@@ -8,10 +8,10 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 
 alias vim='nvim'
-alias hyprconf='nvim ~/dotfiles/.config/hypr/hyprland.conf'
-alias kittyconf='nvim ~/dotfiles/.config/kitty/kitty.conf'
+alias hyprconf='cd ~/dotfiles/ && nvim ~/dotfiles/.config/hypr/hyprland.conf'
+alias kittyconf='cd ~/dotfiles/ && nvim ~/dotfiles/.config/kitty/kitty.conf'
 alias nvimconf='cd ~/.config/nvim && nvim ~/.config/nvim/'
-alias bashconf='nvim ~/dotfiles/.bashrc'
+alias bashconf='cd ~/dotfiles/ && nvim ~/dotfiles/.bashrc'
 alias qsconf='cd ~/dotfiles/.config/quickshell/ && nvim ~/dotfiles/.config/quickshell/shell.qml'
 alias mkdir='mkdir -p'
 alias ls='ls -Alh'
@@ -31,8 +31,6 @@ alias shutdown='shutdown -h now'
 PS1='  \[\e[36m\]\u \[\e[37m\](\@): \[\e[37m\]\w \[\e[33m\]$ \[\e[37m\]'
 
 eval "$(zoxide init bash)"
-
-. "$HOME/.cargo/env"
 
 export EDITOR=nvim
 export VISUAL=nvim
