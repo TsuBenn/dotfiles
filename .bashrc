@@ -8,6 +8,9 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 
 alias vim='nvim'
+
+alias dotfiles='cd ~/dotfiles/ && nvim .'
+
 alias hyprconf='cd ~/dotfiles/ && nvim ~/dotfiles/.config/hypr/hyprland.conf'
 alias kittyconf='cd ~/dotfiles/ && nvim ~/dotfiles/.config/kitty/kitty.conf'
 alias nvimconf='cd ~/.config/nvim && nvim ~/.config/nvim/'
