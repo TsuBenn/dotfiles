@@ -51,8 +51,7 @@ ColumnLayout {
             //transform: [Translate {y: 10}]
             fillMode: Image.PreserveAspectCrop
             cache: true
-            asynchronous: true
-            source: GithubInfo.avatarChanged
+            source: GithubInfo.avatar
 
         }
 
