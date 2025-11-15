@@ -46,7 +46,7 @@ Rectangle {
                 return 4
             } else if (WeatherInfo.condition_icon =="⛈" || WeatherInfo.condition_icon =="🌩") {
                 return 1
-            } else if (WeatherInfo.condition_icon =="☀") {
+            } else if (WeatherInfo.condition_icon =="☀️") {
                 return 0
             } else if (WeatherInfo.condition_icon =="☁" ||WeatherInfo.condition_icon =="🌫" ) {
                 return 2
