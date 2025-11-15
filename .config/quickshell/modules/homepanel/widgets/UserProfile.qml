@@ -52,7 +52,7 @@ ColumnLayout {
             fillMode: Image.PreserveAspectCrop
             cache: true
             asynchronous: true
-            source: "https://avatars.githubusercontent.com/u/142566847?v=4"
+            source: GithubInfo.avatarChanged
 
         }
 
