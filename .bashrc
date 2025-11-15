@@ -1,7 +1,7 @@
 [[ $- != *i* ]] && return
 
 if [[ $- == *i* ]]; then
-    bind '"\C-f":"zi\n"'
+    bind '"\C-f":"fzf\n"'
 fi
 
 alias ls='ls --color=auto'
