@@ -22,13 +22,13 @@ Singleton {
                 root.username = data[1]
                 root.userid = data[2]
                 root.avatar = data[3]
-                console.log(data[3])
+                //console.log(data[3])
             }
         }
 
         stderr: StdioCollector {
             onStreamFinished: {
-                console.error(text)
+                if (text) console.error(text)
             }
         }
     }
