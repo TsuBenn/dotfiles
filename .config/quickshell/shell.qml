@@ -19,6 +19,12 @@ ShellRoot {
     Process {
         id: execOnce
 
+        stdout: StdioCollector {
+            onStreamFinished: {
+                console.log(text)
+            }
+        }
+        
         stderr: StdioCollector {
             onStreamFinished: {
                 if (text) console.error(text)
