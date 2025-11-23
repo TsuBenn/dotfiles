@@ -71,7 +71,7 @@ RowLayout {
                 BarVisualizer {
                     spacing: 2
                     round: true
-                    centered: true
+                    centered: false
                 }
 
                 MediaPlayer {

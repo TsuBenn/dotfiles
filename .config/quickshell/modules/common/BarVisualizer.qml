@@ -9,6 +9,10 @@ Rectangle {
 
     id: root
 
+    onVisibleChanged: {
+
+    }
+
     property int spacing: 0
     property bool round: false
     property bool centered: false
@@ -20,16 +24,16 @@ Rectangle {
 
         anchors.bottom: !root.centered ? parent.bottom : undefined
         anchors.centerIn: root.centered ? parent : undefined
+        anchors.horizontalCenter: !root.centered ? parent.horizontalCenter : undefined
 
         spacing: root.spacing
 
         Repeater {
-
             model: Cava.points
 
             delegate: Rectangle {
 
-                Layout.alignment: !root.centered ? Qt.AlignBottom : Qt.AlignVCenter
+                Layout.alignment: !root.centered ? (Qt.AlignBottom | Qt.AlignHCenter) : Qt.AlignVCenter
 
                 required property int modelData
 
@@ -38,6 +42,9 @@ Rectangle {
                 bottomLeftRadius: root.centered ? undefined : 0
 
                 implicitHeight: !root.centered ? (modelData/100)*root.height : (modelData/100)*root.height*0.5 + implicitWidth
+
+                Behavior on implicitHeight {NumberAnimation {duration: 100}}
+
                 implicitWidth: root.width/Cava.bars - root.spacing - root.spacing/Cava.bars
 
                 color: root.color
