@@ -138,6 +138,7 @@ ColumnLayout {
                     font_family: Fonts.zzz_vn_font
                     font_size: 12
                 }
+
             }
 
         }
@@ -318,7 +319,7 @@ ColumnLayout {
         box_height: 32
         box_width: 150
         maxWidth: 150
-        maxHeight: 92
+        maxHeight: box_height*3 - list_spacing
         selected_centered: true
         selected_padding: 14
         selected_marquee: true
@@ -336,6 +337,8 @@ ColumnLayout {
             required property string entry
 
             property bool selected: source == MediaPlayerInfo.currentSource
+
+            radius: sourcesList.radius - sourcesList.list_spacing
 
             text: entry.toUpperCase()
             font_size: 12

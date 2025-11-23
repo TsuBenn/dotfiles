@@ -64,8 +64,15 @@ RowLayout {
 
             //Media Player
             Widgets {
+
                 implicitWidth: 321
                 implicitHeight: 248
+
+                BarVisualizer {
+                    spacing: 2
+                    round: true
+                    centered: true
+                }
 
                 MediaPlayer {
 
