@@ -80,6 +80,7 @@ Singleton {
 
         onTriggered: {
             status.running = true
+            test.running = true
         }
     }
 
@@ -135,5 +136,6 @@ Singleton {
         }
 
     }
+
 }
 

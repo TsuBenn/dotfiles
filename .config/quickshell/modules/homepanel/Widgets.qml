@@ -9,6 +9,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import QtQuick
 
 RowLayout {
@@ -63,11 +64,19 @@ RowLayout {
 
             //Media Player
             Widgets {
-                implicitWidth: 322
+                implicitWidth: 321
                 implicitHeight: 248
 
+                MediaPlayer {
+
+                    id: mediaPlayer
 
 
+                    anchors.top: parent.top
+                    anchors.topMargin: 10
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                }
             }
 
             //Calendar

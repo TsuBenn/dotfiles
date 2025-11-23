@@ -11,7 +11,7 @@ Singleton {
     FontLoader { id: zalandosans; source: "fonts/ZalandoSans/ZalandoSansSemiExpanded-Bold.ttf" }
     FontLoader { id: plexmono; source: "fonts/IBMPlexMono/IBMPlexMono-Medium.ttf" }
 
-    property string system: "JetBrains Mono Nerd Font"
+    property string system: "JetBrainsMono Nerd Font"
     property string emoji: "Noto Color Emoji"
     property string zzz_us_font: zzz_us.name
     property string zzz_vn_font: zzz_vn.name

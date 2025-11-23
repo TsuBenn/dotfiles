@@ -14,7 +14,12 @@ ColumnLayout {
 
     property var dayofweeks: ["MO","TU","WE","TH","FR","SA","SU"]
 
+    property var date: DateTime.date
     property var dates: CalendarInfo.dates
+
+    onDateChanged: {
+        root.dates = CalendarInfo.dates
+    }
 
     property int selectedDate: -1
 

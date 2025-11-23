@@ -11,6 +11,7 @@ ColumnLayout {
     id: userprofile
 
     property string font: Fonts.zzz_vn_font
+
     property int font_weight: 700
 
     ClippingRectangle {
@@ -100,29 +101,27 @@ ColumnLayout {
 
         }
 
-        Keys.onPressed: (events) => {
-            if (events.isAutoRepeat) return
-            if (events.key == Qt.Key_Space) {
+
+        Component.onCompleted: {
+            KeyHandlers.pressed.connect((key) => {
+            if (key == Qt.Key_Space) {
                 if (!pfp.stuck) {
                     pfpPressed.stop()
                     pfpReleased.stop()
                     pfpPressed.start()
                 }
-                events.accepted = true
             }
-        }
-
-        Keys.onReleased: (events) => {
-            if (events.isAutoRepeat) return
-            if (events.key == Qt.Key_Space) {
+            })
+            KeyHandlers.released.connect((key) => {
+            if (key == Qt.Key_Space) {
                 if (!pfp.stuck) {
                     pfpDrag.stop()
                     pfpPressed.stop()
                     pfpReleased.stop()
                     pfpReleased.start()
                 }
-                events.accepted = true
             }
+            })
         }
 
         transform: [

@@ -121,6 +121,7 @@ Singleton {
             cpustat.reload()
             memstat.reload()
             gpustat.running = true
+            cputemp.running = true
             rootstorage.running = true
             network.reload()
             disk.reload()
@@ -180,6 +181,20 @@ Singleton {
             used = total - parseInt(text().match(/SwapFree: *(\d+)/)[1], 10)
             root.swaptotal = total
             root.swapused = used
+        }
+    }
+
+    //get CPU TEMP
+    Process {
+        id: cputemp
+
+        running: true
+        command: ["bash", "-c", "cat /sys/class/thermal/thermal_zone*/temp"]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.cputemp = parseInt(text, 10)/1000
+            }
         }
     }
 

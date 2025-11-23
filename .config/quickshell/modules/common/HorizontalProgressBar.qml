@@ -11,13 +11,14 @@ ClippingRectangle {
 
     id: root
 
-    property int  box_width          : 28
-    property int  box_height         : 300
+    property real box_width          : 300
+    property real box_height         : 28
+    property int  padding            : 0
     property var  bg_color           : "gray"
     property var  bg_hover           : "gray"
     property var  fg_color           : "light gray"
     property var  fg_hover           : "light gray"
-    property real percentage         : SystemInfo.cpuusage               // Only percentage value (Do math or whatever)
+    property real percentage         : preferedPercentage               // Only percentage value (Do math or whatever)
 
     property real preferedPercentage : SystemInfo.cpuusage
 
@@ -25,29 +26,45 @@ ClippingRectangle {
 
     signal pressed()
     signal released()
+    signal entered()
+    signal exited()
     signal adjusted() 
 
     function syncBar() {
-        root.percentage = Qt.binding(()=>root.preferedPercentage)
+        sync.running = true
+    }
+
+    Timer {
+        id:sync
+
+        interval: 100
+        repeat: false
+        onTriggered: {
+            root.percentage = Qt.binding(()=>root.preferedPercentage)
+        }
     }
 
     Layout.alignment: Qt.AlignCenter
 
     implicitWidth: root.box_width
     implicitHeight: root.box_height
-    radius: height/2
+    radius: root.box_height/2
     color: root.bg_color
 
     MouseControl {
 
         visible: root.interactive
 
+        hoverEnabled: true
 
         function percentageClamp() {
             root.percentage = Math.min(Math.max(root.percentage, 0), 100)
         }
 
-        anchors.fill: parent
+        implicitWidth: root.box_width + root.padding
+        implicitHeight: root.box_height + root.padding
+
+        anchors.centerIn: parent
 
         onHeld: (button) => {
             if (button == Qt.LeftButton) {
@@ -66,8 +83,21 @@ ClippingRectangle {
             root.adjusted()
         }
 
+        onPressed: {
+            root.pressed()
+        }
+
         onReleased: {
             root.adjusted()
+            root.released()
+        }
+
+        onEntered: {
+            root.entered()
+        }
+
+        onExited: {
+            root.exited()
         }
 
     }
@@ -77,12 +107,12 @@ ClippingRectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
 
-        implicitWidth: parent.height*root.percentage/100
+        implicitWidth: parent.width*root.percentage/100
         Behavior on implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
         color: root.fg_color
-        topRightRadius: parent.height/2
-        bottomRightRadius: parent.height/2
+        topRightRadius: root.box_height/2
+        bottomRightRadius: root.box_height/2
     }
 
 }

@@ -20,9 +20,9 @@ Singleton {
 
         root.dates = []
 
-        let dayIndex = dayofweek.indexOf(DateTime.dayofweek_short)
-        let isMonthof30 = monthsof30.includes(parseInt(DateTime.month_numeral))
-        let today = parseInt(DateTime.date)
+        const dayIndex = dayofweek.indexOf(DateTime.dayofweek_short)
+        const isMonthof30 = monthsof30.includes(parseInt(DateTime.month_numeral))
+        const today = parseInt(DateTime.date)
 
         root.dates.push({"day": today, "inMonth": true, "isToday": true})
 
@@ -99,17 +99,18 @@ Singleton {
             currdate += 1
         }
 
+        console.log("It's the Next Day! Re-calculation Calendar")
+
         /**
-        for (const day of dates) {
-            console.log(`${day.day} ${day.inMonth} ${day.isToday}`)
-        }
+         for (const day of dates) {
+             console.log(`${day.day} ${day.inMonth} ${day.isToday}`)
+         }
         **/
 
     }
 
     onDateChanged: {
         calculateCalendar()
-        console.log("It's the Next Day! Re-calculation Calendar")
     }
 
     Component.onCompleted: {

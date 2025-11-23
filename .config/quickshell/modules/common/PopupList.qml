@@ -37,7 +37,8 @@ PillButton {
     property bool   selected_marquee             : false
     property bool   selected_centered            : false
 
-    property string list_container_implicitWidth : list.container_implicitWidth
+    property real   list_container_implicitWidth : list.container_implicitWidth
+    Behavior on list_container_implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
     property string list_container_color         : "#aaaaaa"
     property string list_bg_color                : "#aaaaaa"
 
@@ -285,6 +286,37 @@ PillButton {
                 id: selected
 
                 visible: button.selected_list
+
+                anchors.bottom: !button.dropdown ? parent.bottom : undefined
+                anchors.top: button.dropdown ? parent.top : undefined
+
+                radius: button.radius
+
+                text: button.selected_text
+
+                box_width: parent.implicitWidth
+                box_height: button.box_height
+                font_size: button.selected_font_size
+                font_weight: button.selected_font_weight
+
+                preferedWidth: button.maxWidth
+
+                centered: button.selected_centered
+                text_padding: button.selected_padding
+                marquee: button.selected_marquee
+
+                bg_color: button.selected_color
+                fg_color: button.selected_font_color
+
+                onReleased: {
+                    if (!openList.running) closeList.start()
+                }
+
+            }
+
+            PillButton {
+
+                visible: !button.selected_list
 
                 anchors.bottom: !button.dropdown ? parent.bottom : undefined
                 anchors.top: button.dropdown ? parent.top : undefined

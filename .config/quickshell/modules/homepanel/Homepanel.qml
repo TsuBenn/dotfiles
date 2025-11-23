@@ -1,4 +1,5 @@
 import qs.services
+import qs.modules.common
 import qs.modules.homepanel
 
 import Quickshell
@@ -45,13 +46,25 @@ PanelWindow {
             Layout.alignment: Qt.AlignCenter
         }
 
+        Keys.onPressed: (events) => {
+            if (events.isAutoRepeat) return
+            events.accepted = true
+            KeyHandlers.signalPressed(events.key)
+        }
         Keys.onReleased: (events) => {
             if (events.isAutoRepeat) return
-            if (events.key == Qt.Key_Escape) {
-                root.visible = false
-                events.accepted = true
-            }
+            events.accepted = true
+            KeyHandlers.signalReleased(events.key)
         }
+
+        Component.onCompleted: {
+            KeyHandlers.pressed.connect((key)=> {
+                if (key == Qt.Key_Escape) {
+                    root.visible = false
+            }
+            })
+        }
+
     }
 
 }
