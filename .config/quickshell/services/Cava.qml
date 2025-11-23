@@ -12,7 +12,22 @@ Singleton {
     property int framerate: 60
     property int bars: 40
 
+    property int activeUser: 0
+
+    function requestStart() {
+        activeUser += 1
+        if (activeUser === 1) process.running = true 
+    }
+
+    function release() {
+        activeUser -= 1
+        if (activeUser === 0) process.running = false 
+    }
+
     Process {
+
+        id: process
+
         running: true
         command: ["bash", "-c", `cava -p <(echo "
 [general]

@@ -104,7 +104,7 @@ ColumnLayout {
 
         Component.onCompleted: {
             KeyHandlers.pressed.connect((key) => {
-            if (key == Qt.Key_Space) {
+            if (key == Qt.Key_Tab) {
                 if (!pfp.stuck) {
                     pfpPressed.stop()
                     pfpReleased.stop()
@@ -113,7 +113,7 @@ ColumnLayout {
             }
             })
             KeyHandlers.released.connect((key) => {
-            if (key == Qt.Key_Space) {
+            if (key == Qt.Key_Tab) {
                 if (!pfp.stuck) {
                     pfpDrag.stop()
                     pfpPressed.stop()
