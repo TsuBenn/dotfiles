@@ -1,7 +1,43 @@
+pragma Singleton 
+
 import Quickshell
 import Quickshell.Io
 import QtQuick
 
-Item {
+Singleton {
+
+    id: root
+
+    property list<int> points: []
+    property int framerate: 60
+    property int bars: 40
+
+    Process {
+        running: true
+        command: ["bash", "-c", `cava -p <(echo "
+[general]
+framerate = ${root.framerate}                                                       
+bars = ${root.bars}                             
+autosens = 1
+
+[smoothing]
+monstercat = 1
+gravity = 1
+
+[output]
+method = raw
+raw_target = /dev/stdout
+data_format = ascii
+ascii_max_range = 100
+bit_format = 16bit")`]
+
+        stdout: SplitParser {
+            onRead: (data) => {
+                root.points = data.split(";").slice(0,root.bars)
+            }
+        }
+
+    }
+
 }
 
