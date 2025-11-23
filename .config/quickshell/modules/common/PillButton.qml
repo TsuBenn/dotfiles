@@ -7,12 +7,12 @@ ClippingRectangle {
     id: button
 
     property string text                 : "Text"
-    property int    text_padding         : 10
-    property real    font_size           : 13
+    property real   text_padding         : 10
+    property real   font_size            : 13
     property string font_family          : "JetBrains Mono Nerd Font"
     property int    font_weight          : 800
     property real   font_opacity         : 1
-    property int    spacing              : 0
+    property real   spacing              : 0
     property var    bg_color             : ["transparent", "light gray", "gray"]
     property var    fg_color             : ["black", "black", "white"]
 
@@ -132,9 +132,7 @@ ClippingRectangle {
         id: left_text
         anchors.verticalCenter: parent.verticalCenter
 
-        x: button.x + button.text_padding - button.border.width
-
-        Behavior on x {NumberAnimation {duration: 0}}
+        x: parent.x + button.text_padding - button.border.width
 
         text: button.text.trim()
     }
@@ -154,6 +152,7 @@ ClippingRectangle {
             NumberAnimation {
                 target: left_text
                 property: "x"
+                from: button.text_padding
                 to: -button_text.paintedWidth + button.text_padding
                 duration: 10*(button_text.paintedWidth + button.implicitWidth)
                 loops: Animation.Infinite
@@ -168,8 +167,8 @@ ClippingRectangle {
             PauseAnimation {duration: 1000}
             ScriptAction {
                 script: {
-                    button_text.text = "     " + button.text.trim()
-                    left_text.text = button.text.trim() + "     " + button.text.trim() + "     " + button.text.trim()
+                    button_text.text = "       " + button.text.trim()
+                    left_text.text = button.text.trim() + "       " + button.text.trim() + "       " + button.text.trim()
                 }
             }
         }
@@ -179,7 +178,7 @@ ClippingRectangle {
         id: returnAnimback
         target: left_text
         property: "x"
-        duration: 0.5*(button_text.paintedWidth + button.implicitWidth)
+        duration: 1.2*(button_text.paintedWidth + button.implicitWidth)
         to: button.text_padding
         easing.type: Easing.OutCubic
     }
@@ -188,7 +187,7 @@ ClippingRectangle {
         id: returnAnimfor
         target: left_text
         property: "x"
-        duration: 1*(button_text.paintedWidth + button.implicitWidth)
+        duration: 1.2*(button_text.paintedWidth + button.implicitWidth)
         to: -button_text.paintedWidth + button.text_padding
         easing.type: Easing.OutCubic
     }
@@ -207,14 +206,15 @@ ClippingRectangle {
 
         hoverEnabled: true
 
-        onEntered: {if (button.marqueeAble) {marqueeAnim.start();} else {marqueeAnim.stop();}}
+        onEntered: {if (button.marqueeAble) {marqueeAnim.start();}}
         onExited: {if (button.marqueeAble) {marqueeAnim.stop();
         if (left_text.x > -button_text.paintedWidth*(2/7)) {
             returnAnimback.start();
         } else {
             returnAnimfor.start();
         }
-    }}
+    }
+}
 
         onPressed: {button.pressed()}
         onReleased: {

@@ -51,6 +51,7 @@ Rectangle {
             } else if (WeatherInfo.condition_icon =="☁" ||WeatherInfo.condition_icon =="🌫" ) {
                 return 2
             }
+            else return 0
         }
 
         source: "../../../assets/images/weathers.jpg"

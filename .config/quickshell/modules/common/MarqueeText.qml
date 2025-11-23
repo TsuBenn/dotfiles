@@ -14,12 +14,14 @@ ClippingRectangle {
     property bool centered: true
     required property int box_width
     property string text: "Scrolling Text"
+    property real paintedWidth: the_text.paintedWidth
     property string font_family: Fonts.system
     property string font_color: "black"
     property int spacing: 0
     property int padding: 15
     property int font_weight: 500
     property int font_size: 15
+    property bool hoverable: false
 
     property bool marqueeAble: temp_text.paintedWidth+padding*2 > implicitWidth
 
@@ -51,7 +53,7 @@ ClippingRectangle {
                 orientation: Gradient.Horizontal
                 GradientStop {position: 0.0; color: "transparent"}
                 GradientStop {position: root.padding/root.width; color: "white"}
-                GradientStop {position: 1.0 - root.padding/root.width; color: "white"}
+                GradientStop {position: 1.0 - (root.padding/2)/root.width; color: "white"}
                 GradientStop {position: 1.0; color: "transparent"}
             }
         }
@@ -62,7 +64,7 @@ ClippingRectangle {
 
         visible: false
 
-        text: root.text.trim() + "     "
+        text: root.text.trim() + "⠀⠀⠀⠀⠀"
         font.family: root.font_family
         font.pointSize: root.font_size
         font.weight: root.font_weight
@@ -71,17 +73,61 @@ ClippingRectangle {
 
 
     Component.onCompleted: {
-        if (root.marqueeAble) marqueeAnim.start()
+        if (root.marqueeAble && !root.hoverable) marqueeAnim.start()
+    }
+
+    MouseArea {
+
+        z: 1
+
+        anchors.fill: parent
+
+        acceptedButtons: Qt.NoButton
+
+        hoverEnabled: true
+
+        onEntered: if (root.hoverable && root.marqueeAble) marqueeAnim.start()
+        onExited: if (root.hoverable && root.marqueeAble) {
+            marqueeAnim.stop();
+            if (the_text.x > -temp_text.paintedWidth*(2/7)) {
+                marqueeAnimReturnBack.start();
+            } else {
+                marqueeAnimReturnFor.start();
+            }
+        }
+    }
+
+    NumberAnimation {
+        running: false
+        id: marqueeAnimReturnBack
+        target: the_text
+        property: "x"
+        to: root.padding
+        duration: 1.2*(temp_text.paintedWidth + root.implicitWidth)
+        easing.type: Easing.OutCubic
+    }
+
+    NumberAnimation {
+        running: false
+        id: marqueeAnimReturnFor
+        target: the_text
+        property: "x"
+        to: -temp_text.paintedWidth+root.padding
+        duration: 1.2*(temp_text.paintedWidth + root.implicitWidth)
+        easing.type: Easing.OutCubic
     }
 
     ParallelAnimation {
         id: marqueeAnim
-        NumberAnimation {
-            target: the_text
-            property: "x"
-            from: root.padding
-            to: -temp_text.paintedWidth+root.padding
-            duration: 15*(temp_text.paintedHeight + root.implicitWidth)
+        SequentialAnimation {
+            PauseAnimation {duration: root.hoverable ? 800 : 2000}
+            NumberAnimation {
+                target: the_text
+                property: "x"
+                from: root.padding
+                to: -temp_text.paintedWidth+root.padding
+                duration: 18*(temp_text.paintedWidth + root.implicitWidth)
+            }
         }
         ScriptAction {
             script: {
@@ -90,27 +136,24 @@ ClippingRectangle {
                 }
             }
         }
-        SequentialAnimation {
-            PauseAnimation {duration: 1000}
-            ScriptAction {
-                script: {
-                    root.marqueeAble = temp_text.paintedWidth+root.padding*2 > root.implicitWidth
-                    root.marqueeAble ? marqueeAnim.start() : marqueeAnim.stop()
-                    temp_text.text = "     " + root.text.trim()
-                    the_text.text = root.text.trim() + "     " + root.text.trim() + "     " + root.text.trim()
-                }
-            }
-        }
         loops: Animation.Infinite
     }
 
     onTextChanged: {
-        temp_text.text = root.text.trim()
-        root.marqueeAble = temp_text.paintedWidth > root.implicitWidth
+        marqueeAnim.stop()
+        temp_text.text = root.text.trim() 
+        the_text.text = root.text.trim() 
+        the_text.x = root.centered ? (root.implicitWidth-the_text.implicitWidth)/2 : root.padding
+        root.marqueeAble = temp_text.paintedWidth+root.padding*2 > root.implicitWidth
         if (!marqueeAble) return
-        temp_text.text = root.text.trim() + "     "
-        marqueeAnim.start()
+        temp_text.text = "⠀⠀⠀⠀⠀" + root.text.trim()
+        the_text.text = root.text.trim() + "⠀⠀⠀⠀⠀" + root.text.trim() + "⠀⠀⠀⠀⠀" + root.text.trim()
+        if (!root.hoverable) marqueeAnim.start()
     }
+
+
+
+
 
 }
 

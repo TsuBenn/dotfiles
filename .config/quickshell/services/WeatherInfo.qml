@@ -10,7 +10,7 @@ Singleton {
 
     property string location: "Saigon"
     property string temperature: "NA"
-    property string condition: "Loading..."
+    property string condition: "..."
     property string condition_icon: "🌦" 
 
     Timer {

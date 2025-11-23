@@ -11,8 +11,9 @@ ClippingRectangle {
 
     id: root
 
-    property int  box_width          : 28
-    property int  box_height         : 300
+    property real box_width          : 28
+    property real box_height         : 300
+    property int  padding            : 0
     property var  bg_color           : "gray"
     property var  bg_hover           : "gray"
     property var  fg_color           : "light gray"
@@ -25,10 +26,22 @@ ClippingRectangle {
 
     signal pressed()
     signal released()
+    signal entered()
+    signal exited()
     signal adjusted() 
 
     function syncBar() {
-        root.percentage = Qt.binding(()=>root.preferedPercentage)
+        sync.running = true
+    }
+
+    Timer {
+        id:sync
+
+        interval: 100
+        repeat: false
+        onTriggered: {
+            root.percentage = Qt.binding(()=>root.preferedPercentage)
+        }
     }
 
     Layout.alignment: Qt.AlignCenter
@@ -42,12 +55,16 @@ ClippingRectangle {
 
         visible: root.interactive
 
+        hoverEnabled: true
 
         function percentageClamp() {
             root.percentage = Math.min(Math.max(root.percentage, 0), 100)
         }
 
-        anchors.fill: parent
+        implicitWidth: root.box_width + root.padding
+        implicitHeight: root.box_height + root.padding
+
+        anchors.centerIn: parent
 
         onHeld: (button) => {
             if (button == Qt.LeftButton) {
@@ -66,8 +83,21 @@ ClippingRectangle {
             root.adjusted()
         }
 
+        onPressed: {
+            root.pressed()
+        }
+
         onReleased: {
             root.adjusted()
+            root.released()
+        }
+
+        onEntered: {
+            root.entered()
+        }
+
+        onExited: {
+            root.exited()
         }
 
     }
