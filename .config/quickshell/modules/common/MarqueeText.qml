@@ -14,16 +14,19 @@ ClippingRectangle {
     property bool centered: true
     required property int box_width
     property string text: "Scrolling Text"
-    property real paintedWidth: the_text.paintedWidth
     property string font_family: Fonts.system
     property string font_color: "black"
     property int spacing: 0
     property int padding: 15
     property int font_weight: 500
-    property int font_size: 15
+    property real font_size: 15
+    property real font_minSize: font_size
     property bool hoverable: false
 
-    property bool marqueeAble: temp_text.paintedWidth+padding*2 > implicitWidth
+    property real textImplicitWidth: 0
+
+
+    property bool marqueeAble: temp_text.paintedWidth > implicitWidth
 
     implicitHeight: the_text.implicitHeight
     implicitWidth: box_width
@@ -34,6 +37,7 @@ ClippingRectangle {
         id: the_text
 
         x: root.centered ? (root.implicitWidth-implicitWidth)/2 : root.padding
+        Behavior on x {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
         text: root.text.trim()
         font.family: root.font_family
@@ -64,7 +68,7 @@ ClippingRectangle {
 
         visible: false
 
-        text: root.text.trim() + "⠀⠀⠀⠀⠀"
+        text: root.text.trim() + "⠀⠀⠀⠀⠀⠀⠀"
         font.family: root.font_family
         font.pointSize: root.font_size
         font.weight: root.font_weight
@@ -74,6 +78,7 @@ ClippingRectangle {
 
     Component.onCompleted: {
         if (root.marqueeAble && !root.hoverable) marqueeAnim.start()
+        textChanged()
     }
 
     MouseArea {
@@ -139,16 +144,34 @@ ClippingRectangle {
         loops: Animation.Infinite
     }
 
-    onTextChanged: {
+    function checkMarquee() {
         marqueeAnim.stop()
+
         temp_text.text = root.text.trim() 
         the_text.text = root.text.trim() 
+        temp_text.font.pointSize = root.font_size
+        the_text.font.pointSize = root.font_size
+
+        root.textImplicitWidth = the_text.paintedWidth
+
+        temp_text.font.pointSize = Math.max(root.font_size - 0.08 * Math.max(root.textImplicitWidth+root.padding*2 - root.implicitWidth,0),root.font_minSize)
+        the_text.font.pointSize = Math.max(root.font_size - 0.08 * Math.max(root.textImplicitWidth+root.padding*2 - root.implicitWidth,0),root.font_minSize)
+
         the_text.x = root.centered ? (root.implicitWidth-the_text.implicitWidth)/2 : root.padding
-        root.marqueeAble = temp_text.paintedWidth+root.padding*2 > root.implicitWidth
+        root.marqueeAble = temp_text.paintedWidth+root.padding > root.implicitWidth
         if (!marqueeAble) return
-        temp_text.text = "⠀⠀⠀⠀⠀" + root.text.trim()
-        the_text.text = root.text.trim() + "⠀⠀⠀⠀⠀" + root.text.trim() + "⠀⠀⠀⠀⠀" + root.text.trim()
+        temp_text.text = "⠀⠀⠀⠀⠀⠀⠀" + root.text.trim()
+        the_text.text = root.text.trim() + "⠀⠀⠀⠀⠀⠀⠀" + root.text.trim() + "⠀⠀⠀⠀⠀⠀⠀" + root.text.trim()
         if (!root.hoverable) marqueeAnim.start()
+    }
+
+    onWidthChanged: {
+        root.checkMarquee()
+    }
+
+    onTextChanged: {
+
+        root.checkMarquee()
     }
 
 

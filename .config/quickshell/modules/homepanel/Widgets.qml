@@ -62,30 +62,6 @@ RowLayout {
 
             spacing: Config.gap
 
-            //Media Player
-            Widgets {
-
-                implicitWidth: 321
-                implicitHeight: 248
-
-                BarVisualizer {
-                    spacing: 2
-                    round: true
-                    centered: false
-                }
-
-                MediaPlayer {
-
-                    id: mediaPlayer
-
-
-                    anchors.top: parent.top
-                    anchors.topMargin: 10
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                }
-            }
-
             //Calendar
             Widgets {
                 implicitWidth: 256
@@ -100,6 +76,168 @@ RowLayout {
                 }
 
             }
+
+            //Media Player
+            Widgets {
+
+                implicitWidth: 321
+                implicitHeight: 248
+
+                ClippingRectangle {
+
+                    id: mediaBg
+
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.left: parent.left
+
+                    implicitHeight: 120
+
+                    radius: Config.radius
+                    topRightRadius: 0
+                    topLeftRadius: 0
+
+
+                    Item {
+
+                        anchors.fill: parent
+
+                        Image {
+
+                            id: artBg
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            width: parent.width
+                            height: (sourceSize.height/sourceSize.width)*width
+                            cache: true
+
+                            visible: true
+
+                            source: MediaPlayerInfo.artUrl
+
+                            layer.enabled: true
+                            layer.effect: GaussianBlur {
+                                radius: 15
+                                samples: 50
+                            }
+
+                        }
+                        Image {
+
+                            id: artBgBlurred
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            width: parent.width
+                            height: (sourceSize.height/sourceSize.width)*width
+                            cache: true
+
+                            visible: true
+
+                            source: MediaPlayerInfo.artUrl
+
+                            opacity: 0
+
+                            Behavior on opacity {
+                                SequentialAnimation {
+                                    PauseAnimation {duration: mediaPlayer.pause}
+                                    NumberAnimation {duration: 300; easing.type: Easing.OutCubic}
+                                }
+                            }
+
+                            layer.enabled: true
+                            layer.effect: GaussianBlur {
+                                radius: 30
+                                samples: 50
+                            }
+
+                        }
+
+                    }
+
+                    Rectangle {
+
+                        id: mediaDarken
+
+                        anchors.fill: parent
+
+                        gradient: Gradient {
+                            orientation: Gradient.Vertical
+                            GradientStop {position: 0.0; color: "black"}
+                            GradientStop {position: 1.0; color: "transparent"}
+                        }
+
+                        opacity: 0.1
+
+                        Behavior on opacity {
+                            SequentialAnimation {
+                                PauseAnimation {duration: mediaPlayer.pause}
+                                NumberAnimation {duration: 300; easing.type: Easing.OutCubic}
+                            }
+                        }
+
+                    }
+
+                    BarVisualizer {
+
+                        spacing: 2
+                        round: true
+                        visible: true
+                        opacity: 0.3
+                        layer.enabled: true
+                        layer.effect: DropShadow {
+                            radius: 15
+                            samples: 20
+                            color: Qt.rgba(0.0,0.0,0.0,0.5)
+                            transparentBorder: true
+                            cached: true
+                        }
+
+                    }
+
+                }
+
+
+
+                MediaPlayer {
+
+
+                    id: mediaPlayer
+
+                    property int pause: 200
+
+                    anchors.top: parent.top
+                    anchors.topMargin: 10
+                    anchors.horizontalCenter: parent.horizontalCenter
+
+                    onEntered: {
+                        if (mediaDarken.opacity == 0.2) {
+                            mediaPlayer.pause = 200
+                        } else {
+                            mediaPlayer.pause = 0
+                        }
+
+                        mediaDarken.opacity = 0.5
+                        artBgBlurred.opacity = 1
+                        
+                    }
+                    
+                    onExited: {
+                        if (mediaDarken.opacity == 0.5) {
+                            mediaPlayer.pause = 200
+                        } else {
+                            mediaPlayer.pause = 0
+                        }
+
+                        mediaDarken.opacity = 0.2
+                        artBgBlurred.opacity = 0
+                    }
+
+                }
+
+            }
+
         }
     }
 

@@ -209,7 +209,7 @@ ColumnLayout {
             box_height: device_selector.box_height
             font_weight: 800
             dropdown: device_selector.dropdown
-            items: AudioInfo.sinks
+            items: AudioInfo.sinks ?? [{"id": 0, "name": "n/a"}]
             selected_padding: 15
             selected_marquee: true
             animation_speed: 5
@@ -252,7 +252,7 @@ ColumnLayout {
             spacing: -5
         }
         DeviceSelector {
-            items: AudioInfo.sources
+            items: AudioInfo.sources ?? [{"id": 0, "name": "n/a"}]
             text: "Input"
             spacing: -5
             selected_text: AudioInfo.getName(AudioInfo.sourceDefault)

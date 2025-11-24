@@ -38,7 +38,6 @@ PillButton {
     property bool   selected_centered            : false
 
     property real   list_container_implicitWidth : list.container_implicitWidth
-    Behavior on list_container_implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
     property string list_container_color         : "#aaaaaa"
     property string list_bg_color                : "#aaaaaa"
 
@@ -117,14 +116,14 @@ PillButton {
             SequentialAnimation {
                 NumberAnimation {
                     target: selected
-                    property: "font_opacity"
+                    property: "text_opacity"
                     duration: 0
                     to: 0
                 }
                 PauseAnimation {duration: button.animation_duration*(2/3)}
                 NumberAnimation {
                     target: selected
-                    property: "font_opacity"
+                    property: "text_opacity"
                     duration: button.animation_duration
                     from: 0
                     to: 1
@@ -195,8 +194,8 @@ PillButton {
                     }
                     NumberAnimation {
                         target: selected
-                        property: "font_opacity"
-                        duration: button.animation_duration/5
+                        property: "text_opacity"
+                        duration: button.animation_duration*(2/5)
                         to: 0
                         easing.type: Easing.OutCubic
                     }
@@ -250,6 +249,8 @@ PillButton {
 
                 padding: button.list_spacing
                 spacing: button.list_spacing
+
+                max_height: button.MaxHeight ?? button.box_height
 
                 anchors.top: button.dropdown ? selected.top : undefined
                 anchors.topMargin: button.dropdown ? selected.implicitHeight/2 : undefined
