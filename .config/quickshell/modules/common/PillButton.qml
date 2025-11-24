@@ -7,6 +7,7 @@ ClippingRectangle {
     id: button
 
     property string text                 : "Text"
+    property real   text_opacity         : 1
     property real   text_padding         : 10
     property real   font_size            : 13
     property string font_family          : "JetBrains Mono Nerd Font"
@@ -124,13 +125,16 @@ ClippingRectangle {
         id: button_text
         visible: button.centered && !button.marqueeAble
         anchors.centerIn: parent
-        text: button.text.trim()
+        text: button.text.trim() 
+        opacity: button.text_opacity
     }
 
     ButtonText {
         visible: !button.centered || button.marqueeAble
         id: left_text
         anchors.verticalCenter: parent.verticalCenter
+
+        opacity: button.text_opacity
 
         x: parent.x + button.text_padding - button.border.width
 

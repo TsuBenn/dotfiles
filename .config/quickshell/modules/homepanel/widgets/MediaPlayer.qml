@@ -7,16 +7,17 @@ import qs.modules.common
 import Quickshell
 import Quickshell.Widgets
 import QtQuick.Layouts
-//import Qt5Compat.GraphicalEffects
+import Qt5Compat.GraphicalEffects
 import QtQuick
 
 ColumnLayout {
 
     id: root
 
-    property var sources: MediaPlayerInfo.sources
+    signal entered()
+    signal exited()
 
-    spacing: 10
+    spacing: 6
 
     Component.onCompleted: {
         KeyHandlers.released.connect((key) => {
@@ -26,6 +27,7 @@ ColumnLayout {
         })
     }
 
+
     Rectangle {
 
         id: mediaInfo
@@ -34,20 +36,73 @@ ColumnLayout {
         implicitHeight: 100
         color: "transparent"
 
+        Layout.bottomMargin: 14
+
+
+        layer.enabled: true
+        layer.effect: DropShadow {
+            horizontalOffset: 0
+            verticalOffset: 0
+            radius: 15
+            samples: 20
+            color: Qt.rgba(0.0,0.0,0.0,0.3)
+        }
+
+        MouseArea {
+
+            anchors.fill: parent
+
+            z:1
+
+            hoverEnabled: true
+
+            onEntered: {
+
+                if (playerArt.implicitWidth == 0) {
+                    playerArt.pause = 200
+                } else {
+                    playerArt.pause = 0
+                }
+
+                playerArt.implicitWidth = mediaInfo.implicitHeight
+                root.entered()
+            }
+            onExited: {
+
+                if (playerArt.implicitWidth == mediaInfo.implicitHeight) {
+                    playerArt.pause = 200
+                } else {
+                    playerArt.pause = 0
+                }
+
+                playerArt.implicitWidth = 0
+                root.exited()
+            }
+        }
+
         RowLayout {
 
-            spacing: 4
+            anchors.left: parent.left
+
+            spacing: 0
 
             Item {
 
+                id: playerArt
+
+                property int pause: 200
+
                 implicitHeight: mediaInfo.implicitHeight
-                implicitWidth: mediaInfo.implicitHeight
+                Behavior on implicitWidth {
+                    SequentialAnimation {
+                        PauseAnimation {duration: playerArt.pause}
+                        NumberAnimation {duration: 200; easing.type: Easing.OutCubic}
+                    }
+                }
 
                 ClippingRectangle {
 
                     id: artFrame
-
-                    anchors.centerIn: parent
 
                     implicitHeight: parent.implicitHeight
                     implicitWidth: parent.implicitWidth
@@ -59,25 +114,24 @@ ColumnLayout {
 
                         id: icon
 
-                        visible: art.source
+                        visible: !art.source
 
-                        source: "image://icon/" + MediaPlayerInfo.entry
+                        source: MediaPlayerInfo.entry ? "image://icon/" + MediaPlayerInfo.entry : ""
                         cache: true
-
-                        fillMode: Image.PreserveAspectCrop
 
                         scale: 0.9
 
-                        height: artFrame.implicitHeight
+                        height: (sourceSize.height/sourceSize.width)*width
                         width: artFrame.implicitHeight
 
                     }
+
 
                     Image {
 
                         id: art
 
-                        source: MediaPlayerInfo.artUrl
+                        source: MediaPlayerInfo.artUrl ?? ""
                         cache: true
 
                         fillMode: Image.PreserveAspectCrop
@@ -103,19 +157,28 @@ ColumnLayout {
                     implicitWidth: mediaInfo.implicitWidth - artFrame.implicitWidth - 4
                     implicitHeight: 40
 
+                    function adjustText(text) {
+                        return text.replace(/([\u3040-\u30FF\u4E00-\u9FFF]+)/g,
+                        '<span>$1</span>');
+                    }
+
                     color: "transparent"
 
                     MarqueeText {
 
+                        id: title
+
                         anchors.bottom: parent.bottom
 
+                        padding: 10
                         box_width: mediaInfo.implicitWidth - artFrame.implicitWidth - 4
                         centered: false
                         text: MediaPlayerInfo.title
                         font_family: Fonts.zzz_vn_font
-                        font_size: {
-                            Math.max(20-0.05*Math.max((paintedWidth-implicitWidth),0),16)
-                        }
+                        font_size: 19.5
+                        font_minSize: 16
+                        font_color: "white"
+
                     }
                 }
 
@@ -123,20 +186,24 @@ ColumnLayout {
                 MarqueeText {
                     hoverable: true
                     visible: MediaPlayerInfo.album && (MediaPlayerInfo.album != MediaPlayerInfo.title)
+                    padding: 12
                     box_width: mediaInfo.implicitWidth - artFrame.implicitWidth - 4
                     centered: false
                     text: MediaPlayerInfo.album
                     font_family: Fonts.zzz_vn_font
                     font_size: 10
+                    font_color: "white"
                 }
 
                 MarqueeText {
+                    padding: 12
                     hoverable: true
                     box_width: mediaInfo.implicitWidth - artFrame.implicitWidth - 4
                     centered: false
                     text: MediaPlayerInfo.artist
                     font_family: Fonts.zzz_vn_font
-                    font_size: 12
+                    font_size: 14
+                    font_color: "white"
                 }
 
             }
@@ -150,7 +217,6 @@ ColumnLayout {
         id: timestamp
 
         Layout.alignment: Qt.AlignCenter
-        Layout.bottomMargin: -6
 
         implicitHeight: 10
         implicitWidth: 280
@@ -167,6 +233,7 @@ ColumnLayout {
             font.family: Fonts.system 
             font.pointSize: parent.size
             font.weight: 700
+
         }
 
         Text {
@@ -202,7 +269,7 @@ ColumnLayout {
             interactive: true
 
             onAdjusted: {
-                MediaPlayerInfo.setPosMedia((percentage/100)*MediaPlayerInfo.length)
+                MediaPlayerInfo.setPos((percentage/100)*MediaPlayerInfo.length)
                 syncBar()
             }
 
@@ -255,6 +322,10 @@ ColumnLayout {
         Layout.alignment: Qt.AlignCenter
 
         PillButton {
+
+            text_opacity: MediaPlayerInfo.canPrev ? 1 : 0.25
+            clickable: MediaPlayerInfo.canPrev
+
             text: "\udb81\udcae"
             text_padding: 11
             centered: false
@@ -270,7 +341,7 @@ ColumnLayout {
 
         PillButton {
             text: {
-                if (MediaPlayerInfo.status == "Playing") {
+                if (MediaPlayerInfo.status == "playing") {
                     text_padding = 11
                     return "\udb80\udfe4"
                 } else {
@@ -284,12 +355,19 @@ ColumnLayout {
             box_height: 42
             font_size: 25
 
+            text_opacity: MediaPlayerInfo.canPlay && MediaPlayerInfo.canPause ? 1 : 0.25
+            clickable: MediaPlayerInfo.canPlay && MediaPlayerInfo.canPause
+
             onReleased: {
                 MediaPlayerInfo.playPauseMedia()
             }
         }
 
         PillButton {
+
+            text_opacity: MediaPlayerInfo.canNext ? 1 : 0.25
+            clickable: MediaPlayerInfo.canNext
+
             text: "\udb81\udcad"
             text_padding: 11
             centered: false
@@ -303,7 +381,6 @@ ColumnLayout {
             }
         }
     }
-
 
     PopupList {
 
@@ -319,7 +396,7 @@ ColumnLayout {
         box_height: 32
         box_width: 150
         maxWidth: 150
-        maxHeight: box_height*3 - list_spacing
+        maxHeight: box_height*2 - list_spacing
         selected_centered: true
         selected_padding: 14
         selected_marquee: true
@@ -329,27 +406,26 @@ ColumnLayout {
 
         selected_list: false
 
-        show_scroller: false
-
-        items: MediaPlayerInfo.sources
+        items: MediaPlayerInfo.players
         list_items: PillButton {
-            required property string source
-            required property string entry
+            required property string dbusName
+            required property string desktopEntry
+            required property int index
 
-            property bool selected: source == MediaPlayerInfo.currentSource
+            property bool selected: dbusName == MediaPlayerInfo.dbusName
 
             radius: sourcesList.radius - sourcesList.list_spacing
 
-            text: entry.toUpperCase()
+            text: desktopEntry.toUpperCase()
             font_size: 12
             font_weight: selected ? 800 : 700
             box_width: sourcesList.list_container_implicitWidth
             bg_color: selected ? ["#888888","light gray","gray"] : ["#aaaaaa","light gray","gray"]
 
             onReleased: {
-                if (source != MediaPlayerInfo.currentSource) {
+                if (dbusName != MediaPlayerInfo.activePlayer.dbusName) {
                     MediaPlayerInfo.pauseMedia()
-                    MediaPlayerInfo.currentSource = source
+                    MediaPlayerInfo.activePlayer = MediaPlayerInfo.players[index] 
                 }
                 sourcesList.closeList()
             }

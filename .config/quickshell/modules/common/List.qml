@@ -17,6 +17,7 @@ ClippingRectangle {
     property int    padding
     property int    spacing
 
+    property int    max_height              : implicitHeight
     property string bg_color                : "#aaaaaa"
     property string container_color         : "#aaaaaa"
     property int    container_radius        : 18
@@ -38,9 +39,9 @@ ClippingRectangle {
 
     clip: true
 
-    readonly property int container_implicitWidth: container.width
+    property int container_implicitWidth: container.width
 
-    readonly property int scroller_implicitWidth: {
+    property int scroller_implicitWidth: {
         scroller.visible ? list.scroller_width+list.padding : 0
     }
 
@@ -97,7 +98,7 @@ ClippingRectangle {
 
     ClippingRectangle {
 
-        visible: list.show_scroller && (contentContainer.implicitHeight/(-list.maxScroll + contentContainer.implicitHeight)) < 1
+        visible: list.show_scroller && ((list.max_height-list.padding-list.container_bottom_margin-list.container_top_margin)/(-list.maxScroll + (list.max_height-list.padding-list.container_bottom_margin-list.container_top_margin))) < 1
 
         id: scroller
 
@@ -111,7 +112,7 @@ ClippingRectangle {
 
         radius: implicitWidth/2
 
-        implicitWidth: list.scroller_width
+        implicitWidth: visible ? list.scroller_width : 0
 
         color: list.scroller_bg_color
 
@@ -216,6 +217,7 @@ ClippingRectangle {
         anchors.leftMargin: list.padding + list.container_left_margin
         anchors.rightMargin: list.padding + list.scroller_implicitWidth + list.container_right_margin
         anchors.bottomMargin: list.padding + list.container_bottom_margin
+
 
         y: list.container_top_margin
 
