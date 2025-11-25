@@ -119,7 +119,8 @@ RowLayout {
                             layer.enabled: true
                             layer.effect: GaussianBlur {
                                 radius: 15
-                                samples: 50
+                                samples: 30
+                                cached: true
                             }
 
                         }
@@ -148,8 +149,9 @@ RowLayout {
 
                             layer.enabled: true
                             layer.effect: GaussianBlur {
-                                radius: 30
+                                radius: 50
                                 samples: 50
+                                cached: true
                             }
 
                         }
@@ -181,17 +183,26 @@ RowLayout {
 
                     BarVisualizer {
 
+                        id: barVisualizer
+
                         spacing: 2
                         round: true
                         visible: true
-                        opacity: 0.3
+                        opacity: 0.4
                         layer.enabled: true
                         layer.effect: DropShadow {
                             radius: 15
                             samples: 20
-                            color: Qt.rgba(0.0,0.0,0.0,0.5)
+                            color: Qt.rgba(0.0,0.0,0.0,0.3)
                             transparentBorder: true
                             cached: true
+                        }
+
+                        Behavior on opacity {
+                            SequentialAnimation {
+                                PauseAnimation {duration: mediaPlayer.pause}
+                                NumberAnimation {duration: 300; easing.type: Easing.OutCubic}
+                            }
                         }
 
                     }
@@ -218,6 +229,7 @@ RowLayout {
                             mediaPlayer.pause = 0
                         }
 
+                        barVisualizer.opacity = 0.2
                         mediaDarken.opacity = 0.5
                         artBgBlurred.opacity = 1
                         
@@ -230,6 +242,7 @@ RowLayout {
                             mediaPlayer.pause = 0
                         }
 
+                        barVisualizer.opacity = 0.4
                         mediaDarken.opacity = 0.2
                         artBgBlurred.opacity = 0
                     }

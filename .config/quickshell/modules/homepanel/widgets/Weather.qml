@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Widgets
 import QtQuick.Layouts
 import QtQuick
+import QtQuick.Effects
 import Qt5Compat.GraphicalEffects
 
 Rectangle {
@@ -67,16 +68,6 @@ Rectangle {
 
     }
 
-    DropShadow {
-        anchors.fill: text
-        source: text
-        horizontalOffset: 0
-        verticalOffset: 0
-        radius: 10
-        color: "black"
-        opacity: 0.5 
-    }
-
     ColumnLayout {
 
         id: text
@@ -85,6 +76,13 @@ Rectangle {
         spacing: -8
 
         anchors.centerIn: parent
+
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowBlur: 1
+            shadowColor: Qt.rgba(0.0,0.0,0.0,0.7)
+        }
 
         RowLayout {
 
