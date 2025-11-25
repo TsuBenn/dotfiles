@@ -32,6 +32,7 @@ ClippingRectangle {
     property int    scroller_width          : 5
     property int    scrolling_sen           : (content.implicitHeight/items_data.length)-(spacing/items_data.length)
     property bool   show_scroller           : true
+    property bool   scroller_needed         : scroller.scroller_needed
 
     property var    items_data              : AudioInfo.sinks
 
@@ -42,7 +43,7 @@ ClippingRectangle {
     property int container_implicitWidth: container.width
 
     property int scroller_implicitWidth: {
-        scroller.visible ? list.scroller_width+list.padding : 0
+        scroller.scroller_needed ? list.scroller_width+list.padding : 0
     }
 
     property real scroll_progress: 0
@@ -98,10 +99,9 @@ ClippingRectangle {
 
     ClippingRectangle {
 
-        visible: list.show_scroller && ((list.max_height-list.padding-list.container_bottom_margin-list.container_top_margin)/(-list.maxScroll + (list.max_height-list.padding-list.container_bottom_margin-list.container_top_margin))) < 1
+        property bool scroller_needed: list.show_scroller && ((list.max_height-list.padding-list.container_bottom_margin-list.container_top_margin)/(-list.maxScroll + (list.max_height-list.padding-list.container_bottom_margin-list.container_top_margin))) < 1
 
         id: scroller
-
 
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -112,7 +112,8 @@ ClippingRectangle {
 
         radius: implicitWidth/2
 
-        implicitWidth: visible ? list.scroller_width : 0
+        implicitWidth: scroller_needed ? list.scroller_width : 0
+        Behavior on implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
         color: list.scroller_bg_color
 
@@ -218,6 +219,7 @@ ClippingRectangle {
         anchors.rightMargin: list.padding + list.scroller_implicitWidth + list.container_right_margin
         anchors.bottomMargin: list.padding + list.container_bottom_margin
 
+        Behavior on width {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
         y: list.container_top_margin
 

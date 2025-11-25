@@ -16,12 +16,23 @@ Singleton {
     property string artist        : activePlayer?.trackArtist ?? ""
     property string album         : activePlayer?.trackAlbum ?? ""
     property string artUrl        : activePlayer?.trackArtUrl ?? ""
+    property bool   shuffleStatus : activePlayer ? (activePlayer?.shuffleSupported && activePlayer?.shuffle) : false
     property string status        : {
         if (!activePlayer?.playbackState) return ""
+        if (!activePlayer?.canControl) return "stopped"
         switch (activePlayer?.playbackState) {
             case MprisPlaybackState.Playing: return "playing"
             case MprisPlaybackState.Paused: return "paused"
             case MprisPlaybackState.Stopped: return "stopped"
+        }
+    }
+    property string loopStatus        : {
+        if (!activePlayer?.loopState) return ""
+        if (!activePlayer?.loopSupported) return "none"
+        switch (activePlayer?.loopState) {
+            case MprisLoopState.None: return "none"
+            case MprisLoopState.Track: return "track"
+            case MprisLoopState.Playlist: return "playlist"
         }
     }
     property string entry         : activePlayer?.desktopEntry ?? ""
@@ -30,13 +41,13 @@ Singleton {
     property real   pos           : activePlayer?.positionSupported ? activePlayer.position : null
     property real   volume        : activePlayer?.volumeSupported ? activePlayer.volume : null
 
-    property bool   canPlay       : activePlayer?.canPlay ?? ""
-    property bool   canPause      : activePlayer?.canPause ?? ""
-    property bool   canNext       : activePlayer?.canGoNext ?? ""
-    property bool   canPrev       : activePlayer?.canGoPrevious ?? ""
-    property bool   canLoop       : activePlayer?.loopSupported ?? ""
-    property bool   canShuffle    : activePlayer?.shuffleSupported ?? ""
-    property bool   canVolume     : activePlayer?.volumeSupported ?? ""
+    property bool   canPlay       : activePlayer?.canPlay ?? false
+    property bool   canPause      : activePlayer?.canPause ?? false
+    property bool   canNext       : activePlayer?.canGoNext ?? false
+    property bool   canPrev       : activePlayer?.canGoPrevious ?? false
+    property bool   canLoop       : activePlayer?.loopSupported ?? false
+    property bool   canShuffle    : activePlayer?.shuffleSupported ?? false
+    property bool   canVolume     : activePlayer?.volumeSupported ?? false
 
     signal adjusted()
 
@@ -48,18 +59,12 @@ Singleton {
         return (hour > 0 ? hour + ":" : "") + (minute || minute == 0 ? minute.toString().padStart(2, '0') : "--") + ":" + (second || second == 0 ? second.toString().padStart(2, '0') : "--" )
     }
 
-    function requestPos() {
-    }
-    
-    function releasePos() {
-    }
-
     function setVolume(num) {
         if (activePlayer)
         activePlayer.volume = num
     }
 
-    function getPos(): real {
+    function requestPos() {
         if (activePlayer)
         activePlayer.positionChanged()
     }
@@ -97,6 +102,16 @@ Singleton {
     function toggleShuffle() {
         if (activePlayer)
         activePlayer.shuffle = !activePlayer.shuffle
+    }
+
+    function itterateLoop() {
+        if (activePlayer)
+        switch (root.loopStatus) {
+            case "none": activePlayer.loopState = MprisLoopState.Track
+            case "track": activePlayer.loopState = MprisLoopState.Playlist
+            case "playlist": activePlayer.loopState = MprisLoopState.None
+
+        }
     }
 
     function test() {

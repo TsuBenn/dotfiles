@@ -15,6 +15,11 @@ ColumnLayout {
 
     id: root
 
+    property real artWidth: 0
+    property real artHeight: mediaInfo.implicitHeight
+
+    property bool artHovered: false
+
     signal entered()
     signal exited()
 
@@ -37,14 +42,14 @@ ColumnLayout {
         implicitHeight: 100
         color: "transparent"
 
-        Layout.bottomMargin: 14
+        Layout.bottomMargin: 12
 
 
         layer.enabled: true
         layer.effect: DropShadow {
-            radius: 15
+            radius: 10
             samples: 20
-            color: Qt.rgba(0.0,0.0,0.0,0.3)
+            color: Qt.rgba(0.0,0.0,0.0,0.5*(1-root.artWidth/root.artHeight))
             transparentBorder: true
             cached: true
         }
@@ -57,26 +62,14 @@ ColumnLayout {
 
             hoverEnabled: true
 
+            onContainsMouseChanged: {
+                root.artHovered = containsMouse
+            }
+
             onEntered: {
-
-                if (playerArt.implicitWidth == 0) {
-                    playerArt.pause = 200
-                } else {
-                    playerArt.pause = 0
-                }
-
-                playerArt.implicitWidth = mediaInfo.implicitHeight
                 root.entered()
             }
             onExited: {
-
-                if (playerArt.implicitWidth == mediaInfo.implicitHeight) {
-                    playerArt.pause = 200
-                } else {
-                    playerArt.pause = 0
-                }
-
-                playerArt.implicitWidth = 0
                 root.exited()
             }
         }
@@ -94,12 +87,7 @@ ColumnLayout {
                 property int pause: 200
 
                 implicitHeight: mediaInfo.implicitHeight
-                Behavior on implicitWidth {
-                    SequentialAnimation {
-                        PauseAnimation {duration: playerArt.pause}
-                        NumberAnimation {duration: 200; easing.type: Easing.OutCubic}
-                    }
-                }
+                implicitWidth: root.artWidth
 
                 ClippingRectangle {
 
@@ -222,7 +210,7 @@ ColumnLayout {
         implicitHeight: 10
         implicitWidth: 280
 
-        property real size: 9
+        property real size: 8
 
         color: "transparent"
 
@@ -324,6 +312,38 @@ ColumnLayout {
 
         PillButton {
 
+            text_opacity: MediaPlayerInfo.canShuffle ? 1 : 0.25
+            //clickable: MediaPlayerInfo.canShuffle
+
+            text: {
+                if (MediaPlayerInfo.shuffleStatus == true ) {
+                    text_padding = 9
+                    return "\udb81\udc9d"
+                } else {
+                    text_padding = 9.5
+                    return "\udb81\udc9e"
+                }
+            }
+            text_padding: 8
+            centered: false
+            font_family: Fonts.system
+            box_width: 38
+            box_height: 38
+            font_size: {
+                if (MediaPlayerInfo.shuffleStatus == true ) {
+                    return 21
+                } else {
+                    return 25
+                }
+            }
+
+            onReleased: {
+                MediaPlayerInfo.toggleShuffle()
+            }
+        }
+
+        PillButton {
+
             text_opacity: MediaPlayerInfo.canPrev ? 1 : 0.25
             clickable: MediaPlayerInfo.canPrev
 
@@ -364,6 +384,15 @@ ColumnLayout {
             }
         }
 
+        Timer {
+            interval: 1000
+            running: MediaPlayerInfo.status == "playing"
+            repeat: true
+            onTriggered: {
+                MediaPlayerInfo.requestPos()
+            }
+        }
+
         PillButton {
 
             text_opacity: MediaPlayerInfo.canNext ? 1 : 0.25
@@ -381,13 +410,37 @@ ColumnLayout {
                 MediaPlayerInfo.nextMedia()
             }
         }
+
+        PillButton {
+            text: {
+                if (MediaPlayerInfo.loopStatus == "track") {
+                    return "\udb81\udc58"
+                } else {
+                    return "\udb81\udc56"
+                }
+            }
+            text_padding: 8
+            centered: false
+            font_family: Fonts.system
+            box_width: 38
+            box_height: 38
+            font_size: 22
+
+            text_opacity: MediaPlayerInfo.canLoop ? 1 : 0.25
+            //clickable: MediaPlayerInfo.canLoop
+
+            onReleased: {
+                MediaPlayerInfo.itterateLoop()
+            }
+        }
     }
 
     PopupList {
 
         id: sourcesList
 
-        Layout.leftMargin: -2
+        Layout.topMargin: 2
+        Layout.alignment: Qt.AlignCenter
 
         text: MediaPlayerInfo.entry.toUpperCase()
         font_size: 12
@@ -395,8 +448,8 @@ ColumnLayout {
         marquee: true
 
         box_height: 32
-        box_width: 150
-        maxWidth: 150
+        box_width: 120
+        maxWidth: box_width
         maxHeight: box_height*2 - list_spacing
         selected_centered: true
         selected_padding: 14

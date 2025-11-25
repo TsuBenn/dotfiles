@@ -44,6 +44,7 @@ PillButton {
     property string scroller_bg_color            : "#555555"
     property string scroller_fg_color            : "gray"
     property bool   show_scroller                : true
+    property bool   scroller_needed              : list.scroller_needed
     property bool   dropdown                     : false
 
     property int    animation_speed              : 5
@@ -154,6 +155,9 @@ PillButton {
                 easing.type: Easing.OutCubic
             }
             SequentialAnimation {
+                ScriptAction {
+                    script: list.show_scroller = false;
+                }
                 PauseAnimation {duration: button.animation_duration*button.maxWidth*0.0035*(4/5)}
                 NumberAnimation {
                     target: list
@@ -162,6 +166,9 @@ PillButton {
                     from: 0
                     to: button.maxHeight
                     easing.type: Easing.OutCubic
+                }
+                ScriptAction {
+                    script: list.show_scroller = button.show_scroller;
                 }
             }
         }
@@ -176,6 +183,7 @@ PillButton {
                 easing.type: Easing.InOutCubic
             }
             SequentialAnimation {
+                ScriptAction {script: {list.show_scroller = button.scroller_needed;}}
                 PauseAnimation {duration: button.animation_duration*button.maxHeight*0.007*(3/4)}
                 ParallelAnimation {
                     NumberAnimation {
@@ -225,7 +233,7 @@ PillButton {
                         }
                     }
                 }
-                ScriptAction {script: popup.close()}
+                ScriptAction {script: {popup.close();}}
             }
         }
 
@@ -250,14 +258,12 @@ PillButton {
                 padding: button.list_spacing
                 spacing: button.list_spacing
 
-                max_height: button.MaxHeight ?? button.box_height
+                max_height: button.maxHeight ?? button.box_height
 
                 anchors.top: button.dropdown ? selected.top : undefined
                 anchors.topMargin: button.dropdown ? selected.implicitHeight/2 : undefined
                 anchors.bottom: !button.dropdown ? selected.bottom : undefined
                 anchors.bottomMargin: !button.dropdown ? selected.implicitHeight/2 : undefined
-
-                show_scroller: button.show_scroller
 
                 container_color: button.list_container_color
                 bg_color: button.list_bg_color
