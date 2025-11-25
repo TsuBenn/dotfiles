@@ -8,6 +8,7 @@ import Quickshell
 import Quickshell.Widgets
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
 import QtQuick
 
 ColumnLayout {
@@ -41,11 +42,11 @@ ColumnLayout {
 
         layer.enabled: true
         layer.effect: DropShadow {
-            horizontalOffset: 0
-            verticalOffset: 0
             radius: 15
             samples: 20
             color: Qt.rgba(0.0,0.0,0.0,0.3)
+            transparentBorder: true
+            cached: true
         }
 
         MouseArea {
