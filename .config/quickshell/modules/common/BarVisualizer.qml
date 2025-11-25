@@ -19,6 +19,7 @@ Item {
 
     RowLayout {
 
+
         anchors.bottom: !parent.centered ? parent.bottom : null
         anchors.centerIn: parent.centered ? parent : null
         anchors.horizontalCenter: !parent.centered ? parent.horizontalCenter : null
@@ -27,8 +28,7 @@ Item {
 
         Repeater {
 
-
-            model: visible ? (root.flipped ? Cava.pointsFlipped : Cava.points) : []
+            model: root.visible ? (root.flipped ? Cava.pointsFlipped : Cava.points) : []
 
             delegate: Rectangle {
 

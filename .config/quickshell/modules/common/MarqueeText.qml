@@ -37,7 +37,6 @@ ClippingRectangle {
         id: the_text
 
         x: root.centered ? (root.implicitWidth-implicitWidth)/2 : root.padding
-        Behavior on x {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
         text: root.text.trim()
         font.family: root.font_family
@@ -157,7 +156,12 @@ ClippingRectangle {
         temp_text.font.pointSize = Math.max(root.font_size - 0.08 * Math.max(root.textImplicitWidth+root.padding*2 - root.implicitWidth,0),root.font_minSize)
         the_text.font.pointSize = Math.max(root.font_size - 0.08 * Math.max(root.textImplicitWidth+root.padding*2 - root.implicitWidth,0),root.font_minSize)
 
-        the_text.x = root.centered ? (root.implicitWidth-the_text.implicitWidth)/2 : root.padding
+            if (root.centered) {
+                the_text.x = (root.implicitWidth-the_text.implicitWidth)/2 
+            } else {
+                the_text.x = root.padding
+            }
+
         root.marqueeAble = temp_text.paintedWidth+root.padding > root.implicitWidth
         if (!marqueeAble) return
         temp_text.text = "⠀⠀⠀⠀⠀⠀⠀" + root.text.trim()

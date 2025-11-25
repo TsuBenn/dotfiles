@@ -124,6 +124,7 @@ RowLayout {
                             }
 
                         }
+
                         Image {
 
                             id: artBgBlurred
@@ -172,18 +173,12 @@ RowLayout {
 
                         opacity: 0.1
 
-                        Behavior on opacity {
-                            SequentialAnimation {
-                                PauseAnimation {duration: mediaPlayer.pause}
-                                NumberAnimation {duration: 300; easing.type: Easing.OutCubic}
-                            }
-                        }
-
                     }
 
                     BarVisualizer {
 
                         id: barVisualizer
+
 
                         spacing: 2
                         round: true
@@ -195,21 +190,104 @@ RowLayout {
                             samples: 20
                             color: Qt.rgba(0.0,0.0,0.0,0.3)
                             transparentBorder: true
-                            cached: true
-                        }
-
-                        Behavior on opacity {
-                            SequentialAnimation {
-                                PauseAnimation {duration: mediaPlayer.pause}
-                                NumberAnimation {duration: 300; easing.type: Easing.OutCubic}
-                            }
                         }
 
                     }
 
                 }
 
-
+                SequentialAnimation {
+                    id: artOpen
+                    PauseAnimation {
+                        duration: 200
+                    }
+                    ScriptAction {
+                        script: {
+                            if (!mediaPlayer.artHovered) {artOpen.stop()}
+                        }
+                    }
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: barVisualizer
+                            property: "opacity"
+                            duration: 200
+                            to: 0.2
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            target: mediaDarken
+                            property: "opacity"
+                            duration: 200
+                            to: 0.5
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            target: artBgBlurred
+                            property: "opacity"
+                            duration: 200
+                            to: 1
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            target: mediaPlayer
+                            property: "artWidth"
+                            duration: 200
+                            to: mediaPlayer.artHeight
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    ScriptAction {
+                        script: {
+                            if (!mediaPlayer.artHovered) {artClose.start()}
+                        }
+                    }
+                }
+                SequentialAnimation {
+                    id: artClose
+                    PauseAnimation {
+                        duration: 200
+                    }
+                    ScriptAction {
+                        script: {
+                            if (mediaPlayer.artHovered) {artClose.stop()}
+                        }
+                    }
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: barVisualizer
+                            property: "opacity"
+                            duration: 200
+                            to: 0.4
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            target: mediaDarken
+                            property: "opacity"
+                            duration: 200
+                            to: 0.2
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            target: artBgBlurred
+                            property: "opacity"
+                            duration: 200
+                            to: 0
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            target: mediaPlayer
+                            property: "artWidth"
+                            duration: 200
+                            to: 0
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    ScriptAction {
+                        script: {
+                            if (mediaPlayer.artHovered) {artOpen.start()}
+                        }
+                    }
+                }
 
                 MediaPlayer {
 
@@ -223,28 +301,17 @@ RowLayout {
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     onEntered: {
-                        if (mediaDarken.opacity == 0.2) {
-                            mediaPlayer.pause = 200
-                        } else {
-                            mediaPlayer.pause = 0
+                        if (!artClose.running) {
+                            artClose.stop()
+                            artOpen.start()
                         }
-
-                        barVisualizer.opacity = 0.2
-                        mediaDarken.opacity = 0.5
-                        artBgBlurred.opacity = 1
-                        
                     }
                     
                     onExited: {
-                        if (mediaDarken.opacity == 0.5) {
-                            mediaPlayer.pause = 200
-                        } else {
-                            mediaPlayer.pause = 0
+                        if (!artOpen.running) {
+                            artOpen.stop()
+                            artClose.start()
                         }
-
-                        barVisualizer.opacity = 0.4
-                        mediaDarken.opacity = 0.2
-                        artBgBlurred.opacity = 0
                     }
 
                 }
