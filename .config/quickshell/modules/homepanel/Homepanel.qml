@@ -16,6 +16,7 @@ PanelWindow {
 
     focusable: true
     visible: false
+    exclusionMode: ExclusionMode.Auto
 
     color: Qt.rgba(0, 0, 0, 0.5)
 
