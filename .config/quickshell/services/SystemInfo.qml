@@ -135,8 +135,8 @@ Singleton {
 
         onLoaded: {
             const intel = text().match(/^.*model name\s+:\s+(Intel\(R\) Core\(TM\) [^ ]+).*$/m)
-            const amd = text().match((/^.*model name\s+:\s+(AMD Ryzen [0-9]+ [0-9A-Za-z]+).*$/m))
-            root.cpumodel = intel[1] ?? amd[1]
+            const amd = text().match(/^.*model name\s+:\s+(AMD Ryzen [0-9]+ [0-9A-Za-z]+).*$/m)
+            root.cpumodel = intel?.[1] ?? amd?.[1]
         }
     }
 
