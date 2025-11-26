@@ -165,7 +165,7 @@ ColumnLayout {
                         text: MediaPlayerInfo.title
                         font_family: Fonts.zzz_vn_font
                         font_size: 19.5
-                        font_minSize: 16
+                        font_minSize: 18
                         font_color: "white"
 
                     }
