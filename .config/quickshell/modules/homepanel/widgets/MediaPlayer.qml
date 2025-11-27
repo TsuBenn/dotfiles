@@ -313,7 +313,7 @@ ColumnLayout {
         PillButton {
 
             text_opacity: MediaPlayerInfo.canShuffle ? 1 : 0.25
-            //clickable: MediaPlayerInfo.canShuffle
+            clickable: MediaPlayerInfo.canShuffle
 
             text: {
                 if (MediaPlayerInfo.shuffleStatus == true ) {
@@ -426,8 +426,8 @@ ColumnLayout {
             box_height: 38
             font_size: 22
 
-            text_opacity: MediaPlayerInfo.canLoop ? 1 : 0.25
-            //clickable: MediaPlayerInfo.canLoop
+            text_opacity: (MediaPlayerInfo.canLoop && MediaPlayerInfo.loopStatus != "none") ? 1 : 0.25
+            clickable: MediaPlayerInfo.canLoop
 
             onReleased: {
                 MediaPlayerInfo.itterateLoop()

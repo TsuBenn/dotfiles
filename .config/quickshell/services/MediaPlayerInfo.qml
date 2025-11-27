@@ -27,13 +27,12 @@ Singleton {
         }
     }
     property string loopStatus        : {
-        if (!activePlayer?.loopState) return ""
-        if (!activePlayer?.loopSupported) return "none"
-        switch (activePlayer?.loopState) {
-            case MprisLoopState.None: return "none"
-            case MprisLoopState.Track: return "track"
-            case MprisLoopState.Playlist: return "playlist"
+        if (activePlayer.loopSupported) {
+            if (activePlayer.loopState == MprisLoopState.None) return "none"
+            else if (activePlayer.loopState == MprisLoopState.Track) return "track"
+            else if (activePlayer.loopState == MprisLoopState.Playlist) return "playlist"
         }
+        return "none"
     }
     property string entry         : activePlayer?.desktopEntry ?? ""
     property string dbusName      : activePlayer?.dbusName ?? ""
@@ -105,17 +104,15 @@ Singleton {
     }
 
     function itterateLoop() {
-        if (activePlayer)
-        switch (root.loopStatus) {
-            case "none": activePlayer.loopState = MprisLoopState.Track
-            case "track": activePlayer.loopState = MprisLoopState.Playlist
-            case "playlist": activePlayer.loopState = MprisLoopState.None
-
+        if (activePlayer) {
+            if (root.loopStatus == "none") {activePlayer.loopState = MprisLoopState.Track; root.loopStatus = "track"}
+            else if (root.loopStatus == "track") {activePlayer.loopState = MprisLoopState.Playlist; root.loopStatus = "playlist"}
+            else if (root.loopStatus == "playlist") {activePlayer.loopState = MprisLoopState.None; root.loopStatus = "none"}
         }
     }
 
     function test() {
-        //console.log(root.status)
+        console.log(root.loopStatus + " " + activePlayer.loopState)
     }
 
     Timer {
