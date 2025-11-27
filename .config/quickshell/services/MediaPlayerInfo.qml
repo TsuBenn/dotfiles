@@ -112,7 +112,7 @@ Singleton {
     }
 
     function test() {
-        console.log(root.loopStatus + " " + activePlayer.loopState)
+        //console.log(root.loopStatus + " " + activePlayer.loopState)
     }
 
     Timer {
