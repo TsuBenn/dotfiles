@@ -8,6 +8,7 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 
 alias vim='nvim'
+alias grubUpdate='sudo grub-mkconfig -o /boot/grub/grub.cfg'
 alias dotfiles='cd ~/dotfiles/ && nvim .'
 alias hyprconf='cd ~/dotfiles/ && nvim ~/.config/hypr/hyprland.conf'
 alias kittyconf='cd ~/dotfiles/ && nvim ~/.config/kitty/kitty.conf'
