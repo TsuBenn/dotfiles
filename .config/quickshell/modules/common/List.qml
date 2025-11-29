@@ -113,7 +113,7 @@ ClippingRectangle {
         radius: implicitWidth/2
 
         implicitWidth: scroller_needed ? list.scroller_width : 0
-        Behavior on implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+        Behavior on implicitWidth {NumberAnimation {duration: 300; easing.type: Easing.OutCubic}}
 
         color: list.scroller_bg_color
 
@@ -219,7 +219,7 @@ ClippingRectangle {
         anchors.rightMargin: list.padding + list.scroller_implicitWidth + list.container_right_margin
         anchors.bottomMargin: list.padding + list.container_bottom_margin
 
-        Behavior on width {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+        Behavior on anchors.rightMargin {NumberAnimation {duration: 300; easing.type: Easing.OutCubic}}
 
         y: list.container_top_margin
 
