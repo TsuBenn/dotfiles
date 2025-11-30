@@ -105,14 +105,13 @@ Singleton {
 
     function itterateLoop() {
         if (activePlayer) {
-            if (root.loopStatus == "none") {activePlayer.loopState = MprisLoopState.Track; root.loopStatus = "track"}
-            else if (root.loopStatus == "track") {activePlayer.loopState = MprisLoopState.Playlist; root.loopStatus = "playlist"}
-            else if (root.loopStatus == "playlist") {activePlayer.loopState = MprisLoopState.None; root.loopStatus = "none"}
+            if (root.loopStatus == "none") {activePlayer.loopState = MprisLoopState.Playlist; root.loopStatus = "playlist"}
+            else if (root.loopStatus == "track") {activePlayer.loopState = MprisLoopState.None; root.loopStatus = "none"}
+            else if (root.loopStatus == "playlist") {activePlayer.loopState = MprisLoopState.Track; root.loopStatus = "track"}
         }
     }
 
     function test() {
-        //console.log(root.loopStatus + " " + activePlayer.loopState)
     }
 
     Timer {
