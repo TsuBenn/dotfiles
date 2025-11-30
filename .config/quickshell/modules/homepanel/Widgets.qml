@@ -1,5 +1,6 @@
 pragma ComponentBehavior:Bound
 
+import qs.assets
 import qs.modules.common
 import qs.modules.homepanel
 import qs.services
@@ -102,6 +103,18 @@ RowLayout {
 
                         anchors.fill: parent
 
+                        Text {
+                            anchors.centerIn: parent
+
+                            visible: !MediaPlayerInfo.activePlayer
+
+                            text: "No Media Player Active"
+                            font.family: Fonts.system
+                            font.pointSize: 13
+                            font.weight: 700
+                            color: "gray"
+                        }
+
                         Image {
 
                             id: artBg
@@ -161,6 +174,8 @@ RowLayout {
 
                     Rectangle {
 
+                        visible: MediaPlayerInfo.activePlayer
+
                         id: mediaDarken
 
                         anchors.fill: parent
@@ -179,10 +194,10 @@ RowLayout {
 
                         id: barVisualizer
 
+                        visible: MediaPlayerInfo.activePlayer
 
                         spacing: 2
                         round: true
-                        visible: true
                         opacity: 0.4
                         layer.enabled: true
                         layer.effect: DropShadow {

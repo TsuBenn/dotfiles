@@ -91,9 +91,11 @@ ColumnLayout {
 
                 ClippingRectangle {
 
+                    anchors.verticalCenter: parent.verticalCenter
+
                     id: artFrame
 
-                    implicitHeight: parent.implicitHeight
+                    implicitHeight: (art.sourceSize.height/art.sourceSize.width)*parent.implicitHeight
                     implicitWidth: parent.implicitWidth
                     color: "transparent"
                     radius: 14
@@ -126,7 +128,7 @@ ColumnLayout {
                         fillMode: Image.PreserveAspectCrop
 
                         height: artFrame.implicitHeight
-                        width: artFrame.implicitHeight
+                        width: artFrame.implicitWidth
 
                     }
 
