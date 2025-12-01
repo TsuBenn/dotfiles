@@ -222,15 +222,15 @@ Singleton {
         id: rootstorage
 
         running: true
-        command: ["bash", "-c", "df | grep '^/dev/' | awk '{print $1, $3, $4}'"]
+        command: ["bash", "-c", "df | grep '^/dev/' | awk '{print $1, $3, $4, $2}'"]
 
         stdout: StdioCollector {
             onStreamFinished: {
                 const data = text.split(" ")
                 //console.log(data)
                 root.rootstoragename = data[0]
-                root.rootstoragetotal = parseInt(data[1], 10) + parseInt(data[2], 10)
-                root.rootstorageused = parseInt(data[1], 10)
+                root.rootstoragetotal = parseInt(data[3], 10)
+                root.rootstorageused = parseInt(data[3], 10) - parseInt(data[2], 10)
             }
         }
     }
