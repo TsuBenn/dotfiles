@@ -40,6 +40,9 @@ ColumnLayout {
     property int    font_spacing  : 0
     property int    font_color    : 0
 
+    property real desiredWidth: container.implicitWidth
+    property real desiredHeight: container.implicitHeight
+
     implicitHeight: root.radius*2
     implicitWidth: implicitHeight
 
