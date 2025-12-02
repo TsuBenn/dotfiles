@@ -200,7 +200,6 @@ Singleton {
                     else if (root.cpumodel.match(/^AMD/)) {
                         root.cputemp = text.match(/^Tctl:\s+\+(.*)°C/m)[1]
                     }
-                    console.log(root.cputemp)
                 }
             }
         }

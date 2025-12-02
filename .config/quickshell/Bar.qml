@@ -3,6 +3,7 @@ pragma ComponentBehavior:Bound
 import qs.modules.common
 import qs.modules.homepanel
 import qs.services
+import qs.assets
 
 import Quickshell
 import Quickshell.Hyprland
@@ -49,6 +50,13 @@ Scope {
                     onReleased: {
                         homepanel.item.visible = !homepanel.item.visible
                     }
+                }
+
+                Text {
+                    text: DateTime.hour24 + ":" + DateTime.minute + ":" + DateTime.second
+                    font.family: Fonts.system
+                    font.pointSize: 12
+                    font.weight: 800
                 }
 
             }
