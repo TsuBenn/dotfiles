@@ -18,43 +18,43 @@ Singleton {
     property string rootstoragename: "ROOT"
     property string networkdevice: "Wifi/Ethernet"
     property string monitorname: "Wifi/Ethernet"
-    property int monitorheight: 1920
-    property int monitorwidth: 1080
-    property real monitorscale: 1
+    property int    monitorheight: 1920
+    property int    monitorwidth: 1080
+    property real   monitorscale: 1
 
     //Process
-    property int cputotal
-    property int cpuidle
-    property int cputemp
-    property int cputotalprev
-    property int cpuidleprev
+    property int  cputotal
+    property int  cpuidle
+    property string cputemp
+    property int  cputotalprev
+    property int  cpuidleprev
     property real cpuusage
 
-    property int memtotal
-    property int memused
+    property int  memtotal
+    property int  memused
     property real memusage: {
         const usage = (memused/memtotal)*100
         return usage.toFixed(2)
     }
 
-    property int swaptotal
-    property int swapused
+    property int  swaptotal
+    property int  swapused
     property real swapusage: {
         const usage = (swapused/swaptotal)*100
         return usage.toFixed(2)
     }
 
-    property int gpuusage
-    property int gputemp
-    property int gpumemtotal
-    property int gpumemused
+    property int  gpuusage
+    property string  gputemp
+    property int  gpumemtotal
+    property int  gpumemused
     property real gpumemusage: {
         const usage = (gpumemused/gpumemtotal)*100
         return usage.toFixed(2)
     }
 
-    property int rootstoragetotal
-    property int rootstorageused
+    property int  rootstoragetotal
+    property int  rootstorageused
     property real rootstorageusage: {
         const usage = (rootstorageused/rootstoragetotal)*100
         return usage.toFixed(2)
@@ -94,23 +94,23 @@ Singleton {
         run.exec(["bash", "-c", "notify-send 'System Error!' '" + error.trim() + "'"])
     }
 
-    property int networktransmit
-    property int networkreceive
+    property int  networktransmit
+    property int  networkreceive
 
-    property int receivedbytes
-    property int transmitedbytes
+    property int  receivedbytes
+    property int  transmitedbytes
 
-    property int diskread
+    property int  diskread
     property real diskreadspeed
-    property int diskwrite
+    property int  diskwrite
     property real diskwritespeed
-    property int diskusage
+    property int  diskusage
 
-    property int diskreaded
+    property int  diskreaded
     property real diskreadedspeed
-    property int diskwrote
+    property int  diskwrote
     property real diskwrotespeed
-    property int diskused
+    property int  diskused
 
     Timer {
         id: timer
@@ -189,11 +189,19 @@ Singleton {
         id: cputemp
 
         running: true
-        command: ["bash", "-c", "cat /sys/class/thermal/thermal_zone*/temp"]
+        command: ["sensors"]
 
         stdout: StdioCollector {
             onStreamFinished: {
-                root.cputemp = parseInt(text, 10)/1000
+                if (text) {
+                    if (root.cpumodel.match(/^Intel/)) {
+                        root.cputemp = text.match(/^Package id 0:\s+\+(.*)°C/m)[1]
+                    }
+                    else if (root.cpumodel.match(/^AMD/)) {
+                        root.cputemp = text.match(/^Tctl:\s+\+(.*)°C/m)[1]
+                    }
+                    console.log(root.cputemp)
+                }
             }
         }
     }

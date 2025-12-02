@@ -9,9 +9,11 @@ import QtQuick
 
 ColumnLayout {
 
+    spacing: 8
+
     RowLayout {
 
-        Layout.topMargin: 0
+        Layout.topMargin: 3
         Layout.alignment: Qt.AlignCenter
 
         id: root
@@ -123,7 +125,7 @@ ColumnLayout {
                 }
             }
 
-            implicitWidth: 258
+            implicitWidth: 265
             implicitHeight: 20
 
             radius: implicitHeight/2
