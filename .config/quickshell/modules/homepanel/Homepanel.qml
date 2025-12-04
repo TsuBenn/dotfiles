@@ -60,7 +60,7 @@ PanelWindow {
 
         Component.onCompleted: {
             KeyHandlers.pressed.connect((key)=> {
-                if (key == Qt.Key_Escape) {
+                if (key == Qt.Key_Escape || key == Qt.Key_Meta) {
                     root.visible = false
             }
             })
