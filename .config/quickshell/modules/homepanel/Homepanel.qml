@@ -50,19 +50,20 @@ PanelWindow {
         Keys.onPressed: (events) => {
             if (events.isAutoRepeat) return
             events.accepted = true
-            KeyHandlers.signalPressed(events.key)
+            KeyHandlers.signalPressed(events.key, events.modifiers)
         }
         Keys.onReleased: (events) => {
             if (events.isAutoRepeat) return
             events.accepted = true
-            KeyHandlers.signalReleased(events.key)
+            KeyHandlers.signalReleased(events.key, events.modifiers)
         }
 
         Component.onCompleted: {
-            KeyHandlers.pressed.connect((key)=> {
-                if (key == Qt.Key_Escape || key == Qt.Key_Meta) {
+            KeyHandlers.pressed.connect((key, modifiers)=> {
+                if (key == Qt.Key_Escape) {
                     root.visible = false
-            }
+                    console.log(key)
+                }
             })
         }
 
