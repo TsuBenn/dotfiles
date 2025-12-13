@@ -198,7 +198,7 @@ RowLayout {
 
                         spacing: 2
                         round: true
-                        opacity: 0.4
+                        opacity: 0.3
                         layer.enabled: true
                         layer.effect: DropShadow {
                             radius: 15
@@ -226,7 +226,7 @@ RowLayout {
                             target: barVisualizer
                             property: "opacity"
                             duration: 200
-                            to: 0.2
+                            to: 0.1
                             easing.type: Easing.OutCubic
                         }
                         NumberAnimation {
@@ -272,7 +272,7 @@ RowLayout {
                             target: barVisualizer
                             property: "opacity"
                             duration: 200
-                            to: 0.4
+                            to: 0.3
                             easing.type: Easing.OutCubic
                         }
                         NumberAnimation {
