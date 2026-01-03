@@ -27,7 +27,7 @@ Singleton {
         }
     }
     property string loopStatus        : {
-        if (activePlayer.loopSupported) {
+        if (activePlayer?.loopSupported) {
             if (activePlayer.loopState == MprisLoopState.None) return "none"
             else if (activePlayer.loopState == MprisLoopState.Track) return "track"
             else if (activePlayer.loopState == MprisLoopState.Playlist) return "playlist"
