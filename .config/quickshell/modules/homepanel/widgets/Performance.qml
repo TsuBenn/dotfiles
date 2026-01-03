@@ -107,7 +107,7 @@ ColumnLayout {
             property int font_weight: 700
             property int info_offset: 0
             property int padding: 30
-            property int spacing: 10
+            property int spacing: 8
             property bool toggleinfo: false
             property real textopacity: 1
 
@@ -239,23 +239,23 @@ ColumnLayout {
 
         InfoBar {
             id: left
-            text: toggleinfo ? "SWAP" : "NETWORK"
-            padding: toggleinfo ? 40 : 30
-            subtextleft: toggleinfo ? SystemInfo.formatNum(SystemInfo.ktoM(SystemInfo.swapused).toFixed(1),4) + "MB " : SystemInfo.storageRounder(SystemInfo.networktransmit,0,3) + "/s \udb80\udf60"
-            subtextmid: toggleinfo ? "/" : "|"
-            subtextright: toggleinfo ? " " + SystemInfo.formatNum(SystemInfo.ktoM(SystemInfo.swaptotal).toFixed(1),4) + "MB" : "\udb80\udf5d " + SystemInfo.storageRounder(SystemInfo.networkreceive,0,3) + "/s"
-            midopacity: toggleinfo ? 1 : 0.4
+            text: !toggleinfo ? "SWAP" : "NETWORK"
+            padding: !toggleinfo ? 40 : 30
+            subtextleft: !toggleinfo ? SystemInfo.formatNum(SystemInfo.ktoM(SystemInfo.swapused).toFixed(1),4) + "MB " : SystemInfo.storageRounder(SystemInfo.networktransmit,0,3) + "/s \udb80\udf60"
+            subtextmid: !toggleinfo ? "/" : "|"
+            subtextright: !toggleinfo ? " " + SystemInfo.formatNum(SystemInfo.ktoM(SystemInfo.swaptotal).toFixed(1),4) + "MB" : "\udb80\udf5d " + SystemInfo.storageRounder(SystemInfo.networkreceive,0,3) + "/s"
+            midopacity: !toggleinfo ? 1 : 0.4
         }
 
         InfoBar {
             id: right
-            text: toggleinfo? "ROOT" : "DISK"
-            subtextleft: toggleinfo ? SystemInfo.ktoG(SystemInfo.rootstorageused).toFixed(1) + "GB " : SystemInfo.storageRounder(SystemInfo.diskreadspeed,0,3) + "/s ʀ"
-            subtextmid: toggleinfo ? "/" : "|"
-            subtextright: toggleinfo ? " " + SystemInfo.formatNum(SystemInfo.ktoG(SystemInfo.rootstoragetotal).toFixed(1),4) + "GB (" + SystemInfo.formatNum(SystemInfo.rootstorageusage.toFixed(0),3) + "%)" : "ᴡ " + SystemInfo.storageRounder(SystemInfo.diskwritespeed,0,3) + "/s"
-            padding: toggleinfo ? 20 : 30
-            midopacity: toggleinfo ? 1 : 0.4
-            info_offset: toggleinfo ? -26 : 0
+            text: !toggleinfo? "ROOT" : "DISK"
+            subtextleft: !toggleinfo ? SystemInfo.ktoG(SystemInfo.rootstorageused).toFixed(1) + "GB " : SystemInfo.storageRounder(SystemInfo.diskreadspeed,0,3) + "/s ʀ"
+            subtextmid: !toggleinfo ? "/" : "|"
+            subtextright: !toggleinfo ? " " + SystemInfo.formatNum(SystemInfo.ktoG(SystemInfo.rootstoragetotal).toFixed(1),4) + "GB (" + SystemInfo.formatNum(SystemInfo.rootstorageusage.toFixed(0),3) + "%)" : "ᴡ " + SystemInfo.storageRounder(SystemInfo.diskwritespeed,0,3) + "/s"
+            padding: !toggleinfo ? 20 : 30
+            midopacity: !toggleinfo ? 1 : 0.4
+            info_offset: !toggleinfo ? -26 : 0
         }
 
     }
