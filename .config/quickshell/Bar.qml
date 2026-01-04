@@ -53,7 +53,21 @@ Scope {
                 }
 
                 Text {
-                    text: DateTime.hour24 + ":" + DateTime.minute + ":" + DateTime.second
+                    text: DateTime.hour12 + ":" + DateTime.minute + ":" + DateTime.second + " " + DateTime.ampm
+                    font.family: Fonts.system
+                    font.pointSize: 12
+                    font.weight: 800
+                }
+
+                Text {
+                    text: " | "
+                    font.family: Fonts.system
+                    font.pointSize: 12
+                    font.weight: 800
+                }
+
+                Text {
+                    text: `CPU: ${SystemInfo.cpuusage}% - GPU: ${SystemInfo.gpuusage}% - RAM: ${SystemInfo.ktoG(SystemInfo.memused)}GB of ${SystemInfo.ktoG(SystemInfo.memtotal)}GB - SWAP: ${SystemInfo.ktoM(SystemInfo.swapused)}MB of ${SystemInfo.ktoM(SystemInfo.swaptotal)}MB`
                     font.family: Fonts.system
                     font.pointSize: 12
                     font.weight: 800
