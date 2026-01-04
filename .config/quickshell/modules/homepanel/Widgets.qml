@@ -101,6 +101,8 @@ RowLayout {
 
                     Item {
 
+                        id: artContainer
+
                         anchors.fill: parent
 
                         Text {
@@ -180,13 +182,9 @@ RowLayout {
 
                         anchors.fill: parent
 
-                        gradient: Gradient {
-                            orientation: Gradient.Vertical
-                            GradientStop {position: 0.0; color: "black"}
-                            GradientStop {position: 1.0; color: "transparent"}
-                        }
+                        color: "black"
 
-                        opacity: 0.1
+                        opacity: 0.2
 
                     }
 
@@ -198,15 +196,14 @@ RowLayout {
 
                         spacing: 2
                         round: true
-                        opacity: 0.3
+                        opacity: 0.4
                         layer.enabled: true
                         layer.effect: DropShadow {
                             radius: 15
                             samples: 20
-                            color: Qt.rgba(0.0,0.0,0.0,0.3)
+                            color: Qt.rgba(0.0,0.0,0.0,0.5)
                             transparentBorder: true
                         }
-
                     }
 
                 }
@@ -226,14 +223,14 @@ RowLayout {
                             target: barVisualizer
                             property: "opacity"
                             duration: 200
-                            to: 0.1
+                            to: 0.3
                             easing.type: Easing.OutCubic
                         }
                         NumberAnimation {
                             target: mediaDarken
                             property: "opacity"
                             duration: 200
-                            to: 0.5
+                            to: 0.25
                             easing.type: Easing.OutCubic
                         }
                         NumberAnimation {
@@ -272,7 +269,7 @@ RowLayout {
                             target: barVisualizer
                             property: "opacity"
                             duration: 200
-                            to: 0.3
+                            to: 0.4
                             easing.type: Easing.OutCubic
                         }
                         NumberAnimation {

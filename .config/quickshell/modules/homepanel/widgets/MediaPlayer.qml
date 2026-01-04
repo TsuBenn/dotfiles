@@ -142,6 +142,7 @@ ColumnLayout {
                 spacing: 0
 
                 Layout.alignment: Qt.AlignTop
+                Layout.topMargin: 2
 
                 Rectangle {
 
@@ -166,7 +167,7 @@ ColumnLayout {
                         centered: false
                         text: MediaPlayerInfo.title
                         font_family: Fonts.zzz_vn_font
-                        font_size: 19.5
+                        font_size: 25
                         font_minSize: 18
                         font_color: "white"
 

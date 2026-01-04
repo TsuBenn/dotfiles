@@ -29,7 +29,6 @@ Singleton {
     property int  cputotalprev
     property int  cpuidleprev
     property real cpuusage
-
     property int  memtotal
     property int  memused
     property real memusage: {
