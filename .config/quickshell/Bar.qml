@@ -67,7 +67,7 @@ Scope {
                 }
 
                 Text {
-                    text: `CPU: ${SystemInfo.cpuusage}% - GPU: ${SystemInfo.gpuusage}% - RAM: ${SystemInfo.ktoG(SystemInfo.memused)}GB of ${SystemInfo.ktoG(SystemInfo.memtotal)}GB - SWAP: ${SystemInfo.ktoM(SystemInfo.swapused)}MB of ${SystemInfo.ktoM(SystemInfo.swaptotal)}MB | Battery: ${SystemInfo.battery}%`
+                    text: `CPU: ${SystemInfo.cpuusage}% - GPU: ${SystemInfo.gpuusage}% - RAM: ${SystemInfo.ktoG(SystemInfo.memused)}GB of ${SystemInfo.ktoG(SystemInfo.memtotal)}GB - SWAP: ${SystemInfo.ktoM(SystemInfo.swapused)}MB of ${SystemInfo.ktoM(SystemInfo.swaptotal)}MB | ${SystemInfo.onbattery ? "Battery: " + SystemInfo.battery + "(" + SystemInfo.batterystate + ")" : "PSU"}`
                     font.family: Fonts.system
                     font.pointSize: 12
                     font.weight: 800
