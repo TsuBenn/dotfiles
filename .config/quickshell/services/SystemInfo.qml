@@ -376,9 +376,9 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 if (!text.match(/^Failed/)) {
-                    root.battery = text.match(/^percentage:\s+(\d+%)/)
-                    root.batterystate = text.match(/^state:\s+(.*)\s+/)
-                    root.batteryhealth = text.match(/^capacity:\s+(\d+%)/)
+                    root.battery = text.match(/^\s+percentage:\s+(\d+%)/m)[1]
+                    root.batterystate = text.match(/^\s+state:\s+(.*)\s+/m)[1]
+                    root.batteryhealth = text.match(/^\s+capacity:\s+(\d+%)/m)[1]
                     root.onbattery = true
                 } else {
                     root.battery = "Infinite"
