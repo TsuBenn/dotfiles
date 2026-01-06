@@ -12,7 +12,7 @@ PanelWindow {
 
     anchors { top: true; left: true; bottom: true; right: true }
 
-    property real scale: SystemInfo.monitorheight < 1080 ? SystemInfo.monitorheight/1080*(1/SystemInfo.monitorscale) : 1
+    property real scale: SystemInfo.monitorheight < 1080 ? SystemInfo.monitorheight/1080*(1/SystemInfo.monitorscale) : 1/SystemInfo.monitorscale
 
     focusable: true
     visible: false

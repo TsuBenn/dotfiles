@@ -60,7 +60,7 @@ ColumnLayout {
 
         property bool stuck: false
 
-        property real globalScale: SystemInfo.monitorheight < 1080 ? SystemInfo.monitorheight/1080*(1/SystemInfo.monitorscale) : 1
+        property real globalScale: SystemInfo.monitorheight < 1080 ? SystemInfo.monitorheight/1080*(1/SystemInfo.monitorscale) : 1/SystemInfo.monitorscale
         property real ceiling: (SystemInfo.monitorheight*0.5*(1/SystemInfo.monitorscale))/globalScale-40
 
         MouseControl {

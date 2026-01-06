@@ -347,7 +347,7 @@ Singleton {
                 const data = text.split("\n")
                 let name = data[0].match(/^Monitor\s+([\S]+).*/)
                 let scale = text.match(/^\s+scale:\s+(.*)$/m)
-                let resolution = data[1].match(/\s+(\d+)x(\d+)@.*/)
+                let resolution = data[1].match(/^\s+(\d+)x(\d+)@.*/)
 
 
                 root.monitorname = name
