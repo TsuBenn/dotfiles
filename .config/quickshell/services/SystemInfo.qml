@@ -36,6 +36,9 @@ Singleton {
         return usage.toFixed(2)
     }
 
+    property int battery
+    property bool onbattery
+
     property int  swaptotal
     property int  swapused
     property real swapusage: {
@@ -118,6 +121,7 @@ Singleton {
         repeat: true
         onTriggered: {
             cpustat.reload()
+            battery.reload()
             memstat.reload()
             gpustat.running = true
             cputemp.running = true
@@ -136,6 +140,21 @@ Singleton {
             const intel = text().match(/^.*model name\s+:\s+(Intel\(R\) Core\(TM\) [^ ]+).*$/m)
             const amd = text().match(/^.*model name\s+:\s+(AMD Ryzen [0-9]+ [0-9A-Za-z]+).*$/m)
             root.cpumodel = intel?.[1] ?? amd?.[1]
+        }
+    }
+
+    FileView {
+        id: battery
+
+        path: "/sys/class/power_supply/BAT0/capacity"
+
+        onLoaded: {
+            if (text()) {
+                root.battery = parseInt(text())
+                root.onbattery = true
+            } else {
+                root.onbattery = false
+            }
         }
     }
 
