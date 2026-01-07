@@ -128,7 +128,7 @@ Singleton {
                             root.mute = data[4] ?? 0
                         }
                     }
-                    console.log(root.mute)
+                    //console.log(root.mute)
                 }
 
                 for (const source of rawsources) {

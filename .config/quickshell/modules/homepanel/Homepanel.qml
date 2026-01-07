@@ -12,7 +12,7 @@ PanelWindow {
 
     anchors { top: true; left: true; bottom: true; right: true }
 
-    property real scale: SystemInfo.monitorheight < 1080 ? SystemInfo.monitorheight/1080*(1/SystemInfo.monitorscale) : 1/SystemInfo.monitorscale
+    property real scale: SystemInfo.monitorheight < 1080 ? SystemInfo.monitorheight/1080*(1/SystemInfo.monitorscale) : 1
 
     focusable: true
     visible: false
@@ -26,7 +26,7 @@ PanelWindow {
         id:homepanel
 
         anchors.centerIn: parent
-        anchors.verticalCenterOffset: -40*root.scale
+        anchors.verticalCenterOffset: -20*root.scale
 
         spacing: Config.gap
 
