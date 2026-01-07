@@ -6,6 +6,7 @@ import qs.modules.homepanel
 
 import Quickshell
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import QtQuick
 
 //Clock
@@ -99,9 +100,10 @@ Item {
                 y: 12
                 z: -1
 
-                color: if (percentage >= 0.9) {
+                color:
+                if (percentage >= 0.85) {
                     return "#17e64b"
-                } else if (percentage <= 0.1) {
+                } else if (percentage <= 0.2) {
                     return "#ed312b"
                 } else {
                     return "white"
@@ -109,6 +111,30 @@ Item {
 
                 implicitHeight: 8
                 implicitWidth: 18.5*percentage
+            }
+
+            Text {
+
+                visible: SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully_charged"
+
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.verticalCenterOffset: 0
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.horizontalCenterOffset: -1.4
+
+                id: charging
+                textFormat: Text.MarkdownText
+                text: "\u26a1"
+                color: "white"
+                font.family: Fonts.system
+                font.pointSize: 15
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    radius: 5
+                    samples: 20
+                    color: "black"
+                    transparentBorder: true
+                }
             }
         }
         Text {
