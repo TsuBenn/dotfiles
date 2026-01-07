@@ -91,7 +91,7 @@ Item {
             font.pointSize: 18
             Rectangle {
 
-                property real percentage: (parseInt(SystemInfo.battery.match(/\d+/)?.[0]) ?? 100)/100
+                property real percentage: parseInt(SystemInfo.battery.match(/\d+/)?.[0] ?? 100)/100
 
                 x: 2.5
                 y: 12
