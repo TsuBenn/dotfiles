@@ -83,7 +83,7 @@ Item {
         anchors.rightMargin: 16
         anchors.bottomMargin: -8
 
-        spacing: 3
+        spacing: 4
 
         Text {
             id: battery
