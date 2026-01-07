@@ -12,8 +12,6 @@ PanelWindow {
 
     anchors { top: true; left: true; bottom: true; right: true }
 
-    property real scale: SystemInfo.monitorheight < 1080 ? SystemInfo.monitorheight/1080*(1/SystemInfo.monitorscale) : 1
-
     focusable: true
     visible: false
     exclusionMode: ExclusionMode.Auto
@@ -26,14 +24,9 @@ PanelWindow {
         id:homepanel
 
         anchors.centerIn: parent
-        anchors.verticalCenterOffset: -20*root.scale
+        anchors.verticalCenterOffset: -20
 
         spacing: Config.gap
-
-        transform: [
-            Scale {yScale: root.scale; xScale: root.scale},
-            Translate {x:(homepanel.width-homepanel.width*root.scale)/2; y:(homepanel.height-homepanel.height*root.scale)/2}
-        ]
 
         Clock {}
 
