@@ -76,6 +76,8 @@ Item {
     //Battery
     RowLayout {
 
+        visible: SystemInfo.onbattery
+
         anchors.bottom: parent.bottom
         anchors.right: parent.right
         anchors.rightMargin: 16
@@ -98,9 +100,9 @@ Item {
                 z: -1
 
                 color: if (percentage >= 0.9) {
-                    return "lime"
+                    return "#17e64b"
                 } else if (percentage <= 0.1) {
-                    return "red"
+                    return "#ed312b"
                 } else {
                     return "white"
                 }
