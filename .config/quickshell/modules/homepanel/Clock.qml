@@ -73,6 +73,43 @@ Item {
         }
     }
 
+    //Battery
+    RowLayout {
+
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.rightMargin: 22
+        anchors.bottomMargin: -8
+
+        spacing: 5
+
+        Text {
+            id: battery
+            text: "\uf244"
+            color: "white"
+            font.family: Fonts.system
+            font.pointSize: 18
+            Rectangle {
+
+                x: 4
+                y: 13
+
+                radius: 1
+                implicitHeight: 6
+                implicitWidth: 16*(parseInt(SystemInfo.battery.match(/\d+/))?.[0] ?? 100)/100
+                color: "white"
+            }
+        }
+        Text {
+            text: parseInt(SystemInfo.battery.match(/\d+/))?.[0] ?? "Inifnite"
+            color: "white"
+            font.family: Fonts.system
+            font.wordSpacing: -4
+            font.pointSize: 10
+            font.weight: 700
+        }
+    }
+
     //Clock
     ColumnLayout {
         anchors.centerIn: parent
