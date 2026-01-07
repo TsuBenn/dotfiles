@@ -8,6 +8,7 @@ Singleton {
     id: root
 
     property real volume
+    property bool mute
     property real mic
 
     property var sinks
@@ -27,6 +28,18 @@ Singleton {
         timer.restart()
         if (id == sinkDefault) volume = percentage
         if (id == sourceDefault) mic = percentage
+    }
+
+    function muteVolume(id: int) {
+        if (mute) {
+            setstatus.exec(["bash","-c","wpctl set-mute " + id + " 0"]) 
+            mute = false
+        }
+        else if (!mute) {
+            setstatus.exec(["bash","-c","wpctl set-mute " + id + " 1"])
+            mute = true
+        }
+        timer.restart()
     }
 
     function playSound(file: string, vol: real) {
@@ -105,15 +118,17 @@ Singleton {
                 let sources = []
 
                 for (const sink of rawsinks) {
-                    let data = sink.match(/.(\d+)\.\s+(.*)\[vol: (.*)\]/)
+                    let data = sink.match(/.(\d+)\.\s+(.*)\[vol: (.*)\s+(.*)\]/) ?? sink.match(/.(\d+)\.\s+(.*)\[vol: (.*)\]/)
                     let defaultdata = sink.match(/.\*\s+(\d+)\.\s+.*\[/)
                     if (data) {
                         sinks.push({"id": parseInt(data[1],10), "name": data[2], "vol": parseFloat(data[3])})
                         if (defaultdata) {
                             root.sinkDefault = parseInt(defaultdata[1],10)
                             root.volume = parseFloat(data[3])*100
+                            root.mute = data[4] ?? 0
                         }
                     }
+                    console.log(root.mute)
                 }
 
                 for (const source of rawsources) {
