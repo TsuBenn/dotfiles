@@ -96,12 +96,12 @@ Item {
 
                 radius: 1
                 implicitHeight: 6
-                implicitWidth: 16*(parseInt(SystemInfo.battery.match(/\d+/)?.[0]) ?? 100)/100
+                implicitWidth: 16*(parseInt(SystemInfo.battery.match(/\d+/)?.[0]?? 100))/100
                 color: "white"
             }
         }
         Text {
-            text: parseInt(SystemInfo.battery.match(/\d+/)?.[0]) ?? "Inifnite"
+            text: SystemInfo.battery.match(/\d+/)?.[0] ?? "Inifinite"
             color: "white"
             font.family: Fonts.system
             font.wordSpacing: -4
