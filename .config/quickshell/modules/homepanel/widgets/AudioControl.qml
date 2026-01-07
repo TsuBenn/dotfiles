@@ -14,6 +14,19 @@ import QtQuick
 import QtQml.Models
 
 ColumnLayout {
+
+    Component.onCompleted: {
+        KeyHandlers.released.connect((key) => {
+            if (key == Qt.Key_Up) {
+                AudioInfo.setVolume(AudioInfo.sinkDefault, AudioInfo.volume+5)
+            } else if (key == Qt.Key_Down) {
+                AudioInfo.setVolume(AudioInfo.sinkDefault, AudioInfo.volume-5)
+            } else if (key == Qt.Key_AsciiTilde) {
+                AudioInfo.muteVolume(AudioInfo.sinkDefault)
+            }
+        })
+    }
+
     RowLayout {
 
         id: sliders
@@ -91,6 +104,9 @@ ColumnLayout {
             property int lastPercentage
 
             text: {
+                if (AudioInfo.mute) {
+                    return "\udb81\udf5f"
+                }
                 if (percentage > 200/3) {
                     return "\udb81\udd7e"
                 }
