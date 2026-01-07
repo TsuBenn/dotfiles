@@ -78,10 +78,10 @@ Item {
 
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-        anchors.rightMargin: 22
+        anchors.rightMargin: 16
         anchors.bottomMargin: -8
 
-        spacing: 5
+        spacing: 3
 
         Text {
             id: battery
@@ -91,21 +91,30 @@ Item {
             font.pointSize: 18
             Rectangle {
 
-                x: 4
-                y: 13
+                property real percentage: (parseInt(SystemInfo.battery.match(/\d+/)?.[0]) ?? 100)/100
 
-                radius: 1
-                implicitHeight: 6
-                implicitWidth: 16*(parseInt(SystemInfo.battery.match(/\d+/)?.[0]?? 100))/100
-                color: "white"
+                x: 2.5
+                y: 12
+                z: -1
+
+                color: if (percentage >= 0.9) {
+                    return "lime"
+                } else if (percentage <= 0.1) {
+                    return "red"
+                } else {
+                    return "white"
+                }
+
+                implicitHeight: 8
+                implicitWidth: 18.5*percentage
             }
         }
         Text {
-            text: SystemInfo.battery.match(/\d+/)?.[0] ?? "Inifinite"
+            text: SystemInfo.battery ?? "Inifnite"
             color: "white"
             font.family: Fonts.system
             font.wordSpacing: -4
-            font.pointSize: 10
+            font.pointSize: 10.5
             font.weight: 700
         }
     }
