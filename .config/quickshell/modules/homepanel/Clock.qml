@@ -123,7 +123,7 @@ Item {
                 layer.effect: DropShadow {
                     radius: 2
                     samples: 20
-                    spread: 0.9
+                    spread: 0.8
                     color: "black"
                 }
             }
