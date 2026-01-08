@@ -129,7 +129,14 @@ ColumnLayout {
             }
 
             onToggleMute: {
-                muteVolume(AudioInfo.sinkDefault)
+                if (percentage > 0) {
+                    lastPercentage = percentage
+                    setVolume(AudioInfo.sinkDefault, AudioInfo.volume, 0, false)
+                    syncBar()
+                } else {
+                    setVolume(AudioInfo.sinkDefault, AudioInfo.volume, lastPercentage, true)
+                    syncBar()
+                }
             }
 
 
