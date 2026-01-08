@@ -144,7 +144,7 @@ Item {
                 font.pointSize: 10.5
                 layer.enabled: true
                 layer.effect: ColorOverlay {
-                    color: "white"
+                    color: "#f3fa23"
                 }
             }
 
