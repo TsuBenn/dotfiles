@@ -92,12 +92,13 @@ Item {
             color: "white"
             font.family: Fonts.system
             font.pointSize: 18
+
             Rectangle {
 
                 property real percentage: parseInt(SystemInfo.battery.match(/\d+/)?.[0] ?? 100)/100
 
-                x: 2.5
-                y: 12
+                x: 4
+                y: 13
                 z: -1
 
                 color:
@@ -109,18 +110,18 @@ Item {
                     return "white"
                 }
 
-                implicitHeight: 8
-                implicitWidth: 18.5*percentage
+                implicitHeight: 6
+                implicitWidth: 15.6*percentage
             }
 
             Text {
 
-                visible: SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully_charged"
+                visible: SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged"
 
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.verticalCenterOffset: 0
                 anchors.horizontalCenter: parent.horizontalCenter
-                anchors.horizontalCenterOffset: -1.4
+                anchors.horizontalCenterOffset: -1
 
                 id: charging
                 textFormat: Text.MarkdownText
@@ -130,7 +131,7 @@ Item {
                 font.pointSize: 15
                 layer.enabled: true
                 layer.effect: DropShadow {
-                    radius: 5
+                    radius: 7
                     samples: 20
                     color: "black"
                     transparentBorder: true

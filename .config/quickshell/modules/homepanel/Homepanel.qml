@@ -55,7 +55,7 @@ PanelWindow {
             KeyHandlers.pressed.connect((key, modifiers)=> {
                 if (key == Qt.Key_Escape) {
                     root.visible = false
-                    console.log(key)
+                    //console.log(key)
                 }
             })
         }

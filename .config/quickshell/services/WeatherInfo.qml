@@ -30,12 +30,14 @@ Singleton {
 
         stdout: StdioCollector {
             onStreamFinished: {
-                const raw_data = this.text.split(";")
-                root.temperature = raw_data[0].trim().match(/([0-9]+)/)[1]
-                root.condition = raw_data[1].trim()
-                root.condition_icon = raw_data[2].trim().match(/([\S]+)/)[1].trim()
-                root.location = raw_data[3].split(",")[0]
-                if (raw_data && timer.interval!=60000) {timer.interval=60000; console.log("Loaded Weather Info from " + raw_data[3].split(",")[0].trim() + "!" + root.condition_icon)}
+                if (text) {
+                    const raw_data = this.text.split(";")
+                    root.temperature = raw_data[0].trim().match(/([0-9]+)/)[1]
+                    root.condition = raw_data[1].trim()
+                    root.condition_icon = raw_data[2].trim().match(/([\S]+)/)[1].trim()
+                    root.location = raw_data[3].split(",")[0]
+                    if (raw_data && timer.interval!=60000) {timer.interval=60000; console.log("Loaded Weather Info from " + raw_data[3].split(",")[0].trim() + "!" + root.condition_icon)}
+                }
             }
         }
     }
