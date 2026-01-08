@@ -115,6 +115,7 @@ Item {
             }
 
             ColorOverlay {
+                visible: SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged"
                 anchors.fill: charging
                 color: "black"
                 source: charging
