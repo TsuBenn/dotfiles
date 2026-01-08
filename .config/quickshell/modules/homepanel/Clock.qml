@@ -102,7 +102,7 @@ Item {
                 z: -1
 
                 color:
-                if (percentage >= 0.85) {
+                if (percentage >= 0.85 || SystemInfo.batterystate == "charging") {
                     return "#17e64b"
                 } else if (percentage <= 0.2) {
                     return "#ed312b"
@@ -114,29 +114,40 @@ Item {
                 implicitWidth: 15.6*percentage
             }
 
+            ColorOverlay {
+                anchors.fill: charging
+                color: "black"
+                source: charging
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    radius: 2
+                    samples: 20
+                    spread: 0.9
+                    color: "black"
+                }
+            }
+
             Text {
 
                 visible: SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged"
 
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.verticalCenterOffset: 0
+                anchors.verticalCenterOffset: 0.5
                 anchors.horizontalCenter: parent.horizontalCenter
-                anchors.horizontalCenterOffset: -1
+                anchors.horizontalCenterOffset: -2
 
                 id: charging
                 textFormat: Text.MarkdownText
                 text: "\u26a1"
                 color: "white"
                 font.family: Fonts.system
-                font.pointSize: 15
+                font.pointSize: 10.5
                 layer.enabled: true
-                layer.effect: DropShadow {
-                    radius: 7
-                    samples: 20
-                    color: "black"
-                    transparentBorder: true
+                layer.effect: ColorOverlay {
+                    color: "white"
                 }
             }
+
         }
         Text {
             text: SystemInfo.battery ?? "Inifnite"
