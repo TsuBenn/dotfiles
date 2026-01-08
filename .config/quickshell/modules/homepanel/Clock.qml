@@ -77,7 +77,7 @@ Item {
     //Battery
     RowLayout {
 
-        visible: SystemInfo.onbattery
+        //visible: SystemInfo.onbattery
 
         anchors.bottom: parent.bottom
         anchors.right: parent.right
@@ -103,7 +103,7 @@ Item {
 
                 color:
                 if (percentage >= 0.85 || SystemInfo.batterystate == "charging") {
-                    return "#17e64b"
+                    return "#2eff62"
                 } else if (percentage <= 0.2) {
                     return "#ed312b"
                 } else {
@@ -151,7 +151,7 @@ Item {
 
         }
         Text {
-            text: SystemInfo.battery ?? "Inifnite"
+            text: SystemInfo.battery ?? "Inf"
             color: "white"
             font.family: Fonts.system
             font.wordSpacing: -4

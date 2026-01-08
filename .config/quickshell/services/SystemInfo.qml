@@ -381,7 +381,7 @@ Singleton {
                     root.batteryhealth = text.match(/^\s+capacity:\s+(\d+%)/m)[1]
                     root.onbattery = true
                 } else {
-                    root.battery = "Infinite"
+                    root.battery = "Inf"
                     root.onbattery = false
                 }
             }
