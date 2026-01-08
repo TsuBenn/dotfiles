@@ -141,10 +141,10 @@ Item {
                 text: "\u26a1"
                 color: "white"
                 font.family: Fonts.system
-                font.pointSize: 10.5
+                font.pointSize: 11
                 layer.enabled: true
                 layer.effect: ColorOverlay {
-                    color: "#f3fa23"
+                    color: "white"
                 }
             }
 
