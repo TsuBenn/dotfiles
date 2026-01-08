@@ -115,7 +115,7 @@ Item {
             }
 
             ColorOverlay {
-                visible: SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged"
+                visible: charging.visible
                 anchors.fill: charging
                 color: "black"
                 source: charging
@@ -123,14 +123,14 @@ Item {
                 layer.effect: DropShadow {
                     radius: 2
                     samples: 20
-                    spread: 0.8
+                    spread: 0.85
                     color: "black"
                 }
             }
 
             Text {
 
-                visible: SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged"
+                visible: SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged" || !SystemInfo.onbattery
 
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.verticalCenterOffset: 0.5
@@ -145,7 +145,7 @@ Item {
                 font.pointSize: 11
                 layer.enabled: true
                 layer.effect: ColorOverlay {
-                    color: "white"
+                    color: "#f1ff75"
                 }
             }
 
