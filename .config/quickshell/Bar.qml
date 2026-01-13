@@ -28,6 +28,10 @@ Scope {
                 right: true
             }
 
+            margins {
+                top: -40 * homepanel.item.visible
+            }
+
             implicitHeight: 40
 
             RowLayout {
