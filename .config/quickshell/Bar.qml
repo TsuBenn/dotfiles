@@ -14,6 +14,7 @@ import QtQuick.Layouts
 Scope {
     Variants {
         model: Quickshell.screens
+
         PanelWindow {
             id: bar
 
@@ -87,8 +88,6 @@ Scope {
 
             LazyLoader {id:homepanel; active: true; component: Homepanel {}}
         }
-
-
 
     }
 }
