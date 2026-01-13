@@ -29,7 +29,7 @@ Scope {
             }
 
             margins {
-                top: -40 * homepanel.item.visible
+                top: -40 * Hyprland.focusedWorkspace.hasFullscreen
             }
 
             implicitHeight: 40

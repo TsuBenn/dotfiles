@@ -3,6 +3,7 @@ import qs.modules.common
 import qs.modules.homepanel
 
 import Quickshell
+import Quickshell.Hyprland
 import QtQuick.Layouts
 import QtQuick
 
@@ -11,6 +12,11 @@ PanelWindow {
     id: root
 
     anchors { top: true; left: true; bottom: true; right: true }
+
+    HyprlandFocusGrab {
+        active: root.visible
+        windows: [root]
+    }
 
     focusable: true
     visible: false
