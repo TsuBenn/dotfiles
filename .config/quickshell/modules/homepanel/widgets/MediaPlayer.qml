@@ -17,7 +17,7 @@ ColumnLayout {
 
     property real artWidth: 0
     property real artHeight: mediaInfo.implicitHeight
-    property real artAvailable: art.source
+    property real artAvailable: art.source != ""
 
     property bool artHovered: false
 
