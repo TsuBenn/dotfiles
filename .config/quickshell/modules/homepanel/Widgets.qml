@@ -313,7 +313,7 @@ RowLayout {
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     onEntered: {
-                        if (!artClose.running) {
+                        if (!artClose.running && mediaPlayer.artAvailable) {
                             artClose.stop()
                             artOpen.start()
                         }
