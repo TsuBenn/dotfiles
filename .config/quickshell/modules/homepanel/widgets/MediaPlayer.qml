@@ -17,6 +17,7 @@ ColumnLayout {
 
     property real artWidth: 0
     property real artHeight: mediaInfo.implicitHeight
+    property real artAvailable: art.source
 
     property bool artHovered: false
 
@@ -103,24 +104,6 @@ ColumnLayout {
                     implicitWidth: parent.implicitWidth
                     color: "transparent"
                     radius: 14
-
-
-                    Image {
-
-                        id: icon
-
-                        visible: !art.source
-
-                        source: MediaPlayerInfo.entry ? "image://icon/" + MediaPlayerInfo.entry : ""
-                        cache: true
-
-                        scale: 0.9
-
-                        height: (sourceSize.height/sourceSize.width)*width
-                        width: artFrame.implicitHeight
-
-                    }
-
 
                     Image {
 
