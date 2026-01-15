@@ -67,6 +67,8 @@ ColumnLayout {
 
             hoverEnabled: true
 
+            acceptedButtons: Qt.NoButton
+
             onContainsMouseChanged: {
                 root.artHovered = containsMouse
             }
