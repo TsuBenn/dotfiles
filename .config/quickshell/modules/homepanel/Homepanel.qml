@@ -41,6 +41,7 @@ PanelWindow {
 
         //Search bar
         Searchbar {
+            id: searchbar
             Layout.alignment: Qt.AlignCenter
             preferedWidth: widgets.implicitWidth
         }
@@ -67,6 +68,16 @@ PanelWindow {
                 if (key == Qt.Key_Escape) {
                     root.visible = false
                     //console.log(key)
+                }
+            })
+            KeyHandlers.released.connect((key) => {
+                if (searchbar.typing) return
+                if (key == Qt.Key_Space) {
+                    MediaPlayerInfo.playPauseMedia()
+                } else if (key == Qt.Key_Left) {
+                    MediaPlayerInfo.prevMedia()
+                } else if (key == Qt.Key_Right) {
+                    MediaPlayerInfo.nextMedia()
                 }
             })
         }

@@ -3,68 +3,81 @@ import qs.assets
 
 import Quickshell
 import QtQuick
+import QtQuick.Layouts
 import QtQuick.Controls
 
 Rectangle {
 
+    id: root
+
     property int preferedWidth
+    property bool typing: searchtext.text.length >= 1
 
     implicitWidth: preferedWidth
     implicitHeight: 40
     radius: implicitHeight/2
 
-    TextField {
+    border.color: "gray"
+    border.width: 3 * (searchtext.text.length >= 1)
+    Behavior on border.width {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
-        id: searchtext
+    RowLayout {
 
-        onVisibleChanged: text = ""
+        x: 18
+        y: 0.8
 
-        onTextChanged: {
-            if (text == "") return
-            if (text == "Settings:" || text == "Fuzzy:" || text == "Calculate:") {
-                text = ""
-                return
-            }
-            if (text == ">") {
-                if (text.length == 1) {
-                    text = "Settings: "
-                }
-                console.log("Setting search")
-            } else if (text == "/") {
-                if (text.length == 1) {
-                    text = "Fuzzy: "
-                }
-                console.log("Fuzzy")
-            } else if (text == "=") {
-                if (text.length == 1) {
-                    text = "Calculate: "
-                }
-                console.log("Calculate")
-            } 
+        spacing: 6
+
+        Text {
+
+            id: searchicon
+
+            text: "\ue68f"
+            font.family: Fonts.system
+            font.pointSize: 12
+            font.weight: 700
         }
 
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: 1
+        TextField {
 
-        leftPadding: 18
-        rightPadding: 18
+            id: searchtext
 
-        focus: true
+            onVisibleChanged: text = ""
 
-        implicitWidth: parent.implicitWidth
-        implicitHeight: parent.implicitHeight
+            onTextChanged: {
+                if (text == "") return
+                if (text == " ") {
+                    text = ""
+                    return
+                }
+                if (text[0] == ">") {
+                    console.log("Setting search")
+                } else if (text[0] == "/") {
+                    console.log("Fuzzy")
+                } else if (text[0] == "=") {
+                    console.log("Calculate")
+                } else if (text[0] == "?") {
+                    console.log("Google")
+                } 
+            }
 
-        background: Item {}
+            focus: true
 
-        focusReason: Qt.PopupFocusReason
+            implicitHeight: root.implicitHeight
 
-        placeholderText: qsTr("\ue68f Search")
-        font.family: Fonts.system
-        font.pointSize: 12
-        font.weight: 700
+            background: Item {}
 
-        color: text.length ? "black" : "gray"
+            focusReason: Qt.PopupFocusReason
 
+            placeholderText: qsTr("Search")
+            font.family: Fonts.system
+            font.pointSize: 12
+            font.weight: 700
+
+            color: text.length ? "black" : "gray"
+
+        }
     }
+
 
 }
