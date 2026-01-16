@@ -26,18 +26,6 @@ ColumnLayout {
 
     spacing: 6
 
-    Component.onCompleted: {
-        KeyHandlers.released.connect((key) => {
-            if (key == Qt.Key_Space) {
-                MediaPlayerInfo.playPauseMedia()
-            } else if (key == Qt.Key_Left) {
-                MediaPlayerInfo.prevMedia()
-            } else if (key == Qt.Key_Right) {
-                MediaPlayerInfo.nextMedia()
-            }
-        })
-    }
-
 
     Rectangle {
 
