@@ -33,6 +33,8 @@ Item {
 
     id: homepanel_clock
 
+    property int preferedWidth
+
     property string clock_font: Config.clock_font
     property int clock_weight: Config.clock_weight
     property string dateandmonth_font: Config.dateandmonth_font
@@ -41,7 +43,7 @@ Item {
     property int dateandmonth_size: Config.dateandmonth_size                       
     readonly property var debug_color: Qt.rgba(1,1,1,0.0)
 
-    implicitWidth: 1000
+    implicitWidth: preferedWidth
     implicitHeight: 230
 
     //Uptime

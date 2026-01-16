@@ -34,15 +34,20 @@ PanelWindow {
 
         spacing: Config.gap
 
-        Clock {}
+        Clock {
+            Layout.alignment: Qt.AlignCenter
+            preferedWidth: widgets.implicitWidth
+        }
 
         //Search bar
         Searchbar {
             Layout.alignment: Qt.AlignCenter
+            preferedWidth: widgets.implicitWidth
         }
 
         //Widgets
         Widgets {
+            id: widgets
             Layout.alignment: Qt.AlignCenter
         }
 
