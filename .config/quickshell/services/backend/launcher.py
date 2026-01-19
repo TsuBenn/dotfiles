@@ -4,6 +4,7 @@ import configparser
 import json
 import math
 import urllib.parse
+import re
 
 DESKTOP_DIRS = {
     "/usr/share/applications/",
@@ -67,7 +68,7 @@ def load_apps():
                 {
                     "name": name,
                     "generic_name": generic_name,
-                    "exec": exec,
+                    "exec": re.sub(r"%[fFuUdDnNickvm]", "", exec).strip(),
                     "keywords": keywords,
                     "icon": icon,
                 }
@@ -92,13 +93,13 @@ def main():
 
             
         elif query[0] == "?":
-            search = [{
+            searchs = [{
                 "name": "Google: " + search[1:].strip(),
                 "exec": f"xdg-open \"https://www.google.com/search?q=" + urllib.parse.quote(search[1:],safe='/',encoding=None,errors=None) + "\"", 
                 "icon": "kitty", 
             }]
 
-            print(json.dumps(search))
+            print(json.dumps(searchs))
 
 
         elif query[0] == "=":
