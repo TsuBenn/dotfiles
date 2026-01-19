@@ -15,18 +15,6 @@ import QtQml.Models
 
 ColumnLayout {
 
-    Component.onCompleted: {
-        KeyHandlers.released.connect((key) => {
-            if (key == Qt.Key_Up) {
-                AudioInfo.setVolume(AudioInfo.sinkDefault, AudioInfo.volume+5)
-            } else if (key == Qt.Key_Down) {
-                AudioInfo.setVolume(AudioInfo.sinkDefault, AudioInfo.volume-5)
-            } else if (key == Qt.Key_AsciiTilde) {
-                AudioInfo.muteVolume(AudioInfo.sinkDefault)
-            }
-        })
-    }
-
     RowLayout {
 
         id: sliders
