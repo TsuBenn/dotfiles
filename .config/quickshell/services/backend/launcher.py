@@ -3,6 +3,7 @@ import sys
 import configparser
 import json
 import math
+import urllib.parse
 
 DESKTOP_DIRS = {
     "/usr/share/applications/",
@@ -73,7 +74,7 @@ def main():
         elif query[0] == "?":
             search = [{
                 "name": "Google: " + query[1:],
-                "exec": f"xdg-open \"https://www.google.com/search?q=" + query[1:] + "\"", 
+                "exec": f"xdg-open \"https://www.google.com/search?q=" + urllib.parse.quote(query[1:],safe='/',encoding=None,errors=None) + "\"", 
                 "icon": "kitty", 
             }]
 
