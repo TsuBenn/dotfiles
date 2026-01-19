@@ -11,6 +11,25 @@ DESKTOP_DIRS = {
     os.environ['HOME'] + "/.local/share/applications/"
 }
 
+# Some math stuff lol
+sqrt = math.sqrt
+sin = math.sin
+cos = math.cos
+tan = math.tan
+asin = math.asin
+acos = math.acos
+atan = math.atan
+radians = math.radians
+degrees = math.degrees
+pi = math.pi
+e = math.e
+ln = math.log
+log = math.log
+exp = math.exp
+fac = math.factorial
+######################
+
+
 def load_apps():
     apps = []
 
@@ -60,6 +79,7 @@ def load_apps():
 
 def main():
 
+    search = sys.argv[1] if len(sys.argv) > 1 else ""
     query = sys.argv[1].lower() if len(sys.argv) > 1 else ""
 
     if query:
@@ -73,8 +93,8 @@ def main():
             
         elif query[0] == "?":
             search = [{
-                "name": "Google: " + query[1:],
-                "exec": f"xdg-open \"https://www.google.com/search?q=" + urllib.parse.quote(query[1:],safe='/',encoding=None,errors=None) + "\"", 
+                "name": "Google: " + search[1:].strip(),
+                "exec": f"xdg-open \"https://www.google.com/search?q=" + urllib.parse.quote(search[1:],safe='/',encoding=None,errors=None) + "\"", 
                 "icon": "kitty", 
             }]
 
@@ -82,6 +102,7 @@ def main():
 
 
         elif query[0] == "=":
+
             def safe_eval(expressions):
                 try:
                     return str(eval(expressions.strip()))
