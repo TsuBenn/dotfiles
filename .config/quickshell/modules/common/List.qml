@@ -47,19 +47,41 @@ ClippingRectangle {
     }
 
     property real scroll_progress: 0
-    Behavior on scroll_progress {NumberAnimation {duration: 100; easing.type: Easing.OutQuad}}
+    Behavior on scroll_progress {SequentialAnimation {NumberAnimation {duration: 200; easing.type: Easing.OutCubic} ScriptAction {script: {list.snapProgress()}}}}
 
     implicitWidth: box_height
     implicitHeight: box_width
 
     color: list.bg_color
 
+    property real progressStep: (content.height/list.items_data.length+1) + (list.spacing/(list.items_data.length))
+
     property real maxScroll: {
-        if (content.implicitHeight > list.implicitHeight-list.spacing*2-list.container_bottom_margin) {
-            return -content.implicitHeight-list.padding*2 + list.implicitHeight - list.container_bottom_margin - list.container_top_margin
+        if (content.height > list.height-list.spacing*2-list.container_bottom_margin) {
+            return -content.height-list.padding*2 + list.height - list.container_bottom_margin - list.container_top_margin
         } else {
             return 0
         }
+    }
+
+    function snapProgress() {
+        if (content.y > 0) {
+            listOvershootup.start() 
+            return
+        }
+        else if (content.y < list.maxScroll) {
+            listOvershootdown.start()
+            return
+        }
+        list.scroll_progress = Math.round(list.scroll_progress/progressStep)*progressStep
+    }
+
+    function advanceScroll(interval : int) {
+        list.scroll_progress -= progressStep*interval
+    }
+
+    function resetScroll() {
+        scroll_progress = 0
     }
 
     MouseControl {
@@ -168,7 +190,7 @@ ClippingRectangle {
 
             color: list.scroller_fg_color
 
-            implicitHeight: (contentContainer.implicitHeight/(-list.maxScroll + contentContainer.implicitHeight))*scroller.height
+            implicitHeight: (container.height/(contentContainer.height)*scroller.height)
 
         }
 

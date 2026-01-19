@@ -46,12 +46,26 @@ PanelWindow {
             Layout.alignment: Qt.AlignCenter
             preferedWidth: widgets.implicitWidth
 
+            onTextChanged: {
+                searchresults.resetScroll()
+            }
+
             SearchResults {
 
                 id: searchresults
 
+                visible: implicitHeight
+
                 z: -1
                 y: searchbar.implicitHeight/2
+
+                results: searchbar.results
+
+                onVisibleChanged: searchbar.results = []
+
+                onEnterPressed: {
+                    if (visible) root.visible = false
+                }
 
                 bottomLeftRadius: searchbar.radius
                 bottomRightRadius: searchbar.radius

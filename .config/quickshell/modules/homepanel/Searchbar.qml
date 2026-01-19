@@ -1,4 +1,5 @@
 import qs.assets
+import qs.modules.common
 
 import Quickshell
 import Quickshell.Io
@@ -21,6 +22,8 @@ Rectangle {
     border.color: "gray"
     border.width: 3 * (searchtext.text.length >= 1)
     Behavior on border.width {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+
+    signal textChanged()
 
     RowLayout {
 
@@ -51,8 +54,8 @@ Rectangle {
                     text = ""
                     return
                 }
-                console.log(text)
-                root.updateQuery(text)
+                updatequerycall.restart()
+                root.textChanged()
             }
 
             focus: true
@@ -71,19 +74,29 @@ Rectangle {
             color: text.length ? "black" : "gray"
 
         }
+
+    }
+
+    Timer {
+
+        id: updatequerycall
+
+        interval: 10
+        onTriggered: root.updateQuery(searchtext.text)
     }
 
     function updateQuery(query: string) {
+
         backend.exec(["python", ".config/quickshell/services/backend/launcher.py", query])
     }
-
 
     Process {
         id: backend
 
         stdout: StdioCollector {
             onStreamFinished: {
-                console.log(text)
+                if (!text) return
+                root.results = JSON.parse(text.trim())
             }
         }
     }

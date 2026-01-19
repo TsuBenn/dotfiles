@@ -31,7 +31,7 @@ def load_apps():
             except Exception:
                 continue
             
-            if entry.get("NoDisplay") == True:
+            if entry.get("NoDisplay") == "true":
                 continue
 
             name = entry.get("Name")
@@ -86,17 +86,18 @@ def main():
 
             calculate = safe_eval(query[1:]) 
 
-            result = {
+            result = [{
                 "name": calculate,
                 "exec": f"echo '{calculate}' | wl-copy", 
-            }
+                "icon": "kitty", 
+            }]
 
             print(json.dumps(result))
 
 
         else:
             apps = [
-                app for app in load_apps() if (query in app["name"].lower()) or (query in (app["generic_name"] or "").lower())
+                app for app in load_apps() if (query in app["name"].lower()) or (query in (app["generic_name"] or "").lower()) or (query in (app["keywords"] or "").lower())
             ]
 
             print(json.dumps(apps)) 
