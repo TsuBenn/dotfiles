@@ -20,13 +20,25 @@ ClippingRectangle {
     property int bottom_visible: 5
     property var results: []
 
+    property var execList: []
+
     signal enterPressed()
+
+    onSelectChanged: {
+        //console.log(select)
+    }
 
     function resetScroll() {
         list.resetScroll()
     }
 
-    onResultsChanged: {resetSelection()}
+    onResultsChanged: {
+        resetSelection()
+        execList = [] 
+        for (const result of results) {
+            execList.push(result.exec)
+        }
+    }
 
     function scrollDown() {
         if (bottom_visible - select == 1 && bottom_visible < results.length - 1) {
@@ -61,6 +73,8 @@ ClippingRectangle {
                 select += 1
                 if (scrollDown()) list.advanceScroll(1)
             } else if (key == Qt.Key_Return) {
+                runexec.command = ["bash", "-c", execList[select]]
+                runexec.startDetached()
                 root.enterPressed()
             }
         })
@@ -139,15 +153,6 @@ ClippingRectangle {
 
             }
 
-            Component.onCompleted: {
-                KeyHandlers.released.connect((key) => {
-                    if (key == Qt.Key_Return && index) {
-                        if (root.select == index) {
-                            runexec.exec(["bash", "-c", exec])
-                        }
-                    }
-                })
-            }
 
 
         }
