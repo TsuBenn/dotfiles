@@ -141,7 +141,7 @@ ClippingRectangle {
 
             Component.onCompleted: {
                 KeyHandlers.released.connect((key) => {
-                    if (key == Qt.Key_Return) {
+                    if (key == Qt.Key_Return && index) {
                         if (root.select == index) {
                             runexec.exec(["bash", "-c", exec])
                         }
