@@ -66,15 +66,18 @@ def main():
             print("settings search")
 
 
-
         elif query[0] == "/":
             print("fzf")
 
-
             
         elif query[0] == "?":
-            print("google search")
+            search = [{
+                "name": "Google: " + query[1:],
+                "exec": f"xdg-open \"https://www.google.com/search?q=" + query[1:] + "\"", 
+                "icon": "kitty", 
+            }]
 
+            print(json.dumps(search))
 
 
         elif query[0] == "=":
