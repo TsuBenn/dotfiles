@@ -41,14 +41,42 @@ PanelWindow {
 
         //Search bar
         Searchbar {
+
             id: searchbar
             Layout.alignment: Qt.AlignCenter
             preferedWidth: widgets.implicitWidth
+
+            SearchResults {
+
+                id: searchresults
+
+                z: -1
+                y: searchbar.implicitHeight/2
+
+                bottomLeftRadius: searchbar.radius
+                bottomRightRadius: searchbar.radius
+
+                implicitWidth: parent.implicitWidth
+                implicitHeight: (parent.implicitHeight/2 + widgets.implicitHeight + Config.gap) * parent.typing
+
+                Behavior on implicitHeight {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+
+                MouseArea {
+                    anchors.fill: parent
+                }
+            }
+
         }
 
         //Widgets
         Widgets {
+
+            z:-1
+
+            opacity: !(searchresults.implicitHeight == (searchbar.implicitHeight/2 + widgets.implicitHeight + Config.gap))
+
             id: widgets
+
             Layout.alignment: Qt.AlignCenter
         }
 
@@ -78,8 +106,15 @@ PanelWindow {
                     MediaPlayerInfo.prevMedia()
                 } else if (key == Qt.Key_Right) {
                     MediaPlayerInfo.nextMedia()
+                } else if (key == Qt.Key_Up) {
+                    AudioInfo.setVolume(AudioInfo.sinkDefault, AudioInfo.volume+5)
+                } else if (key == Qt.Key_Down) {
+                    AudioInfo.setVolume(AudioInfo.sinkDefault, AudioInfo.volume-5)
+                } else if (key == Qt.Key_AsciiTilde) {
+                    AudioInfo.muteVolume(AudioInfo.sinkDefault)
                 }
             })
+
         }
 
     }

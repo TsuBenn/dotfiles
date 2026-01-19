@@ -1,7 +1,7 @@
-import qs.modules.homepanel
 import qs.assets
 
 import Quickshell
+import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
@@ -12,6 +12,7 @@ Rectangle {
 
     property int preferedWidth
     property bool typing: searchtext.text.length >= 1
+    property var results: []
 
     implicitWidth: preferedWidth
     implicitHeight: 40
@@ -50,15 +51,8 @@ Rectangle {
                     text = ""
                     return
                 }
-                if (text[0] == ">") {
-                    console.log("Setting search")
-                } else if (text[0] == "/") {
-                    console.log("Fuzzy")
-                } else if (text[0] == "=") {
-                    console.log("Calculate")
-                } else if (text[0] == "?") {
-                    console.log("Google")
-                } 
+                console.log(text)
+                root.updateQuery(text)
             }
 
             focus: true
@@ -79,5 +73,20 @@ Rectangle {
         }
     }
 
+    function updateQuery(query: string) {
+        backend.exec(["python", ".config/quickshell/services/backend/launcher.py", query])
+    }
 
+
+    Process {
+        id: backend
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                console.log(text)
+            }
+        }
+    }
 }
+
+
