@@ -77,6 +77,7 @@ PanelWindow {
 
                 MouseArea {
                     anchors.fill: parent
+                    z:-1
                 }
             }
 
@@ -85,7 +86,7 @@ PanelWindow {
         //Widgets
         Widgets {
 
-            z:-1
+            z:-2
 
             opacity: !(searchresults.implicitHeight == (searchbar.implicitHeight/2 + widgets.implicitHeight + Config.gap))
 
