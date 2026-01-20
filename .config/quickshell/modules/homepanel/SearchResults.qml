@@ -94,6 +94,7 @@ ClippingRectangle {
         container_radius: Config.radius + 5 
         container_right_margin: scroller_implicitWidth ? 0 : 8
         container_left_margin: 8
+        container_bottom_margin: 4
 
         items_data: root.results
         items: Rectangle {
@@ -116,13 +117,12 @@ ClippingRectangle {
                 anchors.fill: parent
 
                 hoverEnabled: true
-                preventStealing: true
-
-                propagateComposedEvents: true
 
                 onEntered: {
+                    if (!containsMouse) return
                     root.select = app.index
                 }
+
                 onReleased: {
                     if (!containsMouse) return
                     runexec.command = ["bash", "-c", app.exec]
