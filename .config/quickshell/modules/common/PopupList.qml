@@ -83,7 +83,7 @@ PillButton {
 
         onOpened: {
             openList.start() 
-            list.scroll_progress = 0
+            list.prefered_scroll_progress = 0
         }
 
         closePolicy: Popup.NoAutoClose
@@ -387,9 +387,11 @@ PillButton {
                     if (openList.running) return
                     closeList.start()
                 }
+
             }
 
         }
+
 
     }
 

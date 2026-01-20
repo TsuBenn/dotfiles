@@ -46,17 +46,15 @@ ClippingRectangle {
         scroller.scroller_needed ? list.scroller_width+list.padding : 0
     }
 
-    property real scroll_progress: 0
+    property real prefered_scroll_progress: 0
+    property real scroll_progress: prefered_scroll_progress
     Behavior on scroll_progress {
         SequentialAnimation {
             NumberAnimation {
                 id: scroll_smoother
-                duration: 100
+                duration: 200
                 easing.type: Easing.OutCubic
             } 
-            ScriptAction {
-                script: if (!scroll_smoother.running) {list.snapProgress()}
-            }
         }
     }
 
@@ -66,7 +64,7 @@ ClippingRectangle {
     color: list.bg_color
 
     property real progressStep: (content.height/list.items_data.length) + (list.spacing/(list.items_data.length-1))
-    property real stepProgress: Math.round(Math.abs((list.scroll_progress)/list.progressStep))
+    property real stepProgress: Math.round(Math.abs((list.prefered_scroll_progress)/list.progressStep))
 
     property real maxScroll: {
         if (content.height > list.height-list.spacing*2-list.container_bottom_margin) {
@@ -78,22 +76,22 @@ ClippingRectangle {
 
     function snapProgress() {
         if (content.y > 0) {
-            list.scroll_progress = 0
+            list.prefered_scroll_progress = 0
             return
         }
-        else if (content.y < list.maxScroll-1) {
-            list.scroll_progress = list.maxScroll
+        else if (content.y < list.maxScroll) {
+            list.prefered_scroll_progress = list.maxScroll
             return
         }
-        list.scroll_progress = Math.round(list.scroll_progress/progressStep)*progressStep
+        //list.prefered_scroll_progress = Math.round(list.scroll_progress/progressStep)*progressStep
     }
 
     function advanceScroll(interval : int) {
-        list.scroll_progress -= (progressStep)*interval
+        list.prefered_scroll_progress -= (progressStep)*interval
     }
 
     function resetScroll() {
-        scroll_progress = 0
+        prefered_scroll_progress = 0
     }
 
     MouseControl {
@@ -113,19 +111,20 @@ ClippingRectangle {
 
             const sen = list.scrolling_sen
 
-            list.scroll_progress += delta * list.progressStep
+            list.prefered_scroll_progress += delta * list.progressStep
 
-            console.log(delta)
+            console.log(list.scroll_progress)
 
-            if (content.y > list.progressStep/2) {
-                list.scroll_progress = list.progressStep/2
+            if (list.prefered_scroll_progress > 0) {
+                list.prefered_scroll_progress = 0
                 return
             }
-            else if (content.y < list.maxScroll-list.progressStep/2) {
-                list.scroll_progress = list.maxScroll-list.progressStep/2
+            else if (list.prefered_scroll_progress < list.maxScroll) {
+                list.prefered_scroll_progress = list.maxScroll
                 return
             }
 
+            list.snapProgress()
 
         }
     }
@@ -159,7 +158,8 @@ ClippingRectangle {
             cursorShape: Qt.OpenHandCursor
 
             onHeld: {
-                list.scroll_progress = relativeY
+                list.prefered_scroll_progress = relativeY
+                list.snapProgress()
             }
             onReleased: {
                 if (relativeY > 0) {

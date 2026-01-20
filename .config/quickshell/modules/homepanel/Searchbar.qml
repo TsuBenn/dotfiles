@@ -12,7 +12,7 @@ Rectangle {
     id: root
 
     property int preferedWidth
-    property bool typing: searchtext.text.length >= 1
+    property bool typing: searchtext.text.length > 1
     property var results: []
 
     implicitWidth: preferedWidth
@@ -46,14 +46,41 @@ Rectangle {
 
             id: searchtext
 
+            property bool newsearch: true
+
             onVisibleChanged: text = ""
 
+            implicitWidth: Math.max(70, contentWidth + 8) + 100*(searchtext.text == "")
+
             onTextChanged: {
-                if (text == "") return
+                if (text == "") {
+                    suggestion.opacity = 0
+                    newsearch = true
+                    return
+                }
                 if (text == " ") {
                     text = ""
                     return
                 }
+
+                if (text.length == 1 && newsearch) {
+                    newsearch = false
+                    if (text[0] == "=" || text[0] == ">" || text[0] == "?") {
+                        text += " "
+                    }
+                }
+                if (text.length == 1 && !newsearch) {
+                    newsearch = true
+                    if (text[0] == "=" || text[0] == ">" || text[0] == "?") {
+                        text = ""
+                    }
+                }
+
+                if (text.length < 2) {
+                    suggest.restart()
+                    return
+                }
+                suggestion.opacity = 0
                 updatequerycall.restart()
                 root.textChanged()
             }
@@ -73,6 +100,60 @@ Rectangle {
 
             color: text.length ? "black" : "gray"
 
+            Text {
+
+                id: searchstatus
+
+                x: parent.implicitWidth + 8
+
+                anchors.verticalCenter: parent.verticalCenter
+
+                Behavior on x {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+
+                text: {
+                    if (searchtext.text[0] == "?") return "- Google search"
+                    else if (searchtext.text[0] == "=") return "- Calculator"
+                    else if (searchtext.text[0] == ">") return "- Settings search"
+                    else if (searchtext.text[0] == "/") return "- Fuzzy search"
+                    return "- App search"
+                }
+
+                opacity: searchtext.text != ""
+
+                Behavior on opacity {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+
+                font.family: Fonts.system
+                font.pointSize: 12
+                font.weight: 700
+                color: "gray"
+
+                Text {
+
+                    id: suggestion
+
+                    opacity: 0
+
+                    Behavior on opacity {NumberAnimation {duration: 1000; easing.type: Easing.OutCubic}}
+
+                    anchors.left: parent.right
+                    anchors.leftMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: "(Type atleast 2 letters to search)"
+                    font.family: Fonts.system
+                    font.pointSize: 10
+                    font.weight: 700
+                    color: "gray"
+                }
+
+                Timer {
+                    id: suggest
+                    interval: 1000
+                    onTriggered: if (searchtext.text.length == 1) suggestion.opacity = 1
+                }
+
+            }
+
         }
 
     }
@@ -81,7 +162,7 @@ Rectangle {
 
         id: updatequerycall
 
-        interval: 5
+        interval: 0
         onTriggered: root.updateQuery(searchtext.text)
     }
 
