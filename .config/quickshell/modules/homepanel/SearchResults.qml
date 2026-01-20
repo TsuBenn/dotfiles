@@ -94,7 +94,6 @@ ClippingRectangle {
         container_radius: Config.radius + 5 
         container_right_margin: scroller_implicitWidth ? 0 : 8
         container_left_margin: 8
-        container_bottom_margin: 8
 
         items_data: root.results
         items: Rectangle {
