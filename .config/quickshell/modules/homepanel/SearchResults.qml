@@ -115,7 +115,7 @@ ClippingRectangle {
             implicitWidth: list.container_implicitWidth
 
             color: root.select == index ? "#dddddd" : "transparent"
-            radius: 14
+            radius: Config.radius
 
 
             RowLayout {
@@ -133,7 +133,7 @@ ClippingRectangle {
 
                     color: "transparent"
 
-                    radius: 10
+                    radius: list.container_radius - list.padding
 
                     Image {
 
