@@ -65,13 +65,13 @@ Rectangle {
 
                 if (text.length == 1 && newsearch) {
                     newsearch = false
-                    if (text[0] == "=" || text[0] == ">" || text[0] == "?") {
+                    if (text[0] == "=" || text[0] == ">" || text[0] == "?" || text[0] == "/") {
                         text += " "
                     }
                 }
                 if (text.length == 1 && !newsearch) {
                     newsearch = true
-                    if (text[0] == "=" || text[0] == ">" || text[0] == "?") {
+                    if (text[0] == "=" || text[0] == ">" || text[0] == "?" || text[0] == "/") {
                         text = ""
                     }
                 }
