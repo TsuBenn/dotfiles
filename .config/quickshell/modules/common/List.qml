@@ -22,10 +22,10 @@ ClippingRectangle {
     property string container_color         : "#aaaaaa"
     property int    container_radius        : 18
 
-    property int    container_top_margin    : 0
-    property int    container_left_margin   : 0
-    property int    container_right_margin  : 0
-    property int    container_bottom_margin : 0
+    property real    container_top_margin    : 0
+    property real    container_left_margin   : 0
+    property real    container_right_margin  : 0
+    property real    container_bottom_margin : 0
 
     property string scroller_bg_color       : "#555555"
     property string scroller_fg_color       : "gray"
@@ -51,11 +51,11 @@ ClippingRectangle {
         SequentialAnimation {
             NumberAnimation {
                 id: scroll_smoother
-                duration: 200 
+                duration: 100
                 easing.type: Easing.OutCubic
             } 
             ScriptAction {
-                script: {list.snapProgress()}
+                script: if (!scroll_smoother.running) {list.snapProgress()}
             }
         }
     }
@@ -78,18 +78,18 @@ ClippingRectangle {
 
     function snapProgress() {
         if (content.y > 0) {
-            listOvershootup.start() 
+            list.scroll_progress = 0
             return
         }
-        else if (content.y < list.maxScroll) {
-            listOvershootdown.start()
+        else if (content.y < list.maxScroll-1) {
+            list.scroll_progress = list.maxScroll
             return
         }
         list.scroll_progress = Math.round(list.scroll_progress/progressStep)*progressStep
     }
 
     function advanceScroll(interval : int) {
-        list.scroll_progress -= progressStep*interval
+        list.scroll_progress -= (progressStep)*interval
     }
 
     function resetScroll() {
@@ -111,21 +111,18 @@ ClippingRectangle {
 
         onWheelDelta: (delta) => {
 
-            listOvershootup.stop() 
-            listOvershootdown.stop() 
-
             const sen = list.scrolling_sen
 
-            list.scroll_progress += delta * sen
+            list.scroll_progress += delta * list.progressStep
 
             console.log(delta)
 
-            if (content.y + delta * sen > 0) {
-                listOvershootup.start() 
+            if (content.y > list.progressStep/2) {
+                list.scroll_progress = list.progressStep/2
                 return
             }
-            else if (content.y + delta * sen < list.maxScroll) {
-                listOvershootdown.start()
+            else if (content.y < list.maxScroll-list.progressStep/2) {
+                list.scroll_progress = list.maxScroll-list.progressStep/2
                 return
             }
 
@@ -209,41 +206,6 @@ ClippingRectangle {
 
         }
 
-    }
-
-    SequentialAnimation {
-        id: listOvershootup
-        NumberAnimation {
-            target: list
-            property: "scroll_progress"
-            duration: 100
-            to: list.scrolling_sen*0.7
-            easing.type: Easing.OutQuad
-        }
-        NumberAnimation {
-            target: list
-            property: "scroll_progress"
-            duration: 100
-            to: 0
-            easing.type: Easing.OutQuad
-        }
-    }
-    SequentialAnimation {
-        id: listOvershootdown
-        NumberAnimation {
-            target: list
-            property: "scroll_progress"
-            duration: 100
-            to: list.maxScroll - list.scrolling_sen*0.7
-            easing.type: Easing.OutQuad
-        }
-        NumberAnimation {
-            target: list
-            property: "scroll_progress"
-            duration: 100
-            to: list.maxScroll
-            easing.type: Easing.OutQuad
-        }
     }
 
     ClippingRectangle {
