@@ -106,10 +106,12 @@ ClippingRectangle {
             required property string exec
             required property string icon
 
+            property bool selected: root.select == index
+
             implicitHeight: 60
             implicitWidth: list.container_implicitWidth
 
-            color: root.select == index ? "#cdcdcd" : "#efefef"
+            color: selected ? "#cccccc" : "transparent"
             radius: Config.radius
 
             MouseControl {
@@ -152,16 +154,16 @@ ClippingRectangle {
 
                         anchors.fill: parent
 
-
                         source: app.icon ? "image://icon/" + app.icon : "image://icon/kitty"
                     }
                 }
 
                 Text {
-                    text: `${app.name} (${app.index})`
+                    text: `${app.name}`
+                    color: app.selected ? "black" : "black"
                     font.family: Fonts.system
                     font.pointSize: 12
-                    font.weight: 700
+                    font.weight: 600
                 }
 
             }

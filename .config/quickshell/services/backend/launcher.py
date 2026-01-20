@@ -120,7 +120,6 @@ def main():
 
             print(json.dumps(result))
 
-
         else:
             apps = [
                 app for app in load_apps() if (query in app["name"].lower()) or (query in (app["generic_name"] or "").lower()) or (query in (app["keywords"] or "").lower())
