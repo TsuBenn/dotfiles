@@ -47,7 +47,18 @@ ClippingRectangle {
     }
 
     property real scroll_progress: 0
-    Behavior on scroll_progress {SequentialAnimation {NumberAnimation {id: scroll_smoother; duration: 200; easing.type: Easing.OutCubic} ScriptAction {script: {if (!scroll_smoother.running) list.snapProgress()}}}}
+    Behavior on scroll_progress {
+        SequentialAnimation {
+            NumberAnimation {
+                id: scroll_smoother
+                duration: 200 
+                easing.type: Easing.OutCubic
+            } 
+            ScriptAction {
+                script: {list.snapProgress()}
+            }
+        }
+    }
 
     implicitWidth: box_height
     implicitHeight: box_width
