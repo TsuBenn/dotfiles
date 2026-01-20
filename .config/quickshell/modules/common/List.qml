@@ -47,7 +47,7 @@ ClippingRectangle {
     }
 
     property real scroll_progress: 0
-    Behavior on scroll_progress {SequentialAnimation {NumberAnimation {duration: 200; easing.type: Easing.OutCubic} ScriptAction {script: {list.snapProgress()}}}}
+    Behavior on scroll_progress {SequentialAnimation {NumberAnimation {id: scroll_smoother; duration: 200; easing.type: Easing.OutCubic} ScriptAction {script: {if (!scroll_smoother.running) list.snapProgress()}}}}
 
     implicitWidth: box_height
     implicitHeight: box_width
@@ -106,6 +106,8 @@ ClippingRectangle {
             const sen = list.scrolling_sen
 
             list.scroll_progress += delta * sen
+
+            console.log(delta)
 
             if (content.y + delta * sen > 0) {
                 listOvershootup.start() 
@@ -192,6 +194,7 @@ ClippingRectangle {
             color: list.scroller_fg_color
 
             implicitHeight: (container.height/(contentContainer.height)*scroller.height)
+            Behavior on implicitHeight {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
 
         }
 
