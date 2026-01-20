@@ -16,8 +16,8 @@ ClippingRectangle {
 
     property int searchbar_offset
     property int select: 0
-    property int top_visible: 0
-    property int bottom_visible: 5
+    property int top_visible: list.stepProgress
+    property int bottom_visible: list.stepProgress + 5
     property var results: []
 
     property var execList: []
@@ -41,18 +41,14 @@ ClippingRectangle {
     }
 
     function scrollDown() {
-        if (bottom_visible - select == 1 && bottom_visible < results.length - 1) {
-            top_visible += 1
-            bottom_visible += 1
+        if (bottom_visible - select == -1 && bottom_visible < results.length - 1) {
             return true
         }
         return false
     }
 
     function scrollUp() {
-        if (select - top_visible == 1 && top_visible > 0) {
-            top_visible -= 1
-            bottom_visible -= 1
+        if (select - top_visible == -1 && top_visible > 0) {
             return true
         }
         return false
@@ -60,18 +56,16 @@ ClippingRectangle {
 
     function resetSelection() {
         select = 0
-        top_visible = 0
-        bottom_visible = 5
     }
 
     Component.onCompleted: {
         KeyHandlers.released.connect((key) => {
             if (key == Qt.Key_Up && select > 0) {
                 select -= 1
-                if (scrollUp()) list.advanceScroll(-1)
+                if (scrollUp()) list.advanceScroll(-Math.min(select+1,6))
             } else if (key == Qt.Key_Down && select < results.length - 1) {
                 select += 1
-                if (scrollDown()) list.advanceScroll(1)
+                if (scrollDown()) list.advanceScroll(Math.min(results.length - select,6))
             } else if (key == Qt.Key_Return) {
                 runexec.command = ["bash", "-c", execList[select]]
                 runexec.startDetached()
@@ -98,6 +92,7 @@ ClippingRectangle {
         bg_color: "white"
         container_color: "transparent"
         container_radius: Config.radius + 5 
+        container_right_margin: scroller_implicitWidth ? 0 : 8
         container_left_margin: 8
         container_bottom_margin: 8
 
@@ -114,9 +109,28 @@ ClippingRectangle {
             implicitHeight: 60
             implicitWidth: list.container_implicitWidth
 
-            color: root.select == index ? "#dddddd" : "transparent"
+            color: root.select == index ? "#cdcdcd" : "#efefef"
             radius: Config.radius
 
+            MouseControl {
+
+                anchors.fill: parent
+
+                hoverEnabled: true
+                preventStealing: true
+
+                propagateComposedEvents: true
+
+                onEntered: {
+                    root.select = app.index
+                }
+                onReleased: {
+                    if (!containsMouse) return
+                    runexec.command = ["bash", "-c", app.exec]
+                    runexec.startDetached()
+                    root.enterPressed()
+                }
+            }
 
             RowLayout {
 

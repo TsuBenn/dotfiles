@@ -54,7 +54,8 @@ ClippingRectangle {
 
     color: list.bg_color
 
-    property real progressStep: (content.height/list.items_data.length+1) + (list.spacing/(list.items_data.length))
+    property real progressStep: (content.height/list.items_data.length) + (list.spacing/(list.items_data.length-1))
+    property real stepProgress: Math.round(Math.abs((list.scroll_progress)/list.progressStep))
 
     property real maxScroll: {
         if (content.height > list.height-list.spacing*2-list.container_bottom_margin) {
@@ -202,7 +203,7 @@ ClippingRectangle {
             target: list
             property: "scroll_progress"
             duration: 100
-            to: list.scrolling_sen*0.5
+            to: list.scrolling_sen*0.7
             easing.type: Easing.OutQuad
         }
         NumberAnimation {
@@ -219,7 +220,7 @@ ClippingRectangle {
             target: list
             property: "scroll_progress"
             duration: 100
-            to: list.maxScroll - list.scrolling_sen*0.5
+            to: list.maxScroll - list.scrolling_sen*0.7
             easing.type: Easing.OutQuad
         }
         NumberAnimation {

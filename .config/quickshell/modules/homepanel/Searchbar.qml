@@ -81,7 +81,7 @@ Rectangle {
 
         id: updatequerycall
 
-        interval: 10
+        interval: 5
         onTriggered: root.updateQuery(searchtext.text)
     }
 
