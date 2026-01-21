@@ -33,6 +33,8 @@ Scope {
                 top: -40 * Hyprland.focusedWorkspace.hasFullscreen
             }
 
+            color: Color.primary
+
             implicitHeight: 40
 
             RowLayout {

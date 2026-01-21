@@ -1,5 +1,7 @@
 pragma ComponentBehavior: Bound
 
+import qs.services
+
 import Quickshell.Widgets
 import QtQuick
 
@@ -14,11 +16,11 @@ ClippingRectangle {
     property int    font_weight          : 800
     property real   font_opacity         : 1
     property real   spacing              : 0
-    property var    bg_color             : ["transparent", "light gray", "gray"]
-    property var    fg_color             : ["black", "black", "white"]
+    property var    bg_color             : ["transparent", Color.primary, Color.text_sink]
+    property var    fg_color             : [Color.text, Color.text, Color.text]
 
-    property var    border_width         : [0, 0, 0]
-    property var    border_color         : ["transparent", "transparent", "transparent"]
+    property var    border_width         : [0, 2, 2]
+    property var    border_color         : ["transparent", Color.accent, Color.accent]
 
     property int    box_height           : 30
     property int    box_width            : 0
@@ -33,20 +35,20 @@ ClippingRectangle {
 
     border.width: {
         if (mouse.pressed && clickable) {
-            return border_width[0]
+            return border_width[2]
         } else if (mouse.containsMouse && clickable) {
             return border_width[1]
         } else {
-            return border_width[2]
+            return border_width[0]
         }
     }
     border.color: {
         if (mouse.pressed && clickable) {
-            return border_color[0]
+            return border_color[2]
         } else if (mouse.containsMouse && clickable) {
             return border_color[1]
         } else {
-            return border_color[2]
+            return border_color[0]
         }
     }
 
@@ -203,6 +205,7 @@ ClippingRectangle {
         visible: button.clickable
 
         anchors.fill: parent
+        anchors.margins: -button.border.width
 
         acceptedButtons: Qt.LeftButton
 
