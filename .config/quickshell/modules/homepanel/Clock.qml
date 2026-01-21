@@ -12,25 +12,6 @@ import QtQuick
 //Clock
 Item {
 
-    component Clock: Rectangle {
-
-        required property string content 
-
-        implicitWidth: clock_size_reference.implicitWidth
-        implicitHeight: clock_size_reference.implicitHeight * 0.8
-        color: homepanel_clock.debug_color
-        Text {
-            id: clock_size_reference
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            text: parent.content
-            font.family: homepanel_clock.clock_font
-            font.weight: homepanel_clock.clock_weight
-            font.pointSize: homepanel_clock.clock_size
-            color: "white"
-        }
-    }
-
     id: homepanel_clock
 
     property int preferedWidth
@@ -59,7 +40,7 @@ Item {
         Text {
             id: system_logo
             text: SystemInfo.systemUTF
-            color: "white"
+            color: Color.textPrimary
             font.family: Fonts.system
             font.pointSize: 28
         }
@@ -68,7 +49,7 @@ Item {
             Layout.bottomMargin: -system_logo.implicitHeight/2 + this.implicitHeight*0.5
 
             text: "Uptime: " + (Uptime.hour > 0 ? Uptime.hour + "h" : "") + Uptime.minute + "m"
-            color: "white"
+            color: Color.textPrimary
             font.family: Fonts.system
             font.wordSpacing: -4
             font.pointSize: 12
@@ -91,7 +72,7 @@ Item {
         Text {
             id: battery
             text: "\uf244"
-            color: "white"
+            color: Color.textPrimary
             font.family: Fonts.system
             font.pointSize: 18
 
@@ -154,7 +135,7 @@ Item {
         }
         Text {
             text: SystemInfo.battery ?? "Inf"
-            color: "white"
+            color: Color.textPrimary
             font.family: Fonts.system
             font.wordSpacing: -4
             font.pointSize: 10.5
@@ -175,6 +156,26 @@ Item {
             Layout.alignment: Qt.AlignCenter
             spacing: -4
 
+            component Clock: Rectangle {
+
+                required property string content 
+
+                implicitWidth: clock_size_reference.implicitWidth
+                implicitHeight: clock_size_reference.implicitHeight * 0.8
+                color: homepanel_clock.debug_color
+                Text {
+                    id: clock_size_reference
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: parent.content
+                    font.family: homepanel_clock.clock_font
+                    font.weight: homepanel_clock.clock_weight
+                    font.pointSize: homepanel_clock.clock_size
+                    color: Color.textPrimary
+                }
+            }
+
+
             //Hour
             Clock {
                 content: DateTime.hour12
@@ -194,7 +195,7 @@ Item {
                     font.pointSize: homepanel_clock.clock_size * 0.25
                     lineHeight: 0.7
                     horizontalAlignment: Text.AlignHCenter
-                    color: "white"
+                    color: Color.textPrimary
                 }
             }
             //Minute
@@ -218,7 +219,7 @@ Item {
                 font.family: homepanel_clock.dateandmonth_font
                 font.weight: homepanel_clock.dateandmonth_weight
                 font.pointSize: homepanel_clock.dateandmonth_size
-                color: "white"
+                color: Color.textSecondary
             }
         }
     }

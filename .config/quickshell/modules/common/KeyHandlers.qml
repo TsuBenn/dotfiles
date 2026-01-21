@@ -5,15 +5,15 @@ import QtQuick
 
 Singleton {
 
-    signal pressed(key: int, modifiers: int)
-    signal released(key: int, modifiers: int)
+    signal pressed(key: int, modifiers: int, auto: bool)
+    signal released(key: int, modifiers: int, auto: bool)
 
-    function signalPressed(key:int, modifiers: int) {
-        pressed(key, modifiers)
+    function signalPressed(key:int, modifiers: int, auto: bool) {
+        pressed(key, modifiers, auto)
     }
 
-    function signalReleased(key:int, modifiers: int) {
-        released(key, modifiers)
+    function signalReleased(key:int, modifiers: int, auto: bool) {
+        released(key, modifiers, auto)
     }
 
 }

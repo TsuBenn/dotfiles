@@ -35,7 +35,7 @@ ColumnLayout {
         implicitHeight: 100
         color: "transparent"
 
-        Layout.bottomMargin: 12
+        Layout.bottomMargin: 8
 
 
         layer.enabled: true
@@ -204,7 +204,7 @@ ColumnLayout {
             font.pointSize: parent.size
             font.weight: 700
 
-            color: Color.text_sink
+            color: Color.textDisabled
 
         }
 
@@ -212,7 +212,7 @@ ColumnLayout {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
 
-            color: Color.text_sink
+            color: Color.textDisabled
 
             text: MediaPlayerInfo.formatTime(MediaPlayerInfo.length)
             font.family: Fonts.system 
@@ -243,10 +243,10 @@ ColumnLayout {
 
             interactive: true
 
-            bg_color: Color.secondary
-            bg_hover: Color.secondary
-            fg_color: knob.opacity ? Color.accent : Color.icon
-            fg_hover: Color.accent
+            bg_color: Color.bgMuted
+            bg_hover: Color.bgMuted
+            fg_color: knob.opacity ? Color.accentStrongStrong : Color.textSecondary
+            fg_hover: Color.accentStrongStrong
 
             onAdjusted: {
                 MediaPlayerInfo.setPos((percentage/100)*MediaPlayerInfo.length)
@@ -292,7 +292,7 @@ ColumnLayout {
 
             radius: implicitWidth/2
 
-            color: Color.icon
+            color: Color.textSecondary
 
         }
 
@@ -304,7 +304,8 @@ ColumnLayout {
         spacing: 10
 
         Layout.alignment: Qt.AlignCenter
-        Layout.bottomMargin: 2
+        Layout.topMargin: 2
+        Layout.bottomMargin: Layout.topMargin + 2
 
         PillButton {
 
@@ -333,9 +334,9 @@ ColumnLayout {
                 }
             }
 
-            fg_color: [Color.text, Color.text, Color.text]
-            bg_color: ["transparent", Color.secondary, Color.secondary]
-            border_width: [0,0,2]
+            fg_color: MediaPlayerInfo.shuffleStatus == true ? [Color.accentStrong, Color.accentStrong, Color.bgSurface] : [Color.textDisabled, Color.textDisabled, Color.bgSurface]
+            bg_color: ["transparent", Color.bgBase, Color.accentStrong]
+            border_width: [0,0,0]
 
             onReleased: {
                 MediaPlayerInfo.toggleShuffle()
@@ -355,9 +356,9 @@ ColumnLayout {
             box_height: box_width
             font_size: 25
 
-            fg_color: [Color.text, Color.text, Color.text]
-            bg_color: ["transparent", Color.secondary, Color.secondary]
-            border_width: [0,0,2]
+            fg_color: MediaPlayerInfo.canPrev == true ? [Color.textSecondary, Color.textSecondary, Color.bgSurface] : [Color.textDisabled, Color.textDisabled, Color.bgSurface]
+            bg_color: ["transparent", Color.bgBase, Color.accentStrong]
+            border_width: [0,0,0]
 
             onReleased: {
                 MediaPlayerInfo.prevMedia()
@@ -380,9 +381,9 @@ ColumnLayout {
             box_height: box_width
             font_size: 23
 
-            fg_color: [Color.invert_text, Color.text, Color.text]
-            bg_color: [Color.accent, Color.accent, Color.secondary]
-            border_width: [0,0,2]
+            fg_color: [Color.bgBase, Color.bgBase, Color.bgBase]
+            bg_color: [Color.textSecondary, Color.textSecondary, Color.accentStrong]
+            border_width: [0,0,0]
 
             text_opacity: MediaPlayerInfo.canPlay && MediaPlayerInfo.canPause ? 1 : 0.25
             clickable: MediaPlayerInfo.canPlay && MediaPlayerInfo.canPause
@@ -414,9 +415,9 @@ ColumnLayout {
             box_height: box_width
             font_size: 25
 
-            fg_color: [Color.text, Color.text, Color.text]
-            bg_color: ["transparent", Color.secondary, Color.secondary]
-            border_width: [0,0,2]
+            fg_color: MediaPlayerInfo.canNext == true ? [Color.textSecondary, Color.textSecondary, Color.bgSurface] : [Color.textDisabled, Color.textDisabled, Color.bgSurface]
+            bg_color: ["transparent", Color.bgBase, Color.accentStrong]
+            border_width: [0,0,0]
 
             onReleased: {
                 MediaPlayerInfo.nextMedia()
@@ -438,9 +439,9 @@ ColumnLayout {
             box_height: 38
             font_size: 22
 
-            fg_color: [Color.text, Color.text, Color.text]
-            bg_color: ["transparent", Color.secondary, Color.secondary]
-            border_width: [0,0,2]
+            fg_color: MediaPlayerInfo.loopStatus != "none" ? [Color.accentStrong, Color.accentStrong, Color.bgSurface] : [Color.textDisabled, Color.textDisabled, Color.bgSurface]
+            bg_color: ["transparent", Color.bgBase, Color.accentStrong]
+            border_width: [0,0,0]
 
             text_opacity: (MediaPlayerInfo.canLoop && MediaPlayerInfo.loopStatus != "none") ? 1 : 0.25
             clickable: MediaPlayerInfo.canLoop
@@ -491,8 +492,8 @@ ColumnLayout {
             font_size: 12
             font_weight: selected ? 800 : 700
             box_width: sourcesList.list_container_implicitWidth
-            fg_color: selected ? [Color.invert_text, Color.invert_text, Color.text] :[Color.text, Color.text, Color.text] 
-            bg_color: selected ? [Qt.darker(Color.accent,1.2),Qt.darker(Color.accent,1.2),Color.primary] : ["transparent",Color.secondary,Color.primary]
+            fg_color: selected ? [Color.bgBase, Color.bgBase, Color.textPrimary] :[Color.textPrimary, Color.textPrimary, Color.textPrimary] 
+            bg_color: selected ? [Qt.darker(Color.accentStrong,1.2),Qt.darker(Color.accentStrong,1.2),Color.bgSurface] : ["transparent",Color.bgBase,Color.bgSurface]
             border_width: [0,0,2]
 
             onReleased: {

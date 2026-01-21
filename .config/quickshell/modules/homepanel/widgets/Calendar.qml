@@ -33,6 +33,7 @@ ColumnLayout {
         //Layout.alignment: Qt.AlignCenter
 
         text: DateTime.month_long
+        color: Color.textPrimary
         font.family: Fonts.zzz_vn_font
         font.pointSize: 20
         font.weight: 800
@@ -60,6 +61,7 @@ ColumnLayout {
                 required property string modelData
 
                 text: modelData
+                color: Color.accentSoft
                 font.family: Fonts.zzz_vn_font
                 font.pointSize: 11
                 font.weight: 900
@@ -89,8 +91,42 @@ ColumnLayout {
                 font_size: 10.5
                 font_weight: isToday ? 800 : 600
 
-                fg_color: {if (isToday || index == root.selectedDate) ["white", "white", "white"]; else if (inMonth) ["black", "black", "white"]; else ["gray", "gray", "black"]}
-                bg_color: {if (isToday) ["black", "black", "gray"]; else if (index == root.selectedDate) ["gray", "gray", "black"]; else ["transparent", "light gray", "gray"]}
+                fg_color: if (isToday) {
+                    return [Color.textPrimary, Color.accentStrong, Color.bgBase]
+                } else if (index == root.selectedDate) {
+                    return [Color.bgBase, Color.warn, Color.bgBase]
+                } else if (inMonth) {
+                    return [Color.accentSoft, Color.textPrimary, Color.bgBase]
+                } else {
+                    return [Color.textDisabled, Color.textDisabled, Color.textPrimary]
+                }
+
+                bg_color: if (isToday) {
+                    return [Color.accentStrong, Color.bgSurface, Color.accentStrong]
+                } else if (index == root.selectedDate) {
+                    return [Color.warn, Color.bgSurface, Color.warn]
+                } else {
+                    ["transparent", Color.bgBase, Color.warn]
+                }
+
+                border_width: if (isToday) {
+                    return [0,2,0]
+                } else if (index == root.selectedDate) {
+                    return [0,2,0]
+                } else {
+                    [0,0,0]
+                }
+                border_color: if (isToday) {
+                    if (index == root.selectedDate) {
+                        return [0,Color.warn,0]
+                    } else {
+                        return [0,Color.accentStrong,0]
+                    }
+                } else if (index == root.selectedDate) {
+                    return [Color.warn,Color.warn,Color.warn]
+                } else {
+                    ["transparent", Color.bgBase, Color.warn]
+                }
 
                 onReleased: {
                     if (index != root.selectedDate) {

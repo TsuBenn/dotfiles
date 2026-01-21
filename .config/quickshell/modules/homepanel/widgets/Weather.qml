@@ -19,11 +19,10 @@ Rectangle {
     property int temp_unit_size: 15
     property int icon_size: 62
     property int condition_size: 13
-    property string text_color: "white"
 
     property bool toggleinfo: false
 
-    color: "black"
+    color: "transparent"
 
     MouseControl {
 
@@ -37,6 +36,8 @@ Rectangle {
     Image {
 
         id: background
+
+        visible: false
 
         anchors.centerIn: parent
 
@@ -77,19 +78,13 @@ Rectangle {
 
         anchors.centerIn: parent
 
-        layer.enabled: true
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowBlur: 1
-            shadowColor: Qt.rgba(0.0,0.0,0.0,0.7)
-        }
-
         RowLayout {
 
             Layout.alignment: Qt.AlignCenter
-            Layout.topMargin: -8
+            Layout.leftMargin: -4
+            Layout.topMargin: -6
 
-            spacing: -4
+            spacing: -3
 
             Text {
 
@@ -100,7 +95,7 @@ Rectangle {
                 font.pointSize: root.temp_size
                 font.weight: 700
                 font.letterSpacing: -5
-                color: root.text_color
+                color: Color.accentStrong
 
 
             }
@@ -118,21 +113,32 @@ Rectangle {
                 font.family: root.temp_font
                 font.pointSize: root.temp_unit_size
                 font.weight: 800
-                color: root.text_color
+                color: Color.accentStrong
 
             }
 
-            Text {
-                id: icon
+            Item {
 
-                property bool exception: WeatherInfo.condition_icon == "🌫" 
+                Layout.leftMargin: 15
 
-                Layout.leftMargin: exception ? 10 : 0 
-                Layout.rightMargin: exception ? 0 : -10
+                implicitHeight: 60
+                implicitWidth: implicitHeight
 
-                text: WeatherInfo.condition_icon
-                font.family: "Noto Color Emoji"
-                font.pointSize: exception ? root.icon_size*0.8 : root.icon_size
+                Text {
+
+                    anchors.centerIn: parent
+                    id: icon
+
+                    property bool exception: WeatherInfo.condition_icon == "🌫" 
+
+                    text: WeatherInfo.condition_icon
+                    font.family: "Noto Color Emoji"
+                    font.pointSize: exception ? root.icon_size*0.8 : root.icon_size
+                    layer.enabled: false
+                    layer.effect: ColorOverlay {
+                        color: Color.textPrimary
+                    }
+                }
             }
 
         }
@@ -191,7 +197,7 @@ Rectangle {
             font_family: root.condition_font
             font_size: root.condition_size
             font_weight: 800
-            font_color: root.text_color
+            font_color: Color.textSecondary
             spacing: -6
         }
 
@@ -207,7 +213,7 @@ Rectangle {
             font_family: root.condition_font
             font_size: root.condition_size
             font_weight: 800
-            font_color: root.text_color
+            font_color: Color.textSecondary
             spacing: -6
         }
 

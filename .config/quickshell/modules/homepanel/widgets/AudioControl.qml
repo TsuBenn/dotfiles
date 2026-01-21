@@ -29,7 +29,7 @@ ColumnLayout {
             property int text_size: 20
             property real percentage: bar.percentage
             property real source: AudioInfo.volume
-            property int box_width: 20
+            property int box_width: 18
             property int box_height: 240
 
             spacing: 9
@@ -83,8 +83,8 @@ ColumnLayout {
                 box_width: control.text_size*2
                 onPressed: control.toggleMute()
 
-                bg_color: ["transparent", Color.secondary, Color.secondary]
-                fg_color: [Color.text, Color.text, Color.text]
+                bg_color: ["transparent", Color.bgBase, Color.bgBase]
+                fg_color: [Color.textPrimary, Color.textPrimary, Color.accentStrong]
                 border_width: [0,0,2]
             }
         }
@@ -186,10 +186,10 @@ ColumnLayout {
         property string list_font                 : Fonts.system
         property int    list_font_weight          : 600
         property int    list_font_weight_selected : 700
-        property var    list_color                : ["transparent", Color.secondary, Color.secondary]
-        property var    list_font_color           : [Color.text, Color.text, Color.text]
-        property var    list_color_selected       : [Qt.darker(Color.accent,1.2), Qt.darker(Color.accent,1.2), Color.primary]
-        property var    list_font_color_selected  : [Color.invert_text, Color.invert_text, Color.text]
+        property var    list_color                : ["transparent", Color.bgBase, Color.bgSurface]
+        property var    list_font_color           : [Color.textPrimary, Color.textPrimary, Color.textPrimary]
+        property var    list_color_selected       : [Color.accentStrong, Color.accentStrong, Color.bgSurface]
+        property var    list_font_color_selected  : [Color.bgBase, Color.bgBase, Color.textPrimary]
         property var    list_border               : [0,0,2]
         property var    list_border_selected      : [0,0,2]
         property int    list_font_size            : 11

@@ -16,11 +16,11 @@ ClippingRectangle {
     property int    font_weight          : 800
     property real   font_opacity         : 1
     property real   spacing              : 0
-    property var    bg_color             : ["transparent", Color.primary, Color.text_sink]
-    property var    fg_color             : [Color.text, Color.text, Color.text]
+    property var    bg_color             : ["transparent", Color.bgSurface, Color.accentStrong]
+    property var    fg_color             : [Color.textPrimary, Color.textPrimary, Color.bgSurface]
 
-    property var    border_width         : [0, 2, 2]
-    property var    border_color         : [Color.accent, Color.accent, Color.accent]
+    property var    border_width         : [0, 2, 0]
+    property var    border_color         : [Color.accentStrong, Color.accentStrong, Color.accentStrong]
 
     property int    box_height           : 30
     property int    box_width            : 0
@@ -166,7 +166,7 @@ ClippingRectangle {
         }
         ScriptAction { 
             script: {
-                if (left_text.x==-button_text.paintedWidth + button.text_padding) {left_text.x = button.text_padding}
+                if (left_text.x==-button_text.paintedWidth + button.text_padding) {left_text.x = button.text_padding - button.border.width*2}
             }
         }
         SequentialAnimation {
@@ -185,7 +185,7 @@ ClippingRectangle {
         target: left_text
         property: "x"
         duration: 1.2*(button_text.paintedWidth + button.implicitWidth)
-        to: button.text_padding
+        to: button.text_padding - button.border.width*2
         easing.type: Easing.OutCubic
     }
 

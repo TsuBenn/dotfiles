@@ -33,7 +33,7 @@ Scope {
                 top: -40 * Hyprland.focusedWorkspace.hasFullscreen
             }
 
-            color: Color.primary
+            color: Color.bgSurface
 
             implicitHeight: 40
 
@@ -49,6 +49,7 @@ Scope {
                 spacing: 5
 
                 PillButton {
+
                     id: homebutton
                     text: SystemInfo.username
 
@@ -61,6 +62,7 @@ Scope {
 
                 Text {
                     text: DateTime.hour12 + ":" + DateTime.minute + ":" + DateTime.second + " " + DateTime.ampm
+                    color: Color.accentSoft
                     font.family: Fonts.system
                     font.pointSize: 12
                     font.weight: 800
@@ -68,6 +70,7 @@ Scope {
 
                 Text {
                     text: " | "
+                    color: Color.accentSoft
                     font.family: Fonts.system
                     font.pointSize: 12
                     font.weight: 800
@@ -75,6 +78,8 @@ Scope {
 
                 Text {
                     text: `CPU: ${SystemInfo.cpuusage}% - GPU: ${SystemInfo.gpuusage}% - RAM: ${SystemInfo.ktoG(SystemInfo.memused)}GB of ${SystemInfo.ktoG(SystemInfo.memtotal)}GB - SWAP: ${SystemInfo.ktoM(SystemInfo.swapused)}MB of ${SystemInfo.ktoM(SystemInfo.swaptotal)}MB | ${SystemInfo.onbattery ? "Battery: " + SystemInfo.battery + " of " + SystemInfo.batteryhealth + " (" + SystemInfo.batterystate + ")" : "PSU"}`
+
+                    color: Color.accentSoft
                     font.family: Fonts.system
                     font.pointSize: 12
                     font.weight: 800

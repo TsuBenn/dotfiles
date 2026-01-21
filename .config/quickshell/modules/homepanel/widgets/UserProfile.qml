@@ -26,10 +26,10 @@ ColumnLayout {
 
         border {
             width: 0
-            color: "black"
+            color: Color.textSecondary
         }
 
-        color: "#555555"
+        color: Color.bgBase
 
         clip: true
 
@@ -38,9 +38,9 @@ ColumnLayout {
             anchors.centerIn: parent
 
             text: "LOADING..."
+            color: Color.bgMuted
             font.family: Fonts.zzz_vn_font
             font.pointSize: 16
-            color: "gray"
 
         }
 
@@ -104,8 +104,8 @@ ColumnLayout {
 
 
         Component.onCompleted: {
-            KeyHandlers.pressed.connect((key) => {
-            if (key == Qt.Key_Tab) {
+            KeyHandlers.pressed.connect((key,mod,auto) => {
+            if (key == Qt.Key_Tab && !auto) {
                 if (!pfp.stuck) {
                     pfpPressed.stop()
                     pfpReleased.stop()
@@ -113,8 +113,8 @@ ColumnLayout {
                 }
             }
             })
-            KeyHandlers.released.connect((key) => {
-            if (key == Qt.Key_Tab) {
+            KeyHandlers.released.connect((key,mod,auto) => {
+            if (key == Qt.Key_Tab && !auto) {
                 if (!pfp.stuck) {
                     pfpDrag.stop()
                     pfpPressed.stop()
@@ -619,6 +619,7 @@ ColumnLayout {
         Layout.bottomMargin: -12
 
         text: "- " + SystemInfo.hostname + " -"
+        color: Color.textSecondary
         font.family: userprofile.font
         font.pointSize: 14
         font.weight: userprofile.font_weight
@@ -631,6 +632,7 @@ ColumnLayout {
         Layout.bottomMargin: -12
 
         text: SystemInfo.username
+        color: Color.textPrimary
         font.family: userprofile.font
         font.pointSize: 26
         font.weight: userprofile.font_weight

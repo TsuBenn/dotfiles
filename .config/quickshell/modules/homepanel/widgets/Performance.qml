@@ -39,16 +39,6 @@ ColumnLayout {
             font_size: root.label_size
             percentage: SystemInfo.cpuusage
             maxPercentage: root.maxPercentage
-
-            fg_color: {
-                if (percentage >= 90) {
-                    return Qt.darker(Color.error,1.1)
-                } else if (percentage >= 70) {
-                    return Qt.darker(Color.warn,1.1)
-                }
-                return Color.accent
-            }
-            Behavior on fg_color {ColorAnimation {duration: 200}}
         }
 
         ProgressCircle {
@@ -63,15 +53,6 @@ ColumnLayout {
             label: Math.round(SystemInfo.gpuusage)
             percentage: SystemInfo.gpuusage
             maxPercentage: root.maxPercentage
-            fg_color: {
-                if (percentage >= 90) {
-                    return Qt.darker(Color.error,1.1)
-                } else if (percentage >= 70) {
-                    return Qt.darker(Color.warn,1.1)
-                }
-                return Color.accent
-            }
-            Behavior on fg_color {ColorAnimation {duration: 200}}
         }
 
         ProgressCircle {
@@ -86,15 +67,6 @@ ColumnLayout {
             label: SystemInfo.ktoG(SystemInfo.memused).toFixed(1) + "/" + Math.round(SystemInfo.ktoG(SystemInfo.memtotal))
             percentage: SystemInfo.memusage
             maxPercentage: root.maxPercentage
-            fg_color: {
-                if (percentage >= 90) {
-                    return Qt.darker(Color.error,1.1)
-                } else if (percentage >= 70) {
-                    return Qt.darker(Color.warn,1.1)
-                }
-                return Color.accent
-            }
-            Behavior on fg_color {ColorAnimation {duration: 200}}
         }
 
         ProgressCircle {
@@ -109,15 +81,6 @@ ColumnLayout {
             label: SystemInfo.ktoM(SystemInfo.gpumemused).toFixed(1) + "/" + Math.round(SystemInfo.ktoM(SystemInfo.gpumemtotal))
             percentage: SystemInfo.gpumemusage
             maxPercentage: root.maxPercentage
-            fg_color: {
-                if (percentage >= 90) {
-                    return Qt.darker(Color.error,1.1)
-                } else if (percentage >= 70) {
-                    return Qt.darker(Color.warn,1.1)
-                }
-                return Color.accent
-            }
-            Behavior on fg_color {ColorAnimation {duration: 200}}
         }
 
     }
@@ -167,7 +130,7 @@ ColumnLayout {
 
             radius: implicitHeight/2
 
-            color: "#b5b5b5"
+            color: Color.bgMuted
 
             SequentialAnimation {
                 id: fade
@@ -204,7 +167,7 @@ ColumnLayout {
 
                 radius: implicitWidth/2
 
-                color: "light gray"
+                color: Color.accentStrong
 
                 Text {
 
@@ -212,6 +175,7 @@ ColumnLayout {
 
                     id: infobar_maintext
                     text: infobar.text
+                    color: Color.bgSurface
                     font.pointSize: infobar.font_size
                     font.family: Fonts.zzz_vn_font
                     font.weight: infobar.font_weight
@@ -235,6 +199,7 @@ ColumnLayout {
                     anchors.verticalCenter: infobar_info.verticalCenter
 
                     text: infobar.subtextleft
+                    color: Color.textSecondary
                     font.pointSize: infobar.font_size
                     font.family: Fonts.system
                     font.weight: infobar.font_weight
@@ -252,6 +217,7 @@ ColumnLayout {
                     opacity: infobar.midopacity
 
                     text: infobar.subtextmid
+                    color: Color.textDisabled
                     font.pointSize: infobar.font_size
                     font.family: Fonts.system
                     font.weight: infobar.font_weight
@@ -264,6 +230,7 @@ ColumnLayout {
                     anchors.verticalCenter: infobar_info.verticalCenter
 
                     text: infobar.subtextright
+                    color: Color.textSecondary
                     font.pointSize: infobar.font_size
                     font.family: Fonts.system
                     font.weight: infobar.font_weight

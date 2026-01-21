@@ -13,8 +13,8 @@ ColumnLayout {
 
     id: root
 
-    property color  bg_color      : Color.secondary
-    property color  fg_color      : Color.accent
+    property color  bg_color      : Color.bgMuted
+    property color  fg_color      : Color.accentStrong
     property int    thickness     : 5
     property int    radius        : 25
     property real   percentage    : SystemInfo.cpuusage
@@ -28,7 +28,7 @@ ColumnLayout {
     property int    icon_size     : 20
     property int    icon_weight   : 600
     property bool   icon_offset   : true
-    property color  icon_color    : Color.accent
+    property color  icon_color    : Color.textPrimary
 
     property string label         : "Text"
     property int    label_height  : 0
@@ -38,7 +38,7 @@ ColumnLayout {
     property int    font_weight   : 600
     property int    font_size     : 13
     property int    font_spacing  : 0
-    property color  font_color    : Color.text
+    property color  font_color    : Color.textDisabled
 
     property real desiredWidth: container.implicitWidth
     property real desiredHeight: container.implicitHeight

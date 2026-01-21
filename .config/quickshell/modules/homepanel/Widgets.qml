@@ -15,11 +15,31 @@ import QtQuick
 
 RowLayout {
 
+    layer.enabled: true
+    layer.effect: DropShadow {
+        radius: 15
+        samples: 20
+        color: Qt.rgba(0.0,0.0,0.0,0.3)
+        transparentBorder: true
+    }
+
     component Widgets: ClippingRectangle {
         radius: Config.radius
-        color: Color.primary
+        color: Color.bgSurface
         border.width: 2
-        border.color: Qt.lighter(Color.primary,1.4)
+        border.color: Qt.lighter(Color.bgSurface,1.5)
+
+    }
+
+    component PowerButton: PillButton {
+        box_height: 65
+        box_width: 65
+        property color icon_color
+        radius: Config.radius
+        bg_color: [Color.bgSurface , Color.bgSurface, icon_color]
+        fg_color: [Color.accentStrong, icon_color, Color.bgSurface]
+        border_width: [2,3,0]
+        border_color: [Qt.lighter(Color.bgSurface,1.3),icon_color,Color.accentStrong]
     }
 
     spacing: Config.gap
@@ -98,9 +118,11 @@ RowLayout {
                     implicitHeight: 120
 
                     radius: Config.radius
-                    topRightRadius: 0
-                    topLeftRadius: 0
 
+                    border.width: 3
+                    border.color: Color.bgSurface
+
+                    color: Color.bgMuted
 
                     Item {
 
@@ -130,7 +152,8 @@ RowLayout {
                             height: (sourceSize.height/sourceSize.width)*width
                             cache: true
 
-                            visible: true
+                            opacity: status == Image.Ready
+                            Behavior on opacity {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
                             source: MediaPlayerInfo.artUrl
 
@@ -321,7 +344,7 @@ RowLayout {
                             artOpen.start()
                         }
                     }
-                    
+
                     onExited: {
                         if (!artOpen.running) {
                             artOpen.stop()
@@ -367,16 +390,6 @@ RowLayout {
             }
         }
 
-        component PowerButton: PillButton {
-            box_height: 65
-            box_width: 65
-            property color icon_color
-            radius: Config.radius
-            bg_color: [Color.primary , icon_color, Qt.darker(icon_color, 1.8)]
-            fg_color: [Qt.darker(icon_color, 1.1), "white", "white"]
-            border_width: [2,2,0]
-            border_color: [Qt.lighter(Color.primary,1.3),Qt.darker(icon_color,1.5),Color.accent]
-        }
 
         //SHUTDOWN
         PowerButton {
