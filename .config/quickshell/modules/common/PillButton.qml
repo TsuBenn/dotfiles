@@ -20,7 +20,7 @@ ClippingRectangle {
     property var    fg_color             : [Color.text, Color.text, Color.text]
 
     property var    border_width         : [0, 2, 2]
-    property var    border_color         : ["transparent", Color.accent, Color.accent]
+    property var    border_color         : [Color.accent, Color.accent, Color.accent]
 
     property int    box_height           : 30
     property int    box_width            : 0
@@ -138,7 +138,7 @@ ClippingRectangle {
 
         opacity: button.text_opacity
 
-        x: parent.x + button.text_padding - button.border.width
+        x: parent.x + button.text_padding - button.border.width*2
 
         text: button.text.trim()
     }
@@ -158,7 +158,7 @@ ClippingRectangle {
             NumberAnimation {
                 target: left_text
                 property: "x"
-                from: button.text_padding
+                from: button.text_padding - button.border.width*2
                 to: -button_text.paintedWidth + button.text_padding
                 duration: 10*(button_text.paintedWidth + button.implicitWidth)
                 loops: Animation.Infinite

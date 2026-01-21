@@ -186,6 +186,7 @@ ColumnLayout {
         id: timestamp
 
         Layout.alignment: Qt.AlignCenter
+        Layout.bottomMargin: -2
 
         implicitHeight: 10
         implicitWidth: 280
@@ -203,11 +204,15 @@ ColumnLayout {
             font.pointSize: parent.size
             font.weight: 700
 
+            color: Color.text_sink
+
         }
 
         Text {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
+
+            color: Color.text_sink
 
             text: MediaPlayerInfo.formatTime(MediaPlayerInfo.length)
             font.family: Fonts.system 
@@ -223,12 +228,13 @@ ColumnLayout {
         implicitWidth: 290
 
         Layout.alignment: Qt.AlignCenter
+        Layout.bottomMargin: 3
 
         HorizontalProgressBar {
 
             id: progress
 
-            box_height: 6
+            box_height: 5
             box_width: parent.implicitWidth
 
             padding: 10
@@ -236,6 +242,11 @@ ColumnLayout {
             preferedPercentage: (MediaPlayerInfo.pos/MediaPlayerInfo.length)*100
 
             interactive: true
+
+            bg_color: Color.secondary
+            bg_hover: Color.secondary
+            fg_color: knob.opacity ? Color.accent : Color.icon
+            fg_hover: Color.accent
 
             onAdjusted: {
                 MediaPlayerInfo.setPos((percentage/100)*MediaPlayerInfo.length)
@@ -247,7 +258,9 @@ ColumnLayout {
             }
 
             onReleased: {
-                knob.opacity = 0
+                if (!containsMouse) {
+                    knob.opacity = 0
+                }
             }
 
             onEntered: {
@@ -255,7 +268,9 @@ ColumnLayout {
             }
 
             onExited: {
-                knob.opacity = 0
+                if (!containsPress) {
+                    knob.opacity = 0
+                }
             }
 
         }
@@ -277,7 +292,7 @@ ColumnLayout {
 
             radius: implicitWidth/2
 
-            color: "light gray"
+            color: Color.icon
 
         }
 
@@ -289,6 +304,7 @@ ColumnLayout {
         spacing: 10
 
         Layout.alignment: Qt.AlignCenter
+        Layout.bottomMargin: 2
 
         PillButton {
 
@@ -317,6 +333,10 @@ ColumnLayout {
                 }
             }
 
+            fg_color: [Color.text, Color.text, Color.text]
+            bg_color: ["transparent", Color.secondary, Color.secondary]
+            border_width: [0,0,2]
+
             onReleased: {
                 MediaPlayerInfo.toggleShuffle()
             }
@@ -328,12 +348,16 @@ ColumnLayout {
             clickable: MediaPlayerInfo.canPrev
 
             text: "\udb81\udcae"
-            text_padding: 11
+            text_padding: 8.5
             centered: false
             font_family: Fonts.system
-            box_width: 42
-            box_height: 42
+            box_width: 36
+            box_height: box_width
             font_size: 25
+
+            fg_color: [Color.text, Color.text, Color.text]
+            bg_color: ["transparent", Color.secondary, Color.secondary]
+            border_width: [0,0,2]
 
             onReleased: {
                 MediaPlayerInfo.prevMedia()
@@ -343,18 +367,22 @@ ColumnLayout {
         PillButton {
             text: {
                 if (MediaPlayerInfo.status == "playing") {
-                    text_padding = 11
+                    text_padding = 9
                     return "\udb80\udfe4"
                 } else {
-                    text_padding = 12.5
+                    text_padding = 10.5
                     return "\udb81\udc0a"
                 }
             }
             centered: false
             font_family: Fonts.system
-            box_width: 42
-            box_height: 42
-            font_size: 25
+            box_width: 36
+            box_height: box_width
+            font_size: 23
+
+            fg_color: [Color.invert_text, Color.text, Color.text]
+            bg_color: [Color.accent, Color.accent, Color.secondary]
+            border_width: [0,0,2]
 
             text_opacity: MediaPlayerInfo.canPlay && MediaPlayerInfo.canPause ? 1 : 0.25
             clickable: MediaPlayerInfo.canPlay && MediaPlayerInfo.canPause
@@ -379,12 +407,16 @@ ColumnLayout {
             clickable: MediaPlayerInfo.canNext
 
             text: "\udb81\udcad"
-            text_padding: 11
+            text_padding: 8.5
             centered: false
             font_family: Fonts.system
-            box_width: 42
-            box_height: 42
+            box_width: 36
+            box_height: box_width
             font_size: 25
+
+            fg_color: [Color.text, Color.text, Color.text]
+            bg_color: ["transparent", Color.secondary, Color.secondary]
+            border_width: [0,0,2]
 
             onReleased: {
                 MediaPlayerInfo.nextMedia()
@@ -405,6 +437,10 @@ ColumnLayout {
             box_width: 38
             box_height: 38
             font_size: 22
+
+            fg_color: [Color.text, Color.text, Color.text]
+            bg_color: ["transparent", Color.secondary, Color.secondary]
+            border_width: [0,0,2]
 
             text_opacity: (MediaPlayerInfo.canLoop && MediaPlayerInfo.loopStatus != "none") ? 1 : 0.25
             clickable: MediaPlayerInfo.canLoop
@@ -441,6 +477,7 @@ ColumnLayout {
         selected_list: false
 
         items: MediaPlayerInfo.players
+
         list_items: PillButton {
             required property string dbusName
             required property string desktopEntry
@@ -454,7 +491,9 @@ ColumnLayout {
             font_size: 12
             font_weight: selected ? 800 : 700
             box_width: sourcesList.list_container_implicitWidth
-            bg_color: selected ? ["#888888","light gray","gray"] : ["#aaaaaa","light gray","gray"]
+            fg_color: selected ? [Color.invert_text, Color.invert_text, Color.text] :[Color.text, Color.text, Color.text] 
+            bg_color: selected ? [Qt.darker(Color.accent,1.2),Qt.darker(Color.accent,1.2),Color.primary] : ["transparent",Color.secondary,Color.primary]
+            border_width: [0,0,2]
 
             onReleased: {
                 if (dbusName != MediaPlayerInfo.activePlayer.dbusName) {

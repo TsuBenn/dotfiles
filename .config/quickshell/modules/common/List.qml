@@ -27,8 +27,8 @@ ClippingRectangle {
     property real    container_right_margin  : 0
     property real    container_bottom_margin : 0
 
-    property string scroller_bg_color       : "#555555"
-    property string scroller_fg_color       : "gray"
+    property color  scroller_bg_color       : Color.secondary
+    property color  scroller_fg_color       : Color.icon_sink
     property int    scroller_width          : 5
     property int    scrolling_sen           : (content.implicitHeight/items_data.length)-(spacing/items_data.length)
     property bool   show_scroller           : true
@@ -83,7 +83,7 @@ ClippingRectangle {
             list.prefered_scroll_progress = list.maxScroll
             return
         }
-        //list.prefered_scroll_progress = Math.round(list.scroll_progress/progressStep)*progressStep
+        list.prefered_scroll_progress = Math.round(list.scroll_progress/progressStep)*progressStep
     }
 
     function advanceScroll(interval : int) {
@@ -123,9 +123,6 @@ ClippingRectangle {
                 list.prefered_scroll_progress = list.maxScroll
                 return
             }
-
-            list.snapProgress()
-
         }
     }
 
@@ -159,7 +156,6 @@ ClippingRectangle {
 
             onHeld: {
                 list.prefered_scroll_progress = relativeY
-                list.snapProgress()
             }
             onReleased: {
                 if (relativeY > 0) {
@@ -167,6 +163,7 @@ ClippingRectangle {
                 } else if (relativeY < list.maxScroll) {
                     scroller_overshootdown.start()
                 }
+                list.snapProgress()
             }
 
         }
@@ -226,6 +223,7 @@ ClippingRectangle {
 
         color: list.container_color
 
+        clip: true
 
         Item {
 
@@ -233,7 +231,6 @@ ClippingRectangle {
 
             implicitWidth: parent.implicitWidth
             implicitHeight: content.implicitHeight
-
 
             ColumnLayout {
 

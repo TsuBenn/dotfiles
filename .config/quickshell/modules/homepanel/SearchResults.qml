@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 
+import qs.services
 import qs.assets
 import qs.modules.homepanel
 import qs.modules.common
@@ -9,6 +10,7 @@ import Quickshell.Io
 import Quickshell.Widgets
 import QtQuick
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 
 ClippingRectangle {
 
@@ -78,7 +80,7 @@ ClippingRectangle {
         id: runexec
     }
 
-    color: "white"
+    color: Color.primary
 
     List {
 
@@ -89,7 +91,7 @@ ClippingRectangle {
 
         padding: 9
         spacing: 10
-        bg_color: "white"
+        bg_color: "transparent"
         container_color: "transparent"
         container_radius: Config.radius + 5 
         container_right_margin: scroller_implicitWidth ? 0 : 8
@@ -111,7 +113,7 @@ ClippingRectangle {
             implicitHeight: 60
             implicitWidth: list.container_implicitWidth
 
-            color: selected ? "#cccccc" : "transparent"
+            color: selected ? Qt.darker(Color.accent,1.2) : "transparent"
             radius: Config.radius
 
             MouseControl {
@@ -141,10 +143,10 @@ ClippingRectangle {
 
                 ClippingRectangle {
 
-                    Layout.leftMargin: 10
+                    Layout.leftMargin: 12
 
-                    implicitWidth: 40
-                    implicitHeight: 40
+                    implicitWidth: 38
+                    implicitHeight: implicitWidth
 
                     color: "transparent"
 
@@ -155,15 +157,26 @@ ClippingRectangle {
                         anchors.fill: parent
 
                         source: app.icon ? "image://icon/" + app.icon : "image://icon/kitty"
+
+                    }
+
+                    layer.enabled: true
+                    layer.effect: DropShadow {
+                        radius: 10
+                        samples: 10
+                        horizontalOffset: 0
+                        verticalOffset: 0
+                        color: Qt.rgba(0.0,0.0,0.0,0.2)
+                        transparentBorder: true
                     }
                 }
 
                 Text {
                     text: `${app.name}`
-                    color: app.selected ? "black" : "black"
+                    color: app.selected ? Color.invert_text : Color.text
                     font.family: Fonts.system
                     font.pointSize: 12
-                    font.weight: 600
+                    font.weight: app.selected ? 700 : 600
                 }
 
             }

@@ -39,6 +39,16 @@ ColumnLayout {
             font_size: root.label_size
             percentage: SystemInfo.cpuusage
             maxPercentage: root.maxPercentage
+
+            fg_color: {
+                if (percentage >= 90) {
+                    return Qt.darker(Color.error,1.1)
+                } else if (percentage >= 70) {
+                    return Qt.darker(Color.warn,1.1)
+                }
+                return Color.accent
+            }
+            Behavior on fg_color {ColorAnimation {duration: 200}}
         }
 
         ProgressCircle {
@@ -53,6 +63,15 @@ ColumnLayout {
             label: Math.round(SystemInfo.gpuusage)
             percentage: SystemInfo.gpuusage
             maxPercentage: root.maxPercentage
+            fg_color: {
+                if (percentage >= 90) {
+                    return Qt.darker(Color.error,1.1)
+                } else if (percentage >= 70) {
+                    return Qt.darker(Color.warn,1.1)
+                }
+                return Color.accent
+            }
+            Behavior on fg_color {ColorAnimation {duration: 200}}
         }
 
         ProgressCircle {
@@ -67,6 +86,15 @@ ColumnLayout {
             label: SystemInfo.ktoG(SystemInfo.memused).toFixed(1) + "/" + Math.round(SystemInfo.ktoG(SystemInfo.memtotal))
             percentage: SystemInfo.memusage
             maxPercentage: root.maxPercentage
+            fg_color: {
+                if (percentage >= 90) {
+                    return Qt.darker(Color.error,1.1)
+                } else if (percentage >= 70) {
+                    return Qt.darker(Color.warn,1.1)
+                }
+                return Color.accent
+            }
+            Behavior on fg_color {ColorAnimation {duration: 200}}
         }
 
         ProgressCircle {
@@ -81,6 +109,15 @@ ColumnLayout {
             label: SystemInfo.ktoM(SystemInfo.gpumemused).toFixed(1) + "/" + Math.round(SystemInfo.ktoM(SystemInfo.gpumemtotal))
             percentage: SystemInfo.gpumemusage
             maxPercentage: root.maxPercentage
+            fg_color: {
+                if (percentage >= 90) {
+                    return Qt.darker(Color.error,1.1)
+                } else if (percentage >= 70) {
+                    return Qt.darker(Color.warn,1.1)
+                }
+                return Color.accent
+            }
+            Behavior on fg_color {ColorAnimation {duration: 200}}
         }
 
     }

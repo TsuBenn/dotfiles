@@ -22,9 +22,9 @@ Rectangle {
 
     color: Color.primary
 
-    border.color: Color.accent
-    border.width: 3 * (searchtext.text.length >= 1)
-    Behavior on border.width {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    border.color: searchtext.text ? Qt.darker(Color.accent,1.1) : Qt.lighter(Color.primary,1.3)
+    border.width: 3
+    Behavior on border.color {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
 
     signal textChanged()
 
@@ -40,7 +40,7 @@ Rectangle {
             id: searchicon
 
             text: "\ue68f"
-            color: Color.icon
+            color: Color.icon_sink
             font.family: Fonts.system
             font.pointSize: 12
             font.weight: 700
@@ -101,6 +101,7 @@ Rectangle {
             focusReason: Qt.PopupFocusReason
 
             placeholderText: qsTr("Search")
+            placeholderTextColor: Color.text_sink
             font.family: Fonts.system
             font.pointSize: 12
             font.weight: 700
@@ -132,7 +133,7 @@ Rectangle {
                 font.family: Fonts.system
                 font.pointSize: 12
                 font.weight: 700
-                color: "gray"
+                color: Color.text_sink
 
                 Text {
 
@@ -148,7 +149,7 @@ Rectangle {
                     font.family: Fonts.system
                     font.pointSize: 10
                     font.weight: 700
-                    color: "gray"
+                    color: Color.text_sink
 
                     NumberAnimation {
                         id: openSuggest

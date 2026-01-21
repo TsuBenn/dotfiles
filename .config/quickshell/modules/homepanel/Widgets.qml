@@ -17,6 +17,9 @@ RowLayout {
 
     component Widgets: ClippingRectangle {
         radius: Config.radius
+        color: Color.primary
+        border.width: 2
+        border.color: Qt.lighter(Color.primary,1.4)
     }
 
     spacing: Config.gap
@@ -26,10 +29,10 @@ RowLayout {
         spacing: Config.gap
 
         //User Profile
-        Rectangle {
+        Widgets {
             implicitWidth: 210
             implicitHeight: 294
-            radius: Config.radius
+
             UserProfile {
                 anchors.centerIn: parent
             }
@@ -364,111 +367,79 @@ RowLayout {
             }
         }
 
-        //SHUTDOWN
-        PillButton {
-
+        component PowerButton: PillButton {
             box_height: 65
             box_width: 65
-
+            property color icon_color
             radius: Config.radius
+            bg_color: [Color.primary , icon_color, Qt.darker(icon_color, 1.8)]
+            fg_color: [Qt.darker(icon_color, 1.1), "white", "white"]
+            border_width: [2,2,0]
+            border_color: [Qt.lighter(Color.primary,1.3),Qt.darker(icon_color,1.5),Color.accent]
+        }
 
-            bg_color: ["white", "#ec2727", "#b61212"]
+        //SHUTDOWN
+        PowerButton {
 
-            fg_color: ["black", "white", "white"]
+            icon_color: "#ec2727"
 
             text: "\udb81\udc25"
-            font_size: 40
+            font_size: 36
 
             onReleased: power.exec(["bash", "-c", "systemctl poweroff"])
+
         }
 
         //HIBERNATE
-        PillButton {
+        PowerButton {
 
-            box_height: 65
-            box_width: 65
-
-            radius: Config.radius
-
-            bg_color: ["white", "#b72bee", "#8515b0"]
-
-            fg_color: ["black", "white", "white"]
+            icon_color: "#b72bee"
 
             text: "\udb82\udd01"
-            font_size: 40
+            font_size: 36
 
             onReleased: power.exec(["bash", "-c", "systemctl hibernate"])
         }
 
         //SLEEP
-        PillButton {
+        PowerButton {
 
-            box_height: 65
-            box_width: 65
-
-            radius: Config.radius
-
-            bg_color: ["white", "#1f62ee", "#0e48c1"]
-
-            fg_color: ["black", "white", "white"]
+            icon_color: "#1f62ee"
 
             text: "\udb82\udd04"
-            font_size: 36
+            font_size: 32
 
             onReleased: power.exec(["bash", "-c", "systemctl suspend"])
         }
 
         //REBOOT
-        PillButton {
-
-            box_height: 65
-            box_width: 65
-
-            radius: Config.radius
-
-            bg_color: ["white", "#eea022", "#c57d0a"]
-
-            fg_color: ["black", "white", "white"]
+        PowerButton {
+            icon_color: "#eea022"
 
             text: "\uead2"
-            font_size: 36
+            font_size: 32
 
             onReleased: power.exec(["bash", "-c", "systemctl reboot"])
         }
 
         //LOCK
-        PillButton {
+        PowerButton {
 
-            box_height: 65
-            box_width: 65
-
-            radius: Config.radius
-
-
-            bg_color: ["white", "#38de31", "#1db816"]
-
-            fg_color: ["black", "white", "white"]
+            icon_color: "#38de31"
 
             text: "\uf456"
-            font_size: 32
+            font_size: 30
 
             onReleased: power.exec(["bash", "-c", "notify-send 'LOCK'"])
         }
 
         //LOGOUT
-        PillButton {
+        PowerButton {
 
-            box_height: 65
-            box_width: 65
-
-            radius: Config.radius
-
-            bg_color: ["white", "#2fbcf0", "#1194c3"]
-
-            fg_color: ["black", "white", "white"]
+            icon_color: "#2fbcf0"
 
             text: "\udb81\uddfd"
-            font_size: 38
+            font_size: 32
 
             onReleased: power.exec(["bash", "-c", "loginctl kill-user $USER"])
         }
