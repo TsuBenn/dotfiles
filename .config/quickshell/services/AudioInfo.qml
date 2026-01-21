@@ -24,7 +24,11 @@ Singleton {
     }
 
     function setVolume(id: int, percentage: real) {
+
         setstatus.exec(["bash","-c","wpctl set-volume " + id + " " + percentage + "%"])
+
+        console.log(Math.min(Math.max(percentage, 0), 100))
+
         timer.restart()
         if (id == sinkDefault) volume = percentage
         if (id == sourceDefault) mic = percentage

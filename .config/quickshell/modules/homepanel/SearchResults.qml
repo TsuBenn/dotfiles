@@ -80,7 +80,7 @@ ClippingRectangle {
         id: runexec
     }
 
-    color: Color.primary
+    color: Color.bgSurface
 
     List {
 
@@ -113,7 +113,7 @@ ClippingRectangle {
             implicitHeight: 60
             implicitWidth: list.container_implicitWidth
 
-            color: selected ? Qt.darker(Color.accent,1.2) : "transparent"
+            color: selected ? Color.accentStrong : "transparent"
             radius: Config.radius
 
             MouseControl {
@@ -173,7 +173,7 @@ ClippingRectangle {
 
                 Text {
                     text: `${app.name}`
-                    color: app.selected ? Color.invert_text : Color.text
+                    color: app.selected ? Color.textPrimary : Color.textPrimary
                     font.family: Fonts.system
                     font.pointSize: 12
                     font.weight: app.selected ? 700 : 600

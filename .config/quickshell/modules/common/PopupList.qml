@@ -10,6 +10,7 @@ import Quickshell.Hyprland
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQml.Models
+import Qt5Compat.GraphicalEffects
 import QtQuick
 
 PillButton {
@@ -21,9 +22,10 @@ PillButton {
     font_weight                                  : 700
     box_width                                    : 122
     box_height                                   : 36
-    bg_color                                     : [Color.primary, Color.accent, Color.secondary]
-    fg_color                                     : [Color.accent, Color.invert_text, Color.accent]
-    border_width                                 : [2,0,2]
+    bg_color                                     : [Color.bgMuted, Color.bgMuted, Color.bgMuted]
+    fg_color                                     : [Color.textSecondary, Color.textSecondary, Color.textSecondary]
+    border_width                                 : [0,2,2]
+    border_color                                 : [Color.accentSoft,Color.accentSoft,Color.accentStrong]
 
     property int    list_spacing                 : 5
     property int    maxWidth                     : 400
@@ -33,20 +35,20 @@ PillButton {
     property int    selected_font_size           : 11
     property int    selected_font_weight         : 700
     property bool   selected_list                : true
-    property var    selected_color               : [Color.primary, Color.primary, Color.accent]
-    property var    selected_font_color          : [Color.accent, Color.accent, Color.invert_text]
-    property var    selected_border              : [2,2,0]
-    property var    selected_border_color        : [Color.accent,Color.accent,Color.accent]
+    property var    selected_color               : [Color.bgMuted, Color.bgMuted, Color.bgMuted]
+    property var    selected_font_color          : [Color.textPrimary, Color.textPrimary, Color.textPrimary]
+    property var    selected_border              : [2,2,2]
+    property var    selected_border_color        : [Color.accentSoft,Color.accentSoft,Color.accentStrong]
     property int    selected_padding             : 25
     property bool   selected_marquee             : false
     property bool   selected_centered            : false
 
     property real   list_container_implicitWidth : list.container_implicitWidth
     property color  list_container_color         : "transparent"
-    property color  list_bg_color                : Color.primary
+    property color  list_bg_color                : Color.bgSurface
 
-    property color  scroller_bg_color            : Color.secondary
-    property color  scroller_fg_color            : Color.icon_sink
+    property color  scroller_bg_color            : Color.bgMuted
+    property color  scroller_fg_color            : Color.textDisabled
     property bool   show_scroller                : true
     property bool   scroller_needed              : list.scroller_needed
     property bool   dropdown                     : false
@@ -291,6 +293,14 @@ PillButton {
 
                 items: button.list_items
 
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    radius: 10
+                    samples: 20
+                    color: Qt.rgba(0.0,0.0,0.0,0.6)
+                    transparentBorder: true
+                }
+
             }
 
             PillButton {
@@ -319,6 +329,7 @@ PillButton {
                 bg_color: button.selected_color
                 fg_color: button.selected_font_color
                 border_width: button.selected_border
+                border_color: button.selected_border_color
 
                 onReleased: {
                     if (!openList.running) closeList.start()
@@ -378,8 +389,8 @@ PillButton {
                 box_height  : button.box_height
                 fg_color    : button.fg_color
                 bg_color    : button.bg_color
-                border_width: button.selected_border
-                border_color: button.selected_border_color
+                border_width: button.border_width
+                border_color: button.border_color
 
                 spacing     : button.spacing
             }

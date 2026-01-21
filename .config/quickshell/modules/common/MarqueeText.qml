@@ -15,7 +15,7 @@ ClippingRectangle {
     required property int box_width
     property string text: "Scrolling Text"
     property string font_family: Fonts.system
-    property string font_color: "black"
+    property color font_color: "black"
     property int spacing: 0
     property int padding: 15
     property int font_weight: 500

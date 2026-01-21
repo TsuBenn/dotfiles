@@ -18,17 +18,17 @@ ClippingRectangle {
     property int    spacing
 
     property int    max_height              : implicitHeight
-    property string bg_color                : "#aaaaaa"
-    property string container_color         : "#aaaaaa"
+    property color  bg_color                : Color.bgBase
+    property color  container_color         : "transparent"
     property int    container_radius        : 18
 
-    property real    container_top_margin    : 0
-    property real    container_left_margin   : 0
-    property real    container_right_margin  : 0
-    property real    container_bottom_margin : 0
+    property real   container_top_margin    : 0
+    property real   container_left_margin   : 0
+    property real   container_right_margin  : 0
+    property real   container_bottom_margin : 0
 
-    property color  scroller_bg_color       : Color.secondary
-    property color  scroller_fg_color       : Color.icon_sink
+    property color  scroller_bg_color       : Color.bgMuted
+    property color  scroller_fg_color       : Color.textDisabled
     property int    scroller_width          : 5
     property int    scrolling_sen           : (content.implicitHeight/items_data.length)-(spacing/items_data.length)
     property bool   show_scroller           : true
@@ -135,9 +135,9 @@ ClippingRectangle {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-        anchors.topMargin: list.padding + list.container_radius/2 + list.container_top_margin/2
-        anchors.bottomMargin: list.padding + list.container_bottom_margin/2 + list.container_radius/2
-        anchors.rightMargin: list.padding
+        anchors.topMargin: list.padding + list.container_radius/2 + list.container_top_margin/2 - list.border.width
+        anchors.bottomMargin: list.padding + list.container_bottom_margin/2 + list.container_radius/2 - list.border.width
+        anchors.rightMargin: list.padding - list.border.width
 
         radius: implicitWidth/2
 
@@ -210,10 +210,10 @@ ClippingRectangle {
         id: container
 
         anchors.fill: parent
-        anchors.topMargin: list.padding + list.container_top_margin
-        anchors.leftMargin: list.padding + list.container_left_margin
-        anchors.rightMargin: list.padding + list.scroller_implicitWidth + list.container_right_margin
-        anchors.bottomMargin: list.padding + list.container_bottom_margin
+        anchors.topMargin: list.padding + list.container_top_margin - list.border.width
+        anchors.leftMargin: list.padding + list.container_left_margin - list.border.width
+        anchors.rightMargin: list.padding + list.scroller_implicitWidth + list.container_right_margin - list.border.width
+        anchors.bottomMargin: list.padding + list.container_bottom_margin - list.border.width
 
         Behavior on anchors.rightMargin {NumberAnimation {duration: 300; easing.type: Easing.OutCubic}}
 

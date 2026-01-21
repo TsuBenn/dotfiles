@@ -13,16 +13,11 @@ PanelWindow {
 
     anchors { top: true; left: true; bottom: true; right: true }
 
-    HyprlandFocusGrab {
-        active: root.visible
-        windows: [root]
-    }
-
     focusable: true
     visible: false
     exclusionMode: ExclusionMode.Auto
 
-    color: Qt.rgba(0, 0, 0, 0.5)
+    color: Qt.darker(Qt.rgba(Color.bgBase.r,Color.bgBase.g,Color.bgBase.b,0.2),2)
 
     //UI
     ColumnLayout {
@@ -96,36 +91,34 @@ PanelWindow {
         }
 
         Keys.onPressed: (events) => {
-            if (events.isAutoRepeat) return
             events.accepted = true
-            KeyHandlers.signalPressed(events.key, events.modifiers)
+            KeyHandlers.signalPressed(events.key, events.modifiers, events.isAutoRepeat)
         }
         Keys.onReleased: (events) => {
-            if (events.isAutoRepeat) return
             events.accepted = true
-            KeyHandlers.signalReleased(events.key, events.modifiers)
+            KeyHandlers.signalReleased(events.key, events.modifiers, events.isAutoRepeat)
         }
 
         Component.onCompleted: {
-            KeyHandlers.pressed.connect((key, modifiers)=> {
+            KeyHandlers.pressed.connect((key, mod, auto)=> {
                 if (key == Qt.Key_Escape) {
                     root.visible = false
                     //console.log(key)
+                } else if (key == Qt.Key_Up) {
+                    AudioInfo.setVolume(AudioInfo.sinkDefault, Math.min(Math.max(AudioInfo.volume+10, 0), 100))
+                } else if (key == Qt.Key_Down) {
+                    AudioInfo.setVolume(AudioInfo.sinkDefault, Math.min(Math.max(AudioInfo.volume-10, 0), 100))
                 }
             })
-            KeyHandlers.released.connect((key) => {
+            KeyHandlers.released.connect((key, mod, auto) => {
                 if (searchbar.typing) return
-                if (key == Qt.Key_Space) {
+                if (key == Qt.Key_Space && !auto) {
                     MediaPlayerInfo.playPauseMedia()
-                } else if (key == Qt.Key_Left) {
+                } else if (key == Qt.Key_Left && !auto) {
                     MediaPlayerInfo.prevMedia()
-                } else if (key == Qt.Key_Right) {
+                } else if (key == Qt.Key_Right && !auto) {
                     MediaPlayerInfo.nextMedia()
-                } else if (key == Qt.Key_Up) {
-                    AudioInfo.setVolume(AudioInfo.sinkDefault, AudioInfo.volume+5)
-                } else if (key == Qt.Key_Down) {
-                    AudioInfo.setVolume(AudioInfo.sinkDefault, AudioInfo.volume-5)
-                } else if (key == Qt.Key_AsciiTilde) {
+                } else if (key == Qt.Key_AsciiTilde && !auto) {
                     AudioInfo.muteVolume(AudioInfo.sinkDefault)
                 }
             })

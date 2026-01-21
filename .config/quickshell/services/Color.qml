@@ -6,26 +6,21 @@ import QtQuick
 Singleton {
     id: root
 
-    property string current: ""
+    property string current: "hutao"
 
-    //Neutral
-    property color text
-    property color text_sink
-    property color invert_text
-    property color icon
-    property color icon_sink
-    property color invert_icon
+    property color accentStrong
+    property color accentSoft
+    property color bgBase
+    property color bgSurface
+    property color bgMuted
+    property color textPrimary
+    property color textSecondary
+    property color textDisabled
 
-    //Primary
-    property color accent
-    property color primary
-    property color secondary
-
-    //Semantic
     property color info
-    property color success
     property color error
     property color warn
+    property color success
 
     function saturate(c, factor) {
         return Qt.hsla(
@@ -36,33 +31,38 @@ Singleton {
         )
     }
 
-    function blendHsl(c1, c2, t) {
-        return Qt.hsla(
-            c1.hslHue + (c2.hslHue - c1.hslHue) * t,
-            c1.hslSaturation + (c2.hslSaturation - c1.hslSaturation) * t,
-            c1.hslLightness + (c2.hslLightness - c1.hslLightness) * t,
+    function mix(c1, c2, t) {
+        if (t > 1) {t = 1}
+        return blend(c1, c2, t)
+    }
+
+    function blend(c1, c2, t) {
+        return Qt.rgba(
+            c1.r + (c2.r - c1.r) * t,
+            c1.g + (c2.g - c1.g) * t,
+            c1.b + (c2.b - c1.b) * t,
             c1.a + (c2.a - c1.a) * t
         )
     }
 
     function apply() {
         switch (current) {
-            default:
-            accent = "#26cae1"
-            primary = "#2d2d2e"
-            secondary = "#1c1c1d"
+            case "hutao": {
+                accentStrong  = "#8B1E2D"   // deep crimson
+                accentSoft    = "#E6A6B0"   // soft pink
+                bgBase        = "#151214"   // root background
+                bgSurface     = Qt.darker("#1D191C",1.2)   // cards / panels
+                bgMuted       = "#2A2428"   // inactive / disabled
+                textPrimary   = "#EDE6E8"
+                textSecondary = "#B8AEB2"
+                textDisabled  = "#7A6F74"
 
-            text = "white"
-            text_sink = "#8c8c92"
-            invert_text = secondary
-            icon = text
-            icon_sink = text_sink
-            invert_icon = invert_text
+                info          = "#2fbcf0"
+                error         = "#ec2727"
+                warn          = "#eea022"
+                success       = "#38de31"
+            }
 
-            info = "#2fbcf0"
-            success = "#38de31"
-            error = "#ec2727"
-            warn = "#eea022"
         }
     }
 
