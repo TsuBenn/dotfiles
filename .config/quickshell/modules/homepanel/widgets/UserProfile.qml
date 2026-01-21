@@ -8,6 +8,7 @@ import QtQuick.Layouts
 import QtQuick
 
 ColumnLayout {
+
     id: userprofile
 
     property string font: Fonts.zzz_vn_font

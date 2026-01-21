@@ -82,6 +82,10 @@ ColumnLayout {
                 box_height: control.text_size*2
                 box_width: control.text_size*2
                 onPressed: control.toggleMute()
+
+                bg_color: ["transparent", Color.secondary, Color.secondary]
+                fg_color: [Color.text, Color.text, Color.text]
+                border_width: [0,0,2]
             }
         }
 
@@ -179,15 +183,15 @@ ColumnLayout {
         property int    maxHeight                 : 102
         property int    box_width                 : 90
         property int    box_height                : 36
-        property string list_height               : "white"
-        property string list_selected             : "white"
         property string list_font                 : Fonts.system
         property int    list_font_weight          : 600
         property int    list_font_weight_selected : 700
-        property var    list_color                : ["transparent", "light gray", "gray"]
-        property var    list_font_color           : ["black", "black", "white"]
-        property var    list_color_selected       : ["#888888", "light gray", "gray"]
-        property var    list_font_color_selected  : ["black", "black", "white"]
+        property var    list_color                : ["transparent", Color.secondary, Color.secondary]
+        property var    list_font_color           : [Color.text, Color.text, Color.text]
+        property var    list_color_selected       : [Qt.darker(Color.accent,1.2), Qt.darker(Color.accent,1.2), Color.primary]
+        property var    list_font_color_selected  : [Color.invert_text, Color.invert_text, Color.text]
+        property var    list_border               : [0,0,2]
+        property var    list_border_selected      : [0,0,2]
         property int    list_font_size            : 11
         property int    list_padding              : 10
 
@@ -225,6 +229,7 @@ ColumnLayout {
                 font_weight: id == devicelist.defaultID ? device_selector.list_font_weight_selected : device_selector.list_font_weight
                 bg_color: id == devicelist.defaultID ? device_selector.list_color_selected : device_selector.list_color
                 fg_color: id == devicelist.defaultID ? device_selector.list_font_color_selected : device_selector.list_font_color
+                border_width: id == devicelist.defaultID ? device_selector.list_border_selected : device_selector.list_border
                 centered: false
                 radius: devicelist.radius-devicelist.list_spacing
 

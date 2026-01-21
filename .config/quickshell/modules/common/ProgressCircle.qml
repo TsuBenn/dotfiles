@@ -13,8 +13,8 @@ ColumnLayout {
 
     id: root
 
-    property var    bg_color      : "dark gray"
-    property var    fg_color      : "light gray"
+    property color  bg_color      : Color.secondary
+    property color  fg_color      : Color.accent
     property int    thickness     : 5
     property int    radius        : 25
     property real   percentage    : SystemInfo.cpuusage
@@ -28,7 +28,7 @@ ColumnLayout {
     property int    icon_size     : 20
     property int    icon_weight   : 600
     property bool   icon_offset   : true
-    property string icon_color    : "black"
+    property color  icon_color    : Color.accent
 
     property string label         : "Text"
     property int    label_height  : 0
@@ -38,7 +38,7 @@ ColumnLayout {
     property int    font_weight   : 600
     property int    font_size     : 13
     property int    font_spacing  : 0
-    property int    font_color    : 0
+    property color  font_color    : Color.text
 
     property real desiredWidth: container.implicitWidth
     property real desiredHeight: container.implicitHeight
@@ -69,7 +69,7 @@ ColumnLayout {
     component Circle: Shape {
 
         id: circle
-        property string color: "black"
+        property color color: "black"
         property real percentage: 1
         property real thickness: root.thickness
 

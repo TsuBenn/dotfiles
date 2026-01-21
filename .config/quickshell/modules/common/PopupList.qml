@@ -21,7 +21,9 @@ PillButton {
     font_weight                                  : 700
     box_width                                    : 122
     box_height                                   : 36
-    bg_color                                     : ["light gray", "light gray", "black"]
+    bg_color                                     : [Color.primary, Color.accent, Color.secondary]
+    fg_color                                     : [Color.accent, Color.invert_text, Color.accent]
+    border_width                                 : [2,0,2]
 
     property int    list_spacing                 : 5
     property int    maxWidth                     : 400
@@ -31,18 +33,20 @@ PillButton {
     property int    selected_font_size           : 11
     property int    selected_font_weight         : 700
     property bool   selected_list                : true
-    property var    selected_color               : ["light gray", "light gray", "black"]
-    property var    selected_font_color          : ["black", "black", "white"]
+    property var    selected_color               : [Color.primary, Color.primary, Color.accent]
+    property var    selected_font_color          : [Color.accent, Color.accent, Color.invert_text]
+    property var    selected_border              : [2,2,0]
+    property var    selected_border_color        : [Color.accent,Color.accent,Color.accent]
     property int    selected_padding             : 25
     property bool   selected_marquee             : false
     property bool   selected_centered            : false
 
     property real   list_container_implicitWidth : list.container_implicitWidth
-    property string list_container_color         : "#aaaaaa"
-    property string list_bg_color                : "#aaaaaa"
+    property color  list_container_color         : "transparent"
+    property color  list_bg_color                : Color.primary
 
-    property string scroller_bg_color            : "#555555"
-    property string scroller_fg_color            : "gray"
+    property color  scroller_bg_color            : Color.secondary
+    property color  scroller_fg_color            : Color.icon_sink
     property bool   show_scroller                : true
     property bool   scroller_needed              : list.scroller_needed
     property bool   dropdown                     : false
@@ -71,13 +75,13 @@ PillButton {
 
         y: {
             if (!button.dropdown) {
-                return parent.y - implicitHeight + button.implicitHeight
+                return parent.y - implicitHeight + button.implicitHeight - button.border.width*2
             } else {
-                return parent.y
+                return parent.y - button.border.width*2
             }
         }
 
-        x: parent.x - implicitWidth/2 + button.implicitWidth/2
+        x: parent.x - implicitWidth/2 + button.implicitWidth/2 - button.border.width*2
 
         focus: true
 
@@ -314,6 +318,7 @@ PillButton {
 
                 bg_color: button.selected_color
                 fg_color: button.selected_font_color
+                border_width: button.selected_border
 
                 onReleased: {
                     if (!openList.running) closeList.start()
@@ -345,6 +350,8 @@ PillButton {
 
                 bg_color: button.selected_color
                 fg_color: button.selected_font_color
+                border_width: button.selected_border
+                border_color: button.selected_border_color
 
                 onReleased: {
                     if (!openList.running) closeList.start()
@@ -369,7 +376,11 @@ PillButton {
                 font_size   : button.font_size
                 box_width   : button.box_width
                 box_height  : button.box_height
+                fg_color    : button.fg_color
                 bg_color    : button.bg_color
+                border_width: button.selected_border
+                border_color: button.selected_border_color
+
                 spacing     : button.spacing
             }
 

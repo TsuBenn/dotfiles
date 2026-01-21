@@ -14,15 +14,17 @@ ClippingRectangle {
     property real box_width          : 300
     property real box_height         : 28
     property int  padding            : 0
-    property var  bg_color           : "gray"
-    property var  bg_hover           : "gray"
-    property var  fg_color           : "light gray"
-    property var  fg_hover           : "light gray"
+    property var  bg_color           : Color.secondary
+    property var  bg_hover           : Color.secondary
+    property var  fg_color           : Color.accent
+    property var  fg_hover           : Color.accent
     property real percentage         : preferedPercentage               // Only percentage value (Do math or whatever)
 
     property real preferedPercentage : SystemInfo.cpuusage
 
     property bool interactive        : false
+    property bool containsMouse      : mouse.containsMouse
+    property bool containsPress      : mouse.containsPress
 
     signal pressed()
     signal released()
@@ -49,9 +51,17 @@ ClippingRectangle {
     implicitWidth: root.box_width
     implicitHeight: root.box_height
     radius: root.box_height/2
-    color: root.bg_color
+    color: {
+        if (mouse.containsMouse) {
+            return root.bg_hover
+        } else {
+            return root.bg_color
+        }
+    }
 
     MouseControl {
+
+        id: mouse
 
         visible: root.interactive
 
@@ -110,8 +120,16 @@ ClippingRectangle {
         implicitWidth: parent.width*root.percentage/100
         Behavior on implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
-        color: root.fg_color
         topRightRadius: root.box_height/2
+
+        color: {
+            if (mouse.containsMouse) {
+                return root.fg_hover
+            } else {
+                return root.fg_color
+            }
+        }
+
         bottomRightRadius: root.box_height/2
     }
 

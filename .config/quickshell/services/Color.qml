@@ -27,24 +27,42 @@ Singleton {
     property color error
     property color warn
 
+    function saturate(c, factor) {
+        return Qt.hsla(
+            c.hslHue,
+            Math.min(c.hslSaturation * factor, 1.0),
+            c.hslLightness,
+            c.a
+        )
+    }
+
+    function blendHsl(c1, c2, t) {
+        return Qt.hsla(
+            c1.hslHue + (c2.hslHue - c1.hslHue) * t,
+            c1.hslSaturation + (c2.hslSaturation - c1.hslSaturation) * t,
+            c1.hslLightness + (c2.hslLightness - c1.hslLightness) * t,
+            c1.a + (c2.a - c1.a) * t
+        )
+    }
+
     function apply() {
         switch (current) {
             default:
-                text = "white"
-                text_sink = "#8c8c92"
-                invert_text = secondary
-                icon = text
-                icon_sink = text_sink
-                invert_icon = invert_text
+            accent = "#26cae1"
+            primary = "#2d2d2e"
+            secondary = "#1c1c1d"
 
-                accent = "#26cae1"
-                primary = "#2d2d2e"
-                secondary = "#212124"
+            text = "white"
+            text_sink = "#8c8c92"
+            invert_text = secondary
+            icon = text
+            icon_sink = text_sink
+            invert_icon = invert_text
 
-                info = "#497aff"
-                success = "#11d70e"
-                error = "#ff3928"
-                warn = "#e8f526"
+            info = "#2fbcf0"
+            success = "#38de31"
+            error = "#ec2727"
+            warn = "#eea022"
         }
     }
 
