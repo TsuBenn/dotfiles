@@ -1,3 +1,4 @@
+import qs.services
 import qs.assets
 import qs.modules.common
 
@@ -19,7 +20,9 @@ Rectangle {
     implicitHeight: 40
     radius: implicitHeight/2
 
-    border.color: "gray"
+    color: Color.primary
+
+    border.color: Color.accent
     border.width: 3 * (searchtext.text.length >= 1)
     Behavior on border.width {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
@@ -37,6 +40,7 @@ Rectangle {
             id: searchicon
 
             text: "\ue68f"
+            color: Color.icon
             font.family: Fonts.system
             font.pointSize: 12
             font.weight: 700
@@ -54,7 +58,7 @@ Rectangle {
 
             onTextChanged: {
                 if (text == "") {
-                    suggestion.opacity = 0
+                    closeSuggest.start()
                     newsearch = true
                     return
                 }
@@ -77,10 +81,13 @@ Rectangle {
                 }
 
                 if (text.length < 2) {
+                    openSuggest.stop()
+                    closeSuggest.stop()
+                    suggestion.opacity = 0
                     suggest.restart()
                     return
                 }
-                suggestion.opacity = 0
+                closeSuggest.start()
                 updatequerycall.restart()
                 root.textChanged()
             }
@@ -98,7 +105,7 @@ Rectangle {
             font.pointSize: 12
             font.weight: 700
 
-            color: text.length ? "black" : "gray"
+            color: Color.text
 
             Text {
 
@@ -133,8 +140,6 @@ Rectangle {
 
                     opacity: 0
 
-                    Behavior on opacity {NumberAnimation {duration: 1000; easing.type: Easing.OutCubic}}
-
                     anchors.left: parent.right
                     anchors.leftMargin: 10
                     anchors.verticalCenter: parent.verticalCenter
@@ -144,12 +149,31 @@ Rectangle {
                     font.pointSize: 10
                     font.weight: 700
                     color: "gray"
+
+                    NumberAnimation {
+                        id: openSuggest
+                        target: suggestion
+                        property: "opacity"
+                        duration: 500
+                        to: 1
+                        easing.type: Easing.OutCubic
+                    }
+
+                    NumberAnimation {
+                        id: closeSuggest
+                        target: suggestion
+                        property: "opacity"
+                        duration: 500
+                        to: 0
+                        easing.type: Easing.OutCubic
+                    }
+
                 }
 
                 Timer {
                     id: suggest
-                    interval: 1000
-                    onTriggered: if (searchtext.text.length == 1) suggestion.opacity = 1
+                    interval: 1500
+                    onTriggered: if (searchtext.text.length == 1) openSuggest.start()
                 }
 
             }
