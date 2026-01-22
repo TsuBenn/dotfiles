@@ -17,7 +17,7 @@ ColumnLayout {
 
     property real artWidth: 0
     property real artHeight: mediaInfo.implicitHeight
-    property real artAvailable: art.source !== ""
+    property real artAvailable: art.source != ""
 
     property bool artHovered: false
 
@@ -492,7 +492,7 @@ ColumnLayout {
             font_size: 12
             font_weight: selected ? 800 : 700
             box_width: sourcesList.list_container_implicitWidth
-            fg_color: selected ? [Color.bgBase, Color.bgBase, Color.textPrimary] :[Color.textPrimary, Color.textPrimary, Color.textPrimary] 
+            fg_color: selected ? [Color.textPrimary, Color.textPrimary, Color.textPrimary] :[Color.textPrimary, Color.textPrimary, Color.textPrimary] 
             bg_color: selected ? [Qt.darker(Color.accentStrong,1.2),Qt.darker(Color.accentStrong,1.2),Color.bgSurface] : ["transparent",Color.bgBase,Color.bgSurface]
             border_width: [0,0,2]
 

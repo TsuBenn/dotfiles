@@ -27,7 +27,7 @@ RowLayout {
         radius: Config.radius
         color: Color.bgSurface
         border.width: 2
-        border.color: Qt.lighter(Color.bgSurface,1.5)
+        border.color: Color.blend(Color.accentStrong,Color.bgSurface,0.75)
 
     }
 
@@ -39,7 +39,7 @@ RowLayout {
         bg_color: [Color.bgSurface , Color.bgSurface, icon_color]
         fg_color: [Color.accentStrong, icon_color, Color.bgSurface]
         border_width: [2,3,0]
-        border_color: [Qt.lighter(Color.bgSurface,1.5),icon_color,Color.accentStrong]
+        border_color: [Color.blend(Color.accentStrong,Color.bgSurface,0.75),icon_color,Color.accentStrong]
     }
 
     spacing: Config.gap

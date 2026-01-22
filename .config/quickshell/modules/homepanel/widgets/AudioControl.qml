@@ -189,7 +189,7 @@ ColumnLayout {
         property var    list_color                : ["transparent", Color.bgBase, Color.bgSurface]
         property var    list_font_color           : [Color.textPrimary, Color.textPrimary, Color.textPrimary]
         property var    list_color_selected       : [Color.accentStrong, Color.accentStrong, Color.bgSurface]
-        property var    list_font_color_selected  : [Color.bgBase, Color.bgBase, Color.textPrimary]
+        property var    list_font_color_selected  : [Color.textPrimary, Color.textPrimary, Color.textPrimary]
         property var    list_border               : [0,0,2]
         property var    list_border_selected      : [0,0,2]
         property int    list_font_size            : 11

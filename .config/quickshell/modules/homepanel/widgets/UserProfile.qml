@@ -17,7 +17,7 @@ ColumnLayout {
 
     ClippingRectangle {
 
-        implicitWidth: 170
+        implicitWidth: 168
         implicitHeight: implicitWidth
 
         radius: implicitWidth/2

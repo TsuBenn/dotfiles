@@ -36,7 +36,7 @@ Singleton {
         return blend(c1, c2, t)
     }
 
-    function blend(c1, c2, t) {
+    function blend(c1: color, c2: color, t: real): color {
         return Qt.rgba(
             c1.r + (c2.r - c1.r) * t,
             c1.g + (c2.g - c1.g) * t,
@@ -48,8 +48,8 @@ Singleton {
     function apply() {
         switch (current) {
             case "hutao": {
-                accentStrong  = "#8B1E2D"
-                accentSoft    = "#E6A6B0"   
+                accentStrong  = "#a32435"
+                accentSoft    = "#f59b75"   
                 bgBase        = "#151214"   
                 bgSurface     = "#1D191C"   
                 bgMuted       = "#2A2428"   
