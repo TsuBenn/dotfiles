@@ -102,20 +102,31 @@ ClippingRectangle {
         items: Rectangle {
 
             Component.onCompleted: {
-                spawn.start()
+                spawn.restart()
             }
 
             SequentialAnimation {
                 id: spawn
                 PauseAnimation {
-                    duration: app.index * 500
+                    duration: app.index * 50
                 }
-                NumberAnimation {
-                    property: "opacity"
-                    duration: 500
-                    from: 0
-                    to: 1
-                    easing.type: Easing.OutCubic
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: app
+                        property: "opacity"
+                        duration: 300
+                        from: 0
+                        to: 1
+                        easing.type: Easing.OutCubic
+                    }
+                    NumberAnimation {
+                        target: app
+                        property: "Layout.leftMargin"
+                        duration: 300
+                        from: 100
+                        to: 0
+                        easing.type: Easing.OutCubic
+                    }
                 }
             }
 
@@ -127,6 +138,11 @@ ClippingRectangle {
             required property string icon
 
             property bool selected: root.select == index
+
+            opacity: 0
+            x: 0
+
+            Behavior on x {NumberAnimation {duration: 400; easing.type: Easing.OutCubic}}
 
             implicitHeight: 60
             implicitWidth: list.container_implicitWidth
@@ -175,6 +191,8 @@ ClippingRectangle {
                         anchors.fill: parent
 
                         source: app.icon ? "image://icon/" + app.icon : "image://icon/kitty"
+                        cache: true
+                        asynchronous: true
 
                     }
 

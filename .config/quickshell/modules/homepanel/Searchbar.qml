@@ -22,7 +22,7 @@ Rectangle {
 
     color: Color.bgSurface
 
-    border.color: searchtext.text ? Color.accentStrong : Qt.lighter(Color.bgSurface,1.4)
+    border.color: searchtext.text ? Color.accentStrong : Color.blend(Color.accentStrong,Color.bgSurface,0.75)
     border.width: searchtext.text ? 3 : 2
     Behavior on border.color {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
     Behavior on border.width {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
