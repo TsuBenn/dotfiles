@@ -17,7 +17,7 @@ PanelWindow {
     visible: false
     exclusionMode: ExclusionMode.Auto
 
-    color: Qt.darker(Qt.rgba(Color.bgBase.r,Color.bgBase.g,Color.bgBase.b,0.2),2)
+    color: Qt.rgba(0.0,0.0,0.0,0.4)
 
     //UI
     ColumnLayout {

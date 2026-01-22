@@ -15,9 +15,9 @@ Rectangle {
 
     property string temp_font: Fonts.system
     property string condition_font: Fonts.zzz_vn_font
-    property int temp_size: 52
+    property int temp_size: 50
     property int temp_unit_size: 15
-    property int icon_size: 62
+    property int icon_size: 58
     property int condition_size: 13
 
     property bool toggleinfo: false
@@ -73,7 +73,6 @@ Rectangle {
 
         id: text
 
-
         spacing: -8
 
         anchors.centerIn: parent
@@ -81,10 +80,9 @@ Rectangle {
         RowLayout {
 
             Layout.alignment: Qt.AlignCenter
-            Layout.leftMargin: -4
-            Layout.topMargin: -6
+            Layout.leftMargin: -17
 
-            spacing: -3
+            spacing: 2
 
             Text {
 
@@ -95,7 +93,7 @@ Rectangle {
                 font.pointSize: root.temp_size
                 font.weight: 700
                 font.letterSpacing: -5
-                color: Color.accentStrong
+                color: Color.textPrimary
 
 
             }
@@ -113,7 +111,7 @@ Rectangle {
                 font.family: root.temp_font
                 font.pointSize: root.temp_unit_size
                 font.weight: 800
-                color: Color.accentStrong
+                color: Color.textPrimary
 
             }
 
@@ -121,7 +119,7 @@ Rectangle {
 
                 Layout.leftMargin: 15
 
-                implicitHeight: 60
+                implicitHeight: 40
                 implicitWidth: implicitHeight
 
                 Text {

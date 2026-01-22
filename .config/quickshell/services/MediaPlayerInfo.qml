@@ -47,6 +47,7 @@ Singleton {
     property bool   canLoop       : activePlayer?.loopSupported ?? false
     property bool   canShuffle    : activePlayer?.shuffleSupported ?? false
     property bool   canVolume     : activePlayer?.volumeSupported ?? false
+    property bool   canPos        : activePlayer?.positionSupported ?? false
 
     signal adjusted()
 

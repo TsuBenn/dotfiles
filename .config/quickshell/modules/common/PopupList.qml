@@ -56,6 +56,8 @@ PillButton {
     property int    animation_speed              : 5
     property int    animation_duration           : 1000/animation_speed
 
+    clickable: items.length > 0
+
     property var items: AudioInfo.sinks
 
     property Component list_items
@@ -297,7 +299,7 @@ PillButton {
                 layer.effect: DropShadow {
                     radius: 10
                     samples: 20
-                    color: Qt.rgba(0.0,0.0,0.0,0.6)
+                    color: Qt.rgba(0.0,0.0,0.0,0.5)
                     transparentBorder: true
                 }
 
@@ -389,8 +391,8 @@ PillButton {
                 box_height  : button.box_height
                 fg_color    : button.fg_color
                 bg_color    : button.bg_color
-                border_width: button.border_width
-                border_color: button.border_color
+                border.width: button.border_width[1]
+                border.color: button.border_color[1]
 
                 spacing     : button.spacing
             }

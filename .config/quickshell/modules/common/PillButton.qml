@@ -52,6 +52,9 @@ ClippingRectangle {
         }
     }
 
+    Behavior on border.width {NumberAnimation {duration: 100; easing.type: Easing.OutCubic}}
+    Behavior on color {ColorAnimation {duration: 100; easing.type: Easing.OutCubic}}
+
     signal pressed()
     signal released()
 
@@ -114,6 +117,8 @@ ClippingRectangle {
                 return button.fg_color[0]
             }
         }
+
+        Behavior on color {ColorAnimation {duration: 100; easing.type: Easing.OutCubic}}
 
         opacity: button.font_opacity
 

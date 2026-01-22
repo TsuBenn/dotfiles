@@ -17,7 +17,7 @@ RowLayout {
 
     layer.enabled: true
     layer.effect: DropShadow {
-        radius: 15
+        radius: 10
         samples: 20
         color: Qt.rgba(0.0,0.0,0.0,0.3)
         transparentBorder: true
@@ -139,7 +139,7 @@ RowLayout {
                             font.family: Fonts.system
                             font.pointSize: 13
                             font.weight: 700
-                            color: Color.accentStrong
+                            color: Color.textDisabled
                         }
 
                         Image {
