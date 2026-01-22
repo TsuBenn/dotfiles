@@ -39,7 +39,7 @@ RowLayout {
         bg_color: [Color.bgSurface , Color.bgSurface, icon_color]
         fg_color: [Color.accentStrong, icon_color, Color.bgSurface]
         border_width: [2,3,0]
-        border_color: [Qt.lighter(Color.bgSurface,1.3),icon_color,Color.accentStrong]
+        border_color: [Qt.lighter(Color.bgSurface,1.5),icon_color,Color.accentStrong]
     }
 
     spacing: Config.gap
@@ -139,7 +139,7 @@ RowLayout {
                             font.family: Fonts.system
                             font.pointSize: 13
                             font.weight: 700
-                            color: "gray"
+                            color: Color.accentStrong
                         }
 
                         Image {

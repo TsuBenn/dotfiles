@@ -17,7 +17,7 @@ ColumnLayout {
 
     property real artWidth: 0
     property real artHeight: mediaInfo.implicitHeight
-    property real artAvailable: art.source != ""
+    property real artAvailable: art.source !== ""
 
     property bool artHovered: false
 
@@ -90,7 +90,7 @@ ColumnLayout {
 
                     id: artFrame
 
-                    implicitHeight: (art.sourceSize.height/art.sourceSize.width)*parent.implicitHeight
+                    implicitHeight: art.source == "" ? 0 : (art.sourceSize.height/art.sourceSize.width)*parent.implicitHeight
                     implicitWidth: parent.implicitWidth
                     color: "transparent"
                     radius: 14
@@ -99,7 +99,7 @@ ColumnLayout {
 
                         id: art
 
-                        source: MediaPlayerInfo.artUrl ?? ""
+                        source: MediaPlayerInfo.artUrl
                         cache: true
 
                         fillMode: Image.PreserveAspectCrop

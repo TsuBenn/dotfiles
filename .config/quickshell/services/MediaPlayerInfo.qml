@@ -112,6 +112,7 @@ Singleton {
     }
 
     function test() {
+        //console.log(root.artUrl == "" ? "nope" : root.artUrl)
     }
 
     Timer {
