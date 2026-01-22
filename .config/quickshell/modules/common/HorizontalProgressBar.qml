@@ -14,10 +14,10 @@ ClippingRectangle {
     property real box_width          : 300
     property real box_height         : 28
     property int  padding            : 0
-    property var  bg_color           : Color.secondary
-    property var  bg_hover           : Color.secondary
-    property var  fg_color           : Color.accent
-    property var  fg_hover           : Color.accent
+    property var  bg_color           : Color.bgMuted
+    property var  bg_hover           : Color.bgMuted
+    property var  fg_color           : Color.accentStrong
+    property var  fg_hover           : Color.accentStrong
     property real percentage         : preferedPercentage               // Only percentage value (Do math or whatever)
 
     property real preferedPercentage : SystemInfo.cpuusage
