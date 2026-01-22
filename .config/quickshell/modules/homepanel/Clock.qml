@@ -128,7 +128,7 @@ Item {
                 font.pointSize: 11
                 layer.enabled: true
                 layer.effect: ColorOverlay {
-                    color: "#f1ff75"
+                    color: Color.textPrimary
                 }
             }
 

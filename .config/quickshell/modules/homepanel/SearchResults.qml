@@ -101,6 +101,24 @@ ClippingRectangle {
         items_data: root.results
         items: Rectangle {
 
+            Component.onCompleted: {
+                spawn.start()
+            }
+
+            SequentialAnimation {
+                id: spawn
+                PauseAnimation {
+                    duration: app.index * 500
+                }
+                NumberAnimation {
+                    property: "opacity"
+                    duration: 500
+                    from: 0
+                    to: 1
+                    easing.type: Easing.OutCubic
+                }
+            }
+
             id: app
 
             required property int index

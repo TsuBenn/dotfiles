@@ -241,12 +241,12 @@ ColumnLayout {
 
             preferedPercentage: (MediaPlayerInfo.pos/MediaPlayerInfo.length)*100
 
-            interactive: true
+            interactive: MediaPlayerInfo.canPos
 
             bg_color: Color.bgMuted
             bg_hover: Color.bgMuted
-            fg_color: knob.opacity ? Color.accentStrongStrong : Color.textSecondary
-            fg_hover: Color.accentStrongStrong
+            fg_color: knob.opacity ? Color.accentStrong : Color.textSecondary
+            fg_hover: Color.accentStrong
 
             onAdjusted: {
                 MediaPlayerInfo.setPos((percentage/100)*MediaPlayerInfo.length)

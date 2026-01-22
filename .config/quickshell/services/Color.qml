@@ -48,11 +48,11 @@ Singleton {
     function apply() {
         switch (current) {
             case "hutao": {
-                accentStrong  = "#8B1E2D"   // deep crimson
-                accentSoft    = "#E6A6B0"   // soft pink
-                bgBase        = "#151214"   // root background
-                bgSurface     = Qt.darker("#1D191C",1.2)   // cards / panels
-                bgMuted       = "#2A2428"   // inactive / disabled
+                accentStrong  = "#8B1E2D"
+                accentSoft    = "#E6A6B0"   
+                bgBase        = "#151214"   
+                bgSurface     = "#1D191C"   
+                bgMuted       = "#2A2428"   
                 textPrimary   = "#EDE6E8"
                 textSecondary = "#B8AEB2"
                 textDisabled  = "#7A6F74"

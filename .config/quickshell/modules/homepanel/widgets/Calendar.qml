@@ -33,7 +33,7 @@ ColumnLayout {
         //Layout.alignment: Qt.AlignCenter
 
         text: DateTime.month_long
-        color: Color.textPrimary
+        color: Color.accentStrong
         font.family: Fonts.zzz_vn_font
         font.pointSize: 20
         font.weight: 800
