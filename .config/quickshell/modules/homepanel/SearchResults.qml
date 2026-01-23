@@ -102,99 +102,148 @@ ClippingRectangle {
 
         items_data: root.results
 
-        items: Rectangle {
+        items_add: Transition {
+            NumberAnimation {
+                property: "x"
+                duration: 200
+                from: 100
+                to: 0
+                easing.type: Easing.OutCubic
+            }
+            NumberAnimation {
+                property: "opacity"
+                duration: 200
+                from: 0
+                to: 1
+                easing.type: Easing.OutCubic
+            }
+        }
 
-            id: app
+        items_remove: Transition {
+            NumberAnimation {
+                property: "x"
+                duration: 200
+                from: 0
+                to: 100
+                easing.type: Easing.OutCubic
+            }
+            NumberAnimation {
+                property: "opacity"
+                duration: 200
+                from: 1
+                to: 0
+                easing.type: Easing.OutCubic
+            }
+        } 
 
+        items: Item {
+
+            id: results_items
+
+            implicitWidth: list.container_implicitWidth
+            implicitHeight: 60
             required property int index
             required property string name
             required property string exec
             required property string icon
-
-            property bool selected: root.select == index
-
-            Layout.leftMargin: 100
-
-            implicitHeight: 60
-            implicitWidth: list.container_implicitWidth
-
-            color: selected ? Color.accentStrong : "transparent"
-
-            radius: Config.radius
-
-            MouseControl {
-
+            Loader {
+                active: list.visible
                 anchors.fill: parent
+                sourceComponent: Rectangle {
 
-                hoverEnabled: true
+                    id: app
 
-                onEntered: {
-                    if (!containsMouse) return
-                    root.select = app.index
-                }
+                    property int index: results_items.index
+                    property string name: results_items.name
+                    property string exec: results_items.exec
+                    property string icon: results_items.icon
 
-                onReleased: {
-                    if (!containsMouse) return
-                    runexec.command = ["bash", "-c", app.exec]
-                    runexec.startDetached()
-                    root.enterPressed()
-                }
-            }
+                    property bool selected: root.select == index
 
-            RowLayout {
+                    Layout.leftMargin: 100
 
-                anchors.verticalCenter: parent.verticalCenter
+                    implicitHeight: 60
+                    implicitWidth: list.container_implicitWidth
 
-                spacing: 20
+                    color: selected ? Color.accentStrong : "transparent"
 
-                ClippingRectangle {
+                    radius: Config.radius
 
-                    Layout.leftMargin: 12
-
-                    implicitWidth: 38
-                    implicitHeight: implicitWidth
-
-                    color: "transparent"
-
-                    radius: list.container_radius - list.padding
-
-                    Image {
+                    MouseControl {
 
                         anchors.fill: parent
 
-                        source: app.icon ? "image://icon/" + app.icon : "image://icon/kitty"
-                        cache: true
-                        asynchronous: true
+                        hoverEnabled: true
+
+                        onEntered: {
+                            if (!containsMouse) return
+                            root.select = app.index
+                        }
+
+                        onReleased: {
+                            if (!containsMouse) return
+                            runexec.command = ["bash", "-c", app.exec]
+                            runexec.startDetached()
+                            root.enterPressed()
+                        }
+                    }
+
+                    RowLayout {
+
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        spacing: 20
+
+                        ClippingRectangle {
+
+                            Layout.leftMargin: 12
+
+                            implicitWidth: 38
+                            implicitHeight: implicitWidth
+
+                            color: "transparent"
+
+                            radius: list.container_radius - list.padding
+
+                            Image {
+
+                                anchors.fill: parent
+
+                                source: app.icon ? "image://icon/" + app.icon : "image://icon/kitty"
+                                cache: true
+                                asynchronous: true
+
+                            }
+
+                            layer.enabled: true
+                            layer.effect: DropShadow {
+                                radius: 10
+                                samples: 10
+                                horizontalOffset: 0
+                                verticalOffset: 0
+                                color: Qt.rgba(0.0,0.0,0.0,0.2)
+                                transparentBorder: true
+                            }
+                        }
+
+                        Text {
+
+                            id: app_name
+
+                            text: `${app.name}`
+                            color: app.selected ? Color.textPrimary : Color.textPrimary
+                            font.family: Fonts.system
+                            font.pointSize: 12
+                            font.weight: app.selected ? 700 : 600
+
+                        }
 
                     }
 
-                    layer.enabled: true
-                    layer.effect: DropShadow {
-                        radius: 10
-                        samples: 10
-                        horizontalOffset: 0
-                        verticalOffset: 0
-                        color: Qt.rgba(0.0,0.0,0.0,0.2)
-                        transparentBorder: true
-                    }
-                }
 
-                Text {
-
-                    id: app_name
-
-                    text: `${app.name}`
-                    color: app.selected ? Color.textPrimary : Color.textPrimary
-                    font.family: Fonts.system
-                    font.pointSize: 12
-                    font.weight: app.selected ? 700 : 600
 
                 }
-
             }
-
-
-
         }
     }
 }

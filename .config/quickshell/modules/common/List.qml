@@ -37,6 +37,8 @@ ClippingRectangle {
     property var    items_data              : AudioInfo.sinks
 
     property Component items
+    property Transition items_add
+    property Transition items_remove
 
     clip: true
 
@@ -252,6 +254,8 @@ ClippingRectangle {
 
             delegate: list.items
 
+            add: list.items_add
+            remove: list.items_remove
         }
     }
 
