@@ -216,28 +216,41 @@ ColumnLayout {
             animation_speed: 5
             show_scroller: true
 
-            list_items: PillButton {
+            list_items: Item {
+                id: device_items 
+                implicitWidth: devicelist.list_container_implicitWidth
+                implicitHeight: devicelist.box_height
                 required property int id
                 required property string name
 
-                text: name
-                implicitWidth: devicelist.list_container_implicitWidth
-                implicitHeight: devicelist.box_height
-                text_padding: device_selector.list_padding
-                font_family: device_selector.list_font
-                font_size: device_selector.list_font_size
-                font_weight: id == devicelist.defaultID ? device_selector.list_font_weight_selected : device_selector.list_font_weight
-                bg_color: id == devicelist.defaultID ? device_selector.list_color_selected : device_selector.list_color
-                fg_color: id == devicelist.defaultID ? device_selector.list_font_color_selected : device_selector.list_font_color
-                border_width: id == devicelist.defaultID ? device_selector.list_border_selected : device_selector.list_border
-                centered: false
-                radius: devicelist.radius-devicelist.list_spacing
+                Loader {
+                    active: devicelist.visible
+                    anchors.fill:parent
+                    sourceComponent: PillButton {
+                        property int id: device_items.id
+                        property string name: device_items.name
 
-                marquee: true
+                        text: name
+                        implicitWidth: devicelist.list_container_implicitWidth
+                        implicitHeight: devicelist.box_height
+                        text_padding: device_selector.list_padding
+                        font_family: device_selector.list_font
+                        font_size: device_selector.list_font_size
+                        font_weight: id == devicelist.defaultID ? device_selector.list_font_weight_selected : device_selector.list_font_weight
+                        bg_color: id == devicelist.defaultID ? device_selector.list_color_selected : device_selector.list_color
+                        fg_color: id == devicelist.defaultID ? device_selector.list_font_color_selected : device_selector.list_font_color
+                        border_width: id == devicelist.defaultID ? device_selector.list_border_selected : device_selector.list_border
+                        centered: false
+                        radius: devicelist.radius-devicelist.list_spacing
 
-                onReleased: {
-                    devicelist.itemPressed(this)
-                    devicelist.closeList()
+                        marquee: true
+
+                        onReleased: {
+                            devicelist.itemPressed(this)
+                            devicelist.closeList()
+                        }
+
+                    }
                 }
 
             }

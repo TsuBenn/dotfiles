@@ -3,33 +3,12 @@ import sys
 import configparser
 import json
 import math
-import urllib.parse
-import re
 
 DESKTOP_DIRS = {
     "/usr/share/applications/",
     "/usr/local/share/applications/",
     os.environ['HOME'] + "/.local/share/applications/"
 }
-
-# Some math stuff lol
-sqrt = math.sqrt
-sin = math.sin
-cos = math.cos
-tan = math.tan
-asin = math.asin
-acos = math.acos
-atan = math.atan
-radians = math.radians
-degrees = math.degrees
-pi = math.pi
-e = math.e
-ln = math.log
-log = math.log
-exp = math.exp
-fac = math.factorial
-######################
-
 
 def load_apps():
     apps = []
@@ -52,7 +31,7 @@ def load_apps():
             except Exception:
                 continue
             
-            if entry.get("NoDisplay") == "true":
+            if entry.get("NoDisplay") == True:
                 continue
 
             name = entry.get("Name")
@@ -67,11 +46,10 @@ def load_apps():
             apps.append(
                 {
                     "name": name,
-                    "exec": re.sub(r"%[fFuUdDnNickvm]", "", exec).strip(),
+                    "generic_name": generic_name,
+                    "exec": exec,
+                    "keywords": keywords,
                     "icon": icon,
-                    "refresh": "true",
-                    **({"generic_name": generic_name} if generic_name is not None else {}),
-                    **({"keywords": keywords} if keywords is not None else {}),
                 }
             )
 
@@ -81,7 +59,6 @@ def load_apps():
 
 def main():
 
-    search = sys.argv[1] if len(sys.argv) > 1 else ""
     query = sys.argv[1].lower() if len(sys.argv) > 1 else ""
 
     if query:
@@ -89,21 +66,19 @@ def main():
             print("settings search")
 
 
+
         elif query[0] == "/":
             print("fzf")
 
+
             
         elif query[0] == "?":
-            searchs = [{
-                "name": "Google: " + search[1:].strip(),
-                "exec": f"xdg-open \"https://www.google.com/search?q=" + urllib.parse.quote(search[1:],safe='/',encoding=None,errors=None) + "\"", 
-                "icon": "kitty", 
-            }]
+            print("google search")
 
-            print(json.dumps(searchs))
 
 
         elif query[0] == "=":
+            print("calculation")
 
             def safe_eval(expressions):
                 try:
@@ -113,17 +88,19 @@ def main():
 
             calculate = safe_eval(query[1:]) 
 
-            result = [{
+            result = {
                 "name": calculate,
                 "exec": f"echo '{calculate}' | wl-copy", 
-                "icon": "kitty", 
-            }]
+            }
 
             print(json.dumps(result))
 
+
         else:
+            print("app search")
+
             apps = [
-                app for app in load_apps() if (query in app["name"].lower()) or (query in app.get("generic_name","").lower()) or (query in app.get("keywords","").lower())
+                app for app in load_apps() if (query in app["name"].lower()) or (query in (app["generic_name"] or "").lower())
             ]
 
             print(json.dumps(apps)) 
