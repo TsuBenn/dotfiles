@@ -21,8 +21,10 @@ ClippingRectangle {
     property int top_visible: list.stepProgress
     property int bottom_visible: list.stepProgress + 5
     property var results: []
-
     property var execList: []
+
+    border.width: 3
+    border.color: Color.blend(Color.accentStrong,Color.bgSurface,0.75)
 
     signal enterPressed()
 
@@ -61,7 +63,7 @@ ClippingRectangle {
     }
 
     Component.onCompleted: {
-        KeyHandlers.released.connect((key) => {
+        KeyHandlers.pressed.connect((key) => {
             if (key == Qt.Key_Up && select > 0) {
                 select -= 1
                 if (scrollUp()) list.advanceScroll(-Math.min(select+1,6))
@@ -87,7 +89,7 @@ ClippingRectangle {
         id: list
 
         anchors.fill: parent
-        anchors.topMargin: 20
+        anchors.topMargin: 18
 
         padding: 9
         spacing: 10
@@ -96,39 +98,11 @@ ClippingRectangle {
         container_radius: Config.radius + 5 
         container_right_margin: scroller_implicitWidth ? 0 : 8
         container_left_margin: 8
-        container_bottom_margin: 4
+        container_bottom_margin: 2
 
         items_data: root.results
+
         items: Rectangle {
-
-            Component.onCompleted: {
-                spawn.restart()
-            }
-
-            SequentialAnimation {
-                id: spawn
-                PauseAnimation {
-                    duration: app.index * 50
-                }
-                ParallelAnimation {
-                    NumberAnimation {
-                        target: app
-                        property: "opacity"
-                        duration: 300
-                        from: 0
-                        to: 1
-                        easing.type: Easing.OutCubic
-                    }
-                    NumberAnimation {
-                        target: app
-                        property: "Layout.leftMargin"
-                        duration: 300
-                        from: 100
-                        to: 0
-                        easing.type: Easing.OutCubic
-                    }
-                }
-            }
 
             id: app
 
@@ -139,15 +113,13 @@ ClippingRectangle {
 
             property bool selected: root.select == index
 
-            opacity: 0
-            x: 0
-
-            Behavior on x {NumberAnimation {duration: 400; easing.type: Easing.OutCubic}}
+            Layout.leftMargin: 100
 
             implicitHeight: 60
             implicitWidth: list.container_implicitWidth
 
             color: selected ? Color.accentStrong : "transparent"
+
             radius: Config.radius
 
             MouseControl {
@@ -208,11 +180,15 @@ ClippingRectangle {
                 }
 
                 Text {
+
+                    id: app_name
+
                     text: `${app.name}`
                     color: app.selected ? Color.textPrimary : Color.textPrimary
                     font.family: Fonts.system
                     font.pointSize: 12
                     font.weight: app.selected ? 700 : 600
+
                 }
 
             }

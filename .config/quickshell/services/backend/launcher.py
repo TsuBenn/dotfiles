@@ -71,6 +71,7 @@ def load_apps():
                     "exec": re.sub(r"%[fFuUdDnNickvm]", "", exec).strip(),
                     "keywords": keywords,
                     "icon": icon,
+                    "refresh": "true",
                 }
             )
 

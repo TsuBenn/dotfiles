@@ -30,7 +30,7 @@ ClippingRectangle {
     property color  scroller_bg_color       : Color.bgMuted
     property color  scroller_fg_color       : Color.textDisabled
     property int    scroller_width          : 5
-    property int    scrolling_sen           : (content.implicitHeight/items_data.length)-(spacing/items_data.length)
+    property int    scrolling_sen           : (content.contentHeight/items_data.length)-(spacing/items_data.length)
     property bool   show_scroller           : true
     property bool   scroller_needed         : scroller.scroller_needed
 
@@ -52,9 +52,20 @@ ClippingRectangle {
         SequentialAnimation {
             NumberAnimation {
                 id: scroll_smoother
-                duration: 200
+                duration: 100
                 easing.type: Easing.OutCubic
             } 
+        }
+    }
+
+    ListModel {
+        id: list_items
+    }
+
+    onItems_dataChanged: {
+        list_items.clear() 
+        for (const i of items_data) {
+            list_items.append(i)
         }
     }
 
@@ -63,12 +74,12 @@ ClippingRectangle {
 
     color: list.bg_color
 
-    property real progressStep: (content.height/list.items_data.length) + (list.spacing/(list.items_data.length-1))
+    property real progressStep: (content.contentHeight/list.items_data.length) + (list.spacing/(list.items_data.length-1))
     property real stepProgress: Math.round(Math.abs((list.prefered_scroll_progress)/list.progressStep))
 
     property real maxScroll: {
-        if (content.height > list.height-list.spacing*2-list.container_bottom_margin) {
-            return -content.height-list.padding*2 + list.height - list.container_bottom_margin - list.container_top_margin
+        if (content.contentHeight > list.height-list.spacing*2-list.container_bottom_margin) {
+            return -content.contentHeight-list.padding*2 + list.height - list.container_bottom_margin - list.container_top_margin
         } else {
             return 0
         }
@@ -150,7 +161,7 @@ ClippingRectangle {
         MouseControl {
             anchors.fill: parent
 
-            property real relativeY: (-((mouseY - scroller_thumb.height/2)/scroller.height)*content.implicitHeight)
+            property real relativeY: (-((mouseY - scroller_thumb.height/2)/scroller.height)*content.contentHeight)
 
             cursorShape: Qt.OpenHandCursor
 
@@ -198,7 +209,7 @@ ClippingRectangle {
 
             color: list.scroller_fg_color
 
-            implicitHeight: (container.height/(contentContainer.height)*scroller.height)
+            implicitHeight: (container.height/(content.contentHeight)*scroller.height)
             Behavior on implicitHeight {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
 
         }
@@ -225,29 +236,21 @@ ClippingRectangle {
 
         clip: true
 
-        Item {
+        ListView {
 
-            id: contentContainer
+            id: content
 
-            implicitWidth: parent.implicitWidth
-            implicitHeight: content.implicitHeight
+            anchors.fill: parent
 
-            ColumnLayout {
+            cacheBuffer: contentHeight
 
-                id: content
+            spacing: list.spacing
 
-                spacing: list.spacing
+            anchors.topMargin: list.scroll_progress
 
-                y: list.scroll_progress
+            model: list_items
 
-                Repeater {
-
-                    model: list.items_data
-
-                    delegate: list.items
-
-                }
-            }
+            delegate: list.items
 
         }
     }
