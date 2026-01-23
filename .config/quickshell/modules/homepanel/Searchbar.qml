@@ -16,6 +16,8 @@ Rectangle {
     property bool typing: searchtext.text.length > 1
     property var results: []
 
+    property bool animationRunning: false
+
     implicitWidth: preferedWidth
     implicitHeight: 40
     radius: implicitHeight/2
@@ -203,7 +205,15 @@ Rectangle {
         stdout: StdioCollector {
             onStreamFinished: {
                 if (!text) return
-                root.results = JSON.parse(text.trim())
+                const new_results = JSON.parse(text.trim())
+                for (const i in new_results) {
+                    if (root.results[i]?.name == new_results[i].name) {
+                        new_results[i].refresh = "false" 
+                        continue
+                    }
+                    break
+                }
+                root.results = new_results
             }
         }
     }

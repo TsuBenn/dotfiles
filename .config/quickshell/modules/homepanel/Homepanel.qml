@@ -103,11 +103,6 @@ PanelWindow {
             KeyHandlers.pressed.connect((key, mod, auto)=> {
                 if (key == Qt.Key_Escape) {
                     root.visible = false
-                    //console.log(key)
-                } else if (key == Qt.Key_Up) {
-                    AudioInfo.setVolume(AudioInfo.sinkDefault, Math.min(Math.max(AudioInfo.volume+10, 0), 100))
-                } else if (key == Qt.Key_Down) {
-                    AudioInfo.setVolume(AudioInfo.sinkDefault, Math.min(Math.max(AudioInfo.volume-10, 0), 100))
                 }
             })
             KeyHandlers.released.connect((key, mod, auto) => {
@@ -120,7 +115,12 @@ PanelWindow {
                     MediaPlayerInfo.nextMedia()
                 } else if (key == Qt.Key_AsciiTilde && !auto) {
                     AudioInfo.muteVolume(AudioInfo.sinkDefault)
+                } else if (key == Qt.Key_Up) {
+                    AudioInfo.setVolume(AudioInfo.sinkDefault, Math.min(Math.max(AudioInfo.volume+10, 0), 100))
+                } else if (key == Qt.Key_Down) {
+                    AudioInfo.setVolume(AudioInfo.sinkDefault, Math.min(Math.max(AudioInfo.volume-10, 0), 100))
                 }
+
             })
 
         }
