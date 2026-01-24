@@ -45,6 +45,8 @@ PanelWindow {
                 searchresults.resetScroll()
             }
 
+            animationRunning: searchresults.animationRunning
+
             SearchResults {
 
                 id: searchresults

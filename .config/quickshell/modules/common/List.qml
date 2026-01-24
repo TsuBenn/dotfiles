@@ -37,8 +37,17 @@ ClippingRectangle {
     property var    items_data              : AudioInfo.sinks
 
     property Component items
-    property Transition items_add
-    property Transition items_remove
+
+    ListModel {
+        id: list_items
+    }
+
+    onItems_dataChanged: {
+        list_items.clear() 
+        for (const i of items_data) {
+            list_items.append(i)
+        }
+    }
 
     clip: true
 
@@ -57,17 +66,6 @@ ClippingRectangle {
                 duration: 100
                 easing.type: Easing.OutCubic
             } 
-        }
-    }
-
-    ListModel {
-        id: list_items
-    }
-
-    onItems_dataChanged: {
-        list_items.clear() 
-        for (const i of items_data) {
-            list_items.append(i)
         }
     }
 
@@ -126,7 +124,7 @@ ClippingRectangle {
 
             list.prefered_scroll_progress += delta * list.progressStep
 
-            console.log(list.scroll_progress)
+            //console.log(list.scroll_progress)
 
             if (list.prefered_scroll_progress > 0) {
                 list.prefered_scroll_progress = 0
@@ -244,8 +242,6 @@ ClippingRectangle {
 
             anchors.fill: parent
 
-            cacheBuffer: contentHeight
-
             spacing: list.spacing
 
             anchors.topMargin: list.scroll_progress
@@ -254,8 +250,6 @@ ClippingRectangle {
 
             delegate: list.items
 
-            add: list.items_add
-            remove: list.items_remove
         }
     }
 
