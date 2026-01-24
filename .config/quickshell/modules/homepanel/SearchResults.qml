@@ -20,13 +20,18 @@ ClippingRectangle {
     property int select: 0
     property int top_visible: list.stepProgress
     property int bottom_visible: list.stepProgress + 5
+
     property var results: []
+
     property var execList: []
+
+    property bool animationRunning: false
 
     border.width: 3
     border.color: Color.blend(Color.accentStrong,Color.bgSurface,0.75)
 
     signal enterPressed()
+
 
     onSelectChanged: {
         //console.log(select)
@@ -42,6 +47,8 @@ ClippingRectangle {
         for (const result of results) {
             execList.push(result.exec)
         }
+        mouse.bypass = 1
+        mouse.visible = true
     }
 
     function scrollDown() {
@@ -70,12 +77,57 @@ ClippingRectangle {
             } else if (key == Qt.Key_Down && select < results.length - 1) {
                 select += 1
                 if (scrollDown()) list.advanceScroll(Math.min(results.length - select,6))
-            } else if (key == Qt.Key_Return) {
-                runexec.command = ["bash", "-c", execList[select]]
-                runexec.startDetached()
-                root.enterPressed()
+            } else if (key == Qt.Key_Return ) {
+                //console.log("test")
+                preEnter.restart()
+                //runexec.command = ["bash", "-c", execList[select]]
+                //runexec.startDetached()
+                //root.enterPressed()
             }
         })
+    }
+
+    Timer {
+        id: preEnter
+
+        property int timer: 0
+
+        interval: 1
+        onTriggered: {
+            //console.log(timer)
+            if (root.results.length > 0 && !root.animationRunning) {
+                //console.log(root.animationRunning)
+                //console.log("entered")
+                runexec.command = ["bash", "-c", root.execList[select]]
+                runexec.startDetached()
+                root.enterPressed()
+                preEnter.timer = 0
+                return
+            }
+            preEnter.timer += 1
+            if (preEnter.timer >= 20) {preEnter.timer = 0; return}
+            preEnter.restart()
+        }
+    }
+
+    MouseArea {
+
+        id: mouse
+
+        property int bypass: 1
+
+        anchors.fill: parent
+        z:2
+        hoverEnabled: true
+        preventStealing:true
+        onPositionChanged: {
+            console.log("mousemoved")
+            if (bypass == 1) {
+                bypass = 0
+                return
+            }
+            visible = !visible
+        }
     }
 
     Process {
@@ -102,147 +154,178 @@ ClippingRectangle {
 
         items_data: root.results
 
-        items_add: Transition {
-            NumberAnimation {
-                property: "x"
-                duration: 200
-                from: 100
-                to: 0
-                easing.type: Easing.OutCubic
-            }
-            NumberAnimation {
-                property: "opacity"
-                duration: 200
-                from: 0
-                to: 1
-                easing.type: Easing.OutCubic
-            }
-        }
-
-        items_remove: Transition {
-            NumberAnimation {
-                property: "x"
-                duration: 200
-                from: 0
-                to: 100
-                easing.type: Easing.OutCubic
-            }
-            NumberAnimation {
-                property: "opacity"
-                duration: 200
-                from: 1
-                to: 0
-                easing.type: Easing.OutCubic
-            }
-        } 
-
-        items: Item {
-
+        items: Loader {
             id: results_items
+            width: list.container_implicitWidth
+            height: 60
+            active: list.visible
 
-            implicitWidth: list.container_implicitWidth
-            implicitHeight: 60
             required property int index
             required property string name
             required property string exec
             required property string icon
-            Loader {
-                active: list.visible
-                anchors.fill: parent
-                sourceComponent: Rectangle {
+            required property string refresh
 
-                    id: app
+            ListView.onAdd: item.add()
 
-                    property int index: results_items.index
-                    property string name: results_items.name
-                    property string exec: results_items.exec
-                    property string icon: results_items.icon
+            sourceComponent: Rectangle {
 
-                    property bool selected: root.select == index
+                signal add()
 
-                    Layout.leftMargin: 100
+                onAdd: if (app.refresh == "true") addAnimation.start()
 
-                    implicitHeight: 60
-                    implicitWidth: list.container_implicitWidth
+                SequentialAnimation {
+                    id: addAnimation
+                    PropertyAction {
+                        target: root
+                        property: "animationRunning"
+                        value: true
+                    }
+                    PropertyAction {
+                        target: app
+                        property: "x"
+                        value: 100
+                    }
+                    PropertyAction {
+                        target: app
+                        property: "opacity"
+                        value: 0
+                    }
+                    PauseAnimation {
+                        duration: Math.abs(app.index * 50)
+                    }
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: app
+                            property: "x"
+                            duration: 300
+                            from: 100
+                            to: 0
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            target: app
+                            property: "opacity"
+                            duration: 300
+                            from: 0
+                            to: 1
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    PropertyAction {
+                        target: root
+                        property: "animationRunning"
+                        value: false
+                    }
+                }
 
-                    color: selected ? Color.accentStrong : "transparent"
+                id: app
 
-                    radius: Config.radius
+                property int index: results_items.index
+                property string name: results_items.name
+                property string exec: results_items.exec
+                property string icon: results_items.icon
+                property string refresh: results_items.refresh
 
-                    MouseControl {
+                property bool selected: root.select == index
 
-                        anchors.fill: parent
+                Layout.leftMargin: 100
 
-                        hoverEnabled: true
+                implicitHeight: 60
+                implicitWidth: list.container_implicitWidth
 
-                        onEntered: {
-                            if (!containsMouse) return
-                            root.select = app.index
+                color: selected ? Color.accentStrong : "transparent"
+
+                radius: Config.radius
+
+                MouseControl {
+
+                    anchors.fill: parent
+
+                    hoverEnabled: true
+
+                    onEntered: {
+                        if (!containsMouse) return
+                        root.select = app.index
+                    }
+
+                    onReleased: {
+                        if (!containsMouse) return
+                        runexec.command = ["bash", "-c", app.exec]
+                        runexec.startDetached()
+                        root.enterPressed()
+                    }
+                }
+
+                RowLayout {
+
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    spacing: 20
+
+                    ClippingRectangle {
+
+                        Layout.leftMargin: 12*0.85
+
+                        implicitWidth: implicitHeight
+                        implicitHeight: 38*(1/0.9)
+
+                        scale: app.selected ? 1 : 0.9
+                        transform: Translate {
+                            y: 0.9
                         }
 
-                        onReleased: {
-                            if (!containsMouse) return
-                            runexec.command = ["bash", "-c", app.exec]
-                            runexec.startDetached()
-                            root.enterPressed()
+                        Behavior on scale {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+
+                        color: "transparent"
+
+                        radius: list.container_radius - 12
+
+                        Image {
+
+                            anchors.fill: parent
+
+                            source: app.icon ? "image://icon/" + app.icon : "image://icon/kitty"
+                            cache: true
+                            asynchronous: true
+
+                        }
+
+                        layer.enabled: true
+                        layer.effect: DropShadow {
+                            radius: 10
+                            samples: 10
+                            horizontalOffset: 0
+                            verticalOffset: 0
+                            color: Qt.rgba(0.0,0.0,0.0,0.2)
+                            transparentBorder: true
                         }
                     }
 
-                    RowLayout {
+                    Text {
 
-                        anchors.verticalCenter: parent.verticalCenter
+                        id: app_name
 
-                        spacing: 20
+                        text: `${app.name}`
+                        color: app.selected ? Color.textPrimary : Color.textPrimary
+                        font.family: Fonts.system
+                        font.pointSize: 12
 
-                        ClippingRectangle {
+                        Layout.leftMargin: (4*app.selected)
 
-                            Layout.leftMargin: 12
+                        scale: app.selected ? 1.01 : 1
 
-                            implicitWidth: 38
-                            implicitHeight: implicitWidth
+                        Behavior on scale {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+                        Behavior on Layout.leftMargin {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
-                            color: "transparent"
-
-                            radius: list.container_radius - list.padding
-
-                            Image {
-
-                                anchors.fill: parent
-
-                                source: app.icon ? "image://icon/" + app.icon : "image://icon/kitty"
-                                cache: true
-                                asynchronous: true
-
-                            }
-
-                            layer.enabled: true
-                            layer.effect: DropShadow {
-                                radius: 10
-                                samples: 10
-                                horizontalOffset: 0
-                                verticalOffset: 0
-                                color: Qt.rgba(0.0,0.0,0.0,0.2)
-                                transparentBorder: true
-                            }
-                        }
-
-                        Text {
-
-                            id: app_name
-
-                            text: `${app.name}`
-                            color: app.selected ? Color.textPrimary : Color.textPrimary
-                            font.family: Fonts.system
-                            font.pointSize: 12
-                            font.weight: app.selected ? 700 : 600
-
-                        }
+                        font.weight: app.selected ? 700 : 600
 
                     }
-
-
 
                 }
+
+
+
             }
         }
     }
