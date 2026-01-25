@@ -15,14 +15,6 @@ import QtQuick
 
 RowLayout {
 
-    layer.enabled: true
-    layer.effect: DropShadow {
-        radius: 10
-        samples: 20
-        color: Qt.rgba(0.0,0.0,0.0,0.3)
-        transparentBorder: true
-    }
-
     component Widgets: ClippingRectangle {
         radius: Config.radius
         color: Color.bgSurface

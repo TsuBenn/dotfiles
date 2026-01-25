@@ -58,7 +58,15 @@ ClippingRectangle {
         interval: 0
         onTriggered: {
             if (root.animationRunning) {updateResults.restart(); return}
-            root.newresults = root.results
+            const tempresults = root.results
+            for (const i in tempresults) {
+                if (root.results[i]?.name == root.newresults[i]?.name) {
+                    tempresults[i].refresh = "false" 
+                    continue
+                }
+                break
+            }
+            root.newresults = tempresults
         }
     }
 

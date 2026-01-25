@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Hyprland
 import QtQuick.Layouts
 import QtQuick
+import Qt5Compat.GraphicalEffects
 
 PanelWindow {
 
@@ -28,6 +29,14 @@ PanelWindow {
         anchors.verticalCenterOffset: -20
 
         spacing: Config.gap
+
+        layer.enabled: true
+        layer.effect: DropShadow {
+            radius: 10
+            samples: 20
+            color: Qt.rgba(0.0,0.0,0.0,0.3)
+            transparentBorder: true
+        }
 
         Clock {
             Layout.alignment: Qt.AlignCenter
