@@ -78,7 +78,7 @@ Item {
             font.family: Fonts.system
             font.wordSpacing: -4
             font.pointSize: 10.5
-            font.weight: 600
+            font.weight: 700
         }
     }
 
