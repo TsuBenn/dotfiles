@@ -69,9 +69,9 @@ Item {
 
         Text {
             text: SystemInfo.battery ?? "Inf"
-            color: if (SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
-                return Color.success
-            } else if (SystemInfo.battery <= 20) {
+            color: if (SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged" || parseInt(SystemInfo.battery) == 100) {
+                return Qt.lighter(Color.success,1.2)
+            } else if (parseInt(SystemInfo.battery) <= 20) {
                 return Color.error
             } else return Color.textPrimary
 
