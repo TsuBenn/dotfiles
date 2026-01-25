@@ -10,7 +10,7 @@ Singleton {
     property int border_width: 2
 
     property string clock_font: Fonts.system
-    property int clock_weight: 600
+    property int clock_weight: 700
     property string dateandmonth_font: Fonts.system
     property int dateandmonth_weight: 700                       
     property int clock_size: 85                       

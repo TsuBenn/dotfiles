@@ -130,11 +130,11 @@ Item {
                     anchors.verticalCenterOffset: 0
                     text: DateTime.ampm[0] + "\n" + DateTime.ampm[1]
                     font.family: homepanel_clock.clock_font
-                    font.weight: homepanel_clock.clock_weight * 1.2
+                    font.weight: homepanel_clock.clock_weight * 1.5
                     font.pointSize: homepanel_clock.clock_size * 0.25
                     lineHeight: 0.7
                     horizontalAlignment: Text.AlignHCenter
-                    color: Color.textPrimary
+                    color: Color.accentSoft
                 }
             }
             //Minute
