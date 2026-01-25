@@ -130,7 +130,7 @@ Item {
                     anchors.verticalCenterOffset: 0
                     text: DateTime.ampm[0] + "\n" + DateTime.ampm[1]
                     font.family: homepanel_clock.clock_font
-                    font.weight: homepanel_clock.clock_weight * 1.5
+                    font.weight: Math.min(homepanel_clock.clock_weight * 1.5,1000)
                     font.pointSize: homepanel_clock.clock_size * 0.25
                     lineHeight: 0.7
                     horizontalAlignment: Text.AlignHCenter

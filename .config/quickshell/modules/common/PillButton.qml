@@ -27,10 +27,10 @@ ClippingRectangle {
     property int    preferedWidth        : button.implicitWidth
     property bool   clickable            : true
     property bool   marquee              : false
-    property bool   marqueeAble          : button.marquee && button_text.paintedWidth > preferedWidth
 
     property bool   centered             : true
     property bool   safe_release         : true
+    property bool   ignoreElide          : false
 
 
     border.width: {
@@ -73,9 +73,12 @@ ClippingRectangle {
 
     radius: implicitHeight/2
 
-    component ButtonText: MarqueeText {
+    component ButtonText: Text {
+
         anchors.verticalCenterOffset: 0.8
-        font_color: {
+        width: button.implicitWidth - (button.text_padding*2*!button.centered)
+
+        color: {
             if (mouse.pressed && button.clickable) {
                 return button.fg_color[2]
             } else if (mouse.containsMouse && button.clickable) {
@@ -89,37 +92,18 @@ ClippingRectangle {
 
         opacity: button.font_opacity
 
-        font_family: button.font_family
-        font_size: button.font_size
-        font_weight: button.font_weight
-        spacing: button.spacing
-        padding: 1
-        centered: button.centered
-        manual: true
+        font.family: button.font_family
+        font.pointSize: button.font_size
+        font.weight: button.font_weight
+        elide: button.ignoreElide || button_text.paintedWidth < button.implicitWidth ? Text.ElideNone : Text.ElideRight
     }
 
     ButtonText {
         id: button_text
-        visible: button.centered && !button.marqueeAble
         anchors.centerIn: parent
+        horizontalAlignment: button.centered ? Text.AlignHCenter : Text.AlignLeft
         text: button.text.trim() 
         opacity: button.text_opacity
-    }
-
-    ButtonText {
-        visible: !button.centered || button.marqueeAble
-        id: left_text
-        anchors.verticalCenter: parent.verticalCenter
-
-        opacity: button.text_opacity
-
-        x: parent.x + button.text_padding - button.border.width*2
-
-        text: button.text.trim()
-    }
-
-
-    Component.onCompleted: {
     }
 
 
