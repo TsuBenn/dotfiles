@@ -12,19 +12,33 @@ ClippingRectangle {
     id: root
 
     property bool centered: true
-    required property int box_width
+    property int box_width: the_text.implicitWidth
     property string text: "Scrolling Text"
     property string font_family: Fonts.system
     property color font_color: "black"
     property int spacing: 0
-    property int padding: 15
+    property real padding: 15
     property int font_weight: 500
     property real font_size: 15
     property real font_minSize: font_size
     property bool hoverable: false
+    property bool manual: false
 
     property real textImplicitWidth: 0
 
+    function entered() {
+        if (root.hoverable && root.marqueeAble) marqueeAnim.start()
+    }
+    function exited() {
+        if (root.hoverable && root.marqueeAble) {
+            marqueeAnim.stop();
+            if (the_text.x > -temp_text.paintedWidth*(2/7)) {
+                marqueeAnimReturnBack.start();
+            } else {
+                marqueeAnimReturnFor.start();
+            }
+        }
+    }
 
     property bool marqueeAble: temp_text.paintedWidth > implicitWidth
 
@@ -76,6 +90,7 @@ ClippingRectangle {
 
 
     Component.onCompleted: {
+        if (manual) return
         if (root.marqueeAble && !root.hoverable) marqueeAnim.start()
         textChanged()
     }
@@ -83,6 +98,8 @@ ClippingRectangle {
     MouseArea {
 
         z: 1
+
+        visible: !root.manual
 
         anchors.fill: parent
 
@@ -156,11 +173,11 @@ ClippingRectangle {
         temp_text.font.pointSize = Math.max(root.font_size - 0.08 * Math.max(root.textImplicitWidth+root.padding*2 - root.implicitWidth,0),root.font_minSize)
         the_text.font.pointSize = Math.max(root.font_size - 0.08 * Math.max(root.textImplicitWidth+root.padding*2 - root.implicitWidth,0),root.font_minSize)
 
-            if (root.centered) {
-                the_text.x = (root.implicitWidth-the_text.implicitWidth)/2 
-            } else {
-                the_text.x = root.padding
-            }
+        if (root.centered) {
+            the_text.x = (root.implicitWidth-the_text.implicitWidth)/2 
+        } else {
+            the_text.x = root.padding
+        }
 
         root.marqueeAble = temp_text.paintedWidth+root.padding > root.implicitWidth
         if (!marqueeAble) return
@@ -170,11 +187,12 @@ ClippingRectangle {
     }
 
     onWidthChanged: {
+        if (manual) return
         root.checkMarquee()
     }
 
     onTextChanged: {
-
+        if (manual) return
         root.checkMarquee()
     }
 

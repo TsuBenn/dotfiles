@@ -33,7 +33,7 @@ ColumnLayout {
         //Layout.alignment: Qt.AlignCenter
 
         text: DateTime.month_long
-        color: Color.accentStrong
+        color: Color.textPrimary
         font.family: Fonts.zzz_vn_font
         font.pointSize: 20
         font.weight: 800
@@ -61,7 +61,7 @@ ColumnLayout {
                 required property string modelData
 
                 text: modelData
-                color: Color.accentSoft
+                color: Color.accentStrong
                 font.family: Fonts.zzz_vn_font
                 font.pointSize: 11
                 font.weight: 900
@@ -118,9 +118,9 @@ ColumnLayout {
                 }
                 border_color: if (isToday) {
                     if (index == root.selectedDate) {
-                        return [0,Color.warn,0]
+                        return [Color.warn,Color.warn,Color.warn]
                     } else {
-                        return [0,Color.accentStrong,0]
+                        return [Color.accentStrong,Color.accentStrong,Color.accentStrong]
                     }
                 } else if (index == root.selectedDate) {
                     return [Color.warn,Color.warn,Color.warn]

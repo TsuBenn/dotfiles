@@ -619,7 +619,7 @@ ColumnLayout {
         Layout.bottomMargin: -12
 
         text: "- " + SystemInfo.hostname + " -"
-        color: Color.textSecondary
+        color: Color.accentSoft
         font.family: userprofile.font
         font.pointSize: 14
         font.weight: userprofile.font_weight

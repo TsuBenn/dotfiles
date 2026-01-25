@@ -147,8 +147,32 @@ Singleton {
                     }
                 }
 
-                root.sources = sources
-                root.sinks = sinks
+                if (sources.length == root.sources?.length && root.sources.length > 0) {
+                    for (const i in sources) {
+                        const key = Object.keys(sources[i])[0]
+                        if (sources[i][key] == root.sources[i][key]) {
+                            continue
+                        }
+                        root.sources = sources
+                        break
+                    }
+                } else {
+                    root.sources = sources
+                }
+
+                if (sinks.length == root.sinks?.length && root.sinks.length > 0) {
+                    for (const i in sinks) {
+                        const key = Object.keys(sources[i])[0]
+                        if (sinks[i][key] == root.sinks[i][key]) {
+                            continue
+                        }
+                        root.sinks = sinks
+                        break
+                    }
+                } else {
+                    root.sinks = sinks
+                }
+
                 root.statusUpdated()
             }
         }

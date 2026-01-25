@@ -234,7 +234,9 @@ ClippingRectangle {
                 implicitHeight: 60
                 implicitWidth: list.container_implicitWidth
 
-                color: selected ? Color.accentStrong : "transparent"
+                color: selected ? Color.accentStrong : Qt.rgba(Color.accentStrong.r,Color.accentStrong.g,Color.accentStrong.b,0.0)
+
+                Behavior on color {ColorAnimation {duration: 100; easing.type: Easing.OutCubic}}
 
                 radius: Config.radius
 
@@ -275,7 +277,7 @@ ClippingRectangle {
                             y: 0.9
                         }
 
-                        Behavior on scale {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+                        Behavior on scale {NumberAnimation {duration: 400; easing.type: Easing.OutCubic}}
 
                         color: "transparent"
 
@@ -311,12 +313,12 @@ ClippingRectangle {
                         font.family: Fonts.system
                         font.pointSize: 12
 
-                        Layout.leftMargin: (4*app.selected)
+                        Layout.leftMargin: (2*app.selected)
 
                         scale: app.selected ? 1.01 : 1
 
-                        Behavior on scale {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
-                        Behavior on Layout.leftMargin {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+                        Behavior on scale {NumberAnimation {duration: 400; easing.type: Easing.OutCubic}}
+                        Behavior on Layout.leftMargin {NumberAnimation {duration: 400; easing.type: Easing.OutCubic}}
 
                         font.weight: app.selected ? 700 : 600
 

@@ -309,7 +309,7 @@ ColumnLayout {
 
         PillButton {
 
-            text_opacity: MediaPlayerInfo.canShuffle ? 1 : 0.25
+            text_opacity: MediaPlayerInfo.canShuffle && MediaPlayerInfo.shuffleStatus == true ? 1 : 0.25
             clickable: MediaPlayerInfo.canShuffle
 
             text: {
