@@ -43,7 +43,7 @@ Rectangle {
             id: searchicon
 
             text: "\ue68f"
-            color: Color.textDisabled
+            color: Color.accentStrong
             font.family: Fonts.system
             font.pointSize: 12
             font.weight: 700

@@ -182,7 +182,7 @@ ColumnLayout {
         property int    maxWidth                  : 300
         property int    maxHeight                 : 102
         property int    box_width                 : 90
-        property int    box_height                : 36
+        property int    box_height                : 34
         property string list_font                 : Fonts.system
         property int    list_font_weight          : 600
         property int    list_font_weight_selected : 700

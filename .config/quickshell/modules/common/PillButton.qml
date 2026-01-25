@@ -58,39 +58,6 @@ ClippingRectangle {
     signal pressed()
     signal released()
 
-    Rectangle {
-        visible: button.marqueeAble
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-
-        implicitWidth: button.text_padding/2
-
-        z:1
-
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-            GradientStop {position: 1.0; color: button.color}
-            GradientStop {position: 0.0; color: "transparent"}
-        }
-    }
-    Rectangle {
-        visible: button.marqueeAble
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-
-        implicitWidth: button.text_padding/2
-
-        z:1
-
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
-            GradientStop {position: 0.0; color: button.color}
-            GradientStop {position: 1.0; color: "transparent"}
-        }
-    }
-
     implicitHeight: box_height > 0 ? box_height : (button_text.implicitHeight + text_padding)
     implicitWidth: box_width > 0 ? box_width : (button_text.implicitWidth + text_padding*2)
 
@@ -106,9 +73,9 @@ ClippingRectangle {
 
     radius: implicitHeight/2
 
-    component ButtonText: Text {
+    component ButtonText: MarqueeText {
         anchors.verticalCenterOffset: 0.8
-        color: {
+        font_color: {
             if (mouse.pressed && button.clickable) {
                 return button.fg_color[2]
             } else if (mouse.containsMouse && button.clickable) {
@@ -122,10 +89,13 @@ ClippingRectangle {
 
         opacity: button.font_opacity
 
-        font.family: button.font_family
-        font.pointSize: button.font_size
-        font.weight: button.font_weight
-        font.wordSpacing: button.spacing
+        font_family: button.font_family
+        font_size: button.font_size
+        font_weight: button.font_weight
+        spacing: button.spacing
+        padding: 1
+        centered: button.centered
+        manual: true
     }
 
     ButtonText {
@@ -150,57 +120,6 @@ ClippingRectangle {
 
 
     Component.onCompleted: {
-        if (button.marqueeAble) {
-            button_text.text = "     " + button.text.trim()
-            left_text.text = button.text.trim() + "     " + button.text.trim() + "     " + button.text.trim()
-        } 
-    }
-
-    ParallelAnimation {
-        id: marqueeAnim
-        SequentialAnimation {
-            PauseAnimation {duration: 500}
-            NumberAnimation {
-                target: left_text
-                property: "x"
-                from: button.text_padding - button.border.width*2
-                to: -button_text.paintedWidth + button.text_padding
-                duration: 10*(button_text.paintedWidth + button.implicitWidth)
-                loops: Animation.Infinite
-            }
-        }
-        ScriptAction { 
-            script: {
-                if (left_text.x==-button_text.paintedWidth + button.text_padding) {left_text.x = button.text_padding - button.border.width*2}
-            }
-        }
-        SequentialAnimation {
-            PauseAnimation {duration: 1000}
-            ScriptAction {
-                script: {
-                    button_text.text = "       " + button.text.trim()
-                    left_text.text = button.text.trim() + "       " + button.text.trim() + "       " + button.text.trim()
-                }
-            }
-        }
-    }
-
-    NumberAnimation {
-        id: returnAnimback
-        target: left_text
-        property: "x"
-        duration: 1.2*(button_text.paintedWidth + button.implicitWidth)
-        to: button.text_padding - button.border.width*2
-        easing.type: Easing.OutCubic
-    }
-
-    NumberAnimation {
-        id: returnAnimfor
-        target: left_text
-        property: "x"
-        duration: 1.2*(button_text.paintedWidth + button.implicitWidth)
-        to: -button_text.paintedWidth + button.text_padding
-        easing.type: Easing.OutCubic
     }
 
 
@@ -217,16 +136,6 @@ ClippingRectangle {
         preventStealing: true
 
         hoverEnabled: true
-
-        onEntered: {if (button.marqueeAble) {marqueeAnim.start();}}
-        onExited: {if (button.marqueeAble) {marqueeAnim.stop();
-        if (left_text.x > -button_text.paintedWidth*(2/7)) {
-            returnAnimback.start();
-        } else {
-            returnAnimfor.start();
-        }
-    }
-}
 
         onPressed: {button.pressed()}
         onReleased: {

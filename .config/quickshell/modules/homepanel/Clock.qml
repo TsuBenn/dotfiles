@@ -40,7 +40,7 @@ Item {
         Text {
             id: system_logo
             text: SystemInfo.systemUTF
-            color: Color.textPrimary
+            color: Color.accentSoft
             font.family: Fonts.system
             font.pointSize: 28
         }
@@ -49,7 +49,7 @@ Item {
             Layout.bottomMargin: -system_logo.implicitHeight/2 + this.implicitHeight*0.5
 
             text: "Uptime: " + (Uptime.hour > 0 ? Uptime.hour + "h" : "") + Uptime.minute + "m"
-            color: Color.textPrimary
+            color: Color.accentSoft
             font.family: Fonts.system
             font.wordSpacing: -4
             font.pointSize: 12
@@ -64,82 +64,21 @@ Item {
 
         anchors.bottom: parent.bottom
         anchors.right: parent.right
-        anchors.rightMargin: 16
-        anchors.bottomMargin: -8
+        anchors.rightMargin: 18
+        anchors.bottomMargin: -4
 
-        spacing: 4
-
-        Text {
-            id: battery
-            text: "\uf244"
-            color: Color.textPrimary
-            font.family: Fonts.system
-            font.pointSize: 18
-
-            Rectangle {
-
-                property real percentage: parseInt(SystemInfo.battery.match(/\d+/)?.[0] ?? 100)/100
-
-                x: 4
-                y: 13
-                z: -1
-
-                color:
-                if (percentage >= 0.85 || SystemInfo.batterystate == "charging") {
-                    return "#2eff62"
-                } else if (percentage <= 0.2) {
-                    return "#ed312b"
-                } else {
-                    return "white"
-                }
-
-                implicitHeight: 6
-                implicitWidth: 15.6*percentage
-            }
-
-            ColorOverlay {
-                visible: charging.visible
-                anchors.fill: charging
-                color: "black"
-                source: charging
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    radius: 2
-                    samples: 20
-                    spread: 0.88
-                    color: "black"
-                }
-            }
-
-            Text {
-
-                visible: SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged" || !SystemInfo.onbattery
-
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.verticalCenterOffset: 0.5
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.horizontalCenterOffset: -2
-
-                id: charging
-                textFormat: Text.MarkdownText
-                text: "\u26a1"
-                color: "white"
-                font.family: Fonts.system
-                font.pointSize: 11
-                layer.enabled: true
-                layer.effect: ColorOverlay {
-                    color: Color.textPrimary
-                }
-            }
-
-        }
         Text {
             text: SystemInfo.battery ?? "Inf"
-            color: Color.textPrimary
+            color: if (SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
+                return Color.success
+            } else if (SystemInfo.battery <= 20) {
+                return Color.error
+            } else return Color.textPrimary
+
             font.family: Fonts.system
             font.wordSpacing: -4
             font.pointSize: 10.5
-            font.weight: 700
+            font.weight: 600
         }
     }
 
