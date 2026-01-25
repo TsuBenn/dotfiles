@@ -22,6 +22,7 @@ ClippingRectangle {
     property int bottom_visible: list.stepProgress + 5
 
     property var results: []
+    property var newresults: []
 
     property var execList: []
 
@@ -49,6 +50,16 @@ ClippingRectangle {
         }
         mouse.bypass = 1
         mouse.visible = true
+        updateResults.restart()
+    }
+
+    Timer {
+        id: updateResults
+        interval: 0
+        onTriggered: {
+            if (root.animationRunning) {updateResults.restart(); return}
+            root.newresults = root.results
+        }
     }
 
     function scrollDown() {
@@ -152,7 +163,7 @@ ClippingRectangle {
         container_left_margin: 8
         container_bottom_margin: 2
 
-        items_data: root.results
+        items_data: root.newresults
 
         items: Loader {
             id: results_items
