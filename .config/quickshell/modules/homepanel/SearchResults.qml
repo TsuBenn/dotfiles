@@ -245,6 +245,9 @@ ClippingRectangle {
                             easing.type: Easing.OutCubic
                         }
                     }
+                    PauseAnimation {
+                        duration: 100
+                    }
                     ScriptAction {
                         script: {
                             root.animationRunning = false
@@ -252,38 +255,6 @@ ClippingRectangle {
                     }
                 }
 
-                SequentialAnimation {
-                    id: removeAnimaton
-                    ScriptAction {
-                        script: {
-                            root.animationRunning = true
-                        }
-                    }
-                    PauseAnimation {
-                        duration: Math.abs(app.index * 50)
-                    }
-                    ParallelAnimation {
-                        NumberAnimation {
-                            target: app
-                            property: "x"
-                            duration: 300
-                            to: 100
-                            easing.type: Easing.OutCubic
-                        }
-                        NumberAnimation {
-                            target: app
-                            property: "opacity"
-                            duration: 300
-                            to: 0
-                            easing.type: Easing.OutCubic
-                        }
-                    }
-                    ScriptAction {
-                        script: {
-                            root.animationRunning = false
-                        }
-                    }
-                }
 
                 id: app
 
