@@ -205,15 +205,7 @@ Rectangle {
         stdout: StdioCollector {
             onStreamFinished: {
                 if (!text) return
-                const new_results = JSON.parse(text.trim())
-                for (const i in new_results) {
-                    if (root.results[i]?.name == new_results[i].name) {
-                        new_results[i].refresh = "false" 
-                        continue
-                    }
-                    break
-                }
-                root.results = new_results
+                root.results = JSON.parse(text.trim())
             }
         }
     }

@@ -55,7 +55,7 @@ ClippingRectangle {
 
     Timer {
         id: updateResults
-        interval: 0
+        interval: 1
         onTriggered: {
             if (root.animationRunning) {updateResults.restart(); return}
             const tempresults = root.results
@@ -242,49 +242,6 @@ ClippingRectangle {
                     }
                 }
 
-                SequentialAnimation {
-                    id: removeAnimation
-                    ScriptAction {
-                        script: {
-                            if (app.index < 5) root.animationRunning = true
-                        }
-                    }
-                    PropertyAction {
-                        target: app
-                        property: "x"
-                        value: 0
-                    }
-                    PropertyAction {
-                        target: app
-                        property: "opacity"
-                        value: 1
-                    }
-                    PauseAnimation {
-                        duration: Math.abs(app.index * 50)
-                    }
-                    ParallelAnimation {
-                        NumberAnimation {
-                            target: app
-                            property: "x"
-                            duration: 300
-                            to: 100
-                            easing.type: Easing.OutCubic
-                        }
-                        NumberAnimation {
-                            target: app
-                            property: "opacity"
-                            duration: 300
-                            to: 0
-                            easing.type: Easing.OutCubic
-                        }
-                    }
-                    ScriptAction {
-                        script: {
-                            if (app.index >= Math.min(root.newresults.length-1,5)) root.animationRunning = false
-                        }
-                    }
-                }
-
                 id: app
 
                 property int index: results_items.index
@@ -374,7 +331,7 @@ ClippingRectangle {
 
                         id: app_name
 
-                        text: `${app.name} - (${app.refresh})`
+                        text: `${app.name}`
                         color: app.selected ? Color.textPrimary : Color.textPrimary
                         font.family: Fonts.system
                         font.pointSize: 12
