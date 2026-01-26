@@ -61,6 +61,7 @@ ClippingRectangle {
             const tempresults = root.results
             for (const i in tempresults) {
                 if (root.results[i]?.name == root.newresults[i]?.name) {
+                    root.newresults[i].refresh = "false" 
                     tempresults[i].refresh = "false" 
                     continue
                 }
@@ -194,6 +195,13 @@ ClippingRectangle {
                 //onAdd: if (app.refresh == "true") addAnimation.start()
 
                 Component.onCompleted: {
+                    /*
+                    root.resultsChanged.connect(() => {
+                        if (app.refresh == "true" && !addAnimation.running) {
+                            removeAnimaton.start()
+                        }
+                    })
+                    */
                     if (app.refresh == "true") addAnimation.start()
                 }
 
@@ -232,6 +240,39 @@ ClippingRectangle {
                             duration: 300
                             from: 0
                             to: 1
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    ScriptAction {
+                        script: {
+                            root.animationRunning = false
+                        }
+                    }
+                }
+
+                SequentialAnimation {
+                    id: removeAnimaton
+                    ScriptAction {
+                        script: {
+                            root.animationRunning = true
+                        }
+                    }
+                    PauseAnimation {
+                        duration: Math.abs(app.index * 50)
+                    }
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: app
+                            property: "x"
+                            duration: 300
+                            to: 100
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            target: app
+                            property: "opacity"
+                            duration: 300
+                            to: 0
                             easing.type: Easing.OutCubic
                         }
                     }
