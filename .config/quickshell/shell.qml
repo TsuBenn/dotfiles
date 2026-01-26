@@ -1,8 +1,5 @@
 pragma ComponentBehavior: Bound 
 
-import qs.services
-import qs.modules.common
-
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
