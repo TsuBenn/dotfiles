@@ -191,14 +191,18 @@ ClippingRectangle {
 
                 signal add()
 
-                onAdd: if (app.refresh == "true") addAnimation.start()
+                //onAdd: if (app.refresh == "true") addAnimation.start()
+
+                Component.onCompleted: {
+                    if (app.refresh == "true") addAnimation.start()
+                }
 
                 SequentialAnimation {
                     id: addAnimation
-                    PropertyAction {
-                        target: root
-                        property: "animationRunning"
-                        value: true
+                    ScriptAction {
+                        script: {
+                            root.animationRunning = true
+                        }
                     }
                     PropertyAction {
                         target: app
@@ -231,10 +235,53 @@ ClippingRectangle {
                             easing.type: Easing.OutCubic
                         }
                     }
+                    ScriptAction {
+                        script: {
+                            root.animationRunning = false
+                        }
+                    }
+                }
+
+                SequentialAnimation {
+                    id: removeAnimation
+                    ScriptAction {
+                        script: {
+                            if (app.index < 5) root.animationRunning = true
+                        }
+                    }
                     PropertyAction {
-                        target: root
-                        property: "animationRunning"
-                        value: false
+                        target: app
+                        property: "x"
+                        value: 0
+                    }
+                    PropertyAction {
+                        target: app
+                        property: "opacity"
+                        value: 1
+                    }
+                    PauseAnimation {
+                        duration: Math.abs(app.index * 50)
+                    }
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: app
+                            property: "x"
+                            duration: 300
+                            to: 100
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            target: app
+                            property: "opacity"
+                            duration: 300
+                            to: 0
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    ScriptAction {
+                        script: {
+                            if (app.index >= Math.min(root.newresults.length-1,5)) root.animationRunning = false
+                        }
                     }
                 }
 
@@ -327,7 +374,7 @@ ClippingRectangle {
 
                         id: app_name
 
-                        text: `${app.name}`
+                        text: `${app.name} - (${app.refresh})`
                         color: app.selected ? Color.textPrimary : Color.textPrimary
                         font.family: Fonts.system
                         font.pointSize: 12

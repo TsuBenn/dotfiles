@@ -73,10 +73,19 @@ ClippingRectangle {
 
     radius: implicitHeight/2
 
-    component ButtonText: Text {
+    Text {
 
+        id: button_text
+
+        text: button.text.trim() 
+        opacity: button.text_opacity
+
+        anchors.verticalCenter: parent.verticalCenter
         anchors.verticalCenterOffset: 0.8
-        width: button.implicitWidth - (button.text_padding*2*!button.centered)
+
+        anchors.centerIn: parent
+
+        width: button.centered ? undefined : button.implicitWidth - button.text_padding*2
 
         color: {
             if (mouse.pressed && button.clickable) {
@@ -90,21 +99,13 @@ ClippingRectangle {
 
         Behavior on color {ColorAnimation {duration: 100; easing.type: Easing.OutCubic}}
 
-        opacity: button.font_opacity
-
         font.family: button.font_family
         font.pointSize: button.font_size
         font.weight: button.font_weight
         elide: button.ignoreElide || button_text.paintedWidth < button.implicitWidth ? Text.ElideNone : Text.ElideRight
+
     }
 
-    ButtonText {
-        id: button_text
-        anchors.centerIn: parent
-        horizontalAlignment: button.centered ? Text.AlignHCenter : Text.AlignLeft
-        text: button.text.trim() 
-        opacity: button.text_opacity
-    }
 
 
     MouseControl {

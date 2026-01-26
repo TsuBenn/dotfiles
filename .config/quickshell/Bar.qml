@@ -67,25 +67,9 @@ Scope {
                     }
                 }
 
+
                 Text {
                     text: DateTime.hour12 + ":" + DateTime.minute + ":" + DateTime.second + " " + DateTime.ampm
-                    color: Color.accentSoft
-                    font.family: Fonts.system
-                    font.pointSize: 12
-                    font.weight: 800
-                }
-
-                Text {
-                    text: " | "
-                    color: Color.accentSoft
-                    font.family: Fonts.system
-                    font.pointSize: 12
-                    font.weight: 800
-                }
-
-                Text {
-                    text: `CPU: ${SystemInfo.cpuusage}% - GPU: ${SystemInfo.gpuusage}% - RAM: ${SystemInfo.ktoG(SystemInfo.memused)}GB of ${SystemInfo.ktoG(SystemInfo.memtotal)}GB - SWAP: ${SystemInfo.ktoM(SystemInfo.swapused)}MB of ${SystemInfo.ktoM(SystemInfo.swaptotal)}MB | ${SystemInfo.onbattery ? "Battery: " + SystemInfo.battery + " of " + SystemInfo.batteryhealth + " (" + SystemInfo.batterystate + ")" : "PSU"}`
-
                     color: Color.accentSoft
                     font.family: Fonts.system
                     font.pointSize: 12
@@ -149,7 +133,6 @@ Scope {
 
                 color: "transparent"
                 exclusionMode: ExclusionMode.Ignore
-                WlrLayershell.layer: WlrLayer.Overlay
                 WlrLayershell.namespace: "screenCorners"
                 mask: Region {
                     item: null
@@ -195,7 +178,6 @@ Scope {
 
                 color: "transparent"
                 exclusionMode: ExclusionMode.Ignore
-                WlrLayershell.layer: WlrLayer.Overlay
                 WlrLayershell.namespace: "screenCorners"
                 mask: Region {
                     item: null
