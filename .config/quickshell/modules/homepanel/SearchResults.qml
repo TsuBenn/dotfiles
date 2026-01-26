@@ -28,8 +28,11 @@ ClippingRectangle {
 
     property bool animationRunning: false
 
+
     border.width: 3
     border.color: Color.blend(Color.accentStrong,Color.bgSurface,0.75)
+
+    signal removeResults()
 
     signal enterPressed()
 
@@ -57,11 +60,10 @@ ClippingRectangle {
         id: updateResults
         interval: 1
         onTriggered: {
-            if (root.animationRunning) {updateResults.restart(); return}
             const tempresults = root.results
+            if (root.animationRunning) {updateResults.restart(); return}
             for (const i in tempresults) {
                 if (root.results[i]?.name == root.newresults[i]?.name) {
-                    root.newresults[i].refresh = "false" 
                     tempresults[i].refresh = "false" 
                     continue
                 }
@@ -196,8 +198,8 @@ ClippingRectangle {
 
                 Component.onCompleted: {
                     /*
-                    root.resultsChanged.connect(() => {
-                        if (app.refresh == "true" && !addAnimation.running) {
+                    root.removeResults.connect(() => {
+                        if (app.refresh == "true") {
                             removeAnimaton.start()
                         }
                     })
