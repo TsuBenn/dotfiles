@@ -117,7 +117,7 @@ ClippingRectangle {
             if (root.results.length > 0 && !root.animationRunning) {
                 //console.log(root.animationRunning)
                 //console.log("entered")
-                runexec.command = ["bash", "-c", root.execList[select]]
+                runexec.command = ["bash", "-c", root.execList[root.select]]
                 runexec.startDetached()
                 root.enterPressed()
                 preEnter.timer = 0

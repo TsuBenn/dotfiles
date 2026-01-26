@@ -19,6 +19,7 @@ ShellRoot {
                 execOnce.exec(["bash", ".config/quickshell/execOnce.sh"])
             }
         }
+
     }
 
     Process {
