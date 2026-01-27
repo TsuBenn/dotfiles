@@ -1,10 +1,8 @@
 pragma ComponentBehavior: Bound 
 
 import Quickshell
-import Quickshell.Hyprland
 import Quickshell.Io
 import QtQuick
-import QtQuick.Layouts
 
 ShellRoot {
     Scope {

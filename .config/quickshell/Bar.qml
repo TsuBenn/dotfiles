@@ -2,6 +2,7 @@ pragma ComponentBehavior:Bound
 
 import qs.modules.common
 import qs.modules.homepanel
+import qs.modules.bar
 import qs.services
 import qs.assets
 
@@ -67,6 +68,7 @@ Scope {
                     }
                 }
 
+                Workspaces {}
 
                 Text {
                     text: DateTime.hour12 + ":" + DateTime.minute + ":" + DateTime.second + " " + DateTime.ampm
@@ -86,104 +88,7 @@ Scope {
 
             LazyLoader {id:homepanel; active: true; component: Homepanel {}}
 
-            PanelWindow {
-
-                implicitWidth: SystemInfo.monitorwidth
-
-                anchors {
-                    top: true
-                    left: true
-                    right: true
-                }
-
-                margins {
-                    top: 40 * !Hyprland.focusedWorkspace.hasFullscreen
-                }
-
-                implicitHeight: bar.screenRadius*2
-
-                Rectangle {
-
-                    id: bgCorner
-
-                    anchors.fill: parent
-
-                    color: Color.bgSurface
-
-                    layer.enabled: true
-                    layer.effect: OpacityMask {
-                        maskSource: topCornerMask
-                        invert: true
-                    }
-                    
-                }
-
-                Rectangle {
-
-                    id: topCornerMask
-
-                    visible: false
-
-                    anchors.fill: parent
-                    color: "white"
-
-                    topLeftRadius: bar.screenRadius
-                    topRightRadius: bar.screenRadius
-                }
-
-                color: "transparent"
-                exclusionMode: ExclusionMode.Ignore
-                WlrLayershell.namespace: "screenCorners"
-                mask: Region {
-                    item: null
-                }
-                
-            }
-            PanelWindow {
-
-                implicitWidth: SystemInfo.monitorwidth
-
-                anchors {
-                    bottom: true
-                    left: true
-                    right: true
-                }
-                implicitHeight: bar.screenRadius*2
-
-                Rectangle {
-                    anchors.fill: parent
-
-                    color: Color.bgSurface
-
-                    layer.enabled: true
-                    layer.effect: OpacityMask {
-                        maskSource: bottomCornerMask
-                        invert: true
-                    }
-                    
-                }
-
-                Rectangle {
-
-                    id: bottomCornerMask
-
-                    visible: false
-
-                    anchors.fill: parent
-                    color: "white"
-
-                    bottomLeftRadius: bar.screenRadius
-                    bottomRightRadius: bar.screenRadius
-                }
-
-                color: "transparent"
-                exclusionMode: ExclusionMode.Ignore
-                WlrLayershell.namespace: "screenCorners"
-                mask: Region {
-                    item: null
-                }
-                
-            }
+            ScreenCorners {}
         }
 
     }
