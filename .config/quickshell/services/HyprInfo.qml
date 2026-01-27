@@ -12,7 +12,7 @@ Singleton {
     property int id: Hyprland.focusedWorkspace.id
     property var workspaces
 
-    property var apps
+    property var icons
 
     function switchWorkspace(n) {
         Hyprland.dispatch("workspace " + n)
@@ -31,6 +31,18 @@ Singleton {
         
         onTriggered: {
             process.running = true
+            iconfetch.reload()
+        }
+    }
+
+    FileView {
+        id: iconfetch
+
+        path: ".config/quickshell/services/backend/icons.json"
+
+        onLoaded: {
+            root.icons = JSON.parse(text()) 
+            console.log(text())
         }
     }
 

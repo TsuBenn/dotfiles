@@ -75,7 +75,6 @@ def load_apps():
                 }
             )
 
-
     return apps
 
 

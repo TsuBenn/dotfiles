@@ -69,11 +69,13 @@ RowLayout {
 
                     delegate: Item {
 
+                        id: apps
+
                         required property int index
                         required property string windowclass
                         required property bool focused
 
-                        Layout.rightMargin: 5
+                        Layout.rightMargin: 6
 
                         Component.onCompleted: {
                             if (windowclass == "zen") windowclass = "zen-browser"
@@ -86,21 +88,21 @@ RowLayout {
 
                         Image {
 
-                            visible: index < 3
+                            visible: apps.index < 3
 
                             height: 18
                             width: 18
                             smooth: true
-                            opacity: focused && wb.selected ? 1 : 0.5
+                            opacity: apps.focused && wb.selected ? 1 : 0.5
 
                             Behavior on opacity {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
                             anchors.centerIn: parent
-                            source: "image://icon/" + windowclass
+                            source: "image://icon/" + apps.windowclass
                         }
 
                         Text {
                             anchors.centerIn: parent
-                            visible: index == 3
+                            visible: apps.index == 3
                             text: "..."
                             font.family: Fonts.system
                             font.pointSize: 8
