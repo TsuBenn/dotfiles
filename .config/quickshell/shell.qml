@@ -12,6 +12,7 @@ ShellRoot {
         Item {
             Component.onCompleted: {
                 execOnce.exec(["bash", ".config/quickshell/execOnce.sh"])
+                execOnce.exec(["python", ".config/quickshell/services/backend/launcher.py", "zen"])
             }
         }
 
