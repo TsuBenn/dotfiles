@@ -12,8 +12,6 @@ Singleton {
     property int id: Hyprland.focusedWorkspace.id
     property var workspaces
 
-    property var icons
-
     function switchWorkspace(n) {
         Hyprland.dispatch("workspace " + n)
     }
@@ -22,45 +20,27 @@ Singleton {
         return workspaces[n]?.length ?? 0
     }
 
-    Timer {
-        id: timer
-        interval: 1
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        
-        onTriggered: {
+    Component.onCompleted: {
+        Hyprland.rawEvent.connect((event) => {
             process.running = true
-            iconfetch.reload()
-        }
-    }
-
-    FileView {
-        id: iconfetch
-
-        path: ".config/quickshell/services/backend/icons.json"
-
-        onLoaded: {
-            root.icons = JSON.parse(text()) 
-            console.log(text())
-        }
+        })
     }
 
     Process {
         id: process
 
-        command: ["hyprctl", "clients"]
+        command: ["hyprctl", "clients", "-j"]
 
         stdout: StdioCollector {
             onStreamFinished: {
                 const workspaces = {}
-                const datas = text.match(/Window [\s\S]*?(?=\n\nWindow|\s*$)/g)
+                const datas = JSON.parse(text)
                 for (const data of datas) {
-                    const workspace = parseInt(data.match(/workspace: (.+)/)[1])
-                    const monitor = data.match(/monitor: (.+)/)[1]
-                    const windowclass = data.match(/initialClass: (.+)/)[1]
-                    const windowtitle = data.match(/initialTitle: (.+)/)[1]
-                    const focused = parseInt(data.match(/focusHistoryID: (.+)/)[1]) == 0
+                    const workspace = data.workspace.id ?? ""
+                    const monitor = data.monitor ?? ""
+                    const windowclass = data.initialClass
+                    const windowtitle = data.initialTitle
+                    const focused = data.focusHistoryID == 0
                     if (workspaces[workspace] == undefined) workspaces[workspace] = [] 
                     workspaces[workspace].push({"workspace": workspace, "monitor": monitor, "windowclass": windowclass, "focused": focused})
                 }
