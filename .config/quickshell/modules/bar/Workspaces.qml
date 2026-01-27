@@ -11,7 +11,7 @@ import Qt5Compat.GraphicalEffects
 
 ClippingRectangle {
 
-    implicitHeight: 28
+    implicitHeight: 30
     implicitWidth: workspace.implicitWidth
     radius: implicitHeight/2
     color: "transparent"
@@ -19,7 +19,7 @@ ClippingRectangle {
     Rectangle {
 
         id: selection
-        implicitHeight: 28
+        implicitHeight: 30
 
         anchors.left: parent.left
         anchors.right: parent.right
@@ -27,7 +27,7 @@ ClippingRectangle {
         visible: HyprInfo.id >= 1 && HyprInfo.id <= 5
 
         anchors.leftMargin: {
-            var leftMargin = 28*(HyprInfo.id-1)
+            var leftMargin = 30*(HyprInfo.id-1)
             for (var i = 1; i < HyprInfo.id; i++) {
                 leftMargin += 29*HyprInfo.windowCount(i)
             }
@@ -39,7 +39,7 @@ ClippingRectangle {
             return leftMargin
         }
         anchors.rightMargin: {
-            var rightMargin = 28*(5-HyprInfo.id)
+            var rightMargin = 30*(5-HyprInfo.id)
             for (var i = 5; i > HyprInfo.id; i--) {
                 rightMargin += 29*HyprInfo.windowCount(i)
             }
@@ -88,7 +88,7 @@ ClippingRectangle {
                 property bool selected: index + 1 == HyprInfo.id
                 property real selected_thresold: selected
 
-                implicitHeight: 28
+                implicitHeight: 30
                 implicitWidth: window.implicitWidth
 
                 Behavior on implicitWidth { NumberAnimation {duration: 200; easing.type: Easing.OutCubic} }
@@ -114,13 +114,13 @@ ClippingRectangle {
 
                     PillButton {
 
-                        box_height: 28
+                        box_height: 30
                         box_width: box_height
                         text_padding: 0
 
                         text_opacity: HyprInfo.windowCount(wb.index + 1) > 0 || wb.selected ? 1 : 0.5
 
-                        font_size: text == "•" ? 15 : 10
+                        font_size: text == "•" ? 15 : 11
                         font_weight: 1000
                         text: HyprInfo.windowCount(wb.index + 1) > 0 ? wb.index + 1 : "•"
 
@@ -175,7 +175,7 @@ ClippingRectangle {
                             visible: index < 4
 
                             width: 29
-                            height: 28
+                            height: 30
 
                             Image {
 
@@ -200,7 +200,7 @@ ClippingRectangle {
                                 visible: apps.index == 3
                                 text: "..."
                                 x: 4
-                                width: 28
+                                width: 30
                                 font.family: Fonts.zalandosans_font
                                 font.pointSize: 10
                                 font.weight: 1000
