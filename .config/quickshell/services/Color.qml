@@ -31,6 +31,15 @@ Singleton {
         )
     }
 
+    function transparent(c, factor) {
+        return Qt.rgba(
+            c.r,
+            c.g,
+            c.b,
+            factor
+        )
+    }
+
     function mix(c1, c2, t) {
         if (t > 1) {t = 1}
         return blend(c1, c2, t)

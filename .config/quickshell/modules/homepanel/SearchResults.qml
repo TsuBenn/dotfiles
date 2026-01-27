@@ -246,7 +246,7 @@ ClippingRectangle {
                         }
                     }
                     PauseAnimation {
-                        duration: 100
+                        duration: 200
                     }
                     ScriptAction {
                         script: {

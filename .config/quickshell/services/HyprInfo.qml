@@ -36,6 +36,7 @@ Singleton {
                 const workspaces = {}
                 const datas = JSON.parse(text)
                 for (const data of datas) {
+                    if (data.focusHistoryID > 20) continue
                     const workspace = data.workspace.id ?? ""
                     const monitor = data.monitor ?? ""
                     const windowclass = data.initialClass
@@ -43,6 +44,7 @@ Singleton {
                     const focused = data.focusHistoryID == 0
                     if (workspaces[workspace] == undefined) workspaces[workspace] = [] 
                     workspaces[workspace].push({"workspace": workspace, "monitor": monitor, "windowclass": windowclass, "focused": focused})
+                    //console.log(data.focusHistoryID)
                 }
                 root.workspaces = workspaces
             }

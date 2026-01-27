@@ -203,7 +203,7 @@ Rectangle {
 
         stdout: StdioCollector {
             onStreamFinished: {
-                console.log(text)
+                //console.log(text)
                 if (!text) return
                 root.results = JSON.parse(text.trim())
             }
