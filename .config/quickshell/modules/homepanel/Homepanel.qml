@@ -4,6 +4,7 @@ import qs.modules.homepanel
 
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Wayland
 import QtQuick.Layouts
 import QtQuick
 import Qt5Compat.GraphicalEffects
@@ -17,6 +18,8 @@ PanelWindow {
     focusable: true
     visible: false
     exclusionMode: ExclusionMode.Auto
+
+    WlrLayershell.layer: WlrLayer.Overlay
 
     color: Qt.rgba(0.0,0.0,0.0,0.4)
 
