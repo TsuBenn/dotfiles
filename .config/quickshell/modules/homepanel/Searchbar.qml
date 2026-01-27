@@ -195,7 +195,6 @@ Rectangle {
     }
 
     function updateQuery(query: string) {
-
         backend.exec(["python", ".config/quickshell/services/backend/launcher.py", query])
     }
 
@@ -204,6 +203,7 @@ Rectangle {
 
         stdout: StdioCollector {
             onStreamFinished: {
+                console.log(text)
                 if (!text) return
                 root.results = JSON.parse(text.trim())
             }
