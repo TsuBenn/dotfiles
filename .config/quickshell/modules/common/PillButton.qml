@@ -102,7 +102,7 @@ ClippingRectangle {
         font.family: button.font_family
         font.pointSize: button.font_size
         font.weight: button.font_weight
-        elide: button.ignoreElide || button_text.paintedWidth < button.implicitWidth ? Text.ElideNone : Text.ElideRight
+        elide: button.ignoreElide || button_text.implicitWidth < button.implicitWidth ? Text.ElideNone : Text.ElideRight
 
     }
 

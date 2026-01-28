@@ -26,7 +26,8 @@ ClippingRectangle {
 
         visible: HyprInfo.id >= 1 && HyprInfo.id <= 5
 
-        anchors.leftMargin: {
+        anchors.leftMargin: left_margin
+        property real left_margin: {
             var leftMargin = 30*(HyprInfo.id-1)
             for (var i = 1; i < HyprInfo.id; i++) {
                 leftMargin += 29*HyprInfo.windowCount(i)
@@ -38,7 +39,9 @@ ClippingRectangle {
             }
             return leftMargin
         }
-        anchors.rightMargin: {
+
+        anchors.rightMargin: right_margin
+        property real right_margin: {
             var rightMargin = 30*(5-HyprInfo.id)
             for (var i = 5; i > HyprInfo.id; i--) {
                 rightMargin += 29*HyprInfo.windowCount(i)
@@ -154,7 +157,7 @@ ClippingRectangle {
 
                         visible: HyprInfo.windowCount(wb.index+1) > 0
 
-                        model: HyprInfo.workspaces[wb.index+1]
+                        model: HyprInfo.workspaces ? HyprInfo.workspaces[wb.index+1] : []
 
                         delegate: Item {
 
@@ -165,12 +168,6 @@ ClippingRectangle {
                             required property bool focused
 
                             //Layout.rightMargin: 2
-
-                            Component.onCompleted: {
-                                if (windowclass.toLowerCase() == "zen") windowclass = "zen-browser"
-                                if (windowclass.toLowerCase() == "portproton") windowclass = "portproton"
-                                if (windowclass.match(/.*steam.*/)) windowclass = "steam"
-                            }
 
                             visible: index < 4
 
@@ -186,12 +183,13 @@ ClippingRectangle {
                                 height: 18
                                 width: 18
 
-                                Behavior on opacity {NumberAnimation {duration: 400; easing.type: Easing.OutCubic}}
+                                opacity: apps.focused ? 1 : 0.5
+                                scale: apps.focused ? 1 : 0.9
 
                                 anchors.verticalCenter: parent.verticalCenter
                                 x: 4
 
-                                source: "image://icon/" + apps.windowclass
+                                source: "image://icon/" + HyprInfo.iconFetch(apps.windowclass)
 
                             }
 
