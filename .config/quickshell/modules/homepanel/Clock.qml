@@ -40,7 +40,7 @@ Item {
         Text {
             id: system_logo
             text: SystemInfo.systemUTF
-            color: Color.accentSoft
+            color: Color.textPrimary
             font.family: Fonts.system
             font.pointSize: 28
         }
@@ -49,7 +49,7 @@ Item {
             Layout.bottomMargin: -system_logo.implicitHeight/2 + this.implicitHeight*0.5
 
             text: "Uptime: " + (Uptime.hour > 0 ? Uptime.hour + "h" : "") + Uptime.minute + "m"
-            color: Color.accentSoft
+            color: Color.textPrimary
             font.family: Fonts.system
             font.wordSpacing: -4
             font.pointSize: 12

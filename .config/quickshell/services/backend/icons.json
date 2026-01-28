@@ -1,4 +1,15 @@
 {
+    "ghost of tsushima": "/home/tsubenn/PortProton/data/img/Ghost_of_Tsushima_DIRECTOR'S_CUT.png",
+    "sekiro\u2122: shadows die twice": "/home/tsubenn/PortProton/data/img/Sekiro\u2122:_Shadows_Die_Twice.png",
+    "arknight: endfield": "/home/tsubenn/PortProton/data/img/GRYPHLINK.png",
+    "counter-strike 2": "steam_icon_730",
+    "hoyoplay": "/home/tsubenn/PortProton/data/img/HoYoPlay.png",
+    "nier automata": "/home/tsubenn/PortProton/data/img/NieR:Automata.png",
+    "mecha break": "steam_icon_2452280",
+    "garry's mod": "steam_icon_4000",
+    "call of duty: modern warfare remastered": "/home/tsubenn/PortProton/data/img/Call_of_Duty:_Modern_Warfare_Remastered.png",
+    "geometry dash": "steam_icon_322170",
+    "zenless zone zero (dx12)": "/home/tsubenn/PortProton/data/img/ZenlessZoneZero.png",
     "qalculate! (qt)": "qalculate-qt",
     "yazi": "yazi",
     "mono dynamic processor": "lsp-plugins",
@@ -255,16 +266,5 @@
     "oscilloscope 4 channels": "lsp-plugins",
     "libreoffice": "libreoffice-startcenter",
     "kdenlive": "kdenlive",
-    "btop++": "btop",
-    "ghost of tsushima": "/home/tsubenn/PortProton/data/img/Ghost_of_Tsushima_DIRECTOR'S_CUT.png",
-    "sekiro\u2122: shadows die twice": "/home/tsubenn/PortProton/data/img/Sekiro\u2122:_Shadows_Die_Twice.png",
-    "arknight: endfield": "/home/tsubenn/PortProton/data/img/GRYPHLINK.png",
-    "counter-strike 2": "steam_icon_730",
-    "hoyoplay": "/home/tsubenn/PortProton/data/img/HoYoPlay.png",
-    "nier automata": "/home/tsubenn/PortProton/data/img/NieR:Automata.png",
-    "mecha break": "steam_icon_2452280",
-    "garry's mod": "steam_icon_4000",
-    "call of duty: modern warfare remastered": "/home/tsubenn/PortProton/data/img/Call_of_Duty:_Modern_Warfare_Remastered.png",
-    "geometry dash": "steam_icon_322170",
-    "zenless zone zero (dx12)": "/home/tsubenn/PortProton/data/img/ZenlessZoneZero.png"
+    "btop++": "btop"
 }
