@@ -15,7 +15,7 @@ import QtQuick
 
 RowLayout {
 
-    component Widgets: ClippingRectangle {
+    component Widgets: Rectangle {
         radius: Config.radius
         color: Color.bgSurface
         border.width: 2

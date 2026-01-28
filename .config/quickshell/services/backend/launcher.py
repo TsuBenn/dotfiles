@@ -33,6 +33,7 @@ fac = math.factorial
 
 def load_apps():
     apps = []
+    icons = {}
 
     for dir in DESKTOP_DIRS:
         if not os.path.isdir(dir):
@@ -74,6 +75,10 @@ def load_apps():
                     **({"keywords": keywords} if keywords is not None else {}),
                 }
             )
+            icons[name.lower()] = icon
+
+    with open(".config/quickshell/services/backend/icons.json", "w") as f:
+        json.dump(icons, f, indent=4)
 
     return apps
 

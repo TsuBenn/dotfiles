@@ -11,19 +11,44 @@ Singleton {
 
     property int id: Hyprland.focusedWorkspace.id
     property var workspaces
+    property var icons
 
     function switchWorkspace(n) {
         Hyprland.dispatch("workspace " + n)
     }
 
     function windowCount(n) {
+        if (!workspaces) return 0
         return workspaces[n]?.length ?? 0
     }
 
+    function iconFetch(query) {
+        query = query.toLowerCase()
+        const key = Object.keys(root.icons).find(k => k.includes(query))
+        const value = key ? root.icons[key] : undefined
+        return value
+    }
+
     Component.onCompleted: {
+        process.running = true
         Hyprland.rawEvent.connect((event) => {
-            process.running = true
+            switch (event.name) {
+                case "openwindow":
+                case "closewindow":
+                case "movewindow":
+                case "activewindow": process.running = true; icons.reload(); break
+            }
         })
+    }
+
+    FileView {
+        id: icons
+
+        path: ".config/quickshell/services/backend/icons.json"
+
+        onLoaded: {
+            root.icons = JSON.parse(text())
+        }
     }
 
     Process {
@@ -36,7 +61,7 @@ Singleton {
                 const workspaces = {}
                 const datas = JSON.parse(text)
                 for (const data of datas) {
-                    if (data.focusHistoryID > 20) continue
+                    if (data.focusHistoryID > 10) continue
                     const workspace = data.workspace.id ?? ""
                     const monitor = data.monitor ?? ""
                     const windowclass = data.initialClass
