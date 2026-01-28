@@ -82,132 +82,153 @@ ClippingRectangle {
 
             model: 5
 
-            delegate: ClippingRectangle {
-
-                id: wb
+            delegate: Loader {
+                id: theLoader
 
                 required property int index
 
-                property bool selected: index + 1 == HyprInfo.id
-                property real selected_thresold: selected
+                sourceComponent: ClippingRectangle {
 
-                implicitHeight: 30
-                implicitWidth: window.implicitWidth
+                    id: wb
 
-                Behavior on implicitWidth { NumberAnimation {duration: 200; easing.type: Easing.OutCubic} }
-                Behavior on selected_thresold { NumberAnimation {duration: 400; easing.type: Easing.OutCubic} }
-                Behavior on color { ColorAnimation {duration: 300; easing.type: Easing.OutCubic} }
+                    property int index: theLoader.index
 
-                radius: implicitHeight/2
+                    property bool selected: index + 1 == HyprInfo.id
+                    property real selected_thresold: selected
 
-                color: selected ? Color.accentStrong : Color.transparent(Color.accentStrong,0)
+                    implicitHeight: 30
+                    implicitWidth: window.implicitWidth
 
-                Rectangle {
-                    anchors.fill: parent
-                    anchors.margins: 2.5
-                    color: wb.selected ? Color.bgMuted : Color.bgMuted
-                    radius: height/2
-                    Behavior on color { ColorAnimation {duration: 400; easing.type: Easing.OutCubic} }
-                }
+                    Behavior on implicitWidth { NumberAnimation {duration: 200; easing.type: Easing.OutCubic} }
+                    Behavior on selected_thresold { NumberAnimation {duration: 400; easing.type: Easing.OutCubic} }
+                    Behavior on color { ColorAnimation {duration: 300; easing.type: Easing.OutCubic} }
 
-                RowLayout {
+                    radius: implicitHeight/2
 
-                    id: window
-                    spacing: 0
+                    color: selected ? Color.accentStrong : Color.transparent(Color.accentStrong,0)
 
-                    PillButton {
-
-                        box_height: 30
-                        box_width: box_height
-                        text_padding: 0
-
-                        text_opacity: HyprInfo.windowCount(wb.index + 1) > 0 || wb.selected ? 1 : 0.5
-
-                        font_size: text == "•" ? 15 : 11
-                        font_weight: 1000
-                        text: HyprInfo.windowCount(wb.index + 1) > 0 ? wb.index + 1 : "•"
-
-                        bg_color: [
-                            wb.selected && HyprInfo.windowCount(wb.index + 1) > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
-                            wb.selected && HyprInfo.windowCount(wb.index + 1) > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
-                            wb.selected && HyprInfo.windowCount(wb.index + 1) > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
-                        ]
-                        /*
-                        bg_color: [
-                            "transparent",
-                            "transparent", 
-                            "transparent", 
-                        ]
-                        */
-
-                        fg_color: [
-                            wb.selected ? Color.textPrimary : Color.accentSoft,
-                            wb.selected ? Color.textPrimary : Color.accentSoft,
-                            wb.selected ? Color.textPrimary : Color.accentStrong, 
-                        ]
-                        border_width: [0,0,wb.selected ? 0 : 2]
-
-                        onReleased: {
-                            HyprInfo.switchWorkspace(wb.index + 1)
-                        }
-
+                    Rectangle {
+                        anchors.fill: parent
+                        anchors.margins: 2.5
+                        color: wb.selected ? Color.bgMuted : Color.bgMuted
+                        radius: height/2
+                        Behavior on color { ColorAnimation {duration: 400; easing.type: Easing.OutCubic} }
                     }
 
-                    Repeater {
+                    RowLayout {
 
-                        visible: HyprInfo.windowCount(wb.index+1) > 0
+                        id: window
+                        spacing: 0
 
-                        model: HyprInfo.workspaces ? HyprInfo.workspaces[wb.index+1] : []
+                        PillButton {
 
-                        delegate: Item {
+                            box_height: 30
+                            box_width: box_height
+                            text_padding: 0
 
-                            id: apps
+                            text_opacity: HyprInfo.windowCount(wb.index + 1) > 0 || wb.selected ? 1 : 0.5
 
-                            required property int index
-                            required property string windowclass
-                            required property bool focused
+                            font_size: text == "•" ? 15 : 11
+                            font_weight: 1000
+                            text: HyprInfo.windowCount(wb.index + 1) > 0 ? wb.index + 1 : "•"
 
-                            //Layout.rightMargin: 2
+                            bg_color: [
+                                wb.selected && HyprInfo.windowCount(wb.index + 1) > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
+                                wb.selected && HyprInfo.windowCount(wb.index + 1) > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
+                                wb.selected && HyprInfo.windowCount(wb.index + 1) > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
+                            ]
+                            /*
+                             bg_color: [
+                                 "transparent",
+                                 "transparent", 
+                                 "transparent", 
+                             ]
+                             */
 
-                            visible: index < 4
+                            fg_color: [
+                                wb.selected ? Color.textPrimary : Color.accentSoft,
+                                wb.selected ? Color.textPrimary : Color.accentSoft,
+                                wb.selected ? Color.textPrimary : Color.accentStrong, 
+                            ]
+                            border_width: [0,0,wb.selected ? 0 : 2]
 
-                            width: 29
-                            height: 30
-
-                            Image {
-
-                                id: icon
-
-                                visible: apps.index < 3
-
-                                height: 18
-                                width: 18
-
-                                opacity: apps.focused ? 1 : 0.5
-                                scale: apps.focused ? 1 : 0.9
-
-                                anchors.verticalCenter: parent.verticalCenter
-                                x: 4
-
-                                source: "image://icon/" + HyprInfo.iconFetch(apps.windowclass)
-
+                            onReleased: {
+                                HyprInfo.switchWorkspace(wb.index + 1)
                             }
 
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                visible: apps.index == 3
-                                text: "..."
-                                x: 4
-                                width: 30
-                                font.family: Fonts.zalandosans_font
-                                font.pointSize: 10
-                                font.weight: 1000
-                                color: wb.selected ? Color.accentSoft : Color.accentStrong
+                        }
+
+                        Repeater {
+
+                            visible: HyprInfo.windowCount(wb.index+1) > 0
+
+                            model: HyprInfo.workspaces ? HyprInfo.workspaces[wb.index+1] : []
+
+                            delegate: Item {
+
+                                id: apps
+
+                                required property int index
+                                required property string windowclass
+                                required property string windowtitle
+                                required property bool focused
+
+                                //Layout.rightMargin: 2
+
+                                visible: index < 4
+
+                                width: 29
+                                height: 30
+
+                                Image {
+
+                                    id: icon
+
+                                    visible: apps.index < 3 && source != "image://icon/exception"
+
+                                    height: 18
+                                    width: 18
+
+                                    opacity: apps.focused ? 1 : 0.5
+                                    scale: apps.focused ? 1 : 0.9
+
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    x: 4
+
+                                    source: "image://icon/" + HyprInfo.iconFetch(apps.windowtitle,apps.windowclass)
+
+                                }
+
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.verticalCenterOffset: 0.6
+                                    visible: !icon.visible && apps.index < 3
+                                    text: "\udb82\udcc6"
+                                    x: 4
+                                    width: 30
+                                    font.family: Fonts.zalandosans_font
+                                    font.pointSize: 10
+                                    font.weight: 1000
+                                    opacity: apps.focused ? 1 : 0.5
+                                    color: Color.textPrimary
+                                }
+
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    visible: apps.index == 3
+                                    text: "..."
+                                    x: 4
+                                    width: 30
+                                    font.family: Fonts.zalandosans_font
+                                    font.pointSize: 10
+                                    font.weight: 1000
+                                    color: wb.selected ? Color.accentSoft : Color.accentStrong
+                                }
                             }
                         }
                     }
-                }
 
+                }
             }
         }
 
