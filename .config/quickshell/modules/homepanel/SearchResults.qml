@@ -143,7 +143,7 @@ ClippingRectangle {
         hoverEnabled: true
         preventStealing:true
         onPositionChanged: {
-            console.log("mousemoved")
+            //console.log("mousemoved")
             if (bypass == 1) {
                 bypass = 0
                 return

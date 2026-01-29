@@ -53,7 +53,7 @@ Scope {
                 anchors.leftMargin: 5
                 anchors.rightMargin: 5
 
-                id: wrapper
+                id: leftSide
 
                 spacing: 5
 
@@ -71,10 +71,49 @@ Scope {
 
                 Workspaces {} 
 
-                SpecialWorkspace {}
+            }
+
+            RowLayout {
+
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                id: center
+
+                spacing: 5
 
                 Text {
-                    text: DateTime.hour12 + ":" + DateTime.minute + ":" + DateTime.second + " " + DateTime.ampm + " | " + SystemInfo.battery + " | " + HyprInfo.focusedwindow.title
+                    text: DateTime.hour12 + ":" + DateTime.minute + ":" + DateTime.second + " " + DateTime.ampm
+                    color: Color.accentSoft
+                    font.family: Fonts.system
+                    font.pointSize: 12
+                    font.weight: 800
+                }
+                Text {
+                    text: " | "
+                    color: Color.accentSoft
+                    font.family: Fonts.system
+                    font.pointSize: 12
+                    font.weight: 800
+                }
+                Text {
+                    text: HyprInfo.focusedwindow.title
+                    Layout.preferredWidth: Math.min(implicitWidth,200)
+                    color: Color.accentSoft
+                    font.family: Fonts.system
+                    font.pointSize: 12
+                    font.weight: 800
+                    elide: Text.ElideRight
+                }
+                Text {
+                    text: " | "
+                    color: Color.accentSoft
+                    font.family: Fonts.system
+                    font.pointSize: 12
+                    font.weight: 800
+                }
+                Text {
+                    text: SystemInfo.battery
                     color: Color.accentSoft
                     font.family: Fonts.system
                     font.pointSize: 12
