@@ -11,10 +11,14 @@ import Qt5Compat.GraphicalEffects
 
 ClippingRectangle {
 
+    id: root
+
     implicitHeight: 30
     implicitWidth: workspace.implicitWidth
     radius: implicitHeight/2
     color: "transparent"
+
+    property int maxWin: 3
 
     Rectangle {
 
@@ -24,13 +28,13 @@ ClippingRectangle {
         anchors.left: parent.left
         anchors.right: parent.right
 
-        visible: HyprInfo.id >= 1 && HyprInfo.id <= 5
+        visible: HyprInfo.focusedworkspace >= 1 && HyprInfo.focusedworkspace <= 5
 
         anchors.leftMargin: left_margin
         property real left_margin: {
-            var leftMargin = 30*(HyprInfo.id-1)
-            for (var i = 1; i < HyprInfo.id; i++) {
-                leftMargin += 29*HyprInfo.windowCount(i)
+            var leftMargin = 30*(HyprInfo.focusedworkspace-1)
+            for (var i = 1; i < HyprInfo.focusedworkspace; i++) {
+                leftMargin += 29*Math.min(HyprInfo.windowCount(i),root.maxWin)
             }
             if (anchors.leftMargin < leftMargin) {
                 left_pause = true
@@ -42,9 +46,9 @@ ClippingRectangle {
 
         anchors.rightMargin: right_margin
         property real right_margin: {
-            var rightMargin = 30*(5-HyprInfo.id)
-            for (var i = 5; i > HyprInfo.id; i--) {
-                rightMargin += 29*HyprInfo.windowCount(i)
+            var rightMargin = 30*(5-HyprInfo.focusedworkspace)
+            for (var i = 5; i > HyprInfo.focusedworkspace; i--) {
+                rightMargin += 29*Math.min(HyprInfo.windowCount(i),root.maxWin)
             }
             if (anchors.rightMargin < rightMargin) {
                 right_pause = true
@@ -93,7 +97,8 @@ ClippingRectangle {
 
                     property int index: theLoader.index
 
-                    property bool selected: index + 1 == HyprInfo.id
+                    property int winCount: HyprInfo.windowCount(wb.index + 1)
+                    property bool selected: index + 1 == HyprInfo.focusedworkspace
                     property real selected_thresold: selected
 
                     implicitHeight: 30
@@ -126,16 +131,16 @@ ClippingRectangle {
                             box_width: box_height
                             text_padding: 0
 
-                            text_opacity: HyprInfo.windowCount(wb.index + 1) > 0 || wb.selected ? 1 : 0.5
+                            text_opacity: wb.winCount > 0 || wb.selected ? 1 : 0.5
 
                             font_size: text == "•" ? 15 : 11
                             font_weight: 1000
-                            text: HyprInfo.windowCount(wb.index + 1) > 0 ? wb.index + 1 : "•"
+                            text: wb.winCount > 0 ? wb.index + 1 : "•"
 
                             bg_color: [
-                                wb.selected && HyprInfo.windowCount(wb.index + 1) > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
-                                wb.selected && HyprInfo.windowCount(wb.index + 1) > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
-                                wb.selected && HyprInfo.windowCount(wb.index + 1) > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
+                                wb.selected && wb.winCount > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
+                                wb.selected && wb.winCount > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
+                                wb.selected && wb.winCount > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
                             ]
                             /*
                              bg_color: [
@@ -160,7 +165,7 @@ ClippingRectangle {
 
                         Repeater {
 
-                            visible: HyprInfo.windowCount(wb.index+1) > 0
+                            visible: wb.winCount > 0
 
                             model: HyprInfo.workspaces ? HyprInfo.workspaces[wb.index+1] : []
 
@@ -175,7 +180,7 @@ ClippingRectangle {
 
                                 //Layout.rightMargin: 2
 
-                                visible: index < 4
+                                visible: index < root.maxWin
 
                                 width: 29
                                 height: 30
@@ -184,7 +189,7 @@ ClippingRectangle {
 
                                     id: icon
 
-                                    visible: apps.index < 3 && source !== "image://icon/exception"
+                                    visible: (apps.index <= wb.winCount-1 && !more.visible) && source != "image://icon/exception"
 
                                     height: 18
                                     width: 18
@@ -202,7 +207,7 @@ ClippingRectangle {
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.verticalCenterOffset: 0.6
-                                    visible: !icon.visible && apps.index < 3
+                                    visible: !icon.visible && !more.visible
                                     text: "\udb82\udcc6"
                                     x: 4
                                     width: 30
@@ -214,12 +219,13 @@ ClippingRectangle {
                                 }
 
                                 Text {
+                                    id: more
                                     anchors.verticalCenter: parent.verticalCenter
-                                    visible: apps.index == 3
-                                    text: "..."
-                                    x: 4
+                                    anchors.verticalCenterOffset: 0.6
+                                    visible: apps.index >= root.maxWin-1 && wb.winCount > root.maxWin
+                                    text: "+" + (wb.winCount - (root.maxWin-1))
                                     width: 30
-                                    font.family: Fonts.zalandosans_font
+                                    font.family: Fonts.system
                                     font.pointSize: 10
                                     font.weight: 1000
                                     color: wb.selected ? Color.accentSoft : Color.accentStrong

@@ -74,7 +74,7 @@ Scope {
                 SpecialWorkspace {}
 
                 Text {
-                    text: DateTime.hour12 + ":" + DateTime.minute + ":" + DateTime.second + " " + DateTime.ampm + " | " + SystemInfo.battery
+                    text: DateTime.hour12 + ":" + DateTime.minute + ":" + DateTime.second + " " + DateTime.ampm + " | " + SystemInfo.battery + " | " + HyprInfo.focusedwindow.title
                     color: Color.accentSoft
                     font.family: Fonts.system
                     font.pointSize: 12
