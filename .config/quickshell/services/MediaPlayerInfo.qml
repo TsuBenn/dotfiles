@@ -118,7 +118,7 @@ Singleton {
 
     Timer {
         interval: 1000
-        running: true
+        running: false
         repeat: true
 
         onTriggered: {

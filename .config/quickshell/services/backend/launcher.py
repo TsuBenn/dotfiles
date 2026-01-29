@@ -99,9 +99,10 @@ def main():
             
         elif query[0] == "?":
             searchs = [{
-                "name": "Google: " + search[1:].strip(),
+                "name": "Google Search: " + search[1:].strip(),
                 "exec": f"xdg-open \"https://www.google.com/search?q=" + urllib.parse.quote(search[1:],safe='/',encoding=None,errors=None) + "\"", 
-                "icon": "kitty", 
+                "icon": "google", 
+                "refresh": "false", 
             }]
 
             print(json.dumps(searchs))
@@ -120,7 +121,7 @@ def main():
             result = [{
                 "name": calculate,
                 "exec": f"echo '{calculate}' | wl-copy", 
-                "icon": "kitty", 
+                "icon": "calc", 
             }]
 
             print(json.dumps(result))

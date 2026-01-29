@@ -10,7 +10,10 @@ Singleton {
     id: root
 
     property int id: Hyprland.focusedWorkspace?.id
+
     property var workspaces
+
+    property var specialWorkspaces
     property var icons
 
     function switchWorkspace(n) {
@@ -45,7 +48,7 @@ Singleton {
                 case "openwindow":
                 case "closewindow":
                 case "movewindow":
-                case "activewindow": process.running = true; icons.reload(); break
+                case "activewindow": process.running = true; special.running = true; icons.reload(); break
             }
         })
     }
@@ -65,6 +68,7 @@ Singleton {
 
         command: ["hyprctl", "clients", "-j"]
 
+        running: true
         stdout: StdioCollector {
             onStreamFinished: {
                 const workspaces = {}
@@ -78,9 +82,31 @@ Singleton {
                     const focused = data.focusHistoryID == 0
                     if (workspaces[workspace] == undefined) workspaces[workspace] = [] 
                     workspaces[workspace].push({"workspace": workspace, "monitor": monitor, "windowclass": windowclass, "windowtitle": windowtitle, "focused": focused})
-                    //console.log(data.focusHistoryID)
                 }
                 root.workspaces = workspaces
+            }
+        }
+    }
+
+    Process {
+        id: special
+
+        command: ["hyprctl", "workspaces", "-j"]
+
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const specialWorkspaces = []
+                const datas = JSON.parse(text)
+                for (const data of datas) {
+                    if (data.id >= 0) continue
+                    console.log(data.id)
+                    const id = data.id ?? ""
+                    const name = data.name.match(/special:(.+)/)[1] ?? ""
+                    const windows = data.windows ?? ""
+                    specialWorkspaces.push({"id": id, "name": name, "windows": windows})
+                }
+                root.specialWorkspaces = specialWorkspaces
             }
         }
     }

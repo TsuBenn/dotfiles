@@ -7,6 +7,7 @@ import qs.services
 import qs.assets
 
 import Quickshell
+import Quickshell.Widgets
 import Quickshell.Hyprland
 import Quickshell.Wayland
 import Quickshell.Io
@@ -68,10 +69,12 @@ Scope {
                     }
                 }
 
-                Workspaces {}
+                Workspaces {} 
+
+                SpecialWorkspace {}
 
                 Text {
-                    text: DateTime.hour12 + ":" + DateTime.minute + ":" + DateTime.second + " " + DateTime.ampm
+                    text: DateTime.hour12 + ":" + DateTime.minute + ":" + DateTime.second + " " + DateTime.ampm + " | " + SystemInfo.battery
                     color: Color.accentSoft
                     font.family: Fonts.system
                     font.pointSize: 12
