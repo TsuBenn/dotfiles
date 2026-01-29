@@ -9,7 +9,9 @@ Singleton {
 
     id: root
 
-    property int id: Hyprland.focusedWorkspace?.id
+    property int focusedworkspace: Hyprland.focusedWorkspace?.id
+
+    property var focusedwindow: {"title": "", "class": ""}
 
     property var workspaces
 
@@ -38,6 +40,7 @@ Singleton {
             key = Object.entries(root.icons).find(([,k]) => k.includes(query2))
             value = key ? key[1] : "exception"
         }
+        if (!value) value = "exception"
         return value
     }
 
@@ -82,6 +85,7 @@ Singleton {
                     const focused = data.focusHistoryID == 0
                     if (workspaces[workspace] == undefined) workspaces[workspace] = [] 
                     workspaces[workspace].push({"workspace": workspace, "monitor": monitor, "windowclass": windowclass, "windowtitle": windowtitle, "focused": focused})
+                    if (focused) root.focusedwindow = {"title": windowtitle, "class": windowclass}
                 }
                 root.workspaces = workspaces
             }
@@ -100,9 +104,9 @@ Singleton {
                 const datas = JSON.parse(text)
                 for (const data of datas) {
                     if (data.id >= 0) continue
-                    console.log(data.id)
+                    //console.log(data.id)
                     const id = data.id ?? ""
-                    const name = data.name.match(/special:(.+)/)[1] ?? ""
+                    const name = data.name ?? ""
                     const windows = data.windows ?? ""
                     specialWorkspaces.push({"id": id, "name": name, "windows": windows})
                 }

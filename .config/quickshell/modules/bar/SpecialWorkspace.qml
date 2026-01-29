@@ -22,6 +22,8 @@ ClippingRectangle {
     color: "transparent"
     Behavior on implicitWidth { NumberAnimation {duration: 200; easing.type: Easing.OutCubic} }
 
+    property int maxWin: 2
+
     RowLayout {
         id: workspace
         spacing: 0
@@ -47,7 +49,8 @@ ClippingRectangle {
                     property string name: theLoader.name
                     property int windows: theLoader.windows
 
-                    property bool selected: index + 1 == HyprInfo.id
+                    property int winCount: HyprInfo.windowCount(wb.id)
+                    property bool selected: false
                     property real selected_thresold: selected
 
                     implicitHeight: 30
@@ -78,16 +81,16 @@ ClippingRectangle {
 
                             box_height: 30
                             text_padding: 10
-                            text_opacity: HyprInfo.windowCount(wb.index + 1) > 0 || wb.selected ? 1 : 0.5
+                            text_opacity: wb.winCount > 0 || wb.selected ? 1 : 0.5
 
                             font_size: text == "•" ? 15 : 11
                             font_weight: 1000
-                            text: HyprInfo.windowCount(wb.id) > 0 ? wb.name : "•"
+                            text: wb.winCount > 0 ? wb.name.match(/special:(.+)/)[1] : "•"
 
                             bg_color: [
-                                wb.selected && HyprInfo.windowCount(wb.index + 1) > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
-                                wb.selected && HyprInfo.windowCount(wb.index + 1) > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
-                                wb.selected && HyprInfo.windowCount(wb.index + 1) > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
+                                wb.selected && wb.winCount > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
+                                wb.selected && wb.winCount > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
+                                wb.selected && wb.winCount > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
                             ]
                             /*
                              bg_color: [
@@ -105,16 +108,16 @@ ClippingRectangle {
                             border_width: [0,0,wb.selected ? 0 : 2]
 
                             onReleased: {
-                                HyprInfo.switchWorkspace(wb.index + 1)
+                                HyprInfo.switchWorkspace(wb.name)
                             }
 
                         }
 
                         Repeater {
 
-                            visible: HyprInfo.windowCount(wb.id) > 0
+                            visible: wb.winCount > 0
 
-                            model: HyprInfo.specialWorkspaces ? HyprInfo.workspaces[wb.id] : []
+                            model: HyprInfo.workspaces ? HyprInfo.workspaces[wb.id] : []
 
                             delegate: Item {
 
@@ -133,7 +136,7 @@ ClippingRectangle {
                                     }
                                 }
 
-                                visible: index < 2
+                                visible: index < root.maxWin
 
                                 width: 29
                                 height: 30
@@ -142,7 +145,7 @@ ClippingRectangle {
 
                                     id: icon
 
-                                    visible: apps.index < 1 && source !== "image://icon/exception"
+                                    visible: (apps.index <= wb.winCount-1 && !more.visible) && source != "image://icon/exception"
 
                                     height: 18
                                     width: 18
@@ -160,7 +163,7 @@ ClippingRectangle {
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.verticalCenterOffset: 0.6
-                                    visible: !icon.visible && apps.index < 1
+                                    visible: !icon.visible && !more.visible
                                     text: "\udb82\udcc6"
                                     x: 4
                                     width: 30
@@ -172,12 +175,13 @@ ClippingRectangle {
                                 }
 
                                 Text {
+                                    id: more
                                     anchors.verticalCenter: parent.verticalCenter
-                                    visible: apps.index == 1 
-                                    text: "..."
-                                    x: 4
+                                    anchors.verticalCenterOffset: 0.6
+                                    visible: apps.index >= root.maxWin-1 && wb.winCount > root.maxWin
+                                    text: "+" + (wb.winCount - (root.maxWin-1))
                                     width: 30
-                                    font.family: Fonts.zalandosans_font
+                                    font.family: Fonts.system
                                     font.pointSize: 10
                                     font.weight: 1000
                                     color: wb.selected ? Color.accentSoft : Color.accentStrong
