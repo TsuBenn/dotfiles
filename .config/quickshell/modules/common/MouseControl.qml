@@ -18,7 +18,6 @@ MouseArea {
         id: timer
 
         interval: 1
-        running: true
         repeat: true
 
         onTriggered: {

@@ -91,7 +91,7 @@ Rectangle {
                     return
                 }
                 closeSuggest.start()
-                updatequerycall.restart()
+                root.updateQuery(searchtext.text)
                 root.textChanged()
             }
 
@@ -186,14 +186,6 @@ Rectangle {
 
     }
 
-    Timer {
-
-        id: updatequerycall
-
-        interval: 0
-        onTriggered: root.updateQuery(searchtext.text)
-    }
-
     function updateQuery(query: string) {
         backend.exec(["python", ".config/quickshell/services/backend/launcher.py", query])
     }
@@ -203,7 +195,7 @@ Rectangle {
 
         stdout: StdioCollector {
             onStreamFinished: {
-                //console.log(text)
+                console.log(text)
                 if (!text) return
                 root.results = JSON.parse(text.trim())
             }

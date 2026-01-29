@@ -198,12 +198,12 @@ ClippingRectangle {
 
                 Component.onCompleted: {
                     /*
-                    root.removeResults.connect(() => {
-                        if (app.refresh == "true") {
-                            removeAnimaton.start()
-                        }
-                    })
-                    */
+                     root.removeResults.connect(() => {
+                         if (app.refresh == "true") {
+                             removeAnimaton.start()
+                         }
+                     })
+                     */
                     if (app.refresh == "true") addAnimation.start()
                 }
 
@@ -304,6 +304,13 @@ ClippingRectangle {
 
                     ClippingRectangle {
 
+                        id: icon
+
+                        visible: {
+                            if (app.icon == "google" || app.icon == "calc") return false
+                            return true
+                        }
+
                         Layout.leftMargin: 12*0.85
 
                         implicitWidth: implicitHeight
@@ -324,8 +331,13 @@ ClippingRectangle {
 
                             anchors.fill: parent
 
-                            source: app.icon ? "image://icon/" + app.icon : "image://icon/kitty"
+
+                            source: {
+                                if (!app.icon) return "image://icon/kitty"
+                                return "image://icon/" + app.icon
+                            }
                             cache: true
+                            smooth: true
                             asynchronous: true
 
                         }
@@ -350,7 +362,7 @@ ClippingRectangle {
                         font.family: Fonts.system
                         font.pointSize: 12
 
-                        Layout.leftMargin: (2*app.selected)
+                        Layout.leftMargin: icon.visible ? (2*app.selected) : 18
 
                         scale: app.selected ? 1.01 : 1
 
