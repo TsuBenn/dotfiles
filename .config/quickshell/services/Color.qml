@@ -8,6 +8,85 @@ import QtQuick
 Singleton {
     id: root
 
+    property var colorList: Object.entries(colors).map(
+        ([id, theme]) => {
+            id: id
+
+        }
+    )
+
+    property string current: "hutao"
+
+    onCurrentChanged: {
+        apply()
+    }
+
+    property color accentStrong
+    property color accentSoft
+    property color bgBase
+    property color bgSurface
+    property color bgMuted
+    property color textPrimary
+    property color textSecondary
+    property color textDisabled
+
+    property color info
+    property color error
+    property color warn
+    property color success
+
+    function saturate(c, factor) {
+        return Qt.hsla(
+            c.hslHue,
+            Math.min(c.hslSaturation * factor, 1.0),
+            c.hslLightness,
+            c.a
+        )
+    }
+
+    function transparent(c, factor) {
+        return Qt.rgba(
+            c.r,
+            c.g,
+            c.b,
+            factor
+        )
+    }
+
+    function mix(c1, c2, t) {
+        if (t > 1) {t = 1}
+        return blend(c1, c2, t)
+    }
+
+    function blend(c1: color, c2: color, t: real): color {
+        return Qt.rgba(
+            c1.r + (c2.r - c1.r) * t,
+            c1.g + (c2.g - c1.g) * t,
+            c1.b + (c2.b - c1.b) * t,
+            c1.a + (c2.a - c1.a) * t
+        )
+    }
+
+    function apply() {
+        const theme = colors[current]
+        if (!theme) theme = colors["hutao"]
+
+        accentStrong  = theme.accentStrong
+        accentSoft    = theme.accentSoft
+        bgBase        = theme.bgBase
+        bgSurface     = theme.bgSurface
+        bgMuted       = theme.bgMuted
+        textPrimary   = theme.textPrimary
+        textSecondary = theme.textSecondary
+        textDisabled  = theme.textDisabled
+        info          = theme.info
+        error         = theme.error
+        warn          = theme.warn
+        success       = theme.success
+    }
+
+    Component.onCompleted: apply()
+
     property var colors: ({
         hutao: {
             id: "hutao",
@@ -523,85 +602,6 @@ Singleton {
         }
 
     })
-
-    property var colorList: Object.entries(colors).map(
-        ([id, theme]) => {
-            id: id
-
-        }
-    )
-
-    property string current: "hutao"
-
-    onCurrentChanged: {
-        apply()
-    }
-
-    property color accentStrong
-    property color accentSoft
-    property color bgBase
-    property color bgSurface
-    property color bgMuted
-    property color textPrimary
-    property color textSecondary
-    property color textDisabled
-
-    property color info
-    property color error
-    property color warn
-    property color success
-
-    function saturate(c, factor) {
-        return Qt.hsla(
-            c.hslHue,
-            Math.min(c.hslSaturation * factor, 1.0),
-            c.hslLightness,
-            c.a
-        )
-    }
-
-    function transparent(c, factor) {
-        return Qt.rgba(
-            c.r,
-            c.g,
-            c.b,
-            factor
-        )
-    }
-
-    function mix(c1, c2, t) {
-        if (t > 1) {t = 1}
-        return blend(c1, c2, t)
-    }
-
-    function blend(c1: color, c2: color, t: real): color {
-        return Qt.rgba(
-            c1.r + (c2.r - c1.r) * t,
-            c1.g + (c2.g - c1.g) * t,
-            c1.b + (c2.b - c1.b) * t,
-            c1.a + (c2.a - c1.a) * t
-        )
-    }
-
-    function apply() {
-        const theme = colors[current]
-        if (!theme) theme = colors["hutao"]
-
-        accentStrong  = theme.accentStrong
-        accentSoft    = theme.accentSoft
-        bgBase        = theme.bgBase
-        bgSurface     = theme.bgSurface
-        bgMuted       = theme.bgMuted
-        textPrimary   = theme.textPrimary
-        textSecondary = theme.textSecondary
-        textDisabled  = theme.textDisabled
-        info          = theme.info
-        error         = theme.error
-        warn          = theme.warn
-        success       = theme.success
-    }
-
-    Component.onCompleted: apply()
 
 }
 
