@@ -175,7 +175,7 @@ ColumnLayout {
 
                     id: infobar_maintext
                     text: infobar.text
-                    color: Color.bgSurface
+                    color: Color.textSecondary
                     font.pointSize: infobar.font_size
                     font.family: Fonts.zzz_vn_font
                     font.weight: infobar.font_weight
@@ -199,7 +199,7 @@ ColumnLayout {
                     anchors.verticalCenter: infobar_info.verticalCenter
 
                     text: infobar.subtextleft
-                    color: Color.textSecondary
+                    color: Color.accentSoft
                     font.pointSize: infobar.font_size
                     font.family: Fonts.system
                     font.weight: infobar.font_weight
@@ -230,7 +230,7 @@ ColumnLayout {
                     anchors.verticalCenter: infobar_info.verticalCenter
 
                     text: infobar.subtextright
-                    color: Color.textSecondary
+                    color: Color.accentSoft
                     font.pointSize: infobar.font_size
                     font.family: Fonts.system
                     font.weight: infobar.font_weight

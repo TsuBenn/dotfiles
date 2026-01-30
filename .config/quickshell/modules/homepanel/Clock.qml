@@ -158,7 +158,7 @@ Item {
                 font.family: homepanel_clock.dateandmonth_font
                 font.weight: homepanel_clock.dateandmonth_weight
                 font.pointSize: homepanel_clock.dateandmonth_size
-                color: Color.textSecondary
+                color: Color.textPrimary
             }
         }
     }

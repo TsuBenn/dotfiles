@@ -30,7 +30,10 @@ Scope {
 
             screen: modelData
 
+            focusable: true
+
             exclusionMode: ExclusionMode.Auto
+            WlrLayershell.layer: WlrLayer.Overlay
 
             anchors {
                 top: true
@@ -46,91 +49,176 @@ Scope {
 
             implicitHeight: 40
 
-            RowLayout {
+            PopupWindow {
+                anchor {
+                    window: bar
+                }
+                implicitWidth: SystemInfo.monitorwidth
+                implicitHeight: SystemInfo.monitorheight
+                color: "transparent"
+                visible: true
+                mask: Region {
+                    item: item
+                }
 
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                anchors.leftMargin: 5
-                anchors.rightMargin: 5
+                Item {
 
-                id: leftSide
+                    id: item
 
-                spacing: 5
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
 
-                PillButton {
+                    implicitHeight: 31
 
-                    id: homebutton
-                    text: SystemInfo.username
 
-                    marquee: true
+                    RowLayout {
 
-                    onReleased: {
-                        homepanel.item.visible = !homepanel.item.visible
+                        id: leftSide
+
+                        anchors.topMargin: Math.round(31/2 - implicitHeight/2)
+                        anchors.top: parent.top
+                        anchors.left: parent.left
+
+                        spacing: 5
+
+                        PillButton {
+
+                            id: homebutton
+                            text: SystemInfo.username
+
+                            marquee: true
+
+                            onReleased: {
+                                homepanel.item.visible = !homepanel.item.visible
+                            }
+                        }
+
+                        Workspaces {} 
+
                     }
+
+                    RowLayout {
+
+                        id: center
+
+                        anchors.topMargin: Math.round(31/2 - implicitHeight/2)
+                        anchors.top: parent.top
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        spacing: 5
+
+                        Text {
+                            text: DateTime.hour12 + ":" + DateTime.minute + ":" + DateTime.second + " " + DateTime.ampm
+                            color: Color.accentSoft
+                            font.family: Fonts.system
+                            font.pointSize: 12
+                            font.weight: 800
+                        }
+                        Text {
+                            text: " | "
+                            color: Color.accentSoft
+                            font.family: Fonts.system
+                            font.pointSize: 12
+                            font.weight: 800
+                        }
+                        Text {
+                            text: HyprInfo.focusedwindow.title
+                            Layout.preferredWidth: Math.min(implicitWidth,200)
+                            color: Color.accentSoft
+                            font.family: Fonts.system
+                            font.pointSize: 12
+                            font.weight: 800
+                            elide: Text.ElideRight
+                        }
+                        Text {
+                            text: " | "
+                            color: Color.accentSoft
+                            font.family: Fonts.system
+                            font.pointSize: 12
+                            font.weight: 800
+                        }
+                        Text {
+                            text: SystemInfo.battery
+                            color: Color.accentSoft
+                            font.family: Fonts.system
+                            font.pointSize: 12
+                            font.weight: 800
+                        }
+
+                    }
+
+                    RowLayout {
+
+                        id: rightSide
+
+                        anchors.topMargin: Math.round(31/2 - implicitHeight/2)
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.rightMargin: 9
+
+
+                        spacing: 5
+
+
+                        PopupList {
+
+                            id: themeList
+
+                            text: "Theme"
+
+                            box_width: 200
+                            box_height: 30
+
+                            maxWidth: box_width
+                            maxHeight: 200
+
+                            selected_text: Color.current
+                            selected_font_size: 13
+                            selected_centered: true
+
+                            items: Object.values(Color.colors)
+
+                            list_items: PillButton {
+
+                                required property string id
+
+                                box_height: 30
+                                box_width: themeList.list_container_implicitWidth
+
+                                text: id
+
+                                onReleased: {
+                                    Color.current = id
+                                    //themeList.closeList()
+                                }
+
+                            }
+
+                            dropdown: true
+
+                            onListOpened: {
+                                item.implicitHeight = SystemInfo.monitorheight
+                                bar.focusable = true
+                            }
+                            onListClosed: {
+                                item.implicitHeight = 31
+                                bar.focusable = false
+                            }
+                        }
+
+                    }
+
+                    LazyLoader {id:homepanel; active: true; component: Homepanel {}}
+
+                    ScreenCorners {}
                 }
-
-                Workspaces {} 
-
             }
-
-            RowLayout {
-
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                id: center
-
-                spacing: 5
-
-                Text {
-                    text: DateTime.hour12 + ":" + DateTime.minute + ":" + DateTime.second + " " + DateTime.ampm
-                    color: Color.accentSoft
-                    font.family: Fonts.system
-                    font.pointSize: 12
-                    font.weight: 800
-                }
-                Text {
-                    text: " | "
-                    color: Color.accentSoft
-                    font.family: Fonts.system
-                    font.pointSize: 12
-                    font.weight: 800
-                }
-                Text {
-                    text: HyprInfo.focusedwindow.title
-                    Layout.preferredWidth: Math.min(implicitWidth,200)
-                    color: Color.accentSoft
-                    font.family: Fonts.system
-                    font.pointSize: 12
-                    font.weight: 800
-                    elide: Text.ElideRight
-                }
-                Text {
-                    text: " | "
-                    color: Color.accentSoft
-                    font.family: Fonts.system
-                    font.pointSize: 12
-                    font.weight: 800
-                }
-                Text {
-                    text: SystemInfo.battery
-                    color: Color.accentSoft
-                    font.family: Fonts.system
-                    font.pointSize: 12
-                    font.weight: 800
-                }
-
-            }
-
 
             IpcHandler {
                 target: "homepanel"
                 function toggle(): void {homepanel.item.visible = !homepanel.item.visible}
             }
-
-            LazyLoader {id:homepanel; active: true; component: Homepanel {}}
-
-            ScreenCorners {}
         }
 
     }

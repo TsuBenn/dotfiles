@@ -245,7 +245,7 @@ ColumnLayout {
 
             bg_color: Color.bgMuted
             bg_hover: Color.bgMuted
-            fg_color: knob.opacity ? Color.accentStrong : Color.textSecondary
+            fg_color: knob.opacity ? Color.accentStrong : Color.textDisabled
             fg_hover: Color.accentStrong
 
             onAdjusted: {
@@ -292,7 +292,7 @@ ColumnLayout {
 
             radius: implicitWidth/2
 
-            color: Color.textSecondary
+            color: Color.textPrimary
 
         }
 
@@ -356,7 +356,7 @@ ColumnLayout {
             box_height: box_width
             font_size: 25
 
-            fg_color: MediaPlayerInfo.canPrev == true ? [Color.textSecondary, Color.textSecondary, Color.bgSurface] : [Color.textDisabled, Color.textDisabled, Color.bgSurface]
+            fg_color: MediaPlayerInfo.canPrev == true ? [Color.textPrimary, Color.textPrimary, Color.bgSurface] : [Color.textDisabled, Color.textDisabled, Color.bgSurface]
             bg_color: ["transparent", Color.bgBase, Color.accentStrong]
             border_width: [0,0,0]
 
@@ -382,7 +382,7 @@ ColumnLayout {
             font_size: 23
 
             fg_color: [Color.bgBase, Color.bgBase, Color.bgBase]
-            bg_color: [Color.textSecondary, Color.textSecondary, Color.accentStrong]
+            bg_color: [Color.textPrimary, Color.textPrimary, Color.accentStrong]
             border_width: [0,0,0]
 
             text_opacity: MediaPlayerInfo.canPlay && MediaPlayerInfo.canPause ? 1 : 0.25
@@ -415,7 +415,7 @@ ColumnLayout {
             box_height: box_width
             font_size: 25
 
-            fg_color: MediaPlayerInfo.canNext == true ? [Color.textSecondary, Color.textSecondary, Color.bgSurface] : [Color.textDisabled, Color.textDisabled, Color.bgSurface]
+            fg_color: MediaPlayerInfo.canNext == true ? [Color.textPrimary, Color.textPrimary, Color.bgSurface] : [Color.textDisabled, Color.textDisabled, Color.bgSurface]
             bg_color: ["transparent", Color.bgBase, Color.accentStrong]
             border_width: [0,0,0]
 

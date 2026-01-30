@@ -215,6 +215,9 @@ RowLayout {
                         spacing: 2
                         round: true
                         opacity: 0.4
+
+                        color: Qt.lighter(Color.accentSoft,1.2)
+
                         layer.enabled: true
                         layer.effect: DropShadow {
                             radius: 15
