@@ -27,7 +27,7 @@ Singleton {
 
         setstatus.exec(["bash","-c","wpctl set-volume " + id + " " + percentage + "%"])
 
-        console.log(Math.min(Math.max(percentage, 0), 100))
+        //console.log(Math.min(Math.max(percentage, 0), 100))
 
         timer.restart()
         if (id == sinkDefault) volume = percentage

@@ -348,7 +348,7 @@ ClippingRectangle {
                             samples: 10
                             horizontalOffset: 0
                             verticalOffset: 0
-                            color: Qt.rgba(0.0,0.0,0.0,0.2)
+                            color: Color.transparent(Color.bgBase,0.2)
                             transparentBorder: true
                         }
                     }
