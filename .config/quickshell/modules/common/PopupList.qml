@@ -23,7 +23,7 @@ PillButton {
     box_width                                    : 122
     box_height                                   : 36
     bg_color                                     : [Color.bgMuted, Color.bgMuted, Color.bgMuted]
-    fg_color                                     : [Color.textSecondary, Color.textSecondary, Color.textSecondary]
+    fg_color                                     : [Color.textPrimary, Color.textPrimary, Color.textPrimary]
     border_width                                 : [0,2,2]
     border_color                                 : [Color.accentSoft,Color.accentSoft,Color.accentStrong]
 
@@ -55,6 +55,20 @@ PillButton {
 
     property int    animation_speed              : 5
     property int    animation_duration           : 1000/animation_speed
+
+    property bool opened: popup.visible
+
+    function advanceScroll(interval) {
+        list.advanceScroll(interval)
+    }
+
+    onOpenedChanged: {
+        if (opened) listOpened()
+        if (!opened) listClosed()
+    }
+
+    signal listOpened()
+    signal listClosed()
 
     clickable: items.length > 0
 
@@ -247,6 +261,8 @@ PillButton {
 
         background: Rectangle {
             color: "transparent"
+            implicitWidth: button.maxWidth
+            implicitHeight: button.maxHeight
         }
 
         padding: 0
@@ -397,21 +413,54 @@ PillButton {
                 spacing     : button.spacing
             }
 
-            MouseControl {
+            Rectangle {
 
-                width: SystemInfo.monitorwidth*1.5
-                height: SystemInfo.monitorheight*1.5
+                width: SystemInfo.monitorwidth*2
+                height: SystemInfo.monitorheight*2
 
                 x:-SystemInfo.monitorwidth
                 y:-SystemInfo.monitorheight
 
-                z:-1
+                color: "transparent"
 
-                onReleased: {
-                    if (openList.running) return
-                    closeList.start()
+                z: -1
+
+                focus: true
+
+                Keys.onPressed: (events) => {
+                    events.accepted = true
+                    KeyHandlers.signalPressed(events.key, events.modifiers, events.isAutoRepeat)
+                }
+                Keys.onReleased: (events) => {
+                    events.accepted = true
+                    KeyHandlers.signalReleased(events.key, events.modifiers, events.isAutoRepeat)
                 }
 
+                Component.onCompleted: {
+                    KeyHandlers.pressed.connect((key) => {
+                        if (key == Qt.Key_Down) {
+                            list.advanceScroll(1)
+                        } else if (key == Qt.Key_Up) {
+                            list.advanceScroll(-1)
+                        } else if (key == Qt.Key_Escape) {
+                            if (openList.running) return
+                            closeList.start()
+                        }
+                    })
+                }
+
+                MouseControl {
+
+                    anchors.fill: parent
+
+                    z:-1
+
+                    onReleased: {
+                        if (openList.running) return
+                        closeList.start()
+                    }
+
+                }
             }
 
         }

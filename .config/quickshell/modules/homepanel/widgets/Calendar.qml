@@ -92,7 +92,7 @@ ColumnLayout {
                 font_weight: isToday ? 800 : 600
 
                 fg_color: if (isToday) {
-                    return [Color.textPrimary, Color.accentStrong, Color.bgBase]
+                    return [Color.textSecondary, Color.accentStrong, Color.bgBase]
                 } else if (index == root.selectedDate) {
                     return [Color.bgBase, Color.warn, Color.bgBase]
                 } else if (inMonth) {

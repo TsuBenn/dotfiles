@@ -358,7 +358,7 @@ ClippingRectangle {
                         id: app_name
 
                         text: `${app.name}`
-                        color: app.selected ? Color.textPrimary : Color.textPrimary
+                        color: app.selected ? Color.textSecondary : Color.textPrimary
                         font.family: Fonts.system
                         font.pointSize: 12
 

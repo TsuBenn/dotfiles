@@ -98,7 +98,15 @@ ClippingRectangle {
     }
 
     function advanceScroll(interval : int) {
+        if (list.prefered_scroll_progress - (progressStep)*interval > 0) {
+            list.prefered_scroll_progress = 0
+            return
+        } else if (list.prefered_scroll_progress - (progressStep)*interval < list.maxScroll) {
+            list.prefered_scroll_progress = list.maxScroll
+            return
+        }
         list.prefered_scroll_progress -= (progressStep)*interval
+
     }
 
     function resetScroll() {

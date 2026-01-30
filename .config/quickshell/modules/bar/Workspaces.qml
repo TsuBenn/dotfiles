@@ -151,9 +151,9 @@ ClippingRectangle {
                              */
 
                             fg_color: [
-                                wb.selected ? Color.textPrimary : Color.accentSoft,
-                                wb.selected ? Color.textPrimary : Color.accentSoft,
-                                wb.selected ? Color.textPrimary : Color.accentStrong, 
+                                wb.selected ? wb.winCount > 0 ? Color.textSecondary : Color.textPrimary: Color.accentSoft,
+                                wb.selected ? wb.winCount > 0 ? Color.textSecondary : Color.textPrimary: Color.accentSoft,
+                                wb.selected ? wb.winCount > 0 ? Color.textSecondary : Color.textPrimary: Color.accentStrong,
                             ]
                             border_width: [0,0,wb.selected ? 0 : 2]
 
@@ -191,8 +191,8 @@ ClippingRectangle {
 
                                     visible: (apps.index <= wb.winCount-1 && !more.visible) && source != "image://icon/exception"
 
-                                    height: 18
-                                    width: 18
+                                    height: 16
+                                    width: 16
 
                                     opacity: apps.focused ? 1 : 0.5
                                     scale: apps.focused ? 1 : 0.9
@@ -201,6 +201,14 @@ ClippingRectangle {
                                     x: 4
 
                                     source: "image://icon/" + HyprInfo.iconFetch(apps.windowtitle,apps.windowclass)
+
+                                    layer.enabled: apps.focused
+                                    layer.effect: DropShadow {
+                                        radius: 2
+                                        samples: 10
+                                        spread: 0.8
+                                        color: Qt.darker(Color.accentStrong,1.2)
+                                    }
 
                                 }
 
@@ -233,13 +241,9 @@ ClippingRectangle {
                             }
                         }
                     }
-
                 }
             }
         }
-
-
     }
-
 }
 

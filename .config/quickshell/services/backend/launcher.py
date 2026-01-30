@@ -98,11 +98,33 @@ def main():
 
             
         elif query[0] == "?":
+
+            def is_url(text: str) -> bool:
+                return re.match(
+                    r"^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w\-._~:/?#[\]@!$&'()*+,;=%]*)?$",
+                    text
+                ) is not None
+
+            def normalize_url(text: str) -> str:
+                if not text.startswith(("http://", "https://")):
+                    return "https://" + text
+                return text
+
+            query = search[1:].strip()
+
+            if is_url(query):
+                url = f'xdg-open "{normalize_url(query)}"'
+                name = "Open URL: " + query
+            else:
+                google = "https://www.google.com/search?q=" + urllib.parse.quote(query)
+                url = f'xdg-open "{google}"'
+                name = "Google Search: " + query
+
             searchs = [{
-                "name": "Google Search: " + search[1:].strip(),
-                "exec": f"xdg-open \"https://www.google.com/search?q=" + urllib.parse.quote(search[1:],safe='/',encoding=None,errors=None) + "\"", 
-                "icon": "google", 
-                "refresh": "false", 
+                "name": name,
+                "exec": url,
+                "icon": "google",
+                "refresh": "false"
             }]
 
             print(json.dumps(searchs))

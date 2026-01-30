@@ -13,7 +13,7 @@ Item {
     property bool   round    : false
     property bool   centered : false
     property bool   flipped  : true
-    property string color    : "white"
+    property color  color    : "white"
 
     anchors.fill: parent
 
