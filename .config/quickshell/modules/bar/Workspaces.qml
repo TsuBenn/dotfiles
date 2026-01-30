@@ -204,10 +204,10 @@ ClippingRectangle {
 
                                     layer.enabled: apps.focused
                                     layer.effect: DropShadow {
-                                        radius: 2
+                                        radius: 3
                                         samples: 10
                                         spread: 0.8
-                                        color: Qt.darker(Color.accentStrong,1.2)
+                                        color: Qt.darker(Color.accentStrong,1.5)
                                     }
 
                                 }
