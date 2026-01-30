@@ -12,7 +12,7 @@ Singleton {
     property int focusedworkspace: Hyprland.focusedWorkspace?.id
 
     onFocusedworkspaceChanged: {
-        console.log(focusedworkspace)
+        //console.log(focusedworkspace)
     }
 
     property var focusedwindow: {"title": "", "class": ""}

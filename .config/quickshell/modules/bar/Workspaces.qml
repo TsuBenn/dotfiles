@@ -34,7 +34,7 @@ ClippingRectangle {
         property real left_margin: {
             var leftMargin = 30*(HyprInfo.focusedworkspace-1)
             for (var i = 1; i < HyprInfo.focusedworkspace; i++) {
-                leftMargin += 29*Math.min(HyprInfo.windowCount(i),root.maxWin)
+                leftMargin += 29*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
             }
             if (anchors.leftMargin < leftMargin) {
                 left_pause = true
@@ -48,7 +48,7 @@ ClippingRectangle {
         property real right_margin: {
             var rightMargin = 30*(5-HyprInfo.focusedworkspace)
             for (var i = 5; i > HyprInfo.focusedworkspace; i--) {
-                rightMargin += 29*Math.min(HyprInfo.windowCount(i),root.maxWin)
+                rightMargin += 29*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
             }
             if (anchors.rightMargin < rightMargin) {
                 right_pause = true
@@ -80,7 +80,7 @@ ClippingRectangle {
 
     RowLayout {
         id: workspace
-        spacing: 0
+        spacing: 2
 
         Repeater {
 
