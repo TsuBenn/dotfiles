@@ -16,6 +16,7 @@ import QtQuick
 RowLayout {
 
     component Widgets: Rectangle {
+        id: widgets
         radius: Config.radius
         color: Color.bgSurface
         border.width: 2
@@ -107,11 +108,13 @@ RowLayout {
                     anchors.right: parent.right
                     anchors.left: parent.left
 
-                    implicitHeight: 120
+                    anchors.margins: parent.border.width
+
+                    implicitHeight: 120 - parent.border.width*2
 
                     radius: Config.radius
 
-                    border.width: 3
+                    border.width: 4
                     border.color: Color.bgSurface
 
                     color: Color.bgMuted
@@ -251,7 +254,7 @@ RowLayout {
                             target: mediaDarken
                             property: "opacity"
                             duration: 200
-                            to: 0.25
+                            to: 0.4
                             easing.type: Easing.OutCubic
                         }
                         NumberAnimation {
@@ -330,7 +333,7 @@ RowLayout {
                     property int pause: 200
 
                     anchors.top: parent.top
-                    anchors.topMargin: 10
+                    anchors.topMargin: 13
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     onEntered: {

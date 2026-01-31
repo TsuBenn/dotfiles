@@ -95,13 +95,14 @@ PanelWindow {
         //Widgets
         Widgets {
 
-            z:-2
+            z: searchresults.visible ? -2 : 1
 
             opacity: !(searchresults.implicitHeight == (searchbar.implicitHeight/2 + widgets.implicitHeight + Config.gap))
 
             id: widgets
 
             Layout.alignment: Qt.AlignCenter
+
         }
 
         Keys.onPressed: (events) => {
@@ -134,6 +135,7 @@ PanelWindow {
                 } else if (key == Qt.Key_Down) {
                     AudioInfo.setVolume(AudioInfo.sinkDefault, Math.min(Math.max(AudioInfo.volume-10, 0), 100))
                 }
+
 
             })
 

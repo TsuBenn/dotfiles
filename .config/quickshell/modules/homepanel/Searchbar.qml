@@ -26,8 +26,9 @@ Rectangle {
 
     border.color: searchtext.text ? Color.accentStrong : Color.blend(Color.accentStrong,Color.bgSurface,0.75)
     border.width: searchtext.text ? 3 : 2
-    Behavior on border.color {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    Behavior on border.width {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+
+    Behavior on border.color {ColorAnimation {duration: 400; easing.type: Easing.OutCubic}}
+    Behavior on border.width {NumberAnimation {duration: 400; easing.type: Easing.OutCubic}}
 
     signal textChanged()
 

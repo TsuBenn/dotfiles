@@ -31,8 +31,8 @@ ColumnLayout {
 
         id: mediaInfo
 
-        implicitWidth: 322 - 20
-        implicitHeight: 100
+        implicitWidth: 322 - 26
+        implicitHeight: 94
         color: "transparent"
 
         Layout.bottomMargin: 8
@@ -93,7 +93,7 @@ ColumnLayout {
                     implicitHeight: art.source == "" ? 0 : (art.sourceSize.height/art.sourceSize.width)*parent.implicitHeight
                     implicitWidth: parent.implicitWidth
                     color: "transparent"
-                    radius: 14
+                    radius: 12
 
                     Image {
 
@@ -106,6 +106,8 @@ ColumnLayout {
 
                         height: artFrame.implicitHeight
                         width: artFrame.implicitWidth
+
+                        smooth: true
 
                     }
 
@@ -479,29 +481,40 @@ ColumnLayout {
 
         items: MediaPlayerInfo.players
 
-        list_items: PillButton {
+        list_items: Loader {
+
+            id: sources
+
+            active: root.visible
+
             required property string dbusName
             required property string desktopEntry
             required property int index
 
-            property bool selected: dbusName == MediaPlayerInfo.dbusName
+            sourceComponent: PillButton {
+                property string dbusName: sources.dbusName
+                property string desktopEntry: sources.desktopEntry
+                property int index: sources.index
 
-            radius: sourcesList.radius - sourcesList.list_spacing
+                property bool selected: dbusName == MediaPlayerInfo.dbusName
 
-            text: desktopEntry.toUpperCase()
-            font_size: 12
-            font_weight: selected ? 800 : 700
-            box_width: sourcesList.list_container_implicitWidth
-            fg_color: selected ? [Color.textPrimary, Color.textPrimary, Color.textPrimary] :[Color.textPrimary, Color.textPrimary, Color.textPrimary] 
-            bg_color: selected ? [Qt.darker(Color.accentStrong,1.2),Qt.darker(Color.accentStrong,1.2),Color.bgSurface] : ["transparent",Color.bgBase,Color.bgSurface]
-            border_width: [0,0,2]
+                radius: sourcesList.radius - sourcesList.list_spacing
 
-            onReleased: {
-                if (dbusName != MediaPlayerInfo.activePlayer.dbusName) {
-                    MediaPlayerInfo.pauseMedia()
-                    MediaPlayerInfo.activePlayer = MediaPlayerInfo.players[index] 
+                text: desktopEntry.toUpperCase()
+                font_size: 12
+                font_weight: selected ? 800 : 700
+                box_width: sourcesList.list_container_implicitWidth
+                fg_color: selected ? [Color.textPrimary, Color.textPrimary, Color.textPrimary] :[Color.textPrimary, Color.textPrimary, Color.textPrimary] 
+                bg_color: selected ? [Qt.darker(Color.accentStrong,1.2),Qt.darker(Color.accentStrong,1.2),Color.bgSurface] : ["transparent",Color.bgBase,Color.bgSurface]
+                border_width: [0,0,2]
+
+                onReleased: {
+                    if (dbusName != MediaPlayerInfo.activePlayer.dbusName) {
+                        MediaPlayerInfo.pauseMedia()
+                        MediaPlayerInfo.activePlayer = MediaPlayerInfo.players[index] 
+                    }
+                    sourcesList.closeList()
                 }
-                sourcesList.closeList()
             }
         }
     }

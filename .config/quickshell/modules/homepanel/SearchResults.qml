@@ -231,7 +231,7 @@ ClippingRectangle {
                         NumberAnimation {
                             target: app
                             property: "x"
-                            duration: 300
+                            duration: 250
                             from: 100
                             to: 0
                             easing.type: Easing.OutCubic
@@ -239,14 +239,11 @@ ClippingRectangle {
                         NumberAnimation {
                             target: app
                             property: "opacity"
-                            duration: 300
+                            duration: 250
                             from: 0
                             to: 1
                             easing.type: Easing.OutCubic
                         }
-                    }
-                    PauseAnimation {
-                        duration: 200
                     }
                     ScriptAction {
                         script: {
@@ -336,9 +333,10 @@ ClippingRectangle {
                                 if (!app.icon) return "image://icon/kitty"
                                 return "image://icon/" + app.icon
                             }
+
                             cache: true
-                            smooth: true
                             asynchronous: true
+                            smooth: true
 
                         }
 

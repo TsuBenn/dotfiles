@@ -103,27 +103,29 @@ ColumnLayout {
         }
 
 
+        /*
         Component.onCompleted: {
             KeyHandlers.pressed.connect((key,mod,auto) => {
-            if (key == Qt.Key_Tab && !auto) {
-                if (!pfp.stuck) {
-                    pfpPressed.stop()
-                    pfpReleased.stop()
-                    pfpPressed.start()
-                }
-            }
+                 if (key == Qt.Key_Tab && !auto) {
+                     if (!pfp.stuck) {
+                         pfpPressed.stop()
+                         pfpReleased.stop()
+                         pfpPressed.start()
+                     }
+                 }
             })
             KeyHandlers.released.connect((key,mod,auto) => {
-            if (key == Qt.Key_Tab && !auto) {
-                if (!pfp.stuck) {
-                    pfpDrag.stop()
-                    pfpPressed.stop()
-                    pfpReleased.stop()
-                    pfpReleased.start()
+                if (key == Qt.Key_Tab && !auto) {
+                    if (!pfp.stuck) {
+                        pfpDrag.stop()
+                        pfpPressed.stop()
+                        pfpReleased.stop()
+                        pfpReleased.start()
+                    }
                 }
-            }
             })
         }
+        */
 
         transform: [
             Scale {
