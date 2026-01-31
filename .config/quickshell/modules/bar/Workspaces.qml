@@ -34,7 +34,7 @@ ClippingRectangle {
         property real left_margin: {
             var leftMargin = 30*(HyprInfo.focusedworkspace-1)
             for (var i = 1; i < HyprInfo.focusedworkspace; i++) {
-                leftMargin += 29*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
+                leftMargin += 28*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
             }
             if (anchors.leftMargin < leftMargin) {
                 left_pause = true
@@ -48,7 +48,7 @@ ClippingRectangle {
         property real right_margin: {
             var rightMargin = 30*(5-HyprInfo.focusedworkspace)
             for (var i = 5; i > HyprInfo.focusedworkspace; i--) {
-                rightMargin += 29*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
+                rightMargin += 28*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
             }
             if (anchors.rightMargin < rightMargin) {
                 right_pause = true
@@ -182,7 +182,7 @@ ClippingRectangle {
 
                                 visible: index < root.maxWin
 
-                                width: 29
+                                width: 28
                                 height: 30
 
                                 Image {
@@ -194,13 +194,16 @@ ClippingRectangle {
                                     height: 16
                                     width: 16
 
-                                    opacity: apps.focused ? 1 : 0.5
-                                    scale: apps.focused ? 1 : 0.9
+                                    opacity: apps.focused && wb.selected ? 1 : 0.5
+                                    scale: apps.focused && wb.selected  ? 1 : 0.9
 
                                     anchors.verticalCenter: parent.verticalCenter
                                     x: 4
 
                                     source: "image://icon/" + HyprInfo.iconFetch(apps.windowtitle,apps.windowclass)
+
+                                    mipmap: true
+                                    smooth: false
 
                                     layer.enabled: apps.focused
                                     layer.effect: DropShadow {
@@ -217,7 +220,7 @@ ClippingRectangle {
                                     anchors.verticalCenterOffset: 0.6
                                     visible: !icon.visible && !more.visible
                                     text: "\udb82\udcc6"
-                                    x: 4
+                                    x: 6
                                     width: 30
                                     font.family: Fonts.zalandosans_font
                                     font.pointSize: 10

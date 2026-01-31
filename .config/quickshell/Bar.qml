@@ -89,6 +89,24 @@ Scope {
 
                             marquee: true
 
+                            bg_color: [
+                                homepanel.item.visible ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
+                                homepanel.item.visible ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
+                                homepanel.item.visible ? "transparent" : Color.accentStrong,
+                            ]
+
+                            fg_color: [
+                                homepanel.item.visible ? Color.textSecondary : Color.textPrimary,
+                                homepanel.item.visible ? Color.textSecondary : Color.textPrimary,
+                                homepanel.item.visible ? Color.textSecondary : Color.textSecondary,
+                            ]
+
+                            border_width: [
+                                homepanel.item.visible ? 0 : 0,
+                                homepanel.item.visible ? 0 : 2,
+                                homepanel.item.visible ? 2 : 0,
+                            ]
+
                             onReleased: {
                                 homepanel.item.visible = !homepanel.item.visible
                             }
