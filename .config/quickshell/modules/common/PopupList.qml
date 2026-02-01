@@ -436,25 +436,15 @@ PillButton {
 
                 color: "transparent"
 
-                MouseControl {
-
+                MouseArea {
                     anchors.fill: parent
-
-                    z:-1
 
                     hoverEnabled: true
 
-                    onEntered: {
-                        auto_close.stop()
-                    }
-                    onExited: {
-                        auto_close.restart()
-                    }
                     onReleased: {
                         if (openList.running) return
                         closeList.start()
                     }
-
                 }
 
             }
@@ -469,7 +459,7 @@ PillButton {
 
                 color: "transparent"
 
-                z: -1
+                z: -2
 
                 focus: true
 
@@ -499,7 +489,14 @@ PillButton {
 
                     anchors.fill: parent
 
-                    z:-1
+                    hoverEnabled: true
+
+                    onEntered: {
+                        auto_close.restart()
+                    }
+                    onExited: {
+                        auto_close.stop()
+                    }
 
                     onReleased: {
                         if (openList.running) return

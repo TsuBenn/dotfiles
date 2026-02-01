@@ -85,7 +85,7 @@ ClippingRectangle {
 
         anchors.centerIn: parent
 
-        width: button.centered ? undefined : button.implicitWidth - button.text_padding*2
+        width: button.centered ? undefined : button.implicitWidth - button.text_padding*2 - button.border.width*2
 
         color: {
             if (mouse.pressed && button.clickable) {
