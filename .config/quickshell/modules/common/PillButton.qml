@@ -81,7 +81,7 @@ ClippingRectangle {
         opacity: button.text_opacity
 
         anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: 0.3
+        anchors.verticalCenterOffset: 0.8
 
         anchors.centerIn: parent
 

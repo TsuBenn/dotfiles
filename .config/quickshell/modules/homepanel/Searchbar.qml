@@ -58,7 +58,7 @@ Rectangle {
 
             onVisibleChanged: text = ""
 
-            implicitWidth: Math.max(70, contentWidth + 8) + 100*(searchtext.text == "")
+            implicitWidth: Math.max(70, contentWidth + 20) + 100*(searchtext.text == "")
 
             onTextChanged: {
                 if (text == "") {

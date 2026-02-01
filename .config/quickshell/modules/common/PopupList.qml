@@ -413,6 +413,52 @@ PillButton {
                 spacing     : button.spacing
             }
 
+            Timer {
+                id: auto_close
+
+                interval: 500
+
+                onTriggered: {
+                    if (openList.running) return
+                    closeList.start()
+                }
+            }
+
+            Rectangle {
+
+                z: -1
+
+                width: button.maxWidth + 100
+                height: button.maxHeight + 100
+
+                y: button.dropdown ? -button.box_height/2 - 50/2 : -button.box_height - 50/2
+                x: -50
+
+                color: "transparent"
+
+                MouseControl {
+
+                    anchors.fill: parent
+
+                    z:-1
+
+                    hoverEnabled: true
+
+                    onEntered: {
+                        auto_close.stop()
+                    }
+                    onExited: {
+                        auto_close.restart()
+                    }
+                    onReleased: {
+                        if (openList.running) return
+                        closeList.start()
+                    }
+
+                }
+
+            }
+
             Rectangle {
 
                 width: SystemInfo.monitorwidth*2
