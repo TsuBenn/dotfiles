@@ -191,8 +191,8 @@ ClippingRectangle {
 
                                     visible: (apps.index <= wb.winCount-1 && !more.visible) && source != "image://icon/exception"
 
-                                    height: 16
-                                    width: 16
+                                    height: 14
+                                    width: 14
 
                                     opacity: apps.focused && wb.selected ? 1 : 0.5
                                     scale: apps.focused && wb.selected  ? 1 : 0.9
@@ -203,7 +203,7 @@ ClippingRectangle {
                                     source: "image://icon/" + HyprInfo.iconFetch(apps.windowtitle,apps.windowclass)
 
                                     mipmap: true
-                                    smooth: false
+                                    smooth: true
 
                                     layer.enabled: apps.focused
                                     layer.effect: DropShadow {
