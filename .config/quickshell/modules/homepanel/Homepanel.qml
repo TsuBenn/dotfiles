@@ -23,6 +23,28 @@ PanelWindow {
 
     color: Qt.rgba(0.0,0.0,0.0,0.4)
 
+    MouseArea {
+
+        z: -3
+
+        anchors.fill: parent
+
+        hoverEnabled: true
+
+        onReleased: {
+            root.visible = false
+        }
+    }
+
+    MouseArea {
+
+        z: -2
+
+        anchors.fill: homepanel
+
+        hoverEnabled: true
+    }
+
     //UI
     ColumnLayout {
 
