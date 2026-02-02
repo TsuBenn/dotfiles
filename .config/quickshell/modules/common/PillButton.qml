@@ -34,6 +34,7 @@ ClippingRectangle {
 
 
     border.width: {
+        if (!border_width) return 0
         if (mouse.pressed && clickable) {
             return border_width[2]
         } else if (mouse.containsMouse && clickable) {
@@ -43,6 +44,7 @@ ClippingRectangle {
         }
     }
     border.color: {
+        if (!border_color) return 0
         if (mouse.pressed && clickable) {
             return border_color[2]
         } else if (mouse.containsMouse && clickable) {
@@ -62,6 +64,7 @@ ClippingRectangle {
     implicitWidth: box_width > 0 ? box_width : (button_text.implicitWidth + text_padding*2)
 
     color: {
+        if (!bg_color) return 0
         if (mouse.pressed && clickable) {
             return bg_color[2]
         } else if (mouse.containsMouse && clickable) {
@@ -88,6 +91,7 @@ ClippingRectangle {
         width: button.centered ? undefined : button.implicitWidth - button.text_padding*2 - button.border.width*2
 
         color: {
+            if (!button.fg_color) return 0
             if (mouse.pressed && button.clickable) {
                 return button.fg_color[2]
             } else if (mouse.containsMouse && button.clickable) {
