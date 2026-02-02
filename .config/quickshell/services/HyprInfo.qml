@@ -49,18 +49,24 @@ Singleton {
     }
 
     Component.onCompleted: {
+        
         Hyprland.rawEvent.connect((event) => {
             switch (event.name) {
                 case "openwindow":
                 case "closewindow":
                 case "movewindow":
-                case "activewindow": process.running = true; special.running = true; icons.reload(); break
+                case "activewindow": {
+                    process.running = true
+                    special.running = true
+                    get_icons.reload()
+                    break
+                }
             }
         })
     }
 
     FileView {
-        id: icons
+        id: get_icons
 
         path: ".config/quickshell/services/backend/icons.json"
 
@@ -68,6 +74,7 @@ Singleton {
             root.icons = JSON.parse(text())
         }
     }
+
 
     Process {
         id: process
@@ -80,7 +87,6 @@ Singleton {
                 const workspaces = {}
                 const datas = JSON.parse(text)
                 for (const data of datas) {
-                    if (data.focusHistoryID > 10) continue
                     const workspace = data.workspace.id ?? ""
                     const monitor = data.monitor ?? ""
                     const windowclass = data.initialClass
