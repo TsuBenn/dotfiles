@@ -71,7 +71,7 @@ PanelWindow {
     }
 
     MouseArea {
-
+        z:-3
         anchors.fill: parent
 
         hoverEnabled: true
@@ -80,7 +80,6 @@ PanelWindow {
             closepanel.start()
         }
     }
-
 
     //UI
     Rectangle {
@@ -100,18 +99,18 @@ PanelWindow {
 
         ColumnLayout {
 
-            MouseArea {
-                anchors.fill: parent
-
-                hoverEnabled: true
-            }
-
             anchors.centerIn: parent
 
             id:homepanel
 
             spacing: Config.gap
 
+            MouseArea {
+                z: -3
+                anchors.fill: parent
+
+                hoverEnabled: true
+            }
 
             Clock {
                 Layout.alignment: Qt.AlignCenter
@@ -128,8 +127,6 @@ PanelWindow {
                 onTextChanged: {
                     searchresults.resetScroll()
                 }
-
-                animationRunning: searchresults.animationRunning
 
                 SearchResults {
 
