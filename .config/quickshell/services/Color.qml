@@ -104,7 +104,7 @@ Singleton {
             info:          "#2fbcf0",
             error:         "#ec2727",
             warn:          "#eea022",
-            success:       "#38de31"
+            success:       "#98BB6C",
         },
 
         kazuha: {
