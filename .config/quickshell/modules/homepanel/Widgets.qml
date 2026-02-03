@@ -20,7 +20,7 @@ ColumnLayout {
     id: root
 
     function advancePanel(interval) {
-        widgets.panel_index = Math.max(widgets.panel_index + interval,1)
+        widgets.panel_index = Math.min(Math.max(widgets.panel_index + interval,1),3)
     }
 
     component PowerButton: PillButton {
@@ -38,25 +38,29 @@ ColumnLayout {
 
         required property int index
 
-        implicitWidth: 1000
-        implicitHeight: 425
+        Layout.preferredWidth: 1000
+        Layout.preferredHeight: 425
 
-        x: (-implicitWidth - Config.gap) * (widgets.panel_index - index)
+        x: (-implicitWidth - 50) * (widgets.panel_index - index)
+
+        opacity: widgets.panel_index == index
 
         Behavior on x {NumberAnimation {
-            duration: 500
+            duration: 300
             easing.type: Easing.OutElastic
             easing.amplitude: 0.5
-            easing.period: 1.4
+            easing.period: 1.8
         }}
+        Behavior on opacity {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
         spacing: Config.gap
+
 
     }
 
     spacing: Config.gap
 
-    ClippingRectangle {
+    Rectangle {
 
         id: widgets
 
@@ -64,6 +68,7 @@ ColumnLayout {
         implicitHeight: 425
 
         color: "transparent"
+        radius: Config.radius
 
         property int panel_index: 1
 
@@ -494,25 +499,23 @@ ColumnLayout {
 
             index: 2
 
-            RowLayout {
-                WidgetsContainer {
-                    implicitWidth: 425
-                    implicitHeight: 425
-                }
-                WidgetsContainer {
-                    implicitWidth: 1000-14-425-120
-                    implicitHeight: 425
-                }
-                WidgetsContainer {
+            WidgetsContainer {
+                implicitWidth: 425
+                implicitHeight: 425
+            }
+            WidgetsContainer {
+                implicitWidth: 1000-Config.gap*2-425-120
+                implicitHeight: 425
+            }
+            WidgetsContainer {
 
-                    implicitWidth: 120
-                    implicitHeight: 425
+                implicitWidth: 120
+                implicitHeight: 425
 
-                    AudioControl {
-                        anchors.centerIn: parent
-                    }
-
+                AudioControl {
+                    anchors.centerIn: parent
                 }
+
             }
         }
 
@@ -539,9 +542,6 @@ ColumnLayout {
         Layout.alignment: Qt.AlignCenter
 
         Text {
-            anchors.verticalCenterOffset: 0.5
-            anchors.horizontalCenterOffset: -0.5
-
             text: "\uf0d9"
             font.family: Fonts.system
             font.pointSize: 12
@@ -591,8 +591,6 @@ ColumnLayout {
 
         }
         Text {
-            anchors.verticalCenterOffset: 0.5
-
             text: "\uf0da"
             font.family: Fonts.system
             font.pointSize: 12

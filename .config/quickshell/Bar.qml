@@ -108,7 +108,7 @@ Scope {
                             ]
 
                             onReleased: {
-                                homepanel.item.visible = !homepanel.item.visible
+                                homepanel.item.toggle()
                             }
                         }
 
