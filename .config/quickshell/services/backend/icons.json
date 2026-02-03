@@ -1,6 +1,4 @@
 {
-    "masm32": "/home/tsubenn/PortProton/data/img/Quick_Editor.png",
-    "hoyoplay": "/home/tsubenn/PortProton/data/img/HoYoPlay.png",
     "eight channel spectrum analyzer": "lsp-plugins",
     "mid-side stereo dynamic sidechain processor": "lsp-plugins",
     "mono slap delay": "lsp-plugins",
@@ -240,5 +238,7 @@
     "return stereo": "lsp-plugins",
     "mono sidechain compressor": "lsp-plugins",
     "stereo sidechain expander": "lsp-plugins",
-    "mono sidechain gate": "lsp-plugins"
+    "mono sidechain gate": "lsp-plugins",
+    "masm32": "/home/tsubenn/PortProton/data/img/Quick_Editor.png",
+    "hoyoplay": "/home/tsubenn/PortProton/data/img/HoYoPlay.png"
 }

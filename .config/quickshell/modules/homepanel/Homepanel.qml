@@ -43,16 +43,11 @@ PanelWindow {
             target: homepanel
             property: "anchors.verticalCenterOffset"
             from: -SystemInfo.monitorheight
-            to: 5
-            duration: 200
-            easing.type: Easing.OutQuint
-        }
-        NumberAnimation {
-            target: homepanel
-            property: "anchors.verticalCenterOffset"
-            to: -20
-            duration: 200
-            easing.type: Easing.OutCubic
+            to: 0
+            duration: 400
+            easing.type: Easing.OutElastic
+            easing.amplitude: 0.8
+            easing.period: 1.6
         }
     }
 
@@ -61,17 +56,11 @@ PanelWindow {
         NumberAnimation {
             target: homepanel
             property: "anchors.verticalCenterOffset"
-            from: -20
-            to: 20
-            duration: 100
-            easing.type: Easing.OutQuad
-        }
-        NumberAnimation {
-            target: homepanel
-            property: "anchors.verticalCenterOffset"
             to: -SystemInfo.monitorheight
-            duration: 150
-            easing.type: Easing.InCubic
+            duration: 300
+            easing.type: Easing.InElastic
+            easing.amplitude: 1
+            easing.period: 1
         }
         PauseAnimation {
             duration: 50
@@ -115,7 +104,7 @@ PanelWindow {
 
         layer.enabled: true
         layer.effect: DropShadow {
-            radius: 10
+            radius: 7
             samples: 20
             color: Qt.rgba(0.0,0.0,0.0,0.3)
             transparentBorder: true
@@ -160,9 +149,9 @@ PanelWindow {
                 bottomRightRadius: searchbar.radius
 
                 implicitWidth: parent.implicitWidth
-                implicitHeight: (parent.implicitHeight/2 + widgets.implicitHeight + Config.gap) * parent.typing
+                implicitHeight: (parent.implicitHeight/2 + widgets.implicitHeight + Config.gap) * parent.typing - 31
 
-                Behavior on implicitHeight {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+                Behavior on implicitHeight {NumberAnimation {duration: 400; easing.type: Easing.OutCubic}}
 
                 MouseArea {
                     anchors.fill: parent
@@ -174,6 +163,8 @@ PanelWindow {
 
         //Widgets
         Widgets {
+
+            panel_navigator: !searchbar.typing
 
             z: searchresults.visible ? -2 : 1
 
@@ -196,18 +187,17 @@ PanelWindow {
 
         Component.onCompleted: {
             KeyHandlers.pressed.connect((key, mod, auto)=> {
-                if (key == Qt.Key_Escape) {
-                    closepanel.start()
-                }
-            })
-            KeyHandlers.released.connect((key, mod, auto) => {
                 if (searchbar.typing) return
                 if (key == Qt.Key_Space && !auto) {
                     MediaPlayerInfo.playPauseMedia()
-                } else if (key == Qt.Key_Left && !auto) {
+                } else if (key == Qt.Key_Left && mod == Qt.ShiftModifier && !auto) {
                     MediaPlayerInfo.prevMedia()
-                } else if (key == Qt.Key_Right && !auto) {
+                } else if (key == Qt.Key_Right && mod == Qt.ShiftModifier && !auto) {
                     MediaPlayerInfo.nextMedia()
+                } else if (key == Qt.Key_Left && !auto) {
+                    widgets.advancePanel(-1)
+                } else if (key == Qt.Key_Right && !auto) {
+                    widgets.advancePanel(1)
                 } else if (key == Qt.Key_AsciiTilde && !auto) {
                     AudioInfo.muteVolume(AudioInfo.sinkDefault)
                 } else if (key == Qt.Key_Up) {
@@ -215,8 +205,11 @@ PanelWindow {
                 } else if (key == Qt.Key_Down) {
                     AudioInfo.setVolume(AudioInfo.sinkDefault, Math.min(Math.max(AudioInfo.volume-10, 0), 100))
                 }
-
-
+            })
+            KeyHandlers.released.connect((key, mod, auto) => {
+                if (key == Qt.Key_Escape) {
+                    closepanel.start()
+                }
             })
 
         }
