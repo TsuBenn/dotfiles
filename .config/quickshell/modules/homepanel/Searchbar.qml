@@ -198,7 +198,15 @@ Rectangle {
             onStreamFinished: {
                 //console.log(text)
                 if (!text) return
-                root.results = JSON.parse(text.trim())
+                const tempresults = JSON.parse(text.trim())
+                for (const i in tempresults) {
+                    if (root.results[i]?.name == tempresults[i]?.name) {
+                        tempresults[i].refresh = "false" 
+                        continue
+                    }
+                    break
+                }
+                root.results = tempresults
             }
         }
     }

@@ -44,7 +44,7 @@ PanelWindow {
             property: "anchors.verticalCenterOffset"
             from: -SystemInfo.monitorheight
             to: 0
-            duration: 400
+            duration: 450
             easing.type: Easing.OutElastic
             easing.amplitude: 0.8
             easing.period: 1.6
@@ -72,8 +72,6 @@ PanelWindow {
 
     MouseArea {
 
-        z: -3
-
         anchors.fill: parent
 
         hoverEnabled: true
@@ -83,137 +81,145 @@ PanelWindow {
         }
     }
 
-    MouseArea {
-
-        z: -2
-
-        anchors.fill: homepanel
-
-        hoverEnabled: true
-    }
 
     //UI
-    ColumnLayout {
+    Rectangle {
 
-        id:homepanel
-
+        implicitWidth: SystemInfo.monitorwidth
+        implicitHeight: SystemInfo.monitorheight
         anchors.centerIn: parent
         anchors.verticalCenterOffset: -20
-
-        spacing: Config.gap
-
+        color: "transparent"
         layer.enabled: true
         layer.effect: DropShadow {
-            radius: 7
+            radius: 10
             samples: 20
             color: Qt.rgba(0.0,0.0,0.0,0.3)
             transparentBorder: true
         }
 
-        Clock {
-            Layout.alignment: Qt.AlignCenter
-            preferedWidth: widgets.implicitWidth
-        }
+        ColumnLayout {
 
-        //Search bar
-        Searchbar {
+            MouseArea {
+                anchors.fill: parent
 
-            id: searchbar
-            Layout.alignment: Qt.AlignCenter
-            preferedWidth: widgets.implicitWidth
-
-            onTextChanged: {
-                searchresults.resetScroll()
+                hoverEnabled: true
             }
 
-            animationRunning: searchresults.animationRunning
+            anchors.centerIn: parent
 
-            SearchResults {
+            id:homepanel
 
-                id: searchresults
+            spacing: Config.gap
 
-                visible: implicitHeight
 
-                z: -1
-                y: searchbar.implicitHeight/2
+            Clock {
+                Layout.alignment: Qt.AlignCenter
+                preferedWidth: widgets.implicitWidth
+            }
 
-                results: searchbar.results
+            //Search bar
+            Searchbar {
 
-                onVisibleChanged: searchbar.results = []
+                id: searchbar
+                Layout.alignment: Qt.AlignCenter
+                preferedWidth: widgets.implicitWidth
 
-                onEnterPressed: {
-                    if (visible) root.visible = false
+                onTextChanged: {
+                    searchresults.resetScroll()
                 }
 
-                bottomLeftRadius: searchbar.radius
-                bottomRightRadius: searchbar.radius
+                animationRunning: searchresults.animationRunning
 
-                implicitWidth: parent.implicitWidth
-                implicitHeight: (parent.implicitHeight/2 + widgets.implicitHeight + Config.gap) * parent.typing - 31
+                SearchResults {
 
-                Behavior on implicitHeight {NumberAnimation {duration: 400; easing.type: Easing.OutCubic}}
+                    id: searchresults
 
-                MouseArea {
-                    anchors.fill: parent
-                    z:-1
+                    visible: implicitHeight
+
+                    z: -1
+                    y: searchbar.implicitHeight/2
+
+                    results: searchbar.results
+
+                    onVisibleChanged: searchbar.results = []
+
+                    onEnterPressed: {
+                        if (visible) root.visible = false
+                    }
+
+                    bottomLeftRadius: searchbar.radius
+                    bottomRightRadius: searchbar.radius
+
+                    implicitWidth: parent.implicitWidth
+                    implicitHeight: (parent.implicitHeight/2 + widgets.implicitHeight + Config.gap) * parent.typing - 28
+
+                    Behavior on implicitHeight {NumberAnimation {duration: 300; easing.type: Easing.OutElastic; easing.period: 1.8}}
+
+                    MouseArea {
+                        anchors.fill: parent
+                        z:-1
+                    }
                 }
+
+            }
+
+            //Widgets
+            Widgets {
+
+                panel_navigator: !searchbar.typing
+
+                z: searchresults.visible ? -2 : 1
+
+                opacity: !(searchresults.implicitHeight == (searchbar.implicitHeight/2 + widgets.implicitHeight + Config.gap))
+
+                id: widgets
+
+                Layout.alignment: Qt.AlignCenter
+
+            }
+
+            Keys.onPressed: (events) => {
+                events.accepted = true
+                KeyHandlers.signalPressed(events.key, events.modifiers, events.isAutoRepeat)
+            }
+            Keys.onReleased: (events) => {
+                events.accepted = true
+                KeyHandlers.signalReleased(events.key, events.modifiers, events.isAutoRepeat)
+            }
+
+            Component.onCompleted: {
+                KeyHandlers.pressed.connect((key, mod, auto)=> {
+                    if (key == Qt.Key_Escape) {
+                        closepanel.start()
+                    }
+                    if (searchbar.typing) return
+                    if (key == Qt.Key_Left && mod == Qt.ShiftModifier && !auto) {
+                        MediaPlayerInfo.prevMedia()
+                    } else if (key == Qt.Key_Right && mod == Qt.ShiftModifier && !auto) {
+                        MediaPlayerInfo.nextMedia()
+                    } else if (key == Qt.Key_Left && !auto) {
+                        widgets.advancePanel(-1)
+                    } else if (key == Qt.Key_Right && !auto) {
+                        widgets.advancePanel(1)
+                    } else if (key == Qt.Key_AsciiTilde && !auto) {
+                        AudioInfo.muteVolume(AudioInfo.sinkDefault)
+                    } else if (key == Qt.Key_Up) {
+                        AudioInfo.setVolume(AudioInfo.sinkDefault, Math.min(Math.max(AudioInfo.volume+10, 0), 100))
+                    } else if (key == Qt.Key_Down) {
+                        AudioInfo.setVolume(AudioInfo.sinkDefault, Math.min(Math.max(AudioInfo.volume-10, 0), 100))
+                    }
+                })
+                KeyHandlers.released.connect((key, mod, auto) => {
+                    if (searchbar.typing) return
+                    if (key == Qt.Key_Space && !auto) {
+                        MediaPlayerInfo.playPauseMedia()
+                    }
+                })
+
             }
 
         }
-
-        //Widgets
-        Widgets {
-
-            panel_navigator: !searchbar.typing
-
-            z: searchresults.visible ? -2 : 1
-
-            opacity: !(searchresults.implicitHeight == (searchbar.implicitHeight/2 + widgets.implicitHeight + Config.gap))
-
-            id: widgets
-
-            Layout.alignment: Qt.AlignCenter
-
-        }
-
-        Keys.onPressed: (events) => {
-            events.accepted = true
-            KeyHandlers.signalPressed(events.key, events.modifiers, events.isAutoRepeat)
-        }
-        Keys.onReleased: (events) => {
-            events.accepted = true
-            KeyHandlers.signalReleased(events.key, events.modifiers, events.isAutoRepeat)
-        }
-
-        Component.onCompleted: {
-            KeyHandlers.pressed.connect((key, mod, auto)=> {
-                if (searchbar.typing) return
-                if (key == Qt.Key_Space && !auto) {
-                    MediaPlayerInfo.playPauseMedia()
-                } else if (key == Qt.Key_Left && mod == Qt.ShiftModifier && !auto) {
-                    MediaPlayerInfo.prevMedia()
-                } else if (key == Qt.Key_Right && mod == Qt.ShiftModifier && !auto) {
-                    MediaPlayerInfo.nextMedia()
-                } else if (key == Qt.Key_Left && !auto) {
-                    widgets.advancePanel(-1)
-                } else if (key == Qt.Key_Right && !auto) {
-                    widgets.advancePanel(1)
-                } else if (key == Qt.Key_AsciiTilde && !auto) {
-                    AudioInfo.muteVolume(AudioInfo.sinkDefault)
-                } else if (key == Qt.Key_Up) {
-                    AudioInfo.setVolume(AudioInfo.sinkDefault, Math.min(Math.max(AudioInfo.volume+10, 0), 100))
-                } else if (key == Qt.Key_Down) {
-                    AudioInfo.setVolume(AudioInfo.sinkDefault, Math.min(Math.max(AudioInfo.volume-10, 0), 100))
-                }
-            })
-            KeyHandlers.released.connect((key, mod, auto) => {
-                if (key == Qt.Key_Escape) {
-                    closepanel.start()
-                }
-            })
-
-        }
-
     }
 
 }

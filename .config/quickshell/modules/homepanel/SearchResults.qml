@@ -26,10 +26,7 @@ ClippingRectangle {
 
     property var execList: []
 
-    property bool animationRunning: false
-
-
-    border.width: 3
+    border.width: 2
     border.color: Color.blend(Color.accentStrong,Color.bgSurface,0.75)
 
     signal removeResults()
@@ -53,24 +50,6 @@ ClippingRectangle {
         }
         mouse.bypass = 1
         mouse.visible = true
-        updateResults.restart()
-    }
-
-    Timer {
-        id: updateResults
-        interval: 1
-        onTriggered: {
-            const tempresults = root.results
-            if (root.animationRunning) {updateResults.restart(); return}
-            for (const i in tempresults) {
-                if (root.results[i]?.name == root.newresults[i]?.name) {
-                    tempresults[i].refresh = "false" 
-                    continue
-                }
-                break
-            }
-            root.newresults = tempresults
-        }
     }
 
     function scrollDown() {
@@ -174,7 +153,7 @@ ClippingRectangle {
         container_left_margin: 8
         container_bottom_margin: 2
 
-        items_data: root.newresults
+        items_data: root.results
 
         items: Loader {
             id: results_items
