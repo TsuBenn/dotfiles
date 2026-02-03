@@ -19,9 +19,67 @@ PanelWindow {
     visible: false
     exclusionMode: ExclusionMode.Auto
 
+    function toggle() {
+        if (visible && !openpanel.running) {
+            closepanel.start()
+            return
+        }
+        else root.visible = true
+    }
+
     WlrLayershell.layer: WlrLayer.Overlay
 
     color: Qt.rgba(0.0,0.0,0.0,0.4)
+
+    onVisibleChanged: {
+        if (visible) {
+            openpanel.start()
+        }
+    }
+
+    SequentialAnimation {
+        id: openpanel
+        NumberAnimation {
+            target: homepanel
+            property: "anchors.verticalCenterOffset"
+            from: -SystemInfo.monitorheight
+            to: 5
+            duration: 200
+            easing.type: Easing.OutQuint
+        }
+        NumberAnimation {
+            target: homepanel
+            property: "anchors.verticalCenterOffset"
+            to: -20
+            duration: 200
+            easing.type: Easing.OutCubic
+        }
+    }
+
+    SequentialAnimation {
+        id: closepanel
+        NumberAnimation {
+            target: homepanel
+            property: "anchors.verticalCenterOffset"
+            from: -20
+            to: 20
+            duration: 100
+            easing.type: Easing.OutQuad
+        }
+        NumberAnimation {
+            target: homepanel
+            property: "anchors.verticalCenterOffset"
+            to: -SystemInfo.monitorheight
+            duration: 150
+            easing.type: Easing.InCubic
+        }
+        PauseAnimation {
+            duration: 50
+        }
+        ScriptAction {
+            script: root.visible = false
+        }
+    }
 
     MouseArea {
 
@@ -31,8 +89,8 @@ PanelWindow {
 
         hoverEnabled: true
 
-        onReleased: {
-            root.visible = false
+        onPressed: {
+            closepanel.start()
         }
     }
 
@@ -139,7 +197,7 @@ PanelWindow {
         Component.onCompleted: {
             KeyHandlers.pressed.connect((key, mod, auto)=> {
                 if (key == Qt.Key_Escape) {
-                    root.visible = false
+                    closepanel.start()
                 }
             })
             KeyHandlers.released.connect((key, mod, auto) => {

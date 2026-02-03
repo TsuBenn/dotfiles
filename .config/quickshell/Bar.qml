@@ -235,7 +235,7 @@ Scope {
 
             IpcHandler {
                 target: "homepanel"
-                function toggle(): void {homepanel.item.visible = !homepanel.item.visible}
+                function toggle(): void {homepanel.item.toggle()}
             }
         }
 
