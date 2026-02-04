@@ -44,7 +44,7 @@ PanelWindow {
             property: "anchors.verticalCenterOffset"
             from: -SystemInfo.monitorheight
             to: 0
-            duration: 450
+            duration: 350
             easing.type: Easing.OutElastic
             easing.amplitude: 0.8
             easing.period: 1.6
