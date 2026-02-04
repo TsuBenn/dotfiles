@@ -8,6 +8,7 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 
 alias vim='nvim'
+alias wifiDriverInstall='yay -S aic8800d80-dkms'
 alias qsRestart='qs kill & qs -d'
 alias qsR='qs kill & qs -d'
 alias grubUpdate='sudo grub-mkconfig -o /boot/grub/grub.cfg'
