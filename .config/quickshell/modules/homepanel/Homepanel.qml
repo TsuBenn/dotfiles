@@ -44,7 +44,7 @@ PanelWindow {
             property: "anchors.verticalCenterOffset"
             from: -SystemInfo.monitorheight
             to: 0
-            duration: 350
+            duration: 400
             easing.type: Easing.OutElastic
             easing.amplitude: 0.8
             easing.period: 1.6
@@ -209,7 +209,7 @@ PanelWindow {
                 })
                 KeyHandlers.released.connect((key, mod, auto) => {
                     if (searchbar.typing) return
-                    if (key == Qt.Key_Space && !auto) {
+                    if (key == Qt.Key_Space) {
                         MediaPlayerInfo.playPauseMedia()
                     }
                 })
