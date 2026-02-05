@@ -46,7 +46,7 @@ ColumnLayout {
         opacity: widgets.panel_index == index
 
         Behavior on x {NumberAnimation {
-            duration: 300
+            duration: 400
             easing.type: Easing.OutElastic
             easing.amplitude: 0.5
             easing.period: 1.8
