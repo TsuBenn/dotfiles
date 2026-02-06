@@ -72,6 +72,7 @@ ColumnLayout {
 
         property int panel_index: 1
 
+        //Panel 1
         WidgetsPanel {
 
             index: 1
@@ -495,17 +496,51 @@ ColumnLayout {
             }
         }
 
+        //Panel 2
         WidgetsPanel {
 
             index: 2
 
             WidgetsContainer {
+
                 implicitWidth: 425
                 implicitHeight: 425
+
+                ClippingRectangle {
+
+                    anchors.fill: parent
+
+                    radius: Config.radius
+                    color: "transparent"
+
+                    Image {
+
+                        anchors.fill: parent
+
+                        fillMode: Image.PreserveAspectCrop
+                        source: MediaPlayerInfo.artUrl
+
+                        opacity: 0.3
+
+                        layer.enabled: true
+                        layer.effect: GaussianBlur {
+                            radius: 30
+                            samples: 30
+                            cached: true
+                        }
+
+                    }
+                }
+
+                MediaPlayer2 {}
+
+
             }
             WidgetsContainer {
                 implicitWidth: 1000-Config.gap*2-425-120
                 implicitHeight: 425
+
+
             }
             WidgetsContainer {
 
@@ -519,6 +554,7 @@ ColumnLayout {
             }
         }
 
+        //Panel 3
         WidgetsPanel {
 
             index: 3
