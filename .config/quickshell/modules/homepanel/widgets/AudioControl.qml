@@ -37,6 +37,7 @@ ColumnLayout {
             signal toggleMute()
 
             signal adjusted()
+            signal held()
 
             function syncBar() {
                 bar.syncBar()
@@ -52,7 +53,7 @@ ColumnLayout {
                 }
 
                 AudioInfo.setVolume(device, percentage)
-                if (alert) AudioInfo.playSound(audio, 2/3)
+                if (alert) AudioInfo.playSound(audio, 1/3)
             }
 
             VerticalProgressBar {
@@ -71,6 +72,10 @@ ColumnLayout {
 
                 onAdjusted: {
                     control.adjusted()
+                }
+
+                onHeld: {
+                    control.held()
                 }
 
             }

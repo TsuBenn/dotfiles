@@ -27,7 +27,7 @@ PanelWindow {
         else root.visible = true
     }
 
-    WlrLayershell.layer: WlrLayer.Overlay
+    //WlrLayershell.layer: WlrLayer.Overlay
 
     color: Qt.rgba(0.0,0.0,0.0,0.4)
 
@@ -35,6 +35,24 @@ PanelWindow {
         if (visible) {
             openpanel.start()
         }
+    }
+
+    Component.onCompleted: {
+        HyprInfo.hyprEvent.connect((event) => {
+            if (!root.visible) return
+            switch (event) {
+                case "activespecial":
+                case "openwindow":
+                case "closewindow":
+                case "movewindow":
+                case "fullscreen":
+                case "activewindow": {
+                    closepanel.start()
+                    return
+                    break
+                }
+            }
+        })
     }
 
     SequentialAnimation {

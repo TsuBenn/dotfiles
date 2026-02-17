@@ -5,7 +5,7 @@ import qs.services
 import Quickshell.Widgets
 import QtQuick
 
-ClippingRectangle {
+Rectangle {
     id: button
 
     property string text                 : "Text"
@@ -54,8 +54,7 @@ ClippingRectangle {
         }
     }
 
-    Behavior on border.width {NumberAnimation {duration: 100; easing.type: Easing.OutCubic}}
-    Behavior on color {ColorAnimation {duration: 100; easing.type: Easing.OutCubic}}
+    Behavior on border.width {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
     signal pressed()
     signal released()
@@ -100,8 +99,6 @@ ClippingRectangle {
                 return button.fg_color[0]
             }
         }
-
-        Behavior on color {ColorAnimation {duration: 100; easing.type: Easing.OutCubic}}
 
         font.family: button.font_family
         font.pointSize: button.font_size

@@ -44,7 +44,6 @@ ColumnLayout {
             samples: 20
             color: Qt.rgba(0.0,0.0,0.0,0.5*(1-root.artWidth/root.artHeight))
             transparentBorder: true
-            cached: true
         }
 
         MouseArea {
@@ -118,7 +117,7 @@ ColumnLayout {
 
             ColumnLayout {
 
-                spacing: 0
+                spacing: -6
 
                 Layout.alignment: Qt.AlignTop
                 Layout.topMargin: 2
@@ -148,22 +147,9 @@ ColumnLayout {
                         font_family: Fonts.zzz_vn_font
                         font_size: 25
                         font_minSize: 18
-                        font_color: "white"
+                        font_color: Color.textPrimary
 
                     }
-                }
-
-
-                MarqueeText {
-                    hoverable: true
-                    visible: MediaPlayerInfo.album && (MediaPlayerInfo.album != MediaPlayerInfo.title)
-                    padding: 12
-                    box_width: mediaInfo.implicitWidth - artFrame.implicitWidth - 4
-                    centered: false
-                    text: MediaPlayerInfo.album
-                    font_family: Fonts.zzz_vn_font
-                    font_size: 10
-                    font_color: "white"
                 }
 
                 MarqueeText {
@@ -173,8 +159,8 @@ ColumnLayout {
                     centered: false
                     text: MediaPlayerInfo.artist
                     font_family: Fonts.zzz_vn_font
-                    font_size: 14
-                    font_color: "white"
+                    font_size: 15
+                    font_color: Color.textPrimary
                 }
 
             }
@@ -504,7 +490,7 @@ ColumnLayout {
                 font_size: 12
                 font_weight: selected ? 800 : 700
                 box_width: sourcesList.list_container_implicitWidth
-                fg_color: selected ? [Color.textPrimary, Color.textPrimary, Color.textPrimary] :[Color.textPrimary, Color.textPrimary, Color.textPrimary] 
+                fg_color: selected ? [Color.textSecondary, Color.textSecondary, Color.textSecondary] :[Color.textPrimary, Color.textPrimary, Color.textPrimary] 
                 bg_color: selected ? [Qt.darker(Color.accentStrong,1.2),Qt.darker(Color.accentStrong,1.2),Color.bgSurface] : ["transparent",Color.bgBase,Color.bgSurface]
                 border_width: [0,0,2]
 

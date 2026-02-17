@@ -258,6 +258,7 @@ ClippingRectangle {
 
             delegate: list.items
 
+            interactive: false
         }
     }
 

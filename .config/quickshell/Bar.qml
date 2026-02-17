@@ -33,7 +33,6 @@ Scope {
             focusable: true
 
             exclusionMode: ExclusionMode.Auto
-            WlrLayershell.layer: WlrLayer.Overlay
 
             anchors {
                 top: true

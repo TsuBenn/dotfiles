@@ -23,15 +23,33 @@ ColumnLayout {
         widgets.panel_index = Math.min(Math.max(widgets.panel_index + interval,1),3)
     }
 
+    signal closeHomepanel()
+
+    onVisibleChanged: {
+        power_buttons.active_power_button = ""
+        power_buttons.power_countdown = 0
+    }
+
     component PowerButton: PillButton {
         box_height: 65
         box_width: 65
         property color icon_color
+        property string power_name
+        property string icon
+        property real size
+
+        property bool active: power_buttons.power_countdown > 0 && power_buttons.active_power_button == power_name 
+
+        text: active ? power_buttons.power_countdown : icon
+        font_size: active ? 22 : size
+
         radius: Config.radius
         bg_color: [Color.bgSurface , Color.bgSurface, icon_color]
-        fg_color: [Color.accentStrong, icon_color, Color.bgSurface]
-        border_width: [2,3,0]
-        border_color: [Color.blend(Color.accentStrong,Color.bgSurface,0.75),icon_color,Color.accentStrong]
+        fg_color: [active ? icon_color : Color.accentStrong, icon_color, Color.bgSurface]
+        font_family: Fonts.system
+        font_weight: 600
+        border_width: [active ? 3 : 2,3,0]
+        border_color: [active ? icon_color : Color.blend(Color.accentStrong,Color.bgSurface,0.75),icon_color,Color.accentStrong]
     }
 
     component WidgetsPanel: RowLayout {
@@ -41,9 +59,10 @@ ColumnLayout {
         Layout.preferredWidth: 1000
         Layout.preferredHeight: 425
 
-        x: (-implicitWidth - 50) * (widgets.panel_index - index)
+        x: (-implicitWidth - (SystemInfo.monitorwidth-1000)/2) * (widgets.panel_index - index)
 
-        opacity: widgets.panel_index == index
+        //opacity: widgets.panel_index == index
+        z: widgets.panel_index == index ? 0 : -2
 
         Behavior on x {NumberAnimation {
             duration: 400
@@ -195,8 +214,8 @@ ColumnLayout {
 
                                     layer.enabled: true
                                     layer.effect: GaussianBlur {
-                                        radius: 15
-                                        samples: 30
+                                        radius: 30
+                                        samples: 60
                                         cached: true
                                     }
 
@@ -228,7 +247,7 @@ ColumnLayout {
                                     layer.enabled: true
                                     layer.effect: GaussianBlur {
                                         radius: 50
-                                        samples: 50
+                                        samples: 60
                                         cached: true
                                     }
 
@@ -413,6 +432,8 @@ ColumnLayout {
             //Power buttons
             ColumnLayout {
 
+                id: power_buttons
+
                 spacing: Config.gap
 
                 Process {
@@ -427,16 +448,51 @@ ColumnLayout {
                     }
                 }
 
+                property int power_countdown: 0
+                property string active_power_button: ""
+
+                function startTimer() {
+                    power_countdown = 3
+                    power_timer.restart()
+                }
+
+                Timer {
+                    id: power_timer
+
+                    interval: 1000
+                    onTriggered: {
+                        if (power_buttons.power_countdown == 1) {
+                            power.startDetached()
+                            power_buttons.power_countdown = 0
+                            power_buttons.active_power_button = ""
+                            return
+                        }
+                        power_buttons.power_countdown -= 1
+                        power_timer.restart()
+                    }
+                }
 
                 //SHUTDOWN
                 PowerButton {
 
                     icon_color: "#ec2727"
 
-                    text: "\udb81\udc25"
-                    font_size: 36
+                    icon: "\udb81\udc25"
 
-                    onReleased: power.exec(["bash", "-c", "systemctl poweroff"])
+                    power_name: "shutdown"
+
+                    size: 36
+
+                    onReleased: {
+                        if (power_buttons.power_countdown > 0 && power_name == power_buttons.active_power_button) {
+                            power_buttons.power_countdown = 0
+                            power_timer.stop()
+                            return
+                        }
+                        power_buttons.active_power_button = power_name
+                        power_buttons.startTimer()
+                        power.command = ["bash", "-c", "systemctl poweroff"] 
+                    }
 
                 }
 
@@ -445,10 +501,22 @@ ColumnLayout {
 
                     icon_color: "#b72bee"
 
-                    text: "\udb82\udd01"
-                    font_size: 36
+                    icon: "\udb82\udd01"
 
-                    onReleased: power.exec(["bash", "-c", "systemctl hibernate"])
+                    power_name: "hibernate"
+
+                    size: 36
+
+                    onReleased: {
+                        if (power_buttons.power_countdown > 0 && power_name == power_buttons.active_power_button) {
+                            power_buttons.power_countdown = 0
+                            power_timer.stop()
+                            return
+                        }
+                        power_buttons.active_power_button = power_name
+                        power_buttons.startTimer()
+                        power.command = ["bash", "-c", "systemctl hibernate"]
+                    }
                 }
 
                 //SLEEP
@@ -456,20 +524,44 @@ ColumnLayout {
 
                     icon_color: "#1f62ee"
 
-                    text: "\udb82\udd04"
-                    font_size: 32
+                    icon: "\udb82\udd04"
 
-                    onReleased: power.exec(["bash", "-c", "systemctl suspend"])
+                    power_name: "sleep"
+
+                    size: 32
+
+                    onReleased: {
+                        if (power_buttons.power_countdown > 0 && power_name == power_buttons.active_power_button) {
+                            power_buttons.power_countdown = 0
+                            power_timer.stop()
+                            return
+                        }
+                        power_buttons.active_power_button = power_name
+                        power_buttons.startTimer()
+                        power.command = ["bash", "-c", "systemctl suspend"]
+                    }
                 }
 
                 //REBOOT
                 PowerButton {
                     icon_color: "#eea022"
 
-                    text: "\uead2"
-                    font_size: 32
+                    icon: "\uead2"
 
-                    onReleased: power.exec(["bash", "-c", "systemctl reboot"])
+                    power_name: "reboot"
+
+                    size: 32
+
+                    onReleased: {
+                        if (power_buttons.power_countdown > 0 && power_name == power_buttons.active_power_button) {
+                            power_buttons.power_countdown = 0
+                            power_timer.stop()
+                            return
+                        }
+                        power_buttons.active_power_button = power_name
+                        power_buttons.startTimer()
+                        power.command = ["bash", "-c", "systemctl reboot"]
+                    }
                 }
 
                 //LOCK
@@ -477,10 +569,22 @@ ColumnLayout {
 
                     icon_color: "#38de31"
 
-                    text: "\uf456"
-                    font_size: 30
+                    icon: "\uf456"
 
-                    onReleased: power.exec(["bash", "-c", "notify-send 'LOCK'"])
+                    power_name: "lock"
+
+                    size: 30
+
+                    onReleased: {
+                        if (power_buttons.power_countdown > 0 && power_name == power_buttons.active_power_button) {
+                            power_buttons.power_countdown = 0
+                            power_timer.stop()
+                            return
+                        }
+                        power_buttons.active_power_button = power_name
+                        power_buttons.startTimer()
+                        power.command = ["kitty"]
+                    }
                 }
 
                 //LOGOUT
@@ -488,10 +592,22 @@ ColumnLayout {
 
                     icon_color: "#2fbcf0"
 
-                    text: "\udb81\uddfd"
-                    font_size: 32
+                    icon: "\udb81\uddfd"
 
-                    onReleased: power.exec(["bash", "-c", "loginctl kill-user $USER"])
+                    power_name: "logout"
+
+                    size: 32
+
+                    onReleased: {
+                        if (power_buttons.power_countdown > 0 && power_name == power_buttons.active_power_button) {
+                            power_buttons.power_countdown = 0
+                            power_timer.stop()
+                            return
+                        }
+                        power_buttons.active_power_button = power_name
+                        power_buttons.startTimer()
+                        power.command = ["spotify"]
+                    }
                 }
             }
         }
@@ -501,6 +617,7 @@ ColumnLayout {
 
             index: 2
 
+            //Media Player 2 (MP2)
             WidgetsContainer {
 
                 implicitWidth: 425
@@ -508,10 +625,13 @@ ColumnLayout {
 
                 ClippingRectangle {
 
+                    id: artBg2
+
                     anchors.fill: parent
 
                     radius: Config.radius
                     color: "transparent"
+
 
                     Image {
 
@@ -520,19 +640,74 @@ ColumnLayout {
                         fillMode: Image.PreserveAspectCrop
                         source: MediaPlayerInfo.artUrl
 
-                        opacity: 0.3
+                        opacity: status == Image.Ready ? 0.4 : 0
+                        Behavior on opacity {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
                         layer.enabled: true
                         layer.effect: GaussianBlur {
                             radius: 30
-                            samples: 30
+                            samples: 60
                             cached: true
                         }
 
                     }
+
+
+                    BarVisualizer {
+
+                        id: mp2_bar
+
+                        visible: MediaPlayerInfo.activePlayer
+
+                        anchors.fill: parent
+                        anchors.bottomMargin: 200
+                        scale: 0.92
+                        x: -2
+
+                        spacing: 4
+                        round: true
+                        opacity: 0.4
+
+                        maxHeight: 300
+
+                        color: Qt.lighter(Color.accentSoft,1.2)
+
+                        centered: true
+
+                    }
+
+                    layer.enabled: true
+                    layer.effect: OpacityMask {
+                        maskSource: Rectangle {
+                            implicitWidth: artBg.implicitWidth
+                            implicitHeight: artBg.implicitHeight
+
+                            gradient: Gradient {
+                                GradientStop {position: 0.0; color: "white" }
+                                GradientStop {position: 0.7; color: "transparent" }
+                            }
+                        }
+                    }
                 }
 
-                MediaPlayer2 {}
+                Text {
+
+                    anchors.centerIn: parent
+                    anchors.verticalCenterOffset: -70
+
+                    visible: !MediaPlayerInfo.activePlayer
+
+                    text: "No Media Player Active"
+                    font.family: Fonts.system
+                    font.pointSize: 13
+                    font.weight: 700
+                    color: Qt.lighter(Color.bgMuted,1.5)
+
+                }
+
+                MediaPlayer2 {
+                    anchors.centerIn: parent
+                }
 
 
             }
@@ -540,6 +715,32 @@ ColumnLayout {
                 implicitWidth: 1000-Config.gap*2-425-120
                 implicitHeight: 425
 
+                Rectangle {
+                    id: mixer_header
+
+                    implicitWidth: parent.implicitWidth
+                    implicitHeight: 34
+
+                    color: "transparent"
+
+                    Text {
+
+                        y: 12
+                        x: 12
+
+                        text: "App Volumes"
+                        font.family: Fonts.system
+                        font.pointSize: 12
+                        font.weight: 700
+                        color: Color.textDisabled
+                    }
+                }
+
+                AudioMixer {
+                    anchors.top: mixer_header.bottom
+                    anchors.bottom: parent.bottom
+                    implicitWidth: parent.implicitWidth
+                }
 
             }
             WidgetsContainer {
@@ -585,7 +786,10 @@ ColumnLayout {
             color: widgets.panel_index > 1 ? Color.textPrimary : Color.textDisabled
             MouseArea {
                 anchors.fill: parent
-                anchors.margins: -10
+                anchors.topMargin: -10
+                anchors.bottomMargin: -50
+                anchors.leftMargin: -200
+                anchors.rightMargin: -10
 
                 hoverEnabled: true
 
@@ -632,9 +836,13 @@ ColumnLayout {
             font.pointSize: 12
             font.weight: 1000
             color: widgets.panel_index < 3 ? Color.textPrimary : Color.textDisabled
+
             MouseArea {
                 anchors.fill: parent
-                anchors.margins: -10
+                anchors.topMargin: -10
+                anchors.bottomMargin: -50
+                anchors.leftMargin: -10
+                anchors.rightMargin: -200
 
                 hoverEnabled: true
 

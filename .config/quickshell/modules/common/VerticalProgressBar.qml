@@ -31,6 +31,7 @@ ClippingRectangle {
     signal entered()
     signal exited()
     signal adjusted() 
+    signal held() 
 
     function syncBar() {
         sync.running = true
@@ -85,6 +86,7 @@ ClippingRectangle {
                 root.percentage = (1 - mouseY/root.implicitHeight).toFixed(1)*100
                 percentageClamp()
             }
+            root.held()
         }
 
         onWheelDelta: (delta) => {

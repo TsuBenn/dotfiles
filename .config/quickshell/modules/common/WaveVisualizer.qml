@@ -9,7 +9,7 @@ Canvas {
     property list<int> points: Cava.points
     property list<int> smoothPoints: []
     property int smoothing: 2
-    property string color: "white"
+    property color color: "white"
 
     anchors.fill: parent
     anchors.centerIn: parent
