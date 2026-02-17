@@ -1,4 +1,6 @@
-pragma Singleton import Quickshell
+pragma Singleton 
+
+import Quickshell
 import Quickshell.Io
 import QtQuick
 
@@ -201,14 +203,6 @@ Singleton {
                 }
                 root.disks = disks
 
-                if (datas[24].result.length > 0) {
-
-                } else {
-                    root.battery = "inf"
-                    root.batterystate = "PSU"
-                    root.onbattery = false
-                }
-
             }
         }
     }
@@ -371,15 +365,12 @@ Singleton {
                     root.onbattery = true
 
                 } else {
-                    root.battery = "Inf"
+                    root.battery = "inf"
+                    root.batterystate = "PSU"
                     root.onbattery = false
                 }
             }
         }
-    }
-
-    Process {
-        id: run
     }
 
     Process {
