@@ -114,7 +114,7 @@ ClippingRectangle {
 
                     Rectangle {
                         anchors.fill: parent
-                        anchors.margins: 2.5
+                        anchors.margins: 2
                         color: wb.selected ? Color.bgMuted : Color.bgMuted
                         radius: height/2
                         Behavior on color { ColorAnimation {duration: 400; easing.type: Easing.OutCubic} }
@@ -136,6 +136,8 @@ ClippingRectangle {
                             font_size: text == "•" ? 15 : 11
                             font_weight: 1000
                             text: wb.winCount > 0 ? wb.index + 1 : "•"
+
+                            Behavior on color {ColorAnimation {duration: 100; easing.type: Easing.OutCubic}}
 
                             bg_color: [
                                 wb.selected && wb.winCount > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),

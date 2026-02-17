@@ -10,16 +10,21 @@ Singleton {
     //OS level
     property string username: "user"
     property string hostname: "host"
+    property string os: "Linux"
+    property string kernel: "linux"
     property string systemUTF: "\udb82\udcc7"
+    property string uptime: "0h0m0s"
+    property string wm: "n/a"
 
     //Specs
     property string cpumodel: "CPU"
-    property string gpumodel: "GPU"
+    property var gpumodels: []
     property string rootstoragename: "ROOT"
     property string networkdevice: "Wifi/Ethernet"
     property string monitorname: "Wifi/Ethernet"
     property int    monitorheight: 1920
     property int    monitorwidth: 1080
+    property int    monitorrefreshrate: 60
     property real   monitorscale: 1
 
     //Process
@@ -56,6 +61,8 @@ Singleton {
         const usage = (gpumemused/gpumemtotal)*100
         return usage.toFixed(2)
     }
+
+    property var  disks
 
     property int  rootstoragetotal
     property int  rootstorageused
@@ -121,27 +128,89 @@ Singleton {
         interval: 1000
         running: true
         repeat: true
+        triggeredOnStart: true
         onTriggered: {
             cpustat.reload()
-            memstat.reload()
-            batterystat.running = true
             gpustat.running = true
             cputemp.running = true
-            rootstorage.running = true
             network.reload()
             disk.reload()
+            fastfetch.running = true
         }
     }
 
-    FileView {
-        id: cpumodel
+    Process {
+        id: fastfetch
 
-        path: "/proc/cpuinfo"
+        command: ["fastfetch", "-j" , "true"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const datas = JSON.parse(text)
 
-        onLoaded: {
-            const intel = text().match(/^.*model name\s+:\s+(Intel\(R\) Core\(TM\) [^ ]+).*$/m)
-            const amd = text().match(/^.*model name\s+:\s+(AMD Ryzen [0-9]+ [0-9A-Za-z]+).*$/m)
-            root.cpumodel = intel?.[1] ?? amd?.[1]
+                root.username = datas[0].result.userName
+                root.hostname = datas[0].result.hostName
+                root.os = datas[2].result.prettyName
+                root.kernel = datas[4].result.release
+                const uptime_hours = Math.floor(datas[5].result.uptime/3600000)
+                const uptime_minutes = Math.floor((datas[5].result.uptime - uptime_hours*3600000)/60000)
+                const uptime_seconds = Math.floor((datas[5].result.uptime - uptime_hours*3600000 - uptime_minutes*60000)/1000)
+                root.uptime = `${uptime_hours}h${uptime_minutes}m${uptime_seconds}s`
+
+                root.monitorname = datas[8].result[0].name
+                root.monitorwidth = datas[8].result[0].scaled.width
+                root.monitorheight = datas[8].result[0].scaled.height
+                root.monitorscale = datas[8].result[0].scaled.height/datas[8].result[0].preferred.height
+                root.monitorrefreshrate = datas[8].result[0].output.refreshRate
+
+                root.wm = datas[10].result.prettyName
+
+                root.cpumodel = datas[18].result.cpu
+
+                var gpumodels = []
+                for (const gpu of datas[19].result) {
+                    gpumodels.push({"type": gpu.type, "name": gpu.name})
+                }
+                root.gpumodels = gpumodels
+
+                root.memtotal = datas[20].result.total/1000
+                root.memused = datas[20].result.used/1000
+
+                var swaptotal = 0
+                var swapused = 0
+                for (const swap of datas[21].result) {
+                    swaptotal += swap.total/1000
+                    swapused += swap.used/1000
+                }
+                root.swaptotal = swaptotal
+                root.swapused = swapused
+
+                var disks = []
+                for (const disk of datas[22].result) {
+
+                    if (disk.mountpoint == "/") {
+                        root.rootstoragetotal = disk.bytes.total/1000
+                        root.rootstorageused = disk.bytes.used/1000
+                    }
+
+                    disks.push({
+                        "name": disk.mountpoint == "/" ? "root" : disk.name,
+                        "mountpoint": disk.mountpoint,
+                        "total": disk.bytes.total/1000,
+                        "used": disk.bytes.used/1000,
+                        "filesystem": disk.filesystem/1000,
+                    })
+                }
+                root.disks = disks
+
+                if (datas[24].result.length > 0) {
+
+                } else {
+                    root.battery = "inf"
+                    root.batterystate = "PSU"
+                    root.onbattery = false
+                }
+
+            }
         }
     }
 
@@ -156,6 +225,7 @@ Singleton {
             const cpudata = data.slice(1).map(x => parseInt(x, 10))
             if (data) {
                 root.cputotal = cpudata.reduce((acc,cur) => acc + cur, 0);
+
                 root.cpuidle = cpudata[3] + cpudata[4];
 
                 const totald = root.cputotal - (root.cputotalprev ?? 0)
@@ -167,25 +237,6 @@ Singleton {
                 root.cpuidleprev = root.cpuidle
                 root.cputotalprev = root.cputotal
             }
-        }
-    }
-
-    //get MEM STAT
-    FileView {
-        id: memstat
-
-        path: "/proc/meminfo"
-
-        onLoaded: {
-            let total = parseInt(text().match(/MemTotal: *(\d+)/)[1], 10)
-            let used = total - parseInt(text().match(/MemAvailable: *(\d+)/)[1], 10)
-            root.memtotal = total
-            root.memused = used
-
-            total = parseInt(text().match(/SwapTotal: *(\d+)/)[1], 10)
-            used = total - parseInt(text().match(/SwapFree: *(\d+)/)[1], 10)
-            root.swaptotal = total
-            root.swapused = used
         }
     }
 
@@ -220,29 +271,10 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 const data = text.split(", ")
-                root.gpumodel = data[0]
                 root.gpuusage = parseInt(data[1], 10)
                 root.gpumemtotal = parseInt(data[2], 10)
                 root.gpumemused = parseInt(data[3], 10)
                 root.gputemp = parseInt(data[4], 10)
-            }
-        }
-    }
-
-    //get ROOTSTORAGE STAT
-    Process {
-        id: rootstorage
-
-        running: true
-        command: ["bash", "-c", "df | grep '^/dev/' | awk '{print $1, $3, $4, $2}'"]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const data = text.split(" ")
-                //console.log(data)
-                root.rootstoragename = data[0]
-                root.rootstoragetotal = parseInt(data[3], 10)
-                root.rootstorageused = parseInt(data[3], 10) - parseInt(data[2], 10)
             }
         }
     }
@@ -323,69 +355,6 @@ Singleton {
 
             //console.log(root.storageRounder(root.diskwritespeed, 2))
 
-        }
-    }
-
-
-    Process {
-        id: getUsername
-        running: true
-
-        command: ["whoami"]
-        stdout: StdioCollector {
-            onStreamFinished: root.username = text.trim()
-        }
-    }
-
-    Process {
-        id: getMonitor
-        running: true
-
-        command: ["hyprctl", "monitors"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const data = text.split("\n")
-                let name = data[0].match(/^Monitor\s+([\S]+).*/)
-                let scale = text.match(/^\s+scale:\s+(.*)$/m)
-                let resolution = data[1].match(/^\s+(\d+)x(\d+)@.*/)
-
-
-                root.monitorname = name
-                root.monitorscale = parseFloat(scale[1])
-                root.monitorwidth = resolution[1]
-                root.monitorheight = resolution[2]
-            }
-        }
-    }
-
-    Process {
-        id: getHostname
-        running: true
-
-        command: ["uname", "-n"]
-        stdout: StdioCollector {
-            onStreamFinished: root.hostname = text.trim()
-        }
-    }
-
-    Process {
-        id: batterystat
-        running: true
-
-        command: ["bash", "-c", "upower -i $(upower -e | grep BAT)"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                if (!text.match(/^Failed/)) {
-                    root.battery = text.match(/^\s+percentage:\s+(\d+%)/m)[1]
-                    root.batterystate = text.match(/^\s+state:\s+(.*)\s+/m)[1]
-                    root.batteryhealth = text.match(/^\s+capacity:\s+(\d+%)/m)[1]
-                    root.onbattery = true
-
-                } else {
-                    root.battery = "Inf"
-                    root.onbattery = false
-                }
-            }
         }
     }
 

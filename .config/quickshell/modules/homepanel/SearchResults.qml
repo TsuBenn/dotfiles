@@ -75,15 +75,11 @@ ClippingRectangle {
             if (key == Qt.Key_Up && select > 0) {
                 select -= 1
                 if (scrollUp()) list.advanceScroll(-Math.min(select+1,6))
-            } else if (key == Qt.Key_Down && select < results.length - 1) {
+            } else if ( (key == Qt.Key_Down || key == Qt.Key_Tab) && select < results.length - 1) {
                 select += 1
                 if (scrollDown()) list.advanceScroll(Math.min(results.length - select,6))
             } else if (key == Qt.Key_Return ) {
-                //console.log("test")
                 preEnter.restart()
-                //runexec.command = ["bash", "-c", execList[select]]
-                //runexec.startDetached()
-                //root.enterPressed()
             }
         })
     }
@@ -95,8 +91,8 @@ ClippingRectangle {
 
         interval: 1
         onTriggered: {
-            //console.log(timer)
-            if (root.results.length > 0 && !root.animationRunning) {
+            console.log(timer)
+            if (root.results.length > 0) {
                 //console.log(root.animationRunning)
                 //console.log("entered")
                 runexec.command = ["bash", "-c", root.execList[root.select]]
@@ -167,11 +163,7 @@ ClippingRectangle {
             required property string icon
             required property string refresh
 
-            ListView.onAdd: item.add()
-
             sourceComponent: Rectangle {
-
-                signal add()
 
                 //onAdd: if (app.refresh == "true") addAnimation.start()
 
@@ -313,7 +305,6 @@ ClippingRectangle {
                                 return "image://icon/" + app.icon
                             }
 
-                            cache: true
                             asynchronous: true
                             smooth: true
 

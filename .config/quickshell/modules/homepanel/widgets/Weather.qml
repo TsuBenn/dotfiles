@@ -33,42 +33,6 @@ Rectangle {
         }
     }
 
-    Image {
-
-        id: background
-
-        visible: false
-
-        anchors.centerIn: parent
-
-        property int index: {
-            if (WeatherInfo.condition_icon == "🌤" ||WeatherInfo.condition_icon == "⛅️") {
-                return 3
-            } else if (WeatherInfo.condition_icon =="🌦" ||WeatherInfo.condition_icon == "🌧") {
-                return 4
-            } else if (WeatherInfo.condition_icon =="⛈" || WeatherInfo.condition_icon =="🌩") {
-                return 1
-            } else if (WeatherInfo.condition_icon =="☀️") {
-                return 0
-            } else if (WeatherInfo.condition_icon =="☁" ||WeatherInfo.condition_icon =="🌫" ) {
-                return 2
-            }
-            else return 0
-        }
-
-        source: "../../../assets/images/weathers.jpg"
-
-        scale: 0.5
-
-        transform: [Translate {x: background.height-(background.height/2)*background.index}]
-
-        cache: true
-        asynchronous: true
-
-        opacity: 0.9
-
-    }
-
     ColumnLayout {
 
         id: text

@@ -93,13 +93,13 @@ PillButton {
 
         y: {
             if (!button.dropdown) {
-                return parent.y - implicitHeight + button.implicitHeight - button.border.width*2
+                return - implicitHeight + button.implicitHeight
             } else {
-                return parent.y - button.border.width*2
+                return parent.y
             }
         }
 
-        x: parent.x - implicitWidth/2 + button.implicitWidth/2 - button.border.width*2
+        x: -implicitWidth/2 + button.implicitWidth/2
 
         focus: true
 

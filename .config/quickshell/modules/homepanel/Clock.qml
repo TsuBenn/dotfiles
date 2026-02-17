@@ -48,7 +48,7 @@ Item {
 
             Layout.bottomMargin: -system_logo.implicitHeight/2 + this.implicitHeight*0.5
 
-            text: "Uptime: " + (Uptime.hour > 0 ? Uptime.hour + "h" : "") + Uptime.minute + "m"
+            text: "Uptime: " + SystemInfo.uptime
             color: Color.textPrimary
             font.family: Fonts.system
             font.wordSpacing: -4

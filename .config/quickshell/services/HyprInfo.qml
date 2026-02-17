@@ -22,6 +22,8 @@ Singleton {
     property var specialWorkspaces
     property var icons
 
+    signal hyprEvent(event : string)
+
     function switchWorkspace(n) {
         Hyprland.dispatch("workspace " + n)
     }
@@ -33,15 +35,15 @@ Singleton {
 
     function iconFetch(query, query2) {
         if (query == "") return "exception"
-        query = query.toLowerCase()
-        var key = Object.keys(root.icons).find(k => k.includes(query))
+        query = query.replace(/\.[^/.]+$/, "").toLowerCase()
+        var key = Object.keys(root.icons).find(k => k.toLowerCase().includes(query))
         var value = key ? root.icons[key] : undefined
         if (!value) {
-            key = Object.keys(root.icons).find(k => k.includes(query2))
+            key = Object.keys(root.icons).find(k => k.toLowerCase().includes(query))
             value = key ? root.icons[key] : undefined
         }
         if (!value) {
-            key = Object.entries(root.icons).find(([,k]) => k.includes(query2))
+            key = Object.entries(root.icons).find(([,k]) => k.toLowerCase().includes(query))
             value = key ? key[1] : "exception"
         }
         if (!value) value = "exception"
@@ -62,6 +64,8 @@ Singleton {
                     break
                 }
             }
+            root.hyprEvent(event.name)
+            //console.log(event.name)
         })
     }
 
