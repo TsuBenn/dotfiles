@@ -1,6 +1,4 @@
-pragma Singleton
-
-import Quickshell
+pragma Singleton import Quickshell
 import Quickshell.Io
 import QtQuick
 
@@ -136,6 +134,7 @@ Singleton {
             network.reload()
             disk.reload()
             fastfetch.running = true
+            batterystat.running = true
         }
     }
 
@@ -356,6 +355,31 @@ Singleton {
             //console.log(root.storageRounder(root.diskwritespeed, 2))
 
         }
+    }
+
+    Process {
+        id: batterystat
+        running: true
+
+        command: ["bash", "-c", "upower -i $(upower -e | grep BAT)"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (!text.match(/^Failed/)) {
+                    root.battery = text.match(/^\s+percentage:\s+(\d+%)/m)[1]
+                    root.batterystate = text.match(/^\s+state:\s+(.*)\s+/m)[1]
+                    root.batteryhealth = text.match(/^\s+capacity:\s+(\d+%)/m)[1]
+                    root.onbattery = true
+
+                } else {
+                    root.battery = "Inf"
+                    root.onbattery = false
+                }
+            }
+        }
+    }
+
+    Process {
+        id: run
     }
 
     Process {
