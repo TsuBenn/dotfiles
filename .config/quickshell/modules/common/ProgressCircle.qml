@@ -132,7 +132,7 @@ ColumnLayout {
         Circle {
             color: root.fg_color
             percentage: root.percentage/100 * root.maxPercentage
-            thickness: root.thickness + 0.5
+            thickness: root.thickness
         }
 
         Text {
