@@ -28,6 +28,7 @@ ColumnLayout {
     onVisibleChanged: {
         power_buttons.active_power_button = ""
         power_buttons.power_countdown = 0
+        power_timer.stop()
     }
 
     component PowerButton: PillButton {
@@ -38,10 +39,10 @@ ColumnLayout {
         property string icon
         property real size
 
-        property bool active: power_buttons.power_countdown > 0 && power_buttons.active_power_button == power_name 
+        property bool active: power_timer.running && power_buttons.active_power_button == power_name 
 
-        text: active ? power_buttons.power_countdown : icon
-        font_size: active ? 22 : size
+        text: active ? "" : icon
+        font_size: active ? 18 : size
 
         radius: Config.radius
         bg_color: [Color.bgSurface , Color.bgSurface, icon_color]
@@ -50,6 +51,19 @@ ColumnLayout {
         font_weight: 600
         border_width: [active ? 3 : 2,3,0]
         border_color: [active ? icon_color : Color.blend(Color.accentStrong,Color.bgSurface,0.75),icon_color,Color.accentStrong]
+
+        ProgressCircle {
+
+            visible: parent.active
+
+            anchors.centerIn: parent
+            fg_color: parent.icon_color
+            percentage: (power_buttons.power_countdown/3)*100
+            thickness: 4
+            radius: 16
+            icon: ""
+            label: ""
+        }
     }
 
     component WidgetsPanel: RowLayout {
@@ -460,8 +474,9 @@ ColumnLayout {
                     id: power_timer
 
                     interval: 1000
+
                     onTriggered: {
-                        if (power_buttons.power_countdown == 1) {
+                        if (power_buttons.power_countdown == 0) {
                             power.startDetached()
                             power_buttons.power_countdown = 0
                             power_buttons.active_power_button = ""

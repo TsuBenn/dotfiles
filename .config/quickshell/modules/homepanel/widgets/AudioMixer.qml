@@ -60,7 +60,6 @@ List {
 
             color: Qt.lighter(Color.bgMuted,1)
 
-
             Rectangle {
 
                 anchors.top: parent.top
@@ -72,6 +71,7 @@ List {
                 implicitHeight: icon.height + 16
 
                 color: Qt.lighter(Color.bgMuted,1.3)
+
             }
 
             ColumnLayout {
@@ -127,9 +127,11 @@ List {
                             color: Qt.rgba(0.0,0.0,0.0,0.3)
                             transparentBorder: true
                         }
+
                     }
 
                     Item {
+
                         implicitWidth: stream_container.implicitWidth - 66
                         implicitHeight: icon.height
                         Text {
@@ -144,6 +146,7 @@ List {
                             color: Color.textPrimary
                             font.weight: 700
                         }
+
                     }
                 }
 
@@ -208,6 +211,7 @@ List {
                     }
 
                     PillButton {
+
                         text: Math.round(bar.percentage)
 
                         font_family: Fonts.system
@@ -218,6 +222,7 @@ List {
                         bg_color: ["transparent","transparent","transparent"]
                         fg_color: [Color.textPrimary,Color.textPrimary,Color.textPrimary]
                         border_width: [0,0,0]
+
                     }
                 }
 
