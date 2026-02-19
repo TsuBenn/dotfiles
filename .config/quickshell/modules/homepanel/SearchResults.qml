@@ -305,6 +305,8 @@ ClippingRectangle {
                                 return "image://icon/" + app.icon
                             }
 
+                            cache: false
+
                             asynchronous: true
                             smooth: true
 

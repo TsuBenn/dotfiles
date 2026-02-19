@@ -99,7 +99,6 @@ ColumnLayout {
                         id: art
 
                         source: MediaPlayerInfo.artUrl
-                        cache: true
 
                         fillMode: Image.PreserveAspectCrop
 

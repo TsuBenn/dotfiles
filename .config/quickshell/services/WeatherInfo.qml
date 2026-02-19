@@ -15,7 +15,7 @@ Singleton {
 
     Timer {
         id: timer
-        interval: 1000
+        interval: 60000
         running: true
         repeat: true
 

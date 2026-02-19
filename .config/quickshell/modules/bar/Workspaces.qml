@@ -204,6 +204,8 @@ ClippingRectangle {
 
                                     source: "image://icon/" + HyprInfo.iconFetch(apps.windowtitle,apps.windowclass)
 
+                                    cache: false
+
                                     mipmap: true
                                     smooth: true
 

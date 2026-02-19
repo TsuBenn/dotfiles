@@ -80,7 +80,7 @@ def load_apps():
 
     icons = dict(sorted(icons.items()))
 
-    with open(".config/quickshell/services/backend/icons.json", "w") as f:
+    with open(os.getcwd() + "/icons.json", "w") as f:
         json.dump(icons, f, indent=4)
 
     return apps
@@ -153,7 +153,7 @@ def main():
 
         else:
             apps = [
-                app for app in load_apps() if (query in app["name"].lower()) or (query in app.get("generic_name","").lower()) or (query in app.get("keywords","").lower())
+                app for app in load_apps() if (query in app["name"].lower()) or (query in app.get("generic_name","").lower()) or (query in app.get("keywords","").lower()) or (query in app.get("icon","").lower())
             ]
 
             print(json.dumps(apps)) 
