@@ -48,6 +48,7 @@ List {
         required property int volume
         required property string app
         required property string name
+        required property string binary
 
         sourceComponent: Rectangle {
 
@@ -56,7 +57,7 @@ List {
             implicitWidth: root.container_implicitWidth
             implicitHeight: 48 + icon.height
 
-            radius: Config.radius - root.padding
+            radius: Config.radius - root.padding/2
 
             color: Qt.lighter(Color.bgMuted,1)
 
@@ -103,7 +104,7 @@ List {
 
                             visible: source != "image://icon/exception"
 
-                            source: "image://icon/" + HyprInfo.iconFetch(stream.app,stream.app)
+                            source: "image://icon/" + HyprInfo.iconFetch(stream.app,stream.binary)
 
                             mipmap: true
                             smooth: true
@@ -115,7 +116,7 @@ List {
                             visible: !icon.visible
                             text: "\udb82\udcc6"
                             font.family: Fonts.zalandosans_font
-                            font.pointSize: 24
+                            font.pointSize: 20
                             font.weight: 1000
                             color: Color.textPrimary
                         }
@@ -185,7 +186,7 @@ List {
 
                         id: bar
 
-                        box_width: root.container_implicitWidth - 95
+                        box_width: root.container_implicitWidth - 97
                         box_height: 12
                         preferedPercentage: stream.volume
 
@@ -212,12 +213,12 @@ List {
 
                     PillButton {
 
-                        text: Math.round(bar.percentage)
+                        text: Math.round(bar.percentage) + "%"
 
                         font_family: Fonts.system
                         font_size: 10
                         font_weight: 700
-                        box_width: 30
+                        box_width: 32
                         box_height: 24
                         bg_color: ["transparent","transparent","transparent"]
                         fg_color: [Color.textPrimary,Color.textPrimary,Color.textPrimary]

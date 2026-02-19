@@ -36,14 +36,19 @@ Singleton {
     function iconFetch(query, query2) {
         if (query == "") return "exception"
         query = query.replace(/\.[^/.]+$/, "").toLowerCase()
+        query2 = query2.replace(/\.[^/.]+$/, "").toLowerCase()
         var key = Object.keys(root.icons).find(k => k.toLowerCase().includes(query))
         var value = key ? root.icons[key] : undefined
         if (!value) {
-            key = Object.keys(root.icons).find(k => k.toLowerCase().includes(query))
+            key = Object.entries(root.icons).find(([,k]) => k.toLowerCase().includes(query))
+            value = key ? key[1] : undefined
+        }
+        if (!value) {
+            key = Object.keys(root.icons).find(k => k.toLowerCase().includes(query2))
             value = key ? root.icons[key] : undefined
         }
         if (!value) {
-            key = Object.entries(root.icons).find(([,k]) => k.toLowerCase().includes(query))
+            key = Object.entries(root.icons).find(([,k]) => k.toLowerCase().includes(query2))
             value = key ? key[1] : "exception"
         }
         if (!value) value = "exception"
@@ -111,7 +116,7 @@ Singleton {
 
         command: ["hyprctl", "workspaces", "-j"]
 
-        running: true
+        running: false
         stdout: StdioCollector {
             onStreamFinished: {
                 const specialWorkspaces = []

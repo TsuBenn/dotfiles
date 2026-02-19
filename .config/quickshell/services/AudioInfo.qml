@@ -11,12 +11,14 @@ Singleton {
     property bool mute
     property real mic
 
+    property string raw
     property var sinks
     property int sinkDefault
     property var sources
     property int sourceDefault
 
     property var streams
+    property string streamraw 
 
     signal statusUpdated()
 
@@ -123,6 +125,7 @@ Singleton {
 
         stdout: StdioCollector {
             onStreamFinished: {
+                if (root.raw == text) return
                 let rawsinks = text.match(/^.*Sinks:([\s\S]*?)\n.*Sources:/m)[1].split("\n")
                 let rawsources = text.match(/^.*Sources:([\s\S]*?)\n.*Filters:/m)[1].split("\n")
                 let rawfilters = text.match(/^.*Filters:([\s\S]*?)\n.*Streams:/m)[1].split("\n")
@@ -207,6 +210,7 @@ Singleton {
                     root.sinks = sinks
                 }
 
+                root.raw = text
                 root.statusUpdated()
             }
         }
@@ -221,6 +225,7 @@ Singleton {
 
         stdout: StdioCollector {
             onStreamFinished: {
+                if (root.streamraw == text) return
                 const datas = text.match(/^Sink Input #\d+(?:\n(?!Sink Input #).*)*/gm)
 
                 var streams = []
@@ -228,6 +233,7 @@ Singleton {
                 for (const data of datas) {
                     const app = data.match(/\application.name\s+=\s+"(.*)"/)[1]
                     const name = JSON.parse(`"${data.match(/\media.name\s+=\s+"(.*)"/)[1]}"`)
+                    const binary = JSON.parse(`"${data.match(/\application.process.binary\s+=\s+"(.*)"/)[1]}"`)
                     const volume = parseInt(data.match(/Volume:.*?\/\s*(\d+)%/)[1])
                     const id = parseInt(data.match(/\object.id\s+=\s+"(.*)"/)[1])
 
@@ -239,11 +245,12 @@ Singleton {
                         case ".config/quickshell/assets/sfx/mambo_wow.mp3": continue
                     }
 
-                    streams.push({"id": id, "volume": volume, "app": app, "name": name})
+                    streams.push({"id": id, "volume": volume, "app": app, "name": name, "binary": binary})
 
                 }
 
                 root.streams = streams
+                root.streamraw = text
             }
         }
 

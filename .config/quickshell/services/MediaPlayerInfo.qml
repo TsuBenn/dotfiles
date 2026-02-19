@@ -116,6 +116,18 @@ Singleton {
         //console.log(root.artUrl == "" ? "nope" : root.artUrl)
     }
 
+    function autoSelect() {
+        for (const player of root.players) {
+            if (player.playbackState == MprisPlaybackState.Playing) {
+                root.activePlayer = player
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        autoSelect()
+    }
+
     Timer {
         interval: 1000
         running: false

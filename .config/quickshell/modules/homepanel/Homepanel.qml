@@ -34,6 +34,7 @@ PanelWindow {
     onVisibleChanged: {
         if (visible) {
             openpanel.start()
+            MediaPlayerInfo.autoSelect()
         }
     }
 
@@ -45,8 +46,7 @@ PanelWindow {
                 case "openwindow":
                 case "closewindow":
                 case "movewindow":
-                case "fullscreen":
-                case "activewindow": {
+                case "fullscreen": {
                     closepanel.start()
                     return
                     break
@@ -57,6 +57,9 @@ PanelWindow {
 
     SequentialAnimation {
         id: openpanel
+        PauseAnimation {
+            duration: 50
+        }
         NumberAnimation {
             target: homepanel
             property: "anchors.verticalCenterOffset"

@@ -58,7 +58,7 @@ ColumnLayout {
 
             anchors.centerIn: parent
             fg_color: parent.icon_color
-            percentage: (power_buttons.power_countdown/3)*100
+            percentage: (power_buttons.power_countdown/2)*100
             thickness: 4
             radius: 16
             icon: ""
@@ -466,7 +466,7 @@ ColumnLayout {
                 property string active_power_button: ""
 
                 function startTimer() {
-                    power_countdown = 3
+                    power_countdown = 2
                     power_timer.restart()
                 }
 
