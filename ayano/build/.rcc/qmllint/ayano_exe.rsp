@@ -1,0 +1,14 @@
+--bare
+-I
+/home/tsubenn/dotfiles/ayano/build
+-I
+/home/tsubenn/dotfiles/ayano/build/ayano
+-I
+/home/tsubenn/dotfiles/ayano/build
+-I
+/usr/lib/qt6/qml
+--resource
+/home/tsubenn/dotfiles/ayano/build/.qt/rcc/qmake_ayano.qrc
+--resource
+/home/tsubenn/dotfiles/ayano/build/.qt/rcc/ayano_exe_raw_qml_0.qrc
+/home/tsubenn/dotfiles/ayano/qml/Main.qml

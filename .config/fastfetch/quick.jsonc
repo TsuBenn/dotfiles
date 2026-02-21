@@ -1,0 +1,43 @@
+{
+    "display": {
+        "stat": true,
+        "pipe": true,
+        "showErrors": true,
+        "noBuffer": true
+    },
+    "modules": [
+        "title",
+        "os",
+        "board",
+        "kernel",
+        "uptime",
+        "display",
+        "wm",
+        {
+            "type": "cpu",
+            "showPeCoreCount": true,
+            "temp": true
+        },
+        {
+            "type": "gpu",
+            "driverSpecific": true,
+            "temp": true
+        },
+        "memory",
+        {
+            "type": "swap",
+            "separate": true
+        },
+        "disk",
+        {
+            "type": "localip",
+            "showIpv4": true,
+            "showMac": true,
+        },
+        "wifi",
+        {
+            "type": "physicaldisk",
+            "temp": true
+        },
+    ]
+}

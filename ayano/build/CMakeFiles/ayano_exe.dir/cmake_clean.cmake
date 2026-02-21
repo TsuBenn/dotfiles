@@ -1,0 +1,40 @@
+file(REMOVE_RECURSE
+  ".qt/rcc/qrc_ayano_exe_raw_qml_0.cpp"
+  ".qt/rcc/qrc_qmake_ayano.cpp"
+  ".rcc/qmlcache/ayano_exe_qml/Main_qml.cpp"
+  ".rcc/qmlcache/ayano_exe_qml/Main_qml.cpp.aotstats"
+  ".rcc/qmlcache/ayano_exe_qmlcache_loader.cpp"
+  "CMakeFiles/ayano_exe.dir/link.d"
+  "CMakeFiles/ayano_exe_autogen.dir/AutogenUsed.txt"
+  "CMakeFiles/ayano_exe_autogen.dir/ParseCache.txt"
+  "ayano_exe_autogen"
+  "CMakeFiles/ayano_exe.dir/ayano_exe_autogen/mocs_compilation.cpp.o"
+  "CMakeFiles/ayano_exe.dir/ayano_exe_autogen/mocs_compilation.cpp.o.d"
+  "CMakeFiles/ayano_exe.dir/ayano_exe_qmltyperegistrations.cpp.o"
+  "CMakeFiles/ayano_exe.dir/ayano_exe_qmltyperegistrations.cpp.o.d"
+  "CMakeFiles/ayano_exe.dir/build/.qt/rcc/qrc_ayano_exe_raw_qml_0.cpp.o"
+  "CMakeFiles/ayano_exe.dir/build/.qt/rcc/qrc_ayano_exe_raw_qml_0.cpp.o.d"
+  "CMakeFiles/ayano_exe.dir/build/.qt/rcc/qrc_qmake_ayano.cpp.o"
+  "CMakeFiles/ayano_exe.dir/build/.qt/rcc/qrc_qmake_ayano.cpp.o.d"
+  "CMakeFiles/ayano_exe.dir/build/.rcc/qmlcache/ayano_exe_qml/Main_qml.cpp.o"
+  "CMakeFiles/ayano_exe.dir/build/.rcc/qmlcache/ayano_exe_qml/Main_qml.cpp.o.d"
+  "CMakeFiles/ayano_exe.dir/build/.rcc/qmlcache/ayano_exe_qmlcache_loader.cpp.o"
+  "CMakeFiles/ayano_exe.dir/build/.rcc/qmlcache/ayano_exe_qmlcache_loader.cpp.o.d"
+  "CMakeFiles/ayano_exe.dir/main.cpp.o"
+  "CMakeFiles/ayano_exe.dir/main.cpp.o.d"
+  "ayano/ayano_exe.qmltypes"
+  "ayano_exe"
+  "ayano_exe.pdb"
+  "ayano_exe_autogen/mocs_compilation.cpp"
+  "ayano_exe_autogen/timestamp"
+  "ayano_exe_qmltyperegistrations.cpp"
+  "meta_types/ayano_exe_json_file_list.txt"
+  "meta_types/ayano_exe_json_file_list.txt.timestamp"
+  "meta_types/qt6ayano_exe_metatypes.json"
+  "meta_types/qt6ayano_exe_metatypes.json.gen"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/ayano_exe.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

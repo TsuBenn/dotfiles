@@ -1,0 +1,14 @@
+-rootPath
+/home/tsubenn/dotfiles/ayano
+-cmake-output
+-output-file
+/home/tsubenn/dotfiles/ayano/build/.qt/qml_imports/ayano_exe_build.cmake
+-importPath
+/home/tsubenn/dotfiles/ayano/build
+-importPath
+/home/tsubenn/dotfiles/ayano/build/ayano
+-importPath
+/usr/lib/qt6/qml
+-qrcFiles
+/home/tsubenn/dotfiles/ayano/build/.qt/rcc/qmake_ayano.qrc
+/home/tsubenn/dotfiles/ayano/build/.qt/rcc/ayano_exe_raw_qml_0.qrc
