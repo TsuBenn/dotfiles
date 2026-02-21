@@ -22,6 +22,7 @@ ClippingRectangle {
 
     property real preferedPercentage : SystemInfo.cpuusage
 
+    property bool round              : true
     property bool interactive        : false
     property bool containsMouse      : mouse.containsMouse
     property bool containsPress      : mouse.containsPress
@@ -51,7 +52,7 @@ ClippingRectangle {
 
     implicitWidth: root.box_width
     implicitHeight: root.box_height
-    radius: root.box_height/2
+    radius: (root.box_height/2)*root.round
     color: {
         if (mouse.containsMouse) {
             return root.bg_hover
@@ -122,7 +123,8 @@ ClippingRectangle {
         implicitWidth: parent.width*root.percentage/100
         Behavior on implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
-        topRightRadius: root.box_height/2
+        topRightRadius: (root.box_height/2)*root.round
+        bottomRightRadius: (root.box_height/2)*root.round
 
         color: {
             if (mouse.containsMouse) {
@@ -132,7 +134,6 @@ ClippingRectangle {
             }
         }
 
-        bottomRightRadius: root.box_height/2
     }
 
 }

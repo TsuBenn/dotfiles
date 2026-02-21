@@ -46,6 +46,7 @@ PanelWindow {
                 case "openwindow":
                 case "closewindow":
                 case "movewindow":
+                case "workspace":
                 case "fullscreen": {
                     closepanel.start()
                     return

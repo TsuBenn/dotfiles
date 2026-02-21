@@ -69,8 +69,8 @@ ClippingRectangle {
         }
     }
 
-    implicitWidth: box_height
-    implicitHeight: box_width
+    implicitWidth: box_width
+    implicitHeight: box_height
 
     color: list.bg_color
 

@@ -625,6 +625,7 @@ ColumnLayout {
                     }
                 }
             }
+
         }
 
         //Panel 2
@@ -758,6 +759,7 @@ ColumnLayout {
                 }
 
             }
+
             WidgetsContainer {
 
                 implicitWidth: 120
@@ -768,6 +770,7 @@ ColumnLayout {
                 }
 
             }
+
         }
 
         //Panel 3
@@ -776,8 +779,15 @@ ColumnLayout {
             index: 3
 
             WidgetsContainer {
+
                 implicitWidth: 1000
                 implicitHeight: 425
+
+                SystemSpecs {
+                    y: 6
+                    x: 2
+                }
+
             }
         }
 
