@@ -39,7 +39,7 @@ Item {
             implicitWidth: spec_container.implicitWidth - spec_header_text_container.anchors.margins*2 - 8
             implicitHeight: 4
 
-            color: Color.bgMuted
+            color: Qt.lighter(Color.bgMuted,1.5)
         }
 
         Rectangle {
@@ -798,7 +798,7 @@ Item {
 
                                     text: disk_loader.name
 
-                                    color: sys_info.value_color
+                                    color: sys_info.stat_color
 
                                     font.family: Fonts.system
                                     font.weight: 700
@@ -1135,7 +1135,7 @@ Item {
 
                                 text: phydisk_loader.name
 
-                                color: sys_info.value_color
+                                color: sys_info.stat_color
 
                                 font.family: Fonts.system
                                 font.weight: 700
