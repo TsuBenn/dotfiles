@@ -268,7 +268,7 @@ ClippingRectangle {
 
                     anchors.verticalCenter: parent.verticalCenter
 
-                    spacing: 20
+                    spacing: 10
 
                     ClippingRectangle {
 
@@ -297,13 +297,13 @@ ClippingRectangle {
 
                         Image {
 
+                            id: app_icon
+
                             anchors.fill: parent
 
+                            visible: source != "image://icon/exception"
 
-                            source: {
-                                if (!app.icon) return "image://icon/kitty"
-                                return "image://icon/" + app.icon
-                            }
+                            source: "image://icon/" + HyprInfo.iconFetch(app.icon, app.name)
 
                             cache: false
 
@@ -311,6 +311,17 @@ ClippingRectangle {
                             smooth: true
 
                         }
+
+                        Text {
+                            anchors.centerIn: parent
+                            visible: !app_icon.visible
+                            text: "\udb82\udcc6"
+                            font.family: Fonts.zalandosans_font
+                            font.pointSize: 26
+                            font.weight: 1000
+                            color: Color.textPrimary
+                        }
+
 
                         layer.enabled: true
                         layer.effect: DropShadow {

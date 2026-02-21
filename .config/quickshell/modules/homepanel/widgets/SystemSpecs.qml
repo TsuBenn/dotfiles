@@ -1109,7 +1109,7 @@ Item {
                                 box_width: 20
 
                                 anchors.left: parent.left
-                                anchors.margins: 18
+                                anchors.margins: 12
 
                                 text: {
                                     if (phydisk_loader.type.toLowerCase() == "ata" || phydisk_loader.type.toLowerCase() == "nvme") {
@@ -1128,7 +1128,7 @@ Item {
 
                                 anchors.left: physdisk_type.right
 
-                                anchors.margins: 2
+                                anchors.margins: 4
 
                                 width: parent.implicitWidth - phydisk_stat.paintedWidth - 20*2 - physdisk_type.implicitWidth
                                 elide: Text.ElideRight
