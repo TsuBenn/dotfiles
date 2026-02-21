@@ -1,0 +1,2 @@
+# CMAKE generated file: DO NOT EDIT!
+# Timestamp file for custom commands dependencies management for ayano_exe_copy_res.

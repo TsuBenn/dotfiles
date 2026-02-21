@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/tsubenn/dotfiles/ayano/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

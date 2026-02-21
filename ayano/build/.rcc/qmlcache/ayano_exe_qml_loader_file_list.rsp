@@ -1,0 +1,5 @@
+--resource
+/home/tsubenn/dotfiles/ayano/build/.qt/rcc/qmake_ayano.qrc
+--resource
+/home/tsubenn/dotfiles/ayano/build/.qt/rcc/ayano_exe_raw_qml_0.qrc
+/ayano/qml/Main.qml

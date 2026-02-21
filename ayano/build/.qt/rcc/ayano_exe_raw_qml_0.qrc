@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/ayano/">
+    <file alias="qml/Main.qml">/home/tsubenn/dotfiles/ayano/qml/Main.qml</file>
+  </qresource>
+</RCC>
+

@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="/ayano">/home/tsubenn/dotfiles/ayano/build/ayano</file>
+
+  </qresource>
+</RCC>
