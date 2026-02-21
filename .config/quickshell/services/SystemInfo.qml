@@ -18,7 +18,38 @@ Singleton {
 
     //Specs
     property string cpumodel: "CPU"
+    property int cpucores
+    property int cputhreads
+    property real cpubase
+    property real cpuboost
+    property int  cputotal
+    property int  cpuidle
+    property real cputemp
+    property int  cputotalprev
+    property int  cpuidleprev
+    property real cpuusage
+
+    property real  memtotal
+    property real  memused
+    property real memusage: {
+        const usage = (memused/memtotal)*100
+        return usage.toFixed(2)
+    }
+
     property var gpumodels: []
+    property real  gpuusage
+    property real  gputemp
+    property real  gpumemtotal
+    property real  gpumemused
+    property real gpumemusage: {
+        const usage = (gpumemused/gpumemtotal)*100
+        return usage.toFixed(2)
+    }
+
+    property string board: "MOTHERBOARD"
+
+    property var wifi
+
     property string rootstoragename: "ROOT"
     property string networkdevice: "Wifi/Ethernet"
     property string monitorname: "Wifi/Ethernet"
@@ -27,45 +58,23 @@ Singleton {
     property int    monitorrefreshrate: 60
     property real   monitorscale: 1
 
-    //Process
-    property int  cputotal
-    property int  cpuidle
-    property string cputemp
-    property int  cputotalprev
-    property int  cpuidleprev
-    property real cpuusage
-    property int  memtotal
-    property int  memused
-    property real memusage: {
-        const usage = (memused/memtotal)*100
-        return usage.toFixed(2)
-    }
-
     property string battery
     property string batterystate
     property string batteryhealth
     property bool onbattery
 
-    property int  swaptotal
-    property int  swapused
+    property real  swaptotal
+    property real  swapused
     property real swapusage: {
         const usage = (swapused/swaptotal)*100
         return usage.toFixed(2)
     }
 
-    property int  gpuusage
-    property string  gputemp
-    property int  gpumemtotal
-    property int  gpumemused
-    property real gpumemusage: {
-        const usage = (gpumemused/gpumemtotal)*100
-        return usage.toFixed(2)
-    }
-
     property var  disks
+    property var  phydisks
 
-    property int  rootstoragetotal
-    property int  rootstorageused
+    property real  rootstoragetotal
+    property real  rootstorageused
     property real rootstorageusage: {
         const usage = (rootstorageused/rootstoragetotal)*100
         return usage.toFixed(2)
@@ -131,8 +140,6 @@ Singleton {
         triggeredOnStart: true
         onTriggered: {
             cpustat.reload()
-            gpustat.running = true
-            cputemp.running = true
             network.reload()
             disk.reload()
             fastfetch.running = true
@@ -143,50 +150,109 @@ Singleton {
     Process {
         id: fastfetch
 
-        command: ["fastfetch", "-j" , "true"]
+        command: ["bash", "-c", "fastfetch -c quick.jsonc --format json"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const datas = JSON.parse(text)
 
+                // Titles
                 root.username = datas[0].result.userName
                 root.hostname = datas[0].result.hostName
-                root.os = datas[2].result.prettyName
-                root.kernel = datas[4].result.release
-                const uptime_hours = Math.floor(datas[5].result.uptime/3600000)
-                const uptime_minutes = Math.floor((datas[5].result.uptime - uptime_hours*3600000)/60000)
-                const uptime_seconds = Math.floor((datas[5].result.uptime - uptime_hours*3600000 - uptime_minutes*60000)/1000)
+                
+                // OS
+                root.os = datas[1].result.prettyName
+
+                // Motherboard
+                root.board = datas[2].result.name
+
+                // Kernel
+                root.kernel = datas[3].result.release
+
+                // Uptime
+                const uptime_hours = Math.floor(datas[4].result.uptime/3600000)
+                const uptime_minutes = Math.floor((datas[4].result.uptime - uptime_hours*3600000)/60000)
+                const uptime_seconds = Math.floor((datas[4].result.uptime - uptime_hours*3600000 - uptime_minutes*60000)/1000)
                 root.uptime = `${uptime_hours}h${uptime_minutes}m${uptime_seconds}s`
 
-                root.monitorname = datas[8].result[0].name
-                root.monitorwidth = datas[8].result[0].scaled.width
-                root.monitorheight = datas[8].result[0].scaled.height
-                root.monitorscale = datas[8].result[0].scaled.height/datas[8].result[0].preferred.height
-                root.monitorrefreshrate = datas[8].result[0].output.refreshRate
+                // Display
+                root.monitorname = datas[5].result[0].name
+                root.monitorwidth = datas[5].result[0].scaled.width
+                root.monitorheight = datas[5].result[0].scaled.height
+                root.monitorscale = datas[5].result[0].scaled.height/datas[5].result[0].preferred.height
+                root.monitorrefreshrate = datas[5].result[0].output.refreshRate
 
-                root.wm = datas[10].result.prettyName
+                // WM
+                root.wm = datas[6].result.prettyName
 
-                root.cpumodel = datas[18].result.cpu
+                // CPU
+                root.cpumodel = datas[7].result.cpu
+                root.cpucores = datas[7].result.cores.physical
+                root.cputhreads = datas[7].result.cores.logical
+                root.cpubase = datas[7].result.frequency.base
+                root.cpuboost = datas[7].result.frequency.max
+                root.cputemp = datas[7].result.temperature
 
+                // GPU
                 var gpumodels = []
-                for (const gpu of datas[19].result) {
-                    gpumodels.push({"type": gpu.type, "name": gpu.name})
+                for (const gpu of datas[8].result) {
+                    gpumodels.push({
+                        "type": gpu.type,
+                        "name": gpu.name,
+                        "memorytotal": gpu.memory.dedicated.total/1000,
+                        "memoryused": gpu.memory.dedicated.used/1000,
+                        "cores": gpu.coreCount,
+                        "usage": gpu.coreUsage,
+                        "temp": gpu.temperature})
+                }
+                var hasGPU = false
+                for (const gpu of gpumodels) {
+                    if (gpu.type == "Discrete") {
+                        root.gputemp = gpu.temp
+                        root.gpuusage = gpu.usage
+                        root.gpumemtotal = gpu.memorytotal
+                        root.gpumemused = gpu.memoryused
+                        hasGPU = true
+                        break
+                    }
+                }
+                for (const i in gpumodels) {
+                    if (gpumodels[i].type == "Discrete") {
+                        const mainGpu = gpumodels[i]
+                        gpumodels.splice(i, 1)
+                        gpumodels.unshift(mainGpu)
+                        break
+                    }
+                }
+                if (!hasGPU) {
+                    for (const gpu of gpumodels) {
+                        if (gpu.type == "Integrated") {
+                            root.gputemp = gpu.temp
+                            root.gpuusage = gpu.usage
+                            root.gpumemtotal = gpu.memorytotal
+                            root.gpumemused = gpu.memoryused
+                            break
+                        }
+                    }
                 }
                 root.gpumodels = gpumodels
 
-                root.memtotal = datas[20].result.total/1000
-                root.memused = datas[20].result.used/1000
+                // RAM
+                root.memtotal = datas[9].result.total/1000
+                root.memused = datas[9].result.used/1000
 
+                // SWAP
                 var swaptotal = 0
                 var swapused = 0
-                for (const swap of datas[21].result) {
+                for (const swap of datas[10].result) {
                     swaptotal += swap.total/1000
                     swapused += swap.used/1000
                 }
                 root.swaptotal = swaptotal
                 root.swapused = swapused
 
+                // DISKS
                 var disks = []
-                for (const disk of datas[22].result) {
+                for (const disk of datas[11].result) {
 
                     if (disk.mountpoint == "/") {
                         root.rootstoragetotal = disk.bytes.total/1000
@@ -194,14 +260,39 @@ Singleton {
                     }
 
                     disks.push({
-                        "name": disk.mountpoint == "/" ? "root" : disk.name,
+                        "name": disk.mountpoint == "/" ? "ROOT" : disk.name,
                         "mountpoint": disk.mountpoint,
                         "total": disk.bytes.total/1000,
                         "used": disk.bytes.used/1000,
-                        "filesystem": disk.filesystem/1000,
+                        "filesystem": disk.filesystem,
                     })
                 }
                 root.disks = disks
+
+                // WIFI
+                root.wifi = {
+                    "device": datas[13].result[0].inf.description,
+                    "name": datas[13].result[0].conn.ssid,
+                    "localip": datas[12].result[0].ipv4,
+                    "signal": datas[13].result[0].conn.signalQuality,
+                    "channel": datas[13].result[0].conn.channel,
+                    "freq": datas[13].result[0].conn.frequency,
+                }
+
+                // PHYSICAL DISKS
+                var phydisks = []
+                for (const disk of datas[14].result) {
+                    const name = disk.name
+                    const size = disk.size/1000
+                    const type = disk.interconnect
+                    if (type.toLowerCase() == "usb") {
+                        phydisks.push({"name": name, "size": size, "type": type})
+                    } else {
+                        phydisks.unshift({"name": name, "size": size, "type": type})
+                    }
+                }
+
+                root.phydisks = phydisks
 
             }
         }
@@ -229,45 +320,6 @@ Singleton {
 
                 root.cpuidleprev = root.cpuidle
                 root.cputotalprev = root.cputotal
-            }
-        }
-    }
-
-    //get CPU TEMP
-    Process {
-        id: cputemp
-
-        running: true
-        command: ["sensors"]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                if (text) {
-                    if (root.cpumodel.match(/^Intel/)) {
-                        root.cputemp = text.match(/^Package id 0:\s+\+(.*)°C/m)[1]
-                    }
-                    else if (root.cpumodel.match(/^AMD/)) {
-                        root.cputemp = text.match(/^Tctl:\s+\+(.*)°C/m)[1]
-                    }
-                }
-            }
-        }
-    }
-
-    //get GPU STAT
-    Process {
-        id: gpustat
-
-        running: true
-        command: ["nvidia-smi", "--query-gpu=name,utilization.gpu,memory.total,memory.used,temperature.gpu", "--format=csv,noheader,nounits"]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const data = text.split(", ")
-                root.gpuusage = parseInt(data[1], 10)
-                root.gpumemtotal = parseInt(data[2], 10)
-                root.gpumemused = parseInt(data[3], 10)
-                root.gputemp = parseInt(data[4], 10)
             }
         }
     }

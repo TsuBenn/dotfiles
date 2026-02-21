@@ -78,7 +78,7 @@ ColumnLayout {
             icon_weight: 700
             font_size: root.label_size
             font_weight: 800
-            label: SystemInfo.ktoM(SystemInfo.gpumemused).toFixed(1) + "/" + Math.round(SystemInfo.ktoM(SystemInfo.gpumemtotal))
+            label: SystemInfo.ktoG(SystemInfo.gpumemused).toFixed(1) + "/" + Math.round(SystemInfo.ktoG(SystemInfo.gpumemtotal))
             percentage: SystemInfo.gpumemusage
             maxPercentage: root.maxPercentage
         }
