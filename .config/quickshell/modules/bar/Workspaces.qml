@@ -64,13 +64,13 @@ ClippingRectangle {
         Behavior on anchors.leftMargin {
             SequentialAnimation {
                 PauseAnimation {duration: 100*selection.left_pause}
-                NumberAnimation {duration: 100; easing.type:Easing.OutCubic}
+                NumberAnimation {duration: 200; easing.type:Easing.OutCubic}
             }
         }
         Behavior on anchors.rightMargin {
             SequentialAnimation {
                 PauseAnimation {duration: 100*selection.right_pause}
-                NumberAnimation {duration: 100; easing.type:Easing.OutCubic}
+                NumberAnimation {duration: 200; easing.type:Easing.OutCubic}
             }
         }
 
@@ -113,11 +113,13 @@ ClippingRectangle {
                     color: selected ? Color.accentStrong : Color.transparent(Color.accentStrong,0)
 
                     Rectangle {
+
                         anchors.fill: parent
                         anchors.margins: 2
                         color: wb.selected ? Color.bgMuted : Color.bgMuted
                         radius: height/2
                         Behavior on color { ColorAnimation {duration: 400; easing.type: Easing.OutCubic} }
+                        
                     }
 
                     RowLayout {
@@ -140,9 +142,9 @@ ClippingRectangle {
                             Behavior on color {ColorAnimation {duration: 100; easing.type: Easing.OutCubic}}
 
                             bg_color: [
-                                wb.selected && wb.winCount > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
-                                wb.selected && wb.winCount > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
-                                wb.selected && wb.winCount > 0 ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
+                                Color.transparent(Color.accentStrong,0),
+                                Color.transparent(Color.accentStrong,0),
+                                Color.transparent(Color.accentStrong,0),
                             ]
                             /*
                              bg_color: [
@@ -153,11 +155,11 @@ ClippingRectangle {
                              */
 
                             fg_color: [
-                                wb.selected ? wb.winCount > 0 ? Color.textSecondary : Color.textPrimary: Color.accentSoft,
-                                wb.selected ? wb.winCount > 0 ? Color.textSecondary : Color.textPrimary: Color.accentSoft,
-                                wb.selected ? wb.winCount > 0 ? Color.textSecondary : Color.textPrimary: Color.accentStrong,
+                                wb.selected ? wb.winCount > 0 ? Color.textPrimary : Color.textPrimary: Color.accentSoft,
+                                wb.selected ? wb.winCount > 0 ? Color.textPrimary : Color.textPrimary: Color.accentSoft,
+                                wb.selected ? wb.winCount > 0 ? Color.textPrimary : Color.textPrimary: Color.accentStrong,
                             ]
-                            border_width: [0,0,wb.selected ? 0 : 2]
+                            border_width: [0,0,0]
 
                             onReleased: {
                                 HyprInfo.switchWorkspace(wb.index + 1)

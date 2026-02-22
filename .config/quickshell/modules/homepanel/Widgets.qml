@@ -477,9 +477,9 @@ ColumnLayout {
 
                     onTriggered: {
                         if (power_buttons.power_countdown == 0) {
-                            power.startDetached()
                             power_buttons.power_countdown = 0
                             power_buttons.active_power_button = ""
+                            power.startDetached()
                             return
                         }
                         power_buttons.power_countdown -= 1
@@ -492,7 +492,10 @@ ColumnLayout {
                     interval: 200
 
                     onTriggered: {
+                        force_power_timer.stop()
+                        power_timer.stop()
                         power.startDetached()
+                        power.command = [""] 
                     }
                 }
 

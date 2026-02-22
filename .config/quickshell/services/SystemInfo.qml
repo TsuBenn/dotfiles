@@ -155,6 +155,8 @@ Singleton {
             onStreamFinished: {
                 const datas = JSON.parse(text)
 
+                const unit = 1024
+
                 // Titles
                 root.username = datas[0].result.userName
                 root.hostname = datas[0].result.hostName
@@ -198,8 +200,8 @@ Singleton {
                     gpumodels.push({
                         "type": gpu.type,
                         "name": gpu.name,
-                        "memorytotal": gpu.memory.dedicated.total/1000,
-                        "memoryused": gpu.memory.dedicated.used/1000,
+                        "memorytotal": gpu.memory.dedicated.total/unit,
+                        "memoryused": gpu.memory.dedicated.used/unit,
                         "cores": gpu.coreCount,
                         "usage": gpu.coreUsage,
                         "temp": gpu.temperature})
@@ -237,15 +239,15 @@ Singleton {
                 root.gpumodels = gpumodels
 
                 // RAM
-                root.memtotal = datas[9].result.total/1000
-                root.memused = datas[9].result.used/1000
+                root.memtotal = datas[9].result.total/unit
+                root.memused = datas[9].result.used/unit
 
                 // SWAP
                 var swaptotal = 0
                 var swapused = 0
                 for (const swap of datas[10].result) {
-                    swaptotal += swap.total/1000
-                    swapused += swap.used/1000
+                    swaptotal += swap.total/unit
+                    swapused += swap.used/unit
                 }
                 root.swaptotal = swaptotal
                 root.swapused = swapused
@@ -255,16 +257,16 @@ Singleton {
                 for (const disk of datas[11].result) {
 
                     if (disk.mountpoint == "/") {
-                        root.rootstoragetotal = disk.bytes.total/1000
-                        root.rootstorageused = disk.bytes.used/1000
+                        root.rootstoragetotal = disk.bytes.total/unit
+                        root.rootstorageused = disk.bytes.used/unit
                     }
 
                     disks.push({
                         "name": disk.mountpoint == "/" ? "ROOT" : disk.name,
                         "mountpoint": disk.mountpoint,
                         "mountfrom": disk.mountFrom,
-                        "total": disk.bytes.total/1000,
-                        "used": disk.bytes.used/1000,
+                        "total": disk.bytes.total/unit,
+                        "used": disk.bytes.used/unit,
                         "filesystem": disk.filesystem,
                     })
                 }
@@ -284,7 +286,7 @@ Singleton {
                 var phydisks = []
                 for (const disk of datas[14].result) {
                     const name = disk.name
-                    const size = disk.size/1000
+                    const size = disk.size/unit
                     const type = disk.interconnect
                     if (type.toLowerCase() == "usb") {
                         phydisks.push({"name": name, "size": size, "type": type})

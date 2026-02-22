@@ -121,7 +121,7 @@ Scope {
 
                                 id: window_class
 
-                                visible: text && (text != window_title.text) && !homepanel.item.visible
+                                visible: text && (text.toLowerCase() != window_title.text.toLowerCase()) && !homepanel.item.visible
 
                                 text: HyprInfo.focusedwindow.class
 
@@ -157,6 +157,7 @@ Scope {
                     RowLayout {
                         id: left_center
                         anchors.right: workspaces.left
+
                     }
 
                     Workspaces {
@@ -194,7 +195,7 @@ Scope {
                                 text: DateTime.hour12 + ":" + DateTime.minute + " " + DateTime.ampm + " • " + DateTime.dayofweek_short + ", " + DateTime.date + " " + DateTime.month_short
                                 font.family: Fonts.system
                                 font.pointSize: 11
-                                font.weight: 800
+                                font.weight: 700
                                 font.wordSpacing: -4
                             }
 
@@ -212,7 +213,7 @@ Scope {
                                 id: battery_percentage
 
                                 implicitHeight: 27
-                                implicitWidth: 64
+                                implicitWidth: 27
 
                                 Behavior on implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
@@ -233,7 +234,7 @@ Scope {
                                             battery_percentage.implicitWidth = 27
                                         }
                                     }
-                                    
+
                                 }
 
                                 Rectangle {
@@ -291,6 +292,7 @@ Scope {
                                     }
                                     return Color.textPrimary
                                 }
+                                bg_color: Color.bgBase
 
                             }
 
