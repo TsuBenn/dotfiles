@@ -206,14 +206,14 @@ Scope {
 
                             implicitWidth: battery.implicitWidth
                             implicitHeight: battery.implicitHeight
-                            
+
                             ProgressCircle {
 
                                 anchors.centerIn: parent
                                 id: battery
 
                                 thickness: 2.5
-                                radius: 11
+                                radius: 12
                                 icon: ""
                                 label: ""
                                 percentage: SystemInfo.battery == "inf" ? 100 : parseInt(SystemInfo.battery)
@@ -221,7 +221,10 @@ Scope {
                                     if (SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
                                         return Color.success
                                     }
-                                        return Color.textPrimary
+                                    else if (percentage <= 20) {
+                                        return Color.error
+                                    }
+                                    return Color.textPrimary
                                 }
 
                             }
