@@ -268,6 +268,7 @@ Scope {
                                 implicitWidth: 27
 
                                 color: Color.bgMuted
+                                radius: implicitHeight/2
                             }
 
 
