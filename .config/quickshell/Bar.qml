@@ -200,59 +200,82 @@ Scope {
 
                         }
 
-                        Text {
+                        Item {
 
-                            id: battery
+                            Layout.topMargin: 0.5
 
-                            text: {
-                                if (SystemInfo.battery == "inf" || SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
-                                    return "\udb80\udc84"                                
-                                }
-                                else if (parseInt(SystemInfo.battery) >= 100) {
-                                    return "\udb80\udc79"
-                                }
-                                else if (parseInt(SystemInfo.battery) > 95) {
-                                    return "\udb80\udc82"
-                                }
-                                else if (parseInt(SystemInfo.battery) > 85) {
-                                    return "\udb80\udc81"
-                                }
-                                else if (parseInt(SystemInfo.battery) > 75) {
-                                    return "\udb80\udc80"
-                                }
-                                else if (parseInt(SystemInfo.battery) > 65) {
-                                    return "\udb80\udc7f"
-                                }
-                                else if (parseInt(SystemInfo.battery) > 55) {
-                                    return "\udb80\udc7e"
-                                }
-                                else if (parseInt(SystemInfo.battery) > 45) {
-                                    return "\udb80\udc7d"
-                                }
-                                else if (parseInt(SystemInfo.battery) > 35) {
-                                    return "\udb80\udc7c"
-                                }
-                                else if (parseInt(SystemInfo.battery) > 25) {
-                                    return "\udb80\udc7c"
-                                }
-                                else if (parseInt(SystemInfo.battery) > 15) {
-                                    return "\udb80\udc7b"
-                                }
-                                else if (parseInt(SystemInfo.battery) > 5) {
-                                    return "\udb80\udc7a"
-                                }
-                                else if (parseInt(SystemInfo.battery) > 0) {
-                                    return "\udb80\udc8e"
-                                }
+                            implicitWidth: battery.implicitWidth
+                            implicitHeight: battery.implicitHeight
+                            
+                            ProgressCircle {
+
+                                anchors.centerIn: parent
+                                id: battery
+
+                                thickness: 2.5
+                                radius: 11
+                                icon: ""
+                                label: ""
+                                percentage: SystemInfo.battery == "inf" ? 100 : parseInt(SystemInfo.battery)
+                                fg_color: Color.textPrimary
+
                             }
 
-                            color: Color.textPrimary
-                            font.family: Fonts.system
-                            font.pointSize: 13
-                            font.weight: 800
 
+                            Text {
+
+                                anchors.centerIn: parent
+                                anchors.horizontalCenterOffset: -1/(battery.thickness-1)
+
+                                text: {
+                                    if (SystemInfo.battery == "inf" || SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
+                                        return "\udb80\udc84"                                
+                                    }
+                                    else if (parseInt(SystemInfo.battery) >= 100) {
+                                        return "\udb80\udc79"
+                                    }
+                                    else if (parseInt(SystemInfo.battery) > 95) {
+                                        return "\udb80\udc82"
+                                    }
+                                    else if (parseInt(SystemInfo.battery) > 85) {
+                                        return "\udb80\udc81"
+                                    }
+                                    else if (parseInt(SystemInfo.battery) > 75) {
+                                        return "\udb80\udc80"
+                                    }
+                                    else if (parseInt(SystemInfo.battery) > 65) {
+                                        return "\udb80\udc7f"
+                                    }
+                                    else if (parseInt(SystemInfo.battery) > 55) {
+                                        return "\udb80\udc7e"
+                                    }
+                                    else if (parseInt(SystemInfo.battery) > 45) {
+                                        return "\udb80\udc7d"
+                                    }
+                                    else if (parseInt(SystemInfo.battery) > 35) {
+                                        return "\udb80\udc7c"
+                                    }
+                                    else if (parseInt(SystemInfo.battery) > 25) {
+                                        return "\udb80\udc7c"
+                                    }
+                                    else if (parseInt(SystemInfo.battery) > 15) {
+                                        return "\udb80\udc7b"
+                                    }
+                                    else if (parseInt(SystemInfo.battery) > 5) {
+                                        return "\udb80\udc7a"
+                                    }
+                                    else if (parseInt(SystemInfo.battery) > 0) {
+                                        return "\udb80\udc8e"
+                                    }
+                                }
+
+                                color: Color.textPrimary
+                                font.family: Fonts.system
+                                font.pointSize: 13
+                                font.weight: 800
+
+                            }
                         }
-
                     }
 
                     RowLayout {
