@@ -251,7 +251,7 @@ Scope {
                                         anchors.verticalCenter: parent.verticalCenter
                                         anchors.verticalCenterOffset: 0.5
 
-                                        text: "100"
+                                        text: SystemInfo.battery == "inf" ? "inf" : parseInt(SystemInfo.battery)
 
                                         color: Color.textPrimary
                                         font.family: Fonts.system
