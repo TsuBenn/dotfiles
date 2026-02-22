@@ -207,6 +207,70 @@ Scope {
                             implicitWidth: battery.implicitWidth
                             implicitHeight: battery.implicitHeight
 
+                            ClippingRectangle {
+
+                                id: battery_percentage
+
+                                implicitHeight: 27
+                                implicitWidth: 64
+
+                                Behavior on implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+
+                                radius: implicitHeight/2
+                                color: Color.bgMuted
+
+                                MouseArea {
+
+                                    anchors.fill: parent
+
+                                    hoverEnabled: true
+
+                                    onPressed: {
+                                        if (battery_percentage.implicitWidth == 27) {
+                                            battery_percentage.implicitWidth = 64
+                                        }
+                                        else {
+                                            battery_percentage.implicitWidth = 27
+                                        }
+                                    }
+                                    
+                                }
+
+                                Rectangle {
+
+                                    anchors.right: parent.right
+
+                                    implicitHeight: 27
+                                    implicitWidth: 64 - 27
+                                    color: "transparent"
+
+                                    Text {
+
+                                        anchors.left: parent.left
+                                        anchors.leftMargin: 6
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.verticalCenterOffset: 0.5
+
+                                        text: "100"
+
+                                        color: Color.textPrimary
+                                        font.family: Fonts.system
+                                        font.pointSize: 10
+                                        font.weight: 800
+
+                                    }
+                                }
+
+                            }
+
+                            Rectangle {
+                                implicitHeight: 27
+                                implicitWidth: 27
+
+                                color: Color.bgMuted
+                            }
+
+
                             ProgressCircle {
 
                                 anchors.centerIn: parent
