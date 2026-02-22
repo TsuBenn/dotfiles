@@ -202,7 +202,7 @@ Scope {
 
                         Item {
 
-                            Layout.topMargin: 0.5
+                            Layout.topMargin: 1
 
                             implicitWidth: battery.implicitWidth
                             implicitHeight: battery.implicitHeight
@@ -217,7 +217,12 @@ Scope {
                                 icon: ""
                                 label: ""
                                 percentage: SystemInfo.battery == "inf" ? 100 : parseInt(SystemInfo.battery)
-                                fg_color: Color.textPrimary
+                                fg_color: {
+                                    if (SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
+                                        return Color.success
+                                    }
+                                        return Color.textPrimary
+                                }
 
                             }
 
