@@ -16,7 +16,7 @@ ColumnLayout {
     property color  bg_color      : Color.bgMuted
     property color  fg_color      : Color.accentStrong
     property int    thickness     : 5
-    property int    radius        : 25
+    property real   radius        : 25
     property real   percentage    : SystemInfo.cpuusage
     property real   maxPercentage : 1
     property real   angle         : 0

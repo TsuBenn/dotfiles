@@ -27,7 +27,7 @@ PanelWindow {
         else root.visible = true
     }
 
-    //WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.namespace: "quickshell_homepanel" 
 
     color: Qt.rgba(0.0,0.0,0.0,0.4)
 

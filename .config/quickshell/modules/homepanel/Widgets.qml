@@ -79,7 +79,7 @@ ColumnLayout {
         z: widgets.panel_index == index ? 0 : -2
 
         Behavior on x {NumberAnimation {
-            duration: 400
+            duration: 300
             easing.type: Easing.OutElastic
             easing.amplitude: 0.5
             easing.period: 1.8
@@ -486,6 +486,15 @@ ColumnLayout {
                         power_timer.restart()
                     }
                 }
+                Timer {
+                    id: force_power_timer
+
+                    interval: 200
+
+                    onTriggered: {
+                        power.startDetached()
+                    }
+                }
 
                 //SHUTDOWN
                 PowerButton {
@@ -498,7 +507,13 @@ ColumnLayout {
 
                     size: 36
 
+                    onPressed: {
+                        power_timer.stop()
+                        force_power_timer.start()
+                        power.command = ["bash", "-c", "systemctl poweroff"] 
+                    }
                     onReleased: {
+                        force_power_timer.stop()
                         if (power_buttons.power_countdown > 0 && power_name == power_buttons.active_power_button) {
                             power_buttons.power_countdown = 0
                             power_timer.stop()
@@ -522,7 +537,13 @@ ColumnLayout {
 
                     size: 36
 
+                    onPressed: {
+                        power_timer.stop()
+                        force_power_timer.start()
+                        power.command = ["bash", "-c", "systemctl hibernate"]
+                    }
                     onReleased: {
+                        force_power_timer.stop()
                         if (power_buttons.power_countdown > 0 && power_name == power_buttons.active_power_button) {
                             power_buttons.power_countdown = 0
                             power_timer.stop()
@@ -545,7 +566,13 @@ ColumnLayout {
 
                     size: 32
 
+                    onPressed: {
+                        power_timer.stop()
+                        force_power_timer.start()
+                        power.command = ["bash", "-c", "systemctl suspend"]
+                    }
                     onReleased: {
+                        force_power_timer.stop()
                         if (power_buttons.power_countdown > 0 && power_name == power_buttons.active_power_button) {
                             power_buttons.power_countdown = 0
                             power_timer.stop()
@@ -567,7 +594,13 @@ ColumnLayout {
 
                     size: 32
 
+                    onPressed: {
+                        power_timer.stop()
+                        force_power_timer.start()
+                        power.command = ["bash", "-c", "systemctl reboot"]
+                    }
                     onReleased: {
+                        force_power_timer.stop()
                         if (power_buttons.power_countdown > 0 && power_name == power_buttons.active_power_button) {
                             power_buttons.power_countdown = 0
                             power_timer.stop()
@@ -590,7 +623,13 @@ ColumnLayout {
 
                     size: 30
 
+                    onPressed: {
+                        power_timer.stop()
+                        force_power_timer.start()
+                        power.command = ["kitty"]
+                    }
                     onReleased: {
+                        force_power_timer.stop()
                         if (power_buttons.power_countdown > 0 && power_name == power_buttons.active_power_button) {
                             power_buttons.power_countdown = 0
                             power_timer.stop()
@@ -613,7 +652,13 @@ ColumnLayout {
 
                     size: 32
 
+                    onPressed: {
+                        power_timer.stop()
+                        force_power_timer.start()
+                        power.command = ["spotify"]
+                    }
                     onReleased: {
+                        force_power_timer.stop()
                         if (power_buttons.power_countdown > 0 && power_name == power_buttons.active_power_button) {
                             power_buttons.power_countdown = 0
                             power_timer.stop()
@@ -784,7 +829,7 @@ ColumnLayout {
                 implicitHeight: 425
 
                 SystemSpecs {
-                    y: 6
+                    y: 4
                     x: 2
                 }
 

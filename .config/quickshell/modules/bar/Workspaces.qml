@@ -64,13 +64,13 @@ ClippingRectangle {
         Behavior on anchors.leftMargin {
             SequentialAnimation {
                 PauseAnimation {duration: 100*selection.left_pause}
-                NumberAnimation {duration: 200; easing.type:Easing.OutCubic}
+                NumberAnimation {duration: 100; easing.type:Easing.OutCubic}
             }
         }
         Behavior on anchors.rightMargin {
             SequentialAnimation {
                 PauseAnimation {duration: 100*selection.right_pause}
-                NumberAnimation {duration: 200; easing.type:Easing.OutCubic}
+                NumberAnimation {duration: 100; easing.type:Easing.OutCubic}
             }
         }
 

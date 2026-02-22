@@ -10,7 +10,10 @@ import Qt5Compat.GraphicalEffects
 
 
 Item {
+    id: root
     PanelWindow {
+
+        visible: root.visible
 
         implicitWidth: SystemInfo.monitorwidth
 

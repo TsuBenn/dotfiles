@@ -262,6 +262,7 @@ Singleton {
                     disks.push({
                         "name": disk.mountpoint == "/" ? "ROOT" : disk.name,
                         "mountpoint": disk.mountpoint,
+                        "mountfrom": disk.mountFrom,
                         "total": disk.bytes.total/1000,
                         "used": disk.bytes.used/1000,
                         "filesystem": disk.filesystem,

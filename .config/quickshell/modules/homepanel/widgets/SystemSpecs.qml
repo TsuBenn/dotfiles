@@ -17,6 +17,7 @@ Item {
     property color stat_color: Qt.lighter(Color.textDisabled,1.3)
     property color value_color: Color.textPrimary
     property color header_color: Color.accentSoft
+    property color bars_color: Color.accentStrong
 
     component SpecContainer: Rectangle {
 
@@ -100,19 +101,40 @@ Item {
 
                     Rectangle {
 
-                        Layout.alignment: Qt.AlignLeft
+                        Layout.fillWidth: true
 
-                        Layout.leftMargin: 20
+                        Layout.topMargin: 2
+                        Layout.bottomMargin: -2
 
-                        implicitWidth: 290
+                        implicitWidth: parent.implicitWidth
                         implicitHeight: cpu_name.implicitHeight
-
                         color: "transparent"
 
                         Text {
                             id: cpu_name
 
-                            width: 290
+                            anchors.left: parent.left
+
+                            anchors.margins: 18
+
+                            text: "Name:"
+
+                            color: sys_info.stat_color
+
+                            font.family: Fonts.system
+                            font.weight: 700
+                            font.pointSize: sys_info.info_size
+
+                        }
+
+                        Text {
+
+                            anchors.right: parent.right
+
+                            anchors.margins: 20
+
+                            width: parent.implicitWidth - cpu_name.implicitWidth - 2
+                            horizontalAlignment: Text.AlignRight
                             elide: Text.ElideRight
 
                             text: SystemInfo.cpumodel
@@ -132,6 +154,8 @@ Item {
                             font.family: Fonts.system
                             font.weight: 700
                             font.pointSize: sys_info.info_size
+                            minimumPointSize: sys_info.info_size-1
+                            fontSizeMode: Text.HorizontalFit
 
                         }
 
@@ -145,10 +169,12 @@ Item {
 
                         HorizontalProgressBar {
 
+                            Layout.alignment: Qt.AlignVCenter
                             box_width: sys_info.spec_width - 76
-                            box_height: 14
+                            box_height: 10
                             round: false
                             preferedPercentage: SystemInfo.cpuusage
+                            fg_color: sys_info.bars_color
 
                         }
 
@@ -263,18 +289,40 @@ Item {
 
                             Rectangle {
 
-                                Layout.alignment: Qt.AlignLeft
-                                Layout.leftMargin: 20
+                                Layout.fillWidth: true
 
-                                implicitWidth: 290
+                                Layout.topMargin: 2
+                                Layout.bottomMargin: -2
+
+                                implicitWidth: parent.implicitWidth
                                 implicitHeight: gpu_name.implicitHeight
-
                                 color: "transparent"
 
                                 Text {
                                     id: gpu_name
 
-                                    width: 290
+                                    anchors.left: parent.left
+
+                                    anchors.margins: 18
+
+                                    text: "Name:"
+
+                                    color: sys_info.stat_color
+
+                                    font.family: Fonts.system
+                                    font.weight: 700
+                                    font.pointSize: sys_info.info_size
+
+                                }
+
+                                Text {
+
+                                    anchors.right: parent.right
+
+                                    anchors.margins: 20
+
+                                    width: parent.implicitWidth - cpu_name.implicitWidth - 2
+                                    horizontalAlignment: Text.AlignRight
                                     elide: Text.ElideRight
 
                                     text: gpu_spec_loader.name
@@ -297,6 +345,8 @@ Item {
                                     font.family: Fonts.system
                                     font.weight: 700
                                     font.pointSize: sys_info.info_size
+                                    minimumPointSize: sys_info.info_size-1
+                                    fontSizeMode: Text.HorizontalFit
 
                                 }
 
@@ -310,10 +360,13 @@ Item {
 
                                 HorizontalProgressBar {
 
+                                    Layout.alignment: Qt.AlignVCenter
+
                                     box_width: sys_info.spec_width - 76
-                                    box_height: 14
+                                    box_height: 10
                                     round: false
                                     preferedPercentage: gpu_spec_loader.usage
+                                    fg_color: sys_info.bars_color
 
                                 }
 
@@ -431,6 +484,7 @@ Item {
                                     box_height: 10
                                     round: false
                                     preferedPercentage: Math.round((gpu_spec_loader.memoryused/gpu_spec_loader.memorytotal)*100)
+                                    fg_color: sys_info.bars_color
 
                                 }
                             }
@@ -456,14 +510,14 @@ Item {
                     Text {
                         text: "\uf0d9"
                         font.family: Fonts.system
-                        font.pointSize: 12
+                        font.pointSize: 10
                         font.weight: 1000
                         color: gpu_spec_container.index > 0 ? sys_info.value_color : Color.textDisabled
                         MouseArea {
                             anchors.fill: parent
                             anchors.topMargin: -10
-                            anchors.bottomMargin: -50
-                            anchors.leftMargin: -200
+                            anchors.bottomMargin: -18
+                            anchors.leftMargin: -120
                             anchors.rightMargin: -10
 
                             hoverEnabled: true
@@ -495,7 +549,7 @@ Item {
 
                                     property bool selected: gpu_spec_container.index == index 
 
-                                    property real size: selected ? 8 : 6
+                                    property real size: selected ? 6 : 4
                                     implicitWidth: size
                                     implicitHeight: size
 
@@ -511,16 +565,16 @@ Item {
                     Text {
                         text: "\uf0da"
                         font.family: Fonts.system
-                        font.pointSize: 12
+                        font.pointSize: 10
                         font.weight: 1000
                         color: gpu_spec_container.index < gpu_nav.gpu_amount-1 ? sys_info.value_color : Color.textDisabled
 
                         MouseArea {
                             anchors.fill: parent
                             anchors.topMargin: -10
-                            anchors.bottomMargin: -50
+                            anchors.bottomMargin: -18
                             anchors.leftMargin: -10
-                            anchors.rightMargin: -200
+                            anchors.rightMargin: -120
 
                             hoverEnabled: true
 
@@ -578,7 +632,11 @@ Item {
 
                         anchors.margins: 20
 
-                        text: `${SystemInfo.board}\n`
+                        width: parent.implicitWidth - board_stat.paintedWidth - 20*2
+                        horizontalAlignment: Text.AlignRight
+                        elide: Text.ElideRight
+
+                        text: SystemInfo.board
 
                         color: sys_info.value_color
 
@@ -664,6 +722,7 @@ Item {
                             box_height: 10
                             round: false
                             preferedPercentage: SystemInfo.memusage
+                            fg_color: sys_info.bars_color
 
                         }
                     }
@@ -723,6 +782,7 @@ Item {
                             box_height: 10
                             round: false
                             preferedPercentage: SystemInfo.swapusage
+                            fg_color: sys_info.bars_color
 
                         }
                     }
@@ -736,7 +796,7 @@ Item {
                 box_height: disks_list.implicitHeight
                 header_text: "DISKS"
 
-                Layout.topMargin: 2
+                Layout.topMargin: 6
 
                 List {
 
@@ -747,7 +807,7 @@ Item {
                     id: disks_list
 
                     box_width: sys_info.spec_width
-                    box_height: 114
+                    box_height: 100
 
                     bg_color: "transparent"
                     container_color: "transparent"
@@ -765,6 +825,7 @@ Item {
 
                         required property string name
                         required property string mountpoint
+                        required property string mountfrom
                         required property string filesystem
                         required property real total
                         required property real used
@@ -773,7 +834,7 @@ Item {
 
                             implicitWidth: disks_list.implicitWidth
 
-                            spacing: 6
+                            spacing: 0
 
                             Rectangle {
 
@@ -796,7 +857,7 @@ Item {
                                     width: parent.implicitWidth - disk_stat.paintedWidth - 20*2
                                     elide: Text.ElideRight
 
-                                    text: disk_loader.name
+                                    text: disk_loader.name ? disk_loader.name : disk_loader.mountfrom
 
                                     color: sys_info.stat_color
 
@@ -822,10 +883,37 @@ Item {
                                 }
                             }
 
+                            Rectangle {
+
+                                Layout.topMargin: -2
+                                Layout.bottomMargin: 2
+                                Layout.leftMargin: 18
+
+                                implicitWidth: disks_list.implicitWidth - 20*2
+                                implicitHeight: mountpoint.implicitHeight
+
+                                color: "transparent"
+
+                                Text {
+
+                                    id: mountpoint
+
+                                    width: parent.implicitWidth
+                                    elide: Text.ElideRight
+
+                                    text: disk_loader.mountpoint
+
+                                    color: Qt.darker(Color.textDisabled,1.2)
+
+                                    font.family: Fonts.system
+                                    font.weight: 700
+                                    font.pointSize: sys_info.info_size-2
+                                }
+                            }
+
                             RowLayout {
 
                                 Layout.alignment: Qt.AlignHCenter
-                                Layout.topMargin: -4
 
                                 spacing: 0
 
@@ -835,6 +923,7 @@ Item {
                                     box_height: 10
                                     round: false
                                     preferedPercentage: Math.round((disk_loader.used/disk_loader.total)*100)
+                                    fg_color: sys_info.bars_color
 
                                 }
 
@@ -851,7 +940,7 @@ Item {
 
                 box_height: disksio_spec.implicitHeight
                 header_text: "DISKS IO"
-                Layout.topMargin: 2
+                Layout.topMargin: 8
 
                 Rectangle {
 
@@ -907,6 +996,8 @@ Item {
 
                 box_height: battery_spec.implicitHeight
                 header_text: "BATTERY"
+
+                Layout.topMargin: 4
 
                 Rectangle {
 

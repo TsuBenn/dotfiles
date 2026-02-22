@@ -25,6 +25,7 @@ Scope {
             required property var modelData
 
             property int screenRadius: 20
+            property bool transparentBar: false && !homepanel.item.visible
 
             Behavior on screenRadius {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
@@ -44,7 +45,9 @@ Scope {
                 top: -40 * Hyprland.focusedWorkspace.hasFullscreen
             }
 
-            color: Color.bgSurface
+            color: transparentBar ? "transparent" : Color.bgSurface
+
+            Behavior on color {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
             implicitHeight: 40
 
@@ -86,12 +89,12 @@ Scope {
                             id: homebutton
                             text: SystemInfo.username
 
-                            marquee: true
+                            Layout.topMargin: -1
 
                             bg_color: [
-                                homepanel.item?.visible ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
-                                homepanel.item?.visible ? Color.accentStrong : Color.transparent(Color.accentStrong,0),
-                                homepanel.item?.visible ? "transparent" : Color.accentStrong,
+                                homepanel.item?.visible ? Color.accentStrong : Color.bgSurface,
+                                homepanel.item?.visible ? Color.accentStrong : Color.bgSurface,
+                                homepanel.item?.visible ? Color.bgSurface : Color.accentStrong,
                             ]
 
                             fg_color: [
@@ -111,56 +114,143 @@ Scope {
                             }
                         }
 
-                        Workspaces {} 
+                        ColumnLayout {
+                            Layout.leftMargin: 4
+                            spacing: 0
+                            Text {
+
+                                id: window_class
+
+                                visible: text && (text != window_title.text) && !homepanel.item.visible
+
+                                text: HyprInfo.focusedwindow.class
+
+                                Layout.preferredWidth: Math.min(implicitWidth,200)
+                                Layout.bottomMargin: -5
+
+                                color: Qt.lighter(Color.textDisabled,1.5)
+                                font.family: Fonts.system
+                                font.pointSize: 9
+                                font.weight: 700
+                                elide: Text.ElideRight
+
+                            }
+                            Text {
+
+                                id: window_title
+
+                                text: homepanel.item.visible ? "Homepanel" : HyprInfo.focusedwindow.title
+
+                                Layout.preferredWidth: Math.min(implicitWidth,200)
+
+                                color: Color.accentSoft
+                                font.family: Fonts.system
+                                font.pointSize: window_class.visible ? 11 : 12
+                                font.weight: 800
+                                elide: Text.ElideRight
+
+                            }
+                        }
 
                     }
 
                     RowLayout {
+                        id: left_center
+                        anchors.right: workspaces.left
+                    }
 
-                        id: center
+                    Workspaces {
+
+                        id: workspaces
 
                         anchors.topMargin: Math.round(31/2 - implicitHeight/2)
                         anchors.top: parent.top
                         anchors.horizontalCenter: parent.horizontalCenter
 
-                        spacing: 5
+                    } 
+
+                    RowLayout {
+                        id: right_center
+
+                        anchors.leftMargin: 10
+                        anchors.left: workspaces.right
+                        anchors.verticalCenter: workspaces.verticalCenter
+                        spacing: 12
+
+
+                        Rectangle {
+
+                            Layout.alignment: Qt.AlignVCenter
+                            implicitWidth: clock.implicitWidth + 20
+                            implicitHeight: 26
+                            radius: implicitWidth/2
+                            color: Color.bgMuted
+
+                            Text {
+
+                                id: clock
+                                anchors.centerIn: parent
+                                color: Color.textPrimary
+                                text: DateTime.hour12 + ":" + DateTime.minute + " " + DateTime.ampm + " • " + DateTime.dayofweek_short + ", " + DateTime.date + " " + DateTime.month_short
+                                font.family: Fonts.system
+                                font.pointSize: 11
+                                font.weight: 800
+                                font.wordSpacing: -4
+                            }
+
+                        }
 
                         Text {
-                            text: DateTime.hour12 + ":" + DateTime.minute + ":" + DateTime.second + " " + DateTime.ampm
-                            color: Color.accentSoft
+
+                            id: battery
+
+                            text: {
+                                if (SystemInfo.battery == "inf" || SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
+                                    return "\udb80\udc84"                                
+                                }
+                                else if (parseInt(SystemInfo.battery) >= 100) {
+                                    return "\udb80\udc79"
+                                }
+                                else if (parseInt(SystemInfo.battery) > 95) {
+                                    return "\udb80\udc82"
+                                }
+                                else if (parseInt(SystemInfo.battery) > 85) {
+                                    return "\udb80\udc81"
+                                }
+                                else if (parseInt(SystemInfo.battery) > 75) {
+                                    return "\udb80\udc80"
+                                }
+                                else if (parseInt(SystemInfo.battery) > 65) {
+                                    return "\udb80\udc7f"
+                                }
+                                else if (parseInt(SystemInfo.battery) > 55) {
+                                    return "\udb80\udc7e"
+                                }
+                                else if (parseInt(SystemInfo.battery) > 45) {
+                                    return "\udb80\udc7d"
+                                }
+                                else if (parseInt(SystemInfo.battery) > 35) {
+                                    return "\udb80\udc7c"
+                                }
+                                else if (parseInt(SystemInfo.battery) > 25) {
+                                    return "\udb80\udc7c"
+                                }
+                                else if (parseInt(SystemInfo.battery) > 15) {
+                                    return "\udb80\udc7b"
+                                }
+                                else if (parseInt(SystemInfo.battery) > 5) {
+                                    return "\udb80\udc7a"
+                                }
+                                else if (parseInt(SystemInfo.battery) > 0) {
+                                    return "\udb80\udc8e"
+                                }
+                            }
+
+                            color: Color.textPrimary
                             font.family: Fonts.system
-                            font.pointSize: 12
+                            font.pointSize: 13
                             font.weight: 800
-                        }
-                        Text {
-                            text: " | "
-                            color: Color.accentSoft
-                            font.family: Fonts.system
-                            font.pointSize: 12
-                            font.weight: 800
-                        }
-                        Text {
-                            text: HyprInfo.focusedwindow.title
-                            Layout.preferredWidth: Math.min(implicitWidth,200)
-                            color: Color.accentSoft
-                            font.family: Fonts.system
-                            font.pointSize: 12
-                            font.weight: 800
-                            elide: Text.ElideRight
-                        }
-                        Text {
-                            text: " | "
-                            color: Color.accentSoft
-                            font.family: Fonts.system
-                            font.pointSize: 12
-                            font.weight: 800
-                        }
-                        Text {
-                            text: SystemInfo.battery
-                            color: Color.accentSoft
-                            font.family: Fonts.system
-                            font.pointSize: 12
-                            font.weight: 800
+
                         }
 
                     }
@@ -228,7 +318,7 @@ Scope {
 
                     LazyLoader {id:homepanel; active: true; component: Homepanel {}}
 
-                    ScreenCorners {}
+                    ScreenCorners {visible: !bar.transparentBar}
                 }
             }
 
