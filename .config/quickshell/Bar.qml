@@ -248,11 +248,16 @@ Scope {
                                     Text {
 
                                         anchors.left: parent.left
+                                        anchors.right: parent.right
                                         anchors.leftMargin: 6
+                                        anchors.rightMargin: 8
                                         anchors.verticalCenter: parent.verticalCenter
                                         anchors.verticalCenterOffset: 0.5
 
                                         text: SystemInfo.battery == "inf" ? "inf" : parseInt(SystemInfo.battery)
+
+                                        width: implicitWidth
+                                        horizontalAlignment: Text.AlignHCenter 
 
                                         color: Color.textPrimary
                                         font.family: Fonts.system
@@ -292,7 +297,7 @@ Scope {
                                     }
                                     return Color.textPrimary
                                 }
-                                bg_color: Color.bgBase
+                                bg_color: Qt.lighter(Color.bgMuted,1.5)
 
                             }
 
@@ -306,29 +311,26 @@ Scope {
                                     if (SystemInfo.battery == "inf" || SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
                                         return "\udb80\udc84"                                
                                     }
-                                    else if (parseInt(SystemInfo.battery) >= 100) {
+                                    else if (parseInt(SystemInfo.battery) > 95) {
                                         return "\udb80\udc79"
                                     }
-                                    else if (parseInt(SystemInfo.battery) > 95) {
+                                    else if (parseInt(SystemInfo.battery) > 85) {
                                         return "\udb80\udc82"
                                     }
-                                    else if (parseInt(SystemInfo.battery) > 85) {
+                                    else if (parseInt(SystemInfo.battery) > 75) {
                                         return "\udb80\udc81"
                                     }
-                                    else if (parseInt(SystemInfo.battery) > 75) {
+                                    else if (parseInt(SystemInfo.battery) > 65) {
                                         return "\udb80\udc80"
                                     }
-                                    else if (parseInt(SystemInfo.battery) > 65) {
+                                    else if (parseInt(SystemInfo.battery) > 55) {
                                         return "\udb80\udc7f"
                                     }
-                                    else if (parseInt(SystemInfo.battery) > 55) {
+                                    else if (parseInt(SystemInfo.battery) > 45) {
                                         return "\udb80\udc7e"
                                     }
-                                    else if (parseInt(SystemInfo.battery) > 45) {
-                                        return "\udb80\udc7d"
-                                    }
                                     else if (parseInt(SystemInfo.battery) > 35) {
-                                        return "\udb80\udc7c"
+                                        return "\udb80\udc7d"
                                     }
                                     else if (parseInt(SystemInfo.battery) > 25) {
                                         return "\udb80\udc7c"
@@ -344,7 +346,15 @@ Scope {
                                     }
                                 }
 
-                                color: Color.textPrimary
+                                color: {
+                                    if (SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
+                                        return Color.success
+                                    }
+                                    else if (battery.percentage <= 20) {
+                                        return Color.error
+                                    }
+                                    return Color.textPrimary
+                                }
                                 font.family: Fonts.system
                                 font.pointSize: 13
                                 font.weight: 800
