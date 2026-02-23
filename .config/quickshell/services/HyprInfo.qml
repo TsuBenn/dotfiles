@@ -98,8 +98,8 @@ Singleton {
                 for (const data of datas) {
                     const workspace = data.workspace.id ?? ""
                     const monitor = data.monitor ?? ""
-                    const windowclass = data.initialClass
-                    const windowtitle = data.initialTitle
+                    const windowclass = data.class
+                    const windowtitle = data.title
                     const focused = (data.focusHistoryID == 0)
                     if (workspaces[workspace] == undefined) workspaces[workspace] = [] 
                     workspaces[workspace].push({

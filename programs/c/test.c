@@ -3,7 +3,14 @@
 
 int main() {
 
-    printf("%d", 5000000);
+
+    printf("Hello");
+
+    getchar();
+
+    printf("Hello");
+    printf("Hello");
+    printf("Hello");
 
     return 0;
 }

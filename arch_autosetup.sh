@@ -133,7 +133,7 @@ RICING=(
 # ===== AUR Packages =====
 AUR_PACKAGES=(
     nvidia-vaapi-driver
-    localsend
+    localsend-bin
     spotify
     ds4drv
     proton-ge-custom-bin
@@ -216,6 +216,7 @@ echo -e "${BLUE}Installing Spotify ad-blocker...${NC}"
 git clone https://github.com/abba23/spotify-adblock.git
 cd spotify-adblock
 make
+sudo make install
 echo -e "${GREEN}✔ Ad-blocked Spotify successfully!${NC}"
 
 # ===== Enable Services =====
@@ -224,8 +225,8 @@ sudo systemctl enable --now NetworkManager
 sudo systemctl enable --now bluetooth
 sudo systemctl enable --now keyd
 sudo systemctl enable --now sshd
-systemctl enable --now avahi-daemon
-systemctl enable --now pipewire.service pipewire-pulse.service wireplumber.service 2>/dev/null || true
+sudo systemctl enable --now avahi-daemon
+sudo systemctl enable --now pipewire.service pipewire-pulse.service wireplumber.service 2>/dev/null || true
 echo -e "${GREEN}✔ Services enabled${NC}"
 
 # ===== Git Configuration =====
@@ -238,17 +239,39 @@ echo -e "${GREEN}✔ Git configured successfully!${NC}\n"
 
 # ===== Set Keyd config =====
 sudo mkdir -p /etc/keyd
-sudo tee /etc/keyd/default.conf > /dev/null << 'EOF'
+if [ ! -f /etc/keyd/default.conf ]; then
+    sudo tee /etc/keyd/default.conf > /dev/null <<EOF
 [ids]
-
 *
 
 [main]
-
-capslock = esc
-
-esc = `
 EOF
+fi
+
+# Ensure [ids] and [main] exist
+if ! grep -q "^\[ids\]" /etc/keyd/default.conf; then
+    sudo sed -i '1i [ids]\n*\n' /etc/keyd/default.conf
+fi
+
+if ! grep -q "^\[main\]" /etc/keyd/default.conf; then
+    echo -e "\n[main]" | sudo tee -a /etc/keyd/default.conf > /dev/null
+fi
+
+# Add capslock = esc (default, no duplicate)
+if ! grep -q "^capslock = esc" /etc/keyd/default.conf; then
+    echo "Setting capslock = esc"
+    echo "capslock = esc" | sudo tee -a /etc/keyd/default.conf > /dev/null
+fi
+
+# Ask about esc = grave
+read -rp "Map Escape to \` (grave)? (y/N): " add_esc
+
+if [[ "$add_esc" =~ ^[Yy]$ ]]; then
+    if ! grep -q "^esc = grave" /etc/keyd/default.conf; then
+        echo "Adding esc = grave"
+        echo "esc = grave" | sudo tee -a /etc/keyd/default.conf > /dev/null
+    fi
+fi
 echo "Keyd config created at /etc/keyd/default.conf"
 sudo keyd reload
 

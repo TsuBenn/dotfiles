@@ -125,7 +125,7 @@ Scope {
 
                                 text: HyprInfo.focusedwindow.class
 
-                                Layout.preferredWidth: Math.min(implicitWidth,200)
+                                Layout.preferredWidth: Math.min(implicitWidth,300)
                                 Layout.bottomMargin: -5
 
                                 color: Qt.lighter(Color.textDisabled,1.5)
@@ -141,7 +141,7 @@ Scope {
 
                                 text: homepanel.item.visible ? "Homepanel" : HyprInfo.focusedwindow.title
 
-                                Layout.preferredWidth: Math.min(implicitWidth,200)
+                                Layout.preferredWidth: Math.min(implicitWidth,300)
 
                                 color: Color.accentSoft
                                 font.family: Fonts.system

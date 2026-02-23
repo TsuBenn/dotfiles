@@ -8,6 +8,8 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 
 alias vim='nvim'
+alias setup='cd ~/dotfiles/ && bash ./arch_autosetup.sh'
+alias setupEdit='cd ~/dotfiles/ && nvim ./arch_autosetup.sh'
 alias wifiDriverInstall='yay -S aic8800d80-dkms'
 alias qsRestart='qs kill & qs -d'
 alias qsR='qs kill & qs -d'
