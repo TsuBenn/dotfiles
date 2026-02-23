@@ -56,7 +56,7 @@ Singleton {
     }
 
     Component.onCompleted: {
-        
+
         Hyprland.rawEvent.connect((event) => {
             switch (event.name) {
                 case "openwindow":
@@ -102,10 +102,22 @@ Singleton {
                     const windowtitle = data.initialTitle
                     const focused = (data.focusHistoryID == 0)
                     if (workspaces[workspace] == undefined) workspaces[workspace] = [] 
-                    workspaces[workspace].push({"workspace": workspace, "monitor": monitor, "windowclass": windowclass, "windowtitle": windowtitle, "focused": focused})
-                    if (focused) root.focusedwindow = {"title": windowtitle, "class": windowclass}
+                    workspaces[workspace].push({
+                        "workspace": workspace,
+                        "monitor": monitor,
+                        "windowclass": windowclass,
+                        "windowtitle": windowtitle,
+                        "focused": focused
+                    })
+                    if (focused) root.focusedwindow = {
+                        "title": windowtitle,
+                        "class": windowclass
+                    }
                 }
-                if (root.windowCount(root.focusedworkspace) == 0) root.focusedwindow = {"title": "Desktop", "class": ""}
+                if (root.windowCount(root.focusedworkspace) == 0) root.focusedwindow = {
+                    "title": "Desktop",
+                    "class": ""
+                }
                 root.workspaces = workspaces
             }
         }
@@ -127,7 +139,11 @@ Singleton {
                     const id = data.id ?? ""
                     const name = data.name ?? ""
                     const windows = data.windows ?? ""
-                    specialWorkspaces.push({"id": id, "name": name, "windows": windows})
+                    specialWorkspaces.push({
+                        "id": id,
+                        "name": name,
+                        "windows": windows
+                    })
                 }
                 root.specialWorkspaces = specialWorkspaces
             }

@@ -1297,7 +1297,7 @@ Item {
 
                         anchors.margins: 20
 
-                        text: `${SystemInfo.os}\n` +
+                        text: `${SystemInfo.os} (${SystemInfo.architecture})\n` +
                         `${SystemInfo.kernel}\n` +
                         `${SystemInfo.uptime}\n` +
                         `${SystemInfo.wm}`

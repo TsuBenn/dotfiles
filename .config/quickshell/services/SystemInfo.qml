@@ -12,6 +12,7 @@ Singleton {
     property string hostname: "host"
     property string os: "Linux"
     property string kernel: "linux"
+    property string architecture: "x86_64"
     property string systemUTF: "\udb82\udcc7"
     property string uptime: "0h0m0s"
     property string wm: "n/a"
@@ -169,6 +170,7 @@ Singleton {
 
                 // Kernel
                 root.kernel = datas[3].result.release
+                root.architecture = datas[3].result.architecture
 
                 // Uptime
                 const uptime_hours = Math.floor(datas[4].result.uptime/3600000)
