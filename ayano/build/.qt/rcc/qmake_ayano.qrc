@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/ayano">
-    <file alias="qmldir">/home/tsubenn/dotfiles/ayano/build/ayano/qmldir</file>
-  </qresource>
-</RCC>
-

@@ -125,7 +125,7 @@ Scope {
 
                                 text: HyprInfo.focusedwindow.class
 
-                                Layout.preferredWidth: Math.min(implicitWidth,300)
+                                Layout.preferredWidth: Math.min(implicitWidth,400)
                                 Layout.bottomMargin: -5
 
                                 color: Qt.lighter(Color.textDisabled,1.5)
@@ -141,7 +141,7 @@ Scope {
 
                                 text: homepanel.item.visible ? "Homepanel" : HyprInfo.focusedwindow.title
 
-                                Layout.preferredWidth: Math.min(implicitWidth,300)
+                                Layout.preferredWidth: Math.min(implicitWidth,400)
 
                                 color: Color.accentSoft
                                 font.family: Fonts.system
@@ -223,16 +223,15 @@ Scope {
                                 MouseArea {
 
                                     anchors.fill: parent
+                                    anchors.margins: -10
 
                                     hoverEnabled: true
 
-                                    onPressed: {
-                                        if (battery_percentage.implicitWidth == 27) {
-                                            battery_percentage.implicitWidth = 64
-                                        }
-                                        else {
-                                            battery_percentage.implicitWidth = 27
-                                        }
+                                    onEntered: {
+                                        battery_percentage.implicitWidth = battery_text.paintedWidth + 42
+                                    }
+                                    onExited: {
+                                        battery_percentage.implicitWidth = 27
                                     }
 
                                 }
@@ -247,17 +246,19 @@ Scope {
 
                                     Text {
 
+                                        id: battery_text
+
                                         anchors.left: parent.left
                                         anchors.right: parent.right
                                         anchors.leftMargin: 6
-                                        anchors.rightMargin: 8
+                                        anchors.rightMargin: 10
                                         anchors.verticalCenter: parent.verticalCenter
                                         anchors.verticalCenterOffset: 0.5
 
                                         text: SystemInfo.battery == "inf" ? "inf" : parseInt(SystemInfo.battery)
 
                                         width: implicitWidth
-                                        horizontalAlignment: Text.AlignHCenter 
+                                        horizontalAlignment: Text.AlignRight 
 
                                         color: Color.textPrimary
                                         font.family: Fonts.system

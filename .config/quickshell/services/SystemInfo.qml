@@ -49,7 +49,14 @@ Singleton {
 
     property string board: "MOTHERBOARD"
 
-    property var wifi
+    property var wifi: {
+        "device": "wlan0",
+        "name": "Wifi",
+        "localip": "0.0.0.0",
+        "signal": 0,
+        "channel": 0,
+        "freq": 0,
+    }
 
     property string rootstoragename: "ROOT"
     property string networkdevice: "Wifi/Ethernet"
@@ -59,7 +66,7 @@ Singleton {
     property int    monitorrefreshrate: 60
     property real   monitorscale: 1
 
-    property string battery
+    property string battery: "inf"
     property string batterystate
     property string batteryhealth
     property bool onbattery
@@ -71,8 +78,8 @@ Singleton {
         return usage.toFixed(2)
     }
 
-    property var  disks
-    property var  phydisks
+    property var  disks: []
+    property var  phydisks: []
 
     property real  rootstoragetotal
     property real  rootstorageused
@@ -161,7 +168,7 @@ Singleton {
                 // Titles
                 root.username = datas[0].result.userName
                 root.hostname = datas[0].result.hostName
-                
+
                 // OS
                 root.os = datas[1].result.prettyName
 
@@ -207,233 +214,233 @@ Singleton {
                         "cores": gpu.coreCount,
                         "usage": gpu.coreUsage,
                         "temp": gpu.temperature})
-                }
-                var hasGPU = false
-                for (const gpu of gpumodels) {
-                    if (gpu.type == "Discrete") {
-                        root.gputemp = gpu.temp
-                        root.gpuusage = gpu.usage
-                        root.gpumemtotal = gpu.memorytotal
-                        root.gpumemused = gpu.memoryused
-                        hasGPU = true
-                        break
                     }
-                }
-                for (const i in gpumodels) {
-                    if (gpumodels[i].type == "Discrete") {
-                        const mainGpu = gpumodels[i]
-                        gpumodels.splice(i, 1)
-                        gpumodels.unshift(mainGpu)
-                        break
-                    }
-                }
-                if (!hasGPU) {
+                    var hasGPU = false
                     for (const gpu of gpumodels) {
-                        if (gpu.type == "Integrated") {
+                        if (gpu.type == "Discrete") {
                             root.gputemp = gpu.temp
                             root.gpuusage = gpu.usage
                             root.gpumemtotal = gpu.memorytotal
                             root.gpumemused = gpu.memoryused
+                            hasGPU = true
                             break
                         }
                     }
-                }
-                root.gpumodels = gpumodels
+                    for (const i in gpumodels) {
+                        if (gpumodels[i].type == "Discrete") {
+                            const mainGpu = gpumodels[i]
+                            gpumodels.splice(i, 1)
+                            gpumodels.unshift(mainGpu)
+                            break
+                        }
+                    }
+                    if (!hasGPU) {
+                        for (const gpu of gpumodels) {
+                            if (gpu.type == "Integrated") {
+                                root.gputemp = gpu.temp
+                                root.gpuusage = gpu.usage
+                                root.gpumemtotal = gpu.memorytotal
+                                root.gpumemused = gpu.memoryused
+                                break
+                            }
+                        }
+                    }
+                    root.gpumodels = gpumodels
 
-                // RAM
-                root.memtotal = datas[9].result.total/unit
-                root.memused = datas[9].result.used/unit
+                    // RAM
+                    root.memtotal = datas[9].result.total/unit
+                    root.memused = datas[9].result.used/unit
 
-                // SWAP
-                var swaptotal = 0
-                var swapused = 0
-                for (const swap of datas[10].result) {
-                    swaptotal += swap.total/unit
-                    swapused += swap.used/unit
-                }
-                root.swaptotal = swaptotal
-                root.swapused = swapused
+                    // SWAP
+                    var swaptotal = 0
+                    var swapused = 0
+                    for (const swap of datas[10].result) {
+                        swaptotal += swap.total/unit
+                        swapused += swap.used/unit
+                    }
+                    root.swaptotal = swaptotal
+                    root.swapused = swapused
 
-                // DISKS
-                var disks = []
-                for (const disk of datas[11].result) {
+                    // DISKS
+                    var disks = []
+                    for (const disk of datas[11].result) {
 
-                    if (disk.mountpoint == "/") {
-                        root.rootstoragetotal = disk.bytes.total/unit
-                        root.rootstorageused = disk.bytes.used/unit
+                        if (disk.mountpoint == "/") {
+                            root.rootstoragetotal = disk.bytes.total/unit
+                            root.rootstorageused = disk.bytes.used/unit
+                        }
+
+                        disks.push({
+                            "name": disk.mountpoint == "/" ? "ROOT" : disk.name,
+                            "mountpoint": disk.mountpoint,
+                            "mountfrom": disk.mountFrom,
+                            "total": disk.bytes.total/unit,
+                            "used": disk.bytes.used/unit,
+                            "filesystem": disk.filesystem,
+                        })
+                    }
+                    root.disks = disks
+
+                    // WIFI
+                    root.wifi = {
+                        "device": datas[13].result[0].inf.description,
+                        "name": datas[13].result[0].conn.ssid,
+                        "localip": datas[12].result[0].ipv4,
+                        "signal": datas[13].result[0].conn.signalQuality,
+                        "channel": datas[13].result[0].conn.channel,
+                        "freq": datas[13].result[0].conn.frequency,
                     }
 
-                    disks.push({
-                        "name": disk.mountpoint == "/" ? "ROOT" : disk.name,
-                        "mountpoint": disk.mountpoint,
-                        "mountfrom": disk.mountFrom,
-                        "total": disk.bytes.total/unit,
-                        "used": disk.bytes.used/unit,
-                        "filesystem": disk.filesystem,
-                    })
-                }
-                root.disks = disks
+                    // PHYSICAL DISKS
+                    var phydisks = []
+                    for (const disk of datas[14].result) {
+                        const name = disk.name
+                        const size = disk.size/unit
+                        const type = disk.interconnect
+                        if (type.toLowerCase() == "usb") {
+                            phydisks.push({"name": name, "size": size, "type": type})
+                        } else {
+                            phydisks.unshift({"name": name, "size": size, "type": type})
+                        }
+                    }
 
-                // WIFI
-                root.wifi = {
-                    "device": datas[13].result[0].inf.description,
-                    "name": datas[13].result[0].conn.ssid,
-                    "localip": datas[12].result[0].ipv4,
-                    "signal": datas[13].result[0].conn.signalQuality,
-                    "channel": datas[13].result[0].conn.channel,
-                    "freq": datas[13].result[0].conn.frequency,
+                    root.phydisks = phydisks
+
+                }
+            }
+        }
+
+        //get CPU STAT
+        FileView {
+            id: cpustat
+
+            path: "/proc/stat"
+
+            onLoaded: {
+                const data = text().match(/^cpu\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/)
+                const cpudata = data.slice(1).map(x => parseInt(x, 10))
+                if (data) {
+                    root.cputotal = cpudata.reduce((acc,cur) => acc + cur, 0);
+
+                    root.cpuidle = cpudata[3] + cpudata[4];
+
+                    const totald = root.cputotal - (root.cputotalprev ?? 0)
+                    const idled = root.cpuidle - (root.cpuidleprev ?? 0)
+
+                    root.cpuusage = ((totald - idled)/totald)*100
+                    root.cpuusage = root.cpuusage.toFixed(2)
+
+                    root.cpuidleprev = root.cpuidle
+                    root.cputotalprev = root.cputotal
+                }
+            }
+        }
+
+        //get NETWORK STAT
+        FileView {
+            id: network
+
+            path: "/proc/net/dev"
+
+            onLoaded: {
+                const data = text().split("\n").slice(2)
+                let bytesin = 0
+                let bytesout = 0
+                //console.log(data[3].trim().match(/\w+:\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+/))
+                for (const wifi of data) {
+                    if (wifi) {
+                        let bytes = wifi.trim().match(/\w+:\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+/)
+                        bytesin += parseInt(bytes[1],10)
+                        bytesout += parseInt(bytes[2],10)
+                    }
                 }
 
-                // PHYSICAL DISKS
-                var phydisks = []
-                for (const disk of datas[14].result) {
-                    const name = disk.name
-                    const size = disk.size/unit
-                    const type = disk.interconnect
-                    if (type.toLowerCase() == "usb") {
-                        phydisks.push({"name": name, "size": size, "type": type})
+                const din = bytesin - (root.receivedbytes ?? 0)
+                const dout = bytesout - (root.transmitedbytes ?? 0)
+
+                root.networkreceive = din/(timer.interval/1000)
+                root.networktransmit = dout/(timer.interval/1000)
+
+                root.receivedbytes = bytesin
+                root.transmitedbytes = bytesout
+
+                //console.log(root.storageRounder(root.networkreceive, 2) + " " + root.storageRounder(root.networktransmit, 2))
+            }
+        }
+
+        //get DISK STAT
+        FileView {
+            id: disk
+
+            path: "/proc/diskstats"
+
+            onLoaded: {
+                const data = text().split("\n")
+                let read = 0
+                let readms = 0
+                let write = 0
+                let writems = 0
+                let ioms = 0
+                for (const device of data) {
+                    let minidata = device.trim().match(/\d+\s+\d+\s+\w+\s+\d+\s+\d+\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+(\d+)\s+(\d+)\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+/)
+                    if (minidata) {
+                        read += parseInt(minidata[1])
+                        readms += parseInt(minidata[2])
+                        write += parseInt(minidata[3])
+                        writems += parseInt(minidata[4])
+                        ioms += parseInt(minidata[5])
+                    }
+                }
+
+                const dread = (read - root.diskreaded) ?? 0
+                const dreadusage = (readms - root.diskreadedspeed) ?? 0
+                const dwrite = (write - root.diskwrote) ?? 0
+                const dwriteusage = (writems - root.diskwrotespeed) ?? 0
+                const dusage = (ioms - root.diskused) ?? 0
+
+                root.diskread = dread*512
+                root.diskreadspeed = dread*512/(timer.interval/1000)
+                root.diskwrite = dwrite*512
+                root.diskwritespeed = dwrite*512/(timer.interval/1000)
+                root.diskusage = dusage/timer.interval
+
+                root.diskreaded = read
+                root.diskreadedspeed = readms
+                root.diskwrote = write
+                root.diskwrotespeed = writems
+                root.diskused = ioms
+
+                //console.log(root.storageRounder(root.diskwritespeed, 2))
+
+            }
+        }
+
+        Process {
+            id: batterystat
+            running: true
+
+            command: ["bash", "-c", "upower -i $(upower -e | grep BAT)"]
+            stdout: StdioCollector {
+                onStreamFinished: {
+                    if (!text.match(/^Failed/)) {
+                        root.battery = text.match(/^\s+percentage:\s+(\d+%)/m)[1]
+                        root.batterystate = text.match(/^\s+state:\s+(.*)\s+/m)[1]
+                        root.batteryhealth = text.match(/^\s+capacity:\s+(\d+%)/m)[1]
+                        root.onbattery = true
+
                     } else {
-                        phydisks.unshift({"name": name, "size": size, "type": type})
+                        root.battery = "inf"
+                        root.batterystate = "PSU"
+                        root.onbattery = false
                     }
                 }
-
-                root.phydisks = phydisks
-
             }
         }
-    }
 
-    //get CPU STAT
-    FileView {
-        id: cpustat
-
-        path: "/proc/stat"
-
-        onLoaded: {
-            const data = text().match(/^cpu\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/)
-            const cpudata = data.slice(1).map(x => parseInt(x, 10))
-            if (data) {
-                root.cputotal = cpudata.reduce((acc,cur) => acc + cur, 0);
-
-                root.cpuidle = cpudata[3] + cpudata[4];
-
-                const totald = root.cputotal - (root.cputotalprev ?? 0)
-                const idled = root.cpuidle - (root.cpuidleprev ?? 0)
-
-                root.cpuusage = ((totald - idled)/totald)*100
-                root.cpuusage = root.cpuusage.toFixed(2)
-
-                root.cpuidleprev = root.cpuidle
-                root.cputotalprev = root.cputotal
-            }
+        Process {
+            id: run
         }
+
     }
-
-    //get NETWORK STAT
-    FileView {
-        id: network
-
-        path: "/proc/net/dev"
-
-        onLoaded: {
-            const data = text().split("\n").slice(2)
-            let bytesin = 0
-            let bytesout = 0
-            //console.log(data[3].trim().match(/\w+:\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+/))
-            for (const wifi of data) {
-                if (wifi) {
-                    let bytes = wifi.trim().match(/\w+:\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+/)
-                    bytesin += parseInt(bytes[1],10)
-                    bytesout += parseInt(bytes[2],10)
-                }
-            }
-
-            const din = bytesin - (root.receivedbytes ?? 0)
-            const dout = bytesout - (root.transmitedbytes ?? 0)
-
-            root.networkreceive = din/(timer.interval/1000)
-            root.networktransmit = dout/(timer.interval/1000)
-
-            root.receivedbytes = bytesin
-            root.transmitedbytes = bytesout
-
-            //console.log(root.storageRounder(root.networkreceive, 2) + " " + root.storageRounder(root.networktransmit, 2))
-        }
-    }
-
-    //get DISK STAT
-    FileView {
-        id: disk
-
-        path: "/proc/diskstats"
-
-        onLoaded: {
-            const data = text().split("\n")
-            let read = 0
-            let readms = 0
-            let write = 0
-            let writems = 0
-            let ioms = 0
-            for (const device of data) {
-                let minidata = device.trim().match(/\d+\s+\d+\s+\w+\s+\d+\s+\d+\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+(\d+)\s+(\d+)\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+/)
-                if (minidata) {
-                    read += parseInt(minidata[1])
-                    readms += parseInt(minidata[2])
-                    write += parseInt(minidata[3])
-                    writems += parseInt(minidata[4])
-                    ioms += parseInt(minidata[5])
-                }
-            }
-
-            const dread = (read - root.diskreaded) ?? 0
-            const dreadusage = (readms - root.diskreadedspeed) ?? 0
-            const dwrite = (write - root.diskwrote) ?? 0
-            const dwriteusage = (writems - root.diskwrotespeed) ?? 0
-            const dusage = (ioms - root.diskused) ?? 0
-
-            root.diskread = dread*512
-            root.diskreadspeed = dread*512/(timer.interval/1000)
-            root.diskwrite = dwrite*512
-            root.diskwritespeed = dwrite*512/(timer.interval/1000)
-            root.diskusage = dusage/timer.interval
-
-            root.diskreaded = read
-            root.diskreadedspeed = readms
-            root.diskwrote = write
-            root.diskwrotespeed = writems
-            root.diskused = ioms
-
-            //console.log(root.storageRounder(root.diskwritespeed, 2))
-
-        }
-    }
-
-    Process {
-        id: batterystat
-        running: true
-
-        command: ["bash", "-c", "upower -i $(upower -e | grep BAT)"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                if (!text.match(/^Failed/)) {
-                    root.battery = text.match(/^\s+percentage:\s+(\d+%)/m)[1]
-                    root.batterystate = text.match(/^\s+state:\s+(.*)\s+/m)[1]
-                    root.batteryhealth = text.match(/^\s+capacity:\s+(\d+%)/m)[1]
-                    root.onbattery = true
-
-                } else {
-                    root.battery = "inf"
-                    root.batterystate = "PSU"
-                    root.onbattery = false
-                }
-            }
-        }
-    }
-
-    Process {
-        id: run
-    }
-
-}
 
 

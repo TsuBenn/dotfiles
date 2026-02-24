@@ -22,11 +22,28 @@ ClippingRectangle {
 
     Rectangle {
 
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        anchors.verticalCenter: parent.verticalCenter
+
+        radius: implicitHeight/2
+
+        implicitHeight: 30
+
+        color: Color.bgMuted
+
+    }
+
+    Rectangle {
+
         id: selection
         implicitHeight: 30
 
         anchors.left: parent.left
         anchors.right: parent.right
+
+        anchors.verticalCenter: parent.verticalCenter
 
         visible: HyprInfo.focusedworkspace >= 1 && HyprInfo.focusedworkspace <= 5
 
@@ -63,14 +80,14 @@ ClippingRectangle {
 
         Behavior on anchors.leftMargin {
             SequentialAnimation {
-                PauseAnimation {duration: 100*selection.left_pause}
-                NumberAnimation {duration: 200; easing.type:Easing.OutCubic}
+                PauseAnimation {duration: 50*selection.left_pause}
+                NumberAnimation {duration: 100; easing.type:Easing.OutCubic}
             }
         }
         Behavior on anchors.rightMargin {
             SequentialAnimation {
-                PauseAnimation {duration: 100*selection.right_pause}
-                NumberAnimation {duration: 200; easing.type:Easing.OutCubic}
+                PauseAnimation {duration: 50*selection.right_pause}
+                NumberAnimation {duration: 100; easing.type:Easing.OutCubic}
             }
         }
 
@@ -101,7 +118,7 @@ ClippingRectangle {
                     property bool selected: index + 1 == HyprInfo.focusedworkspace
                     property real selected_thresold: selected
 
-                    implicitHeight: 30
+                    implicitHeight: 28
                     implicitWidth: window.implicitWidth
 
                     Behavior on implicitWidth { NumberAnimation {duration: 200; easing.type: Easing.OutCubic} }
@@ -110,16 +127,17 @@ ClippingRectangle {
 
                     radius: implicitHeight/2
 
-                    color: selected ? Color.accentStrong : Color.transparent(Color.accentStrong,0)
+                    color: Color.transparent(Color.accentStrong,0)
 
                     Rectangle {
 
+                        visible: false
                         anchors.fill: parent
                         anchors.margins: 2
                         color: wb.selected ? Color.bgMuted : Color.bgMuted
                         radius: height/2
                         Behavior on color { ColorAnimation {duration: 400; easing.type: Easing.OutCubic} }
-                        
+
                     }
 
                     RowLayout {
@@ -128,6 +146,8 @@ ClippingRectangle {
                         spacing: 0
 
                         PillButton {
+
+                            id: pillbutton
 
                             box_height: 30
                             box_width: box_height
@@ -140,6 +160,8 @@ ClippingRectangle {
                             text: wb.winCount > 0 ? wb.index + 1 : "•"
 
                             Behavior on color {ColorAnimation {duration: 100; easing.type: Easing.OutCubic}}
+
+                            fg_color_animation: 100
 
                             bg_color: [
                                 Color.transparent(Color.accentStrong,0),
@@ -155,9 +177,9 @@ ClippingRectangle {
                              */
 
                             fg_color: [
-                                wb.selected ? wb.winCount > 0 ? Color.textPrimary : Color.textPrimary: Color.accentSoft,
-                                wb.selected ? wb.winCount > 0 ? Color.textPrimary : Color.textPrimary: Color.accentSoft,
-                                wb.selected ? wb.winCount > 0 ? Color.textPrimary : Color.textPrimary: Color.accentStrong,
+                                wb.selected ? wb.winCount > 0 ? Color.textSecondary : Color.textSecondary: Color.accentSoft,
+                                wb.selected ? wb.winCount > 0 ? Color.textSecondary : Color.textSecondary: Color.accentSoft,
+                                wb.selected ? wb.winCount > 0 ? Color.textSecondary : Color.textSecondary: Color.accentStrong,
                             ]
                             border_width: [0,0,0]
 
@@ -187,7 +209,14 @@ ClippingRectangle {
                                 visible: index < root.maxWin
 
                                 width: 28
-                                height: 30
+                                height: 28
+
+                                layer.enabled: true
+                                layer.effect: DropShadow {
+                                    radius: 3
+                                    samples: 10
+                                    color: Color.transparent(Qt.darker(Color.accentStrong,2))
+                                }
 
                                 Image {
 
@@ -195,14 +224,15 @@ ClippingRectangle {
 
                                     visible: (apps.index <= wb.winCount-1 && !more.visible) && source != "image://icon/exception"
 
-                                    height: 14
-                                    width: 14
+                                    height: 18
+                                    width: 18
 
-                                    opacity: apps.focused && wb.selected ? 1 : 0.5
-                                    scale: apps.focused && wb.selected  ? 1 : 0.9
+                                    scale: apps.focused || !wb.selected  ? 1 : 0.9
+                                    opacity: apps.focused || !wb.selected  ? 1 : 0.5
 
                                     anchors.verticalCenter: parent.verticalCenter
-                                    x: 4
+                                    anchors.verticalCenterOffset: 0.4
+                                    x: 2
 
                                     source: "image://icon/" + HyprInfo.iconFetch(apps.windowtitle,apps.windowclass)
 
@@ -211,13 +241,6 @@ ClippingRectangle {
                                     mipmap: true
                                     smooth: true
 
-                                    layer.enabled: apps.focused
-                                    layer.effect: DropShadow {
-                                        radius: 3
-                                        samples: 10
-                                        spread: 0.8
-                                        color: Qt.darker(Color.accentStrong,1.5)
-                                    }
 
                                 }
 
@@ -245,7 +268,9 @@ ClippingRectangle {
                                     font.family: Fonts.system
                                     font.pointSize: 10
                                     font.weight: 1000
-                                    color: wb.selected ? Color.accentSoft : Color.accentStrong
+                                    color: wb.selected ? Color.textSecondary : Color.accentStrong
+
+                                    Behavior on color {ColorAnimation {duration: pillbutton.fg_color_animation*2; easing.type: Easing.OutCubic}}
                                 }
                             }
                         }
@@ -254,5 +279,6 @@ ClippingRectangle {
             }
         }
     }
+
 }
 

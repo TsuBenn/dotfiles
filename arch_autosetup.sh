@@ -75,7 +75,7 @@ BLUETOOTH=(
 
 DEV_PKGS=(
     npm nodejs python unzip clang clang-tools-extra rustup go fzf fd
-    lazygit tree-sitter-cli meson cmake make unixodbc
+    lazygit tree-sitter-cli meson cmake make unixodbc python-pip
 )
 
 TERMINALS=(kitty)
@@ -154,7 +154,7 @@ AUR_PACKAGES=(
 
 # ===== Flatpak Apps =====
 FLATPAK_APPS=(
-)
+    )
 
 # ===== Install Function =====
 install_packages() {
@@ -239,29 +239,14 @@ echo -e "${GREEN}✔ Git configured successfully!${NC}\n"
 
 # ===== Set Keyd config =====
 sudo mkdir -p /etc/keyd
-if [ ! -f /etc/keyd/default.conf ]; then
-    sudo tee /etc/keyd/default.conf > /dev/null <<EOF
+sudo tee /etc/keyd/default.conf > /dev/null <<EOF
 [ids]
 *
 
 [main]
+
+capslock = esc
 EOF
-fi
-
-# Ensure [ids] and [main] exist
-if ! grep -q "^\[ids\]" /etc/keyd/default.conf; then
-    sudo sed -i '1i [ids]\n*\n' /etc/keyd/default.conf
-fi
-
-if ! grep -q "^\[main\]" /etc/keyd/default.conf; then
-    echo -e "\n[main]" | sudo tee -a /etc/keyd/default.conf > /dev/null
-fi
-
-# Add capslock = esc (default, no duplicate)
-if ! grep -q "^capslock = esc" /etc/keyd/default.conf; then
-    echo "Setting capslock = esc"
-    echo "capslock = esc" | sudo tee -a /etc/keyd/default.conf > /dev/null
-fi
 
 # Ask about esc = grave
 read -rp "Map Escape to \` (grave)? (y/N): " add_esc

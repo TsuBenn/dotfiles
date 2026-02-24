@@ -18,6 +18,7 @@ Rectangle {
     property real   spacing              : 0
     property var    bg_color             : ["transparent", Color.bgSurface, Color.accentStrong]
     property var    fg_color             : [Color.textPrimary, Color.textPrimary, Color.bgSurface]
+    property int    fg_color_animation   : 0
 
     property var    border_width         : [0, 2, 0]
     property var    border_color         : [Color.accentStrong, Color.accentStrong, Color.accentStrong]
@@ -99,6 +100,8 @@ Rectangle {
                 return button.fg_color[0]
             }
         }
+
+        Behavior on color {ColorAnimation {duration: button.fg_color_animation; easing.type: Easing.OutCubic}}
 
         font.family: button.font_family
         font.pointSize: button.font_size

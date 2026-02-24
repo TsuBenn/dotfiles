@@ -258,11 +258,11 @@ Item {
 
                     id: gpu_spec
 
-                    model: SystemInfo.gpumodels
+                    model: SystemInfo.gpumodels ?? []
 
                     delegate: Loader {
 
-                        active: root.visible
+                        active: sys_info.visible
 
                         id: gpu_spec_loader
 
@@ -503,10 +503,6 @@ Item {
 
                     property int gpu_amount: SystemInfo.gpumodels.length
 
-                    opacity: root.gpu_nav
-
-                    Behavior on opacity {NumberAnimation {duration: 300; easing.type: Easing.OutCubic}}
-
                     Text {
                         text: "\uf0d9"
                         font.family: Fonts.system
@@ -541,7 +537,7 @@ Item {
 
                             Repeater {
 
-                                model: gpu_nav.gpu_amount
+                                model: gpu_nav.gpu_amount ?? []
 
                                 delegate: Rectangle {
 
@@ -815,7 +811,7 @@ Item {
                     spacing: 6
                     padding: 0
 
-                    items_data: SystemInfo.disks
+                    items_data: SystemInfo.disks ?? []
 
                     items: Loader {
 
@@ -1099,7 +1095,7 @@ Item {
                         anchors.margins: 20
 
                         property string signal: {
-                            const sig = SystemInfo.wifi.signal
+                            const sig = SystemInfo.wifi.signal ?? 0
                             if (sig > 90) {
                                 return "S"
                             }
@@ -1169,7 +1165,7 @@ Item {
                     spacing: 6
                     padding: 0
 
-                    items_data: SystemInfo.phydisks
+                    items_data: SystemInfo.phydisks ?? []
 
                     items: Loader {
 

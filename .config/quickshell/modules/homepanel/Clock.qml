@@ -80,6 +80,63 @@ Item {
             font.pointSize: 10.5
             font.weight: 700
         }
+
+        Text {
+
+            Layout.leftMargin: -2
+            text: {
+                if (SystemInfo.battery == "inf" || SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
+                    return "\udb80\udc84"                                
+                }
+                else if (parseInt(SystemInfo.battery) > 95) {
+                    return "\udb80\udc79"
+                }
+                else if (parseInt(SystemInfo.battery) > 85) {
+                    return "\udb80\udc82"
+                }
+                else if (parseInt(SystemInfo.battery) > 75) {
+                    return "\udb80\udc81"
+                }
+                else if (parseInt(SystemInfo.battery) > 65) {
+                    return "\udb80\udc80"
+                }
+                else if (parseInt(SystemInfo.battery) > 55) {
+                    return "\udb80\udc7f"
+                }
+                else if (parseInt(SystemInfo.battery) > 45) {
+                    return "\udb80\udc7e"
+                }
+                else if (parseInt(SystemInfo.battery) > 35) {
+                    return "\udb80\udc7d"
+                }
+                else if (parseInt(SystemInfo.battery) > 25) {
+                    return "\udb80\udc7c"
+                }
+                else if (parseInt(SystemInfo.battery) > 15) {
+                    return "\udb80\udc7b"
+                }
+                else if (parseInt(SystemInfo.battery) > 5) {
+                    return "\udb80\udc7a"
+                }
+                else if (parseInt(SystemInfo.battery) > 0) {
+                    return "\udb80\udc8e"
+                }
+            }
+
+            color: {
+                if (SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
+                    return Color.success
+                }
+                else if (parseInt(SystemInfo.battery) <= 20) {
+                    return Color.error
+                }
+                return Color.textPrimary
+            }
+            font.family: Fonts.system
+            font.pointSize: 14
+            font.weight: 800
+
+        }
     }
 
     //Clock

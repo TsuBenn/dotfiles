@@ -12,12 +12,12 @@ Singleton {
     property real mic
 
     property string raw
-    property var sinks
+    property var sinks: []
     property int sinkDefault
-    property var sources
+    property var sources: []
     property int sourceDefault
 
-    property var streams
+    property var streams: []
     property string streamraw 
 
     signal statusUpdated()

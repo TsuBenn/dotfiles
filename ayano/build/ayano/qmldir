@@ -1,6 +1,0 @@
-module ayano
-typeinfo ayano_exe.qmltypes
-prefer :/ayano/
-Main 254.0 qml/Main.qml
-depends QtQuick
-

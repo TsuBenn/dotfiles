@@ -15,7 +15,7 @@ Singleton {
         }
     )
 
-    property string current: "hutao"
+    property string current: "kanagawa"
 
     onCurrentChanged: {
         apply()
