@@ -33,6 +33,11 @@ ayano() {
         }
     else
         echo "No venv found!"
+        echo "Creating venv..."
+        python -m venv venv
+        echo "Installing required Python Library"
+        pip install PySide6
+        echo "Finished..."
     fi
 }
 
