@@ -36,6 +36,7 @@ ayano() {
         echo "Creating venv..."
         python -m venv venv
         echo "Installing required Python Library"
+        source venv/bin/activate
         pip install PySide6
         echo "Finished..."
     fi
