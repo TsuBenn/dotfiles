@@ -39,6 +39,10 @@ ayano() {
         source venv/bin/activate
         pip install PySide6
         echo "Finished..."
+        run() {
+            pkill -f main.py
+            python main.py &
+        }
     fi
 }
 
