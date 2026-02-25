@@ -24,7 +24,7 @@ alias setup='cd ~/dotfiles/ && bash ./arch_autosetup.sh'
 alias setupEdit='cd ~/dotfiles/ && nvim ./arch_autosetup.sh'
 
 ayano() {
-    cd ~/dotfiles/ayano || return
+    cd ~/ayano || return
     if [ -f "venv/bin/activate" ]; then
         source venv/bin/activate
         run() {
