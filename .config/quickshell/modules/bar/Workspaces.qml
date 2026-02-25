@@ -29,7 +29,7 @@ ClippingRectangle {
 
         radius: implicitHeight/2
 
-        implicitHeight: 30
+        implicitHeight: 26
 
         color: Color.bgMuted
 
@@ -38,7 +38,7 @@ ClippingRectangle {
     Rectangle {
 
         id: selection
-        implicitHeight: 30
+        implicitHeight: 26
 
         anchors.left: parent.left
         anchors.right: parent.right
@@ -80,13 +80,13 @@ ClippingRectangle {
 
         Behavior on anchors.leftMargin {
             SequentialAnimation {
-                PauseAnimation {duration: 50*selection.left_pause}
+                PauseAnimation {duration: 75*selection.left_pause}
                 NumberAnimation {duration: 100; easing.type:Easing.OutCubic}
             }
         }
         Behavior on anchors.rightMargin {
             SequentialAnimation {
-                PauseAnimation {duration: 50*selection.right_pause}
+                PauseAnimation {duration: 75*selection.right_pause}
                 NumberAnimation {duration: 100; easing.type:Easing.OutCubic}
             }
         }
@@ -118,7 +118,7 @@ ClippingRectangle {
                     property bool selected: index + 1 == HyprInfo.focusedworkspace
                     property real selected_thresold: selected
 
-                    implicitHeight: 28
+                    implicitHeight: 30
                     implicitWidth: window.implicitWidth
 
                     Behavior on implicitWidth { NumberAnimation {duration: 200; easing.type: Easing.OutCubic} }
@@ -224,8 +224,8 @@ ClippingRectangle {
 
                                     visible: (apps.index <= wb.winCount-1 && !more.visible) && source != "image://icon/exception"
 
-                                    height: 18
-                                    width: 18
+                                    height: 16
+                                    width: 16
 
                                     scale: apps.focused || !wb.selected  ? 1 : 0.9
                                     opacity: apps.focused || !wb.selected  ? 1 : 0.5

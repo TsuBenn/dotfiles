@@ -309,133 +309,119 @@ Scope {
                                 anchors.horizontalCenterOffset: -1/(battery.thickness-1)
 
                                 text: {
-                                    if (SystemInfo.battery == "inf" || SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
-                                        return "\udb80\udc84"                                
+                                    const raw = SystemInfo.battery
+                                    const state = SystemInfo.batterystate
+
+                                    if (
+                                        raw == "inf" ||
+                                        state == "charging" ||
+                                        state == "fully-charged"
+                                    ) {
+                                        return "\udb80\udc84"
                                     }
-                                    else if (parseInt(SystemInfo.battery) > 95) {
-                                        return "\udb80\udc79"
-                                    }
-                                    else if (parseInt(SystemInfo.battery) > 85) {
-                                        return "\udb80\udc82"
-                                    }
-                                    else if (parseInt(SystemInfo.battery) > 75) {
-                                        return "\udb80\udc81"
-                                    }
-                                    else if (parseInt(SystemInfo.battery) > 65) {
-                                        return "\udb80\udc80"
-                                    }
-                                    else if (parseInt(SystemInfo.battery) > 55) {
-                                        return "\udb80\udc7f"
-                                    }
-                                    else if (parseInt(SystemInfo.battery) > 45) {
-                                        return "\udb80\udc7e"
-                                    }
-                                    else if (parseInt(SystemInfo.battery) > 35) {
-                                        return "\udb80\udc7d"
-                                    }
-                                    else if (parseInt(SystemInfo.battery) > 25) {
-                                        return "\udb80\udc7c"
-                                    }
-                                    else if (parseInt(SystemInfo.battery) > 15) {
-                                        return "\udb80\udc7b"
-                                    }
-                                    else if (parseInt(SystemInfo.battery) > 5) {
-                                        return "\udb80\udc7a"
-                                    }
-                                    else if (parseInt(SystemInfo.battery) > 0) {
-                                        return "\udb80\udc8e"
-                                    }
+
+                                    const battery = parseInt(raw)
+
+                                    if (isNaN(battery) || battery <= 5)
+                                    return "\udb80\udc8e"
+
+                                    if (battery > 95)
+                                    return "\udb80\udc79"
+
+                                    // 6–95 range mapping
+                                    const step = Math.max(Math.floor((battery-6)/ 10),0)
+                                    return String.fromCharCode(0xDB80, 0xDC7A + step)
                                 }
 
-                                color: {
-                                    if (SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
-                                        return Color.success
+                                    color: {
+                                        if (SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
+                                            return Color.success
+                                        }
+                                        else if (battery.percentage <= 20) {
+                                            return Color.error
+                                        }
+                                        return Color.textPrimary
                                     }
-                                    else if (battery.percentage <= 20) {
-                                        return Color.error
-                                    }
-                                    return Color.textPrimary
-                                }
-                                font.family: Fonts.system
-                                font.pointSize: 13
-                                font.weight: 800
+                                    font.family: Fonts.system
+                                    font.pointSize: 13
+                                    font.weight: 800
 
+                                }
                             }
                         }
-                    }
 
-                    RowLayout {
+                        RowLayout {
 
-                        id: rightSide
+                            id: rightSide
 
-                        anchors.topMargin: Math.round(31/2 - implicitHeight/2)
-                        anchors.top: parent.top
-                        anchors.right: parent.right
-                        anchors.rightMargin: 9
-
-
-                        spacing: 5
+                            anchors.topMargin: Math.round(31/2 - implicitHeight/2)
+                            anchors.top: parent.top
+                            anchors.right: parent.right
+                            anchors.rightMargin: 9
 
 
-                        PopupList {
+                            spacing: 5
 
-                            id: themeList
 
-                            text: "Theme"
+                            PopupList {
 
-                            box_width: 200
-                            box_height: 30
+                                id: themeList
 
-                            maxWidth: box_width
-                            maxHeight: 200
+                                text: "Theme"
 
-                            selected_text: Color.current
-                            selected_font_size: 13
-                            selected_centered: true
-
-                            items: Object.values(Color.colors)
-
-                            list_items: PillButton {
-
-                                required property string id
-
+                                box_width: 200
                                 box_height: 30
-                                box_width: themeList.list_container_implicitWidth
 
-                                text: id
+                                maxWidth: box_width
+                                maxHeight: 200
 
-                                onReleased: {
-                                    Color.current = id
-                                    //themeList.closeList()
+                                selected_text: Color.current
+                                selected_font_size: 13
+                                selected_centered: true
+
+                                items: Object.values(Color.colors)
+
+                                list_items: PillButton {
+
+                                    required property string id
+
+                                    box_height: 30
+                                    box_width: themeList.list_container_implicitWidth
+
+                                    text: id
+
+                                    onReleased: {
+                                        Color.current = id
+                                        //themeList.closeList()
+                                    }
+
                                 }
 
+                                dropdown: true
+
+                                onListOpened: {
+                                    item.implicitHeight = SystemInfo.monitorheight
+                                    bar.focusable = true
+                                }
+                                onListClosed: {
+                                    item.implicitHeight = 31
+                                    bar.focusable = false
+                                }
                             }
 
-                            dropdown: true
-
-                            onListOpened: {
-                                item.implicitHeight = SystemInfo.monitorheight
-                                bar.focusable = true
-                            }
-                            onListClosed: {
-                                item.implicitHeight = 31
-                                bar.focusable = false
-                            }
                         }
 
+                        LazyLoader {id:homepanel; active: true; component: Homepanel {}}
+
+                        ScreenCorners {visible: !bar.transparentBar}
                     }
+                }
 
-                    LazyLoader {id:homepanel; active: true; component: Homepanel {}}
-
-                    ScreenCorners {visible: !bar.transparentBar}
+                IpcHandler {
+                    target: "homepanel"
+                    function toggle(): void {homepanel.item.toggle()}
                 }
             }
 
-            IpcHandler {
-                target: "homepanel"
-                function toggle(): void {homepanel.item.toggle()}
-            }
         }
-
     }
-}
