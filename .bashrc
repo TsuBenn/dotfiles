@@ -27,10 +27,6 @@ ayano() {
     cd ~/ayano || return
     if [ -f "venv/bin/activate" ]; then
         source venv/bin/activate
-        run() {
-            pkill -f main.py
-            python main.py &
-        }
     else
         echo "No venv found!"
         echo "Creating venv..."
@@ -38,12 +34,43 @@ ayano() {
         echo "Installing required Python Library"
         source venv/bin/activate
         pip install PySide6
+        pip install requests
+        sudo pacman -S ollama-cuda
+        sudo systemctl enable --now ollama.service
         echo "Finished..."
-        run() {
-            pkill -f main.py
-            python main.py &
-        }
     fi
+    run() {
+        pkill -f main.py
+        python main.py &
+    }
+}
+ayanoSetup() {
+    cd ~/ayano || return
+    echo "Setting up Ayano Project"
+    echo ""
+    echo "Creating venv..."
+    python -m venv venv
+    echo ""
+    echo "Installing required Python Libraries"
+    source venv/bin/activate
+    echo ""
+    echo "Installing PySide6..."
+    pip install PySide6
+    echo ""
+    echo "Installing requests..."
+    pip install requests
+    echo ""
+    echo "Finished Installing Python Libraries"
+    echo ""
+    echo "Installing Ollama"
+    sudo pacman -S ollama-cuda --needed
+    sudo systemctl enable --now ollama.service
+    echo ""
+    echo "Finished..."
+    run() {
+        pkill -f main.py
+        python main.py &
+    }
 }
 
 alias dot='cd ~/dotfiles/ && nvim .'

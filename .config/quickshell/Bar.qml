@@ -26,10 +26,21 @@ Scope {
             property string screen_name: screen.name
             property var monitor: HyprInfo.monitors[screen_name] != undefined ? HyprInfo.monitors[screen_name] : {"width": 1920, "height": 1080}
 
+            property HyprlandMonitor monitorObject
+
             property int screenRadius: 20
             property bool transparentBar: false && !homepanel.item.visible
 
             Behavior on screenRadius {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+
+            Component.onCompleted: {
+                for (const m of Hyprland.monitors.values) {
+                    console.log(m.name)
+                    if (m.name == screen.name) {
+                        monitorObject = m
+                    }
+                }
+            }
 
             screen: modelData
 
@@ -44,7 +55,7 @@ Scope {
             }
 
             margins {
-                top: -40 * Hyprland.focusedWorkspace.hasFullscreen
+                top: -40 * (bar.monitorObject.activeWorkspace.hasFullscreen)
             }
 
             color: transparentBar ? "transparent" : Color.bgSurface
@@ -125,7 +136,7 @@ Scope {
 
                                 visible: text && (text.toLowerCase() != window_title.text.toLowerCase()) && !homepanel.item.visible
 
-                                text: HyprInfo.focusedwindow.class
+                                text: `${HyprInfo.monitors[HyprInfo.focusedwindow.monitor].name} - ${HyprInfo.focusedwindow.class}`
 
                                 Layout.preferredWidth: Math.min(implicitWidth,400)
                                 Layout.bottomMargin: -5
@@ -169,6 +180,8 @@ Scope {
                         anchors.topMargin: Math.round(31/2 - implicitHeight/2)
                         anchors.top: parent.top
                         anchors.horizontalCenter: parent.horizontalCenter
+
+                        secondMonitor: bar.monitor.id > 0
 
                     } 
 

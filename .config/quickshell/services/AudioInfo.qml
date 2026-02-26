@@ -225,6 +225,7 @@ Singleton {
 
         stdout: StdioCollector {
             onStreamFinished: {
+                if (!text) return
                 if (root.streamraw == text) return
                 const datas = text.match(/^Sink Input #\d+(?:\n(?!Sink Input #).*)*/gm)
 

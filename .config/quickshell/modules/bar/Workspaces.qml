@@ -20,8 +20,9 @@ ClippingRectangle {
 
     property int maxWin: 3
 
-    property bool monitorBasedWorkspace: true
+    property bool monitorBasedWorkspace: false
     property bool secondMonitor: HyprInfo.focusedMonitor.id > 0 && monitorBasedWorkspace
+    property bool inBound: HyprInfo.focusedworkspace >= 1 + (root.secondMonitor ? 5 : 0) && HyprInfo.focusedworkspace <= 5 + (root.secondMonitor ? 5 : 0) 
 
     Rectangle {
 
@@ -48,10 +49,13 @@ ClippingRectangle {
 
         anchors.verticalCenter: parent.verticalCenter
 
-        visible: HyprInfo.focusedworkspace >= 1 && HyprInfo.focusedworkspace
+        opacity: root.inBound
+
+        Behavior on opacity {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
         anchors.leftMargin: left_margin
         property real left_margin: {
+            if (!root.inBound) return
             var leftMargin = 26*(HyprInfo.focusedworkspace-(root.secondMonitor ? 6 : 1))
             for (var i = (root.secondMonitor ? 6 : 1); i < HyprInfo.focusedworkspace; i++) {
                 leftMargin += 28*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
@@ -66,6 +70,7 @@ ClippingRectangle {
 
         anchors.rightMargin: right_margin
         property real right_margin: {
+            if (!root.inBound) return
             var rightMargin = 26*((root.secondMonitor ? 10 : 5)-HyprInfo.focusedworkspace)
             for (var i = (root.secondMonitor ? 10 : 5); i > HyprInfo.focusedworkspace; i--) {
                 rightMargin += 28*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing

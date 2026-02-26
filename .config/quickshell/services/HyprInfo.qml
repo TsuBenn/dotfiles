@@ -111,7 +111,8 @@ Singleton {
                     })
                     if (focused) root.focusedwindow = {
                         "title": windowtitle,
-                        "class": windowclass
+                        "class": windowclass,
+                        "monitor": monitor
                     }
                 }
                 if (root.windowCount(root.focusedworkspace) == 0) root.focusedwindow = {
@@ -139,10 +140,20 @@ Singleton {
                     const width = data.width
                     const height = data.height
                     const scale = data.scale
-                    const model = data.mode
+                    const model = data.model
                     const refreshRate = data.refreshRate
                     const focused = data.focused
                     monitors[name] = {
+                        "id": id,
+                        "name": name,
+                        "width": width,
+                        "height": height,
+                        "scale": scale,
+                        "model": model,
+                        "refreshRate": refreshRate,
+                        "focused": focused
+                    }
+                    monitors[id] = {
                         "id": id,
                         "name": name,
                         "width": width,
