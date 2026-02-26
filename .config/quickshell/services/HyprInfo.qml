@@ -11,15 +11,11 @@ Singleton {
 
     property int focusedworkspace: Hyprland.focusedWorkspace?.id
 
-    onFocusedworkspaceChanged: {
-        //console.log(focusedworkspace)
-    }
-
     property var focusedwindow: {"title": "", "class": ""}
 
     property var workspaces
+    property var monitors
 
-    property var specialWorkspaces
     property var icons
 
     signal hyprEvent(event : string)
@@ -64,7 +60,6 @@ Singleton {
                 case "movewindow":
                 case "activewindow": {
                     process.running = true
-                    special.running = true
                     get_icons.reload()
                     break
                 }
@@ -83,7 +78,6 @@ Singleton {
             root.icons = JSON.parse(text())
         }
     }
-
 
     Process {
         id: process
@@ -124,28 +118,34 @@ Singleton {
     }
 
     Process {
-        id: special
+        id: monitor
 
-        command: ["hyprctl", "workspaces", "-j"]
+        command: ["hyprctl", "monitors", "-j"]
 
-        running: false
+        running: true
         stdout: StdioCollector {
             onStreamFinished: {
-                const specialWorkspaces = []
+                const monitors = []
                 const datas = JSON.parse(text)
                 for (const data of datas) {
-                    if (data.id >= 0) continue
-                    //console.log(data.id)
-                    const id = data.id ?? ""
-                    const name = data.name ?? ""
-                    const windows = data.windows ?? ""
-                    specialWorkspaces.push({
+                    const id = data.id
+                    const name = data.name
+                    const width = data.width
+                    const height = data.height
+                    const scale = data.scale
+                    const model = data.mode
+                    const refreshRate = data.refreshRate
+                    monitors[name] = {
                         "id": id,
                         "name": name,
-                        "windows": windows
-                    })
+                        "width": width,
+                        "height": height,
+                        "scale": scale,
+                        "model": model,
+                        "refreshRate": refreshRate,
+                    }
                 }
-                root.specialWorkspaces = specialWorkspaces
+                root.monitors = monitors
             }
         }
     }

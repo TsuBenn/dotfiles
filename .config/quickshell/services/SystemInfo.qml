@@ -60,11 +60,6 @@ Singleton {
 
     property string rootstoragename: "ROOT"
     property string networkdevice: "Wifi/Ethernet"
-    property string monitorname: "Wifi/Ethernet"
-    property int    monitorheight: 1920
-    property int    monitorwidth: 1080
-    property int    monitorrefreshrate: 60
-    property real   monitorscale: 1
 
     property string battery: "inf"
     property string batterystate
@@ -184,13 +179,6 @@ Singleton {
                 const uptime_minutes = Math.floor((datas[4].result.uptime - uptime_hours*3600000)/60000)
                 const uptime_seconds = Math.floor((datas[4].result.uptime - uptime_hours*3600000 - uptime_minutes*60000)/1000)
                 root.uptime = `${uptime_hours}h${uptime_minutes}m${uptime_seconds}s`
-
-                // Display
-                root.monitorname = datas[5].result[0].name
-                root.monitorwidth = datas[5].result[0].scaled.width
-                root.monitorheight = datas[5].result[0].scaled.height
-                root.monitorscale = datas[5].result[0].scaled.height/datas[5].result[0].preferred.height
-                root.monitorrefreshrate = datas[5].result[0].output.refreshRate
 
                 // WM
                 root.wm = datas[6].result.prettyName

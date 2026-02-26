@@ -19,6 +19,8 @@ PanelWindow {
     visible: false
     exclusionMode: ExclusionMode.Auto
 
+    property var monitor
+
     function toggle() {
         if (visible && !openpanel.running) {
             closepanel.start()
@@ -49,7 +51,6 @@ PanelWindow {
                 case "workspace":
                 case "fullscreen": {
                     closepanel.start()
-                    return
                     break
                 }
             }
@@ -64,7 +65,7 @@ PanelWindow {
         NumberAnimation {
             target: homepanel
             property: "anchors.verticalCenterOffset"
-            from: -SystemInfo.monitorheight
+            from: -root.monitor.height
             to: 0
             duration: 400
             easing.type: Easing.OutElastic
@@ -78,7 +79,7 @@ PanelWindow {
         NumberAnimation {
             target: homepanel
             property: "anchors.verticalCenterOffset"
-            to: -SystemInfo.monitorheight
+            to: -root.monitor.height
             duration: 300
             easing.type: Easing.InElastic
             easing.amplitude: 1
@@ -106,8 +107,8 @@ PanelWindow {
     //UI
     Rectangle {
 
-        implicitWidth: SystemInfo.monitorwidth
-        implicitHeight: SystemInfo.monitorheight
+        implicitWidth: root.monitor.width
+        implicitHeight: root.monitor.height
         anchors.centerIn: parent
         anchors.verticalCenterOffset: -20
         color: "transparent"
@@ -119,6 +120,7 @@ PanelWindow {
             transparentBorder: true
         }
 
+
         ColumnLayout {
 
             anchors.centerIn: parent
@@ -126,6 +128,8 @@ PanelWindow {
             id:homepanel
 
             spacing: Config.gap
+
+            scale: Math.min((root.monitor.width/1920),1)
 
             MouseArea {
                 z: -3
@@ -187,6 +191,7 @@ PanelWindow {
             Widgets {
 
                 panel_navigator: !searchbar.typing
+                monitor: root.monitor
 
                 z: searchresults.visible ? -2 : 1
 

@@ -219,6 +219,10 @@ make
 sudo make install
 echo -e "${GREEN}✔ Ad-blocked Spotify successfully!${NC}"
 
+echo "${BLUE}Creating Hyprland's monitor config file..."
+touch ~/hyprmonitor.conf
+echo "${GREEN}DONE!"
+
 # ===== Enable Services =====
 echo -e "${BLUE}Enabling system services...${NC}"
 sudo systemctl enable --now NetworkManager

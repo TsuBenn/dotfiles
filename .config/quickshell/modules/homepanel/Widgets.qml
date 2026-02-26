@@ -16,6 +16,7 @@ import QtQuick
 ColumnLayout {
 
     property bool panel_navigator: true
+    property var monitor
 
     id: root
 
@@ -73,7 +74,7 @@ ColumnLayout {
         Layout.preferredWidth: 1000
         Layout.preferredHeight: 425
 
-        x: (-implicitWidth - (SystemInfo.monitorwidth-1000)/2) * (widgets.panel_index - index)
+        x: (-implicitWidth - (root.monitor.width-1000)/2) * (widgets.panel_index - index)
 
         //opacity: widgets.panel_index == index
         z: widgets.panel_index == index ? 0 : -2

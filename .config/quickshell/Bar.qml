@@ -9,20 +9,22 @@ import qs.assets
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Hyprland
-import Quickshell.Wayland
 import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
 
 Scope {
     Variants {
+
         model: Quickshell.screens
 
         PanelWindow {
             id: bar
 
             required property var modelData
+
+            property string screen_name: screen.name
+            property var monitor: HyprInfo.monitors[screen_name]
 
             property int screenRadius: 20
             property bool transparentBar: false && !homepanel.item.visible
@@ -55,8 +57,8 @@ Scope {
                 anchor {
                     window: bar
                 }
-                implicitWidth: SystemInfo.monitorwidth
-                implicitHeight: SystemInfo.monitorheight
+                implicitWidth: bar.monitor.width
+                implicitHeight: bar.monitor.height
                 color: "transparent"
                 visible: true
                 mask: Region {
@@ -400,7 +402,7 @@ Scope {
                                 dropdown: true
 
                                 onListOpened: {
-                                    item.implicitHeight = SystemInfo.monitorheight
+                                    item.implicitHeight = bar.monitor.height
                                     bar.focusable = true
                                 }
                                 onListClosed: {
@@ -411,7 +413,7 @@ Scope {
 
                         }
 
-                        LazyLoader {id:homepanel; active: true; component: Homepanel {}}
+                        LazyLoader {id:homepanel; active: true; component: Homepanel {monitor: bar.monitor}}
 
                         ScreenCorners {visible: !bar.transparentBar}
                     }

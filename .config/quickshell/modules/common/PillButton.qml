@@ -11,6 +11,10 @@ Rectangle {
     property string text                 : "Text"
     property real   text_opacity         : 1
     property real   text_padding         : 10
+
+    property real   verticalOffset       : 0.8
+    property real   horizontalOffset     : 0
+
     property real   font_size            : 13
     property string font_family          : "JetBrains Mono Nerd Font"
     property int    font_weight          : 800
@@ -83,10 +87,10 @@ Rectangle {
         text: button.text.trim() 
         opacity: button.text_opacity
 
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: 0.8
-
         anchors.centerIn: parent
+
+        anchors.verticalCenterOffset: button.verticalOffset
+        anchors.horizontalCenterOffset: button.horizontalOffset
 
         width: button.centered ? undefined : button.implicitWidth - button.text_padding*2 - button.border.width*2
 

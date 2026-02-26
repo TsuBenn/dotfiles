@@ -13,7 +13,7 @@ ClippingRectangle {
 
     id: root
 
-    implicitHeight: 30
+    implicitHeight: 26
     implicitWidth: workspace.implicitWidth
     radius: implicitHeight/2
     color: "transparent"
@@ -45,11 +45,11 @@ ClippingRectangle {
 
         anchors.verticalCenter: parent.verticalCenter
 
-        visible: HyprInfo.focusedworkspace >= 1 && HyprInfo.focusedworkspace <= 5
+        visible: HyprInfo.focusedworkspace >= 1 && HyprInfo.focusedworkspace
 
         anchors.leftMargin: left_margin
         property real left_margin: {
-            var leftMargin = 30*(HyprInfo.focusedworkspace-1)
+            var leftMargin = 26*(HyprInfo.focusedworkspace-1)
             for (var i = 1; i < HyprInfo.focusedworkspace; i++) {
                 leftMargin += 28*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
             }
@@ -63,7 +63,7 @@ ClippingRectangle {
 
         anchors.rightMargin: right_margin
         property real right_margin: {
-            var rightMargin = 30*(5-HyprInfo.focusedworkspace)
+            var rightMargin = 26*(5-HyprInfo.focusedworkspace)
             for (var i = 5; i > HyprInfo.focusedworkspace; i--) {
                 rightMargin += 28*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
             }
@@ -118,7 +118,7 @@ ClippingRectangle {
                     property bool selected: index + 1 == HyprInfo.focusedworkspace
                     property real selected_thresold: selected
 
-                    implicitHeight: 30
+                    implicitHeight: 26
                     implicitWidth: window.implicitWidth
 
                     Behavior on implicitWidth { NumberAnimation {duration: 200; easing.type: Easing.OutCubic} }
@@ -149,7 +149,7 @@ ClippingRectangle {
 
                             id: pillbutton
 
-                            box_height: 30
+                            box_height: 26
                             box_width: box_height
                             text_padding: 0
 
@@ -158,6 +158,9 @@ ClippingRectangle {
                             font_size: text == "•" ? 15 : 11
                             font_weight: 1000
                             text: wb.winCount > 0 ? wb.index + 1 : "•"
+
+                            verticalOffset: wb.winCount > 0 ? -0.4 : 0.8
+                            horizontalOffset: wb.winCount > 0 ? 0.8 : 0
 
                             Behavior on color {ColorAnimation {duration: 100; easing.type: Easing.OutCubic}}
 
@@ -231,7 +234,7 @@ ClippingRectangle {
                                     opacity: apps.focused || !wb.selected  ? 1 : 0.5
 
                                     anchors.verticalCenter: parent.verticalCenter
-                                    anchors.verticalCenterOffset: 0.4
+                                    anchors.verticalCenterOffset: -0.6
                                     x: 2
 
                                     source: "image://icon/" + HyprInfo.iconFetch(apps.windowtitle,apps.windowclass)
