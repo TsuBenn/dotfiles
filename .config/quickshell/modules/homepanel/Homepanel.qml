@@ -129,8 +129,6 @@ PanelWindow {
 
             spacing: Config.gap
 
-            scale: Math.min((root.monitor.width/1920),1)
-
             MouseArea {
                 z: -3
                 anchors.fill: parent

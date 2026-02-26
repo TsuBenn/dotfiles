@@ -24,7 +24,7 @@ Scope {
             required property var modelData
 
             property string screen_name: screen.name
-            property var monitor: HyprInfo.monitors[screen_name]
+            property var monitor: HyprInfo.monitors[screen_name] != undefined ? HyprInfo.monitors[screen_name] : {"width": 1920, "height": 1080}
 
             property int screenRadius: 20
             property bool transparentBar: false && !homepanel.item.visible
@@ -415,7 +415,7 @@ Scope {
 
                         LazyLoader {id:homepanel; active: true; component: Homepanel {monitor: bar.monitor}}
 
-                        ScreenCorners {visible: !bar.transparentBar}
+                        ScreenCorners {visible: !bar.transparentBar; screenRadius: bar.screenRadius; monitor: bar.monitor}
                     }
                 }
 

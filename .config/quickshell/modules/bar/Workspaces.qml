@@ -20,6 +20,8 @@ ClippingRectangle {
 
     property int maxWin: 3
 
+    property bool secondMonitor: HyprInfo.focusedMonitor.id > 0
+
     Rectangle {
 
         anchors.left: parent.left
@@ -49,8 +51,8 @@ ClippingRectangle {
 
         anchors.leftMargin: left_margin
         property real left_margin: {
-            var leftMargin = 26*(HyprInfo.focusedworkspace-1)
-            for (var i = 1; i < HyprInfo.focusedworkspace; i++) {
+            var leftMargin = 26*(HyprInfo.focusedworkspace-(root.secondMonitor ? 6 : 1))
+            for (var i = (root.secondMonitor ? 6 : 1); i < HyprInfo.focusedworkspace; i++) {
                 leftMargin += 28*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
             }
             if (anchors.leftMargin < leftMargin) {
@@ -63,8 +65,8 @@ ClippingRectangle {
 
         anchors.rightMargin: right_margin
         property real right_margin: {
-            var rightMargin = 26*(5-HyprInfo.focusedworkspace)
-            for (var i = 5; i > HyprInfo.focusedworkspace; i--) {
+            var rightMargin = 26*((root.secondMonitor ? 10 : 5)-HyprInfo.focusedworkspace)
+            for (var i = (root.secondMonitor ? 10 : 5); i > HyprInfo.focusedworkspace; i--) {
                 rightMargin += 28*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
             }
             if (anchors.rightMargin < rightMargin) {
@@ -107,6 +109,21 @@ ClippingRectangle {
                 id: theLoader
 
                 required property int index
+
+                property int baseIndex
+
+                Component.onCompleted: {
+                    baseIndex = index
+                    root.secondMonitorChanged.connect(() => {
+                        if (root.secondMonitor) {
+                            index = baseIndex + 5
+                        }
+                        else {
+                            index = baseIndex
+                        }
+                    })
+
+                }
 
                 sourceComponent: ClippingRectangle {
 

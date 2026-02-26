@@ -14,7 +14,9 @@ Singleton {
     property var focusedwindow: {"title": "", "class": ""}
 
     property var workspaces
-    property var monitors
+    property var monitors: ({})
+
+    property var focusedMonitor: ({})
 
     property var icons
 
@@ -61,6 +63,10 @@ Singleton {
                 case "activewindow": {
                     process.running = true
                     get_icons.reload()
+                    break
+                }
+                case "focusedmon": {
+                    monitor.running = true
                     break
                 }
             }
@@ -135,6 +141,7 @@ Singleton {
                     const scale = data.scale
                     const model = data.mode
                     const refreshRate = data.refreshRate
+                    const focused = data.focused
                     monitors[name] = {
                         "id": id,
                         "name": name,
@@ -143,6 +150,10 @@ Singleton {
                         "scale": scale,
                         "model": model,
                         "refreshRate": refreshRate,
+                        "focused": focused
+                    }
+                    if (focused) {
+                        root.focusedMonitor = monitors[name]
                     }
                 }
                 root.monitors = monitors

@@ -11,11 +11,15 @@ import Qt5Compat.GraphicalEffects
 
 Item {
     id: root
+
+    property var monitor
+    property int screenRadius
+
     PanelWindow {
 
         visible: root.visible
 
-        implicitWidth: SystemInfo.monitorwidth
+        implicitWidth: root.monitor.width
 
         anchors {
             top: true
@@ -27,7 +31,7 @@ Item {
             top: 40 * !Hyprland.focusedWorkspace.hasFullscreen
         }
 
-        implicitHeight: bar.screenRadius*2
+        implicitHeight: root.screenRadius*2
 
         Rectangle {
 
@@ -54,8 +58,8 @@ Item {
             anchors.fill: parent
             color: "white"
 
-            topLeftRadius: bar.screenRadius
-            topRightRadius: bar.screenRadius
+            topLeftRadius: root.screenRadius
+            topRightRadius: root.screenRadius
         }
 
         color: "transparent"
@@ -68,14 +72,14 @@ Item {
     }
     PanelWindow {
 
-        implicitWidth: SystemInfo.monitorwidth
+        implicitWidth: root.monitor.width
 
         anchors {
             bottom: true
             left: true
             right: true
         }
-        implicitHeight: bar.screenRadius*2
+        implicitHeight: root.screenRadius*2
 
         Rectangle {
             anchors.fill: parent
@@ -99,8 +103,8 @@ Item {
             anchors.fill: parent
             color: "white"
 
-            bottomLeftRadius: bar.screenRadius
-            bottomRightRadius: bar.screenRadius
+            bottomLeftRadius: root.screenRadius
+            bottomRightRadius: root.screenRadius
         }
 
         color: "transparent"

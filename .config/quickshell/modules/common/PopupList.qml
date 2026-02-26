@@ -451,11 +451,11 @@ PillButton {
 
             Rectangle {
 
-                width: SystemInfo.monitorwidth*2
-                height: SystemInfo.monitorheight*2
+                width: HyprInfo.focusedMonitor.width*2
+                height: HyprInfo.focusedMonitor.height*2
 
-                x:-SystemInfo.monitorwidth
-                y:-SystemInfo.monitorheight
+                x:-HyprInfo.focusedMonitor.width
+                y:-HyprInfo.focusedMonitor.height
 
                 color: "transparent"
 
