@@ -49,6 +49,7 @@ PanelWindow {
                 case "closewindow":
                 case "movewindow":
                 case "workspace":
+                case "focusedmon":
                 case "fullscreen": {
                     closepanel.start()
                     break

@@ -20,7 +20,8 @@ ClippingRectangle {
 
     property int maxWin: 3
 
-    property bool secondMonitor: HyprInfo.focusedMonitor.id > 0
+    property bool monitorBasedWorkspace: true
+    property bool secondMonitor: HyprInfo.focusedMonitor.id > 0 && monitorBasedWorkspace
 
     Rectangle {
 
@@ -110,26 +111,11 @@ ClippingRectangle {
 
                 required property int index
 
-                property int baseIndex
-
-                Component.onCompleted: {
-                    baseIndex = index
-                    root.secondMonitorChanged.connect(() => {
-                        if (root.secondMonitor) {
-                            index = baseIndex + 5
-                        }
-                        else {
-                            index = baseIndex
-                        }
-                    })
-
-                }
-
                 sourceComponent: ClippingRectangle {
 
                     id: wb
 
-                    property int index: theLoader.index
+                    property int index: theLoader.index + (root.secondMonitor ? 5 : 0)
 
                     property int winCount: HyprInfo.windowCount(wb.index + 1)
                     property bool selected: index + 1 == HyprInfo.focusedworkspace
@@ -242,7 +228,7 @@ ClippingRectangle {
 
                                     id: icon
 
-                                    visible: (apps.index <= wb.winCount-1 && !more.visible) && source != "image://icon/exception"
+                                    visible: (apps.index <= wb.winCount-1 && !more.visible) && source != ""
 
                                     height: 16
                                     width: 16
@@ -254,7 +240,9 @@ ClippingRectangle {
                                     anchors.verticalCenterOffset: -0.6
                                     x: 2
 
-                                    source: "image://icon/" + HyprInfo.iconFetch(apps.windowtitle,apps.windowclass)
+                                    property string icon_name: HyprInfo.iconFetch(apps.windowtitle,apps.windowclass)
+
+                                    source: icon_name != "exception" ? "image://icon/" + icon_name : ""
 
                                     cache: false
 

@@ -481,6 +481,7 @@ ColumnLayout {
                             power_buttons.power_countdown = 0
                             power_buttons.active_power_button = ""
                             power.startDetached()
+                            power.command = []
                             return
                         }
                         power_buttons.power_countdown -= 1
@@ -496,7 +497,7 @@ ColumnLayout {
                         force_power_timer.stop()
                         power_timer.stop()
                         power.startDetached()
-                        power.command = [""] 
+                        power.command = []
                     }
                 }
 
@@ -573,7 +574,7 @@ ColumnLayout {
                     onPressed: {
                         power_timer.stop()
                         force_power_timer.start()
-                        power.command = ["bash", "-c", "systemctl suspend"]
+                        power.command = ["bash", "-c", "sleep 1 && systemctl suspend"]
                     }
                     onReleased: {
                         force_power_timer.stop()

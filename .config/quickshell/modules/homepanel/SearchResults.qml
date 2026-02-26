@@ -299,11 +299,13 @@ ClippingRectangle {
 
                             id: app_icon
 
+                            property string icon_name: HyprInfo.iconFetch(app.icon, app.name)
+
                             anchors.fill: parent
 
-                            visible: source != "image://icon/exception"
+                            visible: source != ""
 
-                            source: "image://icon/" + HyprInfo.iconFetch(app.icon, app.name)
+                            source: icon_name != "exception" ? "image://icon/" + icon_name : ""
 
                             cache: false
 

@@ -100,11 +100,13 @@ List {
 
                             id: icon
 
+                            property string icon_name: HyprInfo.iconFetch(stream.app,stream.binary)
+
                             anchors.fill: parent
 
-                            visible: source != "image://icon/exception"
+                            visible: source != ""
 
-                            source: "image://icon/" + HyprInfo.iconFetch(stream.app,stream.binary)
+                            source: icon_name != "exception" ? "image://icon/" + icon_name : ""
 
                             mipmap: true
                             smooth: true
