@@ -54,7 +54,7 @@ ClippingRectangle {
             gradient: Gradient {
                 orientation: Gradient.Horizontal
                 GradientStop {position: 0.0; color: "transparent"}
-                GradientStop {position: root.padding/root.width; color: "white"}
+                GradientStop {position: (root.padding/2)/root.width; color: "white"}
                 GradientStop {position: 1.0 - (root.padding/2)/root.width; color: "white"}
                 GradientStop {position: 1.0; color: "transparent"}
             }

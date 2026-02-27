@@ -57,6 +57,7 @@ ClippingRectangle {
         property real left_margin: {
             if (!root.inBound) return
             var leftMargin = 26*(HyprInfo.focusedworkspace-(root.secondMonitor ? 6 : 1))
+            leftMargin = 26*(HyprInfo.focusedworkspace-(root.secondMonitor ? 6 : 1))
             for (var i = (root.secondMonitor ? 6 : 1); i < HyprInfo.focusedworkspace; i++) {
                 leftMargin += 28*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
             }

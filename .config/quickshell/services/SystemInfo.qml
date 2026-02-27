@@ -137,7 +137,7 @@ Singleton {
 
     Timer {
         id: timer
-        interval: 1000
+        interval: root.onbattery ? 2000 : 1000
         running: true
         repeat: true
         triggeredOnStart: true
@@ -271,12 +271,12 @@ Singleton {
 
                     // WIFI
                     root.wifi = {
-                        "device": datas[13].result[0].inf.description,
-                        "name": datas[13].result[0].conn.ssid,
-                        "localip": datas[12].result[0].ipv4,
-                        "signal": datas[13].result[0].conn.signalQuality,
-                        "channel": datas[13].result[0].conn.channel,
-                        "freq": datas[13].result[0].conn.frequency,
+                        "device": datas[13].result[0]?.inf.description,
+                        "name": datas[13].result[0]?.conn.ssid,
+                        "localip": datas[12].result[0]?.ipv4,
+                        "signal": datas[13].result[0]?.conn.signalQuality,
+                        "channel": datas[13].result[0]?.conn.channel,
+                        "freq": datas[13].result[0]?.conn.frequency,
                     }
 
                     // PHYSICAL DISKS

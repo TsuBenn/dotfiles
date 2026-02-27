@@ -12,6 +12,7 @@ import Quickshell.Hyprland
 import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 
 Scope {
     Variants {
@@ -22,6 +23,16 @@ Scope {
             id: bar
 
             required property var modelData
+
+            function gainScreenAccess() {
+                item.implicitHeight = bar.monitor.height
+                bar.focusable = true
+            }
+            function returnScreenAccess() {
+                item.implicitHeight = 31
+                bar.focusable = false
+
+            }
 
             property string screen_name: screen.name
             property var monitor: HyprInfo.monitors[screen_name] != undefined ? HyprInfo.monitors[screen_name] : {"width": 1920, "height": 1080}
@@ -35,7 +46,6 @@ Scope {
 
             Component.onCompleted: {
                 for (const m of Hyprland.monitors.values) {
-                    console.log(m.name)
                     if (m.name == screen.name) {
                         monitorObject = m
                     }
@@ -65,6 +75,7 @@ Scope {
             implicitHeight: 40
 
             PopupWindow {
+
                 anchor {
                     window: bar
                 }
@@ -134,18 +145,19 @@ Scope {
 
                                 id: window_class
 
-                                visible: text && (text.toLowerCase() != window_title.text.toLowerCase()) && !homepanel.item.visible
+                                visible: (text && (text.toLowerCase() != window_title.text.toLowerCase()) && !homepanel.item.visible && window_title.text != "Desktop" )
 
-                                text: `${HyprInfo.monitors[HyprInfo.focusedwindow.monitor].name} - ${HyprInfo.focusedwindow.class}`
+                                text: `${HyprInfo.monitors[HyprInfo.focusedwindow.monitor]?.name} - ${HyprInfo.focusedwindow.class}`
 
-                                Layout.preferredWidth: Math.min(implicitWidth,400)
+                                Layout.preferredWidth: Math.min(implicitWidth,bar.implicitWidth/2 - workspaces.implicitWidth/2 - left_center.implicitWidth - homebutton.implicitWidth - 42)
+                                elide: Text.ElideRight
+
                                 Layout.bottomMargin: -5
 
                                 color: Qt.lighter(Color.textDisabled,1.5)
                                 font.family: Fonts.system
                                 font.pointSize: 9
                                 font.weight: 700
-                                elide: Text.ElideRight
 
                             }
                             Text {
@@ -154,7 +166,7 @@ Scope {
 
                                 text: homepanel.item.visible ? "Homepanel" : HyprInfo.focusedwindow.title
 
-                                Layout.preferredWidth: Math.min(implicitWidth,400)
+                                Layout.preferredWidth: Math.min(implicitWidth,bar.monitor.width/2 - workspaces.implicitWidth/2 - left_center.implicitWidth - homebutton.implicitWidth - 42)
 
                                 color: Color.accentSoft
                                 font.family: Fonts.system
@@ -167,9 +179,326 @@ Scope {
 
                     }
 
+                    component ComponentCircle: Item {
+
+                        id: component_circle
+
+                        property int percentage: SystemInfo.cpuusage
+                        property string icon: "\uf4bc"
+                        property int icon_size: 13
+                        property real horizontalOffset: 0
+                        property real verticalOffset: 0
+
+                        Layout.topMargin: 1
+
+                        implicitWidth: progress_circle.implicitWidth
+                        implicitHeight: progress_circle.implicitHeight
+
+                        ClippingRectangle {
+
+                            implicitHeight: 27
+                            implicitWidth: 27
+
+                            Behavior on implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+
+                            radius: implicitHeight/2
+                            color: Color.bgMuted
+
+                        }
+
+                        ProgressCircle {
+
+                            anchors.centerIn: parent
+                            id: progress_circle
+
+                            thickness: 2.5
+                            radius: 12
+                            icon: ""
+                            label: ""
+                            percentage: component_circle.percentage
+                            fg_color: {
+                                if (percentage >= 90) return Color.error
+                                return Color.textPrimary
+                            }
+                            bg_color: Qt.lighter(Color.bgMuted,1.5)
+                        }
+
+
+                        Text {
+
+                            anchors.centerIn: parent
+                            anchors.horizontalCenterOffset: component_circle.horizontalOffset
+                            anchors.verticalCenterOffset: component_circle.verticalOffset
+
+                            text: component_circle.icon
+
+                            color: {
+                                if (component_circle.percentage >= 90) return Color.error
+                                return Color.textPrimary
+                            }
+                            font.family: Fonts.system
+                            font.pointSize: component_circle.icon_size
+                            font.weight: 800
+
+                        }
+                    }
+
                     RowLayout {
                         id: left_center
+
+                        anchors.rightMargin: 12
                         anchors.right: workspaces.left
+                        anchors.verticalCenter: workspaces.verticalCenter
+                        spacing: 10
+
+
+                        ComponentCircle {
+                            percentage: SystemInfo.cpuusage
+                            icon: "\uf4bc"
+                            icon_size: 11
+                            verticalOffset: -0.4
+                        }
+
+                        ComponentCircle {
+                            percentage: SystemInfo.gpuusage
+                            icon: "\udb83\udfb2"
+                        }
+
+                        ComponentCircle {
+                            percentage: SystemInfo.memusage
+                            icon: "\uefc5"
+                            icon_size: 10
+                            horizontalOffset: -0.4
+                        }
+
+                        Rectangle {
+
+                            implicitHeight: 26
+                            implicitWidth: 160
+                            radius: implicitHeight/2
+
+                            color: Color.bgMuted
+
+                            MouseControl {
+
+                                anchors.fill: parent
+                                anchors.margins: -7
+
+                                onReleased: {
+                                    media_player.opacity = !media_player.opacity
+                                }
+                            }
+
+                            BarMediaPlayer {
+
+                                id: media_player
+
+                                x: parent.implicitWidth/2 - implicitWidth/2
+                                y: 40
+
+                                onVisibleChanged: {
+                                    if (visible) bar.gainScreenAccess()
+                                    else bar.returnScreenAccess()
+                                }
+
+                                Rectangle {
+
+                                    width: HyprInfo.focusedMonitor.width*2
+                                    height: HyprInfo.focusedMonitor.height*2
+
+                                    x:-HyprInfo.focusedMonitor.width
+                                    y:-HyprInfo.focusedMonitor.height
+
+                                    color: "transparent"
+
+                                    z: -2
+
+                                    focus: true
+
+                                    Keys.onPressed: (events) => {
+                                        events.accepted = true
+                                        KeyHandlers.signalPressed(events.key, events.modifiers, events.isAutoRepeat)
+                                    }
+                                    Keys.onReleased: (events) => {
+                                        events.accepted = true
+                                        KeyHandlers.signalReleased(events.key, events.modifiers, events.isAutoRepeat)
+                                    }
+
+                                    Component.onCompleted: {
+                                        KeyHandlers.pressed.connect((key) => {
+                                            if (key == Qt.Key_Right) {
+                                                MediaPlayerInfo.nextMedia()
+                                            } else if (key == Qt.Key_Left) {
+                                                MediaPlayerInfo.prevMedia()
+                                            } else if (key == Qt.Key_Space) {
+                                                MediaPlayerInfo.playPauseMedia()
+                                            } else if (key == Qt.Key_Escape) {
+                                                media_player.opacity = 0
+                                            }
+                                        })
+                                    }
+
+                                    MouseControl {
+
+                                        anchors.fill: parent
+
+                                        hoverEnabled: true
+
+                                        onEntered: {
+                                            media_player_timer.restart()
+                                        }
+                                        onExited: {
+                                            media_player_timer.stop()
+                                        }
+
+                                        onReleased: {
+                                            media_player.opacity = 0
+                                        }
+
+                                    }
+                                }
+
+                                Timer {
+                                    id: media_player_timer
+                                    interval: 500
+
+                                    onTriggered: {
+                                        media_player.opacity = 0
+                                    }
+                                }
+
+                                MouseArea {
+
+                                    z:-1
+
+                                    anchors.fill: parent
+                                    anchors.margins: -100
+
+                                    hoverEnabled: true
+
+                                    onReleased: {
+                                        media_player.opacity = 0
+                                    }
+                                }
+
+                            }
+
+                            Rectangle {
+
+                                visible: true
+
+                                anchors.fill: parent
+                                anchors.margins: 2
+
+                                radius: 20
+                                color: Color.bgBase
+                            }
+
+                            ClippingRectangle {
+
+                                anchors.fill: parent
+
+                                radius: parent.radius
+                                color: "transparent"
+
+                                Image {
+
+                                    visible: true
+
+                                    anchors.fill: parent
+
+                                    source: MediaPlayerInfo.artUrl
+                                    fillMode: Image.PreserveAspectCrop
+
+                                    opacity: status == Image.Ready ? 0.4 : 0
+                                    Behavior on opacity {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+
+                                    layer.enabled: true
+                                    layer.effect: GaussianBlur {
+                                        radius: 15
+                                        samples: 30
+                                        cached: true
+                                    }
+
+                                }
+
+                            }
+
+                            PillButton {
+
+                                id: media_playPause
+
+                                anchors.left: parent.left
+                                anchors.verticalCenter: parent.verticalCenter
+
+                                box_height: 26
+                                box_width: box_height
+
+                                property color play_button: MediaPlayerInfo.canPlay ? Color.textPrimary : Color.textDisabled
+
+                                font_size: {
+                                    if (MediaPlayerInfo.status == "playing") return 12
+                                    else return 10
+                                }
+
+                                text: {
+                                    if (MediaPlayerInfo.status == "playing") return "\uf04c"
+                                    else return "\uf04b"
+                                }
+
+                                fg_color: [play_button, play_button, Color.textSecondary]
+                                bg_color: [Color.bgMuted,Color.bgMuted,Color.textPrimary]
+                                border_width: [0,0,0]
+
+                                ProgressCircle {
+
+                                    label: ""
+                                    icon: ""
+
+                                    radius: 11.75
+                                    thickness: 2.5
+
+                                    percentage: MediaPlayerInfo.canPos ? (MediaPlayerInfo.pos/MediaPlayerInfo.length)*100 : 100
+
+                                    bg_color: Qt.lighter(Color.bgMuted,1.5)
+                                    fg_color: MediaPlayerInfo.canPos ? Color.textPrimary : Color.textDisabled
+                                }
+
+                                onReleased: {
+                                    MediaPlayerInfo.playPauseMedia()
+                                    MediaPlayerInfo.requestPos()
+                                }
+
+                                layer.enabled: true
+                                layer.effect: DropShadow {
+                                    radius: 6
+                                    samples: 10
+                                    color: Qt.rgba(0.0,0.0,0.0,0.4)
+                                    transparentBorder: true
+                                }
+
+                            }
+
+                            MarqueeText {
+
+                                anchors.left: media_playPause.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.verticalCenterOffset: 0.4
+
+                                box_width: parent.width - 30
+
+                                centered: false
+
+                                text: `${MediaPlayerInfo.title} ${MediaPlayerInfo.artist ? "- " + MediaPlayerInfo.artist : ""}`
+
+                                padding: 10
+                                font_family: Fonts.system
+                                font_color: Color.textPrimary
+                                font_size: 10
+                                font_weight: 700
+                            }
+
+                        }
 
                     }
 
@@ -188,10 +517,10 @@ Scope {
                     RowLayout {
                         id: right_center
 
-                        anchors.leftMargin: 10
+                        anchors.leftMargin: 12
                         anchors.left: workspaces.right
                         anchors.verticalCenter: workspaces.verticalCenter
-                        spacing: 12
+                        spacing: 10
 
 
                         Rectangle {
@@ -348,95 +677,48 @@ Scope {
                                     return String.fromCharCode(0xDB80, 0xDC7A + step)
                                 }
 
-                                    color: {
-                                        if (SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
-                                            return Color.success
-                                        }
-                                        else if (battery.percentage <= 20) {
-                                            return Color.error
-                                        }
-                                        return Color.textPrimary
+                                color: {
+                                    if (SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
+                                        return Color.success
                                     }
-                                    font.family: Fonts.system
-                                    font.pointSize: 13
-                                    font.weight: 800
-
+                                    else if (battery.percentage <= 20) {
+                                        return Color.error
+                                    }
+                                    return Color.textPrimary
                                 }
+                                font.family: Fonts.system
+                                font.pointSize: 13
+                                font.weight: 800
+
                             }
                         }
-
-                        RowLayout {
-
-                            id: rightSide
-
-                            anchors.topMargin: Math.round(31/2 - implicitHeight/2)
-                            anchors.top: parent.top
-                            anchors.right: parent.right
-                            anchors.rightMargin: 9
-
-
-                            spacing: 5
-
-
-                            PopupList {
-
-                                id: themeList
-
-                                text: "Theme"
-
-                                box_width: 200
-                                box_height: 30
-
-                                maxWidth: box_width
-                                maxHeight: 200
-
-                                selected_text: Color.current
-                                selected_font_size: 13
-                                selected_centered: true
-
-                                items: Object.values(Color.colors)
-
-                                list_items: PillButton {
-
-                                    required property string id
-
-                                    box_height: 30
-                                    box_width: themeList.list_container_implicitWidth
-
-                                    text: id
-
-                                    onReleased: {
-                                        Color.current = id
-                                        //themeList.closeList()
-                                    }
-
-                                }
-
-                                dropdown: true
-
-                                onListOpened: {
-                                    item.implicitHeight = bar.monitor.height
-                                    bar.focusable = true
-                                }
-                                onListClosed: {
-                                    item.implicitHeight = 31
-                                    bar.focusable = false
-                                }
-                            }
-
-                        }
-
-                        LazyLoader {id:homepanel; active: true; component: Homepanel {monitor: bar.monitor}}
-
-                        ScreenCorners {visible: !bar.transparentBar; screenRadius: bar.screenRadius; monitor: bar.monitor}
                     }
-                }
 
-                IpcHandler {
-                    target: "homepanel"
-                    function toggle(): void {homepanel.item.toggle()}
+                    RowLayout {
+
+                        id: rightSide
+
+                        anchors.topMargin: Math.round(31/2 - implicitHeight/2)
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.rightMargin: 9
+
+
+                        spacing: 5
+
+                    }
+
+                    LazyLoader {id:homepanel; active: true; component: Homepanel {monitor: bar.monitor}}
+
+                    ScreenCorners {visible: !bar.transparentBar; screenRadius: bar.screenRadius; monitor: bar.monitor}
                 }
             }
 
+            IpcHandler {
+                target: "homepanel"
+                function toggle(): void {homepanel.item.toggle()}
+            }
         }
+
     }
+}

@@ -79,6 +79,12 @@ alias kittyconf='cd ~/dotfiles/ && nvim ~/.config/kitty/kitty.conf'
 alias nvimconf='cd ~/.config/nvim && nvim ~/.config/nvim/'
 alias bashconf='cd ~/dotfiles/ && nvim ~/.bashrc'
 alias qsconf='cd ~/dotfiles/.config/quickshell/ && nvim ~/.config/quickshell/shell.qml'
+qsDebug() {
+    qs kill
+    clear
+    qs
+}
+
 alias programs='cd ~/dotfiles/programs/ && nvim .'
 
 # QUICK RESET

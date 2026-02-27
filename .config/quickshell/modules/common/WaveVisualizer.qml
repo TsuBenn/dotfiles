@@ -6,10 +6,11 @@ Canvas {
 
     id: root
 
-    property list<int> points: Cava.points
+    property list<int> points: !flipped ? Cava.points : Cava.pointsFlipped
     property list<int> smoothPoints: []
     property int smoothing: 2
     property color color: "white"
+    property bool flipped: true
 
     anchors.fill: parent
     anchors.centerIn: parent
