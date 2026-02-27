@@ -21,9 +21,11 @@ Rectangle {
 
     visible: opacity
 
-    opacity: 0
+    property bool opened: false
 
-    Behavior on opacity {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    opacity: opened
+
+    Behavior on opacity {NumberAnimation {duration: 200; easing.type: Easing.OutQuart}}
 
     implicitWidth: 460
     implicitHeight: 140
@@ -96,7 +98,7 @@ Rectangle {
             color: Qt.lighter(Color.accentSoft,1.2)
             opacity: 0.2
             scale: 0.9
-            spacing: 3
+            spacing: 4
             round: true
         }
 
@@ -105,11 +107,11 @@ Rectangle {
 
     ClippingRectangle {
 
-        x: 12
+        x: 13
         y: 12
 
-        implicitWidth: 118
-        implicitHeight: 118
+        implicitWidth: 116
+        implicitHeight: 116
         color: Color.bgSurface
 
         radius: Config.radius - 10
@@ -161,7 +163,7 @@ Rectangle {
             id: media_info
 
             anchors.top: parent.top
-            anchors.topMargin: 8
+            anchors.topMargin: 10
 
             implicitWidth: 460 - 140 - 10
 
@@ -218,7 +220,8 @@ Rectangle {
                 id: timestamp
 
                 Layout.alignment: Qt.AlignCenter
-                Layout.topMargin: 24
+                Layout.topMargin: 20
+                Layout.leftMargin: 8
                 Layout.bottomMargin: 18
 
                 implicitHeight: 10
@@ -248,6 +251,7 @@ Rectangle {
                 id: progress_bar
 
                 Layout.alignment: Qt.AlignHCenter
+                Layout.leftMargin: 6
 
                 implicitHeight: 6
                 implicitWidth: parent.implicitWidth - 80

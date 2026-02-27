@@ -253,6 +253,7 @@ Scope {
 
 
                         ComponentCircle {
+                            z: 1
                             percentage: SystemInfo.cpuusage
                             icon: "\uf4bc"
                             icon_size: 11
@@ -260,11 +261,13 @@ Scope {
                         }
 
                         ComponentCircle {
+                            z: 1
                             percentage: SystemInfo.gpuusage
                             icon: "\udb83\udfb2"
                         }
 
                         ComponentCircle {
+                            z: 1
                             percentage: SystemInfo.memusage
                             icon: "\uefc5"
                             icon_size: 10
@@ -285,16 +288,25 @@ Scope {
                                 anchors.margins: -7
 
                                 onReleased: {
-                                    media_player.opacity = !media_player.opacity
+                                    media_player.opened = !media_player.opened
                                 }
+                            }
+
+                            Rectangle {
+                                anchors.centerIn: parent
+                                implicitHeight: 40
+                                implicitWidth: media_player.implicitWidth
+                                color: Color.bgSurface
                             }
 
                             BarMediaPlayer {
 
+                                z: -10
+
                                 id: media_player
 
                                 x: parent.implicitWidth/2 - implicitWidth/2
-                                y: 40
+                                y: media_player.opacity*40 - (1 - media_player.opacity)*implicitHeight
 
                                 onVisibleChanged: {
                                     if (visible) bar.gainScreenAccess()
@@ -326,6 +338,7 @@ Scope {
 
                                     Component.onCompleted: {
                                         KeyHandlers.pressed.connect((key) => {
+                                            if (!media_player.visible) return
                                             if (key == Qt.Key_Right) {
                                                 MediaPlayerInfo.nextMedia()
                                             } else if (key == Qt.Key_Left) {
@@ -352,7 +365,7 @@ Scope {
                                         }
 
                                         onReleased: {
-                                            media_player.opacity = 0
+                                            media_player.opened = 0
                                         }
 
                                     }
@@ -363,7 +376,7 @@ Scope {
                                     interval: 500
 
                                     onTriggered: {
-                                        media_player.opacity = 0
+                                        media_player.opened = 0
                                     }
                                 }
 
@@ -377,7 +390,7 @@ Scope {
                                     hoverEnabled: true
 
                                     onReleased: {
-                                        media_player.opacity = 0
+                                        media_player.opened = 0
                                     }
                                 }
 
