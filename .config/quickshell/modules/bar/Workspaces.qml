@@ -225,7 +225,7 @@ ClippingRectangle {
 
                                 layer.enabled: true
                                 layer.effect: DropShadow {
-                                    radius: 3
+                                    radius: 2
                                     samples: 10
                                     color: Color.transparent(Qt.darker(Color.accentStrong,2))
                                 }
@@ -254,7 +254,6 @@ ClippingRectangle {
 
                                     mipmap: true
                                     smooth: true
-
 
                                 }
 

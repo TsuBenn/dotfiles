@@ -95,7 +95,7 @@ PillButton {
             if (!button.dropdown) {
                 return - implicitHeight + button.implicitHeight
             } else {
-                return parent.y
+                return 0
             }
         }
 

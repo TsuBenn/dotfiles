@@ -74,6 +74,14 @@ Scope {
 
             implicitHeight: 40
 
+            Process {
+                id: process
+                function run(cmd : string) {
+                    command = ["bash", "-c", cmd]
+                    startDetached()
+                }
+            }
+
             PopupWindow {
 
                 anchor {
@@ -185,7 +193,7 @@ Scope {
 
                         property int percentage: SystemInfo.cpuusage
                         property string icon: "\uf4bc"
-                        property int icon_size: 13
+                        property real icon_size: 13
                         property real horizontalOffset: 0
                         property real verticalOffset: 0
 
@@ -255,15 +263,8 @@ Scope {
                         ComponentCircle {
                             z: 1
                             percentage: SystemInfo.cpuusage
-                            icon: "\uf4bc"
-                            icon_size: 11
-                            verticalOffset: -0.4
-                        }
-
-                        ComponentCircle {
-                            z: 1
-                            percentage: SystemInfo.gpuusage
-                            icon: "\udb83\udfb2"
+                            icon: "\udb80\udf5b"
+                            icon_size: 15
                         }
 
                         ComponentCircle {
@@ -275,20 +276,62 @@ Scope {
                         }
 
                         Rectangle {
-
-                            implicitHeight: 26
-                            implicitWidth: 160
+                            z: 1
+                            implicitHeight: 28
+                            implicitWidth: 26 + 4 + 26
+                            color: Color.bgBase
                             radius: implicitHeight/2
 
-                            color: Color.bgMuted
+                            border.width: 2
+                            border.color: Qt.lighter(Color.bgMuted,1.2)
+
+                            RowLayout {
+
+                                spacing: 4
+
+                                anchors.verticalCenterOffset: -0.5
+                                anchors.centerIn: parent
+
+                                ComponentCircle {
+                                    percentage: SystemInfo.gpuusage
+                                    icon: "\udb83\udfb2"
+                                }
+
+                                ComponentCircle {
+                                    percentage: SystemInfo.gpumemusage
+                                    icon: "\ue266"
+                                    icon_size: 10.5
+                                    verticalOffset: 0.2
+                                }
+
+                            }
+                        }
+
+                        Rectangle {
+
+                            implicitHeight: 26
+                            implicitWidth: MediaPlayerInfo.activePlayer ? 160 : 26
+                            radius: implicitHeight/2
+
+                            Behavior on implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+
+                            color: Qt.lighter(Color.bgMuted,1.5)
 
                             MouseControl {
 
                                 anchors.fill: parent
                                 anchors.margins: -7
 
+                                visible: MediaPlayerInfo.activePlayer
+
+                                hoverEnabled: true
+
+                                onEntered: {
+                                    MediaPlayerInfo.autoSelect()
+                                }
                                 onReleased: {
                                     media_player.opened = !media_player.opened
+                                    MediaPlayerInfo.autoSelect()
                                 }
                             }
 
@@ -306,7 +349,7 @@ Scope {
                                 id: media_player
 
                                 x: parent.implicitWidth/2 - implicitWidth/2
-                                y: media_player.opacity*40 - (1 - media_player.opacity)*implicitHeight
+                                y: 40 - (1 - media_player.opacity)*implicitHeight
 
                                 onVisibleChanged: {
                                     if (visible) bar.gainScreenAccess()
@@ -323,7 +366,7 @@ Scope {
 
                                     color: "transparent"
 
-                                    z: -2
+                                    z: -3
 
                                     focus: true
 
@@ -382,15 +425,28 @@ Scope {
 
                                 MouseArea {
 
-                                    z:-1
+                                    z:-2
 
                                     anchors.fill: parent
-                                    anchors.margins: -100
+                                    anchors.margins: -200
 
                                     hoverEnabled: true
 
                                     onReleased: {
                                         media_player.opened = 0
+                                    }
+                                }
+                                MouseArea {
+
+                                    z:-1
+
+                                    anchors.fill: parent
+
+                                    hoverEnabled: true
+
+                                    onReleased: {
+                                        media_player.opened = 0
+                                        if (MediaPlayerInfo.entry.toLowerCase() == "spotify") process.run("spotify")
                                     }
                                 }
 
@@ -423,7 +479,7 @@ Scope {
                                     source: MediaPlayerInfo.artUrl
                                     fillMode: Image.PreserveAspectCrop
 
-                                    opacity: status == Image.Ready ? 0.4 : 0
+                                    opacity: status == Image.Ready ? 0.3 : 0
                                     Behavior on opacity {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
                                     layer.enabled: true
@@ -446,6 +502,8 @@ Scope {
 
                                 box_height: 26
                                 box_width: box_height
+
+                                clickable: MediaPlayerInfo.canPlay
 
                                 property color play_button: MediaPlayerInfo.canPlay ? Color.textPrimary : Color.textDisabled
 

@@ -42,6 +42,7 @@ ayano() {
     run() {
         pkill -f main.py
         python main.py &
+        clear
     }
 }
 ayanoSetup() {
@@ -70,6 +71,7 @@ ayanoSetup() {
     run() {
         pkill -f main.py
         python main.py &
+        clear
     }
 }
 

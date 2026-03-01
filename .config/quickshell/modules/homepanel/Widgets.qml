@@ -574,7 +574,7 @@ ColumnLayout {
                     onPressed: {
                         power_timer.stop()
                         force_power_timer.start()
-                        power.command = ["bash", "-c", "sleep 1 && systemctl suspend"]
+                        power.command = ["bash", "-c", "systemctl suspend"]
                     }
                     onReleased: {
                         force_power_timer.stop()

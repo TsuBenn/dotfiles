@@ -22,13 +22,22 @@ Rectangle {
     visible: opacity
 
     property bool opened: false
+    property var easing: Easing.OutCubic
 
     opacity: opened
 
-    Behavior on opacity {NumberAnimation {duration: 200; easing.type: Easing.OutQuart}}
+    onOpacityChanged: {
+        if (opacity == 1) {
+            easing = Easing.InCubic
+        } else if (opacity == 0) {
+            easing = Easing.OutCubic
+        }
+    }
+
+    Behavior on opacity {NumberAnimation {duration: 200; easing.type: media_player.easing}}
 
     implicitWidth: 460
-    implicitHeight: 140
+    implicitHeight: 143
 
     color: Color.bgMuted
 
@@ -86,7 +95,7 @@ Rectangle {
 
                 gradient: Gradient {
                     GradientStop {position: 0.0; color: "white" }
-                    GradientStop {position: 1; color: "transparent" }
+                    GradientStop {position: 1.2; color: "transparent" }
                 }
             }
         }
@@ -110,9 +119,9 @@ Rectangle {
         x: 13
         y: 12
 
-        implicitWidth: 116
-        implicitHeight: 116
-        color: Color.bgSurface
+        implicitWidth: 118
+        implicitHeight: 118
+        color: Color.bgMuted
 
         radius: Config.radius - 10
 
@@ -128,8 +137,7 @@ Rectangle {
             fillMode: Image.PreserveAspectCrop
 
             opacity: status == Image.Ready ? 1 : 0
-            Behavior on opacity {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
-
+            Behavior on opacity {NumberAnimation {duration: 300; easing.type: Easing.OutCubic}}
 
         }
 
@@ -146,7 +154,7 @@ Rectangle {
     Rectangle {
 
         anchors.fill: parent
-        anchors.leftMargin: 140
+        anchors.leftMargin: 136
 
         color: "transparent"
 
@@ -158,12 +166,127 @@ Rectangle {
             transparentBorder: true
         }
 
+
+        RowLayout {
+
+            x: 12
+            y: 73
+
+            spacing: 10
+
+            PillButton {
+
+                Layout.alignment: Qt.AlignVCenter
+                Layout.topMargin: -1
+
+                text: {
+                    if (MediaPlayerInfo.status == "playing") {
+                        text_padding = 8
+                        return "\udb80\udfe4"
+                    } else {
+                        text_padding = 9.5
+                        return "\udb81\udc0a"
+                    }
+                }
+                centered: false
+                font_family: Fonts.system
+                box_width: 30
+                box_height: box_width
+                font_size: 17
+
+                verticalOffset: 1
+
+                fg_color: [Color.bgBase, Color.bgBase, Color.bgBase]
+                bg_color: [Color.accentStrong, Color.accentStrong, Color.textPrimary]
+                border_width: [0,0,0]
+
+                text_opacity: MediaPlayerInfo.canPlay && MediaPlayerInfo.canPause ? 1 : 0.25
+                clickable: MediaPlayerInfo.canPlay && MediaPlayerInfo.canPause
+
+                onReleased: {
+                    MediaPlayerInfo.playPauseMedia()
+                }
+            }
+
+            PopupList {
+
+                id: sourcesList
+
+                Layout.alignment: Qt.AlignVCenter
+
+                text: MediaPlayerInfo.entry.toUpperCase()
+                font_size: 11
+                font_weight: 800
+                marquee: true
+                dropdown: true
+
+                border_width: [2, 2, 2]
+                border_color: [Color.accentStrong, Color.accentSoft, Color.accentStrong]
+
+                box_height: 30
+                box_width: 90
+                maxWidth: box_width
+                maxHeight: box_height*2 - list_spacing - 1
+                selected_centered: true
+                selected_padding: 14
+                selected_marquee: true
+                selected_text: MediaPlayerInfo.entry.toUpperCase()
+                selected_font_size: font_size
+                selected_font_weight: 800
+
+                show_scroller: false
+
+                selected_list: false
+
+                items: MediaPlayerInfo.players
+
+                list_items: Loader {
+
+                    id: sources
+
+                    active: root.visible
+
+                    required property string dbusName
+                    required property string desktopEntry
+                    required property int index
+
+                    sourceComponent: PillButton {
+                        property string dbusName: sources.dbusName
+                        property string desktopEntry: sources.desktopEntry
+                        property int index: sources.index
+
+                        property bool selected: dbusName == MediaPlayerInfo.dbusName
+
+                        radius: sourcesList.radius - sourcesList.list_spacing + 1
+
+                        text: desktopEntry.toUpperCase()
+                        font_size: sourcesList.font_size
+                        font_weight: selected ? 800 : 700
+                        box_width: sourcesList.list_container_implicitWidth
+                        box_height: sourcesList.box_height - 2
+                        fg_color: selected ? [Color.textSecondary, Color.textSecondary, Color.textPrimary] :[Color.textPrimary, Color.textPrimary, Color.textPrimary] 
+                        bg_color: selected ? [Qt.darker(Color.accentStrong,1.2),Qt.darker(Color.accentStrong,1.2),Color.bgSurface] : ["transparent",Color.bgBase,Color.bgSurface]
+                        border_width: [0,0,2]
+
+                        onReleased: {
+                            if (dbusName != MediaPlayerInfo.activePlayer.dbusName) {
+                                MediaPlayerInfo.pauseMedia()
+                                MediaPlayerInfo.activePlayer = MediaPlayerInfo.players[index] 
+                            }
+                            sourcesList.closeList()
+                        }
+                    }
+                }
+            }
+
+        }
+
         ColumnLayout {
 
             id: media_info
 
             anchors.top: parent.top
-            anchors.topMargin: 10
+            anchors.topMargin: 8
 
             implicitWidth: 460 - 140 - 10
 
@@ -178,6 +301,7 @@ Rectangle {
 
                 MarqueeText {
                     anchors.bottom: parent.bottom
+                    anchors.bottomMargin: 1
                     box_width: parent.implicitWidth
 
                     centered: false
@@ -192,6 +316,8 @@ Rectangle {
 
             Rectangle {
 
+                Layout.topMargin: -2
+
                 implicitWidth: parent.implicitWidth
                 implicitHeight: 30
 
@@ -203,12 +329,13 @@ Rectangle {
                     anchors.left: parent.left
                     anchors.leftMargin: 15
 
-                    Layout.preferredWidth: Math.min(implicitWidth, parent.implicitWidth)
+                    width: Math.min(implicitWidth, parent.implicitWidth-20)
 
                     elide: Text.ElideRight
+
                     text: MediaPlayerInfo.artist
                     font.family: Fonts.zzz_vn_font
-                    font.pointSize: 16
+                    font.pointSize: 14
                     color: Color.accentSoft
 
                 }
@@ -220,9 +347,9 @@ Rectangle {
                 id: timestamp
 
                 Layout.alignment: Qt.AlignCenter
-                Layout.topMargin: 20
+                Layout.topMargin: 24
                 Layout.leftMargin: 8
-                Layout.bottomMargin: 18
+                Layout.bottomMargin: 20
 
                 implicitHeight: 10
                 implicitWidth: parent.implicitWidth - 26
@@ -232,15 +359,16 @@ Rectangle {
                 color: "transparent"
 
                 Text {
-                    anchors.left: parent.left
+
+                    anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
 
                     text: MediaPlayerInfo.formatTime(MediaPlayerInfo.pos) + " / " + MediaPlayerInfo.formatTime(MediaPlayerInfo.length)
                     font.family: Fonts.system 
                     font.pointSize: parent.size
-                    font.weight: 700
+                    font.weight: 800
 
-                    color: Color.textDisabled
+                    color: Qt.lighter(Color.textDisabled,1.5)
 
                 }
 
@@ -254,7 +382,7 @@ Rectangle {
                 Layout.leftMargin: 6
 
                 implicitHeight: 6
-                implicitWidth: parent.implicitWidth - 80
+                implicitWidth: parent.implicitWidth - 70
 
 
                 HorizontalProgressBar {
@@ -339,8 +467,8 @@ Rectangle {
                     box_height: box_width
                     font_size: 18
 
-                    fg_color: MediaPlayerInfo.canPrev == true ? [Color.textPrimary, Color.textPrimary, Color.bgSurface] : [Color.textDisabled, Color.textDisabled, Color.bgSurface]
-                    bg_color: ["transparent", Color.transparent(Color.bgBase,0.5), Color.accentStrong]
+                    fg_color: MediaPlayerInfo.canPrev == true ? [Color.textPrimary, Color.textPrimary, Color.accentStrong] : [Color.textDisabled, Color.textDisabled, Color.bgSurface]
+                    bg_color: ["transparent", "transparent", "transparent"]
                     border_width: [0,0,0]
 
                     onReleased: {
@@ -365,8 +493,8 @@ Rectangle {
                     box_height: box_width
                     font_size: 18
 
-                    fg_color: MediaPlayerInfo.canNext == true ? [Color.textPrimary, Color.textPrimary, Color.bgSurface] : [Color.textDisabled, Color.textDisabled, Color.bgSurface]
-                    bg_color: ["transparent", Color.transparent(Color.bgBase,0.5), Color.accentStrong]
+                    fg_color: MediaPlayerInfo.canNext == true ? [Color.textPrimary, Color.textPrimary, Color.accentStrong] : [Color.textDisabled, Color.textDisabled, Color.bgSurface]
+                    bg_color: ["transparent", "transparent", "transparent"]
                     border_width: [0,0,0]
 
                     onReleased: {

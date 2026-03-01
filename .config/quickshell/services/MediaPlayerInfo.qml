@@ -77,16 +77,19 @@ Singleton {
     function playPauseMedia() {
         if (activePlayer)
         activePlayer.togglePlaying()
+        autoSelect()
     }
 
     function playMedia() {
         if (activePlayer)
         activePlayer.play()
+        autoSelect()
     }
 
     function pauseMedia() {
         if (activePlayer)
         activePlayer.pause()
+        autoSelect()
     }
 
     function nextMedia() {
