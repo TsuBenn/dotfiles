@@ -277,6 +277,7 @@ Scope {
 
                         Rectangle {
                             z: 1
+                            Layout.topMargin: 2
                             implicitHeight: 28
                             implicitWidth: 26 + 4 + 26
                             color: Color.bgBase
