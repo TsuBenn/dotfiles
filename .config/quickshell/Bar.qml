@@ -790,6 +790,30 @@ Scope {
                 target: "homepanel"
                 function toggle(): void {homepanel.item.toggle()}
             }
+
+            property var systeminfo: {
+                "cpu": `CPU: ${SystemInfo.cpuusage.toFixed(0)}%`,
+                "cpumodel": `CPU MODEL: ${SystemInfo.cpumodel}`,
+                "gpu": `GPU: ${SystemInfo.gpuusage.toFixed(0)}%`,
+                "gpumodel": `GPU MODEL: ${SystemInfo.gpumodels[0].name}`,
+                "vram": `VRAM: ${SystemInfo.ktoG(SystemInfo.gpumemused).toFixed(1) + "G/" + Math.round(SystemInfo.ktoG(SystemInfo.gpumemtotal))}G (${SystemInfo.gpumemusage}%)`,
+                "ram": `RAM: ${String(SystemInfo.ktoG(SystemInfo.memused).toFixed(1)).padStart(4, " ") + "G/" + SystemInfo.ktoG(SystemInfo.memtotal).toFixed(1) + "G (" + Math.round(SystemInfo.memusage) + "%)"}`,
+                "ram": `RAM: ${String(SystemInfo.ktoG(SystemInfo.memused).toFixed(1)).padStart(4, " ") + "G/" + SystemInfo.ktoG(SystemInfo.memtotal).toFixed(1) + "G (" + Math.round(SystemInfo.memusage) + "%)"}`,
+                "swap": `SWAP: ${String(SystemInfo.ktoG(SystemInfo.memused).toFixed(1)).padStart(4, " ") + "G/" + SystemInfo.ktoG(SystemInfo.memtotal).toFixed(1) + "G (" + Math.round(SystemInfo.memusage) + "%)"}`,
+                "os": `OS: ${SystemInfo.os}`,
+                "motherboard": `MOTHERBOARD: ${SystemInfo.board}`,
+                "uptime": `Uptime: ${SystemInfo.uptime}`,
+                "battery": `BATTERY: ${SystemInfo.onbattery ? SystemInfo.battery + "(" + SystemInfo.batterystate + ")" : "Plugged in"}`,
+            }
+
+            IpcHandler {
+                target: "systeminfo"
+                function getinfo(query: string): string {
+                    const result = bar.systeminfo[query]
+                    if (result) return result
+                    else return "Failed to get specified system info"
+                }
+            }
         }
 
     }
