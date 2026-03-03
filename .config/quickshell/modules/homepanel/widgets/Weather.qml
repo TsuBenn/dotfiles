@@ -175,7 +175,7 @@ Rectangle {
             font_family: root.condition_font
             font_size: root.condition_size
             font_weight: 800
-            font_color: Color.textSecondary
+            font_color: Color.textPrimary
             spacing: -6
         }
 

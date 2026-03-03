@@ -63,6 +63,8 @@ Rectangle {
 
     signal pressed()
     signal released()
+    signal entered()
+    signal exited()
 
     implicitHeight: box_height > 0 ? box_height : (button_text.implicitHeight + text_padding)
     implicitWidth: box_width > 0 ? box_width : (button_text.implicitWidth + text_padding*2)
@@ -130,6 +132,8 @@ Rectangle {
 
         hoverEnabled: true
 
+        onEntered: {button.entered()}
+        onExited: {button.exited()}
         onPressed: {button.pressed()}
         onReleased: {
             if (button.safe_release) {

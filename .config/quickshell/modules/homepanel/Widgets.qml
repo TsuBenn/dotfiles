@@ -17,6 +17,7 @@ ColumnLayout {
 
     property bool panel_navigator: true
     property var monitor
+    property int panel: 1
 
     id: root
 
@@ -104,7 +105,7 @@ ColumnLayout {
         color: "transparent"
         radius: Config.radius
 
-        property int panel_index: 1
+        property int panel_index: root.panel
 
         //Panel 1
         WidgetsPanel {

@@ -21,6 +21,10 @@ PanelWindow {
 
     property var monitor
 
+    function setPanel(num) {
+        widgets.panel = num
+    }
+
     function toggle() {
         if (visible && !openpanel.running) {
             closepanel.start()

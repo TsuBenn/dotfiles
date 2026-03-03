@@ -18,18 +18,10 @@ Singleton {
         id: notificationsServer
 
         onNotification: (noti) => {
+            console.log("Received Notification: " + noti.summary + " " + noti.body)
+
             root.notificationSent(noti)
             noti.tracked = true
-        }
-    }
-
-    Timer {
-        interval: 1000
-        running: true
-        repeat: true
-
-        onTriggered: {
-            console.log(root.notifications)
         }
     }
 

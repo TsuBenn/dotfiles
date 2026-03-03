@@ -9,14 +9,17 @@ import QtQuick
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 
-ClippingRectangle {
+Rectangle {
 
     id: root
 
     implicitHeight: 26
     implicitWidth: workspace.implicitWidth
     radius: implicitHeight/2
-    color: "transparent"
+    color: Color.bgMuted
+
+    border.width: 2
+    border.color: Qt.lighter(Color.bgMuted,1.5)
 
     property int maxWin: 3
 
@@ -26,6 +29,7 @@ ClippingRectangle {
 
     Rectangle {
 
+        visible: false
         anchors.left: parent.left
         anchors.right: parent.right
 
@@ -132,11 +136,10 @@ ClippingRectangle {
 
                     Behavior on implicitWidth { NumberAnimation {duration: 200; easing.type: Easing.OutCubic} }
                     Behavior on selected_thresold { NumberAnimation {duration: 400; easing.type: Easing.OutCubic} }
-                    Behavior on color { ColorAnimation {duration: 300; easing.type: Easing.OutCubic} }
 
                     radius: implicitHeight/2
 
-                    color: Color.transparent(Color.accentStrong,0)
+                    color: "transparent"
 
                     Rectangle {
 
@@ -168,7 +171,7 @@ ClippingRectangle {
                             font_weight: 1000
                             text: wb.winCount > 0 ? wb.index + 1 : "•"
 
-                            verticalOffset: wb.winCount > 0 ? -0.4 : 0.8
+                            verticalOffset: wb.winCount > 0 ? -0.6 : 0.8
                             horizontalOffset: wb.winCount > 0 ? 0.8 : 0
 
                             Behavior on color {ColorAnimation {duration: 100; easing.type: Easing.OutCubic}}
@@ -176,9 +179,9 @@ ClippingRectangle {
                             fg_color_animation: 100
 
                             bg_color: [
-                                Color.transparent(Color.accentStrong,0),
-                                Color.transparent(Color.accentStrong,0),
-                                Color.transparent(Color.accentStrong,0),
+                                "transparent",
+                                "transparent",
+                                "transparent",
                             ]
                             /*
                              bg_color: [

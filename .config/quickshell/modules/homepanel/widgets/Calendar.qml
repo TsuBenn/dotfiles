@@ -73,7 +73,12 @@ ColumnLayout {
 
             id: days
 
-            model: root.dates
+            model: {
+                if (root.dates.length > 35) {
+                    return root.dates.slice(7)
+                }
+                return root.dates
+            }
 
             delegate: PillButton {
 

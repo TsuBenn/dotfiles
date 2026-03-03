@@ -9,6 +9,7 @@ import qs.assets
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Hyprland
+import Quickshell.Services.Notifications
 import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
@@ -275,37 +276,18 @@ Scope {
                             horizontalOffset: -0.4
                         }
 
-                        Rectangle {
+                        ComponentCircle {
                             z: 1
-                            Layout.topMargin: 2
-                            implicitHeight: 28
-                            implicitWidth: 26 + 4 + 26
-                            color: Color.bgBase
-                            radius: implicitHeight/2
+                            percentage: SystemInfo.gpuusage
+                            icon: "\udb83\udfb2"
+                        }
 
-                            border.width: 2
-                            border.color: Qt.lighter(Color.bgMuted,1.2)
-
-                            RowLayout {
-
-                                spacing: 4
-
-                                anchors.verticalCenterOffset: -0.5
-                                anchors.centerIn: parent
-
-                                ComponentCircle {
-                                    percentage: SystemInfo.gpuusage
-                                    icon: "\udb83\udfb2"
-                                }
-
-                                ComponentCircle {
-                                    percentage: SystemInfo.gpumemusage
-                                    icon: "\ue266"
-                                    icon_size: 10.5
-                                    verticalOffset: 0.2
-                                }
-
-                            }
+                        ComponentCircle {
+                            z: 1
+                            percentage: SystemInfo.gpumemusage
+                            icon: "\ue266"
+                            icon_size: 9.5
+                            horizontalOffset: -1
                         }
 
                         Rectangle {
@@ -607,6 +589,7 @@ Scope {
 
                                 id: clock
                                 anchors.centerIn: parent
+                                anchors.verticalCenterOffset: 0.4
                                 color: Color.textPrimary
                                 text: DateTime.hour12 + ":" + DateTime.minute + " " + DateTime.ampm + " • " + DateTime.dayofweek_short + ", " + DateTime.date + " " + DateTime.month_short
                                 font.family: Fonts.system
@@ -678,8 +661,8 @@ Scope {
 
                                         color: Color.textPrimary
                                         font.family: Fonts.system
-                                        font.pointSize: 10
-                                        font.weight: 800
+                                        font.pointSize: 11
+                                        font.weight: 700
 
                                     }
                                 }
@@ -775,8 +758,178 @@ Scope {
                         anchors.right: parent.right
                         anchors.rightMargin: 9
 
+                        Rectangle {
+                            implicitHeight: 28
+                            implicitWidth: noti_list.implicitWidth + 4
 
-                        spacing: 5
+                            color: Qt.lighter(Color.bgMuted,1.5)
+
+                            radius: implicitHeight/2
+
+                            Rectangle {
+
+                                anchors.fill: parent
+                                anchors.margins: 2
+
+                                color: Color.bgMuted
+
+                                radius: height/2
+
+                                RowLayout {
+
+                                    id: noti_list
+
+                                    property int max: 3
+                                    property int length: NotificationsInfo.notifications.length
+
+                                    layoutDirection: Qt.RightToLeft
+
+                                    spacing: 0
+
+                                    Repeater {
+
+                                        model: noti_list.length
+
+                                        delegate: Rectangle {
+
+                                            id: notification
+
+                                            required property int index
+
+                                            property var curr: NotificationsInfo.notifications[index]
+
+                                            property string appIcon: curr.appIcon
+                                            property string appName: curr.appName
+
+                                            visible: index > noti_list.length - noti_list.max - 1
+
+                                            implicitWidth: 24
+                                            implicitHeight: 24
+                                            color: "transparent"
+
+                                            Image {
+
+                                                id: icon
+
+                                                visible: !more.visible && source != ""
+
+                                                anchors.centerIn: parent
+
+                                                height: 16
+                                                width: 16
+
+                                                property string icon_name: HyprInfo.iconFetch(notification.appIcon,notification.appName)
+
+                                                source: icon_name != "exception" ? "image://icon/" + icon_name : ""
+
+                                                cache: false
+
+                                                mipmap: true
+                                                smooth: true
+
+                                            }
+
+                                            Text {
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                anchors.verticalCenterOffset: 0.6
+                                                visible: !icon.visible && !more.visible
+                                                text: "\udb82\udcc6"
+                                                x: 6
+                                                font.family: Fonts.zalandosans_font
+                                                font.pointSize: 10
+                                                font.weight: 1000
+                                                color: Color.textPrimary
+                                            }
+
+                                            Text {
+                                                id: more
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                anchors.verticalCenterOffset: 0.6
+                                                visible: notification.index < noti_list.length - noti_list.max + 1 && (noti_list.length - noti_list.max + 1) >= 2
+                                                text: "+" + (noti_list.length - noti_list.max + 1)
+                                                width: 30
+                                                font.family: Fonts.system
+                                                font.pointSize: 10
+                                                font.weight: 1000
+                                                color: Color.accentStrong
+                                            }
+
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                        PillButton {
+                            box_height: 28
+                            box_width: 28
+
+                            text: {
+                                if (AudioInfo.mute) {
+                                    return "\udb81\udf5f"
+                                }
+                                if (AudioInfo.volume > 200/3) {
+                                    return "\udb81\udd7e"
+                                }
+                                else if (AudioInfo.volume > 100/3) {
+                                    return "\udb81\udd80"
+                                }
+                                else if (AudioInfo.volume > 0) {
+                                    return "\udb81\udd7f"
+                                }
+                                else {
+                                    return "\udb81\udf5f"
+                                }
+                            }
+
+                            bg_color: [
+                                Color.bgSurface,
+                                Color.bgSurface,
+                                Color.accentStrong,
+                            ]
+                            fg_color: [
+                                Color.textPrimary,
+                                Color.textPrimary,
+                                Color.textSecondary,
+                            ]
+
+                            border_width: [0, 0, 0]
+
+                            font_size: 16
+
+                        }
+
+                        PillButton {
+                            box_height: 28
+                            box_width: 28
+
+                            text: {
+                                if (AudioInfo.mic) {
+                                    return "\udb80\udf6c"
+                                }
+                                return "\udb80\udf6d"
+                            }
+
+                            bg_color: [
+                                Color.bgSurface,
+                                Color.bgSurface,
+                                Color.accentStrong,
+                            ]
+                            fg_color: [
+                                Color.textPrimary,
+                                Color.textPrimary,
+                                Color.textSecondary,
+                            ]
+
+                            border_width: [0, 0, 0]
+
+                            font_size: 16
+
+                        }
 
                     }
 
@@ -804,6 +957,7 @@ Scope {
                 "motherboard": `MOTHERBOARD: ${SystemInfo.board}`,
                 "uptime": `Uptime: ${SystemInfo.uptime}`,
                 "battery": `BATTERY: ${SystemInfo.onbattery ? SystemInfo.battery + "(" + SystemInfo.batterystate + ")" : "Plugged in"}`,
+                "notifications": NotificationsInfo.noti_count,
             }
 
             IpcHandler {
