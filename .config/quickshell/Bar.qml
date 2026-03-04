@@ -760,7 +760,7 @@ Scope {
 
                         Rectangle {
                             implicitHeight: 28
-                            implicitWidth: noti_list.implicitWidth + 4
+                            implicitWidth: noti_list.implicitWidth + 4*(noti_list.length > 0) + 28
 
                             color: Qt.lighter(Color.bgMuted,1.5)
 
@@ -860,6 +860,22 @@ Scope {
 
                                 }
 
+                            }
+
+                            Rectangle {
+                                anchors.right: parent.right
+                                implicitWidth: 28
+                                implicitHeight: 28
+                                radius: implicitHeight/2
+                                color: Qt.lighter(Color.bgMuted,1.5)
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    anchors.verticalCenterOffset: -0.1
+                                    text: "\udb80\udc9a"
+                                    font.pointSize: 12
+                                    color: noti_list.length > 0 ? Color.accentSoft : Color.textPrimary
+                                }
                             }
 
                         }
