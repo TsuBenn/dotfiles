@@ -132,12 +132,12 @@ Singleton {
     }
 
     Timer {
-        interval: 1000
-        running: false
+        interval: 2000
+        running: true
         repeat: true
 
         onTriggered: {
-            root.test()
+            root.autoSelect()
         }
     }
 
