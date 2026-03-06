@@ -78,6 +78,7 @@ ayanoSetup() {
 alias dot='cd ~/dotfiles/ && nvim .'
 alias hyprconf='cd ~/dotfiles/ && nvim ~/.config/hypr/hyprland.conf'
 alias kittyconf='cd ~/dotfiles/ && nvim ~/.config/kitty/kitty.conf'
+alias ghosttyconf='cd ~/dotfiles/ && nvim ~/.config/ghostty/config'
 alias nvimconf='cd ~/.config/nvim && nvim ~/.config/nvim/'
 alias bashconf='cd ~/dotfiles/ && nvim ~/.bashrc'
 alias qsconf='cd ~/dotfiles/.config/quickshell/ && nvim ~/.config/quickshell/shell.qml'
