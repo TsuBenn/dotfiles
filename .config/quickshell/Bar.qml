@@ -756,131 +756,98 @@ Scope {
                         anchors.topMargin: Math.round(31/2 - implicitHeight/2)
                         anchors.top: parent.top
                         anchors.right: parent.right
-                        anchors.rightMargin: 9
+                        anchors.rightMargin: 19
 
-                        Rectangle {
-                            implicitHeight: 28
-                            implicitWidth: noti_list.implicitWidth + 4*(noti_list.length > 0) + 28
+                        RowLayout {
 
-                            color: Qt.lighter(Color.bgMuted,1.5)
+                            id: noti_list
 
-                            radius: implicitHeight/2
+                            visible: length > 0
 
-                            Rectangle {
+                            property int max: 3
+                            property int length: NotificationsInfo.notifications.length
 
-                                anchors.fill: parent
-                                anchors.margins: 2
+                            layoutDirection: Qt.RightToLeft
 
-                                color: Color.bgMuted
+                            spacing: 0
 
-                                radius: height/2
+                            Repeater {
 
-                                RowLayout {
+                                model: noti_list.length
 
-                                    id: noti_list
+                                delegate: Rectangle {
 
-                                    property int max: 3
-                                    property int length: NotificationsInfo.notifications.length
+                                    id: notification
 
-                                    layoutDirection: Qt.RightToLeft
+                                    required property int index
 
-                                    spacing: 0
+                                    property var curr: NotificationsInfo.notifications[index]
 
-                                    Repeater {
+                                    property string appIcon: curr.appIcon
+                                    property string appName: curr.appName
 
-                                        model: noti_list.length
+                                    visible: index > noti_list.length - noti_list.max - 1
 
-                                        delegate: Rectangle {
+                                    implicitWidth: 20
+                                    implicitHeight: 20
+                                    color: "transparent"
 
-                                            id: notification
+                                    Image {
 
-                                            required property int index
+                                        id: icon
 
-                                            property var curr: NotificationsInfo.notifications[index]
+                                        visible: !more.visible && source != ""
 
-                                            property string appIcon: curr.appIcon
-                                            property string appName: curr.appName
+                                        anchors.centerIn: parent
 
-                                            visible: index > noti_list.length - noti_list.max - 1
+                                        height: 14
+                                        width: 14
 
-                                            implicitWidth: 24
-                                            implicitHeight: 24
-                                            color: "transparent"
+                                        property string icon_name: HyprInfo.iconFetch(notification.appIcon,notification.appName)
 
-                                            Image {
+                                        source: icon_name != "exception" ? "image://icon/" + icon_name : ""
 
-                                                id: icon
+                                        cache: false
 
-                                                visible: !more.visible && source != ""
+                                        mipmap: true
+                                        smooth: true
 
-                                                anchors.centerIn: parent
+                                    }
 
-                                                height: 16
-                                                width: 16
+                                    Text {
+                                        anchors.centerIn: parent
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.verticalCenterOffset: 0.6
+                                        visible: !icon.visible && !more.visible
+                                        text: "\udb82\udcc6"
+                                        font.family: Fonts.zalandosans_font
+                                        font.pointSize: 10
+                                        font.weight: 1000
+                                        color: Color.textPrimary
+                                    }
 
-                                                property string icon_name: HyprInfo.iconFetch(notification.appIcon,notification.appName)
+                                    Text {
+                                        id: more
 
-                                                source: icon_name != "exception" ? "image://icon/" + icon_name : ""
-
-                                                cache: false
-
-                                                mipmap: true
-                                                smooth: true
-
-                                            }
-
-                                            Text {
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                anchors.verticalCenterOffset: 0.6
-                                                visible: !icon.visible && !more.visible
-                                                text: "\udb82\udcc6"
-                                                x: 6
-                                                font.family: Fonts.zalandosans_font
-                                                font.pointSize: 10
-                                                font.weight: 1000
-                                                color: Color.textPrimary
-                                            }
-
-                                            Text {
-                                                id: more
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                anchors.verticalCenterOffset: 0.6
-                                                visible: notification.index < noti_list.length - noti_list.max + 1 && (noti_list.length - noti_list.max + 1) >= 2
-                                                text: "+" + (noti_list.length - noti_list.max + 1)
-                                                width: 30
-                                                font.family: Fonts.system
-                                                font.pointSize: 10
-                                                font.weight: 1000
-                                                color: Color.accentStrong
-                                            }
-
-                                        }
-
+                                        property int outside: (noti_list.length - noti_list.max + 1)
+                                        anchors.centerIn: parent
+                                        anchors.verticalCenterOffset: 1
+                                        visible: notification.index < noti_list.length - noti_list.max + 1 && (noti_list.length - noti_list.max + 1) >= 2
+                                        text: "\udb80\uddd8"
+                                        font.family: Fonts.system
+                                        font.pointSize: 9
+                                        font.weight: 1000
+                                        color: Color.accentStrong
                                     }
 
                                 }
 
                             }
 
-                            Rectangle {
-                                anchors.right: parent.right
-                                implicitWidth: 28
-                                implicitHeight: 28
-                                radius: implicitHeight/2
-                                color: Qt.lighter(Color.bgMuted,1.5)
-
-                                Text {
-                                    anchors.centerIn: parent
-                                    anchors.verticalCenterOffset: -0.1
-                                    text: "\udb80\udc9a"
-                                    font.pointSize: 12
-                                    color: noti_list.length > 0 ? Color.accentSoft : Color.textPrimary
-                                }
-                            }
-
                         }
 
                         PillButton {
+
                             box_height: 28
                             box_width: 28
 
@@ -920,14 +887,16 @@ Scope {
                         }
 
                         PillButton {
+
                             box_height: 28
                             box_width: 28
 
+                            verticalOffset: 1.6
+                            horizontalOffset: 0.4
+
                             text: {
-                                if (AudioInfo.mic) {
-                                    return "\udb80\udf6c"
-                                }
-                                return "\udb80\udf6d"
+                                if (SystemInfo.wifi.freq) return "\udb81\udda9"
+                                return "\udb81\uddaa"
                             }
 
                             bg_color: [
@@ -943,11 +912,12 @@ Scope {
 
                             border_width: [0, 0, 0]
 
-                            font_size: 16
+                            font_size: 13
 
                         }
 
                     }
+
 
                     LazyLoader {id:homepanel; active: true; component: Homepanel {monitor: bar.monitor}}
 
