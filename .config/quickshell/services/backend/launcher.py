@@ -12,7 +12,6 @@ DESKTOP_DIRS = {
     os.environ['HOME'] + "/.local/share/applications/"
 }
 
-# Some math stuff lol
 sqrt = math.sqrt
 sin = math.sin
 cos = math.cos
@@ -28,8 +27,6 @@ ln = math.log
 log = math.log
 exp = math.exp
 fac = math.factorial
-######################
-
 
 def load_apps():
     apps = []
