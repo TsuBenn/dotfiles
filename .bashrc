@@ -109,6 +109,9 @@ alias yayInstall='echo "yay -S" && yay -S'
 alias yayClearCache='echo "yay -Sc" && yay -Sc'
 alias yayClearAllCache='echo "yay -Scc" && yay -Scc'
 
+if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
+    tmux attach || tmux
+fi
 
 PS1='  \[\e[36m\]\u \[\e[37m\](\@): \[\e[37m\]\w \[\e[33m\]$ \[\e[37m\]'
 
@@ -125,3 +128,4 @@ export QML_IMPORT_PATH=/usr/lib/qt6/qml
 export QML2_IMPORT_PATH=/usr/lib/qt6/qml
 
 export PATH=$PATH:/usr/lib/qt6/bin
+export PATH="/home/tsubenn/.local/bin:$PATH"

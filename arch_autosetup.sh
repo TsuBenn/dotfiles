@@ -225,6 +225,20 @@ echo "${BLUE}Creating Hyprland's monitor config file..."
 touch ~/hyprmonitor.conf
 echo "${GREEN}DONE!"
 
+# ===== Plymouth Setup =====
+echo -e "${BLUE}Setting up Plymouth...${NC}"
+
+# Install plymouth
+sudo pacman -S --noconfirm --needed plymouth
+
+# Add plymouth to mkinitcpio hooks (after udev)
+sudo sed -i 's/\(HOOKS=([^)]*udev\)/\1 plymouth/' /etc/mkinitcpio.conf
+
+# Set theme and rebuild UKI
+sudo plymouth-set-default-theme -R bgrt
+
+echo -e "${GREEN}✔ Plymouth setup complete!${NC}"
+
 # ===== Enable Services =====
 echo -e "${BLUE}Enabling system services...${NC}"
 sudo systemctl enable --now NetworkManager

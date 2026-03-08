@@ -133,8 +133,7 @@ ForegroundPositive=39,174,96
 ForegroundVisited=155,89,182
 
 [General]
-TerminalApplication=kitty
-TerminalService=kitty.desktop
+TerminalApplication=ghostty
 
 [KDE]
 LookAndFeelPackage=org.kde.breezedark.desktop

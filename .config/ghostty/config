@@ -28,13 +28,17 @@ palette = 13=#f59b75
 palette = 14=#2fbcf0
 palette = 15=#EDE6E8
 
-window-padding-x = 10
 window-padding-y = 10
 
 adjust-cell-width = 10%
 
 cursor-style = block
 mouse-hide-while-typing = true
+
+confirm-close-surface = false
+
+clipboard-read = allow
+clipboard-write = allow
 
 # URL
 link-url = true

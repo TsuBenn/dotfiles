@@ -150,6 +150,7 @@ Scope {
                         ColumnLayout {
                             Layout.leftMargin: 4
                             spacing: 0
+                            Layout.topMargin: 2
                             Text {
 
                                 id: window_class
@@ -179,7 +180,10 @@ Scope {
 
                                 color: Color.accentSoft
                                 font.family: Fonts.system
+                                Layout.topMargin: window_class.visible ? 0 : -2
                                 font.pointSize: window_class.visible ? 11 : 12
+                                minimumPointSize: 10
+                                fontSizeMode: Text.HorizontalFit
                                 font.weight: 800
                                 elide: Text.ElideRight
 
@@ -320,6 +324,7 @@ Scope {
 
                             Rectangle {
                                 anchors.centerIn: parent
+                                visible: MediaPlayerInfo.activePlayer
                                 implicitHeight: 40
                                 implicitWidth: media_player.implicitWidth
                                 color: Color.bgSurface
@@ -600,6 +605,139 @@ Scope {
 
                         }
 
+                        Rectangle {
+
+                            implicitHeight: 28
+                            implicitWidth: noti_list.implicitWidth
+
+                            radius: implicitHeight/2
+                            color: Qt.lighter(Color.bgMuted,1.5)
+
+                            Behavior on implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+
+                            ClippingRectangle {
+
+                                anchors.fill: parent
+                                anchors.margins: 2
+
+                                radius: height/2
+                                color: Color.bgMuted
+
+                                RowLayout {
+
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: -2
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    id: noti_list
+
+                                    property int max: 3
+                                    property int length: NotificationsInfo.notifications.length
+
+                                    layoutDirection: Qt.RightToLeft
+
+                                    spacing: -4
+
+                                    Rectangle {
+
+                                        visible: noti_list.length == 0
+                                        implicitWidth: 28
+                                        implicitHeight: 28
+                                        radius: implicitHeight/2
+                                        color: "transparent"
+
+                                        Text {
+                                            anchors.centerIn: parent
+                                            anchors.verticalCenterOffset: 0.2
+                                            anchors.horizontalCenterOffset: 0.5
+                                            text: "\udb80\udc9a"
+                                            font.family: Fonts.system
+                                            font.pointSize: 11
+                                            font.weight: 1000
+                                            color: Color.textPrimary
+                                        }
+
+                                    }
+
+                                    Repeater {
+
+                                        model: noti_list.length
+
+                                        delegate: Rectangle {
+
+                                            id: notification
+
+                                            required property int index
+
+                                            property var curr: NotificationsInfo.notifications[index]
+
+                                            property string appIcon: curr.appIcon
+                                            property string appName: curr.appName
+
+                                            visible: index > noti_list.length - noti_list.max - 1
+
+                                            implicitWidth: 28
+                                            implicitHeight: 28
+                                            radius: implicitHeight/2
+                                            color: "transparent"
+
+                                            Image {
+
+                                                id: icon
+
+                                                visible: !more.visible && source != ""
+
+                                                anchors.centerIn: parent
+
+                                                height: 16
+                                                width: 16
+
+                                                property string icon_name: HyprInfo.iconFetch(notification.appIcon,notification.appName)
+
+                                                source: icon_name != "exception" ? "image://icon/" + icon_name : ""
+
+                                                cache: false
+
+                                                mipmap: true
+                                                smooth: true
+
+                                            }
+
+                                            Text {
+                                                anchors.centerIn: parent
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                anchors.verticalCenterOffset: 0.6
+                                                visible: !icon.visible && !more.visible
+                                                text: "\udb82\udcc6"
+                                                font.family: Fonts.zalandosans_font
+                                                font.pointSize: 10
+                                                font.weight: 1000
+                                                color: Color.textPrimary
+                                            }
+
+                                            Text {
+                                                id: more
+
+                                                property int outside: (noti_list.length - noti_list.max + 1)
+                                                anchors.centerIn: parent
+                                                anchors.verticalCenterOffset: 1
+                                                visible: notification.index < noti_list.length - noti_list.max + 1 && (noti_list.length - noti_list.max + 1) >= 2
+                                                text: "\udb80\uddd8"
+                                                font.family: Fonts.system
+                                                font.pointSize: 9
+                                                font.weight: 1000
+                                                color: Color.accentStrong
+                                            }
+
+                                        }
+
+                                    }
+
+                                }
+                            }
+
+                        }
+
                         Item {
 
                             Layout.topMargin: 1
@@ -758,93 +896,6 @@ Scope {
                         anchors.right: parent.right
                         anchors.rightMargin: 19
 
-                        RowLayout {
-
-                            id: noti_list
-
-                            visible: length > 0
-
-                            property int max: 3
-                            property int length: NotificationsInfo.notifications.length
-
-                            layoutDirection: Qt.RightToLeft
-
-                            spacing: 0
-
-                            Repeater {
-
-                                model: noti_list.length
-
-                                delegate: Rectangle {
-
-                                    id: notification
-
-                                    required property int index
-
-                                    property var curr: NotificationsInfo.notifications[index]
-
-                                    property string appIcon: curr.appIcon
-                                    property string appName: curr.appName
-
-                                    visible: index > noti_list.length - noti_list.max - 1
-
-                                    implicitWidth: 20
-                                    implicitHeight: 20
-                                    color: "transparent"
-
-                                    Image {
-
-                                        id: icon
-
-                                        visible: !more.visible && source != ""
-
-                                        anchors.centerIn: parent
-
-                                        height: 14
-                                        width: 14
-
-                                        property string icon_name: HyprInfo.iconFetch(notification.appIcon,notification.appName)
-
-                                        source: icon_name != "exception" ? "image://icon/" + icon_name : ""
-
-                                        cache: false
-
-                                        mipmap: true
-                                        smooth: true
-
-                                    }
-
-                                    Text {
-                                        anchors.centerIn: parent
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        anchors.verticalCenterOffset: 0.6
-                                        visible: !icon.visible && !more.visible
-                                        text: "\udb82\udcc6"
-                                        font.family: Fonts.zalandosans_font
-                                        font.pointSize: 10
-                                        font.weight: 1000
-                                        color: Color.textPrimary
-                                    }
-
-                                    Text {
-                                        id: more
-
-                                        property int outside: (noti_list.length - noti_list.max + 1)
-                                        anchors.centerIn: parent
-                                        anchors.verticalCenterOffset: 1
-                                        visible: notification.index < noti_list.length - noti_list.max + 1 && (noti_list.length - noti_list.max + 1) >= 2
-                                        text: "\udb80\uddd8"
-                                        font.family: Fonts.system
-                                        font.pointSize: 9
-                                        font.weight: 1000
-                                        color: Color.accentStrong
-                                    }
-
-                                }
-
-                            }
-
-                        }
 
                         PillButton {
 

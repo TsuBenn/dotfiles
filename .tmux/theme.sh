@@ -6,7 +6,9 @@ BG_MUTED="#221E21"
 TEXT_PRIMARY="#EDE6E8"
 TEXT_DISABLED="#8f8389"
 ACCENT_STRONG="#a32435"
-ACCENT_SOFT="#f59b75"
+ACCENT_SOFT="#ff8c5a"
+
+tmux set -g mode-style "bg=$ACCENT_SOFT,fg=$BG_BASE, bold"
 
 tmux set -g status-style "bg=$BG_MUTED,fg=$TEXT_PRIMARY"
 tmux set -g status-left "#[fg=$BG_BASE,bg=$ACCENT_STRONG,bold] #S #[fg=$ACCENT_STRONG,bg=$BG_MUTED]"
