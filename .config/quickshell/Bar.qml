@@ -632,7 +632,7 @@ Scope {
                                     id: noti_list
 
                                     property int max: 3
-                                    property int length: NotificationsInfo.notifications.length
+                                    property int length: NotificationsInfo.notifications_groups.length
 
                                     layoutDirection: Qt.RightToLeft
 
@@ -669,10 +669,10 @@ Scope {
 
                                             required property int index
 
-                                            property var curr: NotificationsInfo.notifications[index]
+                                            property var curr: NotificationsInfo.notifications_groups[index]
 
-                                            property string appIcon: curr.appIcon
-                                            property string appName: curr.appName
+                                            property string appIcon: curr.icon
+                                            property string appName: curr.app
 
                                             visible: index > noti_list.length - noti_list.max - 1
 
@@ -692,7 +692,7 @@ Scope {
                                                 height: 16
                                                 width: 16
 
-                                                property string icon_name: HyprInfo.iconFetch(notification.appIcon,notification.appName)
+                                                property string icon_name: HyprInfo.iconFetch(notification.appName,notification.appIcon)
 
                                                 source: icon_name != "exception" ? "image://icon/" + icon_name : ""
 
@@ -727,6 +727,18 @@ Scope {
                                                 font.pointSize: 9
                                                 font.weight: 1000
                                                 color: Color.accentStrong
+                                            }
+
+                                            Rectangle {
+                                                anchors.centerIn: parent
+                                                anchors.verticalCenterOffset: 5
+                                                anchors.horizontalCenterOffset: 5
+
+                                                color: Color.error
+
+                                                implicitWidth: 10
+                                                implicitHeight: implicitWidth
+                                                radius: implicitHeight/2
                                             }
 
                                         }

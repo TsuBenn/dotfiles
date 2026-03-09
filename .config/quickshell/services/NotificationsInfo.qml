@@ -13,6 +13,10 @@ Singleton {
     property list<Notification> notifications: notificationsServer.trackedNotifications.values
     property var notifications_groups: []
 
+    onNotifications_groupsChanged: {
+        console.log("notifications_groups changed!")
+    }
+
     signal notificationSent(notification: Notification)
 
     NotificationServer {
@@ -35,6 +39,9 @@ Singleton {
                         console.log("Same group")
                         console.log(root.notifications_groups)
                         console.log(root.notifications_groups[0].notifications.length)
+                        const index = notif_groups.indexOf(groups)
+                        notif_groups.push(notif_groups.splice(index,1)[0])
+                        root.notifications_groupsChanged()
                         root.notificationSent(noti)
                         return
                     }
@@ -52,6 +59,7 @@ Singleton {
             console.log("New group")
             console.log(root.notifications_groups[0].notifications.length)
 
+            root.notifications_groupsChanged()
             root.notificationSent(noti)
         }
     }
