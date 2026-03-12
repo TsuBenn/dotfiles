@@ -9,7 +9,6 @@ import qs.assets
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Hyprland
-import Quickshell.Services.Notifications
 import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
@@ -111,7 +110,7 @@ Scope {
 
                         id: leftSide
 
-                        anchors.topMargin: Math.round(31/2 - implicitHeight/2)
+                        anchors.topMargin: Math.round(31/2 - implicitHeight/2) + 1
                         anchors.top: parent.top
                         anchors.left: parent.left
 
@@ -605,151 +604,6 @@ Scope {
 
                         }
 
-                        Rectangle {
-
-                            implicitHeight: 28
-                            implicitWidth: noti_list.implicitWidth
-
-                            radius: implicitHeight/2
-                            color: Qt.lighter(Color.bgMuted,1.5)
-
-                            Behavior on implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
-
-                            ClippingRectangle {
-
-                                anchors.fill: parent
-                                anchors.margins: 2
-
-                                radius: height/2
-                                color: Color.bgMuted
-
-                                RowLayout {
-
-                                    anchors.right: parent.right
-                                    anchors.rightMargin: -2
-                                    anchors.verticalCenter: parent.verticalCenter
-
-                                    id: noti_list
-
-                                    property int max: 3
-                                    property int length: NotificationsInfo.notifications_groups.length
-
-                                    layoutDirection: Qt.RightToLeft
-
-                                    spacing: -4
-
-                                    Rectangle {
-
-                                        visible: noti_list.length == 0
-                                        implicitWidth: 28
-                                        implicitHeight: 28
-                                        radius: implicitHeight/2
-                                        color: "transparent"
-
-                                        Text {
-                                            anchors.centerIn: parent
-                                            anchors.verticalCenterOffset: 0.2
-                                            anchors.horizontalCenterOffset: 0.5
-                                            text: "\udb80\udc9a"
-                                            font.family: Fonts.system
-                                            font.pointSize: 11
-                                            font.weight: 1000
-                                            color: Color.textPrimary
-                                        }
-
-                                    }
-
-                                    Repeater {
-
-                                        model: noti_list.length
-
-                                        delegate: Rectangle {
-
-                                            id: notification
-
-                                            required property int index
-
-                                            property var curr: NotificationsInfo.notifications_groups[index]
-
-                                            property string appIcon: curr.icon
-                                            property string appName: curr.app
-
-                                            visible: index > noti_list.length - noti_list.max - 1
-
-                                            implicitWidth: 28
-                                            implicitHeight: 28
-                                            radius: implicitHeight/2
-                                            color: "transparent"
-
-                                            Image {
-
-                                                id: icon
-
-                                                visible: !more.visible && source != ""
-
-                                                anchors.centerIn: parent
-
-                                                height: 16
-                                                width: 16
-
-                                                property string icon_name: HyprInfo.iconFetch(notification.appName,notification.appIcon)
-
-                                                source: icon_name != "exception" ? "image://icon/" + icon_name : ""
-
-                                                cache: false
-
-                                                mipmap: true
-                                                smooth: true
-
-                                            }
-
-                                            Text {
-                                                anchors.centerIn: parent
-                                                anchors.verticalCenter: parent.verticalCenter
-                                                anchors.verticalCenterOffset: 0.6
-                                                visible: !icon.visible && !more.visible
-                                                text: "\udb82\udcc6"
-                                                font.family: Fonts.zalandosans_font
-                                                font.pointSize: 10
-                                                font.weight: 1000
-                                                color: Color.textPrimary
-                                            }
-
-                                            Text {
-                                                id: more
-
-                                                property int outside: (noti_list.length - noti_list.max + 1)
-                                                anchors.centerIn: parent
-                                                anchors.verticalCenterOffset: 1
-                                                visible: notification.index < noti_list.length - noti_list.max + 1 && (noti_list.length - noti_list.max + 1) >= 2
-                                                text: "\udb80\uddd8"
-                                                font.family: Fonts.system
-                                                font.pointSize: 9
-                                                font.weight: 1000
-                                                color: Color.accentStrong
-                                            }
-
-                                            Rectangle {
-                                                anchors.centerIn: parent
-                                                anchors.verticalCenterOffset: 5
-                                                anchors.horizontalCenterOffset: 5
-
-                                                color: Color.error
-
-                                                implicitWidth: 10
-                                                implicitHeight: implicitWidth
-                                                radius: implicitHeight/2
-                                            }
-
-                                        }
-
-                                    }
-
-                                }
-                            }
-
-                        }
-
                         Item {
 
                             Layout.topMargin: 1
@@ -914,6 +768,9 @@ Scope {
                             box_height: 28
                             box_width: 28
 
+                            verticalOffset: 1
+                            horizontalOffset: -0.2
+
                             text: {
                                 if (AudioInfo.mute) {
                                     return "\udb81\udf5f"
@@ -934,7 +791,7 @@ Scope {
 
                             bg_color: [
                                 Color.bgSurface,
-                                Color.bgSurface,
+                                Color.bgMuted,
                                 Color.accentStrong,
                             ]
                             fg_color: [
@@ -945,7 +802,7 @@ Scope {
 
                             border_width: [0, 0, 0]
 
-                            font_size: 16
+                            font_size: 14
 
                         }
 
@@ -954,8 +811,8 @@ Scope {
                             box_height: 28
                             box_width: 28
 
-                            verticalOffset: 1.6
-                            horizontalOffset: 0.4
+                            verticalOffset: 1
+                            horizontalOffset: -0.2
 
                             text: {
                                 if (SystemInfo.wifi.freq) return "\udb81\udda9"
@@ -964,7 +821,7 @@ Scope {
 
                             bg_color: [
                                 Color.bgSurface,
-                                Color.bgSurface,
+                                Color.bgMuted,
                                 Color.accentStrong,
                             ]
                             fg_color: [
@@ -975,7 +832,7 @@ Scope {
 
                             border_width: [0, 0, 0]
 
-                            font_size: 13
+                            font_size: 12
 
                         }
 

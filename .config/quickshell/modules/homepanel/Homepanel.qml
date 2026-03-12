@@ -3,6 +3,7 @@ import qs.modules.common
 import qs.modules.homepanel
 
 import Quickshell
+import Quickshell.Io
 import Quickshell.Hyprland
 import Quickshell.Wayland
 import QtQuick.Layouts
@@ -35,13 +36,13 @@ PanelWindow {
 
     WlrLayershell.namespace: "quickshell_homepanel" 
 
-    color: Qt.rgba(0.0,0.0,0.0,0.4)
+    color: Color.transparent(Qt.darker(Color.bgBase, 1.5), 0.3)
 
     onVisibleChanged: {
         if (visible) {
             openpanel.start()
             MediaPlayerInfo.autoSelect()
-        }
+        } 
     }
 
     Component.onCompleted: {
@@ -124,7 +125,6 @@ PanelWindow {
             color: Qt.rgba(0.0,0.0,0.0,0.3)
             transparentBorder: true
         }
-
 
         ColumnLayout {
 
