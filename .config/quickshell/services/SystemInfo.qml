@@ -50,6 +50,7 @@ Singleton {
     property string board: "MOTHERBOARD"
 
     property var wifi: {
+        "ethernet": false,
         "device": "wlan0",
         "name": "Wifi",
         "localip": "0.0.0.0",
@@ -277,6 +278,7 @@ Singleton {
                         "signal": datas[13].result[0]?.conn.signalQuality,
                         "channel": datas[13].result[0]?.conn.channel,
                         "freq": datas[13].result[0]?.conn.frequency,
+                        "ethernet": datas[12].result.length && !datas[13].result.length
                     }
 
                     // PHYSICAL DISKS

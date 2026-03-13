@@ -95,6 +95,7 @@ Rectangle {
 
                 gradient: Gradient {
                     GradientStop {position: 0.0; color: "white" }
+                    GradientStop {position: 0.2; color: "white" }
                     GradientStop {position: 1.2; color: "transparent" }
                 }
             }

@@ -373,8 +373,6 @@ Scope {
                                                 MediaPlayerInfo.nextMedia()
                                             } else if (key == Qt.Key_Left) {
                                                 MediaPlayerInfo.prevMedia()
-                                            } else if (key == Qt.Key_Space) {
-                                                MediaPlayerInfo.playPauseMedia()
                                             } else if (key == Qt.Key_Escape) {
                                                 media_player.opacity = 0
                                             }
@@ -762,14 +760,15 @@ Scope {
                         anchors.right: parent.right
                         anchors.rightMargin: 19
 
+                        spacing: 4
 
                         PillButton {
 
                             box_height: 28
                             box_width: 28
 
-                            verticalOffset: 1
-                            horizontalOffset: -0.2
+                            verticalOffset: 0.8
+                            horizontalOffset: 0.8
 
                             text: {
                                 if (AudioInfo.mute) {
@@ -809,14 +808,15 @@ Scope {
                         PillButton {
 
                             box_height: 28
-                            box_width: 28
+                            text_padding: 8
 
-                            verticalOffset: 1
-                            horizontalOffset: -0.2
+                            verticalOffset: !SystemInfo.wifi.ethernet ? 1 : 1.2
+                            horizontalOffset: !SystemInfo.wifi.ethernet ? -0.2 : -0.3
 
                             text: {
-                                if (SystemInfo.wifi.freq) return "\udb81\udda9"
-                                return "\udb81\uddaa"
+                                if (SystemInfo.wifi.ethernet) return "\udb80\udf79" + "  \uf423"
+                                if (SystemInfo.wifi.freq) return "\udb81\udda9" + "  \uf423"
+                                return "\udb81\uddaa" + "  \uf423"
                             }
 
                             bg_color: [

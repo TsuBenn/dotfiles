@@ -100,19 +100,22 @@ Singleton {
                     const monitor = data.monitor ?? ""
                     const windowclass = data.class
                     const windowtitle = data.title
+                    const address = data.address
                     const focused = (data.focusHistoryID == 0)
                     if (workspaces[workspace] == undefined) workspaces[workspace] = [] 
                     workspaces[workspace].push({
                         "workspace": workspace,
                         "monitor": monitor,
                         "windowclass": windowclass,
+                        "address": address,
                         "windowtitle": windowtitle,
                         "focused": focused
                     })
                     if (focused) root.focusedwindow = {
                         "title": windowtitle,
                         "class": windowclass,
-                        "monitor": monitor
+                        "address": address,
+                        "monitor": monitor,
                     }
                 }
                 if (root.windowCount(root.focusedworkspace) == 0) root.focusedwindow = {

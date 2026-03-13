@@ -13,15 +13,20 @@ Rectangle {
 
     id: root
 
-    implicitHeight: 26
+    implicitHeight: 24
     implicitWidth: workspace.implicitWidth
     radius: implicitHeight/2
     color: Color.bgMuted
 
-    border.width: 2
+    border.width: 0
     border.color: Qt.lighter(Color.bgMuted,1.5)
 
     property int maxWin: 3
+
+    property real icon_size: 16
+    property real num_size: 11
+
+    property int hovered_workspace: 1
 
     property bool monitorBasedWorkspace: false
     property bool secondMonitor: HyprInfo.focusedMonitor.id > 0 && monitorBasedWorkspace
@@ -43,10 +48,13 @@ Rectangle {
 
     }
 
+    property real selection_width: root.implicitHeight
+    property real selection_height: root.implicitHeight
+
     Rectangle {
 
         id: selection
-        implicitHeight: 26
+        implicitHeight: root.implicitHeight
 
         anchors.left: parent.left
         anchors.right: parent.right
@@ -60,10 +68,9 @@ Rectangle {
         anchors.leftMargin: left_margin
         property real left_margin: {
             if (!root.inBound) return
-            var leftMargin = 26*(HyprInfo.focusedworkspace-(root.secondMonitor ? 6 : 1))
-            leftMargin = 26*(HyprInfo.focusedworkspace-(root.secondMonitor ? 6 : 1))
+            var leftMargin = root.selection_width*(HyprInfo.focusedworkspace-(root.secondMonitor ? 6 : 1))
             for (var i = (root.secondMonitor ? 6 : 1); i < HyprInfo.focusedworkspace; i++) {
-                leftMargin += 28*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
+                leftMargin += (root.selection_width+2)*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
             }
             if (anchors.leftMargin < leftMargin) {
                 left_pause = true
@@ -76,9 +83,9 @@ Rectangle {
         anchors.rightMargin: right_margin
         property real right_margin: {
             if (!root.inBound) return
-            var rightMargin = 26*((root.secondMonitor ? 10 : 5)-HyprInfo.focusedworkspace)
+            var rightMargin = root.selection_width*((root.secondMonitor ? 10 : 5)-HyprInfo.focusedworkspace)
             for (var i = (root.secondMonitor ? 10 : 5); i > HyprInfo.focusedworkspace; i--) {
-                rightMargin += 28*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
+                rightMargin += (root.selection_width+2)*Math.min(HyprInfo.windowCount(i),root.maxWin) + workspace.spacing
             }
             if (anchors.rightMargin < rightMargin) {
                 right_pause = true
@@ -110,7 +117,7 @@ Rectangle {
 
     RowLayout {
         id: workspace
-        spacing: 2
+        spacing: 4
 
         Repeater {
 
@@ -131,7 +138,7 @@ Rectangle {
                     property bool selected: index + 1 == HyprInfo.focusedworkspace
                     property real selected_thresold: selected
 
-                    implicitHeight: 26
+                    implicitHeight: root.selection_height
                     implicitWidth: window.implicitWidth
 
                     Behavior on implicitWidth { NumberAnimation {duration: 200; easing.type: Easing.OutCubic} }
@@ -152,6 +159,17 @@ Rectangle {
 
                     }
 
+                    MouseArea {
+                        z: 2
+                        anchors.fill: parent
+                        acceptedButtons: Qt.NoButton
+                        hoverEnabled: true
+
+                        onEntered: {
+                            root.hovered_workspace = wb.index + 1
+                        }
+                    }
+
                     RowLayout {
 
                         id: window
@@ -161,13 +179,13 @@ Rectangle {
 
                             id: pillbutton
 
-                            box_height: 26
+                            box_height: root.selection_height
                             box_width: box_height
                             text_padding: 0
 
                             text_opacity: wb.winCount > 0 || wb.selected ? 1 : 0.5
 
-                            font_size: text == "•" ? 15 : 11
+                            font_size: text == "•" ? 15 : root.num_size
                             font_weight: 1000
                             text: wb.winCount > 0 ? wb.index + 1 : "•"
 
@@ -218,13 +236,14 @@ Rectangle {
                                 required property string windowclass
                                 required property string windowtitle
                                 required property bool focused
+                                required property string address
 
                                 //Layout.rightMargin: 2
 
                                 visible: index < root.maxWin
 
-                                width: 28
-                                height: 28
+                                width: root.selection_width + 2
+                                height: root.selection_height + 2
 
                                 layer.enabled: true
                                 layer.effect: DropShadow {
@@ -239,8 +258,8 @@ Rectangle {
 
                                     visible: (apps.index <= wb.winCount-1 && !more.visible) && source != ""
 
-                                    height: 16
-                                    width: 16
+                                    height: root.icon_size
+                                    width: root.icon_size
 
                                     scale: apps.focused || !wb.selected  ? 1 : 0.9
                                     opacity: apps.focused || !wb.selected  ? 1 : 0.5
@@ -277,7 +296,7 @@ Rectangle {
                                 Text {
                                     id: more
                                     anchors.verticalCenter: parent.verticalCenter
-                                    anchors.verticalCenterOffset: 0.6
+                                    anchors.verticalCenterOffset: -0.4
                                     visible: apps.index >= root.maxWin-1 && wb.winCount > root.maxWin
                                     text: "+" + (wb.winCount - (root.maxWin-1))
                                     width: 30
@@ -287,6 +306,16 @@ Rectangle {
                                     color: wb.selected ? Color.textSecondary : Color.accentStrong
 
                                     Behavior on color {ColorAnimation {duration: pillbutton.fg_color_animation*2; easing.type: Easing.OutCubic}}
+                                }
+
+                                MouseControl {
+                                    anchors.fill: parent
+
+                                    onReleased: {
+                                        if (containsMouse) {
+                                            HyprInfo.switchWorkspace(wb.index + 1)
+                                        }
+                                    }
                                 }
                             }
                         }

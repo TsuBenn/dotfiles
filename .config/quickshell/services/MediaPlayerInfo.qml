@@ -133,7 +133,7 @@ Singleton {
 
     Timer {
         interval: 2000
-        running: true
+        running: false
         repeat: true
 
         onTriggered: {
