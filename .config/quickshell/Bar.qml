@@ -760,7 +760,7 @@ Scope {
                         anchors.right: parent.right
                         anchors.rightMargin: 19
 
-                        spacing: 4
+                        spacing: 2
 
                         PillButton {
 
