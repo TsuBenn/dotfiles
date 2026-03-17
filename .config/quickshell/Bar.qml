@@ -331,7 +331,7 @@ Scope {
 
                             BarMediaPlayer {
 
-                                z: -10
+                                z: -1
 
                                 id: media_player
 
@@ -762,46 +762,165 @@ Scope {
 
                         spacing: 2
 
-                        PillButton {
+                        ClippingRectangle {
 
-                            box_height: 28
-                            box_width: 28
+                            z: 1*volume.expanded
 
-                            verticalOffset: 0.8
-                            horizontalOffset: 0.8
+                            id: volume
 
-                            text: {
-                                if (AudioInfo.mute) {
-                                    return "\udb81\udf5f"
+                            property bool expanded: false
+
+                            implicitHeight: 28
+                            implicitWidth: (150 + 10) + 28
+                            radius: implicitHeight/2
+
+
+                            color: "transparent"
+
+                            onExpandedChanged: {
+                                if (expanded) {
+                                    gainScreenAccess()
+                                    return
                                 }
-                                if (AudioInfo.volume > 200/3) {
-                                    return "\udb81\udd7e"
+                                returnScreenAccess()
+                            }
+
+                            RowLayout {
+
+                                anchors.right: parent.right
+
+                                PillButton {
+
+                                    box_height: 28
+                                    box_width: 28
+
+                                    verticalOffset: 0.8
+                                    horizontalOffset: 0.8
+
+                                    text: {
+                                        if (AudioInfo.mute) {
+                                            return "\udb81\udf5f"
+                                        }
+                                        if (AudioInfo.volume > 200/3) {
+                                            return "\udb81\udd7e"
+                                        }
+                                        else if (AudioInfo.volume > 100/3) {
+                                            return "\udb81\udd80"
+                                        }
+                                        else if (AudioInfo.volume > 0) {
+                                            return "\udb81\udd7f"
+                                        }
+                                        else {
+                                            return "\udb81\udf5f"
+                                        }
+                                    }
+
+                                    bg_color: [
+                                        Color.bgSurface,
+                                        Color.bgSurface,
+                                        Color.accentStrong,
+                                    ]
+                                    fg_color: [
+                                        Color.textPrimary,
+                                        Color.textPrimary,
+                                        Color.textSecondary,
+                                    ]
+
+                                    border_width: [0, 0, 0]
+
+                                    font_size: 14
+
+                                    onEntered: {
+                                        if (!volume.expanded) {
+                                            volume.expanded = true
+                                        }
+                                    }
+                                    onPressed: {
+                                        if (!volume.expanded) {
+                                            volume.expanded = true
+                                            return
+                                        }
+                                        AudioInfo.muteVolume(AudioInfo.sinkDefault)
+
+                                    }
+
                                 }
-                                else if (AudioInfo.volume > 100/3) {
-                                    return "\udb81\udd80"
+
+                                HorizontalProgressBar {
+                                    id: volume_bar
+                                    box_height: 20
+                                    box_width: volume.expanded*150
+
+                                    Behavior on implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+
+                                    interactive: volume.expanded
+
+                                    preferedPercentage: AudioInfo.volume
+
+                                    onAdjusted: {
+                                        AudioInfo.setVolume(AudioInfo.sinkDefault, percentage)
+                                        let audio
+                                        switch (Math.floor(Math.random() * 3)) {
+                                            case 0: audio = "mambo"; break
+                                            case 1: audio = "mambo_tongye"; break
+                                            case 2: audio = "mambo_wow"; break
+                                        }
+                                        AudioInfo.playSound(audio, 2/3)
+                                        syncBar()
+                                    }
                                 }
-                                else if (AudioInfo.volume > 0) {
-                                    return "\udb81\udd7f"
+
+                            }
+
+                            MouseArea {
+
+                                z: -2
+
+                                visible: volume.expanded
+
+                                anchors.fill: parent
+                                anchors.leftMargin: -50
+                                anchors.rightMargin: -50
+                                anchors.topMargin: -20
+                                anchors.bottomMargin: -20
+
+                                hoverEnabled: true
+
+                                onEntered: {
+                                    volume_timer.stop()
                                 }
-                                else {
-                                    return "\udb81\udf5f"
+                                onPressed: {
+                                    volume.expanded = false
+                                }
+                                onExited: {
+                                    volume_timer.restart()
                                 }
                             }
 
-                            bg_color: [
-                                Color.bgSurface,
-                                Color.bgMuted,
-                                Color.accentStrong,
-                            ]
-                            fg_color: [
-                                Color.textPrimary,
-                                Color.textPrimary,
-                                Color.textSecondary,
-                            ]
+                            MouseArea {
 
-                            border_width: [0, 0, 0]
+                                z: -1
 
-                            font_size: 14
+                                visible: volume.expanded
+
+                                anchors.fill: parent
+
+                                hoverEnabled: true
+
+                                onEntered: {
+                                    volume_timer.stop()
+                                }
+
+                            }
+
+                            Timer {
+                                id: volume_timer
+
+                                interval: 100
+                                onTriggered: {
+                                    volume.expanded = false
+                                }
+                            }
 
                         }
 

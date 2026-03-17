@@ -53,7 +53,7 @@ ColumnLayout {
                 }
 
                 AudioInfo.setVolume(device, percentage)
-                if (alert) AudioInfo.playSound(audio, 1/3)
+                if (alert) AudioInfo.playSound(audio, 2/3)
             }
 
             VerticalProgressBar {

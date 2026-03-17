@@ -174,7 +174,7 @@ Item {
                             box_height: 10
                             round: false
                             preferedPercentage: SystemInfo.cpuusage
-                            fg_color: sys_info.bars_color
+                            fg_color: Color.mix(sys_info.bars_color,Qt.darker(Color.error,1.2), Math.max(preferedPercentage - 90,0)/10)
 
                         }
 
@@ -366,7 +366,7 @@ Item {
                                     box_height: 10
                                     round: false
                                     preferedPercentage: gpu_spec_loader.usage
-                                    fg_color: sys_info.bars_color
+                                    fg_color: Color.mix(sys_info.bars_color,Qt.darker(Color.error,1.2), Math.max(preferedPercentage - 90,0)/10)
 
                                 }
 
@@ -484,7 +484,7 @@ Item {
                                     box_height: 10
                                     round: false
                                     preferedPercentage: Math.round((gpu_spec_loader.memoryused/gpu_spec_loader.memorytotal)*100)
-                                    fg_color: sys_info.bars_color
+                                    fg_color: Color.mix(sys_info.bars_color,Qt.darker(Color.error,1.2), Math.max(preferedPercentage - 90,0)/10)
 
                                 }
                             }
@@ -718,7 +718,7 @@ Item {
                             box_height: 10
                             round: false
                             preferedPercentage: SystemInfo.memusage
-                            fg_color: sys_info.bars_color
+                            fg_color: Color.mix(sys_info.bars_color,Qt.darker(Color.error,1.2), Math.max(preferedPercentage - 90,0)/10)
 
                         }
                     }
@@ -778,7 +778,7 @@ Item {
                             box_height: 10
                             round: false
                             preferedPercentage: SystemInfo.swapusage
-                            fg_color: sys_info.bars_color
+                            fg_color: Color.mix(sys_info.bars_color,Qt.darker(Color.error,1.2), Math.max(preferedPercentage - 90,0)/10)
 
                         }
                     }
@@ -919,7 +919,7 @@ Item {
                                     box_height: 10
                                     round: false
                                     preferedPercentage: Math.round((disk_loader.used/disk_loader.total)*100)
-                                    fg_color: sys_info.bars_color
+                                    fg_color: Color.mix(sys_info.bars_color,Qt.darker(Color.error,1.2), Math.max(preferedPercentage - 90,0)/10)
 
                                 }
 

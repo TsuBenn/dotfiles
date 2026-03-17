@@ -15,7 +15,7 @@ Singleton {
         }
     )
 
-    property string current: "kanagawa"
+    property string current: "sunsetEmber"
 
     onCurrentChanged: {
         apply()
