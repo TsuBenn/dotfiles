@@ -1,5 +1,7 @@
 pragma Singleton
 
+import qs.services
+
 import Quickshell
 import Quickshell.Services.Mpris
 import Quickshell.Io
@@ -128,12 +130,14 @@ Singleton {
     }
 
     Component.onCompleted: {
+        SystemInfo.onbattery ? refresh.interval = 2000 : refresh.interval = 1000
         autoSelect()
     }
 
     Timer {
-        interval: 2000
-        running: false
+        id: refresh
+        interval: 1000
+        running: true
         repeat: true
 
         onTriggered: {
