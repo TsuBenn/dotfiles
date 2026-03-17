@@ -1032,7 +1032,7 @@ Item {
 
                         anchors.margins: 20
 
-                        text: `${SystemInfo.battery}\n` + 
+                        text: `${SystemInfo.battery} (${parseFloat(SystemInfo.batteryhealth).toFixed(1)}%)\n` + 
                         `${SystemInfo.batterystate}\n` +
                         `${SystemInfo.onbattery}`
 

@@ -32,12 +32,12 @@
         {
             "type": "localip",
             "showIpv4": true,
-            "showMac": true,
+            "showMac": true
         },
         "wifi",
         {
             "type": "physicaldisk",
             "temp": true
-        },
+        }
     ]
 }
