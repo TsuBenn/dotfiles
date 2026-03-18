@@ -879,10 +879,7 @@ Scope {
                                 visible: volume.expanded
 
                                 anchors.fill: parent
-                                anchors.leftMargin: -50
-                                anchors.rightMargin: -50
-                                anchors.topMargin: -20
-                                anchors.bottomMargin: -20
+                                anchors.margins: -100
 
                                 hoverEnabled: true
 

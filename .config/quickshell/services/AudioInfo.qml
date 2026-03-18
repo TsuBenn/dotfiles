@@ -232,11 +232,11 @@ Singleton {
                 var streams = []
 
                 for (const data of datas) {
-                    const app = data.match(/\application.name\s+=\s+"(.*)"/)[1]
-                    const name = JSON.parse(`"${data.match(/\media.name\s+=\s+"(.*)"/)[1]}"`)
-                    const binary = JSON.parse(`"${data.match(/\application.process.binary\s+=\s+"(.*)"/)[1]}"`)
-                    const volume = parseInt(data.match(/Volume:.*?\/\s*(\d+)%/)[1])
-                    const id = parseInt(data.match(/\object.id\s+=\s+"(.*)"/)[1])
+                    const app = data.match(/\application.name\s+=\s+"(.*)"/)?.[1] ?? ""
+                    const name = JSON.parse(`"${data.match(/\media.name\s+=\s+"(.*)"/)?.[1] ?? ""}"`)
+                    const binary = JSON.parse(`"${data.match(/\application.process.binary\s+=\s+"(.*)"/)?.[1] ?? ""}"`)
+                    const volume = parseInt(data.match(/Volume:.*?\/\s*(\d+)%/)?.[1] ?? 0)
+                    const id = parseInt(data.match(/\object.id\s+=\s+"(.*)"/)?.[1] ?? 0)
 
                     switch (app.trim()) {
                     }

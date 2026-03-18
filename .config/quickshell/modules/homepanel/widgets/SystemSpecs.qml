@@ -14,6 +14,8 @@ Item {
     property int info_size: 10
     property int header_size: 11
     property int spec_width: 330
+    property int stat_weight: 700
+    property int value_weight: 500
     property color stat_color: Qt.lighter(Color.textDisabled,1.3)
     property color value_color: Color.textPrimary
     property color header_color: Color.accentSoft
@@ -122,7 +124,7 @@ Item {
                             color: sys_info.stat_color
 
                             font.family: Fonts.system
-                            font.weight: 700
+                            font.weight: sys_info.stat_weight
                             font.pointSize: sys_info.info_size
 
                         }
@@ -152,7 +154,7 @@ Item {
                             }
 
                             font.family: Fonts.system
-                            font.weight: 700
+                            font.weight: 800
                             font.pointSize: sys_info.info_size
                             minimumPointSize: sys_info.info_size-1
                             fontSizeMode: Text.HorizontalFit
@@ -193,7 +195,7 @@ Item {
                                 color: sys_info.value_color
 
                                 font.family: Fonts.system
-                                font.weight: 700
+                                font.weight: sys_info.value_weight
                                 font.pointSize: sys_info.info_size
                             }
                         }
@@ -219,7 +221,7 @@ Item {
                             color: sys_info.stat_color
 
                             font.family: Fonts.system
-                            font.weight: 700
+                            font.weight: sys_info.stat_weight
                             font.pointSize: sys_info.info_size
                         }
 
@@ -234,7 +236,7 @@ Item {
                             color: sys_info.value_color
 
                             font.family: Fonts.system
-                            font.weight: 500
+                            font.weight: sys_info.value_weight
                             font.pointSize: sys_info.info_size
                         }
                     }
@@ -310,7 +312,7 @@ Item {
                                     color: sys_info.stat_color
 
                                     font.family: Fonts.system
-                                    font.weight: 700
+                                    font.weight: sys_info.stat_weight
                                     font.pointSize: sys_info.info_size
 
                                 }
@@ -343,7 +345,7 @@ Item {
                                     }
 
                                     font.family: Fonts.system
-                                    font.weight: 700
+                                    font.weight: 800
                                     font.pointSize: sys_info.info_size
                                     minimumPointSize: sys_info.info_size-1
                                     fontSizeMode: Text.HorizontalFit
@@ -385,7 +387,7 @@ Item {
                                         color: sys_info.value_color
 
                                         font.family: Fonts.system
-                                        font.weight: 700
+                                        font.weight: sys_info.value_weight
                                         font.pointSize: sys_info.info_size
                                     }
                                 }
@@ -411,7 +413,7 @@ Item {
                                     color: sys_info.stat_color
 
                                     font.family: Fonts.system
-                                    font.weight: 700
+                                        font.weight: sys_info.stat_weight
                                     font.pointSize: sys_info.info_size
                                 }
 
@@ -426,7 +428,7 @@ Item {
                                     color: sys_info.value_color
 
                                     font.family: Fonts.system
-                                    font.weight: 500
+                                        font.weight: sys_info.value_weight
                                     font.pointSize: sys_info.info_size
                                 }
                             }
@@ -451,7 +453,7 @@ Item {
                                     color: sys_info.stat_color
 
                                     font.family: Fonts.system
-                                    font.weight: 700
+                                        font.weight: sys_info.stat_weight
                                     font.pointSize: sys_info.info_size
                                 }
 
@@ -466,7 +468,7 @@ Item {
                                     color: sys_info.value_color
 
                                     font.family: Fonts.system
-                                    font.weight: 500
+                                        font.weight: sys_info.value_weight
                                     font.pointSize: sys_info.info_size
                                 }
                             }
@@ -618,7 +620,7 @@ Item {
                         color: sys_info.stat_color
 
                         font.family: Fonts.system
-                        font.weight: 700
+                        font.weight: sys_info.stat_weight
                         font.pointSize: sys_info.info_size
                     }
 
@@ -637,7 +639,7 @@ Item {
                         color: sys_info.value_color
 
                         font.family: Fonts.system
-                        font.weight: 500
+                        font.weight: sys_info.value_weight
                         font.pointSize: sys_info.info_size
                     }
                 }
@@ -685,7 +687,7 @@ Item {
                             color: sys_info.stat_color
 
                             font.family: Fonts.system
-                            font.weight: 700
+                        font.weight: sys_info.stat_weight
                             font.pointSize: sys_info.info_size
                         }
 
@@ -700,7 +702,7 @@ Item {
                             color: sys_info.value_color
 
                             font.family: Fonts.system
-                            font.weight: 500
+                        font.weight: sys_info.value_weight
                             font.pointSize: sys_info.info_size
                         }
                     }
@@ -745,7 +747,7 @@ Item {
                             color: sys_info.stat_color
 
                             font.family: Fonts.system
-                            font.weight: 700
+                        font.weight: sys_info.stat_weight
                             font.pointSize: sys_info.info_size
                         }
 
@@ -760,7 +762,7 @@ Item {
                             color: sys_info.value_color
 
                             font.family: Fonts.system
-                            font.weight: 500
+                        font.weight: sys_info.value_weight
                             font.pointSize: sys_info.info_size
                         }
                     }
@@ -858,7 +860,7 @@ Item {
                                     color: sys_info.stat_color
 
                                     font.family: Fonts.system
-                                    font.weight: 700
+                        font.weight: sys_info.stat_weight
                                     font.pointSize: sys_info.info_size
                                 }
 
@@ -874,7 +876,7 @@ Item {
                                     color: sys_info.value_color
 
                                     font.family: Fonts.system
-                                    font.weight: 500
+                        font.weight: sys_info.value_weight
                                     font.pointSize: sys_info.info_size
                                 }
                             }
@@ -902,7 +904,7 @@ Item {
                                     color: Qt.darker(Color.textDisabled,1.2)
 
                                     font.family: Fonts.system
-                                    font.weight: 700
+                        font.weight: sys_info.stat_weight
                                     font.pointSize: sys_info.info_size-2
                                 }
                             }
@@ -965,7 +967,7 @@ Item {
                         color: sys_info.stat_color
 
                         font.family: Fonts.system
-                        font.weight: 700
+                        font.weight: sys_info.stat_weight
                         font.pointSize: sys_info.info_size
                     }
 
@@ -980,7 +982,7 @@ Item {
                         color: sys_info.value_color
 
                         font.family: Fonts.system
-                        font.weight: 500
+                        font.weight: sys_info.value_weight
                         font.pointSize: sys_info.info_size
                     }
                 }
@@ -1022,7 +1024,7 @@ Item {
                         color: sys_info.stat_color
 
                         font.family: Fonts.system
-                        font.weight: 700
+                        font.weight: sys_info.stat_weight
                         font.pointSize: sys_info.info_size
                     }
 
@@ -1039,7 +1041,7 @@ Item {
                         color: sys_info.value_color
 
                         font.family: Fonts.system
-                        font.weight: 500
+                        font.weight: sys_info.value_weight
                         font.pointSize: sys_info.info_size
                     }
                 }
@@ -1084,7 +1086,7 @@ Item {
                         color: sys_info.stat_color
 
                         font.family: Fonts.system
-                        font.weight: 700
+                        font.weight: sys_info.stat_weight
                         font.pointSize: sys_info.info_size
                     }
 
@@ -1132,7 +1134,7 @@ Item {
                         color: sys_info.value_color
 
                         font.family: Fonts.system
-                        font.weight: 500
+                        font.weight: sys_info.value_weight
                         font.pointSize: sys_info.info_size
                     }
                 }
@@ -1225,7 +1227,7 @@ Item {
                                 color: sys_info.stat_color
 
                                 font.family: Fonts.system
-                                font.weight: 700
+                        font.weight: sys_info.stat_weight
                                 font.pointSize: sys_info.info_size
                             }
 
@@ -1241,7 +1243,7 @@ Item {
                                 color: sys_info.value_color
 
                                 font.family: Fonts.system
-                                font.weight: 500
+                        font.weight: sys_info.value_weight
                                 font.pointSize: sys_info.info_size
                             }
                         }
@@ -1283,7 +1285,7 @@ Item {
                         color: sys_info.stat_color
 
                         font.family: Fonts.system
-                        font.weight: 700
+                        font.weight: sys_info.stat_weight
                         font.pointSize: sys_info.info_size
                     }
 
@@ -1302,7 +1304,7 @@ Item {
                         color: sys_info.value_color
 
                         font.family: Fonts.system
-                        font.weight: 500
+                        font.weight: sys_info.value_weight
                         font.pointSize: sys_info.info_size
                     }
                 }
