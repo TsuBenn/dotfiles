@@ -1,7 +1,5 @@
 pragma Singleton
 
-import qs.services
-
 import Quickshell
 import QtQuick
 
@@ -15,7 +13,7 @@ Singleton {
         }
     )
 
-    property string current: "sunsetEmber"
+    property string current: "gruvbox"
 
     onCurrentChanged: {
         apply()
