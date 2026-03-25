@@ -26,12 +26,12 @@ Singleton {
 
     Process {
         id: weather
-        command: ["curl", "www.wttr.in/?format='%t;%C;%c;%l'"]
+        command: ["curl", "www.wttr.in/?format='%t>%C>%c>%l'"]
 
         stdout: StdioCollector {
             onStreamFinished: {
                 if (text) {
-                    const raw_data = this.text.split(";")
+                    const raw_data = this.text.split(">")
                     root.temperature = raw_data[0].trim().match(/([0-9]+)/)[1]
                     root.condition = raw_data[1].trim()
                     root.condition_icon = raw_data[2].trim().match(/([\S]+)/)[1].trim()
