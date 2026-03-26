@@ -75,8 +75,8 @@ BLUETOOTH=(
 
 DEV_PKGS=(
     npm nodejs python unzip clang clang-tools-extra rustup go fzf fd
-    lazygit tree-sitter-cli meson cmake make unixodbc python-pip
-    tmux
+    lazygit tree-sitter-cli meson cmake make unixodbc python-pip python-conda uv
+    tmux ollama
 )
 
 TERMINALS=(kitty)
@@ -113,7 +113,8 @@ GAMING_PKGS=(
 
 ESSENTIAL_APPS=(
     discord obs-studio 7zip zoxide filelight ark mpv yazi dolphin libreoffice
-    vlc vlc-plugin-x264 vlc-plugin-ffmpeg lame libmad pinta openrgb github-cli libva-utils
+    vlc vlc-plugin-x264 vlc-plugin-ffmpeg lame libmad pinta openrgb github-cli libva-utils ffmpegthumbs
+    glow
     ghostty
     flatpak avahi
     rofi rofi-emoji wtype

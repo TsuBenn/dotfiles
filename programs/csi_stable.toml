@@ -1,0 +1,2284 @@
+[[questions]]
+question = "What is the minimum number of octal digits required to represent the binary number 11111010107?"
+choices = ["3", "4", "5", "6"]
+answer = "4"
+
+[[questions]]
+question = "What is the maximum number of children a binary tree can have?"
+choices = ["1", "2", "3", "Any number of children"]
+answer = "2"
+
+[[questions]]
+question = "What is the octal representation of the binary number 11010?"
+choices = ["25", "32", "32", "26"]
+answer = "32"
+
+[[questions]]
+question = "Which of the following representations is erroneous?"
+choices = ["(10111)2", "(349)8", "(3AB)16", "2666"]
+answer = "(349)8"
+
+[[questions]]
+question = "How many types of cyber attacks exist?"
+choices = ["2", "3", "4", "5"]
+answer = "2"
+
+[[questions]]
+question = "How many main types of intellectual property are recognized?"
+choices = ["2", "3", "4", "5"]
+answer = "4"
+
+[[questions]]
+question = "How many ethical principles are there?"
+choices = ["2", "3", "4", "1", "1"]
+answer = "4"
+
+[[questions]]
+question = "When employing symmetric-key encryption for data communication between 10 hosts, how many keys are necessary to guarantee the security of all transactions?"
+choices = ["45", "46", "47", "48"]
+answer = "45"
+
+[[questions]]
+question = "A device is sending out data at the rate of 1000 bps. How long does it take to send out 10 bits?"
+choices = ["10 ms", "1 ms", "10 000 ms", "100 ms"]
+answer = "10 ms"
+
+[[questions]]
+question = "Convert the binary number 10110111 to decimal"
+choices = ["721", "731", "739", "743"]
+answer = "731"
+
+[[questions]]
+question = "Computers built on the Von Neumann model divide the computer hardware into _____ subsystems"
+choices = ["3", "4", "5", "6"]
+answer = "5"
+
+[[questions]]
+question = "Convert the decimal number 213.75 to octal"
+choices = ["326.6", "225.6", "236.6", "322.5"]
+answer = "326.6"
+
+[[questions]]
+question = "Convert the hexadecimal number C9 to binary"
+choices = ["11001101", "11001001", "10101101", "11010101"]
+answer = "11001001"
+
+[[questions]]
+question = "In a binary positional number system, how much do consecutive digits typically differ?"
+choices = ["1 unit", "2 units", "5 units", "10 units"]
+answer = "2 units"
+
+[[questions]]
+question = "In a steganographic algorithm, if each comma (,) in the encrypted message equals digit 0 and each digit 1 equals digit 1. What is the hidden information in following message?"
+choices = ["0101", "1010", "0011", "1100"]
+answer = "1010"
+
+[[questions]]
+question = "In the context of demand paging and demand segmentation, a memory size of 100 MB can execute ten programs, each of size 30 MB, for a total of 300 MB. At any moment, 100 MB of the ten programs are in memory and 200 MB are on disk. Therefore a virtual memory size of ____ MB."
+choices = ["300", "100", "200", "400"]
+answer = "300"
+
+[[questions]]
+question = "To guarantee secure communication among 10 hosts using asymmetric-key encryption, how many keys are necessary?"
+choices = ["20", "21", "100", "90"]
+answer = "20"
+
+[[questions]]
+question = "Which of the following statements about binary search is true?"
+choices = ["can be used on unsorted data", "divides the search space into three parts", "is faster than linear search for sorted data", "has a time complexity of O(n)"]
+answer = "is faster than linear search for sorted data"
+
+[[questions]]
+question = "Which is true about organizing relational data?"
+choices = ["The physical storage of the data is independent of the way in which the data is logically organized", "The abstract storage of the data is independent of the way in which the data is logically organized", "The logical storage of the data is independent of the way in which the data is logically organized", "The virtual storage of the data is independent of the way in which the data is logically organized"]
+answer = "The physical storage of the data is independent of the way in which the data is logically organized"
+
+[[questions]]
+question = "Which of the following statements is true regarding search algorithms for a list of elements?"
+choices = ["Binary search is more efficient than sequential search for large lists, but it requires the list to be sorted.", "Binary search can be used on an unsorted list to improve search efficiency compared to sequential search.", "Sequential search requires fewer comparisons than binary search in the worst case, regardless of whether the list is sorted or not.", "Binary search and sequential search require the same number of comparisons in the worst case if the list is sorted."]
+answer = "Binary search is more efficient than sequential search for large lists, but it requires the list to be sorted."
+
+[[questions]]
+question = "Which of the following is NOT one of the three traditional database models?"
+choices = ["Hierarchical", "Networking", "Relational", "Object-oriented"]
+answer = "Object-oriented"
+
+[[questions]]
+question = "Which of the following is NOT a component of a database management system (DBMS)?"
+choices = ["Hardware", "Software", "Network", "Data"]
+answer = "Network"
+
+[[questions]]
+question = "Which of the following is not an advantage of AI?"
+choices = ["Reduces the time taken to perform a task", "Decision-making by making the process faster and smarter", "Increased Automation", "The cost might to develop, implement, and maintain AI systems"]
+answer = "The cost might to develop, implement, and maintain AI systems"
+
+[[questions]]
+question = "Which of the following is NOT a computer language paradigm?"
+choices = ["Procedural", "Object-oriented", "Functional", "Declarative", "Mathematical"]
+answer = "Mathematical"
+
+[[questions]]
+question = "is the mask to unset (clear) the four leftmost bits of the pattern 1010 0111?"
+choices = ["0000 1111", "1111 0000", "0101 1000", "1010 0000"]
+answer = "1111 0000"
+
+[[questions]]
+question = "_ is an artificial neuron similar to a single biological neuron."
+choices = ["An expert system", "An intelligent agent", "A perceptron", "Perception"]
+answer = "A perceptron"
+
+[[questions]]
+question = "A memory with 128 kilobytes and a word size of 1 byte has an address space that ranges from _____ to _____."
+choices = ["0, 131 071", "1, 131 071", "0, 131 072", "1, 131 072"]
+answer = "0, 131 071"
+
+[[questions]]
+question = "Python is alan _______ language"
+choices = ["object-oriented", "procedural", "functional", "declarative"]
+answer = "functional"
+
+[[questions]]
+question = "Each element in a record is called a(n) ______"
+choices = ["Cell", "Word", "Item", "Field"]
+answer = "Field"
+
+[[questions]]
+question = "To un-set (force to 0) all the bits of a bit pattern, we"
+choices = ["make a mask of all 0s and then AND the bit pattern and the mask", "make a mask exactly the bit pattern and then XOR the bit pattern and the mask", "both a and b are correct", "both a and b are incorrect"]
+answer = "make a mask of all 0s and then AND the bit pattern and the mask"
+
+[[questions]]
+question = "Unified Modeling Language (UML) is"
+choices = ["A high level language", "A machine language", "An English-language like representation of code", "A pictorial representation of an algorithm"]
+answer = "A pictorial representation of an algorithm"
+
+[[questions]]
+question = "What is the name of the first electronic computer designed for a special-purpose?"
+choices = ["Pascal", "Pascaline", "ABC", "ENIAC"]
+answer = "ABC"
+
+[[questions]]
+question = "What is an example of a declarative programming language?"
+choices = ["Python", "Prolog", "SQL", "Java"]
+answer = "SQL"
+
+[[questions]]
+question = "What is the time complexity of finding the height of a binary tree with n nodes?"
+choices = ["O(n)", "O(log n)", "O(n^2)", "O(n log n)"]
+answer = "O(log n)"
+
+[[questions]]
+question = "What is the hexadecimal equivalent of the binary number (11011011)2?"
+choices = ["6D", "DB", "D6", "B6"]
+answer = "DB"
+
+[[questions]]
+question = "What is Queue used for?"
+choices = ["Keep the order", "Reverse the order of elements", "Random elements", "Sort the elements"]
+answer = "Keep the order"
+
+[[questions]]
+question = "What is an AI program?"
+choices = ["ChatGPT", "Microsoft Word", "React", "MongoDB"]
+answer = "ChatGPT"
+
+[[questions]]
+question = "What is the meaning of the first part of a URL? (for example: rtp://192.168.1.1:8080/cam1)"
+choices = ["Define a protocol", "Define a host name", "Define a port", "Define a device"]
+answer = "Define a protocol"
+
+[[questions]]
+question = "What is the most common language to write AI models?"
+choices = ["C++", "PROLOG", "LISP", "Python"]
+answer = "Python"
+
+[[questions]]
+question = "What model is the foundation of modern computers?"
+choices = ["Leibniz", "von Neumann", "Pascal", "Charles Babbage"]
+answer = "von Neumann"
+
+[[questions]]
+question = "What type of network device operates at the Data Link layer of the OSI model?"
+choices = ["Router", "Switch", "Firewall", "Hub"]
+answer = "Switch"
+
+[[questions]]
+question = "Which is a unary operator?"
+choices = ["AND", "OR", "XOR", "NOT"]
+answer = "NOT"
+
+[[questions]]
+question = "Which file system is most commonly associated with Linux?"
+choices = ["NTFS", "FAT32", "ext4", "HFS+"]
+answer = "ext4"
+
+[[questions]]
+question = "Which type of file structure uses hash functions for indexing?"
+choices = ["Sequential files", "Indexed files", "Hashed files", "Binary files"]
+answer = "Hashed files"
+
+[[questions]]
+question = "Which memory management technique divides the memory into variable-sized segments?"
+choices = ["Paging", "Segmentation", "Virtual memory", "Swapping"]
+answer = "Segmentation"
+
+[[questions]]
+question = "Which method is used to add an element to a stack?"
+choices = ["push()", "pop()", "delete()", "top()"]
+answer = "push()"
+
+[[questions]]
+question = "Which of the following is closest to the CPU in the memory hierarchy?"
+choices = ["Cache memory", "Secondary storage", "Main memory", "Virtual memory"]
+answer = "Cache memory"
+
+[[questions]]
+question = "Which of the following software development methodologies emphasizes iterative development, collaboration among cross-functional teams, and frequent customer feedback?"
+choices = ["Waterfall model", "Agile methodology", "Spiral model", "RAD (Rapid Application Development)"]
+answer = "Agile methodology"
+
+[[questions]]
+question = "Which of the following UML diagram types is most suitable for representing the flow of control within an algorithm, including loops and conditional statements?"
+choices = ["Class diagram", "Sequence diagram", "Activity diagram", "State diagram"]
+answer = "Activity diagram"
+
+[[questions]]
+question = "Which data structure is commonly used for First-In, First-Out (FIFO) data processing?"
+choices = ["Stack", "Queue", "Tree", "Linked list"]
+answer = "Queue"
+
+[[questions]]
+question = "Which software engineering principle advocates breaking down complex systems into smaller, manageable components that are easier to understand, develop, and maintain?"
+choices = ["Abstraction", "Encapsulation", "Modularity", "Inheritance"]
+answer = "Modularity"
+
+[[questions]]
+question = "Which access method typically requires additional space for maintaining an index but provides faster access to records compared to sequential access?"
+choices = ["Sequential access", "Direct access", "Indexed sequential access", "Hashing"]
+answer = "Indexed sequential access"
+
+[[questions]]
+question = "Which IEEE standard is most commonly used for representing floating-point numbers in computers?"
+choices = ["IEEE 754", "IEEE 802", "IEEE 1284", "IEEE 1394"]
+answer = "IEEE 754"
+
+[[questions]]
+question = "Which cryptographic protocol forms the foundation of HTTPS for secure communication over the internet?"
+choices = ["RSA", "SSL/TLS", "AES", "SHA-256"]
+answer = "SSL/TLS"
+
+[[questions]]
+question = "Which component of an operating system is responsible for accepting and interpreting user requests, often through a command-line interface?"
+choices = ["Shell", "Kernel", "Graphical interface", "File system"]
+answer = "Shell"
+
+[[questions]]
+question = "Which shift operation would you use to divide a signed integer by 2?"
+choices = ["Logical right shift", "Arithmetic right shift", "Logical left shift", "Arithmetic left shift"]
+answer = "Arithmetic right shift"
+
+[[questions]]
+question = "Which file format is commonly used for storing vector images?"
+choices = ["jpg", "svg", "gif", "mp4"]
+answer = "svg"
+
+[[questions]]
+question = "Which security goal focuses on protecting data from unauthorized access or disclosure?"
+choices = ["Confidentiality", "Integrity", "Availability", "Non-reputation"]
+answer = "Confidentiality"
+
+[[questions]]
+question = "Which layer of the TCP/IP model ensures reliable data transfer?"
+choices = ["Physical layer", "Transport layer", "Application layer", "Data link layer"]
+answer = "Transport layer"
+
+[[questions]]
+question = "Which principle of OOP encourages bundling data and methods that operate on the data into a single unit, known as a class?"
+choices = ["Inheritance", "Encapsulation", "Polymorphism", "Abstraction"]
+answer = "Encapsulation"
+
+[[questions]]
+question = "Which component of the CPU is responsible for performing arithmetic and logical operations?"
+choices = ["Control Unit", "Memory Unit", "Arithmetic Logic Unit (ALU)", "Input/Output Unit"]
+answer = "Arithmetic Logic Unit (ALU)"
+
+[[questions]]
+question = "How is a linked list typically implemented?"
+choices = ["Using arrays", "Using stacks", "Using queues", "Using pointers"]
+answer = "Using pointers"
+
+[[questions]]
+question = "Who is known as the \u201cFather of the Computer\u201d?"
+choices = ["Alan Turing", "Charles Babbage", "Steve Jobs", "Bill Gates"]
+answer = "Charles Babbage"
+
+[[questions]]
+question = "According to the Von Neumann model, which one is NOT a computer hardware subsystem?"
+choices = ["Arithmetic logic unit (ALU)", "Input/Output (I/O)", "Control unit (CU)", "Power supply unit (PSU)"]
+answer = "Power supply unit (PSU)"
+
+[[questions]]
+question = "In the TCP/IP model, which layer corresponds to both Data Link and Physical layers of the OSI model?"
+choices = ["Network Access Layer", "Internet Layer", "Transport Layer", "Application Layer"]
+answer = "Network Access Layer"
+
+[[questions]]
+question = "In a relational database, which of the following is a unary operation?"
+choices = ["union", "join", "project", "all of these"]
+answer = "project"
+
+[[questions]]
+question = "In UNIX, which of the following commands is used to manage processes?"
+choices = ["ls", "ps", "mv", "cat"]
+answer = "ps"
+
+[[questions]]
+question = "In which phase of the software lifecycle is the problem domain analyzed?"
+choices = ["Design", "Testing", "Analysis", "Implementation"]
+answer = "Analysis"
+
+[[questions]]
+question = "If we need to access one specific record without having to retrieve all records before it, we use a"
+choices = ["sequential file structure", "random file structure", "Both a and b are correct", "Both a and b are incorrect"]
+answer = "random file structure"
+
+[[questions]]
+question = "To perceive an object in an image, which of the following algorithm can be used?"
+choices = ["Edge detection", "Chatbot", "Voice emotional analytic", "Text translation"]
+answer = "Edge detection"
+
+[[questions]]
+question = "What is the primary purpose of a metadata-based file manager?"
+choices = ["To organize files based on their content type", "to store additional information about files, such as author, creation date, and keywords", "To encrypt files for enhanced security", "To compress files to save disk space"]
+answer = "to store additional information about files, such as author, creation date, and keywords"
+
+[[questions]]
+question = "What is the correct answer for an expert system?"
+choices = ["Machines can learn knowledge without instructions from experts", "Experts use machines to talk with patients", "Machine use searching algorithms on databases to respond to patients", "Machine learns knowledge given by experts and responds to patients", "None of the others"]
+answer = "Machine learns knowledge given by experts and responds to patients"
+
+[[questions]]
+question = "What is the most correct statement about LAN topologies?"
+choices = ["is a sophisticated structure and robust with high traffic", "is a high risk for collision between 2 nodes", "has a central switch", "is the most complicated structure"]
+answer = "has a central switch"
+
+[[questions]]
+question = "What is the main benefit of the .jpg (JPEG) format for images?"
+choices = ["Lossless compression", "High-quality video storage", "Lossy compression, which reduces file size", "Support for animation"]
+answer = "Lossy compression, which reduces file size"
+
+[[questions]]
+question = "What is the difference between a stack and a queue?"
+choices = ["A stack follows FIFO, and a queue follows LIFO", "A stack is a hierarchical data structure, and a queue is not", "A stack is LIFO, and a queue is FIFO", "There is no difference between a stack and a queue"]
+answer = "A stack is LIFO, and a queue is FIFO"
+
+[[questions]]
+question = "What is the primary difference between sequential and binary search algorithms?"
+choices = ["requires the data to be sorted in ascending order, while binary search can work on unsorted data as well", "divides the search space into halves, while sequential checks elements one by one", "exhibits greater efficiency and speed compared to binary search when applied to large datasets containing a significant number of elements", "is a versatile algorithm that can be applied to various types of data structures, including arrays, linked lists, and trees, while sequential search is specifically designed to work only with arrays"]
+answer = "divides the search space into halves, while sequential checks elements one by one"
+
+[[questions]]
+question = "What is the primary difference between sequential search and binary search algorithms?"
+choices = ["requires the data to be sorted in ascending order, while binary search can work on unsorted data as well", "divides the search space into halves, while sequential search checks elements one by one", "exhibits greater efficiency and speed compared to binary search when applied to large datasets containing a significant number of elements", "is a versatile algorithm that can be applied to various types of data structures, including arrays, linked lists, and trees, while sequential search is specifically designed to work only with arrays"]
+answer = "divides the search space into halves, while sequential search checks elements one by one"
+
+[[questions]]
+question = "What is the order of steps to design a database?"
+choices = ["Collect the information needed to be stored \u2192 Build an entity-relation model", "Collect the information needed to be stored \u2192 Normalization \u2192 Build an entity-relation model", "Build an entity-relation model \u2192 Normalization \u2192 Collect the information needed to be stored", "Not need be done through a step-by-step process"]
+answer = "Collect the information needed to be stored \u2192 Build an entity-relation model"
+
+[[questions]]
+question = "What does the bit string '011000101100111' mean?"
+choices = ["It represents the two characters 'A' and 'C'", "It represents the two characters 'A' and 'b'", "It represents the two characters 'a' and 'c'", "It represents the decimal number 24903"]
+answer = "It represents the two characters 'a' and 'c'"
+
+[[questions]]
+question = "What is an algorithm?"
+choices = ["A set of programming commands that are executed in a specific order to perform a task", "A step-by-step procedure to solve a problem or accomplish a task", "A program that is loaded into the computer\u2019s memory and is ready for execution", "A method for compressing data to reduce its size for efficient storage or transmission"]
+answer = "A step-by-step procedure to solve a problem or accomplish a task"
+
+[[questions]]
+question = "What is the role of a data scientist in an AI project?"
+choices = ["To design and build the AI algorithms", "To collect, clean, and prepare the data for analysis", "To deploy the AI model into production", "To interpret the results of the AI model and communicate them to stakeholders"]
+answer = "To collect, clean, and prepare the data for analysis"
+
+[[questions]]
+question = "What is a major difference between procedural programming and object-oriented programming?"
+choices = ["Procedural programming uses functions, while object-oriented programming uses loops.", "Object-oriented programming organizes code into objects, while procedural programming uses a linear sequence of instructions.", "Procedural programming supports inheritance, while object-oriented programming does not.", "Object-oriented programming does not allow code reuse, while procedural programming does."]
+answer = "Object-oriented programming organizes code into objects, while procedural programming uses a linear sequence of instructions."
+
+[[questions]]
+question = "What is a key difference between glass-box testing and black-box testing?"
+choices = ["Glass-box testing focuses on the internal logic of the software, while black-box testing focuses on the external functionality", "Glass-box testing does not require any knowledge of the internal code, while black-box testing does", "Black-box testing is performed by developers, while glass-box testing is performed by users", "There is no significant difference between glass-box testing and black-box testing"]
+answer = "Glass-box testing focuses on the internal logic of the software, while black-box testing focuses on the external functionality"
+
+[[questions]]
+question = "What is the primary key in a relational database?"
+choices = ["A column that can store null values", "A column or combination of columns that uniquely identify each row in the table", "A column used for indexing", "A foreign key reference in another table"]
+answer = "A column or combination of columns that uniquely identify each row in the table"
+
+[[questions]]
+question = "What does \"sampling\" refer to in the context of audio storage?"
+choices = ["Converting audio into hexadecimal format", "Capturing discrete values of the sound wave at regular intervals", "Compressing the audio file", "Encoding text metadata for audio"]
+answer = "Capturing discrete values of the sound wave at regular intervals"
+
+[[questions]]
+question = "What does the term 'bus' refer to in a computer system?"
+choices = ["A physical path used for data transmission between components", "A type of memory", "A backup storage system", "A processor\u2019s internal clock"]
+answer = "A physical path used for data transmission between components"
+
+[[questions]]
+question = "What distinguishes positional number systems from nonpositional number systems?"
+choices = ["They represent values using symbols only", "The position of a digit determines its value", "They use Roman numerals", "They are limited to base 10"]
+answer = "The position of a digit determines its value"
+
+[[questions]]
+question = "What distinguishes positional number systems from nonpositional number systems?"
+choices = ["They represent values using symbols only", "The position of a digit determines its value", "They use Roman numerals", "They are limited to base 10"]
+answer = "The position of a digit determines its value"
+
+[[questions]]
+question = "What are the characteristics of a binary search tree (BST) in terms of data order?"
+choices = ["The data in the parent node is always larger than the data in the left child node and smaller than the data in the right child node", "The data in the parent node is always smaller than the data in the left child node and larger than the data in the right child node", "The data in the nodes does not have any order", "The data in the left child node and right child node are always equal", "None of the others"]
+answer = "The data in the parent node is always larger than the data in the left child node and smaller than the data in the right child node"
+
+[[questions]]
+question = "What describes the hierarchical model?"
+choices = ["Data is organized as a binary tree and each entity can have several children", "Data is organized as a binary tree and each entity have only one child", "Data is organized as an inverted tree and each entity can have several children", "Data is organized as an inverted tree and each entity have only one child"]
+answer = "Data is organized as an inverted tree and each entity can have several children"
+
+[[questions]]
+question = "What distinguishes the Internet from an internet?"
+choices = ["a global network", "uses proprietary protocols", "limited to government organizations", "faster than the Internet"]
+answer = "a global network"
+
+[[questions]]
+question = "Which of the following is a common definition of an operating system?"
+choices = ["An interface between hardware and users", "A specific application program", "A document outlining system policies", "A type of computer hardware", "None of the others"]
+answer = "An interface between hardware and users"
+
+[[questions]]
+question = "Which of the following statements about records' data types is correct?"
+choices = ["Records cannot contain other records as fields", "Records are immutable data types", "Records have a fixed size that cannot be changed at runtime", "Records can have fields of different data types"]
+answer = "Records can have fields of different data types"
+
+[[questions]]
+question = "Which of the following is the main challenge during the testing phase of the software lifecycle?"
+choices = ["Ensuring complete coverage of all possible test cases", "Writing code that adheres to design specifications", "Gathering requirements from stakeholders", "Selecting the appropriate programming language"]
+answer = "Ensuring complete coverage of all possible test cases"
+
+[[questions]]
+question = "Which of the following is a responsibility of the process manager in an operating system?"
+choices = ["Managing the communication between hardware and software", "Scheduling processes for execution", "Encrypting and decrypting data files", "Loading the operating system during boot"]
+answer = "Scheduling processes for execution"
+
+[[questions]]
+question = "Which of the following demonstrates the \"repetition\" construct in an algorithm?"
+choices = ["Assigning a value to a variable", "Evaluating a condition once", "Using a for loop to iterate over a list", "Breaking out of a loop"]
+answer = "Using a for loop to iterate over a list"
+
+[[questions]]
+question = "Which of the following accurately describes the differences between TCP and UDP in the TCP/IP model?"
+choices = ["TCP provides error control, while UDP provides none of these features", "UDP is connection-oriented and ensures data reliability, while TCP is connectionless and faster", "Both TCP and UDP are connection-oriented protocols but differ in flow control mechanisms", "TCP is primarily used for real-time communication, while UDP is used for file transfers"]
+answer = "TCP provides error control, while UDP provides none of these features"
+
+[[questions]]
+question = "Which statement describes red hat hackers?"
+choices = ["Hackers who infiltrate computer networks with negative motives, such as monetary gain or reputation building", "Hackers who track down black hat hackers and work to stop their activities", "Hackers whose actions are often driven by revenge or personal agendas", "Hackers who expose large datasets online for the public good"]
+answer = "Hackers who track down black hat hackers and work to stop their activities"
+
+[[questions]]
+question = "How does a computer interpret a sequence of bits to represent a symbol in a character encoding scheme?"
+choices = ["By following a predefined code table to determine the symbol", "By mapping each bit to a corresponding word in a dictionary", "By interpreting bits as colors in a display", "By using random bit sequences to represent symbols", "None of the others"]
+answer = "By following a predefined code table to determine the symbol"
+
+[[questions]]
+question = "How does a queue differ from a stack?"
+choices = ["operates on a LIFO principle", "operates on a FIFO principle", "can only store characters", "is used for recursion"]
+answer = "operates on a FIFO principle"
+
+[[questions]]
+question = "How does a compiler function in the context of high-level languages?"
+choices = ["It directly executes the high-level code", "It translates high-level code into machine language all at once", "It translates and executes the code line by line", "It optimizes the code for better performance"]
+answer = "It translates high-level code into machine language all at once"
+
+[[questions]]
+question = "How do vector graphics differ from raster graphics?"
+choices = ["Vector graphics store images as mathematical equations, while raster graphics store images as grids of pixels", "Raster graphics are faster to render than vector graphics", "Vector graphics are limited to black and white, while raster supports color", "Raster graphics are more scalable than vector graphics"]
+answer = "Vector graphics store images as mathematical equations, while raster graphics store images as grids of pixels"
+
+[[questions]]
+question = "Why is documentation considered important in software engineering?"
+choices = ["It makes the software look more professional", "It helps ensure that the software can be maintained, understood, and used effectively by different stakeholders", "It is required by law in most countries", "It reduces the time needed for coding"]
+answer = "It helps ensure that the software can be maintained, understood, and used effectively by different stakeholders"
+
+[[questions]]
+question = "In a relational database, what operations are we able to define to create new relationships?"
+choices = ["Insert, delete, select, join, union, intersection, and difference", "Insert, delete, select, join, union, intersection, and except", "Insert, delete, project, join, union, intersection, and difference", "Insert, delete, update, select, join, union, intersection, and except", "None of the others"]
+answer = "Insert, delete, project, join, union, intersection, and difference"
+
+[[questions]]
+question = "In the procedural paradigm, how are data and program units (functions) typically related?"
+choices = ["Functions and data are separate entities with no direct relationship", "Functions operate directly on data passed to them as parameters", "Functions encapsulate both data and behavior", "Data and functions are globally shared without restrictions"]
+answer = "Functions operate directly on data passed to them as parameters"
+
+[[questions]]
+question = "In which scenario is a binary search algorithm ineffective?"
+choices = ["When the data is sorted", "When the data is unsorted", "When the data is in an array", "When the data is in a linked list"]
+answer = "When the data is unsorted"
+
+[[questions]]
+question = "Inside the ADT (abstract data type) are two different parts of the model:"
+choices = ["Hardware and software", "Database and operations", "Data structure and algorithms", "Data structure and operations"]
+answer = "Data structure and operations"
+
+[[questions]]
+question = "In the context of software design, what is the significance of the \u201cSoftware Architecture\u201d?"
+choices = ["It focuses on coding individual functions and procedures", "It defines the overall structure and organization of the software system", "It is a tool for project management", "It involves testing the software against user requirements"]
+answer = "It defines the overall structure and organization of the software system"
+
+[[questions]]
+question = "In which case would an iterative algorithm be preferred over a recursive algorithm?"
+choices = ["When solving problems that require backtracking", "When stack overflow is a concern", "When the problem involves tree traversal", "When solving problems with divide-and-conquer techniques"]
+answer = "When stack overflow is a concern"
+
+[[questions]]
+question = "In a multiprogramming system, how are multiple programs typically managed in memory and executed?"
+choices = ["They are loaded into memory simultaneously and executed concurrently", "They are loaded one after another sequentially", "They run sequentially, with each program completing before the next one starts", "They are stored in secondary storage until needed for execution"]
+answer = "They are loaded into memory simultaneously and executed concurrently"
+
+[[questions]]
+question = "The Arithmetic Logic Unit (ALU) in the von Neumann model is primarily responsible for:"
+choices = ["Controlling the execution of a program", "Performing arithmetic and logic operations", "Managing input and output operations", "Storing data and programs"]
+answer = "Performing arithmetic and logic operations"
+
+[[questions]]
+question = "is the standard protocol provided by TCP/IP for copying a file from one host to another and transferring files from one system to another seems simple and straightforward."
+choices = ["FTP", "SMTP", "URL", "HTTP"]
+answer = "FTP"
+
+[[questions]]
+question = "__________ is a memory type that need to be refreshed periodically"
+choices = ["SRAM", "DRAM", "ROM", "PROM"]
+answer = "DRAM"
+
+[[questions]]
+question = "is usually privately owned, limited in size and connects hosts in a single office, building, or campus"
+choices = ["LAN", "WAN", "Internet", "Network"]
+answer = "LAN"
+
+[[questions]]
+question = "Which of the following is the user programmed semiconductor memory?"
+choices = ["SRAM", "DRAM", "EPROM", "All of the others", "None of the others"]
+answer = "EPROM"
+
+[[questions]]
+question = "All the instructions and procedures needed to start a computer, to the point it can load an operating system, are stored in ROM chips. In IBM compatible PCs this is called the _____."
+choices = ["RAM", "BIOS", "EPROM", "POST", "None of the others"]
+answer = "BIOS"
+
+[[questions]]
+question = "______ is a protocol that is used to define how the client-server programs can be written to retrieve web pages from the Web."
+choices = ["FTP", "SMTP", "TELNET", "HTTP"]
+answer = "HTTP"
+
+[[questions]]
+question = "The device that can both feed data into and accept data from a computer is"
+choices = ["CPU", "Input-output device", "All of the others", "None of the others"]
+answer = "Input-output device"
+
+[[questions]]
+question = "is the standard protocol provided by TCP/IP for copying a file from one system to another and transferring files from one system to another seems simple and straightforward"
+choices = ["FTP", "SMTP", "URL", "HTTP"]
+answer = "FTP"
+
+[[questions]]
+question = "The ______ is a protocol that is used to define how the client-server programs can be written to retrieve web pages from the Web"
+choices = ["FTP", "SMTP", "TELNET", "HTTP"]
+answer = "HTTP"
+
+[[questions]]
+question = "explicitly defines connection establishment, data transfer, connection teardown phases to provide a connection-oriented service AND reliable protocol"
+choices = ["TCP", "UDP", "IP", "HTTP"]
+answer = "TCP"
+
+[[questions]]
+question = "is a very simple protocol using a minimum of overhead. If a process wants to send a small message and does not care about reliability."
+choices = ["TCP", "UDP", "IP", "HTTP"]
+answer = "UDP"
+
+[[questions]]
+question = "is usually privately owned, limited in size and connects some hosts in a single office, building, or campus"
+choices = ["LAN", "WAN", "Internet", "Network"]
+answer = "LAN"
+
+[[questions]]
+question = "protocol (s) is one of the protocols in the transport layer"
+choices = ["Only TCP", "UDP", "Only SCTP", "TCP, UDP, and SCTP"]
+answer = "TCP, UDP, and SCTP"
+
+[[questions]]
+question = "Off-line operation is the operation of devices without the control of __."
+choices = ["Memory", "CPU", "ALU", "Control unit", "None of the others"]
+answer = "CPU"
+
+[[questions]]
+question = "In ______ sort, the smallest item from the unsorted list is swapped with the item at the beginning of the unsorted list."
+choices = ["Selection", "Bubble", "Insertion", "Every"]
+answer = "Selection"
+
+[[questions]]
+question = "In ______ sort, the smallest item moves to the beginning of the unsorted list. There is no one-to-one swapping."
+choices = ["Selection", "Bubble", "Insertion", "Every"]
+answer = "Selection"
+
+[[questions]]
+question = "In _____ sort, the item that goes into the sorted list is always the first item in the unsorted list."
+choices = ["Selection", "Bubble", "Insertion", "Every"]
+answer = "Insertion"
+
+[[questions]]
+question = "We use the ______ search for an ordered list."
+choices = ["Sequential", "Binary", "Bubble", "Insertion"]
+answer = "Binary"
+
+[[questions]]
+question = "We use a _____ search for an unordered list."
+choices = ["Sequential", "Binary", "Bubble", "Insertion"]
+answer = "Sequential"
+
+[[questions]]
+question = "To search for elements, we can use ______ on sorted arrays that can help to decrease time complexity."
+choices = ["Sequential search", "Insertion sort", "Selection sort", "Binary search"]
+answer = "Binary search"
+
+[[questions]]
+question = "_____ is a basic algorithm in which we want to find the location of a target in a list of items."
+choices = ["Sorting", "Searching", "Product", "Summation"]
+answer = "Searching"
+
+[[questions]]
+question = "is a basic algorithm that arranges data according to its value."
+choices = ["Inquiry", "Sorting", "Searching", "Recursion"]
+answer = "Sorting"
+
+[[questions]]
+question = "is a process in which an algorithm calls itself."
+choices = ["Insertion", "Searching", "Recursion", "Iteration"]
+answer = "Recursion"
+
+[[questions]]
+question = "The unary ______ operation always results in a relation that has exactly one more row than the original relation."
+choices = ["Insert", "Delete", "Update", "Select"]
+answer = "Insert"
+
+[[questions]]
+question = "If you want to change the value of an attribute of a tuple, you use the ___ operation."
+choices = ["Project", "Join", "Update", "Select"]
+answer = "Update"
+
+[[questions]]
+question = "A(n) ______ is a suitable structure when a small number of insertions and deletions are required but a lot of searching and retrieval is needed."
+choices = ["Array", "Record", "Linked list", "Tree"]
+answer = "Array"
+
+[[questions]]
+question = "In __________ of a binary tree we process all the children of a node before proceeding with the next generation"
+choices = ["Preorder traversal", "Inorder traversal", "Postorder traversal", "Breadth-first traversal"]
+answer = "Breadth-first traversal"
+
+[[questions]]
+question = "Stack is a ______ structure."
+choices = ["FIFO", "LIFO", "DIFO", "SIFO"]
+answer = "LIFO"
+
+[[questions]]
+question = "list is also known as a queue"
+choices = ["LIFO", "FIFO", "unordered", "ordered"]
+answer = "FIFO"
+
+[[questions]]
+question = "A binary search tree (BST) is a binary tree with one extra property: the key value of root is _____ the key values of all nodes in each left subtree"
+choices = ["Greater than", "Less than", "Equal", "Smaller than"]
+answer = "Greater than"
+
+[[questions]]
+question = "Given a linked list called children, the pointer variable children identifies element of the linked list."
+choices = ["The first", "London", "Paris", "Madrid"]
+answer = "The first"
+
+[[questions]]
+question = "In an inorder traversal of a binary tree, the root is processed"
+choices = ["First", "Second", "Last", "Two times"]
+answer = "Second"
+
+[[questions]]
+question = "The name of a linked list is the name of the head pointer that points to the ____ of the list."
+choices = ["First node", "Second node", "Null node", "Last node"]
+answer = "First node"
+
+[[questions]]
+question = "The queue operation \"queueName\" is used to"
+choices = ["Delete queue", "Check status of queue", "Create an empty queue", "Insert queue"]
+answer = "Create an empty queue"
+
+[[questions]]
+question = "The Stack operation returns a/an \u2026"
+choices = ["Full stack", "Empty stack", "Check status of stack", "All of the others"]
+answer = "Check status of stack"
+
+[[questions]]
+question = "In the network database model, the entities are organized in which some entities can be accessed through several paths"
+choices = ["Graph", "London", "Array", "Record"]
+answer = "Graph"
+
+[[questions]]
+question = "In the hierarchical database model, data is organized as an inverted"
+choices = ["Graph", "Tree", "Array", "Record"]
+answer = "Tree"
+
+[[questions]]
+question = "The enqueue operation ___ an item at the ___ of the queue."
+choices = ["Delete/end", "Insert/front", "Insert/rear", "Delete/front"]
+answer = "Insert/rear"
+
+[[questions]]
+question = "An empty linked list consists of"
+choices = ["A node", "Two nodes", "Data and a link", "A null head pointer"]
+answer = "A null head pointer"
+
+[[questions]]
+question = "The queue operation \u201cqueueName\u201d is used to __"
+choices = ["Delete queue", "Check status of queue", "Create an empty queue", "Insert queue"]
+answer = "Create an empty queue"
+
+[[questions]]
+question = "What do these items are dividea into two lists (sorted and unsorted) ______ sort."
+choices = ["Only in a selection", "Only in a bubble", "Only in an insertion", "In selection, bubble, or insertion"]
+answer = "In selection, bubble, or insertion"
+
+[[questions]]
+question = "In preorder traversal of a binary tree, the"
+choices = ["Left subtree is processed first", "Right subtree is processed first", "Root is processed first", "The root is never processed"]
+answer = "Root is processed first"
+
+[[questions]]
+question = "The push operation ______ of the stack"
+choices = ["Deletes an item from the top", "Deletes an item from the bottom", "Inserts an item at the top", "Inserts an item at the bottom"]
+answer = "Inserts an item at the top"
+
+[[questions]]
+question = "Thao t\u00e1c pop _______ c\u1ee7a stack."
+choices = ["X\u00f3a ph\u1ea7n t\u1eed t\u1ea1i \u0111\u1ec9nh", "X\u00f3a ph\u1ea7n t\u1eed d\u01b0\u1edbi c\u00f9ng", "Th\u00eam ph\u1ea7n t\u1eed l\u00ean \u0111\u1ec9nh", "Th\u00eam ph\u1ea7n t\u1eed v\u00e0o \u0111\u00e1y"]
+answer = "X\u00f3a ph\u1ea7n t\u1eed t\u1ea1i \u0111\u1ec9nh"
+
+[[questions]]
+question = "For each entity set in the E-R diagram we create a relation (table) in which there are n columns related to the ______ attributes defined for that set."
+choices = ["n-1", "n", "n+1", "1-n"]
+answer = "n"
+
+[[questions]]
+question = "The base of the binary number system is"
+choices = ["2", "8", "10", "16"]
+answer = "2"
+
+[[questions]]
+question = "The base of the decimal system is"
+choices = ["2", "8", "10", "16"]
+answer = "10"
+
+[[questions]]
+question = "The base of the octal number system is"
+choices = ["2", "8", "10", "16"]
+answer = "8"
+
+[[questions]]
+question = "The base of the hexadecimal number system is"
+choices = ["2", "8", "10", "16"]
+answer = "16"
+
+[[questions]]
+question = "M\u1ed9t byte g\u1ed3m ____ bit."
+choices = ["2", "4", "8", "16"]
+answer = "8"
+
+[[questions]]
+question = "A control unit with five wires can define up to ___ operations."
+choices = ["5", "10", "16", "32"]
+answer = "32"
+
+[[questions]]
+question = "The maximum value of an octal integer with K=2 digits is Nmax = ?"
+choices = ["63", "64", "65", "66", "None of the others"]
+answer = "63"
+
+[[questions]]
+question = "The maximum value of a binary integer with K digits. For example, if K = 5, then the maximum value is?"
+choices = ["30", "31", "32", "33"]
+answer = "31"
+
+[[questions]]
+question = "EBCCIC can code up to how many different characters?"
+choices = ["8", "16", "32", "64", "256"]
+answer = "256"
+
+[[questions]]
+question = "How many connections (in the data bus) do we need to transfer 4 bytes of a word at the same time?"
+choices = ["4", "8", "16", "32"]
+answer = "32"
+
+[[questions]]
+question = "How many symbols can be represented by a bit pattern with ten bits?"
+choices = ["128", "256", "512", "1024"]
+answer = "1024"
+
+[[questions]]
+question = "What is the number of bit patterns provided by a 7-bit code?"
+choices = ["256", "128", "64", "512", "None of the others"]
+answer = "128"
+
+[[questions]]
+question = "If the memory address space is 16 MB and the word size is 8 bits, then _____ bits are needed to access each word."
+choices = ["8", "16", "24", "32"]
+answer = "24"
+
+[[questions]]
+question = "In a positional number system with base b, we can always find the number of digits of an integer. So how many bits can we find in the decimal number 20 in hexadecimal system?"
+choices = ["1", "2", "3", "4", "None of the others"]
+answer = "2"
+
+[[questions]]
+question = "A group contains _____ bits in the binary system are represented as one digit in the octal system."
+choices = ["1", "2", "3", "4", "None of the others"]
+answer = "3"
+
+[[questions]]
+question = "A group contains ______ bits in the binary system are represented as one digit in the octal system."
+choices = ["1", "2", "3", "4", "None of the others"]
+answer = "3"
+
+[[questions]]
+question = "A group includes _____ bits in the binary system are represented as one digit in the hexadecimal system."
+choices = ["1", "2", "3", "4", "None of the others"]
+answer = "4"
+
+[[questions]]
+question = "In a positional number system with base b, we can always find the number of digits of an integer. So how many digits can we find in the decimal number 20 in octal system?"
+choices = ["1", "2", "3", "4", "None of the others"]
+answer = "2"
+
+[[questions]]
+question = "In a positional number system with base b, we can always find the number of digits of an integer. So how many digits can we find in the decimal number 20 in hexadecimal system?"
+choices = ["1", "2", "3", "4", "None of the others"]
+answer = "2"
+
+[[questions]]
+question = "A database management system (DBMS) is a combination of ___ components"
+choices = ["2", "3", "4", "5"]
+answer = "5"
+
+[[questions]]
+question = "How many bits that we can find in the decimal number 20 in binary system?"
+choices = ["4", "5", "6", "7"]
+answer = "5"
+
+[[questions]]
+question = "In two's complement with a 4-bit allocation, we get ___ when we add 5."
+choices = ["5", "6", "7", "10"]
+answer = "6"
+
+[[questions]]
+question = "In the sign-and-magnitude representation, the memory location can hold four bits, assume that we have stored integer 6 in this memory location and we then try to subtract 7 to the integer. The computer\u2019s response is ?"
+choices = ["6", "-6", "7", "-7"]
+answer = "-7"
+
+[[questions]]
+question = "Assume memory location that can only hold four bits. What is the result, if we have stored the integer 11 in a memory location and then try to add 9 to the unsigned integer?"
+choices = ["4", "9", "11", "20"]
+answer = "4"
+
+[[questions]]
+question = "Assume a new Excess system uses 17 bits to represent the exponent section. What is the bias value in this system?"
+choices = ["17", "16", "65535", "65536"]
+answer = "65535"
+
+[[questions]]
+question = "Which 32-bit microprocessor is used in IBM\u2019s PS/2 model-80 computer?"
+choices = ["8088", "80286", "80386", "80486", "None of the others"]
+answer = "80386"
+
+[[questions]]
+question = "In storing audio, how many samples per second is good enough to reproduce an audio signal?"
+choices = ["10 000", "20 000", "30 000", "40 000"]
+answer = "40 000"
+
+[[questions]]
+question = "Conversion of binary number 1010100010111 to hexadecimal number is"
+choices = ["D8F9", "A869", "AA17", "D9F8", "None of the others"]
+answer = "AA17"
+
+[[questions]]
+question = "Which of the following is equivalent to 12 in decimal?"
+choices = ["1110", "C", "110", "None of the others"]
+answer = "C"
+
+[[questions]]
+question = "Which of the following representations is erroneous?"
+choices = ["(111)", "(346)", "(EEG)", "221"]
+answer = "(EEG)"
+
+[[questions]]
+question = "Which of the following representations is erroneous?"
+choices = ["(110)\u0125", "(141)\u0125", "(EF)\u0125", "22A"]
+answer = "22A"
+
+[[questions]]
+question = "Which of the following is equivalent to 24 in decimal?"
+choices = ["11000", "1A", "31", "None of the above"]
+answer = "11000"
+
+[[questions]]
+question = "If we call the bit depth or number of bits per sample B, the number of samples per second S, so how to calculate BIT RATE (R)?"
+choices = ["B x 2S", "2B x S", "B x S", "B2 x S2"]
+answer = "B x S"
+
+[[questions]]
+question = "Convert the FRACTION decimal number 0.625 to binary"
+choices = ["1.010", "0.101", "1.110", "0.110"]
+answer = "0.101"
+
+[[questions]]
+question = "The ASCII code for the character J is Ho\u00e0ng Ho\u00e0ng"
+choices = ["1001 0001", "1001 1010", "0100 1010", "1010 0001", "None of the others"]
+answer = "0100 1010"
+
+[[questions]]
+question = "Use a arithmetic right shift operation on the bit pattern 1001 1000"
+choices = ["0100 1100", "1100 1100", "1001 1000", "1001 1000"]
+answer = "1100 1100"
+
+[[questions]]
+question = "Use a simple right shift operation on the bit pattern 1001 1000"
+choices = ["1001 1000", "1001 1000", "0100 1101", "0100 1100"]
+answer = "0100 1100"
+
+[[questions]]
+question = "Use a simple left shift operation on the bit pattern 1001 1000"
+choices = ["0011 1001", "0011 1010", "0000 0000", "0011 0000"]
+answer = "0011 0000"
+
+[[questions]]
+question = "Use a simple left shift operation on the bit pattern 1001 1000"
+choices = ["0001 1001", "0001 1010", "0011 0000", "0011 0001"]
+answer = "0011 0000"
+
+[[questions]]
+question = "Use a circular right shift operation on the bit pattern 1001 1000"
+choices = ["0100 1100", "0011 0001", "1001 1001", "1001 1000"]
+answer = "1001 1000"
+
+[[questions]]
+question = "Use a circular left shift operation on the bit pattern 1001 1000"
+choices = ["0001 1001", "0011 0001", "1001 1000", "1001 0000"]
+answer = "0011 0001"
+
+[[questions]]
+question = "The binary equivalent of the Octal number 13.54 is"
+choices = ["1011.1011", "1101.1110", "1001.1110", "All of the others", "None of the others"]
+answer = "1011.1011"
+
+[[questions]]
+question = "What is the result of storing -25 in an 8-bit memory location using two's complement representation?"
+choices = ["00011001", "00110010", "11001110", "11100110"]
+answer = "11001110"
+
+[[questions]]
+question = "A computer has 32 MB of memory. How many bits are needed to address any single byte in memory?"
+choices = ["5 bits", "20 bits", "25 bits", "32 bits"]
+answer = "25 bits"
+
+[[questions]]
+question = "An IPv4 address is a _______ address that uniquely and universally defines the connection of a host or a router to the Internet"
+choices = ["32-bit", "64-bit", "128-bit", "None of others"]
+answer = "32-bit"
+
+[[questions]]
+question = "What is meant by a dedicated computer?"
+choices = ["Which is used by one person only", "Which is assigned one and only one task", "Which uses one kind of software", "Which is meant for application software only", "None of the others"]
+answer = "Which is assigned one and only one task"
+
+[[questions]]
+question = "C\u00e1c m\u1ee5c ti\u00eau thi\u1ebft k\u1ebf ch\u00ednh c\u1ee7a h\u1ec7 \u0111i\u1ec1u h\u00e0nh l\u00e0?"
+choices = ["S\u1eed d\u1ee5ng ph\u1ea7n c\u1ee9ng hi\u1ec7u qu\u1ea3", "Ki\u1ec3m so\u00e1t c\u00e1c h\u1ec7 th\u1ed1ng con", "Truy c\u1eadp thi\u1ebft b\u1ecb I/O", "Cung c\u1ea5p giao di\u1ec7n", "Operation on data", "Text editor"]
+answer = "S\u1eed d\u1ee5ng ph\u1ea7n c\u1ee9ng hi\u1ec7u qu\u1ea3"
+
+[[questions]]
+question = "Defining the users, requirements, and methods is part of the ______ phase."
+choices = ["Analysis", "Design", "Implementation", "Testing"]
+answer = "Analysis"
+
+[[questions]]
+question = "In the system development process, structure charts are tools used in the ___ phase"
+choices = ["Analysis", "Design", "Implementation", "Testing"]
+answer = "Design"
+
+[[questions]]
+question = "In a ______ the project team needs to choose a language or a set of languages from among the procedural languages."
+choices = ["Analysis phase", "Design phase", "Implementation phase", "Testing phase"]
+answer = "Implementation phase"
+
+[[questions]]
+question = "is an English-language representation of code"
+choices = ["UML diagram", "program", "Pseudocode", "algorithm"]
+answer = "Pseudocode"
+
+[[questions]]
+question = "A step-by-step solution to a problem is called"
+choices = ["Hardware", "An operating system", "A computer language", "An algorithm"]
+answer = "An algorithm"
+
+[[questions]]
+question = "is a step-by-step method for solving a task."
+choices = ["construct", "recursion", "iteration", "algorithm"]
+answer = "algorithm"
+
+[[questions]]
+question = "scheduler creates a process from a job and changes a process to a job"
+choices = ["Job", "Process", "Virtual", "Queue"]
+answer = "Process"
+
+[[questions]]
+question = "_____ is a program in execution. It is a program that has started but has not finished."
+choices = ["Program", "Job", "Process", "Task"]
+answer = "Process"
+
+[[questions]]
+question = "analyzer reads the source code"
+choices = ["Lexical", "Syntax", "Semantic", "Code generation"]
+answer = "Lexical"
+
+[[questions]]
+question = "The _____ analyzer checks the sentences created by the syntax analyzer to be sure that they contain no ambiguity."
+choices = ["Lexical", "Syntax", "Semantic", "Code generation"]
+answer = "Semantic"
+
+[[questions]]
+question = "In the sequential file we process the records one by one. After the operating system processes the last record the _____ is detected and the loop is exited."
+choices = ["Hashed file", "Sequential file", "EOF", "None of others"]
+answer = "EOF"
+
+[[questions]]
+question = "A ______ is a collection of data stored in the internal format of the computer. This contains data that is meaningful only if it is properly interpreted by a program."
+choices = ["Text file", "Binary file", "Sequential file", "EOF"]
+answer = "Binary file"
+
+[[questions]]
+question = "______ is an attack that reduce the capability of a computer system to function correctly or bring the system down altogether by exhausting its resources."
+choices = ["DoS", "Trojan horses", "Worms", "Viruses"]
+answer = "DoS"
+
+[[questions]]
+question = "If personal information about each employee in a company is stored in a file we can use to retrieve each record at the end of the month to print the checks"
+choices = ["Hashed file", "Sequential file", "EOF", "Index file"]
+answer = "Sequential file"
+
+[[questions]]
+question = "is an independent program which can copy itself and which travels through the network. It tries to find weaknesses in the system to inflict harm."
+choices = ["DoS", "Trojan horses", "Worms", "Viruses"]
+answer = "Worms"
+
+[[questions]]
+question = "are unwanted programs that are hidden within other programs (host). When the user executes the host program"
+choices = ["DoS", "Trojan horses", "Worms", "Viruses"]
+answer = "Trojan horses"
+
+[[questions]]
+question = "They are the types of hackers who break into computer networks with purely negative motives such as monetary gain or reputation."
+choices = ["Black Hat Hacker", "Grey Hat Hacker", "Red Hat Hacker", "Blue Hat Hacker"]
+answer = "Black Hat Hacker"
+
+[[questions]]
+question = "who create algorithms to break existing internet networks so as to solve the loopholes in them"
+choices = ["Black Hat Hacker", "Grey Hat Hacker", "White Hat Hacker", "Blue Hat Hacker"]
+answer = "White Hat Hacker"
+
+[[questions]]
+question = "_____ is the amateur. Usually their techniques are deployed out of ill motives such as revenge attacks"
+choices = ["Black Hat Hacker", "Grey Hat Hacker", "Red Hat Hacker", "Blue Hat Hacker"]
+answer = "Blue Hat Hacker"
+
+[[questions]]
+question = "Nh\u1eefng ng\u01b0\u1eddi khai th\u00e1c h\u1ec7 th\u1ed1ng Internet ch\u1ec9 \u0111\u1ec3 c\u00f4ng khai c\u00e1c b\u1ed9 d\u1eef li\u1ec7u l\u1edbn nh\u1eb1m mang l\u1ea1i l\u1ee3i \u00edch cho m\u1ecdi ng\u01b0\u1eddi l\u00e0 ai?"
+choices = ["Black Hat Hacker", "Grey Hat Hacker", "Red Hat Hacker", "Blue Hat Hacker"]
+answer = "Grey Hat Hacker"
+
+[[questions]]
+question = "In the storing images, the samples are called ____ (which stands for picture elements)."
+choices = ["Bit map", "Pixels", "Resolution", "Color depth", "None of others"]
+answer = "Pixels"
+
+[[questions]]
+question = "The scanning rate in image processing is called \u2014\u2014\u2014 . If the resolution is sufficiently high, the human eye cannot recognize the discontinuity in reproduced images"
+choices = ["Bit map", "Pixels", "Resolution", "Color depth", "None of others"]
+answer = "Resolution"
+
+[[questions]]
+question = "In physical layer, an  _____ has infinitely many levels of intensity over a period of time"
+choices = ["Analog signals", "Electromagnetic signals", "Digital signals", "Electronic signals"]
+answer = "Analog signals"
+
+[[questions]]
+question = "In physical layer, a ______ can have only a limited number of defined values. Although each value can be any number, it is often as 1 and 0."
+choices = ["Analog signals", "Electromagnetic signals", "Digital signals", "Electronic signals"]
+answer = "Digital signals"
+
+[[questions]]
+question = "The ______ construct uses a set of actions one after another."
+choices = ["Sequence", "Decision", "Repetition", "Flow"]
+answer = "Sequence"
+
+[[questions]]
+question = "construct tests a condition"
+choices = ["Sequence", "Decision", "Repetition", "Flow"]
+answer = "Decision"
+
+[[questions]]
+question = "The program in a high-level language is called the __"
+choices = ["Programming language", "Source program", "Translation", "Interpretation"]
+answer = "Source program"
+
+[[questions]]
+question = "refers to the process of translating each line of the source program and executing the line"
+choices = ["Object program", "Source program", "Translation", "Interpretation"]
+answer = "Interpretation"
+
+[[questions]]
+question = "Prolog is an example of a(n) _______ language"
+choices = ["Procedural", "Functional", "Declarative", "Object-oriented"]
+answer = "Declarative"
+
+[[questions]]
+question = "Pascal is a(n) _______ language."
+choices = ["Procedural", "Functional", "Declarative", "Object-oriented"]
+answer = "Procedural"
+
+[[questions]]
+question = "In a three-level DBMS architecture, the layer that interacts directly with the hardware is the _____ level."
+choices = ["External", "Conceptual", "Internal", "Physical"]
+answer = "Internal"
+
+[[questions]]
+question = "In a three-level DBMS architecture, the ___ level interacts directly with the users."
+choices = ["External", "Conceptual", "Internal", "Physical"]
+answer = "External"
+
+[[questions]]
+question = "The _____ level of a three-level DBMS architecture defines the logical view of the data."
+choices = ["External", "Conceptual", "Internal", "Physical"]
+answer = "Conceptual"
+
+[[questions]]
+question = "Each row in a relation is called"
+choices = ["An attribute", "A tuple", "A union", "An attitude"]
+answer = "A tuple"
+
+[[questions]]
+question = "Each column in a relation is called"
+choices = ["attribute", "tuple", "union", "attitude"]
+answer = "attribute"
+
+[[questions]]
+question = "What must be maximized between modules in a software system?"
+choices = ["Coupling", "Cohesion", "Neither coupling nor cohesion", "Both coupling and cohesion"]
+answer = "Cohesion"
+
+[[questions]]
+question = "What must be minimized between modules in a software system?"
+choices = ["Coupling", "Cohesion", "Neither coupling nor cohesion", "Both coupling and cohesion"]
+answer = "Both coupling and cohesion"
+
+[[questions]]
+question = "Cryptography is often used for short messages"
+choices = ["Symmetric key", "Asymmetric key", "Secret key", "Open key"]
+answer = "Symmetric key"
+
+[[questions]]
+question = "ciphers are sometimes called public-key ciphers"
+choices = ["symmetric-key", "Asymmetric-key", "Public-key", "Private-key"]
+answer = "Asymmetric-key"
+
+[[questions]]
+question = "In ______ cryptography symbols are permuted or substituted, in asymmetric cryptography numbers are manipulated"
+choices = ["Symmetric-key", "Asymmetric-key", "Public-key", "Private-key"]
+answer = "Symmetric-key"
+
+[[questions]]
+question = "In _____ cryptography the same key is used by the sender and the receiver."
+choices = ["Symmetric-key", "Asymmetric-key", "Public-key", "Open-key"]
+answer = "Symmetric-key"
+
+[[questions]]
+question = "The ethical principle that dictates that an act is ethical when a majority of people in society agrees with it is referred to as"
+choices = ["Moral rules", "Utilization", "Social contract", "None of the others"]
+answer = "Social contract"
+
+[[questions]]
+question = "The ethical principle that dictates that a decision should be made according to the universally accepted principles of morality is referred to as"
+choices = ["Moral rules", "Utilization", "Social contract", "None of the others"]
+answer = "Moral rules"
+
+[[questions]]
+question = "In the _______, we can think of a program as an active agent that manipulates passive objects."
+choices = ["Procedural paradigm", "Functional paradigm", "Declarative paradigm", "Object-oriented paradigm"]
+answer = "Object-oriented paradigm"
+
+[[questions]]
+question = "uses the principle of logical reasoning to answer queries. It is based on formal logic defined by Greek mathematicians and later developed into first-order predicate calculus"
+choices = ["Procedural paradigm", "Functional paradigm", "Declarative paradigm", "Object-oriented paradigm"]
+answer = "Declarative paradigm"
+
+[[questions]]
+question = "_____ is a unit of code consisting of zero or more statements. It is also known as a block."
+choices = ["Compound statement", "Assignment statement", "Control statement", "None of the others"]
+answer = "Compound statement"
+
+[[questions]]
+question = "What statement stores the value in the variable, which has already been created in the declaration section. We use the symbol \u2192 in our algorithm to define it?"
+choices = ["Compound statement", "Assignment statement", "Control statement", "None of the above"]
+answer = "Assignment statement"
+
+[[questions]]
+question = "Which of the following attacks is threatening confidentiality?"
+choices = ["Snooping", "Repudiation", "Denial of service", "Modification"]
+answer = "Snooping"
+
+[[questions]]
+question = "In the attacks threaten the confidentiality based on _____ they can obtain some other type of information by monitoring online traffic"
+choices = ["Snooping", "Repudiation", "Denial of service", "Traffic analysis"]
+answer = "Traffic analysis"
+
+[[questions]]
+question = "In the attacks threateni integrity with _____ attack the modifier modifies the information to make it beneficial to them"
+choices = ["Snooping", "Repudiation", "Denial of service", "Traffic analysis"]
+answer = "Traffic analysis"
+
+[[questions]]
+question = " l\u00e0 bi\u1ec3u di\u1ec5n gi\u1ed1ng ng\u00f4n ng\u1eef Anh c\u1ee7a m\u1ed9t thu\u1eadt to\u00e1n; kh\u00f4ng c\u00f3 chu\u1ea9n chung, m\u1ed7i ng\u01b0\u1eddi d\u00f9ng m\u1ee9c chi ti\u1ebft kh\u00e1c nhau."
+choices = ["Pseudocode", "Unified Modeling Language (UML)", "Flowchart", "State diagram"]
+answer = "Pseudocode"
+
+[[questions]]
+question = "_____ is a pictorial representation of an algorithm."
+choices = ["A UML diagram", "A program", "Pseudocode", "An algorithm"]
+answer = "A UML diagram"
+
+[[questions]]
+question = "What details of an algorithm does a flowchart provide?"
+choices = ["Pseudocode", "Unified Modeling Language (UML)", "Flowchart", "State diagram"]
+answer = "Flowchart"
+
+[[questions]]
+question = "What is quality referring to the ability to move data and/or an application from one platform to another and to reuse code?"
+choices = ["Flexibility", "Interoperability", "Reusability", "Changeability"]
+answer = "Interoperability"
+
+[[questions]]
+question = "If modules are written so that they can be reused in other systems then they have high levels of"
+choices = ["Flexibility", "Interoperability", "Reusability", "Changeability"]
+answer = "Reusability"
+
+[[questions]]
+question = " refers to the ability to move data and/or a system from one platform to another and to reuse code"
+choices = ["Maintainability", "Operability", "Correctability", "Transferability"]
+answer = "Transferability"
+
+[[questions]]
+question = "What is the quality referring to the ability to move software from one hardware platform to another?"
+choices = ["Flexibility", "Interoperability", "Resusability", "Changeability"]
+answer = "Interoperability"
+
+[[questions]]
+question = "In the software quality, what factor measures can be mentioned for transferability?"
+choices = ["Accuracy", "Timeliness", "Reusability", "Changeability"]
+answer = "Reusability"
+
+[[questions]]
+question = "In the software quality, what factor measures the maintainability?"
+choices = ["Accuracy", "Timeliness", "Reusability", "Changeability"]
+answer = "Changeability"
+
+[[questions]]
+question = "is a measure of how tightly two modules are bound to each other"
+choices = ["Modularity", "Coupling", "Interoperability", "Cohesion"]
+answer = "Coupling"
+
+[[questions]]
+question = "is needed to allow any relation in the database to be represented, to allow a language like SQL to use powerful retrieval composed of atomic operations, to remove anomalies in insertion, deletion, and updating, and reduce the need for restructuring the database as new data type are added."
+choices = ["Relational database", "Database system", "Atomic operations", "Normalization"]
+answer = "Normalization"
+
+[[questions]]
+question = "is a basic algorithm that adds a list of numbers"
+choices = ["Summation", "Product", "Smallest", "Largest"]
+answer = "Summation"
+
+[[questions]]
+question = "\u2014 is the smallest element of named data that has meaning in a record"
+choices = ["Name of record", "Pointer", "field", "Index"]
+answer = "field"
+
+[[questions]]
+question = "are provided by most operating systems for organizing files. This performs the same function as a folder in a filing cabinet"
+choices = ["Operating system", "Files", "Binary files", "Directories"]
+answer = "Directories"
+
+[[questions]]
+question = "______ is the process by which a given set of relations are transformed to a new set of relations with a more solid structure."
+choices = ["Relational database", "Database system", "Atomic operations", "Normalization"]
+answer = "Normalization"
+
+[[questions]]
+question = "are names for memory locations"
+choices = ["Variables", "Imperative language", "Identifiers", "Data type"]
+answer = "Variables"
+
+[[questions]]
+question = "What does Steganography mean?"
+choices = ["Cryptography", "Steganography", "Compressing", "Authentication"]
+answer = "Steganography"
+
+[[questions]]
+question = "______ means that the data must arrive at the receiver exactly as they were sent."
+choices = ["Nonrepudiation", "Message integrity", "Authentication", "Secrecy"]
+answer = "Message integrity"
+
+[[questions]]
+question = "is the breaking up of a large project into smaller parts."
+choices = ["Coupling", "Incrementing", "Obsolescence", "Modularization"]
+answer = "Modularization"
+
+[[questions]]
+question = "is needed to allow any relation in the database to be represented, to allow a language like SQL to use powerful retrieval operations composed of atomic operations. to remove anomalies in insertion, deletion, and updating, and reduce the need for restructuring the database as new data type are added."
+choices = ["Relational database", "Database system", "Atomic operations", "Normalization"]
+answer = "Normalization"
+
+[[questions]]
+question = "can occur if a process has too many resources restrictions"
+choices = ["Starvation", "Synchronization", "Paging", "Deadlock"]
+answer = "Starvation"
+
+[[questions]]
+question = "is an English-language-like representation of code."
+choices = ["UML diagram", "program", "Pseudocode", "algorithm"]
+answer = "Pseudocode"
+
+[[questions]]
+question = "is a multi-programming method in which multiple programs are entirely in memory with each program occupying a contiguous space."
+choices = ["Partitioning", "Paging", "Demand paging", "Demand segmentation"]
+answer = "Partitioning"
+
+[[questions]]
+question = "What is NOT a standard of vector graphic?"
+choices = ["CAD", "FLASH", "TrueType", "PostScript", "None of others"]
+answer = "TrueType"
+
+[[questions]]
+question = "What is the name given to the molecular-scale computer?"
+choices = ["Femtocomputer", "Nanocomputer", "Supercomputer", "Microcomputer", "None of the others"]
+answer = "Nanocomputer"
+
+[[questions]]
+question = "What is language of procedural paradigm that is high level and also has some low-level instructions?"
+choices = ["COBOL", "C", "Pascal", "Ada"]
+answer = "C"
+
+[[questions]]
+question = "What is the domain name in the e mail address kayla@nasa.gov?"
+choices = ["kayla", "kayla@nasa.gov", "nasa.gov", "gov"]
+answer = "nasa.gov"
+
+[[questions]]
+question = "Which is a unit representing the no bits of discrete"
+choices = ["Baud", "Byte", "Bit", "All of the others", "None of the others"]
+answer = "Bit"
+
+[[questions]]
+question = "Which is an electronic device that can store temporarily a single bit of data"
+choices = ["Accumulator", "Buffer", "Memory", "Latch", "None of the others"]
+answer = "Latch"
+
+[[questions]]
+question = "Which of the following is the coding of data so that it can't be easily understood if intercepted?"
+choices = ["Barcode", "Decoder", "Encryption", "Memorics", "None of the others"]
+answer = "Encryption"
+
+[[questions]]
+question = "Which of the following is a binary operator?"
+choices = ["Select", "Update", "Difference", "All of the above"]
+answer = "Difference"
+
+[[questions]]
+question = "Which of the following attacks is threatening integrity?"
+choices = ["Masquerading", "Traffic Analysis", "Denial of service", "Encoding"]
+answer = "Masquerading"
+
+[[questions]]
+question = "Which of the following describe that information needs to be protected from unauthorized change?"
+choices = ["Hoang", "Availability", "Integrity", "Masquerading"]
+answer = "Integrity"
+
+[[questions]]
+question = "Which data of the following cannot change with time?"
+choices = ["Constants", "Literals", "Input/output", "Variables"]
+answer = "Constants"
+
+[[questions]]
+question = "Which generation of computers is covered by the period 1964\u201377?"
+choices = ["First", "Second", "Third", "Fourth", "None of the others"]
+answer = "Third"
+
+[[questions]]
+question = "Which physical topology uses a hub or switch?"
+choices = ["Bus", "Ring", "Star", "Bus and ring"]
+answer = "Star"
+
+[[questions]]
+question = "Which technique is used in multiprocessing that needs to be determined size beforehand by the memory manager and with each program occupying a contiguous space?"
+choices = ["Partitioning", "Paging", "Demand paging", "Demand segmentation"]
+answer = "Partitioning"
+
+[[questions]]
+question = "When a hashing algorithm produces an address for an insertion key and that address is already occupied, it is called a"
+choices = ["Collision", "Probe", "Synonym", "Linked list"]
+answer = "Collision"
+
+[[questions]]
+question = "When the ciphertext is received the receiver must transform the ciphertext back into the plaintext \u2013 this is"
+choices = ["Plain text", "Cipher text", "Encryption", "Decryption"]
+answer = "Decryption"
+
+[[questions]]
+question = "Who in 1988 announced the latest version of CD-ROMXA (extended architecture) which provides a documented means of integrating digital audio with computer data on a CD-ROM disk?"
+choices = ["Sony", "Philips", "Microsoft", "All of the others", "None of the others"]
+answer = "All of the others"
+
+[[questions]]
+question = "A path by which communication is achieved between a central processor and other devices is called"
+choices = ["Audit trail", "Network", "Bus", "Channel", "None of the others"]
+answer = "Bus"
+
+[[questions]]
+question = "A computer is a box full of electronic"
+choices = ["Switching devices", "Chips", "Circuits", "Registers", "None of the others"]
+answer = "Circuits"
+
+[[questions]]
+question = "A computer language that is written in binary codes only is"
+choices = ["machine language", "C", "C#", "pascal", "None of the others"]
+answer = "machine language"
+
+[[questions]]
+question = "A 17th-century computing machine that could perform addition and subtraction was the"
+choices = ["Pascaline", "Jacquard loom", "Analytical Engine", "Babbage machine"]
+answer = "Pascaline"
+
+[[questions]]
+question = "A billionth of a second is defined as"
+choices = ["Millisecond", "Microsecond", "Nanosecond", "Picoseconds", "None of the others"]
+answer = "Nanosecond"
+
+[[questions]]
+question = "_____ is a collection of logically coherent data used by the application programs in an organization."
+choices = ["Database", "File", "Directory", "Flat-file"]
+answer = "Database"
+
+[[questions]]
+question = "A 32-bit code called _____ represents symbols in all languages."
+choices = ["ANSI", "Unicode", "EBCDIC", "Extended ASCII"]
+answer = "Unicode"
+
+[[questions]]
+question = "causes an action to be performed by the program. It translates directly into one or more executable instructions."
+choices = ["Expression", "Operator", "Variables", "Statements"]
+answer = "Statements"
+
+[[questions]]
+question = "A hybrid computer uses a ______ to convert digital signals into analog signals."
+choices = ["Modulator", "Demodulator", "Modem", "Decoder", "None of the others"]
+answer = "Modem"
+
+[[questions]]
+question = "A program that reads each of the instructions in mnemonic form and translates it into the machine-language equivalent"
+choices = ["Machine language", "Assembler", "Interpreter", "C program", "None of the others"]
+answer = "Assembler"
+
+[[questions]]
+question = "A program becomes a _____ when it is selected by the operating system and brought to the hold state."
+choices = ["Job", "Process", "Deadlock", "Partition"]
+answer = "Process"
+
+[[questions]]
+question = "_____ is a collection of related elements of different types having a single name."
+choices = ["Array", "Record", "Linked list", "Tree"]
+answer = "Record"
+
+[[questions]]
+question = "defines the rules that both the sender and receiver need to be able to communicate effectively."
+choices = ["Protocol", "Layers", "Provider networks", "Hardware and software"]
+answer = "Protocol"
+
+[[questions]]
+question = "An operating system intended for use on microprocessor based systems that support a single user"
+choices = ["PC-DOS", "MS-DOS", "UNIX", "CP/M", "None of the others"]
+answer = "CP/M"
+
+[[questions]]
+question = "At the transport layer, TCP groups a number of bytes together into a packet called a ______"
+choices = ["Frame", "Bit pattern", "Segment", "Packet"]
+answer = "Segment"
+
+[[questions]]
+question = "Before transmission the sender transforms the plaintext into ciphertext - this is"
+choices = ["Plain text", "Cipher text", "Encryption", "Decryption"]
+answer = "Encryption"
+
+[[questions]]
+question = "Communication by phone is indeed a ______ activity, no party needs to be running forever waiting for the other party to call"
+choices = ["P2P", "Traditional", "Client-server", "Model"]
+answer = "P2P"
+
+[[questions]]
+question = "Codes consisting of light and dark marks may be optically read is known as"
+choices = ["Mnemonics", "Bar code", "Decoder", "All of the others", "None of the others"]
+answer = "Bar code"
+
+[[questions]]
+question = "Different sets of bit patterns have been designed to represent text symbols. Each set is called a ___?"
+choices = ["bit patterns", "binary", "code", "binary text file"]
+answer = "code"
+
+[[questions]]
+question = "FORTRAN is a(n) ______ language."
+choices = ["Procedural", "Functional", "Declarative", "Object-oriented"]
+answer = "Procedural"
+
+[[questions]]
+question = "RAM \u0111\u01b0\u1ee3c d\u00f9ng l\u00e0m b\u1ed9 nh\u1edb ng\u1eafn h\u1ea1n v\u00ec n\u00f3 nh\u01b0 th\u1ebf n\u00e0o?"
+choices = ["Volatile", "Has small capacity", "Is very expensive", "Is programmable", "None of the others"]
+answer = "Volatile"
+
+[[questions]]
+question = "One phase in system development is"
+choices = ["Analysis", "Application", "Designing", "Collecting"]
+answer = "Analysis"
+
+[[questions]]
+question = "If A is the first data element input into a queue, followed by B, C, and D, then _____ is the first element to be removed."
+choices = ["A", "B", "C", "D"]
+answer = "A"
+
+[[questions]]
+question = "In the ______ graphic method of representing an image, re-scaling the image creates a ragged or grainy image."
+choices = ["Bitmap", "Vector", "Quantized", "Binary"]
+answer = "Bitmap"
+
+[[questions]]
+question = "In the ______ hashing method, there are no synonyms or collisions."
+choices = ["Direct", "Division remainder", "Modulo division", "Digit extraction"]
+answer = "Direct"
+
+[[questions]]
+question = "In the hierarchical database model, data is organized as an inverted"
+choices = ["Graph", "Tree", "Array", "Record"]
+answer = "Tree"
+
+[[questions]]
+question = "In ______ paradigm, there is no need for a server process to be running all the time and waiting for the client processes to connect."
+choices = ["P2P", "Traditional", "Client-server", "Model"]
+answer = "P2P"
+
+[[questions]]
+question = "In a computer, the ______ subsystem stores data and programs."
+choices = ["ALU", "Input/output", "Memory", "Control unit"]
+answer = "Memory"
+
+[[questions]]
+question = "In a three-level DBMS architecture, the ______ level interacts directly with the users."
+choices = ["External", "Conceptual", "Internal", "Physical"]
+answer = "External"
+
+[[questions]]
+question = "If we cannot record all the values of an audio signal over an interval, we can record some of them. This means that we select a finite number of points on the signal and measure their values and record them."
+choices = ["digital", "analog", "sampling", "binary"]
+answer = "sampling"
+
+[[questions]]
+question = "Instead of using a numeric address, what unique address can we use to connect a host to the Internet in TCP/IP protocol?"
+choices = ["DNS", "Port number", "MAC addresses", "IP address"]
+answer = "IP address"
+
+[[questions]]
+question = "Layer of the TCP/IP protocol suite is responsible for source-to-destination delivery of the entire message."
+choices = ["Transport", "Network", "Data-link", "Session"]
+answer = "Transport"
+
+[[questions]]
+question = "The ____ scheduler moves a process from one state to another."
+choices = ["Job", "Process", "Virtual", "Queue"]
+answer = "Process"
+
+[[questions]]
+question = "The TCP/IP model has ___ layers."
+choices = ["Five", "Six", "Seven", "Eight"]
+answer = "Five"
+
+[[questions]]
+question = "The ______ of ethics says that an act is ethical if it brings about a useful for society"
+choices = ["Moral rules", "Social contract", "Utilization", "Nonmalevolence"]
+answer = "Utilization"
+
+[[questions]]
+question = "The address produced by a hashing algorithm is the ___ address."
+choices = ["Probe", "Synonym", "Collision", "Home"]
+answer = "Home"
+
+[[questions]]
+question = "The personnel who deals with the computer & its management put together are called"
+choices = ["Software", "Humanware", "Firmware", "Hardware", "None of the others"]
+answer = "Humanware"
+
+[[questions]]
+question = "The code that should be adequate for present and anticipated data processing both for machine and human use is"
+choices = ["Conciseness", "Uniqueness", "Operability", "All of the above", "None of the above"]
+answer = "All of the above"
+
+[[questions]]
+question = "The intersection of a column and row in a spreadsheet is called a"
+choices = ["Key", "Field", "Cell", "Menu", "None of the others"]
+answer = "Cell"
+
+[[questions]]
+question = "The organization and interconnection of the various components of a computer system is"
+choices = ["Architecture", "Networks", "Graphics", "Designing", "None of the others"]
+answer = "Architecture"
+
+[[questions]]
+question = "The dequeue operation ______ the item at ______ of the queue"
+choices = ["delete/front", "delete/end", "insert/front", "insert/rear"]
+answer = "delete/front"
+
+[[questions]]
+question = "The precision of the fractional part of a number stored in a computer is defined by the"
+choices = ["Sign", "Exponent", "Mantissa", "Last digit"]
+answer = "Mantissa"
+
+[[questions]]
+question = "The first microprocessors produced by Intel Corp. and Texas Instruments were used primarily to control"
+choices = ["Microwave ovens", "Washing machines", "Calculators", "Personal computers", "Robotics"]
+answer = "Calculators"
+
+[[questions]]
+question = "The scanning rate in image processing is called ____________________ if the resolution is sufficiently high, the human eye cannot recognize the discontinuity in reproduced images"
+choices = ["Bit map", "Pixels", "Resolution", "Color depth", "None of others"]
+answer = "Resolution"
+
+[[questions]]
+question = "The ________ construct handles repeated actions."
+choices = ["Sequence", "Decision", "Repetition", "Flow"]
+answer = "Repetition"
+
+[[questions]]
+question = "To traverse a list, you need a ______ pointer."
+choices = ["Null", "Walking", "Beginning", "Insertion"]
+answer = "Walking"
+
+[[questions]]
+question = "File n\u00e0o c\u00f3 th\u1ec3 \u0111\u01b0\u1ee3c truy c\u1eadp tu\u1ea7n t\u1ef1?"
+choices = ["sequential", "indexed", "hashed", "No"]
+answer = "sequential"
+
+[[questions]]
+question = "_____ is a stand-alone storage location that holds data temporarily."
+choices = ["An ALU", "a register", "a control unit", "a tape drive"]
+answer = "a register"
+
+[[questions]]
+question = "______ is a set of characters that is treated like an array in some languages and as a type in others."
+choices = ["a string", "a record", "a symbol", "a link"]
+answer = "a string"
+
+[[questions]]
+question = "is an ordered set of unambiguous steps that produces a result and terminates in a finite time"
+choices = ["A construct", "B recursion", "C an iteration", "An algorithm"]
+answer = "An algorithm"
+
+[[questions]]
+question = "What is model a process of software development where requirements divided into multiple standalone modules of the software development cycle?"
+choices = ["Waterfall model", "Incremental model", "Development process", "Software engineering"]
+answer = "Incremental model"
+
+[[questions]]
+question = "What is more common technique of two-dimensional arrays that can be stored in memory?"
+choices = ["Column-major storage", "DMA", "Isolated I/O", "Row-major storage"]
+answer = "Row-major storage"
+
+[[questions]]
+question = "What is the method in black-box testing that a subset of values in the input domain is selected for testing?"
+choices = ["Boundary-value testing", "Random testing", "Exhaustive testing", "Data flow testing"]
+answer = "Boundary-value testing"
+
+[[questions]]
+question = "What kind of state does a process execute in until it needs I/O resources when I/O is complete?"
+choices = ["Hold state", "Ready state", "Running state", "Waiting state"]
+answer = "Running state"
+
+[[questions]]
+question = "What generation appeared high-level programming language?"
+choices = ["First generation", "Second generation", "Third generation", "Fourth generation"]
+answer = "Third generation"
+
+[[questions]]
+question = "What type of OS evolution led to the design with multiple CPUs on the same machine?"
+choices = ["Personal systems", "Distributed systems", "Parallel systems", "Real-time systems"]
+answer = "Parallel systems"
+
+[[questions]]
+question = "Which printer uses a combination of laser-beam & electrophotographic techniques?"
+choices = ["Laser printers", "Dot-Matrix", "Line printer", "Daisy wheel", "None of the others"]
+answer = "Laser printers"
+
+[[questions]]
+question = "Which network is a packet switching network?"
+choices = ["Ring network", "LAN", "Star network", "EuroNET", "None of the others"]
+answer = "EuroNET"
+
+[[questions]]
+question = "Which of the following holds data and processing instructions temporarily until the CPU needs it?"
+choices = ["ROM", "Control unit", "Main memory", "Coprocessor chips", "None of the others"]
+answer = "Main memory"
+
+[[questions]]
+question = "When converting a decimal fraction to base b, we repeatedly"
+choices = ["Divide by", "Multiply by", "Add to", "Subtract from"]
+answer = "Multiply by"
+
+[[questions]]
+question = "When the ciphertext is received the receiver must transform the ciphertext into the plaintext-this is"
+choices = ["Plain text", "Cipher text", "Encryption", "Decryption"]
+answer = "Decryption"
+
+[[questions]]
+question = "When a sequential file is updated, the _____ file contains a list of all errors occurring during the process."
+choices = ["New master", "Old master", "Transaction", "Error report"]
+answer = "Error report"
+
+[[questions]]
+question = "When a sequential file is updated, the file gets the actual update"
+choices = ["New master", "Old master", "Transaction", "Error report"]
+answer = "New master"
+
+[[questions]]
+question = "When Minicomputers appeared on the market?"
+choices = ["First generation", "Second generation", "Third generation", "Fourth generation"]
+answer = "Third generation"
+
+[[questions]]
+question = "Who is considered the \"father\" of the minicomputer and one of the founder of the modern computer industry worldwide?"
+choices = ["George Tale", "Kenneth H. Olsen", "Seymour Cray", "Basic Pascal", "None of the others"]
+answer = "Kenneth H. Olsen"
+
+[[questions]]
+question = "At the transport layer, addresses are called ______ and these define the application-layer programs at the source and destination."
+choices = ["TCP", "Port numbers", "UDP", "IP address"]
+answer = "Port numbers"
+
+[[questions]]
+question = "A binary operator is applied to ________ relation(s) and creates an output of ________ relation(s)"
+choices = ["One, one", "One, two", "Two, one", "Two, two"]
+answer = "Two, one"
+
+[[questions]]
+question = "A data item which is not broken down into smaller units is"
+choices = ["Data element", "Elementary data item", "Data entry", "Database management", "None of the others"]
+answer = "Elementary data item"
+
+[[questions]]
+question = "Which type of cipher does not substitute one symbol for another, instead it changes the location of the symbols?"
+choices = ["Monopalbeitic cipher", "Substitution cipher", "Polyalphabetic cipher", "Transposition cipher"]
+answer = "Transposition cipher"
+
+[[questions]]
+question = "A monitor\u2019s ______ is the distance between the holes in the mask behind the screen. This helps determine how sharp the dots appear."
+choices = ["Refresh rate", "Dot pitch", "Resolution", "Color depth", "None of the others"]
+answer = "Dot pitch"
+
+[[questions]]
+question = " is a node that can accommodate more than one record. The disadvantage of this method is that there may be a lot of wasted (unoccupied) locations."
+choices = ["Linked list resolution", "Open addressing resolution", "Bucket hashing", "Digit extraction hashing"]
+answer = "Bucket hashing"
+
+[[questions]]
+question = "A device invented by Dr. Bobeck in 1966, for mass storage of data is"
+choices = ["Punched paper tape", "Magnetic bubble storage", "Magnetic tape", "Magnetic disk", "None of the others"]
+answer = "Magnetic bubble storage"
+
+[[questions]]
+question = "A program may need files located in different parts of the world. Networking and internetworking have created a new dimension in operating system that is"
+choices = ["Personal systems", "Distributed systems", "Parallel systems", "Real-time systems"]
+answer = "Distributed systems"
+
+[[questions]]
+question = "After the instruction is decoded, the control unit sends the task order to a component in the CPU. What is this phase?"
+choices = ["Fetch phase", "Decode phase", "Execute phase", "None of the others"]
+answer = "Execute phase"
+
+[[questions]]
+question = "A notation used to express clearly an algorithm is known as"
+choices = ["Algorithmic language", "Assembly language", "Machine language", "High level language", "None of the others"]
+answer = "Algorithmic language"
+
+[[questions]]
+question = "An instruction that transfers program control to one or more possible paths is known as"
+choices = ["Utility program", "System software", "Broadband channel", "Application program", "None of the others"]
+answer = "None of the others"
+
+[[questions]]
+question = "An array is normally __ and so is more suitable when the number of data items is fixed"
+choices = ["Dynamic data structure", "Static data structure", "Same data", "Related data"]
+answer = "Static data structure"
+
+[[questions]]
+question = "A memory that does not change its contents without external causes is known as"
+choices = ["Dynamic memory", "Static memory", "RAM", "EEPROM", "None of the others"]
+answer = "Static memory"
+
+[[questions]]
+question = "A/an ______ is a program in a procedural language that is a set of statements. The statements are normally executed one after another. However, sometimes it is necessary to change this sequential order. This figure illustrates this statement."
+choices = ["Compound statement", "Assignment statement", "Control statement", "None of others"]
+answer = "Control statement"
+
+[[questions]]
+question = "Each element in a record is called"
+choices = ["A variable", "An index", "field", "a node"]
+answer = "field"
+
+[[questions]]
+question = "First CAD system called AutoCAD for the PCs was announced in the year 1882. Can you tell who announced it?"
+choices = ["Intel Corp.", "Rolls India Ltd.", "Autodesk Inc", "AT & T Corp", "None of the others"]
+answer = "Autodesk Inc"
+
+[[questions]]
+question = "FORTRAN and COBOL are examples of ______."
+choices = ["Hardware", "Operating systems", "Computer languages", "Algorithms"]
+answer = "Computer languages"
+
+[[questions]]
+question = "For surface organization of magnetic tape, the width of the tape is divided into nine tracks. Nine vertical locations can store 8 bits of information related to a byte plus 1 bit for"
+choices = ["Next block", "Data", "Next tape information", "Error detection"]
+answer = "Error detection"
+
+[[questions]]
+question = "RISC (reduced instruction set computer) The strategy behind RISC architecture is to have a small set of instructions that do a minimum number of __"
+choices = ["Complex instructions", "Complex operations", "Simple operations", "Simple instructions"]
+answer = "Simple operations"
+
+[[questions]]
+question = "Programs designed to perform specific tasks is called known as"
+choices = ["System software", "Application software", "Utility programs", "Operating system", "None of the others"]
+answer = "Application software"
+
+[[questions]]
+question = "IBM-PC is an example of"
+choices = ["A main frame", "Machine-built", "Micro computer", "Special purpose", "None of the others"]
+answer = "Micro computer"
+
+[[questions]]
+question = "In the ______ hashing method, the key is divided by the file size, and the address is the remainder plus 1."
+choices = ["Direct", "Division remainder", "Modulo division", "Digit extraction"]
+answer = "Modulo division"
+
+[[questions]]
+question = "In a ______ the directory listing of the peers and what they offer uses the client-server paradigm, but the storing and downloading of the files are done using the peer-to-peer paradigm."
+choices = ["WWW", "Centralized network", "Hybrid network", "Decentralized network"]
+answer = "Hybrid network"
+
+[[questions]]
+question = "In a block cipher a _____ is used to encrypt the whole block even if the key is made of multiple values"
+choices = ["Key block", "Single key", "Key stream", "Auto key"]
+answer = "Single key"
+
+[[questions]]
+question = "In a ________ the relationship between a character in the plaintext to a character in the ciphertext is one-to-many"
+choices = ["Monoalphabetic cipher", "Substitution cipher", "Polyalphabetic cipher", "Transposition cipher"]
+answer = "Polyalphabetic cipher"
+
+[[questions]]
+question = "In the ___________ collision resolution method, we try to put data that cannot be placed in location 123 into location 124."
+choices = ["Open addressing", "Linked list", "Bucket hashing", "Random hashing"]
+answer = "Open addressing"
+
+[[questions]]
+question = "In the attacks threaten the confidentiality by monitoring online traffic"
+choices = ["Snooping", "Repudiation", "Denial of service", "Traffic analysis"]
+answer = "Traffic analysis"
+
+[[questions]]
+question = "In the attacks threaten integrity _______ is performed by one of the two parties in the communication: the sender or the receiver."
+choices = ["Snooping", "Modification", "Repudiation", "Masquerading"]
+answer = "Repudiation"
+
+[[questions]]
+question = "In the Turing model, the _____ depends on the combination of two factors: the input data and the program"
+choices = ["Output data", "Instructions", "Algorithm", "Data processing"]
+answer = "Algorithm"
+
+[[questions]]
+question = "In a stream cipher encryption and decryption are done one symbol. We have a plaintext a ciphertext stream and a ______."
+choices = ["Key block", "Single key", "Key stream", "Auto key"]
+answer = "Key stream"
+
+[[questions]]
+question = "refers to a process that rounds the value of a sample to the closest integer value. For example, if the real value is 17.2, it can be rounded down to 17. If the value is 17.7, it can be rounded up to 18."
+choices = ["Quantization", "Sampling rate", "Encoding", "Bit depth"]
+answer = "Quantization"
+
+[[questions]]
+question = "In the storing audio, if the signal is changing rapidly, we need more samples. It has been shown that a 40000 samples per second is good enough to reproduce an audio signal."
+choices = ["Quantization", "Sampling rate", "Encoding", "Bit depth"]
+answer = "Sampling rate"
+
+[[questions]]
+question = "Instructions and memory addresses are represented by"
+choices = ["Character codes", "Binary codes", "Binary word", "Panty bit", "None of the others"]
+answer = "Binary codes"
+
+[[questions]]
+question = "In _____, the identity of a party is verified once for the entire duration of system access."
+choices = ["entity authentication", "message integrity", "message authentication", "message encryption"]
+answer = "message authentication"
+
+[[questions]]
+question = "In magnetic disks, the _____ defines how fast the disk is spinning."
+choices = ["Seek time", "Transfer time", "Rotational speed", "None of the others"]
+answer = "Rotational speed"
+
+[[questions]]
+question = "In RSA, if user A wants to send an encrypted message to user B, the plaintext is encrypted with the public key of _____:"
+choices = ["User A", "User B", "The network", "A third party"]
+answer = "User B"
+
+[[questions]]
+question = "Time during which a job is processed by the computer is"
+choices = ["Delay time", "Real time", "Execution time", "Down time", "None of the others"]
+answer = "Execution time"
+
+[[questions]]
+question = "The device manager will be tracking every device constantly to ensure that the device is"
+choices = ["Ready", "Finished", "Functioning properly", "Running"]
+answer = "Functioning properly"
+
+[[questions]]
+question = "The difference between memory and storage is that memory is ______ and storage is ______."
+choices = ["Temporary, permanent", "Permanent, temporary", "Slow, fast", "All of the others", "None of the others"]
+answer = "Temporary, permanent"
+
+[[questions]]
+question = "The _____ model is the basis for today\u2019s computers."
+choices = ["Leibniz", "Von Neumann", "Pascal", "Charles Babbage"]
+answer = "Von Neumann"
+
+[[questions]]
+question = "The list of coded instructions is called"
+choices = ["Computer program", "Algorithm", "Flowchart", "Utility programs", "None of the others"]
+answer = "Computer program"
+
+[[questions]]
+question = "The role of the physical layer is to transfer the bits received from the data-link layer and convert them to \n\nfor transmission."
+choices = ["Analog signals", "Electromagnetic signals", "Digital signals", "Electronic signals"]
+answer = "Electromagnetic signals"
+
+[[questions]]
+question = "The result of the decode step is the _____ for some operation that the system will perform."
+choices = ["Output", "Data processing", "Binary code", "Code"]
+answer = "Code"
+
+[[questions]]
+question = "The ____ is the highest level in the file system hierarchy. This does not have a parent directory"
+choices = ["Root directory", "Home directory", "Working directory", "Parent directory"]
+answer = "Root directory"
+
+[[questions]]
+question = "The physic layer addresses, sometimes called ______ are locally defined addresses, each of which defines a specific host or router in a network (LAN or WAN)."
+choices = ["TCP", "Port numbers", "MAC addresses", "IP address"]
+answer = "MAC addresses"
+
+[[questions]]
+question = "The language that is an input for statement translation is called"
+choices = ["Assembly language", "Source language", "High-level language", "Object language", "None of the others"]
+answer = "Source language"
+
+[[questions]]
+question = "The number of bits per sample is sometimes referred to as the ___"
+choices = ["Quantization", "Sampling rate", "Encoding", "Bit depth"]
+answer = "Bit depth"
+
+[[questions]]
+question = "is a method in which each statement in the software is executed at least once"
+choices = ["Basis path testing", "Condition testing", "Loop testing", "Boundary testing"]
+answer = "Basis path testing"
+
+[[questions]]
+question = "were designed in the 1950s to control mainframe computers."
+choices = ["Time-sharing systems", "Batch operating system", "Personal systems", "Parallel systems"]
+answer = "Batch operating system"
+
+[[questions]]
+question = "supervises the activity of each component in a computer system"
+choices = ["An operating system", "Hardware", "A queue", "An application program"]
+answer = "An operating system"
+
+[[questions]]
+question = "Which of the following can be threatened by security attacks?"
+choices = ["Cryptography, nonrepudiation", "Decryption", "Integrity, availability", "Denial of service, masquerading"]
+answer = "Integrity, availability"
+
+[[questions]]
+question = "When we want to store music in a computer, the audio signal must be"
+choices = ["Sampled only", "Quantized only", "Coded", "Sampled, quantized and coded"]
+answer = "Sampled, quantized and coded"
+
+[[questions]]
+question = "A number which is stored and processed but not in the standard exponential form is called"
+choices = ["Floating point number", "Fixed point number", "Octal number", "Decimal number", "None of the others"]
+answer = "Fixed point number"
+
+[[questions]]
+question = "A data structure can be"
+choices = ["an array", "a record", "a linked list", "an array, a record, or a linked list"]
+answer = "an array, a record, or a linked list"
+
+[[questions]]
+question = "An operating system NO needs to manage what resources in a computer system?"
+choices = ["Memory manager", "Process manager", "Device manager", "Input/output data manager"]
+answer = "Input/output data manager"
+
+[[questions]]
+question = "Computers are extremely fast and have fantastic memories. However, the only thing they can remember is"
+choices = ["Instruction", "Series of 1s and 0s", "Boolean algebra", "Logic theorems", "None of the others"]
+answer = "Series of 1s and 0s"
+
+[[questions]]
+question = "Every process is"
+choices = ["Only a job", "Only a program", "Only a partition", "A job and a program"]
+answer = "A job and a program"
+
+[[questions]]
+question = "In the internet today, backbones and provider networks are also called"
+choices = ["Customer networks", "Provider networks", "Peering points", "Internet service providers (ISPs)"]
+answer = "Internet service providers (ISPs)"
+
+[[questions]]
+question = "In an Excess conversion, we _______ the number to be converted."
+choices = ["Add the bias number to", "Subtract the bias number from", "Multiply the bias number", "Divide the bias number"]
+answer = "Add the bias number to"
+
+[[questions]]
+question = "In two's complement addition, if there is a final carry after the left most column addition,"
+choices = ["Add it to the right most column", "Add it to the left most column", "Discard it", "Increase the bit length"]
+answer = "Discard it"
+
+[[questions]]
+question = "Sending a virus to a computer is called an _______ attack."
+choices = ["Penetration", "Denial of service", "Either a or b", "Neither a nor b"]
+answer = "Neither a nor b"
+
+[[questions]]
+question = "The _____ method is used when a collision occurs: the prime area addresses are searched for an open or unoccupied record where the new data can be placed"
+choices = ["Linked list resolution", "Open addressing resolution", "Bucket hashing", "Digit extraction hashing"]
+answer = "Open addressing resolution"
+
+[[questions]]
+question = "The file structure allows random access is"
+choices = ["Hashed file", "Sequential file", "EOF", "None of others"]
+answer = "Hashed file"
+
+[[questions]]
+question = "The union database operation is taking two relations and creating a new relation. What is the result of this operation?"
+choices = ["Neither the first relation nor the second", "Both of the first relation and the second", "The first relation but not the second", "The second but not the first"]
+answer = "Both of the first relation and the second"
+
+[[questions]]
+question = "separated the programming task from computer operation tasks."
+choices = ["Algorithms", "Data processors", "High-level programming languages", "Operating systems"]
+answer = "High-level programming languages"
+
+[[questions]]
+question = "What method in black-box testing are designed to include representatives of boundary values in a range?"
+choices = ["Boundary-value testing", "Random testing", "Exhaustive testing", "Data flow testing"]
+answer = "Boundary-value testing"
+
+[[questions]]
+question = "What is more common technique of two-dimensional arrays that can be stored in memory?"
+choices = ["Column-major storage", "DMA", "Isolated I/O", "Row-major storage"]
+answer = "Row-major storage"
+
+[[questions]]
+question = "What is the analysis process in the system implementation phase that will use a program as an active agent that manipulates passive object?"
+choices = ["Procedure-oriented analysis", "Structured analysis", "Classical analysis", "All of others"]
+answer = "All of others"
+
+[[questions]]
+question = "What is the method in black box testing that a subset of values in the input domain is selected for testing?"
+choices = ["Boundary-value testing", "Random testing", "Exhaustive testing", "Data flow testing"]
+answer = "Boundary-value testing"
+
+[[questions]]
+question = "Which method in black box testing is to test the software for all possible values in the input domain?"
+choices = ["Boundary-value testing", "Random testing", "Exhaustive testing", "Data flow testing"]
+answer = "Exhaustive testing"
+
+[[questions]]
+question = "WAN l\u00e0 g\u00ec?"
+choices = ["Peer-to-peer", "Node-to-node", "Point-to-point", "Data link"]
+answer = "Point-to-point"
+
+[[questions]]
+question = "gives the user\u2019s view of the system: it shows how the user communicates with the system"
+choices = ["Class diagram", "State diagram", "Use-case diagram", "Sequence diagram"]
+answer = "Use-case diagram"
+
+[[questions]]
+question = "A mechanism for arranging controlled access to a shared resource is"
+choices = ["Retrieving", "Sorting", "Balleting", "Lock-out", "None of the others"]
+answer = "Lock-out"
+
+[[questions]]
+question = "An array that consists of just rows and columns is a ______ array."
+choices = ["One dimensional", "Two dimensional", "Three dimensional", "Multidimensional"]
+answer = "Two dimensional"
+
+[[questions]]
+question = "C++ and C# languages are _______ language"
+choices = ["Procedural", "Functional", "Declarative", "Object-oriented"]
+answer = "Object-oriented"
+
+[[questions]]
+question = "In ______ paradigm, the service provider is an application program, it runs continuously, waiting for another application program, then to make a connection through the Internet and ask for service"
+choices = ["P2P", "Traditional", "Client-server", "Model"]
+answer = "Client-server"
+
+[[questions]]
+question = "In the ______ we can think of a program as an active agent that manipulates passive objects"
+choices = ["Procedural paradigm", "Functional paradigm", "Declarative paradigm", "Object-oriented paradigm"]
+answer = "Procedural paradigm"
+
+[[questions]]
+question = "In physical layer,  can be broadly defined as anything that can carry information from a source to a destination"
+choices = ["Digital-to-digital conversion", "Analog-to-digital conversion", "Digital-to-analog conversion", "Analog-to-digital conversion", "Transmission medium"]
+answer = "Transmission medium"
+
+[[questions]]
+question = "In _______ only one program can reside in memory for execution."
+choices = ["Mono-programming", "Multi-programming", "Partitioning", "Paging"]
+answer = "Mono-programming"
+
+[[questions]]
+question = "acts as a liaison between a client program and a server, a process-to-process connection."
+choices = ["Physical", "Data-link", "Network", "Transport"]
+answer = "Transport"
+
+[[questions]]
+question = "In the relational database model, data is organized in _________________."
+choices = ["Two-dimensional array", "Two-dimensional tables", "Two-dimensional record", "None of the others"]
+answer = "Two-dimensional tables"
+
+[[questions]]
+question = "The RSA algorithm for confidentiality uses"
+choices = ["Asymmetric-key", "Symmetric-key", "Substitution", "Transposition"]
+answer = "Asymmetric-key"
+
+[[questions]]
+question = "Testing a software system can involve ________ testing."
+choices = ["Black-box", "Glass-box", "Neither black-box nor glass-box", "Both black-box and glass-box"]
+answer = "Both black-box and glass-box"
+
+[[questions]]
+question = "What is taxonomy of computer organization?"
+choices = ["SIMD - Single instruction, Multiple Data-stream", "MISD - Multiple instruction, Single Data-stream", "MIMD - Multiple instruction, Multiple Data-stream", "All of others"]
+answer = "All of others"
+
+[[questions]]
+question = "What is the 80-20 rule in cache?"
+choices = ["Most computers typically spend 80 percent of their time accessing only 20 percent of the data", "Cache memory at any time contains a copy of a portion of main memory", "It can hold data 20 percent faster at least 80 percent of the time", "The CPU need to checks the cache first"]
+answer = "Most computers typically spend 80 percent of their time accessing only 20 percent of the data"
+
+[[questions]]
+question = "What is the result of difference operation from 2 relation tables?"
+choices = ["Neither the first relation nor the second", "Both of the first relation and the second", "The first relation but not the second", "The second but not the first"]
+answer = "The first relation but not the second"
+
+[[questions]]
+question = "What is the 80-20 rule in cache?"
+choices = ["Most computers typically spend 80 percent of their time accessing only 20 percent of the data", "Cache memory at any time contains a copy of a portion of main memory.", "It can hold data to make access faster at least 80 percent of the time", "The CPU need to checks the cache first"]
+answer = "Most computers typically spend 80 percent of their time accessing only 20 percent of the data"
+
+[[questions]]
+question = "Why OS is responsible for the efficient use of input/output devices?"
+choices = ["Because need to maintain a queue for each input/output device", "Because these devices are slower in speed compared with the CPU and memory", "It may use FIFO for one device", "The manager also needs to know when a device has finished serving one process"]
+answer = "Because these devices are slower in speed compared with the CPU and memory"
+
+[[questions]]
+question = "A multi programming system is one that can"
+choices = ["Run very fast", "Share resources with many programs simultaneously", "Compute many programs simultaneously", "Use many operating systems", "None of the others"]
+answer = "Share resources with many programs simultaneously"
+
+[[questions]]
+question = "A multi programming system is one that can"
+choices = ["Run very fast", "Share resources with many programs simultaneously", "Compute many programs simultaneously", "Use many operating systems", "None of the others"]
+answer = "Share resources with many programs simultaneously"
+
+[[questions]]
+question = "Before insertion into a linked list we first apply the searching algorithm because we DO NOT"
+choices = ["Allow insertion into an empty list", "Allow insertion in the middle of the list", "Allow insertion at the beginning of the list", "Allow data with duplicate values"]
+answer = "Allow data with duplicate values"
+
+[[questions]]
+question = "If the transaction file key is 20 and the first master file key is 25 then we"
+choices = ["Add the new record to the new master file", "Revise the contents of the old master file", "Delete the data", "Write the old master file record to the new master file"]
+answer = "Add the new record to the new master file"
+
+[[questions]]
+question = "In peripheral device management, what is the principle of hierarchical work on OS of third-generation computers?"
+choices = ["Processor - Peripheral device", "Control device - Peripheral device", "Processor - Control device", "None of the answers are correct"]
+answer = "Control device - Peripheral device"
+
+[[questions]]
+question = "Inside the ADT are two different parts of the model that are ___ and ___."
+choices = ["Data structure and operations", "Application program and public operations", "Application program and private operations", "Data structure and application program"]
+answer = "Data structure and operations"
+
+[[questions]]
+question = "Images are stored in computers using _____ techniques?"
+choices = ["Raster graphics and bit map", "Vector graphics and bit map", "True color and raster graphics", "Index color and vector graphics", "Bit map"]
+answer = "Raster graphics and bit map"
+
+[[questions]]
+question = "In the asymmetric-key method used for confidentiality, which key(s) is (are) publicly known?"
+choices = ["Encryption key", "Decryption key", "Both encryption and decryption keys", "Neither encryption nor decryption keys"]
+answer = "Encryption key"
+
+[[questions]]
+question = "The format of an IPv6 address is referred to as"
+choices = ["Dotted-hexadecimal notation", "Dotted-octal notation", "Dotted-decimal notation", "Hexadecimal digits"]
+answer = "Hexadecimal digits"
+
+[[questions]]
+question = "The term users in a DBMS has a broad meaning. We can divide users into:"
+choices = ["End users and database administrators", "End users and normal users", "Application programs and normal users", "Application programs and database administrators"]
+answer = "End users and database administrators"
+
+[[questions]]
+question = "The main principles of ethics are"
+choices = ["Moral rules", "Ethical decision", "Beneficence", "Nonmaleficence"]
+answer = "Moral rules"

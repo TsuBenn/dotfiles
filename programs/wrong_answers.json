@@ -1,0 +1,87 @@
+[
+  {
+    "question": "Which data structure follows Last In First Out (LIFO)?",
+    "answer": "Stack",
+    "timestamp": "2026-03-26T18:30:27.642399"
+  },
+  {
+    "question": "What is the capital of France?",
+    "answer": "Paris",
+    "timestamp": "2026-03-26T18:30:29.630355"
+  },
+  {
+    "question": "Which data structure follows Last In First Out (LIFO)?",
+    "answer": "Stack",
+    "timestamp": "2026-03-26T18:32:35.229742"
+  },
+  {
+    "question": "Which data structure follows Last In First Out (LIFO)?",
+    "answer": "Stack",
+    "timestamp": "2026-03-26T18:47:12.052950"
+  },
+  {
+    "question": "What is the capital of France?",
+    "answer": "Paris",
+    "timestamp": "2026-03-26T18:47:15.234112"
+  },
+  {
+    "question": "In peripheral device management, what is the principle of hierarchical work on third-generation computers?",
+    "answer": "Control device - Peripheral device",
+    "timestamp": "2026-03-26T22:35:37.583765"
+  },
+  {
+    "question": "Before insertion into a linked list we first apply the searching algorithm because we DO NOT",
+    "answer": "Allow data with duplicate values",
+    "timestamp": "2026-03-26T22:35:55.687356"
+  },
+  {
+    "question": "Images are stored in computers using _______ techniques?",
+    "answer": "Raster graphics and bit map",
+    "timestamp": "2026-03-26T22:36:12.974139"
+  },
+  {
+    "question": "In the asymmetric-key method used for confidentiality, which key(s) is (are) publicly known?",
+    "answer": "Encryption key",
+    "timestamp": "2026-03-26T22:36:56.819444"
+  },
+  {
+    "question": "The format of an IPv6 address is referred to as",
+    "answer": "Hexadecimal digits",
+    "timestamp": "2026-03-26T22:37:04.439408"
+  },
+  {
+    "question": "How many main types of intellectual property are recognized?",
+    "answer": "4",
+    "timestamp": "2026-03-26T22:40:52.429430"
+  },
+  {
+    "question": "When employing symmetric-key encryption for data communication between 10 hosts, how many keys are necessary to guarantee the security of all transactions?",
+    "answer": "47",
+    "timestamp": "2026-03-26T22:40:58.542691"
+  },
+  {
+    "question": "Convert the binary number 10110111 to decimal",
+    "answer": "731",
+    "timestamp": "2026-03-26T22:41:04.361697"
+  },
+  {
+    "question": "How many ethical principles are there?",
+    "answer": "4",
+    "timestamp": "2026-03-26T22:41:31.599867"
+  },
+  {
+    "question": "How many main types of intellectual property are recognized?",
+    "answer": "4",
+    "timestamp": "2026-03-26T22:44:36.676779"
+  },
+  {
+    "question": "A device is sending out data at the rate of 1000 bps. How long does it take to send out 10 bits?",
+    "answer": "10 ms",
+    "timestamp": "2026-03-26T22:44:39.275932"
+  },
+  {
+    "question": "How many ethical principles are there?",
+    "answer": "4",
+    "timestamp": "2026-03-26T22:50:03.228671"
+  }
+]

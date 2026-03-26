@@ -1,0 +1,5 @@
+# OCR
+sudo pacman -S tesseract tesseract-data-eng
+
+# Python deps
+pip install pillow pytesseract ollama tqdm
