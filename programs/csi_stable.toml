@@ -1,5 +1,5 @@
 [[questions]]
-question = "What is the minimum number of octal digits required to represent the binary number 11111010107?"
+question = "What is the minimum number of octal digits required to represent the binary number 11111010101?"
 choices = ["3", "4", "5", "6"]
 answer = "4"
 
