@@ -721,7 +721,6 @@ def _parse_version(src: str) -> str:
 def check_for_updates() -> tuple[bool, str, str, str]:
     import urllib.request
  
-    script_dir = Path(__file__).resolve().parent
     local_src  = Path(__file__).read_text(encoding="utf-8")
     local_ver  = _parse_version(local_src)
  
