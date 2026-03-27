@@ -200,5 +200,35 @@
     "question": "is an ordered set of unambiguous steps that produces a result and terminates in a finite time",
     "answer": "An algorithm",
     "timestamp": "2026-03-27T15:09:28.826993"
+  },
+  {
+    "question": "In a stream cipher encryption and decryption are done one symbol. We have a plaintext a ciphertext stream and a ______.",
+    "answer": "Key stream",
+    "timestamp": "2026-03-27T15:23:50.305853"
+  },
+  {
+    "question": "A memory that does not change its contents without external causes is known as",
+    "answer": "Static memory",
+    "timestamp": "2026-03-27T15:24:09.072721"
+  },
+  {
+    "question": "is a basic algorithm that arranges data according to its value.",
+    "answer": "Sorting",
+    "timestamp": "2026-03-27T15:28:13.124737"
+  },
+  {
+    "question": "The union database operation is taking two relations and creating a new relation. What is the result of this operation?",
+    "answer": "Both of the first relation and the second",
+    "timestamp": "2026-03-27T15:32:17.268879"
+  },
+  {
+    "question": "When we want to store music in a computer, the audio signal must be",
+    "answer": "Sampled, quantized and coded",
+    "timestamp": "2026-03-27T15:34:38.034402"
+  },
+  {
+    "question": "In the attacks threaten integrity _______ is performed by one of the two parties in the communication: the sender or the receiver.",
+    "answer": "Repudiation",
+    "timestamp": "2026-03-27T15:38:01.875983"
   }
 ]
