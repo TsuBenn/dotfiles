@@ -783,7 +783,7 @@ def prompt_update(mode: str):
     if mode == "git":
         result = subprocess.run(["git", "pull"], cwd=script_dir)
         if result.returncode == 0:
-            print("  ✓ Updated! Please restart the script.")
+            print("  ✓ Updated! Please restart the script.\n")
             sys.exit(0)
         else:
             print("  ✗ Pull failed. Check your git status.")
