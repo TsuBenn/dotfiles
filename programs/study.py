@@ -8,7 +8,7 @@ import tomllib
 from datetime import datetime
 from pathlib import Path
 
-VERSION = "1.3.23 (Beta)"
+VERSION = "1.3.24"
 FILEPATH = ""
 
 # ─── File I/O ─────────────────────────────────────────────────────────────────
@@ -712,21 +712,6 @@ def main(stdscr, filepath: str):
 
 RAW_URL = "https://raw.githubusercontent.com/TsuBenn/dotfiles/main/programs/study.py"
  
- 
-def _in_git_repo() -> bool:
-    import subprocess
-    try:
-        subprocess.check_output(
-            ["git", "rev-parse", "--is-inside-work-tree"],
-            cwd=Path(__file__).resolve().parent,
-            stderr=subprocess.DEVNULL,
-            timeout=3
-        )
-        return True
-    except Exception:
-        return False
- 
- 
 def check_for_updates() -> tuple[bool, str]:
     """
     Returns (update_available, mode) where mode is "git" or "standalone".
@@ -737,29 +722,13 @@ def check_for_updates() -> tuple[bool, str]:
  
     script_dir = Path(__file__).resolve().parent
  
-    if _in_git_repo():
-        try:
-            subprocess.run(
-                ["git", "fetch"],
-                cwd=script_dir,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                timeout=5
-            )
-            local  = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=script_dir, timeout=5).strip()
-            remote = subprocess.check_output(["git", "rev-parse", "@{u}"], cwd=script_dir, timeout=5).strip()
-            return (local != remote, "git")
-        except Exception:
-            return (False, "")
-    else:
-        # Standalone: compare first line comment hash or just check if remote differs
-        try:
-            with urllib.request.urlopen(RAW_URL, timeout=5) as r:
-                remote_src = r.read().decode("utf-8")
-            local_src = Path(__file__).read_text(encoding="utf-8")
-            return (remote_src != local_src, "standalone")
-        except Exception:
-            return (False, "")
+    try:
+        with urllib.request.urlopen(RAW_URL, timeout=5) as r:
+            remote_src = r.read().decode("utf-8")
+        local_src = Path(__file__).read_text(encoding="utf-8")
+        return (remote_src != local_src, "standalone")
+    except Exception:
+        return (False, "")
  
  
 def prompt_update(mode: str):
@@ -780,23 +749,14 @@ def prompt_update(mode: str):
         print("  Skipping update, continuing...\n")
         return
  
-    if mode == "git":
-        result = subprocess.run(["git", "pull"], cwd=script_dir)
-        if result.returncode == 0:
-            print("  ✓ Updated! Please restart the script.\n")
-            sys.exit(0)
-        else:
-            print("  ✗ Pull failed. Check your git status.")
-    else:
-        # Standalone: overwrite this file with remote version
-        try:
-            with urllib.request.urlopen(RAW_URL, timeout=5) as r:
-                new_src = r.read()
-            Path(__file__).write_bytes(new_src)
-            print("  ✓ Updated! Please restart the script.\n")
-            sys.exit(0)
-        except Exception as e:
-            print(f"  ✗ Download failed: {e}")
+    try:
+        with urllib.request.urlopen(RAW_URL, timeout=5) as r:
+            new_src = r.read()
+        Path(__file__).write_bytes(new_src)
+        print("  ✓ Updated! Please restart the script.\n")
+        sys.exit(0)
+    except Exception as e:
+        print(f"  ✗ Download failed: {e}")
  
  
 def run():
