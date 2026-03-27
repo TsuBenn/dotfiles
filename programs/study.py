@@ -9,7 +9,7 @@ from datetime import datetime
 from pathlib import Path
 import urllib.request
 
-VERSION = "1.3.25 (Beta)"
+VERSION = "1.3.25"
 FILEPATH = ""
 
 # ─── File I/O ─────────────────────────────────────────────────────────────────
