@@ -15,7 +15,7 @@ answer = "32"
 
 [[questions]]
 question = "Which of the following representations is erroneous?"
-choices = ["(110)2", "(141)8", "(EF)16", "22A"]
+choices = ["(141)8", "22A", "(EF)16", "(110)2"]
 answer = "22A"
 
 [[questions]]
@@ -705,7 +705,7 @@ answer = "Greater than"
 
 [[questions]]
 question = "Given a linked list called children, the pointer variable children identifies element of the linked list."
-choices = ["The first", "London", "Paris", "Madrid"]
+choices = ["The second", "The first", "The third", "The last"]
 answer = "The first"
 
 [[questions]]
@@ -975,8 +975,8 @@ answer = "0011 0000"
 
 [[questions]]
 question = "Use a circular right shift operation on the bit pattern 1001 1000"
-choices = ["0100 1100", "0011 0001", "1001 1001", "1001 1000"]
-answer = "1001 1000"
+choices = ["1001 1000", "1001 1001", "0100 1100", "0011 0001"]
+answer = "0011 0001"
 
 [[questions]]
 question = "Use a circular left shift operation on the bit pattern 1001 1000"
@@ -2105,7 +2105,7 @@ answer = "Hashed file"
 
 [[questions]]
 question = "The union database operation is taking two relations and creating a new relation. What is the result of this operation?"
-choices = ["Neither the first relation nor the second", "Both of the first relation and the second", "The first relation but not the second", "The second but not the first"]
+choices = ["The first relation but not the second", "The second but not the first", "Neither the first relation nor the second", "Both of the first relation and the second"]
 answer = "Both of the first relation and the second"
 
 [[questions]]

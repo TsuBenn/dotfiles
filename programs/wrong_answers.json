@@ -230,5 +230,70 @@
     "question": "In the attacks threaten integrity _______ is performed by one of the two parties in the communication: the sender or the receiver.",
     "answer": "Repudiation",
     "timestamp": "2026-03-27T15:38:01.875983"
+  },
+  {
+    "question": "What is the number of bit patterns provided by a 7-bit code?",
+    "answer": "128",
+    "timestamp": "2026-03-27T15:45:44.182024"
+  },
+  {
+    "question": "Which statement describes red hat hackers?",
+    "answer": "Hackers who track down black hat hackers and work to stop their activities",
+    "timestamp": "2026-03-27T15:47:42.724787"
+  },
+  {
+    "question": "analyzer reads the source code",
+    "answer": "Lexical",
+    "timestamp": "2026-03-27T15:49:24.132622"
+  },
+  {
+    "question": "In which scenario is a binary search algorithm ineffective?",
+    "answer": "When the data is unsorted",
+    "timestamp": "2026-03-27T15:51:28.725320"
+  },
+  {
+    "question": "The union database operation is taking two relations and creating a new relation. What is the result of this operation?",
+    "answer": "Both of the first relation and the second",
+    "timestamp": "2026-03-27T16:02:18.503733"
+  },
+  {
+    "question": "uses the principle of logical reasoning to answer queries. It is based on formal logic defined by Greek mathematicians and later developed into first-order predicate calculus",
+    "answer": "Declarative paradigm",
+    "timestamp": "2026-03-27T16:02:40.525267"
+  },
+  {
+    "question": "In an Excess conversion, we _______ the number to be converted.",
+    "answer": "Add the bias number to",
+    "timestamp": "2026-03-27T16:04:49.861987"
+  },
+  {
+    "question": "What is a major difference between procedural programming and object-oriented programming?",
+    "answer": "Object-oriented programming organizes code into objects, while procedural programming uses a linear sequence of instructions.",
+    "timestamp": "2026-03-27T16:04:57.057015"
+  },
+  {
+    "question": "The first microprocessors produced by Intel Corp. and Texas Instruments were used primarily to control",
+    "answer": "Calculators",
+    "timestamp": "2026-03-27T16:08:26.744774"
+  },
+  {
+    "question": "In physical layer,  can be broadly defined as anything that can carry information from a source to a destination",
+    "answer": "Transmission medium",
+    "timestamp": "2026-03-27T16:08:40.230061"
+  },
+  {
+    "question": " is a node that can accommodate more than one record. The disadvantage of this method is that there may be a lot of wasted (unoccupied) locations.",
+    "answer": "Bucket hashing",
+    "timestamp": "2026-03-27T16:09:14.512550"
+  },
+  {
+    "question": "Use a circular right shift operation on the bit pattern 1001 1000",
+    "answer": "1001 1000",
+    "timestamp": "2026-03-27T16:09:32.486552"
+  },
+  {
+    "question": "What does \"sampling\" refer to in the context of audio storage?",
+    "answer": "Capturing discrete values of the sound wave at regular intervals",
+    "timestamp": "2026-03-27T16:17:27.565205"
   }
 ]

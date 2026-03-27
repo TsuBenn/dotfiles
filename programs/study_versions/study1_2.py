@@ -21,8 +21,8 @@ def load_questions(filepath: str) -> list[dict]:
         sys.exit(1)
     with open(path, "rb" if path.suffix == ".toml" else "r") as f:
         if path.suffix == ".toml":
-            data = tomllib.load(f)
             FILEPATH = filepath
+            data = tomllib.load(f)
         elif path.suffix == ".json":
             data = json.load(f)
         else:
@@ -62,9 +62,15 @@ def save_wrong_answers(wrong_file: str, wrong: list[dict]):
 # ─── Queue ────────────────────────────────────────────────────────────────────
 
 def build_queue(questions: list[dict]) -> list[dict]:
-    q = [dict(q, _wrong_count=0, _answered_correct=False) for q in questions]
-    random.shuffle(q)
-    return q
+    result = []
+    for q in questions:
+        q = dict(q, _wrong_count=0, _answered_correct=False)
+        choices = list(q["choices"])
+        random.shuffle(choices)
+        q["choices"] = choices
+        result.append(q)
+    random.shuffle(result)
+    return result
 
 # ─── TUI Helpers ──────────────────────────────────────────────────────────────
 
@@ -329,7 +335,7 @@ def edit_screen(stdscr, question: dict, all_questions: list[dict], filepath: str
         if sel == FIELD_ANSWER:
             try:
                 stdscr.addstr(r, box_x + 2,
-                              "(Select the correct answer(s))",
+                              "(Select the right answer(s))",
                               curses.color_pair(4))
                 r += 1
             except curses.error:
@@ -490,7 +496,7 @@ def ask_question(stdscr, question: dict, q_num: int, total: int, can_go_prev: bo
                 marker = "✓" if is_correct_choice else ("✗" if is_chosen else " ")
                 style  = (curses.color_pair(1) | curses.A_BOLD) if is_correct_choice else \
                          (curses.color_pair(2) if is_chosen else curses.color_pair(5))
-                cursor = ">" if is_sel else " "
+                cursor = ">" if is_sel and not answered else " "
                 prefix = f"{cursor} {marker} {labels[i]}. "
             else:
                 tick   = f"[{'X' if i in ticked else ' '}] " if multi else ""
@@ -512,9 +518,9 @@ def ask_question(stdscr, question: dict, q_num: int, total: int, can_go_prev: bo
         if answered:
             footer = f" {prev_hint}] Next   E Edit   Q Quit "
         elif multi:
-            footer = f" ↑↓ Navigate   Space Toggle   Enter Submit   {prev_hint}] Next   Q Quit "
+            footer = f" ↑↓ Navigate   Space Toggle   Enter Submit   {prev_hint}] Next   E Edit   Q Quit "
         else:
-            footer = f" ↑↓ Navigate   Enter Select   {prev_hint}] Next   Q Quit "
+            footer = f" ↑↓ Navigate   Enter Select   {prev_hint}] Next   E Edit   Q Quit "
         draw_footer(stdscr, footer)
         stdscr.refresh()
 
@@ -526,7 +532,7 @@ def ask_question(stdscr, question: dict, q_num: int, total: int, can_go_prev: bo
             return NAV_NEXT, False
         elif key in (ord('q'), ord('Q')):
             return NAV_QUIT, False
-        elif key in (ord('e'), ord('E')) and answered:
+        elif key in (ord('e'), ord('E')):
             return NAV_EDIT, False
 
         if answered:
