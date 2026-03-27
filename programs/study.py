@@ -723,9 +723,17 @@ def check_for_updates() -> tuple[bool, str, str, str]:
  
     local_src  = Path(__file__).read_text(encoding="utf-8")
     local_ver  = _parse_version(local_src)
+
+    req = urllib.request.Request(
+        RAW_URL,
+        headers={
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
+        }
+    )
  
     try:
-        with urllib.request.urlopen(RAW_URL, timeout=5) as r:
+        with urllib.request.urlopen(req, timeout=5) as r:
             remote_src = r.read().decode("utf-8")
         remote_ver = _parse_version(remote_src)
         if remote_src != local_src:
