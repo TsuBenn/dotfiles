@@ -793,7 +793,7 @@ def prompt_update(mode: str):
             with urllib.request.urlopen(RAW_URL, timeout=5) as r:
                 new_src = r.read()
             Path(__file__).write_bytes(new_src)
-            print("  ✓ Updated! Please restart the script.")
+            print("  ✓ Updated! Please restart the script.\n")
             sys.exit(0)
         except Exception as e:
             print(f"  ✗ Download failed: {e}")
