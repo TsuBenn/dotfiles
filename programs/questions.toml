@@ -1,49 +1,10 @@
 [[questions]]
-question = "A multi programming system is one that can"
-choices = ["Run very fast", "Share resources with many programs simultaneously", "Compute many programs simultaneously", "Use many operating systems", "None of the others"]
-answer = "Share resources with many programs simultaneously"
+question = "One choice"
+choices = ["A", "B", "C", "D"]
+answer = "A"
 
 [[questions]]
-question = "Before insertion into a linked list we first apply the searching algorithm because we DO NOT __ Ho\u00e0ng Ho\u00e0ng"
-choices = ["Allow insertion into an empty list", "Allow insertion in the middle of the list", "Allow insertion at the beginning of the list", "Allow data with duplicate values"]
-answer = "Allow data with duplicate values"
+question = "Two choices"
+choices = ["A", "B", "C", "D"]
+answer = ["A", "B"]
 
-[[questions]]
-question = "If the transaction file key is 20 and the first master file key is 25 then we __"
-choices = ["Add the new record to the new master file", "Revise the contents of the old master file", "Delete the data", "Write the old master file record to the new master file"]
-answer = "Add the new record to the new master file"
-
-[[questions]]
-question = "In peripheral device management, what is the principle of hierarchical work on OS of third-generation computers?"
-choices = ["Processor - Peripheral device", "Control device - Peripheral device", "Processor - Peripheral device", "None of the answers are correct"]
-answer = "Control device - Peripheral device"
-
-[[questions]]
-question = "Inside the ADT are two different parts of the model that are ___ and ___"
-choices = ["Data structure and operations", "Application program and public operations", "Application program and private operations", "Data structure and application program"]
-answer = "Data structure and operations"
-
-[[questions]]
-question = "Images are stored in computers using \u2026 techniques?"
-choices = ["Raster graphics and bit map", "Vector graphics and bit map", "True color and raster graphics", "Index color and vector graphics", "Bit map"]
-answer = "Raster graphics and bit map"
-
-[[questions]]
-question = "In the asymmetric-key method used for confidentiality, which key(s) is (are) publicly known?"
-choices = ["Encryption key", "Decryption key", "Both encryption and decryption keys", "Neither encryption nor decryption keys"]
-answer = "Encryption key"
-
-[[questions]]
-question = "The format of an IPv6 address is referred to as __"
-choices = ["Dotted-hexadecimal notation", "Dotted-octal notation", "Dotted-decimal notation", "Hexadecimal digits"]
-answer = "Hexadecimal digits"
-
-[[questions]]
-question = "The term \"users\" in a DBMS has a broad meaning. We can divide users into:"
-choices = ["End users and database administrators", "End users and normal users", "Application programs and end users", "Application programs and database administrators"]
-answer = "End users and database administrators"
-
-[[questions]]
-question = "The main principles of ethics are"
-choices = ["Moral rules", "Ethical decision", "Beneficence", "Nonmaleficence"]
-answer = "Moral rules"

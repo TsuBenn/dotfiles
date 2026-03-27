@@ -2110,7 +2110,7 @@ answer = "Both of the first relation and the second"
 
 [[questions]]
 question = "separated the programming task from computer operation tasks."
-choices = ["Algorithms", "Data processors", "High-level programming languages", "Operating systems"]
+choices = ["Algorithms", "Programs", "High-level programming languages", "Operating systems"]
 answer = "High-level programming languages"
 
 [[questions]]

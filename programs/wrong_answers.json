@@ -83,5 +83,97 @@
     "question": "How many ethical principles are there?",
     "answer": "4",
     "timestamp": "2026-03-26T22:50:03.228671"
+  },
+  {
+    "question": "Which of the following is the user programmed semiconductor memory?",
+    "answer": "EPROM",
+    "timestamp": "2026-03-27T10:01:59.298169"
+  },
+  {
+    "question": "acts as a liaison between a client program and a server, a process-to-process connection.",
+    "answer": "Transport",
+    "timestamp": "2026-03-27T10:02:28.225999"
+  },
+  {
+    "question": "What is the primary difference between sequential and binary search algorithms?",
+    "answer": "divides the search space into halves, while sequential checks elements one by one",
+    "timestamp": "2026-03-27T10:44:31.106364"
+  },
+  {
+    "question": "Which component of the CPU is responsible for performing arithmetic and logical operations?",
+    "answer": "Arithmetic Logic Unit (ALU)",
+    "timestamp": "2026-03-27T10:46:44.614464"
+  },
+  {
+    "question": "The queue operation \u201cqueueName\u201d is used to __",
+    "answer": "Create an empty queue",
+    "timestamp": "2026-03-27T10:46:46.587051"
+  },
+  {
+    "question": "A hybrid computer uses a ______ to convert digital signals into analog signals.",
+    "answer": "Modem",
+    "timestamp": "2026-03-27T10:46:47.259185"
+  },
+  {
+    "question": "A data structure can be",
+    "answer": "an array, a record, or a linked list",
+    "timestamp": "2026-03-27T10:46:55.237144"
+  },
+  {
+    "question": "What details of an algorithm does a flowchart provide?",
+    "answer": "Flowchart",
+    "timestamp": "2026-03-27T10:46:57.142366"
+  },
+  {
+    "question": "The ____ is the highest level in the file system hierarchy. This does not have a parent directory",
+    "answer": "Root directory",
+    "timestamp": "2026-03-27T10:47:18.518366"
+  },
+  {
+    "question": "When a sequential file is updated, the _____ file contains a list of all errors occurring during the process.",
+    "answer": "Error report",
+    "timestamp": "2026-03-27T10:47:38.114369"
+  },
+  {
+    "question": "The term users in a DBMS has a broad meaning. We can divide users into:",
+    "answer": "End users and database administrators",
+    "timestamp": "2026-03-27T10:47:52.559268"
+  },
+  {
+    "question": "What describes the hierarchical model?",
+    "answer": "Data is organized as an inverted tree and each entity can have several children",
+    "timestamp": "2026-03-27T10:48:21.701515"
+  },
+  {
+    "question": "_____ is a program in execution. It is a program that has started but has not finished.",
+    "answer": "Process",
+    "timestamp": "2026-03-27T10:51:54.574881"
+  },
+  {
+    "question": "For each entity set in the E-R diagram we create a relation (table) in which there are n columns related to the ______ attributes defined for that set.",
+    "timestamp": "2026-03-27T10:55:40.274681"
+  },
+  {
+    "question": "A/an ______ is a program in a procedural language that is a set of statements. The statements are normally executed one after another. However, sometimes it is necessary to change this sequential order. This figure illustrates this statement.",
+    "timestamp": "2026-03-27T10:55:47.381923"
+  },
+  {
+    "question": "Which type of cipher does not substitute one symbol for another, instead it changes the location of the symbols?",
+    "timestamp": "2026-03-27T10:55:54.066511"
+  },
+  {
+    "question": "What must be maximized between modules in a software system?",
+    "answer": "Cohesion",
+    "timestamp": "2026-03-27T10:56:29.981469"
+  },
+  {
+    "question": "The _____ method is used when a collision occurs: the prime area addresses are searched for an open or unoccupied record where the new data can be placed",
+    "answer": "Open addressing resolution",
+    "timestamp": "2026-03-27T10:56:36.037254"
+  },
+  {
+    "question": "The ______ construct uses a set of actions one after another.",
+    "answer": "Sequence",
+    "timestamp": "2026-03-27T10:56:39.523774"
   }
 ]

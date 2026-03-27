@@ -8,7 +8,7 @@ import tomllib
 from datetime import datetime
 from pathlib import Path
 
-VERSION = "1.0"
+VERSION = "0.3"
 
 # ─── File I/O ─────────────────────────────────────────────────────────────────
 
@@ -334,7 +334,7 @@ def ask_question(stdscr, question: dict, q_num: int, total: int, can_go_prev: bo
     selected = 0
     ticked   = set()
     multi    = is_multi(question)
-    answered = question.get("_answered_correct")
+    answered = question.get("_answered_correct") or question.get("_wrong_count", 0) > 0
 
     if answered and question.get("_last_chosen"):
         last = question["_last_chosen"]
@@ -362,8 +362,7 @@ def ask_question(stdscr, question: dict, q_num: int, total: int, can_go_prev: bo
         except curses.error:
             pass
 
-        choice_y    = 3 + len(q_lines) + 1
-        current_row = choice_y
+        choice_y = 3 + len(q_lines) + 1
         for i, choice in enumerate(choices):
             is_sel = i == selected
             if answered:
@@ -373,22 +372,16 @@ def ask_question(stdscr, question: dict, q_num: int, total: int, can_go_prev: bo
                 style  = (curses.color_pair(1) | curses.A_BOLD) if is_correct_choice else \
                          (curses.color_pair(2) if is_chosen else curses.color_pair(5))
                 cursor = ">" if is_sel else " "
-                prefix = f"{cursor} {marker} {labels[i]}. "
+                line   = f"{cursor} {marker} {labels[i]}. {choice}"
             else:
                 tick   = f"[{'X' if i in ticked else ' '}] " if multi else ""
                 cursor = ">" if is_sel else " "
-                prefix = f"{cursor} {tick}{labels[i]}. "
+                line   = f"{cursor} {tick}{labels[i]}. {choice}"
                 style  = curses.color_pair(3) | curses.A_BOLD if is_sel else curses.color_pair(5)
-            indent       = " " * len(prefix)
-            choice_lines = wrap_text(choice, box_w - len(prefix))
             try:
-                stdscr.addstr(current_row, box_x, prefix + choice_lines[0], style)
-                for cont in choice_lines[1:]:
-                    current_row += 1
-                    stdscr.addstr(current_row, box_x, indent + cont, style)
+                stdscr.addstr(choice_y + i, box_x, line, style)
             except curses.error:
                 pass
-            current_row += 1
 
         prev_hint = "[ Prev  " if can_go_prev else "        "
         if answered:
@@ -445,30 +438,16 @@ def show_result(stdscr, question: dict, chosen, correct: bool,
         status = "✓ CORRECT!" if correct else "✗ WRONG"
         color  = curses.color_pair(1) if correct else curses.color_pair(2)
 
-        def draw_ans_list(start_row, ans_list, style):
-            """Draw a list of answers with wrapping, returns next free row."""
-            row = start_row
-            prefix = "• "
-            indent = "  "
-            for ans in ans_list:
-                lines = wrap_text(ans, box_w - 4 - len(prefix))
-                try:
-                    stdscr.addstr(row, box_x + 2, prefix + lines[0], style)
-                    for cont in lines[1:]:
-                        row += 1
-                        stdscr.addstr(row, box_x + 2, indent + cont, style)
-                except curses.error:
-                    pass
-                row += 1
-            return row
-
         try:
             stdscr.addstr(2, box_x, status, color | curses.A_BOLD)
             stdscr.addstr(4, box_x, "Correct answer:", curses.color_pair(4))
-            next_row = draw_ans_list(5, correct_ans, curses.color_pair(1) | curses.A_BOLD)
+            for idx, ans in enumerate(correct_ans):
+                stdscr.addstr(5 + idx, box_x + 2, f"• {ans}", curses.color_pair(1) | curses.A_BOLD)
             if not correct:
-                stdscr.addstr(next_row + 1, box_x, "Your answer:", curses.color_pair(4))
-                draw_ans_list(next_row + 2, chosen_ans, curses.color_pair(2))
+                row = 5 + len(correct_ans) + 1
+                stdscr.addstr(row, box_x, "Your answer:", curses.color_pair(4))
+                for idx, ans in enumerate(chosen_ans):
+                    stdscr.addstr(row + 1 + idx, box_x + 2, f"• {ans}", curses.color_pair(2))
         except curses.error:
             pass
 
@@ -595,4 +574,3 @@ def run():
 
 if __name__ == "__main__":
     run()
-
