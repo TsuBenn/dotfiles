@@ -7,6 +7,7 @@ import sys
 import tomllib
 from datetime import datetime
 from pathlib import Path
+import urllib.request
 
 VERSION = "1.3.25 (Beta)"
 FILEPATH = ""
@@ -719,7 +720,6 @@ def _parse_version(src: str) -> str:
     return "unknown"
  
 def check_for_updates() -> tuple[bool, str, str, str]:
-    import urllib.request
  
     local_src  = Path(__file__).read_text(encoding="utf-8")
     local_ver  = _parse_version(local_src)
@@ -736,8 +736,7 @@ def check_for_updates() -> tuple[bool, str, str, str]:
  
  
 def prompt_update(mode: str, local_ver: str, remote_ver: str):
-    import urllib.request
- 
+
     print()
     print(f"  ✦ Update available: {local_ver} → {remote_ver}")
     print("  Update now? [y/N] ", end="", flush=True)
