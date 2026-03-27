@@ -8,7 +8,7 @@ import tomllib
 from datetime import datetime
 from pathlib import Path
 
-VERSION = "1.3.2"
+VERSION = "1.3.21"
 FILEPATH = ""
 
 # ─── File I/O ─────────────────────────────────────────────────────────────────
