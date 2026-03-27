@@ -738,7 +738,6 @@ def check_for_updates() -> tuple[bool, str, str, str]:
 def prompt_update(mode: str, local_ver: str, remote_ver: str):
     import urllib.request
  
-    script_dir = Path(__file__).resolve().parent
     print()
     print(f"  ✦ Update available: {local_ver} → {remote_ver}")
     print("  Update now? [y/N] ", end="", flush=True)
@@ -756,7 +755,7 @@ def prompt_update(mode: str, local_ver: str, remote_ver: str):
         with urllib.request.urlopen(RAW_URL, timeout=5) as r:
             new_src = r.read()
         Path(__file__).write_bytes(new_src)
-        print(f"  ✓ Updated to {remote_ver}! Please restart the script.")
+        print(f"  ✓ Updated to {remote_ver}! Please restart the script.\n")
         sys.exit(0)
     except Exception as e:
         print(f"  ✗ Download failed: {e}")
