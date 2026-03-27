@@ -15,8 +15,8 @@ answer = "32"
 
 [[questions]]
 question = "Which of the following representations is erroneous?"
-choices = ["(10111)2", "(349)8", "(3AB)16", "2666"]
-answer = "(349)8"
+choices = ["(110)2", "(141)8", "(EF)16", "22A"]
+answer = "22A"
 
 [[questions]]
 question = "How many types of cyber attacks exist?"
@@ -71,7 +71,7 @@ answer = "2 units"
 [[questions]]
 question = "In a steganographic algorithm, if each comma (,) in the encrypted message equals digit 0 and each digit 1 equals digit 1. What is the hidden information in following message?"
 choices = ["0101", "1010", "0011", "1100"]
-answer = "1010"
+answer = "0101"
 
 [[questions]]
 question = "In the context of demand paging and demand segmentation, a memory size of 100 MB can execute ten programs, each of size 30 MB, for a total of 300 MB. At any moment, 100 MB of the ten programs are in memory and 200 MB are on disk. Therefore a virtual memory size of ____ MB."
@@ -1061,7 +1061,7 @@ answer = "Lexical"
 [[questions]]
 question = "The _____ analyzer checks the sentences created by the syntax analyzer to be sure that they contain no ambiguity."
 choices = ["Lexical", "Syntax", "Semantic", "Code generation"]
-answer = "Semantic"
+answer = "Syntax"
 
 [[questions]]
 question = "In the sequential file we process the records one by one. After the operating system processes the last record the _____ is detected and the loop is exited."
@@ -1710,7 +1710,7 @@ answer = "a string"
 
 [[questions]]
 question = "is an ordered set of unambiguous steps that produces a result and terminates in a finite time"
-choices = ["A construct", "B recursion", "C an iteration", "An algorithm"]
+choices = ["Construct", "Recursion", "An iteration", "An algorithm"]
 answer = "An algorithm"
 
 [[questions]]
@@ -1761,7 +1761,7 @@ answer = "Main memory"
 [[questions]]
 question = "When converting a decimal fraction to base b, we repeatedly"
 choices = ["Divide by", "Multiply by", "Add to", "Subtract from"]
-answer = "Multiply by"
+answer = "Divide by"
 
 [[questions]]
 question = "When the ciphertext is received the receiver must transform the ciphertext into the plaintext-this is"
@@ -1851,7 +1851,7 @@ answer = "Static data structure"
 [[questions]]
 question = "A memory that does not change its contents without external causes is known as"
 choices = ["Dynamic memory", "Static memory", "RAM", "EEPROM", "None of the others"]
-answer = "Static memory"
+answer = "EEPROM"
 
 [[questions]]
 question = "A/an ______ is a program in a procedural language that is a set of statements. The statements are normally executed one after another. However, sometimes it is necessary to change this sequential order. This figure illustrates this statement."
@@ -2126,7 +2126,7 @@ answer = "Row-major storage"
 [[questions]]
 question = "What is the analysis process in the system implementation phase that will use a program as an active agent that manipulates passive object?"
 choices = ["Procedure-oriented analysis", "Structured analysis", "Classical analysis", "All of others"]
-answer = "All of others"
+answer = "Procedure-oriented analysis"
 
 [[questions]]
 question = "What is the method in black box testing that a subset of values in the input domain is selected for testing?"

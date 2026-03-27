@@ -175,5 +175,30 @@
     "question": "The ______ construct uses a set of actions one after another.",
     "answer": "Sequence",
     "timestamp": "2026-03-27T10:56:39.523774"
+  },
+  {
+    "question": "A monitor\u2019s ______ is the distance between the holes in the mask behind the screen. This helps determine how sharp the dots appear.",
+    "answer": "Dot pitch",
+    "timestamp": "2026-03-27T13:22:59.781131"
+  },
+  {
+    "question": "What is the quality referring to the ability to move software from one hardware platform to another?",
+    "answer": "Interoperability",
+    "timestamp": "2026-03-27T13:23:17.095218"
+  },
+  {
+    "question": "In the ______ hashing method, there are no synonyms or collisions.",
+    "answer": "Direct",
+    "timestamp": "2026-03-27T15:04:24.326788"
+  },
+  {
+    "question": "In which case would an iterative algorithm be preferred over a recursive algorithm?",
+    "answer": "When stack overflow is a concern",
+    "timestamp": "2026-03-27T15:07:56.026014"
+  },
+  {
+    "question": "is an ordered set of unambiguous steps that produces a result and terminates in a finite time",
+    "answer": "An algorithm",
+    "timestamp": "2026-03-27T15:09:28.826993"
   }
 ]
