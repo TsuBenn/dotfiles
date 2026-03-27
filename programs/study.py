@@ -8,7 +8,7 @@ import tomllib
 from datetime import datetime
 from pathlib import Path
 
-VERSION = "1.3.24"
+VERSION = "1.3.25"
 FILEPATH = ""
 
 # ─── File I/O ─────────────────────────────────────────────────────────────────
@@ -709,37 +709,41 @@ def main(stdscr, filepath: str):
 
     show_stats(stdscr, total_unique, len(correct_first_try), wrong_questions_log)
 
-
 RAW_URL = "https://raw.githubusercontent.com/TsuBenn/dotfiles/main/programs/study.py"
+
+def _parse_version(src: str) -> str:
+    for line in src.splitlines():
+        if line.startswith("VERSION") and "=" in line:
+            val = line.split("=", 1)[1].strip()
+            return val.strip(chr(34)).strip(chr(39))
+    return "unknown"
  
-def check_for_updates() -> tuple[bool, str]:
-    """
-    Returns (update_available, mode) where mode is "git" or "standalone".
-    Silently returns (False, "") on any error.
-    """
-    import subprocess
+def check_for_updates() -> tuple[bool, str, str, str]:
     import urllib.request
  
     script_dir = Path(__file__).resolve().parent
+    local_src  = Path(__file__).read_text(encoding="utf-8")
+    local_ver  = _parse_version(local_src)
  
     try:
         with urllib.request.urlopen(RAW_URL, timeout=5) as r:
             remote_src = r.read().decode("utf-8")
-        local_src = Path(__file__).read_text(encoding="utf-8")
-        return (remote_src != local_src, "standalone")
+        remote_ver = _parse_version(remote_src)
+        if remote_src != local_src:
+            return (True, "standalone", local_ver, remote_ver)
+        return (False, "", "", "")
     except Exception:
-        return (False, "")
+        return (False, "", "", "")
  
  
-def prompt_update(mode: str):
-    """Show update notice and optionally update based on mode."""
-    import subprocess
+def prompt_update(mode: str, local_ver: str, remote_ver: str):
     import urllib.request
  
     script_dir = Path(__file__).resolve().parent
     print()
-    print("  ✦ Update available for study.py!")
+    print(f"  ✦ Update available: {local_ver} → {remote_ver}")
     print("  Update now? [y/N] ", end="", flush=True)
+
     try:
         choice = input().strip().lower()
     except (EOFError, KeyboardInterrupt):
@@ -753,7 +757,7 @@ def prompt_update(mode: str):
         with urllib.request.urlopen(RAW_URL, timeout=5) as r:
             new_src = r.read()
         Path(__file__).write_bytes(new_src)
-        print("  ✓ Updated! Please restart the script.\n")
+        print(f"  ✓ Updated to {remote_ver}! Please restart the script.")
         sys.exit(0)
     except Exception as e:
         print(f"  ✗ Download failed: {e}")
@@ -764,10 +768,10 @@ def run():
         print("Usage: python study.py <questions.toml or questions.json>")
         sys.exit(1)
  
-    update_available, method = check_for_updates()
+    update_available, mode, local_ver, remote_ver = check_for_updates()
     if update_available:
-        prompt_update(method)
- 
+        prompt_update(mode, local_ver, remote_ver) 
+
     curses.wrapper(lambda stdscr: main(stdscr, sys.argv[1]))
  
  
