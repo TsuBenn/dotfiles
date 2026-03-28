@@ -385,5 +385,26 @@
       "10"
     ],
     "timestamp": "2026-03-28T13:47:25.030047"
+  },
+  {
+    "question": "What describes the hierarchical model?",
+    "answer": [
+      "Data is organized as an inverted tree and each entity can have several children"
+    ],
+    "timestamp": "2026-03-28T15:49:40.717700"
+  },
+  {
+    "question": "Which 32-bit microprocessor is used in IBM\u2019s PS/2 model-80 computer?",
+    "answer": [
+      "80386"
+    ],
+    "timestamp": "2026-03-28T15:54:11.582757"
+  },
+  {
+    "question": "In a ______ the project team needs to choose a language or a set of languages from among the procedural languages.",
+    "answer": [
+      "Implementation phase"
+    ],
+    "timestamp": "2026-03-28T15:54:30.573808"
   }
 ]

@@ -450,7 +450,7 @@ def is_multi(question: dict) -> bool:
 def check_answer(question: dict, chosen) -> bool:
     if is_multi(question):
         return set(chosen) == set(question["answer"])
-    return chosen == question["answer"]
+    return chosen == question["answer"] or chosen == question["answer"][0]
 
 
 def ask_question(stdscr, question: dict, q_num: int, total: int, can_go_prev: bool):

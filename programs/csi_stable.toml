@@ -445,7 +445,7 @@ answer = ["The data in the parent node is always larger than the data in the lef
 
 [[questions]]
 question = "What describes the hierarchical model?"
-choices = ["Data is organized as a binary tree and each entity can have several children", "Data is organized as a binary tree and each entity have only one child", "Data is organized as an inverted tree and each entity can have several children", "Data is organized as an inverted tree and each entity have only one child"]
+choices = ["Data is organized as an inverted tree and each entity have only one child", "Data is organized as an inverted tree and each entity can have several children", "Data is organized as a binary tree and each entity have only one child", "Data is organized as a binary tree and each entity can have several children"]
 answer = ["Data is organized as an inverted tree and each entity can have several children"]
 
 [[questions]]
