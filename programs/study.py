@@ -710,7 +710,7 @@ def main(stdscr, filepath: str):
 
     show_stats(stdscr, total_unique, len(correct_first_try), wrong_questions_log)
 
-RAW_URL = "https://raw.githubusercontent.com/TsuBenn/dotfiles/main/programs/study.py"
+RAW_URL = f"https://raw.githubusercontent.com/TsuBenn/dotfiles/main/programs/study.py?{int(time.time())}"
 
 def _parse_version(src: str) -> str:
     for line in src.splitlines():
