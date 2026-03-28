@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import curses
+import time
 import json
 import random
 import sys
