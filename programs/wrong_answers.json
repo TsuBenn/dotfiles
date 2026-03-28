@@ -295,5 +295,95 @@
     "question": "What does \"sampling\" refer to in the context of audio storage?",
     "answer": "Capturing discrete values of the sound wave at regular intervals",
     "timestamp": "2026-03-27T16:17:27.565205"
+  },
+  {
+    "question": "When a sequential file is updated, the _____ file contains a list of all errors occurring during the process.",
+    "answer": "Error report",
+    "timestamp": "2026-03-27T21:39:35.671489"
+  },
+  {
+    "question": "are unwanted programs that are hidden within other programs (host). When the user executes the host program",
+    "answer": "Trojan horses",
+    "timestamp": "2026-03-27T21:39:39.483479"
+  },
+  {
+    "question": "C\u00e1c m\u1ee5c ti\u00eau thi\u1ebft k\u1ebf ch\u00ednh c\u1ee7a h\u1ec7 \u0111i\u1ec1u h\u00e0nh l\u00e0?",
+    "answer": [
+      "Efficient use of hardware and easy use of resources",
+      "Control subsystems and manage memory",
+      "Access I/O device and CPU",
+      "Provide UI"
+    ],
+    "timestamp": "2026-03-27T21:51:14.440568"
+  },
+  {
+    "question": "To un-set (force to 0) all the bits of a bit pattern, we",
+    "answer": [
+      "make a mask of all 0s and then AND the bit pattern and the mask"
+    ],
+    "timestamp": "2026-03-28T12:42:06.907390"
+  },
+  {
+    "question": "Which of the following Boolean expressions is equivalent to F = BC + A'BC?",
+    "answer": "AC",
+    "timestamp": "2026-03-28T12:55:13.708510"
+  },
+  {
+    "question": "Convert the following SOP expression to an equivalent POS expression ABC + A'B'C",
+    "answer": "(A + B' + C')(A' + B + C)",
+    "timestamp": "2026-03-28T13:01:00.610416"
+  },
+  {
+    "question": "Which of the following Boolean expressions is equivalent to F = (A + B)C\u2019?",
+    "answer": "A' + BC",
+    "timestamp": "2026-03-28T13:01:05.824427"
+  },
+  {
+    "question": "Which of the following Boolean expressions is equivalent to F = BC + A'BC?",
+    "answer": "AC",
+    "timestamp": "2026-03-28T13:01:13.966571"
+  },
+  {
+    "question": "Consider some computer generations\n1. the first computer generation\n2. the second computer generation\n3. the third computer generation\nAnd some technologies are used in computer generations",
+    "answer": "Integrated Circuits (IC)",
+    "timestamp": "2026-03-28T13:01:21.504722"
+  },
+  {
+    "question": "Write the Boolean expression of each of the logic circuits",
+    "answer": "A*D+ACD +ABD",
+    "timestamp": "2026-03-28T13:01:26.607021"
+  },
+  {
+    "question": "Convert the following SOP expression to an equivalent POS expression. ABC + AB'C + A'BC",
+    "answer": "(A+B')(B'+C')",
+    "timestamp": "2026-03-28T13:01:42.303061"
+  },
+  {
+    "question": "In ____ sort, the item that goes into the sorted list is always the first item in the unsorted list.",
+    "answer": [
+      "Insertion"
+    ],
+    "timestamp": "2026-03-28T13:47:20.663138"
+  },
+  {
+    "question": "A group includes ______ bits in the binary system are represented as one digit in the hexadecimal system.",
+    "answer": [
+      "4"
+    ],
+    "timestamp": "2026-03-28T13:47:22.459119"
+  },
+  {
+    "question": "Which shift operation would you use to divide a signed integer by 2?",
+    "answer": [
+      "Arithmetic right shift"
+    ],
+    "timestamp": "2026-03-28T13:47:23.902103"
+  },
+  {
+    "question": "The base of the decimal number system is",
+    "answer": [
+      "10"
+    ],
+    "timestamp": "2026-03-28T13:47:25.030047"
   }
 ]

@@ -9,7 +9,7 @@ from datetime import datetime
 from pathlib import Path
 import urllib.request
 
-VERSION = "1.3.26"
+VERSION = "1.3.25"
 FILEPATH = ""
 
 # ─── File I/O ─────────────────────────────────────────────────────────────────
@@ -195,7 +195,7 @@ def pick_answer(stdscr, choices: list, current_answer) -> list | str | None:
     Returns str if one selected, list if multiple, None if cancelled.
     """
     curses.curs_set(0)
-    labels   = ["A", "B", "C", "D", "E", "F", "G", "H"]
+    labels   = ["A", "B", "C", "D", "E", "F"]
     selected = 0
 
     # Pre-tick current answers regardless of type
@@ -260,7 +260,7 @@ def edit_screen(stdscr, question: dict, all_questions: list[dict], filepath: str
     """In-app editor. Returns updated or original question dict."""
     import copy
     draft  = copy.deepcopy(question)
-    labels   = ["A", "B", "C", "D", "E", "F", "G", "H"]
+    labels = ["A", "B", "C", "D", "E", "F"]
 
     FIELD_QUESTION = 0
     FIELD_CHOICES  = list(range(1, len(draft["choices"]) + 1))
@@ -443,7 +443,7 @@ NAV_EDIT = "__EDIT__"
 # ─── Question Screen ──────────────────────────────────────────────────────────
 
 def is_multi(question: dict) -> bool:
-    return isinstance(question["answer"], list) and len(question["answer"]) > 1
+    return isinstance(question["answer"], list)
 
 
 def check_answer(question: dict, chosen) -> bool:
@@ -455,7 +455,7 @@ def check_answer(question: dict, chosen) -> bool:
 def ask_question(stdscr, question: dict, q_num: int, total: int, can_go_prev: bool):
     curses.curs_set(0)
     choices  = question["choices"]
-    labels   = ["A", "B", "C", "D", "E", "F", "G", "H"]
+    labels   = ["A", "B", "C", "D", "E", "F"]
     selected = 0
     ticked   = set()
     multi    = is_multi(question)

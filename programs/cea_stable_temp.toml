@@ -1,0 +1,538 @@
+[[questions]]
+question = """Consider the expression NOT(A + B) = ?"""
+choices = ["NOT A AND NOT B", "NOT A OR NOT B", "A OR NOT B", "NOT A AND NOT B"]
+answer = ["NOT A AND NOT B"]
+
+[[questions]]
+question = """Consider an expression. NOT (A OR B) Choose the correct expression that is equal to the given expression."""
+choices = ["A NOR B", "A NAND B", "NOT A NOR B", "NOT A OR B"]
+answer = ["A NAND B"]
+
+[[questions]]
+question = """Assume that a truth table
+X Y OUTPUT
+1 1 1
+0 1 1
+0 0 0
+Which basic operator matches the table above?"""
+choices = ["AND", "OR", "NAND", "NOR"]
+answer = ["OR"]
+
+[[questions]]
+question = """The operation ______ yields true (binary value 1) if and only if both of its operands are true"""
+choices = ["OR", "AND", "XOR", "NAND"]
+answer = ["AND"]
+
+[[questions]]
+question = """_____ is made with cells that store data as capacitors."""
+choices = ["SRAM", "DRAM", "RDRAM", "CDRAM"]
+answer = ["DRAM"]
+
+[[questions]]
+question = """Which gate can be used to create an inverted output of an input signal in digital logic?"""
+choices = ["NOT gate", "OR gate", "AND gate", "XOR gate"]
+answer = ["NOT gate"]
+
+[[questions]]
+question = """The effective address of 
+EA = A + (R)
+(R) = 1"""
+choices = ["relative addressing", "autoindexing", "postindexing", "preindexing"]
+answer = ["autoindexing"]
+
+[[questions]]
+question = """The effective address of Register indirect addressing mode is"""
+choices = ["EA = R", "EA = (R)", "EA = R + A", "EA = (R) + A"]
+answer = ["EA = (R)"]
+
+[[questions]]
+question = """Which of the following PDP series computers is known for its use of 12-bit instructions and a single general purpose register, the accumulator?"""
+choices = ["PDP-8", "PDP-10", "PDP-11", "PDP-6"]
+answer = ["PDP-8"]
+
+[[questions]]
+question = """Which RAID level uses striping technique with a minimum of 3 disks and provides fault tolerance through the use of parity bit?"""
+choices = ["RAID 0", "RAID 1", "RAID 2", "RAID 3"]
+answer = ["RAID 3"]
+
+[[questions]]
+question = """Which instruction is used by MASM32 to return a procedure?"""
+choices = ["RET", "EXIT", "END", "RES"]
+answer = ["RET"]
+
+[[questions]]
+question = """Which register is the memory address register?"""
+choices = ["MAR", "MBR", "IR", "PC"]
+answer = ["MAR"]
+
+[[questions]]
+question = """Which registers can interact with the secondary storage?"""
+choices = ["MAR", "PC", "IR", "R0", "All of the mentioned"]
+answer = ["MAR", "PC"]
+
+[[questions]]
+question = """Which technique involves dividing physical memory into fixed-size or variable-size blocks to allocate memory to processes?"""
+choices = ["Partitioning", "Swapping", "Paging", "Translation Lookaside Buffer"]
+answer = ["Partitioning"]
+
+[[questions]]
+question = """Which of the following is not an operand type?"""
+choices = ["Addresses", "Logical data", "Value", "Characters"]
+answer = ["Value"]
+
+[[questions]]
+question = """Which type of instruction format is more flexible but can lead to inefficient use of memory?"""
+choices = ["Fixed-Length Instruction Format", "Variable-Length Instruction Format", "Compact Instruction Format", "Standardized Instruction Format"]
+answer = ["Variable-Length Instruction Format"]
+
+[[questions]]
+question = """For reads to and writes from main memory, ______ translates each virtual address into a physical address in main memory."""
+choices = ["MAR", "MMU", "Overlays", "TLB", "Accumulator"]
+answer = ["MMU"]
+
+[[questions]]
+question = """What are basic registers that help CPU establish a connection with an I/O device?"""
+choices = ["IIOAR, IIOBR", "IIOAR, MAR", "IIOBR, MAR", "MAR, MBR"]
+answer = ["IIOAR, IIOBR"]
+
+[[questions]]
+question = """Choose an operation in which no operating system's utility is called"""
+choices = ["Y = 10 + 7", "Read an integer from the keyboard.", "Print data to monitor.", "Read data from a file.", "None of the others"]
+answer = ["None of the others"]
+
+[[questions]]
+question = """Choose the appropriate words to fill in the following definitions: 
+
+ contains a word to be stored in memory or sent to the I/O unit, or is used to receive a word from memory or from the I/O unit.
+specifies the address in memory of a word to be written from or read into the MBR.  is employed to hold temporarily the right hand instruction word in memory."""
+choices = ["MBR, MAR, IBR", "AC, MAR, IR", "MAR, MBR, IBR", "AC, MBR, MAR"]
+answer = ["MBR, MAR, IBR"]
+
+[[questions]]
+question = """Consider an expression: A + (B C) Hoàng Hoàng
+What expression is equal to the given expression?"""
+choices = ["(A + B) /A - C)", "(A + B) /C", "A /(B + C)", "NOT (A/(B + C))"]
+answer = ["(A + B) /A - C)"]
+
+[[questions]]
+question = """In MASM32, which command is incorrect?"""
+choices = ["ADD EAX, a", "ADD EAX, EBX", "ADD a, EAX", "ADD a, b"]
+answer = ["ADD a, b"]
+
+[[questions]]
+question = """In an arithmetic left shift operation, what is appended to the rightmost bits?"""
+choices = ["Zeros", "Ones", "The original leftmost bit", "Random bits"]
+answer = ["Zeros"]
+
+[[questions]]
+question = """Consider some computer generations
+1. the first computer generation
+2. the second computer generation
+3. the third computer generation
+And some technologies are used in computer generations"""
+choices = ["Vacuum Tubes", "Transistors", "Integrated Circuits (IC)", "Microprocessors"]
+answer = ["Integrated Circuits (IC)"]
+
+[[questions]]
+question = """Consider the truth table
+A B F
+0 0 1
+0 1 0
+1 0 0
+1 1 0
+Choose the correct Algebraic Functions with given truth"""
+choices = ["F = NOT (A + B)", "F = A XOR B", "F = A AND NOT B", "F = A AND B"]
+answer = ["F = NOT (A + B)"]
+
+[[questions]]
+question = """What is the initial state of a process when it is admitted by the high-level scheduler, but not yet ready to execute?"""
+choices = ["New", "Ready", "Running", "Halted"]
+answer = ["Running"]
+
+[[questions]]
+question = """What is the most common mapping technique used in cache memory in modern computers?"""
+choices = ["Direct Mapping", "Fully Associative", "Set Associative", "None of the mentioned"]
+answer = ["Set Associative"]
+
+[[questions]]
+question = """What is the cache memory level that is integrated into the processor chip and has the lowest latency?"""
+choices = ["L1 cache", "L2 cache", "L3 cache", "L4 cache"]
+answer = ["L1 cache"]
+
+[[questions]]
+question = """What is the primary purpose of index registers within the processor?"""
+choices = ["To manage control signals", "To hold condition codes", "To facilitate indexed addressing", "To execute arithmetic operations"]
+answer = ["To facilitate indexed addressing"]
+
+[[questions]]
+question = """What is the primary advantage of indirect addressing mode?"""
+choices = ["Faster access to operands", "Ability to access a larger data set", "Flexibility in data location", "Reduced instruction size"]
+answer = ["Flexibility in data location"]
+
+[[questions]]
+question = """What is the primary method used to cope with storage conflicts in registers?"""
+choices = ["Increasing the size of the instruction set", "Register renaming", "Using shared memory", "Using technique of out-of-order issue with cut-of-order completion"]
+answer = ["Register renaming"]
+
+[[questions]]
+question = """What electronic component is used to govern operations such as fetching, decoding, and performing arithmetic operations executed by a processor?"""
+choices = ["Using a system clock", "Using a quartz crystal", "Using an analog to digital converter", "Using a counter"]
+answer = ["Using a system clock"]
+
+[[questions]]
+question = """What does CISC stand for?"""
+choices = ["Complex Instruction Set Computer", "Computer Instruction Set Complex", "Computer Instruction Summarize Complex", "Computer Instruction Summarize Complex"]
+answer = ["Complex Instruction Set Computer"]
+
+[[questions]]
+question = """What type of addressing is primarily used by almost all RISC instructions?"""
+choices = ["Immediate addressing", "Register addressing", "Indirect addressing", "Direct addressing"]
+answer = ["Register addressing"]
+
+[[questions]]
+question = """What type of instruction is used for converting data formats?"""
+choices = ["Transfer", "Arithmetic", "Control", "Conversion"]
+answer = ["Conversion"]
+
+[[questions]]
+question = """Which type of interrupt is exemplified by “division by zero, attempt to execute an illegal machine instruction”?"""
+choices = ["Program", "Timer", "I/O", "Hardware failure"]
+answer = ["Program"]
+
+[[questions]]
+question = """Which cache is not a shared cache?"""
+choices = ["L4 cache", "L3 cache", "L2 cache", "L1 cache"]
+answer = ["L1 cache"]
+
+[[questions]]
+question = """Which is the correct choice for the description “A single machine controls the simultaneous execution of a number of processing elements such as vector and array processors”?"""
+choices = ["Single instruction, single data (SISD)", "Single instruction, multiple data (SIMD)", "Multiple instruction, single data (MISD)", "Multiple instruction, multiple data (MIMD)"]
+answer = ["Single instruction, multiple data (SIMD)"]
+
+[[questions]]
+question = """Which computing model is characterized by a large number of processors working on different parts of a problem simultaneously?"""
+choices = ["Single instruction, single data (SISD)", "Single instruction, multiple data (SIMD)", "Multiple instruction, multiple data (MIMD)", "Multiple instruction, single data (MISD)"]
+answer = ["Multiple instruction, multiple data (MIMD)"]
+
+[[questions]]
+question = """Which of the following component does not belong to central processing unit?"""
+choices = ["System interconnection", "Arithmetic and logic unit", "Registers", "Control unit", "CPU interconnection"]
+answer = ["System interconnection"]
+
+[[questions]]
+question = """Which of the following memory devices has the lowest access speed?"""
+choices = ["ROM", "Flash memory", "Magnetic tape", "HDD", "Cache"]
+answer = ["Magnetic tape"]
+
+[[questions]]
+question = """Which portion of a computer consists of an ALU, a control unit, and registers, uses for fetching and executing instructions?"""
+choices = ["Main memory", "CPU", "I/O", "System interconnection"]
+answer = ["CPU"]
+
+[[questions]]
+question = """Which of the following components was used in the first ENIAC computer?"""
+choices = ["Bipolar transistors", "Field transistors", "Vacuum tubes", "Semiconductor ICs"]
+answer = ["Vacuum tubes"]
+
+[[questions]]
+question = """Which of the following algorithms is not typically used in cache memory replacement?"""
+choices = ["Least Recently Used (LRU)", "First-In,First-Out (FIFO)", "Least Frequently Used (LFU)", "Round Robin (RR)"]
+answer = ["Round Robin (RR)"]
+
+[[questions]]
+question = """Which portion of a computer consists of an ALU, a control unit, and registers, uses for fetching and executing instructions?"""
+choices = ["Main memory", "CPU", "I/O", "System interconnection"]
+answer = ["CPU"]
+
+[[questions]]
+question = """Which of the following components was used in the first ENIAC computer?"""
+choices = ["Bipolar transistors", "Field transistors", "Vacuum tubes", "Semiconductor ICs"]
+answer = ["Vacuum tubes"]
+
+[[questions]]
+question = """Which of the following algorithms is not typically used in cache memory replacement?"""
+choices = ["Least Recently Used (LRU)", "First-In-First-Out (FIFO)", "Least Frequently Used (LFU)", "Round Robin (RR)"]
+answer = ["Round Robin (RR)"]
+
+[[questions]]
+question = """Which of the following components of CPU is responsible to direct the system to execute instructions?"""
+choices = ["Arithmetic and Logic Unit (ALU)", "Control Unit (CU)", "Registers", "Random Access Memory (RAM)"]
+answer = ["Control Unit (CU)"]
+
+[[questions]]
+question = """Which of the following is a DISADVANTAGE of using programmed I/O?"""
+choices = ["Increases system efficiency", "Reduces CPU involvement in I/O operations", "Requires the CPU to be constantly busy with I/O tasks", "Increases system complexity"]
+answer = ["Requires the CPU to be constantly busy with I/O tasks"]
+
+[[questions]]
+question = """Which of the following describes a RISC (Reduced Instruction Set Computer) architecture?"""
+choices = ["Many complex instructions", "Fixed instruction length", "Extensive use of memory addressing modes", "Emphasis on multi-tasking capabilities"]
+answer = ["Fixed instruction length"]
+
+[[questions]]
+question = """Which of the following types of processors typically offer better performance for parallel processing?"""
+choices = ["Single-core processors", "Multi-core processors", "Microelectronics", "Digital signal processors (DSPs)"]
+answer = ["Multi-core processors"]
+
+[[questions]]
+question = """Which addressing mode allows direct specification of the memory address within the instruction?"""
+choices = ["Direct", "Indirect", "Register indirect", "Displacement"]
+answer = ["Direct"]
+
+[[questions]]
+question = """Which architectural concept involves replicating register banks to facilitate the sharing of pipeline resources among multiple threads?"""
+choices = ["Pipelining", "Superscalar", "Simultaneous multithreading", "Superpipelining"]
+answer = ["Simultaneous multithreading"]
+
+[[questions]]
+question = """Which memory has the fastest speed and smallest capacity?"""
+choices = ["Cache", "Main memory", "HDD", "Magnetic Disk"]
+answer = ["Cache"]
+
+[[questions]]
+question = """Which write technique in which all write operations are made to main memory as well as to the cache, ensuring that main memory is always valid?"""
+choices = ["Write through", "Write back", "Write around", "No write allocate"]
+answer = ["Write through"]
+
+[[questions]]
+question = """Which one of four basic functions of computer describes the following statement?
+
+'The paths among components are used to move data from memory to memory and from memory to peripheral gates to memory.' Hoang Hai"""
+choices = ["Data storage", "Data processing", "Data movement", "Control"]
+answer = ["Data movement"]
+
+[[questions]]
+question = """Which registers can be assigned to a variety of functions by the programmer?"""
+choices = ["Data registers", "General purpose registers", "Address registers", "Condition codes (flags)"]
+answer = ["General purpose registers"]
+
+[[questions]]
+question = """Which representation is most efficient to perform arithmetic operations on the signed integer numbers?"""
+choices = ["Sign-magnitude", "2's complement", "1\u2019s & 2\u2019s compliment", "1\u2019s complement"]
+answer = ["2's complement"]
+
+[[questions]]
+question = """Which state indicates that a process is currently being executed by the processor?"""
+choices = ["Running", "Ready", "NewBorn", "Halted"]
+answer = ["Running"]
+
+[[questions]]
+question = """Which component defines the system call interface to the operating system and facilitates binary portability?"""
+choices = ["Application Binary Interface", "Application Programming Interface", "Instruction Set Architecture", "Central Processing Unit"]
+answer = ["Application Binary Interface"]
+
+[[questions]]
+question = """Which method of accessing units of data is used to copy a block in main memory into cache memory?"""
+choices = ["Direct access", "Random access", "Sequential access", "Associative"]
+answer = ["Associative"]
+
+[[questions]]
+question = """Which method allows the programmer to view memory as consisting of multiple address spaces and is used to map logical addresses of variable length onto physical memory?"""
+choices = ["Paging", "Overlays", "Segmentation", "Paging with segmentation"]
+answer = ["Segmentation"]
+
+[[questions]]
+question = """Which portion of a computer consists of an ALU, a control unit, registers, uses for fetching and executing instructions?"""
+choices = ["Main memory", "CPU", "I/O", "System interconnection"]
+answer = ["CPU"]
+
+[[questions]]
+question = """Which kind of cache mapping maps each block of main memory into one unique line of the cache?"""
+choices = ["Direct mapping", "Set associative mapping", "Fully associative mapping", "Direct access"]
+answer = ["Direct mapping"]
+
+[[questions]]
+question = """Which type of interrupt is exemplified by division by zero, attempt to execute an illegal instruction?"""
+choices = ["Program", "Timer", "I/O", "Hardware failure"]
+answer = ["Program"]
+
+[[questions]]
+question = """Which type is not an interconnection bus?"""
+choices = ["Data lines", "Control lines", "Signal lines", "Address lines"]
+answer = ["Signal lines"]
+
+[[questions]]
+question = """Which of the following is a characteristic of sequential circuits compared to combinational circuits?"""
+choices = ["Do not use gates", "Output depends only on current inputs", "Output depends on current inputs and past inputs", "Simpler to design and implement"]
+answer = ["Output depends on current inputs and past inputs"]
+
+[[questions]]
+question = """(1) An I/O module must recognize one unique address for each peripheral it controls. (2) I/O channels are commonly seen on microcomputers, whereas I/O controllers are used on mainframes. The statement (1) is ___ and (2) is ___"""
+choices = ["true, false", "true, true", "false, true", "false, false"]
+answer = ["true, false"]
+
+[[questions]]
+question = """Control and status registers are used by which entities to control the operation of the processor?"""
+choices = ["Privileged, operating system programs", "Machine or assembly language programmers", "External I/O devices", "Main memory modules"]
+answer = ["Privileged, operating system programs"]
+
+[[questions]]
+question = """Choose the register that controls sequential execution."""
+choices = ["Program counter (PC)", "Instruction register (IR)", "Memory address register (MAR)", "Memory buffer register (MBR)"]
+answer = ["Program counter (PC)"]
+
+[[questions]]
+question = """For interrupts, all I/O modules share a common interrupt request line. When the processor senses an interrupt it sends out an interrupt acknowledge. This signal propagates through a series of I/O modules until it gets to a requesting module.
+Which kind of interrupt technique is it?"""
+choices = ["Multiple interrupt lines", "Software poll", "Daisy chain", "Bus arbitration"]
+answer = ["Daisy chain"]
+
+[[questions]]
+question = """EEPROM is read-mostly memory and volatile"""
+choices = ["True", "False"]
+answer = ["False"]
+
+[[questions]]
+question = """For reads to and writes from main memory, ______ translates each virtual address into a physical address"""
+choices = ["MAR", "MMU", "Overlays", "TLB", "Accumulator"]
+answer = ["MMU"]
+
+[[questions]]
+question = """From a structural point of view, the external devices are controlled by"""
+choices = ["Control signals", "Peripheral device", "I/O modules", "Remote devices"]
+answer = ["I/O modules"]
+
+[[questions]]
+question = """In ASM32, which OPCODE is used to compare two values?"""
+choices = ["COM", "CMP", "IF .ELSE", "TEST"]
+answer = ["CMP"]
+
+[[questions]]
+question = """In modern computers, which devices among the memory types have the smallest capacity?"""
+choices = ["RAM", "Magnetic Tape", "Hard Disk Drive", "Cache Memory"]
+answer = ["Cache Memory"]
+
+[[questions]]
+question = """In which I/O technique does an I/O channel or processor manage transfer of data, thus freeing the CPU?"""
+choices = ["Programmed I/O", "Interrupt-driven I/O", "Channel I/O", "Memory-mapped I/O"]
+answer = ["Channel I/O"]
+
+[[questions]]
+question = """In terms of organization, what is the basic element of semiconductor memory?"""
+choices = ["Memory capacity", "Memory block", "Memory cell", "Memory location"]
+answer = ["Memory cell"]
+
+[[questions]]
+question = """In various statement types in a high-level programming language, what is not the most common statement?"""
+choices = ["GOTO statement", "IF statement", "CLOOP statement", "CALL procedure statement"]
+answer = ["GOTO statement"]
+
+[[questions]]
+question = """Multiple processors share a single memory or pool of means of a shared bus or other interconnection mechanism, a distinguishing feature is that the memory access time to any region of memory is approximately the same for each processor. Which concept does the statement belong to?"""
+choices = ["Symmetric multiprocessor (SMP)", "Nonuniform memory access (NUMA)", "Cluster", "Single instruction, multiple data (SIMD)"]
+answer = ["Symmetric multiprocessor (SMP)"]
+
+[[questions]]
+question = """Performs the computer’s data processing functions is"""
+choices = ["Arithmetic and logic unit (ALU)", "Control unit", "CPU interconnection", "Registers"]
+answer = ["Arithmetic and logic unit (ALU)"]
+
+[[questions]]
+question = """The pulse rate in the ck system is known as the"""
+choices = ["ck cycle", "ck speed", "ck time", "ck tick"]
+answer = ["ck speed"]
+
+[[questions]]
+question = """The first generation of computers used _____ for digital logic elements and memory?"""
+choices = ["Transistor", "Integrated Circuits", "Large-scale integration", "Vacuum Tubes"]
+answer = ["Vacuum Tubes"]
+
+[[questions]]
+question = """The _____ scheduler executes relatively infrequently and makes the coarse-grained decision of whether or not to take on a new process, and which one to take. The _____ scheduler, also known as the dispatcher, executes frequently and makes the fine-grained decision of which job to execute next."""
+choices = ["short-term; medium-term", "medium-term; short-term", "long-term; short-term", "long-term; medium-term"]
+answer = ["long-term; short-term"]
+
+[[questions]]
+question = """The effective address of ______ is EA = top of stack"""
+choices = ["Immediate", "Direct", "Indirect", "Displacement", "Implicit"]
+answer = ["Implicit"]
+
+[[questions]]
+question = """The stored-program concept means a computer could get its instructions by reading them from memory, and a program could be set or altered by setting the values of a portion of memory"""
+choices = ["True", "False"]
+answer = ["True"]
+
+[[questions]]
+question = """The I/O technique where the processor busy waits for an I/O operation to complete is called"""
+choices = ["Programmed I/O or DMA", "Interrupt driven I/O", "Direct Memory Access (DMA)", "Programmed I/O"]
+answer = ["Programmed I/O"]
+
+[[questions]]
+question = """The task of subdivision is carried out dynamically by the OS and is known as"""
+choices = ["Scheduling", "Memory management", "Virtual Memory", "All of the mentioned"]
+answer = ["Memory management"]
+
+[[questions]]
+question = """The PC, IR, MAR, MBR registers belong to which of the following groups?"""
+choices = ["Control and Status Registers", "User-Visible Registers", "General Registers", "Handle Registers"]
+answer = ["Control and Status Registers"]
+
+[[questions]]
+question = """To enhance performance in a superscalar processor, which method(s) should we apply?"""
+choices = ["Duplication of resources.", "Out-of-order issue.", "Renaming registers.", "All of the mentioned."]
+answer = ["All of the mentioned."]
+
+[[questions]]
+question = """The hardware mechanism that allows a device to notify the CPU is called"""
+choices = ["polling", "interrupt", "driver", "controlling"]
+answer = ["interrupt"]
+
+[[questions]]
+question = """The chunks of a program, known as pages, could be assigned to available chunks of memory, known as frames, is called"""
+choices = ["Swapping", "Partitioning", "Paging", "Virtual Memory", "Segmentation"]
+answer = ["Paging"]
+
+[[questions]]
+question = """The decision as to which process shall be handled by an available I/O device"""
+choices = ["Medium-term scheduling", "Short-term scheduling", "I/O scheduling", "Long-term scheduling"]
+answer = ["I/O scheduling"]
+
+[[questions]]
+question = """With the hard disk data layout, the set of all the tracks in the same relative position on the platter, is called"""
+choices = ["Cylinder", "Tracks", "Inter-track gap", "Sector"]
+answer = ["Cylinder"]
+
+[[questions]]
+question = """We have a long-term queue of process requests, typically stored on"""
+choices = ["main memory", "disk", "cache memory", "registers"]
+answer = ["disk"]
+
+[[questions]]
+question = """Steps for executing a machine instruction are concerned, given an assembly code: ADD EAX, V. What step will access the variable V?"""
+choices = ["The fetch data step.", "The fetch instruction step.", "The process data step.", "The interpret instruction step."]
+answer = ["The fetch data step."]
+
+[[questions]]
+question = """What is the main advantage of using DMA over Programmed I/O or Interrupt Driven I/O?"""
+choices = ["DMA reduces the CPU involvement and overhead in data transfer", "DMA increases the data transfer rate and efficiency", "DMA allows concurrent execution of CPU and IO operations", "All of the mentioned"]
+answer = ["All of the mentioned"]
+
+[[questions]]
+question = """What are the most important general categories of data that machine instructions operate on?"""
+choices = ["Addresses, numbers, characters, and logical data", "Text, images, functions, and audio", "Variables, functions, and arrays", "Instructions, control signals, and registers"]
+answer = ["Addresses, numbers, characters, and logical data"]
+
+[[questions]]
+question = """What is the correct order of memory speed from fastest to slowest?"""
+choices = ["Registers > Cache > RAM > SSD", "Cache > Registers > RAM > SSD", "Registers > Cache > SSD > RAM", "Cache > Registers > SSD > RAM", "All of the mentioned are wrong"]
+answer = ["Registers > Cache > RAM > SSD"]
+
+[[questions]]
+question = """Sort the following memory types in ascending order by access speed:"""
+choices = ["HDD - L2 cache - L1 cache", "HDD - Main Memory - L1 cache - L2 cache", "HDD - L2 cache - L1 cache - Main Memory", "Main Memory - L2 cache - L1 cache - HDD"]
+answer = ["HDD - L2 cache - L1 cache"]
+
+[[questions]]
+question = """What is correct about increasing performance and endurance? Hoàng Hùng"""
+choices = ["Hard Disk - DRAM - NAND Flash - SRAM", "Hard Disk - NAND Flash - DRAM - SRAM", "NAND Flash - Hard Disk - SRAM - DRAM", "Hard Disk - DRAM - SRAM - NAND Flash"]
+answer = ["Hard Disk - NAND Flash - DRAM - SRAM"]
+
+[[questions]]
+question = """The speed of data delivery is your main concern when configuring a RAID drive for a Media Streaming Server. This server has two hard disks installed. What type of RAID should you install, and what type of data will be stored on Disk 1 and Disk 2?"""
+choices = ["RAID 0 - Disk 1 (Stripe) and Disk 2 (Stripe)", "RAID 0 - Disk 1 (Mirror) and Disk 2 (Mirror)", "RAID 1 - Disk 1 (Stripe) and Disk 2 (Stripe)", "RAID 1 - Disk 1 (Mirror) and Disk 2 (Mirror)"]
+answer = ["RAID 0 - Disk 1 (Stripe) and Disk 2 (Stripe)"]
+
+[[questions]]
+question = """Which of the following are the four basic functions that a computer performs?"""
+choices = ["Data processing, Data storage, Control", "Data processing, Data storage, movement, Interrupt", "Data processing, Data storage, Interrupt, Control", "Data processing, Interrupt, movement, Control"]
+answer = ["Data processing, Data storage, Control"]
