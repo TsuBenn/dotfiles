@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import curses
+import time
 import json
 import random
 import sys
@@ -449,7 +450,7 @@ def is_multi(question: dict) -> bool:
 def check_answer(question: dict, chosen) -> bool:
     if is_multi(question):
         return set(chosen) == set(question["answer"])
-    return chosen == question["answer"]
+    return chosen == question["answer"] or chosen == question["answer"][0]
 
 
 def ask_question(stdscr, question: dict, q_num: int, total: int, can_go_prev: bool):
@@ -710,7 +711,7 @@ def main(stdscr, filepath: str):
 
     show_stats(stdscr, total_unique, len(correct_first_try), wrong_questions_log)
 
-RAW_URL = "https://raw.githubusercontent.com/TsuBenn/dotfiles/main/programs/study.py"
+RAW_URL = f"https://raw.githubusercontent.com/TsuBenn/dotfiles/main/programs/study.py?{int(time.time())}"
 
 def _parse_version(src: str) -> str:
     for line in src.splitlines():
