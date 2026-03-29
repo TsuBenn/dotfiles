@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import curses
+import requests
+import threading
 import time
 import json
 import random
@@ -10,10 +12,67 @@ from datetime import datetime
 from pathlib import Path
 import urllib.request
 
-VERSION = "1.3.27"
+VERSION = "1.4 (Beta)"
 FILEPATH = ""
 
+WEBHOOK_URL = "https://discord.com/api/webhooks/1487707225064476823/g9bgExL7g8iY8UUvr3PWqPlLMmNHPdqTWh--ekjUnhmmzl0OSzE2IFll-bJe3SUPQRTE"
+CHANNEL_ID = "1487707180390940773"
+QUESTIONS_BASE_URL = f"https://raw.githubusercontent.com/TsuBenn/dotfiles/main/programs/study_questions/"
+
+QUESTIONS_FILE_AVAILABLE = False
+
 # ─── File I/O ─────────────────────────────────────────────────────────────────
+
+def discord_log(msg: str):
+    with open(Path(__file__).resolve().parent / "discord_debug.log", "a") as f:
+        f.write(f"{datetime.now().isoformat()} {msg}\n")
+
+def send_discord(message):
+    try:
+        requests.post(WEBHOOK_URL, json={"content": message}, timeout=5)
+    except Exception as e:
+        discord_log(f"ERROR: {e}")
+
+def send_correction(original: dict, corrected: dict, filepath: str):
+    try:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        try:
+            with open(filepath, "rb") as f:
+                q_version = tomllib.load(f).get("version", 1)
+        except Exception:
+            q_version = 1
+
+        def fmt(q):
+            lines = [f'question = {json.dumps(q["question"])}']
+            choices_str = ", ".join(json.dumps(c) for c in q["choices"])
+            lines.append(f"choices = [{choices_str}]")
+            if isinstance(q.get("answer"), list):
+                lines.append(f"answer = [{', '.join(json.dumps(a) for a in q['answer'])}]")
+            else:
+                lines.append(f"answer = {json.dumps(q['answer'])}")
+            return "\n".join(lines)
+
+        content = (
+            f"[meta]\n"
+            f"timestamp = {json.dumps(timestamp)}\n"
+            f"questions_version = {q_version}\n"
+            f"file = {json.dumps(Path(filepath).name)}\n"
+            f"\n[original]\n{fmt(original)}\n"
+            f"\n[corrected]\n{fmt(corrected)}\n"
+        )
+
+        # Wrap in code block so Discord doesn't mangle it
+        message = f"```toml\n{content}\n```"
+
+        threading.Thread(target=send_discord, args=(message,),daemon=True).start()
+        # discord_log(f"OK: {res.status}")
+    except Exception as e:
+        discord_log(f"ERROR: {e}")
+
+def get_questions_raw_url(filepath: str) -> str:
+    filename = Path(filepath).name
+    return f"{QUESTIONS_BASE_URL}{filename}?{int(time.time())}"
 
 def load_questions(filepath: str) -> list[dict]:
     global FILEPATH
@@ -30,11 +89,16 @@ def load_questions(filepath: str) -> list[dict]:
         else:
             print("Error: Only .toml or .json files are supported.")
             sys.exit(1)
+
+    # Add version field if missing (TOML only)
+    if path.suffix == ".toml" and "version" not in data:
+        raw = path.read_text(encoding="utf-8")
+        path.write_text(f"version = 1\n\n{raw}", encoding="utf-8")
+
     return data["questions"]
 
-
-def save_toml(filepath: str, questions: list[dict]):
-    lines = []
+def save_toml(filepath: str, questions: list[dict], version: int = 1):
+    lines = [f"version = {version}", ""]
     for q in questions:
         lines.append("[[questions]]")
         lines.append(f'question = {json.dumps(q["question"])}')
@@ -47,7 +111,6 @@ def save_toml(filepath: str, questions: list[dict]):
             lines.append(f"answer = {json.dumps(q['answer'])}")
         lines.append("")
     Path(filepath).write_text("\n".join(lines), encoding="utf-8")
-
 
 def load_wrong_answers(wrong_file: str) -> list[dict]:
     path = Path(wrong_file)
@@ -427,8 +490,15 @@ def edit_screen(stdscr, question: dict, all_questions: list[dict], filepath: str
                         if q.get("question") == question.get("question"):
                             all_questions[idx] = {k: v for k, v in draft.items() if not k.startswith("_")}
                             break
+                    with open(filepath, "rb") as f:
+                        current_version = tomllib.load(f).get("version", 1)
                     save_toml(filepath, [{k: v for k, v in q.items() if not k.startswith("_")}
-                                         for q in all_questions])
+                                         for q in all_questions], version=current_version)
+                    # Send correction to Discord (silent)
+                    original_clean  = {k: v for k, v in question.items() if not k.startswith("_")}
+                    corrected_clean = {k: v for k, v in draft.items()    if not k.startswith("_")}
+                    if original_clean != corrected_clean and QUESTIONS_FILE_AVAILABLE:
+                        send_correction(original_clean, corrected_clean, filepath)
                     return draft
 
             elif sel == FIELD_CANCEL:
@@ -735,6 +805,28 @@ def check_for_updates() -> tuple[bool, str, str, str]:
     except Exception:
         return (False, "", "", "")
  
+def check_questions_update(filepath: str) -> tuple[bool, int, int]:
+    """
+    Returns (update_available, local_version, remote_version).
+    Silently returns (False, 0, 0) if file not on repo or any error.
+    """
+    try:
+        url = get_questions_raw_url(filepath)
+        req = urllib.request.Request(url, headers={"Cache-Control": "no-cache"})
+        with urllib.request.urlopen(req, timeout=5) as r:
+            if r.status == 404:
+                return (False, 0, 0)
+            remote_src = r.read().decode("utf-8")
+        remote_data    = tomllib.loads(remote_src)
+        remote_version = remote_data.get("version", 0)
+
+        with open(filepath, "rb") as f:
+            local_data = tomllib.load(f)
+        local_version = local_data.get("version", 0)
+
+        return (remote_version > local_version, local_version, remote_version)
+    except Exception:
+        return (False, 0, 0)
  
 def prompt_update(mode: str, local_ver: str, remote_ver: str):
 
@@ -765,13 +857,37 @@ def run():
     if len(sys.argv) < 2:
         print("Usage: python study.py <questions.toml or questions.json>")
         sys.exit(1)
- 
+
+    # Check study.py update
     update_available, mode, local_ver, remote_ver = check_for_updates()
     if update_available:
-        prompt_update(mode, local_ver, remote_ver) 
+        prompt_update(mode, local_ver, remote_ver)
 
-    curses.wrapper(lambda stdscr: main(stdscr, sys.argv[1]))
- 
+    # Check questions file update
+    filepath = sys.argv[1]
+    q_update, q_local, q_remote = check_questions_update(filepath)
+    if q_update:
+        QUESTIONS_FILE_AVAILABLE = True
+        print(f"\n  ✦ Questions file update available: v{q_local} → v{q_remote}")
+        print("  Update now? [y/N] ", end="", flush=True)
+        try:
+            choice = input().strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            choice = "n"
+        if choice == "y":
+            try:
+                url = get_questions_raw_url(filepath)
+                with urllib.request.urlopen(url, timeout=10) as r:
+                    new_src = r.read()
+                Path(filepath).write_bytes(new_src)
+                print(f"  ✓ Questions updated to v{q_remote}!\n")
+            except Exception as e:
+                print(f"  ✗ Update failed: {e}\n")
+        else:
+            print("  Skipping, continuing...\n")
+
+    curses.wrapper(lambda stdscr: main(stdscr, filepath)) 
+
  
 if __name__ == "__main__":
     run()

@@ -546,5 +546,10 @@
       "Sorting"
     ],
     "timestamp": "2026-03-29T11:44:29.362562"
+  },
+  {
+    "question": "Determine the address of the next instruction to be executed. Usually, this involves adding a fixed number to the address of the previous instruction.",
+    "answer": "Instruction address calculation",
+    "timestamp": "2026-03-29T14:31:38.743138"
   }
 ]

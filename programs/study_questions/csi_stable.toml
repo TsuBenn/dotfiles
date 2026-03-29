@@ -719,8 +719,8 @@ choices = ["First node", "Second node", "Null node", "Last node"]
 answer = ["First node"]
 
 [[questions]]
-question = "The queue operation \"queueName\" is used to"
-choices = ["Delete queue", "Check status of queue", "Create an empty queue", "Insert queue"]
+question = "The queue operation \"queue(queueName)\" is used to"
+choices = ["Check status of queue", "Delete queue", "Create an empty queue", "Insert queue"]
 answer = ["Create an empty queue"]
 
 [[questions]]
@@ -885,13 +885,13 @@ answer = ["5"]
 
 [[questions]]
 question = "In two's complement with a 4-bit allocation, we get ______ when we add 5"
-choices = ["5", "-6", "-7", "10"]
+choices = ["5", "-7", "-6", "10"]
 answer = ["-6"]
 
 [[questions]]
 question = "In the sign-and-magnitude representation, the memory location can hold four bits, assume that we have stored integer 6 in a memory location and we then try to subtract 7 to the integer. The computer\u2019s response is"
-choices = ["6", "-6", "7", "-7"]
-answer = ["-7"]
+choices = ["-6", "7", "-7", "6"]
+answer = "-6"
 
 [[questions]]
 question = "Assume memory location that can only hold four bits. What is the result, if we have stored the integer 11 in a memory location and then try to add 9 to the unsigned integer?"
@@ -1755,8 +1755,8 @@ answer = ["Main memory"]
 
 [[questions]]
 question = "When converting a decimal fraction to base b, we repeatedly"
-choices = ["Divide by", "Multiply by", "Add to", "Subtract from"]
-answer = ["Multiply by"]
+choices = ["Subtract from", "Divide by", "Multiply by", "Add to"]
+answer = "Divide by"
 
 [[questions]]
 question = "When the ciphertext is received the receiver must transform the ciphertext back into the plaintext-this is"

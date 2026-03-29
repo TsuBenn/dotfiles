@@ -1,3 +1,5 @@
+version = 1
+
 [[questions]]
 question = "The stored-program concept means a computer could get its instructions by reading them from memory, and a program could be set or altered by setting the values of a portion of memory."
 choices = ["True", "False"]
@@ -99,8 +101,8 @@ choices = ["01101010", "10110101", "01101101", "11010100", "11010100"]
 answer = "11010100"
 
 [[questions]]
-question = "What is result logical shift of 10110000 by 2 bit?"
-choices = ["00101100", "01011000", "01001100", "00110000"]
+question = "What is result logical right shift of 10110000 by 2 bit?"
+choices = ["01011000", "01001100", "00110000", "00101100"]
 answer = "00101100"
 
 [[questions]]
@@ -545,7 +547,7 @@ answer = "CPU"
 
 [[questions]]
 question = "Which of the following components was used in the first ENIAC computer?"
-choices = ["Bipolar transistors", "Field transistors", "Vacuum tubes", "Semiconductor ICs"]
+choices = ["Bipolar transistors", "Field transistors", "Semiconductor ICs", "Vacuum tubes"]
 answer = "Vacuum tubes"
 
 [[questions]]
