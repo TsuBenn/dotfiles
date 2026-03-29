@@ -469,5 +469,82 @@
       "string"
     ],
     "timestamp": "2026-03-29T11:05:39.641453"
+  },
+  {
+    "question": "Use a simple left shift operation on the bit pattern 1001 1000",
+    "answer": [
+      "0011 0000"
+    ],
+    "timestamp": "2026-03-29T11:22:30.096120"
+  },
+  {
+    "question": "What is the 80-20 rule in cache?",
+    "answer": [
+      "Most computers typically spend 80 percent of their time accessing only 20 percent of the data"
+    ],
+    "timestamp": "2026-03-29T11:22:46.163452"
+  },
+  {
+    "question": "Which access method typically requires additional space for maintaining an index structure but provides faster access to records compared to sequential access?",
+    "answer": [
+      "Indexed sequential access"
+    ],
+    "timestamp": "2026-03-29T11:24:33.461363"
+  },
+  {
+    "question": "In the ______ we can think of a program as an active agent that manipulates passive objects",
+    "answer": [
+      "Procedural paradigm"
+    ],
+    "timestamp": "2026-03-29T11:30:47.267985"
+  },
+  {
+    "question": "In the sequential file we process the records one by one. After the operating system processes the last record the _____ is detected and the loop is exited.",
+    "answer": [
+      "EOF"
+    ],
+    "timestamp": "2026-03-29T11:30:52.438126"
+  },
+  {
+    "question": "The ______ acts as a liaison between a client program and a server, a process-to-process connection.",
+    "answer": [
+      "Transport"
+    ],
+    "timestamp": "2026-03-29T11:31:40.290887"
+  },
+  {
+    "question": "Sending a virus to a computer is called an \n\n__________ attack.",
+    "answer": [
+      "Neither a nor b"
+    ],
+    "timestamp": "2026-03-29T11:39:33.919192"
+  },
+  {
+    "question": "For surface organization of magnetic tape, the width of the tape is divided into nine tracks. Nine vertical locations can store 8 bits of information related to a byte plus 1 bit for",
+    "answer": [
+      "Error detection"
+    ],
+    "timestamp": "2026-03-29T11:39:49.822938"
+  },
+  {
+    "question": "The ______ construct uses a set of actions one after another.",
+    "answer": [
+      "Sequence"
+    ],
+    "timestamp": "2026-03-29T11:44:17.067650"
+  },
+  {
+    "question": "What is an example of a declarative programming language?",
+    "answer": [
+      "SQL"
+    ],
+    "timestamp": "2026-03-29T11:44:26.952712"
+  },
+  {
+    "question": "______ is a basic algorithm that arranges data according to its value.",
+    "answer": [
+      "Sorting"
+    ],
+    "timestamp": "2026-03-29T11:44:29.362562"
   }
 ]

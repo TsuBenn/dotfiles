@@ -236,7 +236,7 @@ def pick_answer(stdscr, choices: list, current_answer) -> list | str | None:
                 pass
             row += 1
 
-        draw_footer(stdscr, " ↑↓ Navigate   Space Toggle   Enter Confirm   Esc Cancel ")
+        draw_footer(stdscr, " ↑↓: Navigate   Space: Toggle   Enter: Confirm   Esc: Cancel ")
         stdscr.refresh()
 
         key = stdscr.getch()
@@ -363,7 +363,7 @@ def edit_screen(stdscr, question: dict, all_questions: list[dict], filepath: str
             except curses.error:
                 pass
 
-        draw_footer(stdscr, " ↑↓/Tab Navigate   Enter Edit/Confirm   Esc Cancel ")
+        draw_footer(stdscr, " ↑↓/Tab: Navigate   Enter: Edit/Confirm   Esc: Cancel ")
         nonlocal row
         row = r
 
@@ -516,13 +516,13 @@ def ask_question(stdscr, question: dict, q_num: int, total: int, can_go_prev: bo
                 pass
             current_row += 2
 
-        prev_hint = "[ Prev  " if can_go_prev else "        "
+        prev_hint = "[: Prev  " if can_go_prev else "        "
         if answered:
-            footer = f" {prev_hint}] Next   E Edit   Q Quit "
+            footer = f" {prev_hint}]: Next   E: Edit   Q: Quit "
         elif multi:
-            footer = f" ↑↓ Navigate   Space Toggle   Enter Submit   {prev_hint}] Next   E Edit   Q Quit "
+            footer = f" ↑↓: Navigate   Space: Toggle   Enter: Submit   {prev_hint}]: Next   E: Edit   Q: Quit "
         else:
-            footer = f" ↑↓ Navigate   Enter Select   {prev_hint}] Next   E Edit   Q Quit "
+            footer = f" ↑↓: Navigate   Enter: Select   {prev_hint}]: Next   E: Edit   Q: Quit "
         draw_footer(stdscr, footer)
         stdscr.refresh()
 
@@ -598,7 +598,7 @@ def show_result(stdscr, question: dict, chosen, correct: bool,
         except curses.error:
             pass
 
-        draw_footer(stdscr, " Enter Continue   E Edit question ")
+        draw_footer(stdscr, " Enter: Continue   E: Edit question ")
         stdscr.refresh()
 
         key = stdscr.getch()
@@ -628,14 +628,6 @@ def show_stats(stdscr, total_questions: int, correct_count: int, wrong_details: 
         (f"  Score           : {pct:.1f}%",                curses.color_pair(4) | curses.A_BOLD),
         ("",                                               0),
     ]
-
-    if wrong_details:
-        lines.append(("  Questions you missed:", curses.color_pair(2) | curses.A_BOLD))
-        for q in wrong_details:
-            for wl in wrap_text(f"  • {q['question']}", box_w - 2):
-                lines.append((wl, curses.color_pair(2)))
-        lines.append(("", 0))
-        lines.append(("  (Saved to wrong_answers.json)", curses.color_pair(4)))
 
     start_y = max(1, (h - len(lines)) // 2)
     for i, (text, style) in enumerate(lines):
@@ -711,7 +703,7 @@ def main(stdscr, filepath: str):
 
     show_stats(stdscr, total_unique, len(correct_first_try), wrong_questions_log)
 
-RAW_URL = f"https://raw.githubusercontent.com/TsuBenn/dotfiles/main/programs/study.py?t={int(time.time())}"
+RAW_URL = f"https://raw.githubusercontent.com/TsuBenn/dotfiles/main/programs/study.py?{int(time.time())}"
 
 def _parse_version(src: str) -> str:
     for line in src.splitlines():
@@ -728,9 +720,8 @@ def check_for_updates() -> tuple[bool, str, str, str]:
     req = urllib.request.Request(
         RAW_URL,
         headers={
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            "Pragma": "no-cache",
-            "Expires": "0"
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
         }
     )
  
@@ -775,10 +766,6 @@ def run():
         print("Usage: python study.py <questions.toml or questions.json>")
         sys.exit(1)
  
-    print()
-    print(f"  Fetching data from {RAW_URL}")
-    print(f"  Checking for update...")
-
     update_available, mode, local_ver, remote_ver = check_for_updates()
     if update_available:
         prompt_update(mode, local_ver, remote_ver) 
