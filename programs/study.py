@@ -711,7 +711,7 @@ def main(stdscr, filepath: str):
 
     show_stats(stdscr, total_unique, len(correct_first_try), wrong_questions_log)
 
-RAW_URL = f"https://raw.githubusercontent.com/TsuBenn/dotfiles/main/programs/study.py?{int(time.time())}"
+RAW_URL = f"https://raw.githubusercontent.com/TsuBenn/dotfiles/main/programs/study.py?t={int(time.time())}"
 
 def _parse_version(src: str) -> str:
     for line in src.splitlines():
@@ -728,8 +728,9 @@ def check_for_updates() -> tuple[bool, str, str, str]:
     req = urllib.request.Request(
         RAW_URL,
         headers={
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache"
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0"
         }
     )
  

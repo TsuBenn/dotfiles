@@ -434,5 +434,40 @@
       "Reusability"
     ],
     "timestamp": "2026-03-29T10:53:10.905918"
+  },
+  {
+    "question": "In the ______ hashing method, the key is divided by the file size, and the address is the remainder plus 1.",
+    "answer": [
+      "Modulo division"
+    ],
+    "timestamp": "2026-03-29T11:05:37.122678"
+  },
+  {
+    "question": "uses the principle of logical reasoning to answer queries. It is based on formal logic defined by Greek mathematicians and later developed into firstorder predicate calculus",
+    "answer": [
+      "Declarative paradigm"
+    ],
+    "timestamp": "2026-03-29T11:05:37.828609"
+  },
+  {
+    "question": "File n\u00e0o c\u00f3 th\u1ec3 \u0111\u01b0\u1ee3c truy c\u1eadp tu\u1ea7n t\u1ef1.",
+    "answer": [
+      "sequential"
+    ],
+    "timestamp": "2026-03-29T11:05:38.894470"
+  },
+  {
+    "question": "is a step-by-step method for solving a problem or doing a task.",
+    "answer": [
+      "algorithm"
+    ],
+    "timestamp": "2026-03-29T11:05:39.164465"
+  },
+  {
+    "question": "_____ is a set of characters that is treated like an array in some languages and as a type in others.",
+    "answer": [
+      "string"
+    ],
+    "timestamp": "2026-03-29T11:05:39.641453"
   }
 ]
