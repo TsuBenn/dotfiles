@@ -10,7 +10,7 @@ from datetime import datetime
 from pathlib import Path
 import urllib.request
 
-VERSION = "1.3.26"
+VERSION = "1.3.27"
 FILEPATH = ""
 
 # ─── File I/O ─────────────────────────────────────────────────────────────────
@@ -489,7 +489,7 @@ def ask_question(stdscr, question: dict, q_num: int, total: int, can_go_prev: bo
             pass
 
         choice_y    = 3 + len(q_lines) + 1
-        current_row = choice_y
+        current_row = choice_y + 1
         for i, choice in enumerate(choices):
             is_sel = i == selected
             if answered:
@@ -514,7 +514,7 @@ def ask_question(stdscr, question: dict, q_num: int, total: int, can_go_prev: bo
                     stdscr.addstr(current_row, box_x, indent + cont, style)
             except curses.error:
                 pass
-            current_row += 1
+            current_row += 2
 
         prev_hint = "[ Prev  " if can_go_prev else "        "
         if answered:

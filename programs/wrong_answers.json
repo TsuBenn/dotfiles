@@ -406,5 +406,33 @@
       "Implementation phase"
     ],
     "timestamp": "2026-03-28T15:54:30.573808"
+  },
+  {
+    "question": "is needed to allow any relation in the database to be represented, to allow a language like SQL to use powerful retrieval composed of atomic operations, to remove anomalies in insertion, deletion, and updating, and reduce the need for restructuring the database as new data type are added.",
+    "answer": [
+      "Normalization"
+    ],
+    "timestamp": "2026-03-29T10:51:59.521684"
+  },
+  {
+    "question": "In ______ paradigm, the service provider is an application program, it runs continuously, waiting for another application program, then to make a connection through the Internet and ask for service",
+    "answer": [
+      "Client-server"
+    ],
+    "timestamp": "2026-03-29T10:52:34.369444"
+  },
+  {
+    "question": "Defining the users, requirements, and methods is part of the ______ phase.",
+    "answer": [
+      "Analysis"
+    ],
+    "timestamp": "2026-03-29T10:52:43.362560"
+  },
+  {
+    "question": "If modules are written so that they can be reused in other systems then they have high levels of",
+    "answer": [
+      "Reusability"
+    ],
+    "timestamp": "2026-03-29T10:53:10.905918"
   }
 ]
