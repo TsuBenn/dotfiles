@@ -775,6 +775,10 @@ def run():
         print("Usage: python study.py <questions.toml or questions.json>")
         sys.exit(1)
  
+    print()
+    print(f"  Fetching data from {RAW_URL}")
+    print(f"  Checking for update...")
+
     update_available, mode, local_ver, remote_ver = check_for_updates()
     if update_available:
         prompt_update(mode, local_ver, remote_ver) 
