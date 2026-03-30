@@ -25,8 +25,8 @@ question_available = False
 # ─── File I/O ─────────────────────────────────────────────────────────────────
 
 def discord_log(msg: str):
-    with open(Path(__file__).resolve().parent / "discord_debug.log", "a") as f:
-        f.write(f"{datetime.now().isoformat()} {msg}\n")
+    #with open(Path(__file__).resolve().parent / "discord_debug.log", "a") as f:
+    #    f.write(f"{datetime.now().isoformat()} {msg}\n")
 
 def send_discord(message):
     try:
