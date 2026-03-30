@@ -28,7 +28,7 @@ if sys.platform == "win32":
             choice = "n"
         if choice == "y":
             install('windows-curses')
-            import windows-curses
+            import curses
         else:
             print("study.py can't run without \"windows-curses\", sorry...")
             print()
