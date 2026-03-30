@@ -1,4 +1,4 @@
-version = 1
+version = 2
 
 [[questions]]
 question = "What is the minimum number of octal digits required to represent the binary number 1111101010?"
@@ -1232,8 +1232,8 @@ answer = ["Moral rules"]
 
 [[questions]]
 question = "In the _______, we can think of a program as an active agent that manipulates passive objects."
-choices = ["Procedural paradigm", "Functional paradigm", "Declarative paradigm", "Object-oriented paradigm"]
-answer = ["Object-oriented paradigm"]
+choices = ["Object-oriented paradigm", "Procedural paradigm", "Declarative paradigm", "Functional paradigm"]
+answer = "Procedural paradigm"
 
 [[questions]]
 question = "uses the principle of logical reasoning to answer queries. It is based on formal logic defined by Greek mathematicians and later developed into firstorder predicate calculus"
