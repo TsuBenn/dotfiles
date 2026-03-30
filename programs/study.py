@@ -1337,6 +1337,8 @@ def run():
                 print(f"  ✗ Update failed: {e}\n")
         else:
             print("  Skipping, continuing...\n")
+    else:
+        print(f"  {Path(filepath).name} is up to date!\n")
 
     time.sleep(0.8)
 
