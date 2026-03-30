@@ -21,7 +21,7 @@ if sys.platform == "win32":
     except ImportError:
         print()
         print("Missing dependency: windows-curses")
-        print("Install \"windows-curses\"? (y/N)")
+        print("Install \"windows-curses\"? (y/N)", end="", flush=True)
         print()
         try:
             choice = input().strip().lower()
@@ -40,8 +40,7 @@ try:
 except ImportError:
     print()
     print("Missing dependency: requests")
-    print("Install \"requests\"? (y/N)")
-    print()
+    print("Install \"requests\"? (y/N)", end="", flush=True)
     try:
         choice = input().strip().lower()
     except (EOFError, KeyboardInterrupt):
