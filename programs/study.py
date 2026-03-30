@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import curses
 import time
 import json
 import socket
@@ -34,6 +33,8 @@ if sys.platform == "win32":
             print("study.py can't run without \"windows-curses\", sorry...")
             print()
             sys.exit(1)
+else:
+    import curses
 
 try:
     import requests
