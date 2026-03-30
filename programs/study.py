@@ -39,7 +39,7 @@ try:
     import requests
 except ImportError:
     print()
-    print("Missing dependency: requests")
+    print("Missing dependency: requests (optional)")
     print()
 
 VERSION = "1.4"
