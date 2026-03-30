@@ -838,8 +838,9 @@ def check_for_updates() -> tuple[bool, str, str, str]:
     req = urllib.request.Request(
         RAW_URL,
         headers={
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache"
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0"
         }
     )
  
@@ -1305,6 +1306,8 @@ def run():
                 print(f"  ✗ Update failed: {e}\n")
         else:
             print("  Skipping, continuing...\n")
+    else:
+        print("  study.py is up to date!\n")
 
     time.sleep(0.8)
 
