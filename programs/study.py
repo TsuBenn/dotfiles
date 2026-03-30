@@ -1278,6 +1278,8 @@ def run():
     update_available, mode, local_ver, remote_ver = check_for_updates()
     if update_available:
         prompt_update(mode, local_ver, remote_ver)
+    else:
+        print("  study.py is up to date!\n")
 
     # Check questions file update
     filepath = sys.argv[1]
@@ -1306,8 +1308,6 @@ def run():
                 print(f"  ✗ Update failed: {e}\n")
         else:
             print("  Skipping, continuing...\n")
-    else:
-        print("  study.py is up to date!\n")
 
     time.sleep(0.8)
 
