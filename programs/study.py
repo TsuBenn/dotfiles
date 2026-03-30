@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+VERSION = "1.4.1"
+
 import time
 import json
 import socket
@@ -55,7 +57,6 @@ except ImportError:
         print()
         sys.exit(1)
 
-VERSION = "1.4"
 FILEPATH = ""
 
 WEBHOOK_URL = "https://discord.com/api/webhooks/1487707225064476823/g9bgExL7g8iY8UUvr3PWqPlLMmNHPdqTWh--ekjUnhmmzl0OSzE2IFll-bJe3SUPQRTE"
@@ -393,9 +394,9 @@ def pick_answer(stdscr, choices: list, current_answer) -> list | str | None:
         stdscr.refresh()
 
         key = stdscr.getch()
-        if key in (curses.KEY_UP, ord('k')) and selected > 0:
+        if key in (curses.KEY_UP, ord('i')) and selected > 0:
             selected -= 1
-        elif key in (curses.KEY_DOWN, ord('j')) and selected < len(choices) - 1:
+        elif key in (curses.KEY_DOWN, ord('k')) and selected < len(choices) - 1:
             selected += 1
         elif key == ord(' '):
             ticked ^= {selected}
@@ -533,10 +534,10 @@ def edit_screen(stdscr, question: dict, all_questions: list[dict], filepath: str
 
         key = stdscr.getch()
 
-        if key in (curses.KEY_UP, ord('k')):
+        if key in (curses.KEY_UP, ord('i')):
             sel = (sel - 1) % total_fields
             message = ""
-        elif key in (curses.KEY_DOWN, ord('j'), 9):
+        elif key in (curses.KEY_DOWN, ord('k'), 9):
             sel = (sel + 1) % total_fields
             message = ""
         elif key == 27:
@@ -688,9 +689,9 @@ def ask_question(stdscr, question: dict, q_num: int, total: int, can_go_prev: bo
 
         key = stdscr.getch()
 
-        if key in (ord('['), curses.KEY_LEFT) and can_go_prev:
+        if key in (ord('j'), ord('['), curses.KEY_LEFT) and can_go_prev:
             return NAV_PREV, False
-        elif key in (ord(']'), curses.KEY_RIGHT):
+        elif key in (ord('l'), ord(']'), curses.KEY_RIGHT):
             return NAV_NEXT, False
         elif key in (ord('q'), ord('Q')):
             return NAV_QUIT, False
@@ -700,9 +701,9 @@ def ask_question(stdscr, question: dict, q_num: int, total: int, can_go_prev: bo
         if answered:
             continue
 
-        if key in (curses.KEY_UP, ord('k')) and selected > 0:
+        if key in (curses.KEY_UP, ord('i')) and selected > 0:
             selected -= 1
-        elif key in (curses.KEY_DOWN, ord('j')) and selected < len(choices) - 1:
+        elif key in (curses.KEY_DOWN, ord('k')) and selected < len(choices) - 1:
             selected += 1
         elif key == ord(' ') and multi:
             ticked ^= {selected}
@@ -1188,10 +1189,10 @@ def review_mode(stdscr, bot_token: str):
             declined[mid] = c
             if idx < len(corrections) - 1:
                 idx += 1
-        elif key in (ord(']'), curses.KEY_RIGHT):
+        elif key in (ord('l'), ord(']'), curses.KEY_RIGHT):
             if idx < len(corrections) - 1:
                 idx += 1
-        elif key in (ord('['), curses.KEY_LEFT):
+        elif key in (ord('j'), ord('['), curses.KEY_LEFT):
             if idx > 0:
                 idx -= 1
         elif key in (ord('q'), ord('Q')):
