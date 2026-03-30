@@ -1112,5 +1112,26 @@
     "question": "The stored-program concept means a computer could get its instructions by reading them from memory, and a program could be set or altered by setting the values of a portion of memory. haiya",
     "answer": "True",
     "timestamp": "2026-03-30T17:37:49.850675"
+  },
+  {
+    "question": "In storing audio, how many samples per second is good enough to reproduce an audio signal?",
+    "answer": [
+      "40 000"
+    ],
+    "timestamp": "2026-03-30T22:23:48.566955"
+  },
+  {
+    "question": "In a block cipher a ______ is used to encrypt the whole block even if the key is made of multiple values",
+    "answer": [
+      "Single key"
+    ],
+    "timestamp": "2026-03-30T18:44:04.796008"
+  },
+  {
+    "question": "In ______ cryptography symbols are permuted or substituted, in asymmetric-key cryptography numbers are manipulated",
+    "answer": [
+      "Symmetric-key"
+    ],
+    "timestamp": "2026-03-30T18:44:35.651475"
   }
 ]
