@@ -1,4 +1,4 @@
-version = 2
+version = 3
 
 [[questions]]
 question = "What is the minimum number of octal digits required to represent the binary number 1111101010?"
@@ -1056,8 +1056,8 @@ choices = ["Program", "Job", "Process", "Task"]
 answer = ["Process"]
 
 [[questions]]
-question = "B\u1ed9 ph\u1eadn t\u00edch ___ \u0111\u1ecdc m\u00e3 ngu\u1ed3n t\u01b0\u1ee3ng k\u00fd hi\u1ec7u m\u1ed9t v\u00e0 t\u1ea1o danh s\u00e1ch token trong ng\u00f4n ng\u1eef ngu\u1ed3n"
-choices = ["Lexical", "Syntax", "Semantic", "Code generation"]
+question = "a -- analyzer read the source code symbol and create a list of token in the source language"
+choices = ["Semantic", "Lexical", "Code generation", "Syntax"]
 answer = ["Lexical"]
 
 [[questions]]
