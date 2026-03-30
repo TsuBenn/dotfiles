@@ -27,6 +27,7 @@ question_available = False
 def discord_log(msg: str):
     #with open(Path(__file__).resolve().parent / "discord_debug.log", "a") as f:
     #    f.write(f"{datetime.now().isoformat()} {msg}\n")
+    return
 
 def send_discord(message):
     try:
