@@ -28,7 +28,7 @@ if sys.platform == "win32":
             choice = "n"
         if choice == "y":
             install('windows-curses')
-            import requests  # Import it again after installation
+            import windows-curses
         else:
             print("study.py can't run without \"windows-curses\", sorry...")
             print()
@@ -49,7 +49,7 @@ except ImportError:
         choice = "n"
     if choice == "y":
         install('requests')
-        import requests  # Import it again after installation
+        import requests
     else:
         print("study.py can't run without \"requests\", sorry...")
         print()
