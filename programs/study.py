@@ -1,17 +1,58 @@
 #!/usr/bin/env python3
 
 import curses
-import requests
-import threading
 import time
 import json
 import socket
 import random
 import sys
+import subprocess
 import tomllib
 from datetime import datetime
 from pathlib import Path
 import urllib.request
+
+def install(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+if sys.platform == "win32":
+    try:
+        import curses
+    except ImportError:
+        print()
+        print("Missing dependency: windows-curses")
+        print("Install \"windows-curses\"? (y/N)")
+        print()
+        try:
+            choice = input().strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            choice = "n"
+        if choice == "y":
+            install('windows-curses')
+            import requests  # Import it again after installation
+        else:
+            print("study.py can't run without \"windows-curses\", sorry...")
+            print()
+            sys.exit(1)
+
+try:
+    import requests
+except ImportError:
+    print()
+    print("Missing dependency: requests")
+    print("Install \"requests\"? (y/N)")
+    print()
+    try:
+        choice = input().strip().lower()
+    except (EOFError, KeyboardInterrupt):
+        choice = "n"
+    if choice == "y":
+        install('requests')
+        import requests  # Import it again after installation
+    else:
+        print("study.py can't run without \"requests\", sorry...")
+        print()
+        sys.exit(1)
 
 VERSION = "1.4"
 FILEPATH = ""
