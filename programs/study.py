@@ -40,18 +40,7 @@ try:
 except ImportError:
     print()
     print("Missing dependency: requests")
-    print("Install \"requests\"? (y/N)", end="", flush=True)
-    try:
-        choice = input().strip().lower()
-    except (EOFError, KeyboardInterrupt):
-        choice = "n"
-    if choice == "y":
-        install('requests')
-        import requests  # Import it again after installation
-    else:
-        print("study.py can't run without \"requests\", sorry...")
-        print()
-        sys.exit(1)
+    print()
 
 VERSION = "1.4"
 FILEPATH = ""
