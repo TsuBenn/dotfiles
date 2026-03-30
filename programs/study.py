@@ -5,6 +5,7 @@ import requests
 import threading
 import time
 import json
+import socket
 import random
 import sys
 import tomllib
@@ -12,14 +13,14 @@ from datetime import datetime
 from pathlib import Path
 import urllib.request
 
-VERSION = "1.4 (Beta)"
+VERSION = "1.4"
 FILEPATH = ""
 
 WEBHOOK_URL = "https://discord.com/api/webhooks/1487707225064476823/g9bgExL7g8iY8UUvr3PWqPlLMmNHPdqTWh--ekjUnhmmzl0OSzE2IFll-bJe3SUPQRTE"
 CHANNEL_ID = "1487707180390940773"
 QUESTIONS_BASE_URL = f"https://raw.githubusercontent.com/TsuBenn/dotfiles/main/programs/study_questions/"
 
-QUESTIONS_FILE_AVAILABLE = False
+question_available = False
 
 # ─── File I/O ─────────────────────────────────────────────────────────────────
 
@@ -33,7 +34,7 @@ def send_discord(message):
     except Exception as e:
         discord_log(f"ERROR: {e}")
 
-def send_correction(original: dict, corrected: dict, filepath: str):
+def send_correction(original: dict, corrected: dict, filepath: str) -> tuple[bool, str]:
     try:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -58,6 +59,7 @@ def send_correction(original: dict, corrected: dict, filepath: str):
             f"timestamp = {json.dumps(timestamp)}\n"
             f"questions_version = {q_version}\n"
             f"file = {json.dumps(Path(filepath).name)}\n"
+            f"hostname = {json.dumps(socket.gethostname())}\n"
             f"\n[original]\n{fmt(original)}\n"
             f"\n[corrected]\n{fmt(corrected)}\n"
         )
@@ -65,14 +67,59 @@ def send_correction(original: dict, corrected: dict, filepath: str):
         # Wrap in code block so Discord doesn't mangle it
         message = f"```toml\n{content}\n```"
 
-        threading.Thread(target=send_discord, args=(message,),daemon=True).start()
-        # discord_log(f"OK: {res.status}")
+        send_discord(message)
+
+        return (True, "")
+
     except Exception as e:
         discord_log(f"ERROR: {e}")
+        return (False, str(e))
 
-def get_questions_raw_url(filepath: str) -> str:
-    filename = Path(filepath).name
-    return f"{QUESTIONS_BASE_URL}{filename}?{int(time.time())}"
+def send_correction_screen(stdscr, original: dict, corrected: dict, filepath: str):
+    h, w = stdscr.getmaxyx()
+    box_x = (w - min(w - 4, 50)) // 2
+
+    while True:
+        stdscr.erase()
+        try:
+            stdscr.addstr(h // 2 - 1, box_x, "Sending correction to TsuBenn...",
+                          curses.color_pair(4) | curses.A_BOLD)
+            stdscr.addstr(h // 2 + 1, box_x, "Please wait...",
+                          curses.color_pair(5))
+        except curses.error:
+            pass
+        stdscr.refresh()
+
+        success, error_msg = send_correction(original, corrected, filepath)
+
+        stdscr.erase()
+        if success:
+            try:
+                stdscr.addstr(h // 2, box_x, "✓ Correction sent!",
+                              curses.color_pair(1) | curses.A_BOLD)
+            except curses.error:
+                pass
+            stdscr.refresh()
+            curses.napms(800)
+            return
+
+        # Failed — show error and options
+        try:
+            stdscr.addstr(h // 2 - 2, box_x, "✗ Failed to send correction:",
+                          curses.color_pair(2) | curses.A_BOLD)
+            stdscr.addstr(h // 2,     box_x, str(error_msg)[:w - box_x - 2],
+                          curses.color_pair(5))
+        except curses.error:
+            pass
+        draw_footer(stdscr, " R: Retry   S: Skip ")
+        stdscr.refresh()
+
+        while True:
+            key = stdscr.getch()
+            if key in (ord('r'), ord('R')):
+                break       # retry the outer while loop
+            elif key in (ord('s'), ord('S')):
+                return      # give up, continue normally
 
 def load_questions(filepath: str) -> list[dict]:
     global FILEPATH
@@ -497,8 +544,8 @@ def edit_screen(stdscr, question: dict, all_questions: list[dict], filepath: str
                     # Send correction to Discord (silent)
                     original_clean  = {k: v for k, v in question.items() if not k.startswith("_")}
                     corrected_clean = {k: v for k, v in draft.items()    if not k.startswith("_")}
-                    if original_clean != corrected_clean and QUESTIONS_FILE_AVAILABLE:
-                        send_correction(original_clean, corrected_clean, filepath)
+                    if original_clean != corrected_clean and question_available:
+                        send_correction_screen(stdscr, original_clean, corrected_clean, filepath)
                     return draft
 
             elif sel == FIELD_CANCEL:
@@ -804,17 +851,27 @@ def check_for_updates() -> tuple[bool, str, str, str]:
         return (False, "", "", "")
     except Exception:
         return (False, "", "", "")
+
+def get_questions_raw_url(filepath: str) -> str:
+    filename = Path(filepath).name
+    return f"{QUESTIONS_BASE_URL}{filename}?t={int(time.time())}"
  
 def check_questions_update(filepath: str) -> tuple[bool, int, int]:
     """
     Returns (update_available, local_version, remote_version).
     Silently returns (False, 0, 0) if file not on repo or any error.
     """
+    global question_available
+
     try:
         url = get_questions_raw_url(filepath)
         req = urllib.request.Request(url, headers={"Cache-Control": "no-cache"})
         with urllib.request.urlopen(req, timeout=5) as r:
             if r.status == 404:
+                print(f"\n  {Path(filepath).name} not found on remote repo!")
+                print(f"  Continue using local files...")
+                print()
+                time.sleep(0.8)
                 return (False, 0, 0)
             remote_src = r.read().decode("utf-8")
         remote_data    = tomllib.loads(remote_src)
@@ -824,8 +881,13 @@ def check_questions_update(filepath: str) -> tuple[bool, int, int]:
             local_data = tomllib.load(f)
         local_version = local_data.get("version", 0)
 
-        return (remote_version > local_version, local_version, remote_version)
+        question_available = True
+        return (remote_version != local_version, local_version, remote_version)
     except Exception:
+        print(f"\n  {Path(filepath).name} not found on remote repo!")
+        print(f"  Continue using local files...")
+        print()
+        time.sleep(0.8)
         return (False, 0, 0)
  
 def prompt_update(mode: str, local_ver: str, remote_ver: str):
@@ -851,24 +913,381 @@ def prompt_update(mode: str, local_ver: str, remote_ver: str):
         sys.exit(0)
     except Exception as e:
         print(f"  ✗ Download failed: {e}")
- 
+
+def apply_corrections(filepath: str, accepted: list[dict], bot_token: str):
+    """Patch accepted corrections into the questions file and bump version."""
+    with open(filepath, "rb") as f:
+        data = tomllib.load(f)
+
+    questions = data["questions"]
+    version   = data.get("version", 1)
+    changed   = 0
+
+    for correction in accepted:
+        orig_q = correction["original"]["question"]
+        corr   = correction["corrected"]
+        for i, q in enumerate(questions):
+            if q["question"] == orig_q:
+                questions[i] = {
+                    "question": corr["question"],
+                    "choices":  corr["choices"],
+                    "answer":   corr["answer"],
+                }
+                changed += 1
+                break
+
+    new_version = version + 1
+    save_toml(filepath, questions, version=new_version)
+
+    # Final screen
+    import curses as _c
+    # Can't draw here easily — just write a summary log
+    discord_log(f"Applied {changed} corrections, version {version} → {new_version}")
+
+def delete_messages(bot_token: str, message_ids: list[str]):
+    """Bulk delete up to 100 messages at once. Falls back to one-by-one if needed."""
+    if not message_ids:
+        return
+    try:
+        if len(message_ids) == 1:
+            # Bulk delete requires at least 2 messages
+            url = f"https://discord.com/api/v10/channels/{CHANNEL_ID}/messages/{message_ids[0]}"
+            req = urllib.request.Request(
+                url,
+                headers={
+                    "Authorization": f"Bot {bot_token}",
+                    "User-Agent": "DiscordBot (https://github.com/TsuBenn/dotfiles, 1.0)"
+                },
+                method="DELETE"
+            )
+            urllib.request.urlopen(req, timeout=5)
+        else:
+            # Bulk delete — max 100, messages must be < 14 days old
+            url  = f"https://discord.com/api/v10/channels/{CHANNEL_ID}/messages/bulk-delete"
+            body = json.dumps({"messages": message_ids[:100]}).encode("utf-8")
+            req  = urllib.request.Request(
+                url,
+                data=body,
+                headers={
+                    "Authorization": f"Bot {bot_token}",
+                    "Content-Type": "application/json",
+                    "User-Agent": "DiscordBot (https://github.com/TsuBenn/dotfiles, 1.0)"
+                },
+                method="POST"
+            )
+            urllib.request.urlopen(req, timeout=10)
+            discord_log(f"Bulk deleted {len(message_ids[:100])} messages")
+    except Exception as e:
+        discord_log(f"Delete error: {e}") 
+
+def review_mode(stdscr, bot_token: str):
+    init_colors()
+    curses.start_color()
+    curses.use_default_colors()
+    curses.init_pair(1, curses.COLOR_GREEN, -1)
+    curses.init_pair(2, curses.COLOR_RED, -1)
+    curses.init_pair(3, curses.COLOR_CYAN, -1)
+    curses.init_pair(4, curses.COLOR_YELLOW, -1)
+    curses.init_pair(5, curses.COLOR_WHITE, -1)
+    curses.init_pair(6, curses.COLOR_BLACK, curses.COLOR_YELLOW)   # diff highlight bg
+    stdscr.keypad(True)
+    curses.curs_set(0)
+
+    # ── Fetch ──────────────────────────────────────────────────────────────────
+    stdscr.erase()
+    h, w = stdscr.getmaxyx()
+    draw_header(stdscr, " Review Mode ")
+    try:
+        stdscr.addstr(h // 2, (w - 28) // 2, "Fetching corrections...",
+                      curses.color_pair(4) | curses.A_BOLD)
+    except curses.error:
+        pass
+    stdscr.refresh()
+
+    corrections = fetch_corrections(bot_token)
+
+    if not corrections:
+        stdscr.erase()
+        draw_header(stdscr, " Review Mode ")
+        try:
+            stdscr.addstr(h // 2, (w - 22) // 2, "No corrections found.",
+                          curses.color_pair(4) | curses.A_BOLD)
+        except curses.error:
+            pass
+        draw_footer(stdscr, " Press any key to exit ")
+        stdscr.refresh()
+        stdscr.getch()
+        return
+
+    accepted = {}   # message_id -> correction
+    declined = {}   # message_id -> correction
+    idx      = 0
+
+    # ── Review loop ────────────────────────────────────────────────────────────
+    while True:
+        if idx < 0:
+            idx = 0
+        if idx >= len(corrections):
+            idx = len(corrections) - 1
+
+        c    = corrections[idx]
+        orig = c["original"]
+        corr = c["corrected"]
+        meta = c["meta"]
+        mid  = c["message_id"]
+
+        stdscr.erase()
+        h, w = stdscr.getmaxyx()
+        box_w = min(w - 4, 100)
+        box_x = (w - box_w) // 2
+
+        # Status tag
+        if mid in accepted:
+            status_str   = " ✓ ACCEPTED "
+            status_color = curses.color_pair(1) | curses.A_BOLD
+        elif mid in declined:
+            status_str   = " ✗ DECLINED "
+            status_color = curses.color_pair(2) | curses.A_BOLD
+        else:
+            status_str   = " ? PENDING  "
+            status_color = curses.color_pair(4) | curses.A_BOLD
+
+        pending_count  = len(corrections) - len(accepted) - len(declined)
+        hostname       = meta.get("hostname", "unknown")
+        header_text    = f" Review [{idx + 1}/{len(corrections)}]  from: {hostname}  file: {meta.get('file', '?')} "
+        draw_header(stdscr, header_text)
+        try:
+            stdscr.addstr(0, box_x + box_w - len(status_str), status_str, status_color)
+        except curses.error:
+            pass
+
+        row = 2
+
+        def draw_section(title, q, color, start_row):
+            r = start_row
+            try:
+                stdscr.addstr(r, box_x, title, color | curses.A_BOLD)
+                r += 1
+                stdscr.addstr(r, box_x, "─" * box_w, curses.color_pair(5))
+                r += 1
+            except curses.error:
+                pass
+
+            def draw_field(label, old_val, new_val, is_after):
+                nonlocal r
+                val     = new_val if is_after else old_val
+                changed = old_val != new_val
+
+                try:
+                    stdscr.addstr(r, box_x, f"  {label}:", curses.color_pair(4) | curses.A_BOLD)
+                    r += 1
+                except curses.error:
+                    pass
+
+                if isinstance(val, list):
+                    text = ", ".join(val)
+                else:
+                    text = str(val)
+
+                # Diff highlight: if changed, highlight in yellow on after section
+                # on before section show in red, after section show in green
+                if changed:
+                    style = (curses.color_pair(1) | curses.A_BOLD) if is_after else curses.color_pair(2)
+                else:
+                    style = curses.color_pair(5)
+
+                for line in wrap_text(text, box_w - 6):
+                    try:
+                        stdscr.addstr(r, box_x + 4, line, style)
+                        r += 1
+                    except curses.error:
+                        pass
+                r += 1  # blank line between fields
+
+            draw_field("Question", orig.get("question", ""), corr.get("question", ""), is_after=(title == "AFTER"))
+            draw_field("Choices",
+                       ", ".join(orig.get("choices", [])),
+                       ", ".join(corr.get("choices", [])),
+                       is_after=(title == "AFTER"))
+            draw_field("Answer",
+                       orig.get("answer", "") if not isinstance(orig.get("answer"), list) else ", ".join(orig.get("answer", [])),
+                       corr.get("answer", "") if not isinstance(corr.get("answer"), list) else ", ".join(corr.get("answer", [])),
+                       is_after=(title == "AFTER"))
+            return r
+
+        row = draw_section("BEFORE", orig, curses.color_pair(2), row)
+        row += 1
+        row = draw_section("AFTER",  corr, curses.color_pair(1), row)
+
+        # Pending count hint
+        try:
+            stdscr.addstr(row + 1, box_x,
+                          f"  {pending_count} pending  |  {len(accepted)} accepted  |  {len(declined)} declined",
+                          curses.color_pair(4))
+        except curses.error:
+            pass
+
+        prev_hint = "[ Prev   " if idx > 0 else "         "
+        next_hint = "] Next   " if idx < len(corrections) - 1 else "] Finish "
+        draw_footer(stdscr, f" A: Accept   D: Decline   {prev_hint}{next_hint}  Q: Apply & Quit ")
+        stdscr.refresh()
+
+        key = stdscr.getch()
+
+        if key in (ord('a'), ord('A')):
+            declined.pop(mid, None)
+            accepted[mid] = c
+            if idx < len(corrections) - 1:
+                idx += 1
+        elif key in (ord('d'), ord('D')):
+            accepted.pop(mid, None)
+            declined[mid] = c
+            if idx < len(corrections) - 1:
+                idx += 1
+        elif key in (ord(']'), curses.KEY_RIGHT):
+            if idx < len(corrections) - 1:
+                idx += 1
+        elif key in (ord('['), curses.KEY_LEFT):
+            if idx > 0:
+                idx -= 1
+        elif key in (ord('q'), ord('Q')):
+            break
+
+    # ── Apply & Delete ─────────────────────────────────────────────────────────
+    stdscr.erase()
+    h, w = stdscr.getmaxyx()
+    draw_header(stdscr, " Applying Changes ")
+    try:
+        stdscr.addstr(h // 2 - 1, (w - 50) // 2,
+                      f"Applying {len(accepted)} correction(s), deleting {len(accepted) + len(declined)} message(s)...",
+                      curses.color_pair(4) | curses.A_BOLD)
+    except curses.error:
+        pass
+    stdscr.refresh()
+
+    # Group accepted by filename
+    from collections import defaultdict
+    by_file = defaultdict(list)
+    for c in accepted.values():
+        fname = c["meta"].get("file", "")
+        if fname:
+            by_file[fname].append(c)
+
+    script_dir    = Path(__file__).resolve().parent
+    questions_dir = script_dir / "study_questions"
+    applied       = 0
+
+    for filename, file_corrections in by_file.items():
+        filepath = questions_dir / filename
+        if not filepath.exists():
+            discord_log(f"File not found, skipping: {filepath}")
+            continue
+        apply_corrections(str(filepath), file_corrections, bot_token)
+        applied += len(file_corrections)
+
+    # Delete all accepted + declined messages from Discord
+    all_ids = [c["message_id"] for c in list(accepted.values()) + list(declined.values())]
+    delete_messages(bot_token, all_ids)
+
+    # Done
+    stdscr.erase()
+    draw_header(stdscr, " Review Complete ")
+    try:
+        stdscr.addstr(h // 2 - 2, (w - 40) // 2,
+                      f"✓ Applied {applied} correction(s).",
+                      curses.color_pair(1) | curses.A_BOLD)
+        stdscr.addstr(h // 2,     (w - 40) // 2,
+                      f"✓ Deleted {len(accepted) + len(declined)} Discord message(s).",
+                      curses.color_pair(1) | curses.A_BOLD)
+        if applied > 0:
+            stdscr.addstr(h // 2 + 2, (w - 40) // 2,
+                          "Don't forget to git push!",
+                          curses.color_pair(4) | curses.A_BOLD)
+    except curses.error:
+        pass
+    draw_footer(stdscr, " Press any key to exit ")
+    stdscr.refresh()
+    stdscr.getch()
+
+def fetch_corrections(bot_token: str) -> list[dict]:
+    import urllib.request
+    corrections = []
+    try:
+        url = f"https://discord.com/api/v10/channels/{CHANNEL_ID}/messages?limit=100"
+        req = urllib.request.Request(
+            url,
+            headers={
+                "Authorization": f"Bot {bot_token}",
+                "User-Agent": "DiscordBot (https://github.com/TsuBenn/dotfiles, 1.0)"
+            }
+
+        )
+        discord_log(f"Fetching from channel {CHANNEL_ID}...")
+        with urllib.request.urlopen(req, timeout=10) as r:
+            raw      = r.read().decode("utf-8")
+            messages = json.loads(raw)
+        discord_log(f"Got {len(messages)} messages")
+
+        for msg in messages:
+            content = msg.get("content", "")
+            content = content.strip()
+            if content.startswith("```"):
+                content = "\n".join(content.splitlines()[1:])
+            if content.endswith("```"):
+                content = "\n".join(content.splitlines()[:-1])
+            content = content.strip()
+
+            try:
+                data = tomllib.loads(content)
+                if "meta" in data and "original" in data and "corrected" in data:
+                    corrections.append({
+                        "message_id": msg["id"],
+                        "meta":       data["meta"],
+                        "original":   data["original"],
+                        "corrected":  data["corrected"],
+                    })
+                    discord_log(f"Parsed correction from message {msg['id']}")
+            except Exception as e:
+                discord_log(f"Skipped message {msg['id']}: {e}")
+                continue
+
+    except Exception as e:
+        discord_log(f"Fetch error: {e}")
+
+    discord_log(f"Total corrections parsed: {len(corrections)}")
+    return corrections
+
  
 def run():
     if len(sys.argv) < 2:
         print("Usage: python study.py <questions.toml or questions.json>")
         sys.exit(1)
 
+    if sys.argv[1] == "--review":
+        if len(sys.argv) < 3:
+            print("Usage: python study.py --review <bot_token>")
+            sys.exit(1)
+        bot_token = sys.argv[2]
+        curses.wrapper(lambda stdscr: review_mode(stdscr, bot_token))
+        return
+
     # Check study.py update
+    print(f"\n  Checking study.py updates...")
     update_available, mode, local_ver, remote_ver = check_for_updates()
     if update_available:
         prompt_update(mode, local_ver, remote_ver)
 
     # Check questions file update
     filepath = sys.argv[1]
+    if not Path(filepath).exists():
+        print(f"  {Path(filepath).name} doesn't exist...")
+        print()
+        sys.exit(1)
+
+    print(f"  Checking {Path(filepath).name} for updates...")
     q_update, q_local, q_remote = check_questions_update(filepath)
     if q_update:
-        QUESTIONS_FILE_AVAILABLE = True
-        print(f"\n  ✦ Questions file update available: v{q_local} → v{q_remote}")
+        print(f"\n  ✦ \"{Path(filepath).name}\" update available: v{q_local} → v{q_remote}")
         print("  Update now? [y/N] ", end="", flush=True)
         try:
             choice = input().strip().lower()
@@ -885,6 +1304,8 @@ def run():
                 print(f"  ✗ Update failed: {e}\n")
         else:
             print("  Skipping, continuing...\n")
+
+    time.sleep(0.8)
 
     curses.wrapper(lambda stdscr: main(stdscr, filepath)) 
 

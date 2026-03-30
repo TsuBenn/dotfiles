@@ -1,3 +1,5 @@
+version = 1
+
 [[questions]]
 question = "What is the minimum number of octal digits required to represent the binary number 1111101010?"
 choices = ["3", "4", "5", "6"]
@@ -450,7 +452,7 @@ answer = ["Data is organized as an inverted tree and each entity can have severa
 
 [[questions]]
 question = "What distinguishes the Internet from an internet?"
-choices = ["The Internet is a global network, whereas an internet is any interconnected network.", "The Internet uses proprietary protocols, while an internet uses TCP/IP.", "The Internet is limited to government organizations, and an internet is public.", "An internet is faster than the Internet."]
+choices = ["The Internet uses proprietary protocols, while an internet uses TCP/IP.", "An internet is faster than the Internet.", "The Internet is a global network, whereas an internet is any interconnected network.", "The Internet is limited to government organizations, and an internet is public."]
 answer = ["The Internet is a global network, whereas an internet is any interconnected network."]
 
 [[questions]]
@@ -1060,8 +1062,8 @@ answer = ["Lexical"]
 
 [[questions]]
 question = "The ______ analyzer checks the sentences created by the syntax analyzer to be sure that they contain no ambiguity."
-choices = ["Lexical", "Syntax", "Semantic", "Code generation"]
-answer = ["Semantic"]
+choices = ["Code generation", "Syntax", "Semantic", "Lexical"]
+answer = "Syntax"
 
 [[questions]]
 question = "In the sequential file we process the records one by one. After the operating system processes the last record the _____ is detected and the loop is exited."
@@ -1334,8 +1336,8 @@ choices = ["Relational database", "Database system", "Atomic operations", "Norma
 answer = ["Normalization"]
 
 [[questions]]
-question = "Variables"
-choices = ["Variables", "Imperative language", "Identifiers", "Data type"]
+question = "_____ are names for memory locations."
+choices = ["Variables", "Data type", "Imperative language", "Identifiers"]
 answer = ["Variables"]
 
 [[questions]]
@@ -1610,8 +1612,8 @@ answer = ["sampling"]
 
 [[questions]]
 question = "Instead of using a numeric address, what unique address can we use to connect a host to the Internet in TCP/IP protocol?"
-choices = ["DNS", "Port number", "MAC addresses", "IP address"]
-answer = ["IP address"]
+choices = ["Port number", "DNS", "IP address", "MAC addresses"]
+answer = "DNS"
 
 [[questions]]
 question = "The _____ layer of the TCP/IP protocol suite is responsible for source-to-destination delivery of the entire message."
@@ -1704,8 +1706,8 @@ choices = ["string", "record", "symbol", "link"]
 answer = ["string"]
 
 [[questions]]
-question = "is an ordered set of unambiguous steps that produces a result and terminates in a finite time"
-choices = ["construct", "recursion", "an iteration", "an algorithm"]
+question = "is an ordered set of unambiguous steps that produces a result and terminates in a finite time."
+choices = ["construct", "an algorithm", "recursion", "an iteration"]
 answer = ["an algorithm"]
 
 [[questions]]

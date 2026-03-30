@@ -1,4 +1,4 @@
-version = 1
+version = 2
 
 [[questions]]
 question = "The stored-program concept means a computer could get its instructions by reading them from memory, and a program could be set or altered by setting the values of a portion of memory."
@@ -311,8 +311,8 @@ choices = ["I/O module / Memory", "Interrupts / I/O module", "I/O module / Inter
 answer = "I/O module / Memory"
 
 [[questions]]
-question = "Read instruction from its memory location into the processor"
-choices = ["Instruction fetch", "Instruction operation decoding", "Operand address calculation", "Data operation"]
+question = "Read instruction from its memory location into the processor."
+choices = ["Instruction operation decoding", "Data operation", "Operand address calculation", "Instruction fetch"]
 answer = "Instruction fetch"
 
 [[questions]]
@@ -991,8 +991,8 @@ choices = ["Data and instructions are stored in a single read-write memory.", "T
 answer = "Data is stored in main memory and instructions are stored in cache memory."
 
 [[questions]]
-question = "What is the significance of the program counter (PC) in the fetch phase of the instruction cycle?"
-choices = ["The program counter (PC) is not used in the fetch phase, and its role is limited to tracking the number of instructions executed by the CPU", "The program counter (PC) in the fetch phase holds the memory address of the next instruction to be fetched and executed", "The program counter (PC) is responsible for executing instructions and has no specific role during the fetch phase", "The program counter (PC) is only relevant in multi-core processors and does not contribute to the fetch phase of the instruction cycle in single-core systems"]
+question = "What is the significance of the program counter (PC) in the fetch phase of the instruction cycle? Hoang Hoang"
+choices = ["The program counter (PC) is only relevant in multi-core processors and does not contribute to the fetch phase of the instruction cycle in single-core systems", "The program counter (PC) is not used in the fetch phase, and its role is limited to tracking the number of instructions executed by the CPU", "The program counter (PC) in the fetch phase holds the memory address of the next instruction to be fetched and executed", "The program counter (PC) is responsible for executing instructions and has no specific role during the fetch phase"]
 answer = "The program counter (PC) in the fetch phase holds the memory address of the next instruction to be fetched and executed"
 
 [[questions]]

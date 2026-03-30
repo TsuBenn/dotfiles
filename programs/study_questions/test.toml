@@ -1,0 +1,11 @@
+version = 2
+
+[[questions]]
+question = "The stored-program concept means a computer could get its instructions by reading them from memory, and a program could be set or altered by setting the values of a portion of memory."
+choices = ["True", "False"]
+answer = "True"
+
+[[questions]]
+question = "The stored-program concept means a computer could get its instructions by reading them from memory, and a program could be set or altered by setting the values of a portion of memory. (Test)"
+choices = ["True", "False"]
+answer = "True"
