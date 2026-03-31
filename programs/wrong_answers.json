@@ -1183,5 +1183,18 @@
     "question": "Questions",
     "answer": "option A",
     "timestamp": "2026-03-31T21:44:16.016407"
+  },
+  {
+    "question": "What functions to input strings?",
+    "answer": [
+      "scanf()",
+      "gets()"
+    ],
+    "timestamp": "2026-03-31T23:05:11.480167"
+  },
+  {
+    "question": "What is the results will be displayed on the screen after executing the following code:\nchar a[] = \"Ab\";\tint i = 1;\tfor (\\\"s\\\"; \\\"s\\\"; ++i) {\tt=a;printf(\"%d\", t);}",
+    "answer": "6370",
+    "timestamp": "2026-03-31T23:08:33.241902"
   }
 ]

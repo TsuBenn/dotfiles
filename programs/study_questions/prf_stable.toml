@@ -493,7 +493,16 @@ choices = ["9", "8", "9", "99"]
 answer = "9"
 
 [[questions]]
-question = "What will be the output of the following C code?\n#include <stdio.h>\nint main() {\n int a, b, c;\na = b = c = 10;\nc = a + ++b && ++c;\nprintf(\"%d %d %d\", a, b, c);\nreturn 0; \n}"
+question = """What will be the output of the following C code?
+#include <stdio.h>
+int main()
+{
+    int a, b, c;
+    a = b = c = 10;
+    c = a++ || ++b && ++c;
+    printf("%d %d %d", c, a, b);
+    return 0;
+}"""
 choices = ["1 11 10", "10 11 1", "10 11 10", "1 10 1"]
 answer = "1 11 10"
 
@@ -933,7 +942,21 @@ choices = ["20", "9", "1.25", "0"]
 answer = "20"
 
 [[questions]]
-question = "Why the following code is wrong?"
+question = """Why the following code is wrong?
+#include<stdio.h>
+int main()
+{
+    int choice;
+    scanf("%d", &choice);
+    switch(choice)
+    {
+        case 1.5:
+            printf("You choice 1.5");
+        case 2.3:
+            printf("You choice 2.3");
+    }
+    return 0;
+}"""
 choices = ["The case label is the real number", "Missing \"break\" command", "Missing \"default\" command", "The variable name is wrong"]
 answer = "The case label is the real number"
 

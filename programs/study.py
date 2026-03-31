@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-VERSION = "1.5"
+VERSION = "1.5.1"
 
 import time
 import json
@@ -258,19 +258,23 @@ def init_colors():
 
 
 def wrap_text(text: str, width: int) -> list[str]:
-    words = text.split()
-    lines, current = [], ""
-    for word in words:
-        if len(current) + len(word) + 1 <= width:
-            current = (current + " " + word).strip()
-        else:
-            if current:
-                lines.append(current)
-            current = word
-    if current:
-        lines.append(current)
-    return lines or [""]
-
+    result = []
+    for paragraph in text.splitlines():
+        if not paragraph.strip():
+            result.append("")
+            continue
+        words = paragraph.split()
+        current = ""
+        for word in words:
+            if len(current) + len(word) + 1 <= width:
+                current = (current + " " + word).strip()
+            else:
+                if current:
+                    result.append(current)
+                current = word
+        if current:
+            result.append(current)
+    return result or [""]
 
 def draw_header(stdscr, text: str):
     _, w = stdscr.getmaxyx()
