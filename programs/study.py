@@ -927,10 +927,12 @@ def check_questions_update(filepath: str) -> tuple[bool, int, int]:
         local_version = local_data.get("version", 0)
 
         question_available = True
+        if remote_version == local_version:
+            print(f"  {Path(filepath).name} is up to date!\n")
         return (remote_version != local_version, local_version, remote_version)
     except Exception:
         print(f"\n  {Path(filepath).name} not found on remote repo!")
-        print(f"  Continue using local files...")
+        print(f"  Continuing to use local file (Offline mode)...")
         print()
         time.sleep(0.8)
         return (False, 0, 0)
@@ -1351,8 +1353,6 @@ def run():
                 print(f"  ✗ Update failed: {e}\n")
         else:
             print("  Skipping, continuing...\n")
-    else:
-        print(f"  {Path(filepath).name} is up to date!\n")
 
     time.sleep(0.8)
 
