@@ -893,8 +893,12 @@ def check_for_updates() -> tuple[bool, str, str, str]:
         remote_ver = _parse_version(remote_src)
         if remote_src != local_src:
             return (True, "standalone", local_ver, remote_ver)
+        else:
+            print("  study.py is up to date!\n")
         return (False, "", "", "")
     except Exception:
+        print("  Failed to connect with repo!")
+        print("  Skipping updates...\n")
         return (False, "", "", "")
 
 def get_questions_raw_url(filepath: str) -> str:
@@ -1323,8 +1327,6 @@ def run():
     update_available, mode, local_ver, remote_ver = check_for_updates()
     if update_available:
         prompt_update(mode, local_ver, remote_ver)
-    else:
-        print("  study.py is up to date!\n")
 
     # Check questions file update
     filepath = sys.argv[1]
