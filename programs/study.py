@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-VERSION = "1.4.1"
+VERSION = "1.5"
 
 import time
 import json
@@ -96,6 +96,9 @@ def send_correction(original: dict, corrected: dict, filepath: str) -> tuple[boo
                 lines.append(f"answer = [{', '.join(json.dumps(a) for a in q['answer'])}]")
             else:
                 lines.append(f"answer = {json.dumps(q['answer'])}")
+            if q.get("explanations"):
+                exp_str = ", ".join(json.dumps(e) for e in q["explanations"])
+                lines.append(f"explanations = [{exp_str}]")
             return "\n".join(lines)
 
         content = (
@@ -200,6 +203,9 @@ def save_toml(filepath: str, questions: list[dict], version: int = 1):
             lines.append(f"answer = [{answer_str}]")
         else:
             lines.append(f"answer = {json.dumps(q['answer'])}")
+        if q.get("explanations"):
+            exp_str = ", ".join(json.dumps(e) for e in q["explanations"])
+            lines.append(f"explanations = [{exp_str}]")
         lines.append("")
     Path(filepath).write_text("\n".join(lines), encoding="utf-8")
 
@@ -221,9 +227,20 @@ def build_queue(questions: list[dict]) -> list[dict]:
     result = []
     for q in questions:
         q = dict(q, _wrong_count=0, _answered_correct=False)
-        choices = list(q["choices"])
-        random.shuffle(choices)
-        q["choices"] = choices
+        choices      = list(q["choices"])
+        explanations = list(q.get("explanations", []))
+
+        if explanations and len(explanations) == len(choices):
+            # Zip together, shuffle, unzip
+            paired = list(zip(choices, explanations))
+            random.shuffle(paired)
+            choices, explanations = zip(*paired)
+            q["choices"]      = list(choices)
+            q["explanations"] = list(explanations)
+        else:
+            random.shuffle(choices)
+            q["choices"] = choices
+
         result.append(q)
     random.shuffle(result)
     return result
@@ -720,8 +737,11 @@ def ask_question(stdscr, question: dict, q_num: int, total: int, can_go_prev: bo
 
 def show_result(stdscr, question: dict, chosen, correct: bool,
                 all_questions: list[dict], filepath: str) -> dict:
-    correct_ans = question["answer"] if isinstance(question["answer"], list) else [question["answer"]]
-    chosen_ans  = chosen if isinstance(chosen, list) else [chosen]
+    correct_ans  = question["answer"] if isinstance(question["answer"], list) else [question["answer"]]
+    chosen_ans   = chosen if isinstance(chosen, list) else [chosen]
+    choices      = question.get("choices", [])
+    explanations = question.get("explanations", [])  # empty list if not present
+    labels       = ["A", "B", "C", "D", "E", "F", "G", "H"]
 
     while True:
         stdscr.erase()
@@ -732,32 +752,97 @@ def show_result(stdscr, question: dict, chosen, correct: bool,
         status = "✓ CORRECT!" if correct else "✗ WRONG"
         color  = curses.color_pair(1) if correct else curses.color_pair(2)
 
-        def draw_ans_list(start_row, ans_list, style):
-            """Draw a list of answers with wrapping, returns next free row."""
-            row = start_row
+        try:
+            stdscr.addstr(2, box_x, status, color | curses.A_BOLD)
+        except curses.error:
+            pass
+
+        row = 4
+
+        if explanations and len(explanations) == len(choices):
+            # ── Per-choice breakdown with explanations ──
+            for i, choice in enumerate(choices):
+                is_correct = choice in correct_ans
+                is_chosen  = choice in chosen_ans
+                label      = labels[i] if i < len(labels) else str(i)
+
+                if is_correct:
+                    marker = "✓"
+                    style  = curses.color_pair(1) | curses.A_BOLD
+                elif is_chosen:
+                    marker = "✗"
+                    style  = curses.color_pair(2)
+                else:
+                    marker = " "
+                    style  = curses.color_pair(5)
+
+                prefix       = f"{marker} {label}. "
+                indent       = " " * len(prefix)
+                choice_lines = wrap_text(choice, box_w - len(prefix))
+
+                try:
+                    stdscr.addstr(row, box_x, prefix + choice_lines[0], style)
+                    for cont in choice_lines[1:]:
+                        row += 1
+                        stdscr.addstr(row, box_x, indent + cont, style)
+                    row += 1
+                except curses.error:
+                    pass
+
+                # Always show explanation if present
+                explanation = explanations[i]
+                exp_prefix  = "  → " if explanations[i] != "" else "    "
+                exp_indent  = "    "
+                exp_lines   = wrap_text(explanation, box_w - len(exp_prefix))
+                exp_style   = curses.color_pair(5) | curses.A_DIM  # neutral, dimmed
+                try:
+                    stdscr.addstr(row, box_x, exp_prefix + exp_lines[0], exp_style)
+                    for cont in exp_lines[1:]:
+                        row += 1
+                        stdscr.addstr(row, box_x, exp_indent + cont, exp_style)
+                    row += 1
+                except curses.error:
+                    pass
+                row += 1  # blank line between choices
+
+        else:
+            # ── Fallback: no explanations, show old style ──
+            try:
+                stdscr.addstr(row, box_x, "Correct answer:", curses.color_pair(4))
+                row += 1
+            except curses.error:
+                pass
+
             prefix = "• "
             indent = "  "
-            for ans in ans_list:
+            for ans in correct_ans:
                 lines = wrap_text(ans, box_w - 4 - len(prefix))
                 try:
-                    stdscr.addstr(row, box_x + 2, prefix + lines[0], style)
+                    stdscr.addstr(row, box_x + 2, prefix + lines[0], curses.color_pair(1) | curses.A_BOLD)
                     for cont in lines[1:]:
                         row += 1
-                        stdscr.addstr(row, box_x + 2, indent + cont, style)
+                        stdscr.addstr(row, box_x + 2, indent + cont, curses.color_pair(1) | curses.A_BOLD)
                 except curses.error:
                     pass
                 row += 1
-            return row
 
-        try:
-            stdscr.addstr(2, box_x, status, color | curses.A_BOLD)
-            stdscr.addstr(4, box_x, "Correct answer:", curses.color_pair(4))
-            next_row = draw_ans_list(5, correct_ans, curses.color_pair(1) | curses.A_BOLD)
             if not correct:
-                stdscr.addstr(next_row + 1, box_x, "Your answer:", curses.color_pair(4))
-                draw_ans_list(next_row + 2, chosen_ans, curses.color_pair(2))
-        except curses.error:
-            pass
+                row += 1
+                try:
+                    stdscr.addstr(row, box_x, "Your answer:", curses.color_pair(4))
+                    row += 1
+                except curses.error:
+                    pass
+                for ans in chosen_ans:
+                    lines = wrap_text(ans, box_w - 4 - len(prefix))
+                    try:
+                        stdscr.addstr(row, box_x + 2, prefix + lines[0], curses.color_pair(2))
+                        for cont in lines[1:]:
+                            row += 1
+                            stdscr.addstr(row, box_x + 2, indent + cont, curses.color_pair(2))
+                    except curses.error:
+                        pass
+                    row += 1
 
         draw_footer(stdscr, " Enter: Continue   E: Edit question ")
         stdscr.refresh()
@@ -980,10 +1065,12 @@ def apply_corrections(filepath: str, accepted: list[dict], bot_token: str):
         for i, q in enumerate(questions):
             if q["question"] == orig_q:
                 questions[i] = {
-                    "question": corr["question"],
-                    "choices":  corr["choices"],
-                    "answer":   corr["answer"],
+                    "question":    corr["question"],
+                    "choices":     corr["choices"],
+                    "answer":      corr["answer"],
                 }
+                if corr.get("explanations"):
+                    questions[i]["explanations"] = corr["explanations"]
                 changed += 1
                 break
 
