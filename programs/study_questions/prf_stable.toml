@@ -1,0 +1,1823 @@
+version = 1
+
+[[questions]]
+question = "Which is the function returns the absolute value of a floating number?"
+choices = ["fabs()", "abs()", "labs()", "asbf()"]
+answer = "fabs()"
+
+[[questions]]
+question = "Which is the function returns the absolute value of a floating number?"
+choices = ["fabs()", "abs()", "labs()", "asbf()"]
+answer = "fabs()"
+
+[[questions]]
+question = "Which of the following statements is invalid?"
+choices = ["printf(\"\");", "printf(\"abc\");", "printf(\"%s%\");", "printf(\"n\");"]
+answer = "printf(\"\");"
+
+[[questions]]
+question = "Choose the correct statement for declaring a float pointer:"
+choices = ["float* ptr;", "float ptr;", "*float ptr;", "float ptr*;"]
+answer = "float* ptr;"
+
+[[questions]]
+question = "Which of the following is used for single character I/O?"
+choices = ["getchar() and putchar()", "gets() and puts()", "scanf() and printf()", "fgets() and fputs()"]
+answer = "getchar() and putchar()"
+
+[[questions]]
+question = "Which of the following declaration is not supported by C?"
+choices = ["string a;", "float a = 3e2;", "int* a;", "float *a;", "char* a;"]
+answer = "string a;"
+
+[[questions]]
+question = "Which of the following is not a valid variable declaration?"
+choices = ["int_a3;", "int a_3;", "int 3_a;", "int _3a;"]
+answer = "int 3_a;"
+
+[[questions]]
+question = "Which of the following statements declares a function that receives a float pointer and returns a float pointer?"
+choices = ["float* fun(float *p);", "float fun(float *p);", "float fun(double *p);", "float* fun(int *p);"]
+answer = "float* fun(float *p);"
+
+[[questions]]
+question = "Which of the following is a valid variable definition?"
+choices = ["int 1student_ID;", "int _Student_ID1;", "int Age$;", "int long;"]
+answer = "int _Student_ID1;"
+
+[[questions]]
+question = "Choose the correct statement for declaring a pointer variable."
+choices = ["int *p;", "int p*;", "int +p;", "int $p;"]
+answer = "int *p;"
+
+[[questions]]
+question = "Which of the following correctly declares an integer array of size 5 in C/C++?"
+choices = ["int arr[5];", "array int arr = [5];", "int arr = new int[5];", "int arr{[5]};"]
+answer = "int arr[5];"
+
+[[questions]]
+question = "Which of the following is a valid code to declare and initialize a two-dimensional array?"
+choices = ["int a[2,3] = {{1,2,3},{4,5,6}};", "int a[][] = {{1,2,3},{4,5,6}};", "int a[2][3] = {{1,2,3},{4,5,6}};", "int a[][3] = {{1,2,3},{4,5,6}};"]
+answer = "int a[][3] = {{1,2,3},{4,5,6}};"
+
+[[questions]]
+question = "What represents dynamic allocation in C?"
+choices = ["int* a = (int*)malloc(5 * sizeof(int));", "int a[5];", "int a[5][5];", "free(a);"]
+answer = "int* a = (int*)malloc(5 * sizeof(int));"
+
+[[questions]]
+question = "What function in C is used to check if the end of a file has been reached?"
+choices = ["feof()", "eof()", "fscanf()", "checkEOF()"]
+answer = "feof()"
+
+[[questions]]
+question = "Which library function returns a pseudo-random number in the range 0 to RAND_MAX?"
+choices = ["random()", "rand()", "generate_random()", "getrand()"]
+answer = "rand()"
+
+[[questions]]
+question = "Which is the correct function definition that will run without errors?"
+choices = ["int minus(int a, int b) {return (a - b);}", "int minus(int a, int b){};", "int minus(int a, int b) {return (a - b)};", "int minus(int a, int b){}"]
+answer = "int minus(int a, int b) {return (a - b)};"
+
+[[questions]]
+question = "What is incorrect about function prototype?"
+choices = ["void printSum(int* a, int b);", "int printSum(int* a, int b);", "int printSum(int a, b);", "int* printSum(int* a, int b);"]
+answer = "int printSum(int a, b);"
+
+[[questions]]
+question = "Which of the following is the correct syntax for the loop statement?"
+choices = ["for (Init1; Init2; Condition ; Task1, Task2);", "for (Init1, Condition ,Task1)", "for (Condition  Init1, Task1);", "for (Init1; Init2; Condition ; Task2)"]
+answer = "for (Init1; Init2; Condition ; Task1, Task2);"
+
+[[questions]]
+question = "The function which will compute the average of two real numbers should be prototyped as:"
+choices = ["int average(double, double);", "double average(double, double);", "char average(double, double);", "void average(double, double);"]
+answer = "double average(double, double);"
+
+[[questions]]
+question = "The function which will compute the average of two real numbers should be prototyped as:"
+choices = ["int average(double, double);", "double average(double, double);", "char average(double, double);", "void average(double, double);"]
+answer = "double average(double, double);"
+
+[[questions]]
+question = "Which implicit type casting is used in the following codes in C programming?"
+choices = ["int i = (double)123.5;", "double t = double(2);", "double t = (double) 2;", "double t = (int) 2.7;"]
+answer = "double t = (double) 2;"
+
+[[questions]]
+question = "How can you initialize a character array in C?"
+choices = ["char arr[] = \"Hello\";", "char arr[] = {H, e, l, l, o};", "char [] arr = \"Hello\";", "char [] arr = {H, e, l, l, o };"]
+answer = "char arr[] = \"Hello\";"
+
+[[questions]]
+question = "Which of the following statements has a different result from the other statements?"
+choices = ["char c1 = 'B'; printf(\"%c\", c1);", "char c2 = 066; printf(\"%c\", c2);", "char c3 = 0x42; printf(\"%c\", c3);", "char c4 = 0102; printf(\"%c\", c4);"]
+answer = "char c2 = 066; printf(\"%c\", c2);"
+
+[[questions]]
+question = "Which of the following statements is invalid?"
+choices = ["printf(\"\");", "printf(\"abc\");", "printf(\"%s%\");", "printf(\"\\n\")"]
+answer = "printf(\"\");"
+
+[[questions]]
+question = "Which of the following is the correct syntax of the do-while statement?"
+choices = ["do { statements; } while(condition);", "do while(condition) { statements}", "do{ statements; } while (condition)", "do{ statements; } while(condition);"]
+answer = "do { statements; } while(condition);"
+
+[[questions]]
+question = "Which of the following is an incorrect iteration construct?"
+choices = ["(condition) ? True : False Value", "for (InitBlock; Condition; Task2) Task1;", "do { statements } while (condition);", "while (condition){ statements; }"]
+answer = "(condition) ? True : False Value"
+
+[[questions]]
+question = "Which function writes the argument c to the output stream referenced by fp?"
+choices = ["int fputc(int c, FILE *fp);", "int fputs( const char *s, FILE *fp );", "int fgets(FILE *fp)", "char *fgetc(char *buf, int n, FILE *fp);"]
+answer = "int fputc(int c, FILE *fp);"
+
+[[questions]]
+question = "Which function writes the argument c to the output stream referenced by fp?"
+choices = ["int fputc(int c, FILE *fp);", "int fgets(const char *s, FILE *fp);", "int fputs(FILE *fp);", "char *fgets(char *buf, int n, FILE *fp);"]
+answer = "int fputc(int c, FILE *fp);"
+
+[[questions]]
+question = "What is the syntax of the conditional operator in C?"
+choices = ["condition ? expression1 : expression2", "condition ? expression1, expression2", "condition : expression1 ? expression2", "expression1 : condition ? expression2"]
+answer = "condition ? expression1 : expression2"
+
+[[questions]]
+question = "The function which will compute the average of two real numbers should be prototyped as:"
+choices = ["int average( double, double);", "double average(double, double);", "char average( double, double);", "void average(double, double);"]
+answer = "double average(double, double);"
+
+[[questions]]
+question = "The pow() function in the math.h library is used to calculate the value of a number raised to a specified power. What is the return type of the pow() function?"
+choices = ["double", "int", "long double", "float"]
+answer = "double"
+
+[[questions]]
+question = "Which of the following is the correct syntax of the while statement?"
+choices = ["while (condition) { statements; }", "(condition){ statements }", "while { statements } (condition)", "{ statements } while (condition);"]
+answer = "while (condition) { statements; }"
+
+[[questions]]
+question = "What commands are used to write data appended to the end of the file? (Choose 2 answers)"
+choices = ["FILE *f* = fwrite(\"output.txt\", \"a\");", "FILE *f* = fopen(\"output.txt\", \"a\");", "FILE *f* = fopen(\"output.txt\", \"a+\");", "FILE *f* = fopen(\"output.txt\", \"w+\");", "FILE *f* = fopen(\"output.txt\", \"w\");"]
+answer = ["FILE *f* = fopen(\"output.txt\", \"a\");", "FILE *f* = fopen(\"output.txt\", \"a+\");"]
+
+[[questions]]
+question = "What commands are used to write data appended to the end of the file? (Choose 2 answers)"
+choices = ["FILE *f* = fwrite(\"output.txt\", \"a\");", "FILE *f* = fopen(\"output.txt\", \"a\");", "FILE *f* = fopen(\"output.txt\", \"a+\");", "FILE *f* = fopen(\"output.txt\", \"w+\");", "FILE *f* = fopen(\"output.txt\", \"w\");"]
+answer = ["FILE *f* = fopen(\"output.txt\", \"a\");", "FILE *f* = fopen(\"output.txt\", \"a+\");"]
+
+[[questions]]
+question = "To reallocate ptr to be an array of 5 elements, which of the following statements generates an error?"
+choices = ["ptr = realloc(ptr, 5 * sizeof(int));", "realloc(ptr, 5 * sizeof(int));", "ptr += malloc(5 * sizeof(int));", "realloc(ptr, 20);", "ptr = realloc(ptr, 20);"]
+answer = "ptr += malloc(5 * sizeof(int));"
+
+[[questions]]
+question = "To reallocate ptr to be an array of 5 elements, which of the following statements generates an error?"
+choices = ["ptr = realloc(ptr, 5 * sizeof(int));", "realloc(ptr, 5 * sizeof(int));", "ptr += malloc(5 * sizeof(int));", "realloc(ptr, 20);", "ptr = realloc(ptr, 20);"]
+answer = "ptr += malloc(5 * sizeof(int));"
+
+[[questions]]
+question = "What is the correct syntax to output \"Hello, World!\" in C/C++?"
+choices = ["printf(\"Hello, World!\");", "cout << \"Hello, World!\" << endl;", "System.out.println(\"Hello, World!\");", "echo \"Hello, World!\";"]
+answer = "printf(\"Hello, World!\");"
+
+[[questions]]
+question = "What is a proper method of opening a file for writing as binary file?"
+choices = ["FILE *f = fwrite(\"test.bin\", \"b\");", "FILE *f = fopen(\"test.bin\", \"w\");", "FILE *f = fopen(\"test.bin\", \"wb\");", "FILE *f = fwriteb(\"test.bin\");", "FILE *f = fopen(\"test.bin\", \"bw\");"]
+answer = "FILE *f = fopen(\"test.bin\", \"wb\");"
+
+[[questions]]
+question = "Which library should you include to work with the FILE data type in C?"
+choices = ["stdio.h", "stdlib.h", "string.h", "type.h"]
+answer = "stdio.h"
+
+[[questions]]
+question = "What is a proper method of opening a file for writing as binary file?"
+choices = ["FILE *f = fwrte(\"test.bin\", \"b\");", "FILE *f = fopen(\"test.bin\", \"w\");", "FILE *f = fopen(\"test.bin\", \"wb\");", "FILE *f = fwrteb(\"test.bin\");", "FILE *f = fopen(\"test.bin\", \"bw\");"]
+answer = "FILE *f = fopen(\"test.bin\", \"wb\");"
+
+[[questions]]
+question = "In C, which of the following statements allows to move to the next loop without doing the rest of the loop"
+choices = ["break;", "goto;", "continue;", "return;"]
+answer = "continue;"
+
+[[questions]]
+question = "A one dimensional array A has indices 1...100. Each element is a string and takes up three byte. The starting address of the array A[1] is 1110 decimal. The address of A[49] is"
+choices = ["1254", "1158", "1159", "1257"]
+answer = "1254"
+
+[[questions]]
+question = "A one dimensional array A has indices 1...100. Each element is a string up three byte. The starting address of the array A[1] is 1110 decimal. The address of A[49] is"
+choices = ["1254", "1158", "1159", "1257"]
+answer = "1158"
+
+[[questions]]
+question = "What is the binary representation of 0xA2?"
+choices = ["0b01100010", "0b10100010", "0b10010010", "0b10110010"]
+answer = "0b10100010"
+
+[[questions]]
+question = "The strcmp() compares two strings character by character. If the strings are equal, the function returns..."
+choices = ["1", "0", "-1"]
+answer = "0"
+
+[[questions]]
+question = "Choose the correct answer. The decimal positive binary computer representation on 16 bits (2 Bytes) with 251(10)"
+choices = ["0000 0000 1111 1011(2)", "0000 0000 1110 1011(2)", "0000 0000 1111 1001(2)", "0000 0000 1101 1011(2)"]
+answer = "0000 0000 1111 1011(2)"
+
+[[questions]]
+question = "What is the result of the statement strcmp(\"abcdef\", \"abcd\")?"
+choices = ["1", "0", "-1"]
+answer = "-1"
+
+[[questions]]
+question = "If the two strings have the same value, then strcmp() function returns"
+choices = ["True", "1", "0", "-1"]
+answer = "0"
+
+[[questions]]
+question = "Given two character strings s1=\"C\" and s2=\"+\", the function strcmp(s1, s2) will return the value"
+choices = ["0", "1", "-1", "<0", ">0"]
+answer = "<0"
+
+[[questions]]
+question = "Given the following code snippet\nint a[10] = {1, 2, 3}; What is the value of a[3]? "
+choices = ["0", "1", "2", "3"]
+answer = "0"
+
+[[questions]]
+question = "What is the result of the expression 10 % 3?"
+choices = ["1", "3", "2", "0"]
+answer = "1"
+
+[[questions]]
+question = "What is the return value of the strcmp(\"abc\", \"abcdef\") function?"
+choices = ["1", "0", "-1", "2"]
+answer = "1"
+
+[[questions]]
+question = "What will the following if-else statement output if x = 10?"
+choices = ["Greater", "Smaller", "Equal", "None of the others"]
+answer = "Greater"
+
+[[questions]]
+question = "What will be the following program output?"
+choices = ["14 7 and -4 8", "6 2 and 3 5"]
+answer = "14 7 and -4 8"
+
+[[questions]]
+question = "What does the following program print?"
+choices = ["5.5", "5.50000", "4.50000", "An error will be raised."]
+answer = "An error will be raised."
+
+[[questions]]
+question = "What will be the output of the C program? Ho\u00e0ng Ho\u1ea3ng\nchar temp;\narr[10] = {1, 2, 3, 4, 5, 6, 7, 8};\ntemp = (arr + 1)[2];\nprintf(\"%d\\n\", temp);"
+choices = ["1", "2", "3", "4"]
+answer = "4"
+
+[[questions]]
+question = "What will be the output of the following code?\n#include <stdio.h>\nint main() {\n int a = 1, b = 1;\n int result = ++a + ++b;\n printf(\"%d %d\\n\", result, a); \n return 0;}"
+choices = ["422", "022", "122", "222"]
+answer = "422"
+
+[[questions]]
+question = "What is the output of this code?"
+choices = ["54321", "543210", "531", "542"]
+answer = "54321"
+
+[[questions]]
+question = "What is the output of the following code?"
+choices = ["tptfpt", "fptp", "tfotp", "Compile error"]
+answer = "tptfpt"
+
+[[questions]]
+question = "What is the output when the sample code below is executed?"
+choices = ["1005", "1006", "1000", "1004"]
+answer = "1005"
+
+[[questions]]
+question = "What is the output of the following code snippet?"
+choices = ["1", "4", "5", "0"]
+answer = "1"
+
+[[questions]]
+question = "What is the result displayed on the screen of the following program?\n#include <stdio.h>\n\nint main() {\r\ninteger x, p;\r\nx = 3;\r\np = 6;\r\nx = 8;\r\np = 9;\r\nprintf(\"%d\", x);\r\nprintf(\"%d\", p);"
+choices = ["None of these", "99", "39", "69"]
+answer = "99"
+
+[[questions]]
+question = "What is the result displayed on the screen of the following program?"
+choices = ["12", "8", "10", "None of these"]
+answer = "12"
+
+[[questions]]
+question = "What is the output of the following code?"
+choices = ["2025", "2024", "2023", "2026"]
+answer = "2025"
+
+[[questions]]
+question = "What is the value of ceil(2.55) from the math library?"
+choices = ["3", "2", "2.5", "26"]
+answer = "3"
+
+[[questions]]
+question = "What is the output when the sample code below is executed?"
+choices = ["14", "15", "16", "20"]
+answer = "14"
+
+[[questions]]
+question = "What is the maximum index of the last character in a character array initialized with a size is 10?"
+choices = ["9", "10", "8", "It depends on the contents of the array"]
+answer = "9"
+
+[[questions]]
+question = "Suppose there is a function in C as follows:\ndouble g(double x, double y) {\nreturn (x - 2)/(x - 2) + y;\n};\nWhat is the value of z after executing the statement z=g(2,2)?"
+choices = ["0", "4", "2", "8"]
+answer = "0"
+
+[[questions]]
+question = "What is the result of the expression 1\u00b9?"
+choices = ["0", "1", "10", "11"]
+answer = "1"
+
+[[questions]]
+question = "What will be the output of the C program?\nint a = 4, b = 2;\nprintf(\"%d%d\", a*b);"
+choices = ["2", "8", "16", "6"]
+answer = "6"
+
+[[questions]]
+question = "What will the following program print?"
+choices = ["4-1", "0,1", "10", "0,2"]
+answer = "10"
+
+[[questions]]
+question = "What will be the output of the following C code?"
+choices = ["x is greater than or equal to y", "x is less than y", "x is equal to y", "Compilation error"]
+answer = "x is less than y"
+
+[[questions]]
+question = "What is the output when the sample code below is executed?"
+choices = ["14", "15", "16", "20"]
+answer = "14"
+
+[[questions]]
+question = "What is the output when the sample code below is executed?"
+choices = ["9", "8", "12", "10"]
+answer = "9"
+
+[[questions]]
+question = "What is the result displayed on the screen of the following program?"
+choices = ["a, b, c: a triangle", "1.00, 1.00, 1.25: a triangle", "1, 1, 1.25: a triangle", "1.00, 1.00, 1.25: not a triangle"]
+answer = "1.00, 1.00, 1.25: a triangle"
+
+[[questions]]
+question = "What is the result of the \"printf(\"%d\", 0x11 | 0x10);\" command?"
+choices = ["5", "22", "18", "25", "28"]
+answer = "25"
+
+[[questions]]
+question = "In the sample code int a = 0x10 | 0x11; the variable a will contain the value (in decimal system):"
+choices = ["3", "13", "19", "25", "27"]
+answer = "25"
+
+[[questions]]
+question = "Assume we have the following code:\nint f=4;\nint *p=&f;\nWhat is the result of the expression ++*p?"
+choices = ["5", "4", "9", "12"]
+answer = "5"
+
+[[questions]]
+question = "Assume we have a snippet code in C:\nint main() {\nint *p = NULL;\nprintf(\"%d\", p);\ngetchar();\nreturn 0;"
+choices = ["0", "1", "10", "100"]
+answer = "0"
+
+[[questions]]
+question = """What will be the output of the following program?
+void func(int *p){
+    int j = 11;
+    *p = j;
+}
+int main() {
+    int i = 1;
+    int *p = &i;
+    func(p);
+    printf("%d,%d", i, *p);
+    getchar();
+    return 0;
+}"""
+choices = ["11,11", "1,1", "0,0", "0,1"]
+answer = "11,11"
+
+[[questions]]
+question = "What will be the output of the C program?\nint i = 1, j = 2;\nif(i == j)\n{\n printd\"%d\", -0);\n} else {\n printf(\"%d\", ++j);"
+choices = ["i=2", "i=0", "j=3", "j=1"]
+answer = "j=3"
+
+[[questions]]
+question = "What is the output of the following code snippet?"
+choices = ["22", "10", "12", "21"]
+answer = "22"
+
+[[questions]]
+question = "How many times will the loop execute?"
+choices = ["2", "1", "3", "4"]
+answer = "2"
+
+[[questions]]
+question = "What is the value of z after the \"int a = 8, b = 4, c = ++a + --b;\""
+choices = ["16", "28", "37", "32", "-28"]
+answer = "37"
+
+[[questions]]
+question = "What is the result when converting 01010 in binary system to decimal system?"
+choices = ["78", "76", "74", "72"]
+answer = "74"
+
+[[questions]]
+question = "What will be the output of the following program?\nint main() {\r\nint i = 101;\r\ninteger *p = &i;\r\nprintf(\"%d\\n\", ++(*p));\r\nreturn 0;\r\n}"
+choices = ["101", "102", "0", "Address of i"]
+answer = "102"
+
+[[questions]]
+question = "Assume we have the following codes:\ndouble d=9;\ndouble *p = &d;\nSuppose that a double occupies the memory block of 8 bytes, and the address of d is 1200. What\nis the result"
+choices = ["1264", "1200", "1208", "1209"]
+answer = "1264"
+
+[[questions]]
+question = "What will be the output of the following C code?"
+choices = ["105", "150", "120", "210"]
+answer = "105"
+
+[[questions]]
+question = "What will be the output of the following C code?"
+choices = ["130", "-130", "126", "-126"]
+answer = "-126"
+
+[[questions]]
+question = "What will be the output of the C program?\nint arr[5] = {2, 3, 4, 7}; \nint *ptr = (&arr + 1);\nprintf(\"%d %d\\n\", *(arr + 1), *(ptr - 1));"
+choices = ["23", "32", "47", "26356728"]
+answer = "47"
+
+[[questions]]
+question = "What will be printed when the following code is executed?\n#include <stdio.h>\nint main() {\n int a[] = {1,2,3,4,5,6};\n int *p = a;\np += 3;\nprintf(\"%d %d %d\", p[0], *(a+3), *(p++));\nreturn 0;\n}"
+choices = ["45", "34", "33", "44"]
+answer = "44"
+
+[[questions]]
+question = "What is the output when the sample code below is executed?"
+choices = ["0 5", "5 10", "10 5", "0 0"]
+answer = "0 5"
+
+[[questions]]
+question = "What will be printed when the following code is executed?"
+choices = ["a=5, b=5", "a=5, b=6", "a=6, b=5", "a=7, b=4"]
+answer = "a=7, b=4"
+
+[[questions]]
+question = "What will be the output of the following code snippet"
+choices = ["5 10", "15 5 10", "10 15 5", "10 15 5"]
+answer = "5 10"
+
+[[questions]]
+question = "What will be the output of the following code snippet\n#include <stdlib.h>\n#include <stdio.h>\nint main(){\r\n int a = 5;\r\n printf(\"%d\", a);\r\n return 0; \r\n}"
+choices = ["10", "5 10", "5.5", "10 10"]
+answer = "10"
+
+[[questions]]
+question = "What is the output of the following code snippet\n#include <stdio.h>\nx = 9;\nyoid someFunction() { x = 8; printf(\"%d\",x); }\nin main() {someFunction();printf(\"%d\",x);return 0;} "
+choices = ["9", "8", "9", "99"]
+answer = "9"
+
+[[questions]]
+question = "What will be the output of the following C code?\n#include <stdio.h>\nint main() {\n int a, b, c;\na = b = c = 10;\nc = a + ++b && ++c;\nprintf(\"%d %d %d\", a, b, c);\nreturn 0; \n}"
+choices = ["1 11 10", "10 11 1", "10 11 10", "1 10 1"]
+answer = "1 11 10"
+
+[[questions]]
+question = "What does the following program display?"
+choices = ["010", "121", "111", "123"]
+answer = "111"
+
+[[questions]]
+question = "What is the output of s?"
+choices = ["15, 5", "15, 6", "12, 5", "12, 6"]
+answer = "15, 6"
+
+[[questions]]
+question = "What will be printed when the following code is executed?"
+choices = ["8 8", "4 5", "8 5", "4 5"]
+answer = "8 5"
+
+[[questions]]
+question = "What will be the output of the following C code?\n#include <stdio.h>\nvoid main() {\nint *ptr, a = 10;\nptr = &a;\n*ptr += 1;\nprintf(\"%d,%d\\n\", *ptr, a);\n}"
+choices = ["10,10", "10,11", "11,10", "11,10"]
+answer = "11,10"
+
+[[questions]]
+question = "What will be the output of the following program?\n#include <stdio.h>\nint main() {\n int *pa = a;\n int a = 10;\n (*pa)++;\na++;\nprintf(\"%d\", ++a);\ngetchar();\nreturn 0; \n}"
+choices = ["Compiler error", "22", "21", "20"]
+answer = "22"
+
+[[questions]]
+question = "What is the result of the \u201cprintf(\"%d\", 12&5, 12[5]);\u201d command?"
+choices = ["4 13", "5 12", "4 12", "5 13", "11"]
+answer = "4 13"
+
+[[questions]]
+question = "What is the output when the sample code below is executed?"
+choices = ["1; 18; 120", "10; 19; 60", "1; 20; 60", "10; 19; 120"]
+answer = "1; 18; 120"
+
+[[questions]]
+question = "What will be the output of the following program\nint main(){\nint i = 100;\nint *p = &i;\n*p +=2;\nprintf(\"%d, %d\", i, p);\ngetchar();\nreturn 0;}"
+choices = ["102, 102", "100, 102", "100, 100", "102, 100"]
+answer = "102, 102"
+
+[[questions]]
+question = "What is the output when the sample code below is executed?"
+choices = ["-20,90,8", "70,90,80", "150,80,8", "150,90,80"]
+answer = "-20,90,8"
+
+[[questions]]
+question = "What is the results will be displayed on the screen after executing the following code:\nchar s[] = \"AbCd\";\nprintf(\"%d,%d,%d,%d\", s[1], s[2], s[3], s[4]);"
+choices = ["97,98,99,100", "65,66,67,68", "65,98,67,100", "98,67,100,0"]
+answer = "98,67,100,0"
+
+[[questions]]
+question = "What is the output when the sample code below? Ho\u00e0ng"
+choices = ["108642", "1086420", "1086420-2-4", "1098765432"]
+answer = "108642"
+
+[[questions]]
+question = "What will the following program print?"
+choices = ["01019283746", "010182634", "0918273645", "An error will be raised."]
+answer = "0918273645"
+
+[[questions]]
+question = "What is the result displayed on the screen of the following program?"
+choices = ["123", "051015253035", "1234", "011223"]
+answer = "123"
+
+[[questions]]
+question = "What does the following code print?"
+choices = ["Compiler error", "1.000000", "1.500000", "1.0", "1.5"]
+answer = "1.500000"
+
+[[questions]]
+question = "What does the following program print?"
+choices = ["3", "3.000000", "3.500000", "An error will be raised."]
+answer = "3.000000"
+
+[[questions]]
+question = "What is the results will be displayed on the screen after executing the following code:\nint a[] = {1,2,3,4};\nint i, s;\nfor (i=0; i<4; ++i)\n{\ns = a[i];\nprintf(\"%f\", s/4.0);\n}"
+choices = ["0.000000", "2.000000", "2.500000", "Garbage value"]
+answer = "2.500000"
+
+[[questions]]
+question = "What is the results will be displayed on the screen after executing the following code:\nint a[] = {1, 2, 3, 4};\nint i, s=0;\nfor (i = 0; i < 4; ++i)\n{\ns += a[i];\nprintf(\"%f\", (float)s / 4);"
+choices = ["25", "2", "2.500000", "2.000000"]
+answer = "2.000000"
+
+[[questions]]
+question = "What will be the output of the C program?"
+choices = ["0", "2", "Compiler error.", "4"]
+answer = "Compiler error."
+
+[[questions]]
+question = "How many times will the do-while loop execute the code if the condition is false?"
+choices = ["1", "0", "Loop infinitely", "Compile time error"]
+answer = "1"
+
+[[questions]]
+question = "What is the output when the sample code below is executed?"
+choices = ["Compile time error", "1", "2", "return 1 return 2"]
+answer = "1"
+
+[[questions]]
+question = "What is the output of the following code?\nint a = 10, b = 20;\nprintf(\"%d\", (a > 5 && b < 25));"
+choices = ["0", "1", "10", "20"]
+answer = "1"
+
+[[questions]]
+question = "What does the following program display?"
+choices = ["2", "3", "4", "An error will be raised."]
+answer = "4"
+
+[[questions]]
+question = "What does the following program display?"
+choices = ["3", "2", "1", "An error will be raised"]
+answer = "1"
+
+[[questions]]
+question = "What will be the output of the C program?"
+choices = ["2", "5", "Compilation error.", "3"]
+answer = "Compilation error."
+
+[[questions]]
+question = "What is the result of this code\nint a = 10;\r\nfload c = a / b;\r\nprintlf(\"%f\",c);"
+choices = ["3", "3.3", "3.0", "Compile error"]
+answer = "3.0"
+
+[[questions]]
+question = "What is the output when the sample code below is executed?"
+choices = ["Compile time error", "6", "4", "5"]
+answer = "Compile time error"
+
+[[questions]]
+question = "What will be the output of the following C code?"
+choices = ["5", "Run time error", "6", "Junk"]
+answer = "6"
+
+[[questions]]
+question = "What is the output of the following code snippet?\nvoid main() { \r\ninteger const *p = 5;\r\nprint(\"%d\", ++*p);\r\ngetchar(); }"
+choices = ["Compile error", "5", "NULL", "6"]
+answer = "Compile error"
+
+[[questions]]
+question = "What is the output of the following code snippet?"
+choices = ["10", "5", "15", "Compiler error"]
+answer = "10"
+
+[[questions]]
+question = "What is the output of the following code if the user enters \"20\"?"
+choices = ["10", "20", "\u201c\\n\u201d", "Undefined"]
+answer = "10"
+
+[[questions]]
+question = "What is the output of the following code snippet?\n#include<stdio.h>\nint main()\n{\n const int *p;\na = 100;\np = &a;\nprintf(\"%d\", p);\nreturn 0;\n}"
+choices = ["100", "0", "101", "Compile error"]
+answer = "100"
+
+[[questions]]
+question = "What is the results will be displayed on the screen after executing the following code:\nchar a[] = \"Ab\";\tint i = 1;\tfor (\\\"s\\\"; \\\"s\\\"; ++i) {\tt=a;printf(\"%d\", t);}"
+choices = ["Garbage value", "0", "Compiler error", "6370", "65", "98"]
+answer = "6370"
+
+[[questions]]
+question = "What is the result of the printf(\"%d\", 12<<2, 8>>2); command?"
+choices = ["64", "242", "484", "482", "00"]
+answer = "482"
+
+[[questions]]
+question = "What will be printed when the following code is executed?"
+choices = ["6", "Results are not printed", "8", "Error", "7"]
+answer = "8"
+
+[[questions]]
+question = "What will be the output of the following program?"
+choices = ["333", "111", "222", "Compile error"]
+answer = "333"
+
+[[questions]]
+question = "What will be the output of the following C code?\n#include <stdio.h>\nvoid main() { \tint i = 10, j = 3, k = 3;\nprintf(\"%d %d \\n\", i, j, k); }"
+choices = ["Compile time error", "10 3 3", "10 3", "10 3 somegarbage value"]
+answer = "10 3"
+
+[[questions]]
+question = "What will be the output of the C program?\nint 2_var = 15;\nprintf(\"%d\", 2_var);"
+choices = ["0", "15", "Compilation error", "Runtime error"]
+answer = "Compilation error"
+
+[[questions]]
+question = "What is the results will be displayed on the screen after executing the following code:\nint a[] = {1, 2, 3, 4};\nint i = 0; s = 0;\nfor (i=0; i<4; ++i) {\ns += a[i];\n}"
+choices = ["10", "Compiler error", "Runtime error", "Garbage value"]
+answer = "10"
+
+[[questions]]
+question = "#include <stdio.h>\n#define MONTHS_IN_YEAR 12\nint main() {\nconst int WORKING_DAYS = 22;\nprintf(\"%d\",MONTHS_IN_YEAR);\nprintf(\"%d \",WORKING_DAYS);\nreturn 0;"
+choices = ["The output will be: 12 22", "No output", "Compile error", "Runtime error"]
+answer = "The output will be: 12 22"
+
+[[questions]]
+question = "What is the output when the sample code below is executed?"
+choices = ["No the output", "True", "False", "Compile time error"]
+answer = "No the output"
+
+[[questions]]
+question = "What does the following code print?\nint i = 0;\nwhile (i < 5) {\nprintf(\"%d\", i);\ni++;\n}"
+choices = ["infinite loop", "01234", "543210", "No output", "Compiler error", "0"]
+answer = "infinite loop"
+
+[[questions]]
+question = "What does the following code print?"
+choices = ["Runtime error", "Compiler error", "x = 5, y = 10", "x = 10, y = 5", "x = 10, y = 10", "x = 5, y = 5"]
+answer = "Compiler error"
+
+[[questions]]
+question = "What will be the output of the following code\nprint(\"%c\", tolower(c));"
+choices = ["`c`", "`C`", "`c` or `C` (depending on IDE)", "Compilation error"]
+answer = "`c`"
+
+[[questions]]
+question = "What is the issue with the following code?\nchar str1[];\ngets(str);\nprintf(\"%s\", str);"
+choices = ["Runtime error.", "Logical error.", "Compilation error.", "No issue."]
+answer = "Runtime error."
+
+[[questions]]
+question = "How many times will the loop execute?"
+choices = ["5", "4", "6", "0"]
+answer = "5"
+
+[[questions]]
+question = "What represents dynamic allocation in C?"
+choices = ["int* a = (int*)malloc(5 * sizeof(int));", "int a[5];", "int a[5][5];", "free(a);"]
+answer = "int* a = (int*)malloc(5 * sizeof(int));"
+
+[[questions]]
+question = "Which of the following statements correctly allocates memory for a dynamic array of 10 integers in C?"
+choices = ["int* a = (int*)malloc(10 * sizeof(int));", "int a[10] = malloc(10 * sizeof(int));", "int* a = (int*)calloc(sizeof(int), 10);", "int* a = (int*)malloc(10);"]
+answer = "int* a = (int*)malloc(10 * sizeof(int));"
+
+[[questions]]
+question = "Given a matrix named mat with dimensions 6x6, what is the correct way to access the element in the last row and last column?"
+choices = ["mat[5][5]", "mat[5][6]", "mat[6][5]", "mat[-1][-1]"]
+answer = "mat[5][5]"
+
+[[questions]]
+question = "Which of the following represents the updated array after the execution of the below code?"
+choices = ["{1, 2, 4, 5}", "{1, 2, 4, 5}", "{1, 3, 4, 5}", "{1, 3, 4, 5}"]
+answer = "{1, 2, 4, 5}"
+
+[[questions]]
+question = "Consider the following array of integers: (8, 1, 2, 7, 9) What will be the state of the array after one pass of selection sort?"
+choices = ["(1, 8, 2, 7, 9)", "(8, 1, 2, 7, 9)", "(1, 2, 8, 7, 9)", "(1, 2, 7, 8, 9)"]
+answer = "(1, 8, 2, 7, 9)"
+
+[[questions]]
+question = "What is the result displayed to the screen"
+choices = ["t=0, p = 4.000000", "t=2, p = 4.000000", "t=0, p = 4.000000", "t=2, p = 4.000000"]
+answer = "t=0, p = 4.000000"
+
+[[questions]]
+question = "What is the size of the char data type in bytes?"
+choices = ["1 byte", "2 bytes", "4 bytes", "It depends on the system"]
+answer = "1 byte"
+
+[[questions]]
+question = "What is the size of a float variable in byte?"
+choices = ["2 bytes", "1 byte", "8 bytes", "4 bytes"]
+answer = "4 bytes"
+
+[[questions]]
+question = "How many bytes to represent float data type in C?"
+choices = ["1 byte", "2 bytes", "4 bytes", "8 bytes"]
+answer = "4 bytes"
+
+[[questions]]
+question = "What is the maximum size required to store the string \"Hello\" in C?"
+choices = ["5 bytes", "6 bytes", "4 bytes", "10 bytes"]
+answer = "6 bytes"
+
+[[questions]]
+question = "What will be the maximum size of a double variable?"
+choices = ["8 bytes", "4 bytes", "2 bytes", "16 bytes"]
+answer = "8 bytes"
+
+[[questions]]
+question = "What is the result of floor(-5.9) and floor(5.9)?"
+choices = ["-6 and 5", "-5 and 5", "-6 and 6", "-5 and 6"]
+answer = "-6 and 5"
+
+[[questions]]
+question = "What are the sizes of the memory blocks allocated for d and e?"
+choices = ["400 bytes and 400 bytes", "400 bytes and 100 bytes", "100 bytes and 800 bytes", "100 bytes and 400 bytes"]
+answer = "100 bytes and 400 bytes"
+
+[[questions]]
+question = "In linear search, if the size of the array is n and the expected value does NOT exist in the array, how many comparisons will be made between the searching item and elements in the array?"
+choices = ["n", "2n + 1", "n - 1", "n + 1"]
+answer = "n"
+
+[[questions]]
+question = "What will be the output of the C program?\nint a = 5;\nprintf(\"%dha %a\", a);"
+choices = ["5ha", "ha", "dha", "7"]
+answer = "ha"
+
+[[questions]]
+question = "What is the value of variable a after executing the following lines of code:\nchar line1[] = \"Hi\";\nchar line2[] = \"Hello\";\na=strcmp(line1, line2);"
+choices = ["0", "A positive value", "A negative value", "NAN"]
+answer = "A positive value"
+
+[[questions]]
+question = "What is the result displayed on the screen of the following program\n#include <stdio.h>\n#include <ctype.h>\nin main() {\nchar a[] = \"hello world\";\tint i = 0;\nwhile (issapce(a[i]))\n{\ni++;\nprintf(\"%d, %c\", i, a[i-1]);\n}\nreturn 0;}"
+choices = ["0, h", "5, o", "5,", "5, w"]
+answer = "5, o"
+
+[[questions]]
+question = "What is the result of the printf(\"%c %c\", \"A\", 0x42, 68); command?"
+choices = ["ABC", "ABCD", "ACCD", "ABDC"]
+answer = "ABCD"
+
+[[questions]]
+question = "The strcmp(S1, S2) will return ___ even if the value of S1 is greater than the value of S2"
+choices = ["Positive integer", "Negative integer", "Null", "-1", "0"]
+answer = "Positive integer"
+
+[[questions]]
+question = "What will be the output of the following C code?"
+choices = ["Hi", "How are you", "Hello", "HIHello"]
+answer = "HIHello"
+
+[[questions]]
+question = "What is the output of the following code snippet\nchar words[11];\r\nstrcpy(words, \"apple\");\r\nstrcat(words, \"juice\") ;\r\nprintf(\"%s\\n\", words);"
+choices = ["applejuice", "apple", "juice", "juiceapple"]
+answer = "applejuice"
+
+[[questions]]
+question = "What will be the output of the following code if the input is abcdef?"
+choices = ["abcd", "abcdef", "abc", "Syntax Error in fgets function"]
+answer = "abcd"
+
+[[questions]]
+question = "What does the following program display?"
+choices = ["H", "I", "e", "o"]
+answer = "e"
+
+[[questions]]
+question = "What does this code print?"
+choices = ["1,0", "0,1", "1,1", "0,0"]
+answer = "0,1"
+
+[[questions]]
+question = "What will be the output of the C program?"
+choices = ["loop", "Infinite loop", "loop loop", "loop loop"]
+answer = "loop"
+
+[[questions]]
+question = "What will be the output of the following C code?\n#include <stdio.h>\nvoid main() {\n int k = 4;\n int const p = k;\n int r = 3;\n printf(\"%d\", p);\n}"
+choices = ["The value of p is 4", "Run time error", "Compile time error", "The value of p is a garbage value"]
+answer = "The value of p is 4"
+
+[[questions]]
+question = "char str1[20] = \"Hello\";\nchar str2[20] = \"World\";\nstrcat(str1, str2);\nprintf(\"%s\", str1);"
+choices = ["World Hello", "HelloWorld", "Hello World", "World Helio"]
+answer = "HelloWorld"
+
+[[questions]]
+question = "What is the output when the sample code below is executed?"
+choices = ["Infinite loop", "Compile time error", "YesYesYesYes", "Yes"]
+answer = "YesYesYesYes"
+
+[[questions]]
+question = "What is the result will be displayed on the screen after executing the following code:\nchar a[] = \"ABCDEF\";\nchar *s = a;\nfor ( ; s < &a[6]; s += 3) {\n   printf(\"%s\", s);\n}"
+choices = ["Runtime error", "Ad", "Compiler error", "ABCDEFdEf", "Abc", "dEF"]
+answer = "ABCDEFdEf"
+
+[[questions]]
+question = "What is the output when the sample code below is executed?"
+choices = ["OneOneOne", "oneTwoOneOne", "OneTwoTwoOne", "TwoTwoOne"]
+answer = "OneOneOne"
+
+[[questions]]
+question = "What is the output when the sample code below is executed?"
+choices = ["OneThreeFour", "OneTwoThreeFour", "One", "TwoOneThreeFour"]
+answer = "OneThreeFour"
+
+[[questions]]
+question = "What is the result of the statement printf(\"(Welcome to\\rFPTU)\");"
+choices = ["FPTUome to", "FPTU", "Welcome to FPTU", "Welcome to", "FPTU Welcome to"]
+answer = "FPTUome to"
+
+[[questions]]
+question = "Choose the best comment about the output of the following C code:\n#include <stdio.h>\nvoid main() {\nint i = 0;\nwhile (i < 5) {\ni++;\nprintf(\"Hi-\");\nwhile (i < 4) {\ni++;\nprintf(\"Hello-\");\n}\n}"
+choices = ["Hi-Hi-Hi-Hi-Hi-Hello-Hello-Hello-", "Hi-Hi-Hi-Hi-Hello-Hello-Hello-", "Hi-Hello-Hello-Hello-", "Hi-Hello-Hello-Hi-"]
+answer = "Hi-Hello-Hello-Hi-"
+
+[[questions]]
+question = "Choose the best comment about the output of the following C code:\n#include <stdio.h>\nvoid main() {\nint i = 0;\nwhile (i < 5) {\ni++;\nprintf(\"Hi-\");\n}"
+choices = ["Hi-Hi-Hi-Hi-Hi-Hello-Hi-", "Hi-Hi-Hi-Hi-Hello-Hi-", "Hi-Hello-Hello-Hi-", "Hello-Hello-"]
+answer = "Hello-Hello-"
+
+[[questions]]
+question = "Consider the following program. What will be printed to the screen?"
+choices = ["AAAA", "BBBB", "CCCC", "DDDD", "EEEE"]
+answer = "AAAA"
+
+[[questions]]
+question = "What is the output of the following code snippet"
+choices = ["bcdef", "abcde", "98 99 100 101 102", "cdefg"]
+answer = "bcdef"
+
+[[questions]]
+question = "What is the output of the following code snippet"
+choices = ["bcdef", "abcde", "98 99 100 101 102", "cdefg"]
+answer = "bcdef"
+
+[[questions]]
+question = "Consider the following code snippet that reads and prints the contents of a text file named \"data.txt\":\n#include <stdio.h>\nint main() {\nFILE *file_ptr;\nchar ch;\nfile_ptr = fopen(\"data.txt\", \"r\") ;\nif (file_ptr == NULL){\nprintf(\"Unable to open the file \\n\") ;\nreturn 1;\n}\nwhile (!feof(file_ptr)) {\nprintff(\"%c\", ch);\n}"
+choices = ["Hello", "Hello\rThis is a sample text file", "This is a sample text file", "This is a sample text file\rHello"]
+answer = "Hello\rThis is a sample text file"
+
+[[questions]]
+question = "Consider the following program and answer the question.\n\nvoid hours_and_minutes(int total, int& phrs, int& min) {\npmin = total % 60;\nphrs = total / 60;}\n\nint main() {\tint lmin hr = 0, min = 0;\nprintf(\"Enter total minutes for videotape: \");\nscanf(\u201c%d\u201d, &min);\nhours_and_minutes(lmin, hr, min);\nprintf(\"That is %d hours and %d minutes\\n\", hr, min);}\n\nWhat is the result displayed on the screen if user inputs 85 ?"
+choices = ["That is 8 hours and 5 minutes", "That is 0 hours and 0 minutes", "That is 1 hours and 25 minutes", "That is 0 hours and 85 minutes"]
+answer = "That is 8 hours and 5 minutes"
+
+[[questions]]
+question = "What will the following program output? #include <stdio.h>\nint main() {\r\ninteger a = -5;\r\nif (a%2 == 0) \r\n{\r\nprintf(\"a is an positive number\") ;\r\n} else if(a==0)\r\n{\r\n printf (\"a is zero\") ;\r\n}\r\nelser\r\n{\r\n  printf(\"a is an negative number\") ;\r\n}\r\nreturn 0;\r\n}"
+choices = ["a is an positive number", "a is an negative number", "a is zero", "An error will be raised."]
+answer = "a is an negative number"
+
+[[questions]]
+question = "Consider the following program\n#include <stdio.h>\nvoid announce(int n) {\nswitch (n) {\ncase 0: printf(\"%s\\n\", \"Good luck next time!\");\nbreak;\ncase 1: printf(\"%s\\n\", \"You got a beer!Cheers!\");\nbreak;\ncase 2: printf(\"%s\\n\", \"You gotta... car!Get your license!\");\nbreak;\ncase 3: printf(\"%s\\n\", \"You gonna... tour around the world in a year!See you next year!\");\nbreak;\ndefault:\nbreak;\n}\n}\n\nvoid draw5times(int arr[]) {\nprintf(\"Input 5 integers \\n\";)\nscanf(\"%d %d %d %d %d\", &arr[0], &arr[1], &arr[2], &arr[3], &arr[4]);\n}\n\nint main() {\n int arr[5];\ndraw5times(arr);\nfor (int i = 1; i < 5; i++) {\nanounce(arr[i] % 4);\n}\n}"
+choices = ["Good luck next time!", "You got a beer!Cheers!", "You gotta... car!Get your license!", "You gonna... tour around the world in a year!See you next year!"]
+answer = "You got a beer!Cheers!"
+
+[[questions]]
+question = "Which of the following switch statement will correctly compute the result for the expression 5 * 4?"
+choices = ["20", "9", "1.25", "0"]
+answer = "20"
+
+[[questions]]
+question = "Why the following code is wrong?"
+choices = ["The case label is the real number", "Missing \"break\" command", "Missing \"default\" command", "The variable name is wrong"]
+answer = "The case label is the real number"
+
+[[questions]]
+question = "What is the output of the following code snippet?\nchar str1[] = \"Hello\";\nchar str2[10];\nstrcpy(str2, str1);"
+choices = ["Copies content of str1 into str2", "Compares str1 with str2", "Retrieves the length of str1", "Assign str2 to an empty string"]
+answer = "Copies content of str1 into str2"
+
+[[questions]]
+question = "What is correct about strcpy(s1, s2) function?"
+choices = ["Compare two s1 strings and s2 string", "Copy s2 string to s1 string", "Copy s1 string to s2 string", "Concatenate string s2 to the end of s1", "Find the address of a substring"]
+answer = "Copy s2 string to s1 string"
+
+[[questions]]
+question = "What is the result displayed on the screen of the following program?"
+choices = ["The address of variable a", "The address of the pointer pa", "The address of the double pointer ppa", "10"]
+answer = "10"
+
+[[questions]]
+question = "What does the following code print?\nint x = 10;\nprintf(\"Zero\");\nelser\nprintf(\"Non-zero\");"
+choices = ["Runs and prints \"Non-zero\"", "Compiler error.", "Runs but prints nothing.", "Runs and prints garbage value.", "Runs and prints \"Zero\".", "Runtime error."]
+answer = "Runs and prints \"Non-zero\""
+
+[[questions]]
+question = "What is correct about strcpy(s1, s2) function?"
+choices = ["Compare two s1 strings and s2 string", "Copy s2 string to s1 string", "Copy s1 string to s2 string", "Concatenate string s2 to the end of s1", "Find the address of a substring"]
+answer = "Copy s2 string to s1 string"
+
+[[questions]]
+question = "Assume we have a function such as:\nvoid swap(int a, int b){ \nint t=a;\na=b;\nb=t; \n}\nWhat is the problem with a and b after executing the swap(a,b) function?"
+choices = ["a and b do not change values.", "cannot execute the swap(a,b) function.", "a has the old value of b and b has the new value of t.", "a and b change values for each other."]
+answer = "a and b do not change values."
+
+[[questions]]
+question = "Consider an array a with n elements. The code snippet above is executed to calculate the value s.\nint a[MAX_SIZE];\nint s = 0;\nfor(int i = 0; i < n; i++) {\ns = s + a[i] * a[i];\n}"
+choices = ["The sum of squares of all elements in the array a.", "The sum of all even elements in the array a.", "The sum of all odd elements in the array a.", "The sum of all elements in the array a."]
+answer = "The sum of squares of all elements in the array a."
+
+[[questions]]
+question = "Consider the following code:\nint func(int *a, int n) {\nint S = 0;\nfor(inti=0; i<n; i++) { \nS += (a[i] % 2) * a[i];\n}\nreturn S;"
+choices = ["Calculates the sum of all odd elements in the array a of size n.", "Calculates the sum of all even elements in the array a of size n.", "Calculates the sum of squares of all elements in the array a of size n", "Calculates the sum of absolute value of all odd elements in the array a of size n."]
+answer = "Calculates the sum of all even elements in the array a of size n."
+
+[[questions]]
+question = "Consider the following code:\nint func(int *a, int n){\nint S = 0;\nfor(inti=0; i<n, i++)\n{\nS = S + (a[i] % 2) * a[i];\n}\nreturn S;\n}"
+choices = ["Calculates the sum of the absolute value of all odd elements in the array a of size n.", "Calculates the sum of all odd elements in the array a of size n.", "Calculates the sum of all even elements in the array a of size n.", "Calculates the sum of squares of all elements in the array a of size n."]
+answer = "Calculates the sum of all odd elements in the array a of size n."
+
+[[questions]]
+question = "Choose the correct statement about the following scanf(\"%d, %d\", &a, &b);"
+choices = ["scan will expect two integers inputted by user and write them to variables a and b.", "scan will expect two floating-point numbers inputted by user and write them to variables a and b.", "scanf will expect two integers separated by a comma, and write the first integer to variable a, the second integer to variable b", "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the second integer to variable b."]
+answer = "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the second integer to variable b."
+
+[[questions]]
+question = "Given the following code snippet:\n#include <stdio.h>\nint main() {\n int a = 5;\n   {\n     int b = 10;\n     printf(\"%d\", a);\n // Uncommenting the line of code below will be a compilation error.\n    // printf(\"%d\", b);\n  }\n return 0;\n}"
+choices = ["The variable b can be accessed only inside the inner block where it\u2019s declared.", "The variable b can be accessed anywhere within main() after its declaration.", "Both variables a and b can be accessed inside the inner block", "The variable b can be accessed globally throughout the program."]
+answer = "The variable b can be accessed only inside the inner block where it\u2019s declared."
+
+[[questions]]
+question = "#include <stdio>\nint main() {\n int a = 1;\n switch (a) {\n case 1: \n printf(\"%d\", a);\n case 2:\n printf(\"%d\", a);\n case 3:\n printf(\"%d\", a);"
+choices = ["No error, output is 111", "No error, output is 1", "Compile time error, no break statements", "Compile time error, case label outside switch statement"]
+answer = "No error, output is 1"
+
+[[questions]]
+question = "Analyze the following C function and determine the output?"
+choices = ["6", "3", "9", "0"]
+answer = "3"
+
+[[questions]]
+question = "In C programming, comments are used to add explanatory text that is ignored by the compiler.\nWhich is a correct type of comment?"
+choices = ["/* Comments */", "\"\" Comment\"", "/* Comment */", "{ Comment }"]
+answer = "/* Comment */"
+
+[[questions]]
+question = "Assume we have the following code:\nint i = 4;\nint *p = &i;\n\nSuppose that an int occupies a memory block of 4 bytes, and the address of i is 1008.\nWhat result of the following expression: p + 4?"
+choices = ["1024", "1020", "1016", "1012"]
+answer = "1016"
+
+[[questions]]
+question = "The ASCII code for the Enter key (also known as the Carriage Return) is 13 in some contexts, it may also be represented as a combination of Carriage Return (CR) and Line Feed (LF), where CR"
+choices = ["is 10.", "is 13.", "may also be represented as a combination of Carriage Return (CR)", "is the sequence LF."]
+answer = "is 13."
+
+[[questions]]
+question = "In C programming, when declaring a variable of a type integer, the computer stores it in a numbered storage location. What is this numbered location called?"
+choices = ["Address", "Pointer", "Integer", "Byte"]
+answer = "Address"
+
+[[questions]]
+question = "In C programming, a variable is frequently used to store the address of another variable. What is the name of"
+choices = ["Pointer", "Address", "Integer", "Byte"]
+answer = "Pointer"
+
+[[questions]]
+question = "What is a variable storing the address of another variable or a variable storing the address of the dynamically allocated memory called?"
+choices = ["String", "Pointer", "Function", "Array"]
+answer = "Pointer"
+
+[[questions]]
+question = "What is the result when converting 0111 1011 in binary system to decimal system?"
+choices = ["120", "121", "122", "123"]
+answer = "123"
+
+[[questions]]
+question = "What is the result when converting 7B in hexa system to a decimal system?"
+choices = ["123", "124", "125", "126"]
+answer = "125"
+
+[[questions]]
+question = "What is the result of the expression sizeof(int) in Windows?"
+choices = ["4", "1", "2", "8"]
+answer = "4"
+
+[[questions]]
+question = "What is the numeric code of the NULL character?"
+choices = ["1", "0", "-1", "32"]
+answer = "0"
+
+[[questions]]
+question = "What is the & operator? Ho\u00e0ng"
+choices = ["Bitwise AND", "Bitwise OR", "Logical AND", "Logical OR"]
+answer = "Bitwise AND"
+
+[[questions]]
+question = "What is not a loop in C programming language?"
+choices = ["While", "Do while", "For", "Repeat until"]
+answer = "Repeat until"
+
+[[questions]]
+question = "What is the purpose of the fscanf() function in the C programming language?"
+choices = ["Read data from the file.", "Print to the screen.", "Read data from the keyboard.", "Open a file.", "Print to file."]
+answer = "Read data from the file."
+
+[[questions]]
+question = "What does a variable store in memory?"
+choices = ["Compiler instructions", "Debug information", "Binary data", "Memory addresses of other programs"]
+answer = "Binary data"
+
+[[questions]]
+question = "What term is commonly used to specify both the type and name of a variable or constant in a C programming language?"
+choices = ["Identification", "Name", "Declaration", "Definition"]
+answer = "Declaration"
+
+[[questions]]
+question = "What syntax is used to declare a variable that contains only a positive integer?"
+choices = ["unsigned variable_name;", "int variable_name;", "long variable_name;", "positive int variable_name;"]
+answer = "unsigned variable_name;"
+
+[[questions]]
+question = "What technique in programming is to break the program into a series of smaller programs?"
+choices = ["Modularity", "Repeat", "Select", "Sequentially"]
+answer = "Modularity"
+
+[[questions]]
+question = "What translates a C source file into machine language so that the computer can execute it?"
+choices = ["A compiler", "A text editor", "A file", "A program"]
+answer = "A compiler"
+
+[[questions]]
+question = "What will happen if the while loop does NOT do the loop's condition?"
+choices = ["Compile time error", "Loop infinitely", "No Output will be printed", "The loop will not work"]
+answer = "The loop will not work"
+
+[[questions]]
+question = "What algorithm should be used to sort the elements in the array?"
+choices = ["Bubble sort, Linear sort", "Binary sort, Linear sort", "Selection sort, Bubble sort", "Binary sort, Selection sort"]
+answer = "Selection sort, Bubble sort"
+
+[[questions]]
+question = "Which is not a type of bus in a computer?"
+choices = ["Address bus", "Signal bus", "Control bus", "Data bus"]
+answer = "Signal bus"
+
+[[questions]]
+question = "Which of the following code snippets can be used to create an array with all elements initialized to zero in the C language?"
+choices = ["int a[5] = {0};", "int a[5] = 0;", "int a[5] = {0, 0, 0, 0, 0};", "int a[5];"]
+answer = "int a[5] = {0};"
+
+[[questions]]
+question = "Which of the following operators can be applied to the pointer variable(s)?"
+choices = ["Increments", "Square root", "Division", "Multiplication"]
+answer = "Increments"
+
+[[questions]]
+question = "Which of the following is the correct way to assign a value in C?"
+choices = ["int number = 10;", "int number == 10;", "int number: 10;", "int number 10;"]
+answer = "int number = 10;"
+
+[[questions]]
+question = "Which sorting algorithm repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order?"
+choices = ["Bubble sort", "Selection sort", "Binary sort", "None of the others"]
+answer = "Bubble sort"
+
+[[questions]]
+question = "How would you copy the content of one string into another in C?"
+choices = ["strcpy(destination, source);", "strcat(destination, source);", "strcmp(destination, source);", "sprintf(destination, source);"]
+answer = "strcpy(destination, source);"
+
+[[questions]]
+question = "When a C program compiles without any errors or warnings, it means that the syntax of the program is correct, and the compiler successfully translates the code into machine-readable instructions. However, a program can still produce incorrect results if there are"
+choices = ["compilation errors", "runtime errors", "logic or semantic errors", "interpreter errors"]
+answer = "logic or semantic errors"
+
+[[questions]]
+question = "How are strings typically represented in C?"
+choices = ["As an array of characters", "As an array of strings", "As individual characters", "As integers referencing ASCII values"]
+answer = "As an array of characters"
+
+[[questions]]
+question = "Who is the inventor of the C programming language?"
+choices = ["Dennis Ritchie", "Bjarne Stroustrup", "Brian Kernighan", "Niklaus Wirth"]
+answer = "Dennis Ritchie"
+
+[[questions]]
+question = "How are negative integers typically stored in C?"
+choices = ["Binary Coded Decimal (BCD)", "One's complement", "Two's complement", "Sign magnitude notation"]
+answer = "Two's complement"
+
+[[questions]]
+question = "Binary search can be applied to which type of data structure in C?"
+choices = ["One-dimensional array", "Two-dimensional array", "Every kind of array", "All of the others"]
+answer = "One-dimensional array"
+
+[[questions]]
+question = "Errors that occur due to syntax errors belong to which of the following?"
+choices = ["Compile error", "Run time error", "Input error", "Linking error"]
+answer = "Compile error"
+
+[[questions]]
+question = "How can you initialize a character array in C?"
+choices = ["char arr[] = \"Hello\";", "char arr[] = {H, e, l, l, o};", "Char[arr] = \"Hello\";", "Char[arr] = {H, e, l, l, o};"]
+answer = "char arr[] = \"Hello\";"
+
+[[questions]]
+question = "Values used to describe information are typically referred to as \""
+choices = ["Data", "Information", "Algorithm", "Computer program"]
+answer = "Data"
+
+[[questions]]
+question = "In JSTL, what is the purpose of the fmt:bundle tag?"
+choices = ["To include external JavaScript files", "To define localization bundles", "To format numbers", "To handle user sessions"]
+answer = "To define localization bundles"
+
+[[questions]]
+question = "In a for loop, what part of the loop is executed before the loop starts?"
+choices = ["The condition", "The initialization block", "The iteration statement", "The body of the loop"]
+answer = "The initialization block"
+
+[[questions]]
+question = "The fopen function is used to open a file. Is the following true or false?\n\t\"- tells fopen you will be reading data from the file. If no such exists, fopen will fail."
+choices = ["True", "False"]
+answer = "True"
+
+[[questions]]
+question = "The statement for(;;); does indeed represent an infinite loop as it lacks the conditions that would cause the loop to terminate naturally. However, an infinite loop can still be terminated by using"
+choices = ["exit()", "abort()", "break", "terminate"]
+answer = "break"
+
+[[questions]]
+question = "The strcpy() function in C programming is used to"
+choices = ["copy strings", "concatenate (joins) two strings", "compare two strings"]
+answer = "copy strings"
+
+[[questions]]
+question = "The function islower() returns a non-zero value if a character"
+choices = ["A lowercase letter", "An uppercase letter", "A digit", "A punctuation character"]
+answer = "A lowercase letter"
+
+[[questions]]
+question = "The & operator in the C programming language is used to"
+choices = ["AND two bit sequences.", "OR two conditionals.", "AND two conditionals.", "OR two bit sequences.", "XOR two bit sequences.", "NOT a conditional."]
+answer = "AND two bit sequences."
+
+[[questions]]
+question = "Which library contains the abs() function?"
+choices = ["time.h", "conio.h", "math.h", "stdlib.h"]
+answer = "stdlib.h"
+
+[[questions]]
+question = "Which library contains the function rand() to generate pseudo random integers?"
+choices = ["ctype.h", "stdlib.h", "math.h", "conio.h", "iostream.h"]
+answer = "stdlib.h"
+
+[[questions]]
+question = "To generate a random integer, you need to declare the _____ library and then you can use the rand() function."
+choices = ["stdio.h", "stdlib.h", "ctype.h", "conio.h"]
+answer = "stdlib.h"
+
+[[questions]]
+question = "Which of the following statements is used to move to the next loop without executing the remaining part of the loop?"
+choices = ["continue", "goto", "return", "break"]
+answer = "continue"
+
+[[questions]]
+question = "In the Standard library of C language, which function returns a pseudo-random integer?"
+choices = ["rand()", "srand()", "randomize()", "random()"]
+answer = "rand()"
+
+[[questions]]
+question = "Which of the following statements is used to stop the select or loop statement?"
+choices = ["break", "goto", "continue", "while"]
+answer = "break"
+
+[[questions]]
+question = "What is the returned type of the sqrt() function from the math.h library in C?"
+choices = ["double", "float", "int", "long"]
+answer = "double"
+
+[[questions]]
+question = "The pow() function in the math library is used to calculate the value of a number raised to a power. What is the return type of the pow() function?"
+choices = ["double", "int", "long double", "float"]
+answer = "double"
+
+[[questions]]
+question = "What is the return type of the putchar function?"
+choices = ["int", "char", "void", "string"]
+answer = "int"
+
+[[questions]]
+question = "Which keyword is used to define a named constant in C?"
+choices = ["const", "define", "constant", "named"]
+answer = "const"
+
+[[questions]]
+question = "Which of the following identifiers is invalid?"
+choices = ["4me2", "Primes", "Max", "PL_NUMBER"]
+answer = "4me2"
+
+[[questions]]
+question = "What functions to output strings? (Select all that apply)"
+choices = ["printf()", "putc()", "gets()", "puts()", "getc()"]
+answer = ["printf()", "putc()", "gets()", "puts()", "getc()"]
+
+[[questions]]
+question = "What functions to input strings?"
+choices = ["scanf()", "putc()", "gets()", "puts()", "getc()"]
+answer = ["scanf()", "gets()"]
+
+[[questions]]
+question = "What is incorrect when output a string?"
+choices = ["putc(s)", "puts(s)", "printf(s)", "printf(\"%s\")", "printf(\"%s\", &s)"]
+answer = "putc(s)"
+
+[[questions]]
+question = "Which is a function in C language?"
+choices = ["Is_prime()", "#include()", "int()", "if()", "return()", "2ndElement()"]
+answer = "Is_prime()"
+
+[[questions]]
+question = "What function is used to send formatted output to a file?"
+choices = ["fprintf", "fwritef", "fsendf", "fgets"]
+answer = "fprintf"
+
+[[questions]]
+question = "What function is used to read a line from the specified stream and store it in the string pointed from a file?"
+choices = ["fgets", "fgetc", "fprintf", "fclose"]
+answer = "fgets"
+
+[[questions]]
+question = "Which of the following functions provide buffered input facilities on the standard input stream?"
+choices = ["getchar(), scanf()", "getcharl(), fgets()", "scanf(), fgetc()", "fgets(), f getc()"]
+answer = "getcharl(), fgets()"
+
+[[questions]]
+question = "Which function is used to write a string to a file in C?"
+choices = ["fputs()", "fscanf()", "fgets()", "fopen()"]
+answer = "fputs()"
+
+[[questions]]
+question = "To read an entire line in C, which function is commonly used?"
+choices = ["fgets()", "gets()", "readline()", "scanLine()"]
+answer = "fgets()"
+
+[[questions]]
+question = "Which function is used to read a single character from the standard input in C?"
+choices = ["getchar()", "scanf()", "fgets()", "getc()"]
+answer = "getchar()"
+
+[[questions]]
+question = "What function is used to find the length of a string in C?"
+choices = ["strlen()", "lenstr()", "stmlen()", "strlength()"]
+answer = "strlen()"
+
+[[questions]]
+question = "Which function is used to concatenate two strings in C?"
+choices = ["strcat()", "strcomb()", "strmerge()", "strconv()"]
+answer = "strcat()"
+
+[[questions]]
+question = "Which of the following function is used to find the first occurrence of a given string in another string?"
+choices = ["strchr()", "strrchr()", "strstr()", "strnset()"]
+answer = "strstr()"
+
+[[questions]]
+question = "Which function is used to read a string from a file in C?"
+choices = ["fgets()", "fputs()", "ftell()", "fopen()"]
+answer = "fgets()"
+
+[[questions]]
+question = "Which of the following keywords defines a named constant in C?"
+choices = ["const", "define", "const or #define", "static final"]
+answer = "const or #define"
+
+[[questions]]
+question = "In ctype.h, which function checks if a character is printable, including whitespace?"
+choices = ["isalpha()", "isgraph()", "ispent()", "issspace()"]
+answer = "ispent()"
+
+[[questions]]
+question = "To avoid the generated random sequence being identical after the program is run again, we need to use the _____ library and the _____ function before using the rand() function."
+choices = ["stdlib.h, randomize()", "stdlib.h, reset()", "time.h, randomize()", "time.h, srand()"]
+answer = "time.h, srand()"
+
+[[questions]]
+question = "The correct function to remove characters that remain in the keyboard buffer in C programming is"
+choices = ["clearbuffer()", "cleanbuffer()", "flushall(in)", "fflush(stdin)"]
+answer = "fflush(stdin)"
+
+[[questions]]
+question = "The library stdio.h contains functions for printing out data, including"
+choices = ["scanf, printf", "putchar, printf", "scanf, putchar", "printf, getchar"]
+answer = "putchar, printf"
+
+[[questions]]
+question = "The fopen function is used to open a file. Is the following true or false? \"-\" tells fopen you will be reading data from the file. If no file exists, fopen will fail."
+choices = ["True", "False"]
+answer = "True"
+
+[[questions]]
+question = "Which function in math is used to find the natural logarithm of a number?"
+choices = ["log10()", "log()", "ln()", "exp()"]
+answer = "log()"
+
+[[questions]]
+question = "Which function is used to open a file for reading in C?"
+choices = ["fopen(\"file.txt\", \"r\")", "open(\"file.txt\", \"w\")", "fopen(\"file.txt\", \"w\")", "open(\"file.txt\", \"r\")"]
+answer = "fopen(\"file.txt\", \"r\")"
+
+[[questions]]
+question = "Which format specifier is used to print the value of a double variable? Ho\u00e0ng Ho\u1ea3ng"
+choices = ["%f", "%d", "%c", "%lf"]
+answer = "%f"
+
+[[questions]]
+question = "Which mode is only used to append data to a file?"
+choices = ["\"a\"", "\"append+\"", "\"r+\"", "\"w+\""]
+answer = "\"a\""
+
+[[questions]]
+question = "Which character is commonly used to mark the end of a string in C?"
+choices = ["\\0", "\\n", "%\u201d,", "\""]
+answer = "\\0"
+
+[[questions]]
+question = "Which of the following symbols is used to force the cursor its position to the beginning of the next line on the screen?"
+choices = ["\\n", "\\t", "\\f", "\\b"]
+answer = "\\n"
+
+[[questions]]
+question = "Which relational operator is used to check if two values are not equal in C?"
+choices = ["==", "!=", "<=", ">="]
+answer = "!="
+
+[[questions]]
+question = "Which of these is NOT a relational or logical operator?"
+choices = ["=", "||", "==", "!"]
+answer = "="
+
+[[questions]]
+question = "Which of the following operators has the lowest priority?"
+choices = ["+", "++", "--", "-"]
+answer = "+"
+
+[[questions]]
+question = "Which of the following operators has the highest priority?"
+choices = ["++", "+=", "*", "+"]
+answer = "++"
+
+[[questions]]
+question = "Which of the following file modes in C will create a file if it does not already exist and allow both reading and writing? (Choose 2 answers)"
+choices = ["\"r\"", "\"w+\"", "\"a+\"", "\"t\""]
+answer = ["\"w+\"", "\"a+\""]
+
+[[questions]]
+question = "Which of the following is a valid variable name?"
+choices = ["break", "_2", "for", "2_"]
+answer = "_2"
+
+[[questions]]
+question = "Which of the following symbols is used to denote the end statement?"
+choices = [";", "#", "!", "."]
+answer = ";"
+
+[[questions]]
+question = "Which of the following is not a keyword in C?"
+choices = ["shorter", "break", "default", "goto"]
+answer = "shorter"
+
+[[questions]]
+question = "In C programming language, a list of variables is separated by"
+choices = ["Semi-colon (;)", "Comma (,)", "Dots (..)", "Colon (:)"]
+answer = "Comma (,)"
+
+[[questions]]
+question = "Choose the wrong declaration."
+choices = ["char c1, c2=\u2018A\u2019;", "int m=19; char k=27;", "char c3; int t;", "float f1; f2=5.1;"]
+answer = "float f1; f2=5.1;"
+
+[[questions]]
+question = "Several algorithms commonly used for searching an element in an array are"
+choices = ["Quick search, Selection search", "Binary search, Quick search", "Binary search, Linear search", "Linear search, Quick search"]
+answer = "Binary search, Linear search"
+
+[[questions]]
+question = "What is the sequence construct in programming?"
+choices = ["A single line of code", "A simple statement or a code block executed in order", "A function call", "A loop that repeats indefinitely"]
+answer = "A simple statement or a code block executed in order"
+
+[[questions]]
+question = "What is the free(p) function used for?"
+choices = ["De-allocates space to which p points", "Returns pointer to allocated space for existing contents of p", "To abnormally terminate the program", "None of the others"]
+answer = "De-allocates space to which p points"
+
+[[questions]]
+question = "What is the function of the strcat(str1, str2) in C?"
+choices = ["Compare two strings: str1 and str2", "Appends the string pointed to, by str2 to the end of the string pointed to by str1.", "Copies the string pointed to, by str2 to str1.", "Finds the first occurrence of the entire string needle (not including the terminating null character) which appears in the haystack."]
+answer = "Appends the string pointed to, by str2 to the end of the string pointed to by str1."
+
+[[questions]]
+question = "What is a NULL string or C-string in programming?"
+choices = ["A string that ends with a NULL byte (\\0) to indicate the end of the string.", "A string that contains only NULL characters.", "A string that does not occupy any memory space.", "A string that is always empty."]
+answer = "A string that ends with a NULL byte (\\0) to indicate the end of the string."
+
+[[questions]]
+question = "What is the main difference between a while loop and a do...while loop?"
+choices = ["While checks the condition before executing the loop body, do\u2026while checks it after.", "Do\u2026while loops runs only once, while loop can run multiple times.", "While requires an increment statement, do\u2026while does not.", "There is no difference; they are identical in function."]
+answer = "While checks the condition before executing the loop body, do\u2026while checks it after."
+
+[[questions]]
+question = "What is the purpose of the function atoi (const char*)?"
+choices = ["Converts a string to an integer", "Converts an integer to a string", "Copy a string", "Converts a string to a number"]
+answer = "Converts a string to a number"
+
+[[questions]]
+question = "What is required in each C program?"
+choices = ["The program must have at least one function.", "The program does not require any function.", "Input data", "Output data"]
+answer = "The program must have at least one function."
+
+[[questions]]
+question = "What is the problem of strcpy() function if the destination array is not large enough to hold the source string and the null terminator?"
+choices = ["Your program will act unpredictably.", "Your program will automatically resize the destination array.", "Your program will automatically truncate the source string.", "Your program will return an error code."]
+answer = "Your program will act unpredictably."
+
+[[questions]]
+question = "What is an array in C programming?"
+choices = ["A collection of elements of the same data type stored in contiguous memory locations", "A single variable that holds multiple values of different data types", "A pointer to a single element in memory", "A function that performs mathematical calculations"]
+answer = "A collection of elements of the same data type stored in contiguous memory locations"
+
+[[questions]]
+question = "What is the loop in C language used for?"
+choices = ["To execute a block of codes repeatedly as long as a specified condition is true.", "To perform mathematical calculations.", "To define variables within a program.", "To execute a statement based on a condition."]
+answer = "To execute a block of codes repeatedly as long as a specified condition is true."
+
+[[questions]]
+question = "What is the primary purpose of logic constructs in programming?"
+choices = ["To perform calculations and execute statements in a sequential order", "To store data in variables.", "To allocate memory dynamically", "To define the syntax of a programming language"]
+answer = "To perform calculations and execute statements in a sequential order"
+
+[[questions]]
+question = "What is the purpose of the calloc function in C?"
+choices = ["Allocate memory and initialize it to zero", "Free memory allocated", "Deallocate memory", "Copy memory from one location to another"]
+answer = "Allocate memory and initialize it to zero"
+
+[[questions]]
+question = "What is the rewind() function used for?"
+choices = ["To reset the file pointer to the beginning of the file.", "To read the entire file into memory.", "To close the file.", "To move the file pointer to the end of the file."]
+answer = "To reset the file pointer to the beginning of the file."
+
+[[questions]]
+question = "What is the purpose of the sizeof operator in C? Ho\u00e0ng"
+choices = ["It returns the size of a variable in bytes", "It returns the value of a variable", "It declares the size of an array", "It calculates the sum of two numbers"]
+answer = "It returns the size of a variable in bytes"
+
+[[questions]]
+question = "What is the fseek() function used for?"
+choices = ["To move the position indicator to a specific location.", "To close a file.", "To read characters from a file.", "To write characters to a file."]
+answer = "To move the position indicator to a specific location."
+
+[[questions]]
+question = "What is the purpose of the continue statement in a loop?"
+choices = ["To skip the rest of the code inside the loop and move to the next iteration.", "To jump to the beginning of the loop.", "To exit the entire program.", "The way increment/decrement variable in the loop."]
+answer = "To skip the rest of the code inside the loop and move to the next iteration."
+
+[[questions]]
+question = "What is the purpose of an if-else statement in programming?"
+choices = ["It is used to decide whether the part of the code will be executed or not based on the specified condition.", "It allows you to repeat a block of code a specified number of times", "It is used to define a function in a programming language.", "It is used to declare variables and assign values to them."]
+answer = "It is used to decide whether the part of the code will be executed or not based on the specified condition."
+
+[[questions]]
+question = "What is the purpose of the increment or decrement expression in a for loop?"
+choices = ["It is executed after each iteration of the loop to update loop control variables.", "It determines when the loop should stop.", "It is executed before the loop starts and used to initialize loop control variables.", "It specifies the condition to be checked."]
+answer = "It is executed after each iteration of the loop to update loop control variables."
+
+[[questions]]
+question = "What is the difference between a while loop and a do-while loop?"
+choices = ["The way the condition is checked.", "They are essentially the same.", "The type of tasks they can perform.", "The variable in loop construct."]
+answer = "The way the condition is checked."
+
+[[questions]]
+question = "What is a pointer in C programming?"
+choices = ["A variable stores anything", "A variable stores address of another variable or a variable addresses of the dynamically allocated memory", "An address in the memory", "A variable stores any number"]
+answer = "A variable stores address of another variable or a variable addresses of the dynamically allocated memory"
+
+[[questions]]
+question = "What is the scope of a global variable in C?"
+choices = ["Throughout the entire program", "Only within the function where it's declared", "Only within the block where it\u2019s declared", "Within the structure where it\u2019s defined"]
+answer = "Throughout the entire program"
+
+[[questions]]
+question = "What is the main() function in C?"
+choices = ["It is the function where the program's execution starts.", "Every program has exactly one main function.", "The main function always returns an integer value or void", "All answers are correct."]
+answer = "All answers are correct."
+
+[[questions]]
+question = "What is correct about the heap?"
+choices = ["One of the sections of a program in an object file or in memory, which contains executable instructions.", "Common Variables All functions can access them", "Dynamic allocated data through explicit statements for memory allocation", "Variables are defined in functions . They will exist only when the function is executed and they will be removed when the function completes the execution."]
+answer = "Dynamic allocated data through explicit statements for memory allocation"
+
+[[questions]]
+question = "What is the incorrect definition?"
+choices = ["Algorithm: a way to find out a solution", "Data: Values are used to describe information. So, information can be called as the mean of data", "Solution: A situation in which something is hidden", "Information: Knowledge about something"]
+answer = "Solution: A situation in which something is hidden"
+
+[[questions]]
+question = "What is incorrect about pointer?"
+choices = ["Pointers are containers for storing data values, like numbers and characters", "If one variable contains the address of another variable, the first variable is said to point to the second variable", "A pointer provides an indirect method of accessing the value of a data item", "Pointers can point to variables of other fundamental data types like int, char, or double or data aggregates like arrays or structures"]
+answer = "Pointers are containers for storing data values, like numbers and characters"
+
+[[questions]]
+question = "What is incorrect about the getchar() function?"
+choices = ["The getchar() function is defined in the <stdio.h> header file.", "getchar() gets a string from stdin.", "getchar() retrieves a single character from the standard input stream without translating the input.", "getchar() gets a character (an unsigned char) from stdin."]
+answer = "getchar() gets a string from stdin."
+
+[[questions]]
+question = "What is the function of \"flush(stdin)\" command?"
+choices = ["Print string out to screen", "Receive a string entered from the keyboard", "Remove characters are entered from keyboard", "Remove characters are remained in the keyboard buffer"]
+answer = "Remove characters are remained in the keyboard buffer"
+
+[[questions]]
+question = "What is the correct order of the main components in the function?"
+choices = ["Return type, function name, parameters, and function body", "Return type, function value, and function body", "Return type, function name, parameters, and return value", "Return value, function name, parameters, and function body"]
+answer = "Return type, function name, parameters, and function body"
+
+[[questions]]
+question = "What is the primary use of the const keyword when used with function parameters in C?"
+choices = ["It prevents the function from modifying the parameter's value", "It ensures the parameter is passed by reference", "It restricts the parameter\u2019s scope to the function", "It specifies that the parameter should be initialized"]
+answer = "It prevents the function from modifying the parameter's value"
+
+[[questions]]
+question = "What is the primary difference between global variables and local variables in C?"
+choices = ["Global variables have a wider scope and can be accessed from any function, while local variables are limited to their function\u2019s scope.", "Global variables are initialized automatically to zero, while local variables require explicit initialization.", "Local variables cannot be modified after initialization, while global variables allow modification at any time", "Global variables can only be used within the main function, while local variables can be used throughout the program."]
+answer = "Global variables have a wider scope and can be accessed from any function, while local variables are limited to their function\u2019s scope."
+
+[[questions]]
+question = "What does a data type tell us about a variable?"
+choices = ["The color of the variable", "How much space the variable needs in memory", "How fast the variable runs", "The name of the variable"]
+answer = "How much space the variable needs in memory"
+
+[[questions]]
+question = "What does the following statement do?"
+choices = ["Print to the file location pointed by fp the string name, the double variable salary (2 decimal places), the string job and a newline character.", "Print to the screen the string name, a colon, the double variable salary (2 decimal places), the string job and a newline character taken from the file location pointed by fp.", "Print to the file location pointed by fp the string name, a colon, the double variable salary (2 decimal places), a comma, the string job and a newline character.", "Read from the file location pointed by fp a string (and copy to name), a double (and copy to variable salary), a string (and copy to variable job) and a newline character."]
+answer = "Print to the file location pointed by fp the string name, a colon, the double variable salary (2 decimal places), a comma, the string job and a newline character."
+
+[[questions]]
+question = "What does the return value of the scanf function indicate when it is used to read items from the argument list?"
+choices = ["The function returns the number of the argument list successfully filled", "The function returns the total number of items in the argument list.", "The function returns the number of items that were not successfully filled", "The function does not return any value."]
+answer = "The function returns the number of the argument list successfully filled"
+
+[[questions]]
+question = "What does the statement rewind(fp) do?"
+choices = ["Bring the pointer fp back to the beginning of the file", "Assign to the pointer fp the address 0x00 (NULL)", "Bring the pointer fp to the end of the file", "Bring the pointer fp to the beginning of the current line"]
+answer = "Bring the pointer fp back to the beginning of the file"
+
+[[questions]]
+question = "What does the expression sizeof(arr) / sizeof(arr[0]) evaluate to, where arr is an array?"
+choices = ["The number of elements in arr", "The size of arr in bytes", "The number of bytes occupied by each element in arr", "The total size of arr in bytes"]
+answer = "The number of elements in arr"
+
+[[questions]]
+question = "What will happen if a break statement is not used in a switch case?"
+choices = ["The program will execute the next case(s) until a break is encountered or the switch ends", "The program will terminate immediately", "The program will throw a compile-time error", "The program will skip all remaining cases"]
+answer = "The program will execute the next case(s) until a break is encountered or the switch ends"
+
+[[questions]]
+question = "What will happen if the while loop does NOT the loop's condition? Ho\u00e0ng Ho\u1ea3ng"
+choices = ["Compile time error", "Loop infinitely", "No Output will be printed", "The loop will not work"]
+answer = "The loop will not work"
+
+[[questions]]
+question = "What will happen if the condition in a while loop is initially false?"
+choices = ["The loop is skipped entirely.", "The loop executes indefinitely.", "The loop executes once and then terminates.", "An error occurs."]
+answer = "The loop is skipped entirely."
+
+[[questions]]
+question = "What will be the result of performing a binary search on an unsorted array?"
+choices = ["The search may return an incorrect index or fail to locate the target element", "The search will always find the target element if it is present somewhere in the array.", "The search will perform as expected, but only for elements in the lower half of the array", "The search will automatically sort the array before locating the target element"]
+answer = "The search may return an incorrect index or fail to locate the target element"
+
+[[questions]]
+question = "What will happen if the loop\u2019s condition is always true?"
+choices = ["Loop infinitely", "No Output will be printed", "Compile time error", "The loop will not work"]
+answer = "Loop infinitely"
+
+[[questions]]
+question = "What benefit does #define offer when dealing with magic values in code?"
+choices = ["It improves code portability", "It makes the code shorter", "It prevents the use of symbolic names", "It increases code complexity"]
+answer = "It improves code portability"
+
+[[questions]]
+question = "What happens when the return statement has a double expression and the function return type is int?"
+choices = ["There is error", "This causes a run-time error", "This is system dependent", "There is a conversion from double to int"]
+answer = "There is a conversion from double to int"
+
+[[questions]]
+question = "Which statement in C programming?"
+choices = ["#define is a preprocessor command often used to introduce named constants", "double and goto are keyword for declaring data type.", "return 0, is normally the last statement in main()", "The file stdio.h is the library where the compiler finds scanf()"]
+answer = "double and goto are keyword for declaring data type."
+
+[[questions]]
+question = "What happens when you try to access the 11th element of an array with a size of 10 in the C language?"
+choices = ["The program compiles and runs without any errors, but the behavior is undefined", "The program compiles and runs without error, and the 11th element is accessed", "The program fails to compile due to a compilation error", "The program compiles and runs without any errors, and the 11th element is automatically added to the array"]
+answer = "The program compiles and runs without any errors, but the behavior is undefined"
+
+[[questions]]
+question = "Which of the following is true about the default case in a switch statement?"
+choices = ["It must be placed at the beginning of the switch statement", "It is mandatory for every switch statement", "It executes when none of the case conditions match", "It can be used multiple times within a single switch"]
+answer = "It executes when none of the case conditions match"
+
+[[questions]]
+question = "Which of the following statements is incorrect?"
+choices = ["To make our programs longer, we use higher-level languages", "Program code in a high level language can not run, it must be translated to binary code (machine code before running)", "based on a view of structured programming", "Programs that perform relatively simple tasks and are written in assembly language contain a large number of statements"]
+answer = "To make our programs longer, we use higher-level languages"
+
+[[questions]]
+question = "Which of the following statements about the strstr() function in C is true?"
+choices = ["Compare two strings", "Returns the pointer to the first occurrence of the given substring in the main string", "Concatenate source string to the end of destination string", "Copy source string to destination string"]
+answer = "Returns the pointer to the first occurrence of the given substring in the main string"
+
+[[questions]]
+question = "Which of the following accurately describes the scope of a local variable in C?"
+choices = ["It is visible only within the function where it's declared.", "It is accessible throughout the entire program.", "It can be accessed by any function within the same source file.", "It is available globally but with restricted modification rights."]
+answer = "It is visible only within the function where it's declared."
+
+[[questions]]
+question = "Which of the following is TRUE about the while loop in C?"
+choices = ["The loop will always execute at least once.", "The condition is checked after each iteration.", "The loop will never execute if the condition is initially false.", "The loop requires an increment statement inside the body."]
+answer = "The loop will never execute if the condition is initially false."
+
+[[questions]]
+question = "Which of the following is true regarding the declaration of a two-dimensional array in C?"
+choices = ["Both the number of rows and columns must be specified.", "The number of columns must be specified.", "The number of rows must be specified.", "The number of rows and columns can be determined dynamically at runtime."]
+answer = "Both the number of rows and columns must be specified."
+
+[[questions]]
+question = "Which of the following statements is incorrect?"
+choices = ["To make our programs longer, we use higher-level languages.", "Program code in a high level language can not run, it must be translated to binary code (machine code) before running.", "C is based on a view of structured programming.", "Programs that perform relatively simple tasks and are written in assembly language contain a large number of statements."]
+answer = "To make our programs longer, we use higher-level languages."
+
+[[questions]]
+question = "Which of the following about the switch case statement is true?"
+choices = ["It can only be used with integer or character type expressions.", "It can be used with any data type.", "It can only be used in functions.", "It can only have one case statement inside."]
+answer = "It can only be used with integer or character type expressions."
+
+[[questions]]
+question = "Which of the following statements is correct regarding the first character of an identifier?"
+choices = ["The first character of an identifier can be a number", "The first character of an identifier must be a special symbol", "The first character of an identifier must be a letter or an underscore", "The first character of an identifier can be a space"]
+answer = "The first character of an identifier must be a letter or an underscore"
+
+[[questions]]
+question = "Which of the following about linear search is true?"
+choices = ["It sequentially checks each element in the array.", "It requires the array to be sorted.", "It is faster than binary search.", "It is the fastest way to find an element in the array."]
+answer = "It sequentially checks each element in the array."
+
+[[questions]]
+question = "How are strings typically represented in C?"
+choices = ["As an array of characters", "As an array of strings", "As individual characters", "As integers referencing ASCII values"]
+answer = "As an array of characters"
+
+[[questions]]
+question = "How can you check if a file was successfully opened for writing in C?"
+choices = ["Checking the return value of fopen()", "Using ferror()", "Using feof()", "Using fprintf()"]
+answer = "Checking the return value of fopen()"
+
+[[questions]]
+question = "How is 'Data' related to information?"
+choices = ["It is a hidden aspect of information", "It is a way to solve a problem", "It describes values used to define information", "It is an implementation of a program"]
+answer = "It describes values used to define information"
+
+[[questions]]
+question = "How does compilation differ from interpretation in the context of C programming language?"
+choices = ["Compilation involves converting source code to machine code, while interpretation involves executing code line by line.", "Compilation and interpretation are terms that are used interchangeably.", "Algorithm is another term for interpretation in programming languages.", "IDE tools are responsible for both compilation and interpretation processes."]
+answer = "Compilation involves converting source code to machine code, while interpretation involves executing code line by line."
+
+[[questions]]
+question = "How to declare a variable in C language?"
+choices = ["All variables must be declared before we use them in C program.", "To declare you specify its name and data type it can store.", "All variable are always stored on the stack.", "Reading a value from keyboard or other device with a OUT statement", "The scope of a variable is the range of program statements that cant access that variable."]
+answer = "To declare you specify its name and data type it can store."
+
+[[questions]]
+question = "How does a \u201cfor\u201d loop differ from a \u201cwhile\u201d loop in C programming?"
+choices = ["A \"for\" loop is used for iterating over a sequence of elements, while a \u201cwhile\u201d loop is used to execute a block of code repeatedly as long as a condition is true.", "A \u201cfor\u201d loop is primarily used for conditional statements, while a \u201cwhile\u201d loop is designed for sequential processing.", "The use of \"for\" and \"while\" loops is interchangeable; there is no substantial difference between them", "A \u201cfor\u201d loop is exclusively used with arrays, while a \u201cwhile\u201d loop is used with numerical calculations."]
+answer = "A \"for\" loop is used for iterating over a sequence of elements, while a \u201cwhile\u201d loop is used to execute a block of code repeatedly as long as a condition is true."
+
+[[questions]]
+question = "Choose the correct statement related to the array."
+choices = ["Arrays provide constant-time access to elements", "Arrays allow for dynamic resizing during runtime", "Arrays can store different data types", "Arrays automatically adjust their size based on the number of elements"]
+answer = "Arrays provide constant-time access to elements"
+
+[[questions]]
+question = "Choose the correct statement about the following statement:\nscanf(\"%d, %d\", &a, &b);"
+choices = ["scanf will expect two integers inputted by user and write them to variables a and b.", "scanf will expect two floating-point numbers inputted by user and write them to variables a and b.", "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the comma to variable b", "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the second integer to variable b"]
+answer = "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the second integer to variable b"
+
+[[questions]]
+question = "Choose the correct definition for \"Simple data types\" in C programming"
+choices = ["Changing form one representation to another", "A category of data that represents individual, non-complex elements such as integers, floating-point numbers, and characters", "Performing operations on data", "Storing a collection of elements accessible by an index or a key"]
+answer = "A category of data that represents individual, non-complex elements such as integers, floating-point numbers, and characters"
+
+[[questions]]
+question = "During the compilation process, what will be done with comments?"
+choices = ["The comment mark will be removed. The content of the compiled line will be", "The comment is treated as an array of characters.", "Comments are removed in the pre-processing step.", "Each comment is compiled as a statement that does nothing."]
+answer = "Comments are removed in the pre-processing step."
+
+[[questions]]
+question = "Choose the correct statement about the following statement scanf(\"%d, %d\", &a, &b); Ho\u00e0ng Ho\u00e0ng"
+choices = ["scanf will expect two integers inputted by user and write them to variables a and b", "scanf will expect two floating-point numbers inputted by user and write them to variables a and b", "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the coming to variable b", "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the second integer to variable b"]
+answer = "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the second integer to variable b"
+
+[[questions]]
+question = "Real-world example of a switch statement in C is"
+choices = ["Check the day of the week", "Sort an array ascending.", "Sort an array descending.", "Find the average value of a sequence."]
+answer = "Check the day of the week"
+
+[[questions]]
+question = "In C, what is the purpose of | operator?"
+choices = ["It is a bitwise operator OR", "It is a logical operator AND", "It is a bitwise operator AND", "It is a logical operator OR"]
+answer = "It is a bitwise operator OR"
+
+[[questions]]
+question = "In C programming language, what is the function fprintf() used for?"
+choices = ["Writing formatted data to a file.", "Reading formatted data from a file.", "Appending formatted data to a file.", "Closing a file."]
+answer = "Writing formatted data to a file."
+
+[[questions]]
+question = "In a C program, what happens if none of the conditions in an if-else statement are true?"
+choices = ["The program will skip the if-else block and continue with the next statement.", "The program will raise an error.", "The else if block will be executed.", "The program will terminate abruptly."]
+answer = "The program will skip the if-else block and continue with the next statement."
+
+[[questions]]
+question = "In computers, what are the basic number systems and their corresponding bases used?"
+choices = ["Decimal system (Base-10).", "Binary system (Base-2).", "Octal system (Base-8).", "Hexadecimal system (Base-16).", "All answers are correct."]
+answer = "All answers are correct."
+
+[[questions]]
+question = "In bubble sort, after each pass of sorting in ascending, where is the largest element in the unsorted part of the array?"
+choices = ["It moved to the end of the sorted part", "It moved to the beginning of the sorted part", "It stays in its position", "It removed from the array"]
+answer = "It moved to the end of the sorted part"
+
+[[questions]]
+question = "In the context of arrays in the C language, what does traversal refer to?"
+choices = ["The process of accessing elements in an array sequentially.", "The process of searching for a specific element in an array", "The process of resizing the array during runtime.", "The process of inserting elements into an array."]
+answer = "The process of accessing elements in an array sequentially."
+
+[[questions]]
+question = "In a switch statement, what is the purpose of the default case?"
+choices = ["To specify a condition to stop execution", "To exit the program", "To define the first case in the switch statement", "To handle values that are not matched by any label"]
+answer = "To handle values that are not matched by any label"
+
+[[questions]]
+question = "The rand() function in C is used for:"
+choices = ["Generating random integer", "Generating random integer from min to max", "Generating random float from min to max", "Generating random float", "Generating random double", "Generating random double from min to max"]
+answer = "Generating random integer"
+
+[[questions]]
+question = "The ^ operator in the C programming language is used to"
+choices = ["XOR two bit sequences.", "OR two bit sequences.", "AND two bit sequences.", "SHIFT UP a bit sequences.", "NOT a bit sequences.", "Calculate the exponential value, for example 2^3 = 8."]
+answer = "XOR two bit sequences."
