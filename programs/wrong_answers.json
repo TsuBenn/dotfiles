@@ -1196,5 +1196,10 @@
     "question": "What is the results will be displayed on the screen after executing the following code:\nchar a[] = \"Ab\";\tint i = 1;\tfor (\\\"s\\\"; \\\"s\\\"; ++i) {\tt=a;printf(\"%d\", t);}",
     "answer": "6370",
     "timestamp": "2026-03-31T23:08:33.241902"
+  },
+  {
+    "question": "In IEEE 754 single-precision, what is the bias value for the exponent?",
+    "answer": "127",
+    "timestamp": "2026-03-31T23:33:20.861675"
   }
 ]

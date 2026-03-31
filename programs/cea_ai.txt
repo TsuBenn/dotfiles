@@ -1,0 +1,4606 @@
+# Computer Organization and Architecture - Complete MCQ Bank (21 Chapters)
+
+## Chapter 1: Basic Concepts and Computer Evolution
+
+**1. What is the primary difference between computer architecture and computer organization?**
+A) Architecture is visible to the programmer, organization is how features are implemented
+B) Organization is visible to the programmer, architecture is how features are implemented
+C) They are exactly the same concept
+D) Architecture deals with hardware, organization deals with software
+
+**Answer: A**
+*Explanation: Computer architecture refers to those attributes visible to the programmer (instruction set, data types, I/O mechanisms), while computer organization refers to how these features are implemented (control signals, memory technology).*
+
+**2. The IBM System/370 architecture was introduced in 1970 with what key benefit?**
+A) It was the first computer to use vacuum tubes
+B) Customers could upgrade to faster models without abandoning original software
+C) It was the first multiprocessor system
+D) It introduced the concept of virtual memory for the first time
+
+**Answer: B**
+*Explanation: The System/370 architecture maintained compatibility across models, allowing customers to upgrade to faster models while preserving their software investment—a principle that continues in IBM's mainframe product line today.*
+
+**3. Which of the following is NOT one of the four basic functions a computer performs?**
+A) Data processing
+B) Data storage
+C) Data encryption
+D) Data movement
+
+**Answer: C**
+*Explanation: The four basic functions are data processing, data storage, data movement, and control. Data encryption is a specific operation, not a fundamental function category.*
+
+**4. What are the four main structural components of a computer?**
+A) CPU, RAM, ROM, Hard Drive
+B) CPU, Main Memory, I/O, System Interconnection
+C) Processor, Cache, Bus, Peripherals
+D) ALU, Control Unit, Registers, Cache
+
+**Answer: B**
+*Explanation: The four main structural components are the Central Processing Unit (CPU), Main Memory, Input/Output (I/O), and System Interconnection (the mechanism for communication among them).*
+
+**5. In the context of multicore systems, what is the definition of a "core"?**
+A) The entire processor chip
+B) The main memory controller
+C) An individual processing unit on a processor chip
+D) The cache memory subsystem
+
+**Answer: C**
+*Explanation: A core is an individual processing unit on a processor chip that can execute instructions independently. A processor may contain one or multiple cores.*
+
+**6. What is the fundamental contribution of the IAS computer?**
+A) First computer to use integrated circuits
+B) Stored program concept
+C) First commercial computer
+D) Introduction of pipelining
+
+**Answer: B**
+*Explanation: The IAS computer (completed in 1952) implemented the stored program concept attributed to John von Neumann, becoming the prototype for all subsequent general-purpose computers.*
+
+**7. The von Neumann architecture is based on three key concepts. Which of the following is NOT one of them?**
+A) Data and instructions are stored in a single read-write memory
+B) Memory contents are addressable by location
+C) Execution occurs in parallel fashion across multiple instructions
+D) Execution occurs sequentially unless explicitly modified
+
+**Answer: C**
+*Explanation: The von Neumann architecture specifies sequential execution, not parallel. Instructions are fetched and executed one after another unless a branch instruction explicitly changes the sequence.*
+
+**8. Which statement about cache memory is TRUE?**
+A) Cache is larger and slower than main memory
+B) Cache is smaller and faster than main memory
+C) Cache is used only for permanent storage
+D) Cache replaces main memory entirely
+
+**Answer: B**
+*Explanation: Cache memory is smaller and faster than main memory, placed between the processor and main memory to speed up memory access by storing data likely to be used in the near future.*
+
+**9. Moore's Law originally stated that:**
+A) The number of transistors on a chip doubles approximately every two years
+B) Processor speed doubles every 18 months
+C) Memory capacity quadruples every three years
+D) Computer prices halve every year
+
+**Answer: A**
+*Explanation: Gordon Moore observed that the number of transistors on an integrated circuit doubled approximately every two years, a trend that continued for decades.*
+
+**10. What distinguishes an embedded system from a general-purpose computer?**
+A) Embedded systems are always faster
+B) Embedded systems are designed for specific tasks within larger devices
+C) Embedded systems cannot use operating systems
+D) Embedded systems have no memory constraints
+
+**Answer: B**
+*Explanation: Embedded systems are specialized computing systems integrated into larger devices, often with real-time constraints and tight coupling to their environment.*
+
+**11. The Internet of Things (IoT) is primarily associated with which generation of technology deployment?**
+A) Information Technology (IT)
+B) Operational Technology (OT)
+C) Personal Technology
+D) Sensor/actuator technology (fourth generation)
+
+**Answer: D**
+*Explanation: The fourth generation, sensor/actuator technology, is usually considered the IoT, marked by billions of embedded devices with wireless connectivity.*
+
+**12. What is a deeply embedded system?**
+A) A system with deep memory hierarchy
+B) A system with processor behavior difficult to observe, using microcontrollers
+C) A system with multiple processors
+D) A system that requires constant user interaction
+
+**Answer: B**
+*Explanation: Deeply embedded systems use microcontrollers rather than microprocessors, have non-programmable logic burned into ROM, no user interaction, and extreme resource constraints.*
+
+**13. Which type of processor is defined by its ability to execute complex operating systems?**
+A) Dedicated processor
+B) Embedded processor
+C) Application processor
+D) Microcontroller
+
+**Answer: C**
+*Explanation: Application processors are general-purpose processors designed to run complex operating systems and support numerous applications, such as those found in smartphones.*
+
+**14. What is the role of the Arithmetic and Logic Unit (ALU)?**
+A) Controls the operation of the CPU
+B) Stores data temporarily
+C) Performs data processing functions
+D) Manages I/O operations
+
+**Answer: C**
+*Explanation: The ALU performs the computer's data processing functions, including arithmetic calculations and logical operations on data.*
+
+**15. The Control Unit's primary function is to:**
+A) Perform arithmetic operations
+B) Store data in registers
+C) Manage computer resources and orchestrate functional parts
+D) Communicate with I/O devices
+
+**Answer: C**
+*Explanation: The control unit manages the computer's resources and orchestrates the performance of its functional parts in response to instructions.*
+
+**16. Which of the following best describes cache memory levels?**
+A) L1 is farthest from the core, L3 is closest
+B) L1 is closest to the core, with additional levels progressively farther
+C) All cache levels are equally distant from the core
+D) Cache levels are arranged in a circular pattern
+
+**Answer: B**
+*Explanation: In multilevel cache hierarchies, level 1 (L1) cache is closest to the core, with level 2 (L2) and level 3 (L3) progressively farther away.*
+
+**17. What is the significance of transistors in computer architecture?**
+A) They are only used for power supply
+B) They are the fundamental building block of digital circuits
+C) They store data permanently
+D) They are used exclusively for I/O operations
+
+**Answer: B**
+*Explanation: Transistors are the fundamental building blocks of digital circuits, used to construct processors, memories, and other digital logic devices by changing electrical state when voltage is applied.*
+
+**18. What are the three categories of external devices in computer systems?**
+A) Input, output, storage
+B) Human readable, machine readable, communication
+C) Analog, digital, hybrid
+D) Local, remote, networked
+
+**Answer: B**
+*Explanation: External devices fall into three categories: human readable (VDTs, printers), machine readable (magnetic disk, tape systems), and communication devices (terminals, other computers).*
+
+**19. In the IAS computer architecture, the instruction format typically consisted of:**
+A) Single address format
+B) Multiple address formats with opcode and address fields
+C) Zero-address format only
+D) Variable-length instructions
+
+**Answer: B**
+*Explanation: The IAS computer used instructions with opcode and address fields, following the stored program concept with separate instruction and data storage.*
+
+**20. Which of the following is an example of a dedicated processor?**
+A) Smartphone application processor
+B) General-purpose CPU
+C) Graphics processing unit (GPU) in an embedded system
+D) Server processor
+
+**Answer: C**
+*Explanation: A dedicated processor is designed for specific tasks required by the host device. A GPU in an embedded system is engineered for graphics processing, reducing size and cost for that specific purpose.*
+
+---
+
+## Chapter 2: Performance Concepts
+
+**21. According to Amdahl's Law, what limits the potential speedup of a program using multiple processors?**
+A) The number of processors available
+B) The speed of individual processors
+C) The fraction of the program that cannot be parallelized
+D) The size of the program
+
+**Answer: C**
+*Explanation: Amdahl's Law states that the speedup is limited by the portion of the program that must execute sequentially. Even with infinite processors, speedup is bounded by 1/(1-P) where P is the parallelizable fraction.*
+
+**22. What is the formula for Amdahl's Law speedup?**
+A) Speedup = 1 / (1 - P + P/N)
+B) Speedup = P × N
+C) Speedup = N / (1 - P)
+D) Speedup = 1 / P
+
+**Answer: A**
+*Explanation: Amdahl's Law: Speedup = 1 / [(1 - P) + P/N] where P is the parallelizable portion and N is the number of processors. The sequential portion (1-P) always remains.*
+
+**23. Little's Law states that:**
+A) The average number of items in a queuing system equals arrival rate times average time in system
+B) The speedup is limited by the sequential portion of a program
+C) Power consumption is proportional to frequency squared
+D) Memory latency increases with capacity
+
+**Answer: A**
+*Explanation: Little's Law: L = λ × W, where L is average number of items in the system, λ is average arrival rate, and W is average time an item spends in the system.*
+
+**24. Which of the following is a technique to address the mismatch between processor and memory speeds?**
+A) Increasing clock speed only
+B) Adding cache memory
+C) Reducing transistor count
+D) Using only magnetic storage
+
+**Answer: B**
+*Explanation: Cache memory acts as a buffer between the fast processor and slower main memory, exploiting locality to reduce effective memory access time.*
+
+**25. What is the arithmetic mean (AM) best used for when comparing system performance?**
+A) Comparing rates where equal time is meaningful
+B) Comparing normalized results across systems
+C) Measuring execution time when total time is meaningful
+D) Measuring throughput performance
+
+**Answer: C**
+*Explanation: The arithmetic mean is appropriate for time-based variables like execution time because it's directly proportional to total time—if total time doubles, the mean doubles.*
+
+**26. SPEC (System Performance Evaluation Corporation) is best described as:**
+A) A manufacturer of computer processors
+B) An industry consortium that defines benchmark suites
+C) A government agency regulating computer performance
+D) A software development company
+
+**Answer: B**
+*Explanation: SPEC is an industry consortium that defines and maintains benchmark suites for evaluating computer systems, widely used for comparison and research purposes.*
+
+**27. In SPEC CPU2017, what is the difference between a "speed metric" and a "rate metric"?**
+A) Speed measures throughput, rate measures single-task time
+B) Speed measures single-task execution time, rate measures how many tasks can be completed in a given time
+C) Speed uses integer benchmarks, rate uses floating-point
+D) Speed uses one processor, rate uses multiple processors
+
+**Answer: B**
+*Explanation: Speed metric measures the time to execute a single task (latency), while rate metric measures throughput—how many tasks can be completed in a certain time period.*
+
+**28. What is the primary challenge addressed by RC delay in processor design?**
+A) Power consumption in transistors
+B) The speed at which electrons flow through metal wires
+C) Heat dissipation from logic gates
+D) Memory access latency
+
+**Answer: B**
+*Explanation: RC delay refers to the limitation on electron flow speed due to resistance and capacitance of metal interconnects. As wires become thinner and closer together, RC delay increases.*
+
+**29. Which of the following is NOT a reason for the trend toward multicore processors?**
+A) Power density limitations
+B) RC delay in wires
+C) Memory latency issues
+D) Decreasing software complexity
+
+**Answer: D**
+*Explanation: Software complexity is increasing, not decreasing. Multicore processors address physical limitations like power density, RC delay, and memory latency that prevent further single-core speed increases.*
+
+**30. What is the geometric mean (GM) best suited for?**
+A) Comparing execution times directly
+B) Normalized results where ratio comparison is meaningful
+C) Measuring total throughput
+D) Calculating average power consumption
+
+**Answer: B**
+*Explanation: The geometric mean is appropriate for normalized results because it's independent of the reference machine and gives consistent relative performance comparisons.*
+
+**31. What does the term "instruction execution rate" measure?**
+A) The number of instructions in a program
+B) The number of instructions executed per second (MIPS)
+C) The number of instructions per byte
+D) The clock speed of the processor
+
+**Answer: B**
+*Explanation: Instruction execution rate, typically measured in MIPS (millions of instructions per second), indicates how many instructions the processor can execute in one second.*
+
+**32. Which of the following is a characteristic of a good benchmark program?**
+A) Written in assembly language
+B) Not portable across machines
+C) Representative of a particular programming domain
+D) Difficult to measure
+
+**Answer: C**
+*Explanation: Good benchmarks should be representative of actual programming domains, written in high-level languages for portability, easy to measure, and widely distributed.*
+
+**33. What is the harmonic mean (HM) most appropriate for?**
+A) Averaging execution times
+B) Averaging rates when total work is meaningful
+C) Comparing cache hit rates
+D) Measuring power consumption
+
+**Answer: B**
+*Explanation: The harmonic mean is appropriate for averaging rates when the total amount of work is meaningful across measurements, such as throughput rates.*
+
+**34. In the context of performance balance, what does "mismatch among components" refer to?**
+A) Different manufacturers producing components
+B) The gap between processor speed and memory access speed
+C) Incompatible instruction sets
+D) Different voltage requirements
+
+**Answer: B**
+*Explanation: Performance balance refers to compensating for the mismatch between fast processor speeds and slower memory and I/O component speeds through architectural techniques.*
+
+**35. What is a Graphics Processing Unit (GPU) primarily designed for?**
+A) General-purpose computing
+B) Parallel operations on graphics data
+C) Operating system management
+D) Memory control
+
+**Answer: B**
+*Explanation: GPUs are designed to perform parallel operations on graphics data for 2D/3D graphics rendering, but are also used as vector processors for repetitive computations.*
+
+**36. According to the text, what is the "base metric" in SPEC benchmarks?**
+A) The fastest possible measurement
+B) Required results with strict compilation guidelines
+C) Measurements using specialized hardware
+D) Results from the reference machine
+
+**Answer: B**
+*Explanation: Base metrics are required for all reported results and have strict guidelines for compilation, ensuring consistent and comparable measurements.*
+
+**37. What is the primary advantage of using multiple levels of cache?**
+A) Reduced cost
+B) Greater performance improvement than single-level cache
+C) Simplified architecture
+D) Lower power consumption
+
+**Answer: B**
+*Explanation: Multiple cache levels (L1, L2, L3) provide greater performance improvement by creating a hierarchy where the fastest cache handles most accesses and larger caches catch misses.*
+
+**38. The "peak metric" in SPEC benchmarks allows:**
+A) Only basic compilation
+B) Users to optimize system performance through compiler output
+C) Running only integer benchmarks
+D) Measuring only single-thread performance
+
+**Answer: B**
+*Explanation: Peak metrics enable users to optimize system performance by optimizing compiler output, potentially achieving better results than base metrics.*
+
+**39. What does IPC (instructions per cycle) measure?**
+A) Number of instructions executed per second
+B) Average number of instructions completed per clock cycle
+C) Cycles per instruction
+D) Processor clock frequency
+
+**Answer: B**
+*Explanation: IPC measures the average number of instructions completed per clock cycle, reflecting processor efficiency independent of clock speed.*
+
+**40. Why is power density a problem in modern processors?**
+A) It reduces processing speed
+B) Heat dissipation becomes difficult as logic density and clock speed increase
+C) It increases memory latency
+D) It causes RC delay
+
+**Answer: B**
+*Explanation: As logic density and clock speed increase, power density increases, making heat dissipation challenging and potentially damaging components without adequate cooling.*
+
+---
+
+## Chapter 3: A Top-Level View of Computer Function and Interconnection
+
+**41. What are the three key concepts of the von Neumann architecture?**
+A) Parallel execution, separate memory for data and instructions, fixed program
+B) Stored in single memory, addressable by location, sequential execution
+C) Distributed memory, parallel execution, hardware program
+D) Separate instruction and data memory, random access, parallel execution
+
+**Answer: B**
+*Explanation: The three concepts are: (1) data and instructions stored in single read-write memory, (2) memory addressable by location regardless of data type, (3) sequential execution unless modified.*
+
+**42. What does the Program Counter (PC) hold?**
+A) The current instruction being executed
+B) The address of the next instruction to be fetched
+C) The result of the last arithmetic operation
+D) The memory address of data
+
+**Answer: B**
+*Explanation: The Program Counter (PC) holds the address of the next instruction to be fetched. After each instruction fetch, the PC is incremented to point to the next sequential instruction.*
+
+**43. In the instruction cycle, what happens during the fetch cycle?**
+A) The processor executes the instruction
+B) The processor fetches an instruction from memory
+C) The processor saves the program state
+D) The processor handles interrupts
+
+**Answer: B**
+*Explanation: During the fetch cycle, the processor fetches the next instruction from memory using the address in the Program Counter and loads it into the Instruction Register.*
+
+**44. Which of the following is a class of interrupts?**
+A) Data processing interrupt
+B) Program interrupt
+C) Memory interrupt
+D) Architecture interrupt
+
+**Answer: B**
+*Explanation: Classes of interrupts include program interrupts (overflow, division by zero), timer interrupts, I/O interrupts, and hardware failure interrupts.*
+
+**45. What is Direct Memory Access (DMA)?**
+A) Processor directly accessing memory without cache
+B) I/O module exchanging data directly with memory without processor involvement
+C) Memory accessing I/O devices directly
+D) Cache directly accessing main memory
+
+**Answer: B**
+*Explanation: DMA allows I/O modules to read from or write to memory directly, without tying up the processor. The processor grants authority to the I/O module for memory transfers.*
+
+**46. What determines the maximum possible memory capacity in a system?**
+A) Data bus width
+B) Control bus width
+C) Address bus width
+D) Processor clock speed
+
+**Answer: C**
+*Explanation: The width of the address bus determines the number of unique addresses that can be referenced, thus determining the maximum possible memory capacity (2^address lines).*
+
+**47. What is the function of the data bus?**
+A) To designate the source or destination of data
+B) To provide a path for moving data among system modules
+C) To control access to data and address lines
+D) To provide timing signals
+
+**Answer: B**
+*Explanation: The data bus provides the path for moving data among system modules. Its width determines how many bits can be transferred simultaneously.*
+
+**48. What is QuickPath Interconnect (QPI)?**
+A) A shared bus architecture
+B) A point-to-point interconnect with layered protocol architecture
+C) A type of main memory
+D) An I/O interface standard
+
+**Answer: B**
+*Explanation: QPI is a point-to-point interconnect introduced in 2008 that uses direct pairwise connections, eliminating arbitration, with a layered protocol architecture and packetized data transfer.*
+
+**49. In PCI Express, what is a "split transaction"?**
+A) A transaction split across multiple buses
+B) A request packet sent with a response (completion packet) expected
+C) A transaction that requires multiple clock cycles
+D) A transaction split between memory and I/O
+
+**Answer: B**
+*Explanation: Split transactions involve sending a request packet and waiting for a completion packet response, allowing other transactions to proceed while waiting.*
+
+**50. What are the four address spaces supported by PCI Express Transaction Layer?**
+A) Memory, I/O, Configuration, Message
+B) Data, Instruction, Control, Status
+C) Local, Remote, Cache, Main
+D) Input, Output, Storage, Processing
+
+**Answer: A**
+*Explanation: PCIe supports four address spaces: Memory (main memory and I/O devices), Configuration (I/O device registers), Message (control signals for interrupts, error handling), and I/O (legacy PCI devices).*
+
+**51. What is the purpose of the Control Bus?**
+A) To move data between modules
+B) To designate source or destination of data
+C) To transmit command and timing information
+D) To provide power to modules
+
+**Answer: C**
+*Explanation: The control bus transmits command and timing information, including signals that indicate validity of data and address information and specify operations to be performed.*
+
+**52. What is a key advantage of point-to-point interconnects over shared buses?**
+A) Lower cost
+B) No arbitration required
+C) Simpler protocol
+D) Longer distance capability
+
+**Answer: B**
+*Explanation: Point-to-point interconnects use direct connections between components, eliminating the need for arbitration that is required in shared bus systems where multiple devices compete for access.*
+
+**53. In QPI, what is a "flit" (flow control unit)?**
+A) A complete packet of data
+B) A 72-bit message payload with 8-bit error control code
+C) A routing instruction
+D) A cache line
+
+**Answer: B**
+*Explanation: A flit consists of a 72-bit message payload and an 8-bit cyclic redundancy check (CRC) for error control, operating at the link layer for flow and error control.*
+
+**54. What does the QPI link layer's flow control function ensure?**
+A) Data is routed correctly
+B) Sender does not overwhelm receiver's buffer capacity
+C) Cache coherency is maintained
+D) Physical connections are maintained
+
+**Answer: B**
+*Explanation: Flow control ensures that a sending QPI entity does not send data faster than the receiver can process it and clear buffers for more incoming data.*
+
+**55. In PCIe, what are "posted transactions"?**
+A) Transactions that require immediate response
+B) Transactions that expect no response (no completion packet)
+C) Transactions posted to memory
+D) Highest priority transactions
+
+**Answer: B**
+*Explanation: Posted transactions, such as some write transactions and TL messages, do not expect a response or completion packet, improving efficiency for certain operations.*
+
+**56. What is the primary function of the QPI routing layer?**
+A) Error detection and recovery
+B) Flow control
+C) Determining packet path across system interconnects
+D) Cache coherency protocol
+
+**Answer: C**
+*Explanation: The routing layer determines the course that a packet will traverse across available system interconnects, with possible paths defined by firmware.*
+
+**57. In the context of I/O, what is "memory-mapped I/O"?**
+A) I/O devices use separate address space
+B) I/O devices and memory share the same address space
+C) I/O devices are mapped to cache
+D) Memory is mapped to I/O devices
+
+**Answer: B**
+*Explanation: Memory-mapped I/O shares the same address space between devices and memory, allowing I/O operations to use the same instructions as memory accesses.*
+
+**58. What is the function of the Instruction Register (IR)?**
+A) Hold the address of the next instruction
+B) Hold the instruction most recently fetched
+C) Hold data being written to memory
+D) Hold the memory address for I/O
+
+**Answer: B**
+*Explanation: The Instruction Register (IR) contains the instruction most recently fetched from memory, holding it while the control unit decodes and executes it.*
+
+**59. In the indirect cycle, what happens when an instruction specifies indirect addressing?**
+A) The operand is fetched directly
+B) The address field is used to fetch the actual operand address
+C) The instruction is executed immediately
+D) The instruction is ignored
+
+**Answer: B**
+*Explanation: In indirect addressing, the address field contains the address of a memory location that holds the actual operand address. The indirect cycle fetches this effective address.*
+
+**60. What is an I/O module's role in data transfer?**
+A) Store data permanently
+B) Exchange data between processor and external environment
+C) Process data
+D) Control memory access
+
+**Answer: B**
+*Explanation: The I/O module provides a mechanism for exchanging data between the computer and its external environment, managing communication with peripheral devices.*
+
+---
+
+## Chapter 4: The Memory Hierarchy: Locality and Performance
+
+**61. What is the principle of locality (locality of reference)?**
+A) Memory references are evenly distributed throughout execution
+B) Memory references by the processor tend to cluster during execution
+C) All memory locations are accessed equally often
+D) Programs access random memory locations
+
+**Answer: B**
+*Explanation: Locality of reference reflects the observation that during program execution, memory references tend to cluster, with programs repeatedly accessing the same or nearby memory locations.*
+
+**62. What is temporal locality?**
+A) Accessing memory locations with nearby addresses
+B) Referencing memory units accessed in the recent past
+C) Accessing memory in sequential order
+D) Accessing memory at specific times
+
+**Answer: B**
+*Explanation: Temporal locality refers to the tendency to reference in the near future memory units that were referenced in the recent past, such as loops and frequently accessed variables.*
+
+**63. What is spatial locality?**
+A) Accessing the same memory location repeatedly
+B) Accessing memory units whose addresses are near one another
+C) Accessing memory at specific spatial coordinates
+D) Random memory access patterns
+
+**Answer: B**
+*Explanation: Spatial locality refers to the tendency to reference memory units with addresses near each other, such as when processing sequential data in arrays or executing sequential instructions.*
+
+**64. Which of the following is a characteristic of volatile memory?**
+A) Information remains without power
+B) Information decays or is lost when power is switched off
+C) Cannot be altered after programming
+D) Requires periodic refresh even with power
+
+**Answer: B**
+*Explanation: Volatile memory loses its contents when power is removed. Information naturally decays or is lost when electrical power is switched off.*
+
+**65. What trade-off exists in memory hierarchy design?**
+A) Faster access time, greater cost per bit; greater capacity, slower access time
+B) Faster access time, lower cost per bit
+C) Larger capacity, faster access time
+D) All memory types have identical characteristics
+
+**Answer: A**
+*Explanation: There is an inherent trade-off: faster access memory costs more per bit and typically has less capacity, while larger capacity memory is slower and costs less per bit.*
+
+**66. In a two-level memory system, what is the purpose of the upper-level memory (M1)?**
+A) To permanently store all data
+B) To serve as temporary store for part of the larger M2's contents
+C) To replace the lower-level memory
+D) To store only system programs
+
+**Answer: B**
+*Explanation: Upper-level memory (M1) is smaller, faster, and more expensive, serving as a temporary store for frequently accessed portions of the larger, slower M2 memory.*
+
+**67. What is the unit of transfer for internal memory?**
+A) Always one byte
+B) The number of electrical lines into and out of the memory module
+C) One word
+D) Variable based on instruction
+
+**Answer: B**
+*Explanation: The unit of transfer for internal memory equals the number of electrical lines into and out of the memory module, determining how many bits can be read or written simultaneously.*
+
+**68. Which type of memory is nonvolatile and cannot be altered except by destroying the storage unit?**
+A) SRAM
+B) DRAM
+C) ROM (Read-Only Memory)
+D) Cache
+
+**Answer: C**
+*Explanation: ROM is nonvolatile and nonerasable; its contents are permanently set during fabrication and cannot be altered except by physically destroying the storage unit.*
+
+**69. What is the primary benefit of using a multilevel memory hierarchy?**
+A) Simplified design
+B) Balanced cost, performance, and capacity
+C) Reduced power consumption
+D) Increased complexity
+
+**Answer: B**
+*Explanation: A memory hierarchy balances the three conflicting constraints: how much, how fast, and how expensive, by using different technologies at different levels.*
+
+**70. What is a "block" in the context of memory hierarchy?**
+A) A single byte of data
+B) The minimum unit of transfer between levels of memory
+C) A sector on disk
+D) A cache line tag
+
+**Answer: B**
+*Explanation: A block is the minimum unit of information that can be transferred between levels of the memory hierarchy, such as between cache and main memory.*
+
+**71. What is the access time of a memory system?**
+A) The time to transfer a block of data
+B) The time from when an address is presented until data is available
+C) The time between successive accesses
+D) The time to power up the memory
+
+**Answer: B**
+*Explanation: Access time is the time interval between the presentation of an address and the availability of the data at the memory output.*
+
+**72. In memory hierarchy design, what does "hit ratio" measure?**
+A) The number of memory accesses
+B) The fraction of accesses that find data in the upper-level memory
+C) The number of misses
+D) The ratio of read to write operations
+
+**Answer: B**
+*Explanation: Hit ratio is the fraction of memory accesses that find the desired data in the upper-level (faster) memory, with higher hit ratios indicating better performance.*
+
+**73. What is the primary difference between internal and external memory?**
+A) Speed only
+B) Internal memory is directly accessible by processor; external requires I/O
+C) Cost only
+D) Size only
+
+**Answer: B**
+*Explanation: Internal memory (registers, cache, main memory) is directly accessible by the processor, while external memory (disk, tape) requires I/O controllers for access.*
+
+**74. According to the principle of locality, how does the probability of referencing a memory unit change over time?**
+A) It remains constant
+B) It tends to change slowly as a function of time
+C) It changes randomly
+D) It decreases exponentially
+
+**Answer: B**
+*Explanation: As a function of time, the probability that a given unit of memory is referenced tends to change slowly, reflecting the program's evolving execution focus.*
+
+**75. What is the correlation between immediate past and immediate future memory reference patterns?**
+A) Low and inconsistent
+B) High and tapers off as time interval increases
+C) Negative correlation
+D) No correlation
+
+**Answer: B**
+*Explanation: The correlation between immediate past and immediate future memory reference patterns is high and tapers off as the time interval increases, supporting the effectiveness of caching.*
+
+**76. In the memory hierarchy, what is the role of virtual memory?**
+A) To replace physical memory entirely
+B) To allow programs to address memory logically without regard to physical memory amount
+C) To increase memory speed
+D) To provide permanent storage
+
+**Answer: B**
+*Explanation: Virtual memory allows programs to address memory from a logical point of view, independent of the amount of physical main memory available, using disk storage as extension.*
+
+**77. What is a "cache miss"?**
+A) When data is found in cache
+B) When data is not found in cache and must be fetched from lower level
+C) When cache is full
+D) When processor cannot access cache
+
+**Answer: B**
+*Explanation: A cache miss occurs when the requested data is not found in the cache, requiring the block to be fetched from a lower level of memory hierarchy.*
+
+**78. What characterizes magnetic surface memory?**
+A) Volatile and expensive
+B) Nonvolatile and uses magnetic coating on surface
+C) Read-only memory
+D) Fastest memory type
+
+**Answer: B**
+*Explanation: Magnetic surface memory (disk, tape) is nonvolatile, storing data as magnetic patterns on a coated surface, and does not require power to retain information.*
+
+**79. What is the purpose of a disk cache?**
+A) To replace main memory
+B) To exploit locality and provide improved performance for disk accesses
+C) To store operating system
+D) To handle I/O interrupts
+
+**Answer: B**
+*Explanation: Disk cache uses a portion of main memory to store recently accessed disk data, exploiting locality to reduce the number of slow disk accesses.*
+
+**80. How does memory organization affect performance?**
+A) Organization has no effect on performance
+B) The physical arrangement of bits to form words affects access patterns
+C) Only capacity matters
+D) Organization affects only cost, not performance
+
+**Answer: B**
+*Explanation: Memory organization—the physical arrangement of bits to form words and the interleaving scheme—affects how efficiently memory can be accessed and influences overall system performance.*
+
+---
+
+## Chapter 5: Cache Memory
+
+**81. What is a cache line?**
+A) A portion of main memory
+B) A portion of cache memory capable of holding one block
+C) The connection between cache and processor
+D) The tag portion of cache
+
+**Answer: B**
+*Explanation: A line is a portion of cache memory that can hold one block of data, typically drawn as a horizontal unit in cache diagrams.*
+
+**82. What is the purpose of a cache tag?**
+A) To store data values
+B) A portion of a cache line used for addressing purposes
+C) To mark dirty data
+D) To indicate cache size
+
+**Answer: B**
+*Explanation: The tag is a portion of a cache line used for addressing purposes, containing part of the memory address to identify which block is stored in that line.*
+
+**83. In direct-mapped cache, where can a given main memory block be placed?**
+A) Anywhere in the cache
+B) In exactly one specific cache line
+C) In any line of a specific set
+D) In a location determined by the replacement algorithm
+
+**Answer: B**
+*Explanation: In direct mapping, each main memory block maps to exactly one specific cache line, determined by the block address modulo the number of cache lines.*
+
+**84. What is Content-Addressable Memory (CAM)?**
+A) Memory that uses addresses to locate data
+B) Memory that searches its entire contents in parallel for a match
+C) Memory that stores content with addresses
+D) Memory with fixed content
+
+**Answer: B**
+*Explanation: CAM (associative memory) searches its entire memory in parallel for a supplied bit string, returning the address and associated data in one clock cycle.*
+
+**85. In set-associative mapping, how does a block map to cache?**
+A) To any line in any set
+B) To a specific line in a specific set
+C) To any line in a specific set
+D) To a specific line in any set
+
+**Answer: C**
+*Explanation: In set-associative mapping, each block maps to any line within a specific set, combining flexibility with reduced search complexity.*
+
+**86. Which replacement algorithm is most effective and commonly used?**
+A) First-in-first-out (FIFO)
+B) Least frequently used (LFU)
+C) Least recently used (LRU)
+D) Random replacement
+
+**Answer: C**
+*Explanation: LRU (Least Recently Used) is the most effective and popular replacement algorithm, replacing the block that has been in the cache longest without being referenced.*
+
+**87. What is the difference between write-through and write-back cache policies?**
+A) Write-through writes only to cache; write-back writes to both
+B) Write-through writes to both cache and main memory; write-back writes only to cache initially
+C) Write-through is faster; write-back is slower
+D) Write-through uses DMA; write-back uses programmed I/O
+
+**Answer: B**
+*Explanation: Write-through updates both cache and main memory simultaneously. Write-back updates only the cache, marking the line as "dirty" for later write to main memory.*
+
+**88. What problem does cache coherency address in multiprocessor systems?**
+A) Caches being too small
+B) Different caches containing inconsistent copies of the same data
+C) Cache access speed
+D) Cache replacement algorithms
+
+**Answer: B**
+*Explanation: Cache coherency ensures that when one processor updates data in its cache, other caches that contain the same data are either updated or invalidated to maintain consistency.*
+
+**89. What is a split cache?**
+A) Cache split between processors
+B) Separate caches for instructions and data
+C) Cache with multiple levels
+D) Cache split between main memory and disk
+
+**Answer: B**
+*Explanation: A split cache uses separate dedicated caches for instructions and data, typically at the L1 level, eliminating contention between instruction fetch and data access.*
+
+**90. What is the inclusive cache policy?**
+A) Data in one cache is guaranteed not to be in lower levels
+B) Data in one cache is guaranteed to be found in all lower levels
+C) Data may or may not be in lower levels
+D) Data is never duplicated
+
+**Answer: B**
+*Explanation: Inclusive policy ensures that any data in a higher-level cache is also present in all lower-level caches, simplifying searching and cache coherence
+
+# Computer Organization and Architecture - Complete MCQ Bank (21 Chapters) - Continued
+
+## Chapter 5: Cache Memory (Continued)
+
+**91. What is the primary advantage of an on-chip cache?**
+A) Lower cost than off-chip cache
+B) Reduces processor's external bus activity and speeds execution
+C) Increases cache size
+D) Simplifies cache coherency
+
+**Answer: B**
+*Explanation: On-chip cache reduces external bus activity since frequently accessed data is found within the processor chip, speeding execution and freeing the bus for other transfers.*
+
+**92. In a two-level cache system, what is the effective access time formula?**
+A) T_eff = H1 × T1 + (1-H1) × T2
+B) T_eff = H1 × T1 + (1-H1) × (H2 × T2 + (1-H2) × T_memory)
+C) T_eff = T1 + T2
+D) T_eff = (H1 + H2) × T1
+
+**Answer: B**
+*Explanation: Effective access time = Hit rate L1 × Access time L1 + Miss rate L1 × (Hit rate L2 × Access time L2 + Miss rate L2 × Memory access time).*
+
+**93. What is the "write allocate" policy?**
+A) Writing directly to main memory
+B) When a write miss occurs, the block is fetched into cache before the write
+C) Writing only to cache without allocating new line
+D) Allocating memory for cache writes
+
+**Answer: B**
+*Explanation: Write allocate fetches the block containing the target word from main memory into the cache on a write miss, then performs the write in the cache.*
+
+**94. Which cache timing model allows for simple and fast speculation?**
+A) Fully associative
+B) Set associative
+C) Direct-mapped
+D) All of the above equally
+
+**Answer: C**
+*Explanation: Direct-mapped cache allows speculation because the line number is known before the tag comparison, enabling parallel data access and tag check.*
+
+**95. What is the main disadvantage of a unified cache compared to split caches?**
+A) Higher miss rate
+B) Contention between instruction fetch and data access
+C) More complex design
+D) Higher power consumption
+
+**Answer: B**
+*Explanation: A unified cache can create contention when both instruction fetch and data access try to use the same cache simultaneously, potentially causing pipeline stalls.*
+
+**96. In the MESI cache coherency protocol, what does the "Exclusive" state indicate?**
+A) The line is modified and only in this cache
+B) The line is same as main memory and only in this cache
+C) The line may be in other caches
+D) The line is invalid
+
+**Answer: B**
+*Explanation: Exclusive state means the cache line contains valid data that matches main memory and is present in only this cache, with no other copies in other caches.*
+
+**97. What is the purpose of a "dirty bit" in cache design?**
+A) To indicate the cache line needs replacement
+B) To indicate the line has been modified and differs from main memory
+C) To indicate the line is frequently accessed
+D) To mark the line as read-only
+
+**Answer: B**
+*Explanation: A dirty bit indicates that the cache line has been modified (written to) and is not consistent with main memory, requiring write-back when replaced.*
+
+**98. What is a "victim cache"?**
+A) A cache that stores data from failed operations
+B) A small cache holding recently evicted lines to reduce conflict misses
+C) A cache used only for instructions
+D) A cache that never experiences misses
+
+**Answer: B**
+*Explanation: A victim cache is a small, fully associative cache that holds recently evicted cache lines, reducing conflict misses by capturing lines that would otherwise be lost.*
+
+**99. In associative cache, how is a line located?**
+A) By direct indexing using address bits
+B) By comparing tag bits with all cache lines simultaneously
+C) By using a hash function
+D) By sequential search
+
+**Answer: B**
+*Explanation: Associative cache compares the tag of the requested address with all cache line tags simultaneously using content-addressable memory, enabling parallel search.*
+
+**100. What is the relationship between line size and spatial locality?**
+A) Smaller line sizes better exploit spatial locality
+B) Larger line sizes better exploit spatial locality
+C) Line size has no effect on spatial locality
+D) Only temporal locality matters
+
+**Answer: B**
+*Explanation: Larger line sizes take advantage of spatial locality by bringing in neighboring data that is likely to be accessed soon, reducing compulsory misses.*
+
+---
+
+## Chapter 6: Internal Memory
+
+**101. What is the fundamental difference between DRAM and SRAM?**
+A) DRAM uses flip-flops, SRAM uses capacitors
+B) DRAM uses capacitors requiring refresh, SRAM uses flip-flops
+C) DRAM is faster than SRAM
+D) DRAM is nonvolatile, SRAM is volatile
+
+**Answer: B**
+*Explanation: DRAM stores data as charge on capacitors and requires periodic refresh; SRAM uses flip-flop logic gates and retains data as long as power is supplied without refresh.*
+
+**102. Which memory type is typically used for cache memory?**
+A) DRAM
+B) SRAM
+C) Flash memory
+D) ROM
+
+**Answer: B**
+*Explanation: SRAM is faster than DRAM and is typically used for cache memory, both on-chip and off-chip, due to its speed and no refresh requirement.*
+
+**103. What is the primary advantage of DRAM over SRAM?**
+A) Faster access speed
+B) Higher density and lower cost per bit
+C) No refresh required
+D) Lower power consumption
+
+**Answer: B**
+*Explanation: DRAM cells are simpler and smaller than SRAM cells, allowing higher density (more bits per chip) and lower cost per bit, making it suitable for main memory.*
+
+**104. What is a "soft error" in memory?**
+A) A permanent physical defect
+B) A random, non-destructive event that alters memory contents
+C) A manufacturing defect
+D) A software programming error
+
+**Answer: B**
+*Explanation: Soft errors are random events (caused by alpha particles, power supply issues) that alter memory contents without permanent damage to the memory cells.*
+
+**105. What is Hamming code used for in memory systems?**
+A) Increasing memory speed
+B) Error detection and correction
+C) Data compression
+D) Address translation
+
+**Answer: B**
+*Explanation: Hamming code is an error-correcting code that can detect and correct single-bit errors and detect double-bit errors (SEC-DED) in memory systems.*
+
+**106. In Hamming error correction, how many check bits are needed for 64 data bits?**
+A) 4
+B) 5
+C) 6
+D) 7
+
+**Answer: D**
+*Explanation: The Hamming code requires k check bits where 2^k ≥ n + k + 1. For n=64, k=7 satisfies 2^7=128 ≥ 64+7+1=72, providing SEC-DED capability.*
+
+**107. What is the key feature of Synchronous DRAM (SDRAM)?**
+A) Asynchronous operation with memory bus
+B) Synchronized with processor clock for pipelined access
+C) Uses double data rate
+D) Nonvolatile operation
+
+**Answer: B**
+*Explanation: SDRAM synchronizes its operations with the processor clock, allowing pipelined access where new commands can be issued while previous data is being read.*
+
+**108. How does DDR SDRAM achieve higher data rates?**
+A) Only by increasing clock frequency
+B) By transferring data on both rising and falling clock edges
+C) By using wider data buses
+D) By reducing latency
+
+**Answer: B**
+*Explanation: DDR SDRAM transfers data on both the rising and falling edges of the clock, effectively doubling the data transfer rate without doubling the clock frequency.*
+
+**109. What is the characteristic of Double Data Rate (DDR) memory generations?**
+A) Each generation increases voltage requirements
+B) Each generation roughly doubles the data rate
+C) Each generation decreases the number of pins
+D) Each generation increases latency
+
+**Answer: B**
+*Explanation: Each DDR generation approximately doubles the maximum data transfer rate, from DDR (200-400 MT/s) to DDR5 (up to 6400 MT/s and beyond).*
+
+**110. What is eDRAM (embedded DRAM)?**
+A) DRAM used for external storage
+B) DRAM integrated on the same chip as the processor or ASIC
+C) DRAM with error correction
+D) DRAM used only for graphics
+
+**Answer: B**
+*Explanation: eDRAM is DRAM integrated directly onto the same chip or MCM as the processor or ASIC, providing intermediate characteristics between SRAM and off-chip DRAM.*
+
+**111. Which of the following is true about Flash memory?**
+A) Provides byte-level erasure like EEPROM
+B) Uses only one transistor per bit and erases blocks of memory
+C) Is faster than DRAM
+D) Requires constant power to retain data
+
+**Answer: B**
+*Explanation: Flash memory uses one transistor per bit (like EPROM) but erases blocks of memory rather than bytes, combining density with electrical erasability.*
+
+**112. What is the difference between NOR and NAND flash memory?**
+A) NOR is serial access, NAND is random access
+B) NOR provides random access, NAND provides serial access with higher density
+C) NOR is slower than NAND
+D) NOR is nonvolatile, NAND is volatile
+
+**Answer: B**
+*Explanation: NOR flash provides random access suitable for code storage; NAND flash offers higher density and lower cost with serial access, better for data storage.*
+
+**113. What is interleaved memory?**
+A) Memory with error correction interleaved
+B) Memory organized across multiple banks for parallel access
+C) Memory interleaved with cache
+D) Memory with interleaved addressing
+
+**Answer: B**
+*Explanation: Interleaved memory uses multiple memory banks that can be accessed in parallel, allowing consecutive addresses to be spread across banks for faster access.*
+
+**114. In a 256-KByte memory organization with 4 interleaved banks, what is the benefit?**
+A) Reduced power consumption
+B) Ability to access multiple words simultaneously
+C) Smaller physical size
+D) Higher error correction capability
+
+**Answer: B**
+*Explanation: Interleaving allows multiple memory banks to operate in parallel, enabling access to consecutive memory locations simultaneously and reducing effective access time.*
+
+**115. What is a "hard failure" in memory?**
+A) A soft error that becomes permanent
+B) A permanent physical defect that affects memory cells
+C) A failure in the memory controller
+D) A software crash
+
+**Answer: B**
+*Explanation: Hard failure is a permanent physical defect that causes affected memory cells to become stuck at 0 or 1 or switch erratically, caused by manufacturing defects, wear, or environmental abuse.*
+
+**116. What is the SEC-DEC capability in error-correcting memory?**
+A) Single Error Correction - Double Error Correction
+B) Single Error Correction - Double Error Detection
+C) Single Error Detection - Double Error Correction
+D) Systematic Error Correction - Dynamic Error Correction
+
+**Answer: B**
+*Explanation: SEC-DEC (Single Error Correction - Double Error Detection) can correct single-bit errors and detect double-bit errors, providing protection against most common memory errors.*
+
+**117. What is the primary advantage of using multiple memory modules in a system?**
+A) Reduced cost
+B) Increased memory bandwidth through parallel access
+C) Simplified design
+D) Lower power consumption
+
+**Answer: B**
+*Explanation: Multiple memory modules allow parallel access to increase memory bandwidth, especially when combined with techniques like interleaving and multi-channel architectures.*
+
+**118. Which type of ROM can be written more than once using electrical signals?**
+A) Mask ROM
+B) PROM
+C) EPROM
+D) EEPROM
+
+**Answer: D**
+*Explanation: EEPROM (Electrically Erasable Programmable ROM) can be erased and rewritten electrically multiple times, though typically slower than RAM.*
+
+**119. What is the main characteristic of Phase-Change Memory (PCM)?**
+A) Uses magnetic fields to store data
+B) Uses materials that change between crystalline and amorphous states
+C) Uses capacitors to store charge
+D) Uses flip-flops to store bits
+
+**Answer: B**
+*Explanation: Phase-change memory uses materials that can be switched between crystalline (low resistance) and amorphous (high resistance) states, providing nonvolatile storage with fast access.*
+
+**120. What is the purpose of a memory controller?**
+A) To store data permanently
+B) To manage data flow between processor and memory
+C) To perform arithmetic operations
+D) To handle I/O requests
+
+**Answer: B**
+*Explanation: The memory controller manages the flow of data between the processor and main memory, handling timing, refresh for DRAM, and error correction.*
+
+---
+
+## Chapter 7: External Memory
+
+**121. What is the typical substrate material for modern hard disk platters?**
+A) Plastic
+B) Glass
+C) Aluminum only
+D) Ceramic
+
+**Answer: B**
+*Explanation: Modern hard disks use glass substrates, which provide improved magnetic film uniformity, reduced surface defects, lower fly heights, better stiffness, and greater shock resistance.*
+
+**122. What is the function of a read-write head in magnetic disk storage?**
+A) Only reads data
+B) Only writes data
+C) Generates or senses electromagnetic fields to read/write data
+D) Positions the disk platter
+
+**Answer: C**
+*Explanation: The read-write head generates electromagnetic fields to write data by magnetizing the medium, and senses electromagnetic fields to read previously written data.*
+
+**123. What is seek time in disk performance?**
+A) Time for disk to spin to correct sector
+B) Time to position the head at the desired track
+C) Time to transfer data
+D) Total access time
+
+**Answer: B**
+*Explanation: Seek time is the time required to position the read-write head over the desired track on a movable-head disk system.*
+
+**124. What is rotational delay (latency) in disk access?**
+A) Time to move the head to the track
+B) Time for the desired sector to rotate under the head
+C) Time to read the data
+D) Time for the disk to start spinning
+
+**Answer: B**
+*Explanation: Rotational delay (latency) is the time waiting for the beginning of the desired sector to rotate to the position of the read-write head.*
+
+**125. What is the total access time for a disk I/O operation?**
+A) Seek time only
+B) Rotational delay only
+C) Seek time + Rotational delay + Transfer time
+D) Transfer time only
+
+**Answer: C**
+*Explanation: Disk access time is the sum of seek time (head positioning), rotational latency (sector positioning), and transfer time (data read/write).*
+
+**126. What is RAID (Redundant Array of Independent Disks)?**
+A) A single disk with redundancy
+B) A set of physical disks viewed as a single logical drive with data distribution
+C) A type of disk controller
+D) A backup software
+
+**Answer: B**
+*Explanation: RAID combines multiple physical disks into a single logical drive, distributing data across the array with redundant capacity for data recovery.*
+
+**127. Which RAID level uses striping without redundancy?**
+A) RAID 0
+B) RAID 1
+C) RAID 5
+D) RAID 6
+
+**Answer: A**
+*Explanation: RAID 0 uses striping across disks without any redundancy, providing performance benefits but no fault tolerance—any disk failure results in data loss.*
+
+**128. What is a key characteristic of RAID 1?**
+A) Striping with parity
+B) Mirroring (duplicating all data)
+C) Bit-level striping with Hamming code
+D) Distributed parity
+
+**Answer: B**
+*Explanation: RAID 1 uses disk mirroring where each logical strip is mapped to two separate physical disks, providing complete data duplication for redundancy.*
+
+**129. What is the "write penalty" in RAID 4 and RAID 5?**
+A) Writes are slower than reads
+B) Each write requires reading old data and parity before updating
+C) Writes cannot be performed
+D) Writes require more disk space
+
+**Answer: B**
+*Explanation: Write penalty occurs because each small write requires reading the old data and old parity, then writing the new data and new parity—2 reads and 2 writes per operation.*
+
+**130. How does RAID 5 differ from RAID 4?**
+A) RAID 5 uses more parity disks
+B) RAID 5 distributes parity strips across all disks
+C) RAID 5 uses mirroring
+D) RAID 5 has no parity
+
+**Answer: B**
+*Explanation: RAID 5 distributes parity blocks across all disks in a round-robin fashion, eliminating the dedicated parity disk bottleneck found in RAID 4.*
+
+**131. What is the advantage of SSD over HDD?**
+A) Lower cost per GB
+B) Higher IOPS, lower access times, lower power consumption
+C) Larger capacity
+D) Unlimited write cycles
+
+**Answer: B**
+*Explanation: SSDs offer higher input/output operations per second (IOPS), lower access times, lower power consumption, and better durability compared to HDDs.*
+
+**132. What is a major practical issue with SSD performance?**
+A) Performance decreases over time due to write amplification
+B) They cannot be used for boot drives
+C) They require constant defragmentation
+D) They have high access times
+
+**Answer: A**
+*Explanation: SSD performance can degrade as the device is used due to write amplification and the need to erase entire blocks before writing, requiring wear-leveling and garbage collection.*
+
+**133. What is wear-leveling in flash memory?**
+A) Distributing writes evenly across blocks to prolong life
+B) Leveling the physical surface
+C) Reducing wear on the controller
+D) Balancing read operations
+
+**Answer: A**
+*Explanation: Wear-leveling algorithms distribute write operations evenly across all flash memory blocks to prevent any single block from wearing out prematurely due to limited write cycles.*
+
+**134. How does CD-ROM store data?**
+A) Magnetic patterns
+B) Microscopic pits on a polycarbonate surface
+C) Electrical charges
+D) Phase changes in crystal structure
+
+**Answer: B**
+*Explanation: CD-ROM stores data as a series of microscopic pits (and lands) imprinted on a polycarbonate surface, which are read by a laser based on reflectivity changes.*
+
+**135. What is the difference between CD-R and CD-RW?**
+A) CD-R is rewritable, CD-RW is write-once
+B) CD-R is write-once, CD-RW is rewritable
+C) Both are rewritable
+D) Both are read-only
+
+**Answer: B**
+*Explanation: CD-R (Recordable) can be written once; CD-RW (Rewritable) can be written and overwritten multiple times using phase-change technology.*
+
+**136. What is the advantage of DVD over CD-ROM?**
+A) Higher cost
+B) Higher capacity and data rate
+C) Smaller physical size
+D) Rewritable only
+
+**Answer: B**
+*Explanation: DVDs offer significantly higher capacity (4.7GB vs 650MB) and higher data transfer rates compared to CDs, using smaller pits and tighter track spacing.*
+
+**137. What is the format of data on magnetic tape?**
+A) Random access blocks
+B) Serial access with physical records separated by inter-record gaps
+C) Circular tracks
+D) Sectors and tracks like disk
+
+**Answer: B**
+*Explanation: Magnetic tape uses serial access with data organized in contiguous blocks (physical records) separated by inter-record gaps for sequential reading and writing.*
+
+**138. What is the Linear Tape-Open (LTO) technology?**
+A) A disk RAID standard
+B) An open standard for magnetic tape storage
+C) A flash memory standard
+D) A CD-ROM format
+
+**Answer: B**
+*Explanation: LTO is an open standard for magnetic tape storage that provides high capacity and performance for backup and archival applications.*
+
+**139. In disk performance, what is the transfer time?**
+A) Time to position the head
+B) Time for sector to rotate under head
+C) Time to read/write data once head is positioned
+D) Total time from request to completion
+
+**Answer: C**
+*Explanation: Transfer time is the time to read or write the actual data once the head is positioned at the correct track and sector, proportional to the amount of data transferred.*
+
+**140. What is a characteristic of fixed-head disk systems?**
+A) One read-write head per track
+B) One head for all tracks
+C) Removable disks only
+D) Slower than movable-head systems
+
+**Answer: A**
+*Explanation: Fixed-head disks have one read-write head per track mounted on a fixed rigid arm, eliminating seek time but increasing cost and complexity.*
+
+---
+
+## Chapter 8: Input/Output
+
+**141. What are the three categories of external devices?**
+A) Input, output, storage
+B) Human readable, machine readable, communication
+C) Analog, digital, hybrid
+D) Local, remote, networked
+
+**Answer: B**
+*Explanation: External devices fall into three categories: human readable (VDTs, printers), machine readable (disk, tape, sensors), and communication devices (terminals, modems).*
+
+**142. What is the International Reference Alphabet (IRA) used for?**
+A) Disk formatting
+B) Character encoding (ASCII in US)
+C) Memory addressing
+D) Error correction
+
+**Answer: B**
+*Explanation: IRA (ASCII in the US) is a 7-bit character code representing 128 different characters including printable and control characters for text communication.*
+
+**143. What are the four types of I/O commands an I/O module may receive?**
+A) Start, Stop, Read, Write
+B) Control, Test, Read, Write
+C) Initiate, Execute, Complete, Stop
+D) Open, Close, Read, Write
+
+**Answer: B**
+*Explanation: The four I/O commands are: Control (activate peripheral), Test (check status), Read (obtain data from peripheral), Write (send data to peripheral).*
+
+**144. What is programmed I/O?**
+A) Processor issues command and continues execution
+B) Processor issues command and waits until I/O is complete
+C) I/O module has its own processor
+D) I/O operations are handled by DMA
+
+**Answer: B**
+*Explanation: In programmed I/O, the processor issues an I/O command and then actively waits (polls) until the operation completes, wasting processor cycles.*
+
+**145. What is the main advantage of interrupt-driven I/O over programmed I/O?**
+A) Simpler hardware
+B) Processor can execute other instructions while waiting for I/O
+C) Higher data transfer rates
+D) Lower cost
+
+**Answer: B**
+*Explanation: Interrupt-driven I/O allows the processor to continue executing other instructions while the I/O operation is in progress, improving processor utilization.*
+
+**146. What is the difference between memory-mapped I/O and isolated I/O?**
+A) Memory-mapped uses separate address space; isolated shares memory address space
+B) Memory-mapped shares memory address space; isolated uses separate I/O address space
+C) Memory-mapped uses DMA; isolated uses programmed I/O
+D) Memory-mapped is slower; isolated is faster
+
+**Answer: B**
+*Explanation: Memory-mapped I/O uses the same address space for memory and I/O devices, while isolated I/O uses separate address spaces with special I/O instructions.*
+
+**147. What is vectored interrupt?**
+A) Interrupts are processed in a vector (array)
+B) Processor uses vector from interrupting device to directly access service routine
+C) Interrupts are disabled
+D) Multiple interrupts are queued
+
+**Answer: B**
+*Explanation: Vectored interrupt uses a unique identifier (vector) from the interrupting device that points directly to the appropriate interrupt service routine, eliminating the need for a general poll.*
+
+**148. What is the primary benefit of Direct Memory Access (DMA)?**
+A) Reduces processor involvement in data transfer
+B) Increases I/O speed
+C) Simplifies I/O programming
+D) Reduces memory usage
+
+**Answer: A**
+*Explanation: DMA allows I/O modules to transfer data directly to/from memory without processor involvement during the transfer, freeing the processor for other tasks.*
+
+**149. In DMA operation, what is a "fly-by" transfer?**
+A) Data is transferred through DMA controller without being stored
+B) Data is transferred in bursts
+C) Data is transferred at high speed
+D) Data bypasses the processor
+
+**Answer: A**
+*Explanation: In fly-by DMA transfers, data moves directly between I/O device and memory through the DMA controller without being stored in the controller itself.*
+
+**150. What is Direct Cache Access (DCA)?**
+A) DMA transfers directly to cache instead of main memory
+B) Processor accesses cache directly
+C) I/O devices access cache directly
+D) Cache bypasses main memory
+
+**Answer: A**
+*Explanation: DCA is a technique where I/O data is transferred directly into the processor's cache rather than main memory, reducing latency and memory bandwidth usage.*
+
+**151. What is the USB (Universal Serial Bus) architecture?**
+A) Point-to-point connection
+B) Hierarchical tree topology with root host controller
+C) Bus with multiple masters
+D) Serial connection only
+
+**Answer: B**
+*Explanation: USB uses a hierarchical tree topology where the root host controller manages connections to devices, creating a local network with a star-like structure.*
+
+**152. What data rates are supported by USB 3.0 SuperSpeed?**
+A) 480 Mbps
+B) 5 Gbps signaling rate
+C) 10 Gbps
+D) 12 Mbps
+
+**Answer: B**
+*Explanation: USB 3.0 SuperSpeed provides a signaling rate of 5 Gbps, with usable data rates up to about 4 Gbps after overhead.*
+
+**153. What is FireWire (IEEE 1394) primarily used for?**
+A) Low-speed peripherals
+B) High-speed serial bus for audio/video and storage
+C) Network connections
+D) Memory expansion
+
+**Answer: B**
+*Explanation: FireWire is a high-performance serial bus designed for high-speed I/O applications such as digital video, audio, and external storage with hot plugging capability.*
+
+**154. What is the key feature of Thunderbolt technology?**
+A) Only supports video
+B) Combines data, video, audio, and power in one high-speed connection
+C) Wireless only
+D) Low-speed peripherals
+
+**Answer: B**
+*Explanation: Thunderbolt combines multiple protocols (PCIe, DisplayPort) with power delivery over a single cable, providing up to 10 Gbps throughput in each direction.*
+
+**155. What is SCSI (Small Computer System Interface)?**
+A) A serial bus standard
+B) A parallel bus interface for peripherals
+C) A wireless standard
+D) A memory interface
+
+**Answer: B**
+*Explanation: SCSI is a parallel bus interface standard originally designed for connecting peripheral devices (especially storage) to small and medium-sized computer systems.*
+
+**156. What is the predominant wired networking technology for computers?**
+A) USB
+B) FireWire
+C) Ethernet
+D) Thunderbolt
+
+**Answer: C**
+*Explanation: Ethernet is the predominant wired networking technology, evolving from a 3 Mbps bus-based system to switch-based systems supporting speeds up to 100 Gbps.*
+
+**157. What is Wi-Fi in the context of computer systems?**
+A) Wired network standard
+B) Predominant wireless Internet access technology
+C) Bluetooth replacement
+D) Cellular network standard
+
+**Answer: B**
+*Explanation: Wi-Fi (IEEE 802.11) is the predominant wireless Internet access technology connecting computers, tablets, smartphones, and other electronic devices.*
+
+**158. What is the evolution of I/O from direct CPU control to modern systems?**
+A) Direct control → I/O module → Interrupts → DMA → I/O processor → I/O channel
+B) I/O module → Direct control → Interrupts → DMA
+C) Direct control → DMA → Interrupts → I/O processor
+D) DMA → Direct control → I/O module → Interrupts
+
+**Answer: A**
+*Explanation: I/O evolved from direct CPU control, to I/O module with programmed I/O, to interrupts, to DMA, to I/O processors, and finally to I/O channels with local memory.*
+
+**159. What is an I/O channel?**
+A) A dedicated path for I/O
+B) An I/O module enhanced to become a processor with specialized instruction set
+C) A type of cable
+D) A software driver
+
+**Answer: B**
+*Explanation: An I/O channel is an I/O module that has been enhanced to function as a processor with its own specialized instruction set for I/O operations, reducing CPU involvement.*
+
+**160. What is the purpose of an interrupt controller like the 82C59A?**
+A) To generate interrupts
+B) To manage multiple interrupt requests and prioritize them
+C) To execute interrupt handlers
+D) To disable interrupts
+
+**Answer: B**
+*Explanation: An interrupt controller manages multiple interrupt requests from various devices, prioritizes them, and presents the highest priority interrupt to the processor.*
+
+---
+
+## Chapter 9: Operating System Support
+
+**161. What are the primary services provided by an operating system?**
+A) Only memory management
+B) Program creation, execution, I/O access, file access, system access, error detection, accounting
+C) Only file management
+D) Only process scheduling
+
+**Answer: B**
+*Explanation: OS provides comprehensive services including program creation, execution, I/O access, controlled file access, system access, error detection/response, and accounting.*
+
+**162. What is the role of the OS as a resource manager?**
+A) Managing only memory
+B) Managing movement, storage, processing of data and control of these functions
+C) Managing only CPU time
+D) Managing only I/O devices
+
+**Answer: B**
+*Explanation: The OS manages all computer resources including data movement, storage, processing, and control functions, acting as a control mechanism that manages resource allocation.*
+
+**163. What is a batch operating system?**
+A) System where users interact directly with computer
+B) User programs are batched together and submitted by operator
+C) System that runs one program at a time
+D) System with multiple processors
+
+**Answer: B**
+*Explanation: In batch systems, user programs are grouped into batches and submitted by an operator; results are printed after completion with no user interaction during execution.*
+
+**164. What is Job Control Language (JCL) used for?**
+A) Programming applications
+B) Providing instructions to the batch monitor
+C) Controlling I/O devices
+D) Managing memory
+
+**Answer: B**
+*Explanation: JCL is a special programming language used to provide instructions to the batch monitor about job requirements, including compiler, loader, and data specifications.*
+
+**165. What hardware features are required for a multiprogramming OS?**
+A) Only a fast processor
+B) Memory protection, timer, privileged instructions, interrupts
+C) Large memory only
+D) Fast I/O only
+
+**Answer: B**
+*Explanation: Multiprogramming requires memory protection (prevent user program from altering monitor), timer (prevent job monopolizing system), privileged instructions (control I/O), and interrupts (flexible control transfer).*
+
+**166. What is the primary benefit of multiprogramming?**
+A) Simpler OS design
+B) Better resource utilization by keeping processor busy
+C) Faster program execution
+D) Less memory required
+
+**Answer: B**
+*Explanation: Multiprogramming improves resource utilization by allowing multiple programs to reside in memory, so the processor can switch to another program when one is waiting for I/O.*
+
+**167. What is time sharing?**
+A) Programs share time on the processor
+B) Processor time is shared among multiple users interacting directly
+C) Multiple processors share time
+D) Time-based scheduling only
+
+**Answer: B**
+*Explanation: Time sharing allows multiple users to simultaneously access the system through terminals, with the OS interleaving execution of each user program in short quanta.*
+
+**168. What are the three types of scheduling in operating systems?**
+A) Process, thread, I/O
+B) Long-term, medium-term, short-term
+C) Priority, round-robin, FIFO
+D) User, system, idle
+
+**Answer: B**
+*Explanation: The three types are: long-term (admission to system), medium-term (swapping), and short-term (dispatcher - which job executes next).*
+
+**169. What is the short-term scheduler also known as?**
+A) Job scheduler
+B) Swapper
+C) Dispatcher
+D) Process scheduler
+
+**Answer: C**
+*Explanation: The short-term scheduler, or dispatcher, executes frequently and makes the fine-grained decision of which job to execute next.*
+
+**170. What is swapping in memory management?**
+A) Exchanging data between CPU and memory
+B) Moving entire processes between main memory and secondary storage
+C) Swapping register contents
+D) Exchanging data between caches
+
+**Answer: B**
+*Explanation: Swapping moves entire processes between main memory and secondary storage to manage the degree of multiprogramming and free memory for other processes.*
+
+**171. What is the difference between logical address and physical address?**
+A) Logical address is actual location; physical is relative
+B) Logical address is relative to program start; physical is actual memory location
+C) They are the same
+D) Logical is used by hardware; physical by software
+
+**Answer: B**
+*Explanation: Logical (virtual) addresses are expressed relative to the beginning of the program; physical addresses are the actual locations in main memory after address translation.*
+
+**172. What is a base address in memory management?**
+A) The starting location of a program in memory
+B) The lowest memory address
+C) The address of the OS
+D) The address of the stack
+
+**Answer: A**
+*Explanation: The base address is the current starting location of a process in main memory, used to convert logical addresses to physical addresses by addition.*
+
+**173. What is demand paging?**
+A) Loading entire program before execution
+B) Loading pages only when they are needed (on page fault)
+C) Preloading all pages
+D) Paging without virtual memory
+
+**Answer: B**
+*Explanation: Demand paging brings each page into memory only when it is referenced, reducing memory usage by loading only pages actually needed during execution.*
+
+**174. What is thrashing in virtual memory systems?**
+A) High cache hit rate
+B) Processor spends most time swapping pages instead of executing instructions
+C) Fast page access
+D) Efficient memory usage
+
+**Answer: B**
+*Explanation: Thrashing occurs when the system spends more time swapping pages in and out than executing instructions, severely degrading performance.*
+
+**175. What is a Translation Lookaside Buffer (TLB)?**
+A) A cache for disk blocks
+B) A cache for page table entries
+C) A buffer for I/O operations
+D) A register for program counter
+
+**Answer: B**
+*Explanation: TLB is a cache that stores recently used page table entries, speeding up virtual-to-physical address translation by avoiding full page table walks.*
+
+**176. What is segmentation in memory management?**
+A) Dividing memory into fixed-size blocks
+B) Viewing memory as multiple logical address spaces (segments)
+C) Paging with variable page sizes
+D) Dividing program into equal sections
+
+**Answer: B**
+*Explanation: Segmentation allows the programmer to view memory as multiple logical address spaces or segments, simplifying program organization and data structure handling.*
+
+**177. What are the two forms of protection associated with segments in x86?**
+A) Read and write protection
+B) Privilege level and access attribute
+C) User and system protection
+D) Code and data protection
+
+**Answer: B**
+*Explanation: x86 segments have two protection mechanisms: privilege level (0-3, most to least protected) for data access, and access attribute (read-only, read-write, etc.).*
+
+**178. What is the size of the x86 virtual address space with segmentation?**
+A) 4 GB
+B) 64 terabytes (2^46)
+C) 16 GB
+D) 1 TB
+
+**Answer: B**
+*Explanation: With segmentation, x86 provides a 2^46 = 64 terabyte virtual address space using 16-bit segment selectors (14 bits specify segment) and 32-bit offsets.*
+
+**179. What are the two levels of ARM translation tables?**
+A) Page table and page directory
+B) Level 1 table (sections/supersections) and Level 2 table (pages)
+C) Global and local tables
+D) User and kernel tables
+
+**Answer: B**
+*Explanation: ARM uses level 1 tables containing descriptors for sections and supersections, and level 2 tables containing descriptors for large pages (64KB) and small pages (4KB).*
+
+**180. What is a domain in ARM memory management?**
+A) A memory region with specific access permissions
+B) A collection of sections/pages with particular access permissions
+C) A type of cache
+D) A processor mode
+
+**Answer: B**
+*Explanation: ARM supports up to 16 domains, each a collection of sections/pages with specific access permissions, allowing multiple processes to share translation tables with protection.*
+
+---
+
+## Chapter 10: Number Systems
+
+**181. In the decimal system, what is the radix (base)?**
+A) 2
+B) 8
+C) 10
+D) 16
+
+**Answer: C**
+*Explanation: The decimal system uses base 10, meaning each digit is multiplied by 10 raised to a power corresponding to its position.*
+
+# Computer Organization and Architecture - Complete MCQ Bank (21 Chapters) - Continued
+
+## Chapter 10: Number Systems (Continued)
+
+**182. What is the binary representation of the decimal number 13?**
+A) 1011
+B) 1101
+C) 1110
+D) 1001
+
+**Answer: B**
+*Explanation: 13 decimal = 8 + 4 + 1 = 2³ + 2² + 2⁰ = 1101₂. Option A (1011) is 11 decimal, C (1110) is 14, D (1001) is 9.*
+
+**183. Convert binary 1011.101 to decimal.**
+A) 11.625
+B) 11.5
+C) 13.625
+D) 13.5
+
+**Answer: A**
+*Explanation: 1011.101₂ = (1×8)+(0×4)+(1×2)+(1×1) + (1×0.5)+(0×0.25)+(1×0.125) = 8+2+1+0.5+0.125 = 11.625.*
+
+**184. What is the process for converting a decimal integer to binary?**
+A) Repeated multiplication by 2
+B) Repeated division by 2, collecting remainders
+C) Repeated subtraction of powers of 2
+D) Direct conversion using a table
+
+**Answer: B**
+*Explanation: Decimal to binary conversion uses repeated division by 2, collecting remainders from least significant to most significant bit. The final quotient becomes the most significant bit.*
+
+**185. What is the binary representation of decimal 0.375?**
+A) 0.011
+B) 0.101
+C) 0.110
+D) 0.001
+
+**Answer: A**
+*Explanation: 0.375 × 2 = 0.75 (bit 0), 0.75 × 2 = 1.5 (bit 1), 0.5 × 2 = 1.0 (bit 1). Reading bits: 0.011₂ = 0×0.5 + 1×0.25 + 1×0.125 = 0.375.*
+
+**186. What is the hexadecimal equivalent of binary 1110 1011?**
+A) EB
+B) E7
+C) 1E
+D) BE
+
+**Answer: A**
+*Explanation: Group binary into nibbles: 1110₂ = E₁₆, 1011₂ = B₁₆, so EB₁₆. Option B (E7) would be 1110 0111, C (1E) is 0001 1110, D (BE) is 1011 1110.*
+
+**187. Convert hexadecimal 2C to decimal.**
+A) 28
+B) 44
+C) 52
+D) 36
+
+**Answer: B**
+*Explanation: 2C₁₆ = (2 × 16¹) + (12 × 16⁰) = 32 + 12 = 44 decimal.*
+
+**188. What is the hexadecimal representation of decimal 255?**
+A) FF
+B) 100
+C) FE
+D) 0F
+
+**Answer: A**
+*Explanation: 255 ÷ 16 = 15 remainder 15; 15₁₆ = F, so FF₁₆. 255 = 16² - 1, which is the maximum value for two hex digits.*
+
+**189. In positional number systems, what does the radix point separate?**
+A) Integer and fractional parts
+B) Positive and negative numbers
+C) Most and least significant digits
+D) Base and exponent
+
+**Answer: A**
+*Explanation: The radix point (decimal point in base 10) separates the integer part (positive powers of the radix) from the fractional part (negative powers of the radix).*
+
+**190. What is the most significant digit (MSD) of a number?**
+A) The rightmost digit
+B) The leftmost digit with the highest positional value
+C) The digit with the smallest weight
+D) The digit representing the fractional part
+
+**Answer: B**
+*Explanation: The most significant digit is the leftmost digit, which carries the highest positional value (largest exponent of the radix).*
+
+**191. Convert decimal 47 to binary.**
+A) 101111
+B) 101111
+C) 111101
+D) 110111
+
+**Answer: A**
+*Explanation: 47 ÷ 2 = 23 R1, 23 ÷ 2 = 11 R1, 11 ÷ 2 = 5 R1, 5 ÷ 2 = 2 R1, 2 ÷ 2 = 1 R0, 1 ÷ 2 = 0 R1. Reading remainders upward: 101111₂.*
+
+**192. What is the binary equivalent of hexadecimal 1A?**
+A) 00011010
+B) 00011011
+C) 00010010
+D) 00101010
+
+**Answer: A**
+*Explanation: 1₁₆ = 0001₂, A₁₆ = 1010₂, so 00011010₂. Option B is 1B, C is 12, D is 2A.*
+
+**193. What is the decimal value of 2⁻³?**
+A) 0.125
+B) 0.25
+C) 0.5
+D) 0.0625
+
+**Answer: A**
+*Explanation: 2⁻³ = 1/2³ = 1/8 = 0.125. Negative exponents represent reciprocals of positive powers.*
+
+**194. Convert binary 11111111 to hexadecimal.**
+A) FF
+B) 100
+C) 80
+D) 7F
+
+**Answer: A**
+*Explanation: Group into nibbles: 1111₂ = F, 1111₂ = F, so FF₁₆. This is the maximum 8-bit binary value.*
+
+**195. What is the decimal value of hexadecimal 10?**
+A) 10
+B) 16
+C) 17
+D) 15
+
+**Answer: B**
+*Explanation: 10₁₆ = (1 × 16¹) + (0 × 16⁰) = 16 decimal. In hexadecimal, "10" is 16, not ten.*
+
+**196. Which of the following is the correct representation of the decimal fraction 0.1 in binary?**
+A) 0.0001100110011... (repeating)
+B) 0.1 exactly
+C) 0.111...
+D) 0.001001001...
+
+**Answer: A**
+*Explanation: 0.1 decimal is a repeating binary fraction (0.0001100110011...), similar to how 1/3 repeats in decimal. Not all decimal fractions have exact binary representations.*
+
+**197. What is a nibble?**
+A) 2 bits
+B) 4 bits
+C) 8 bits
+D) 16 bits
+
+**Answer: B**
+*Explanation: A nibble (or nybble) is a group of 4 bits, which can represent 16 possible values and corresponds to one hexadecimal digit.*
+
+**198. Convert octal 17 to decimal.**
+A) 15
+B) 17
+C) 14
+D) 13
+
+**Answer: A**
+*Explanation: 17₈ = (1 × 8¹) + (7 × 8⁰) = 8 + 7 = 15 decimal. The "17" in octal is fifteen, not seventeen.*
+
+**199. What is the radix of the hexadecimal system?**
+A) 8
+B) 10
+C) 16
+D) 2
+
+**Answer: C**
+*Explanation: Hexadecimal uses base 16, with digits 0-9 and letters A-F representing values 10-15.*
+
+**200. How many distinct symbols are used in hexadecimal notation?**
+A) 10
+B) 12
+C) 16
+D) 8
+
+**Answer: C**
+*Explanation: Hexadecimal uses 16 symbols: 0-9 (10 symbols) and A-F (6 symbols), total 16 distinct symbols.*
+
+---
+
+## Chapter 11: Computer Arithmetic
+
+**201. What are the three main components of the Arithmetic and Logic Unit (ALU)?**
+A) Registers, cache, memory
+B) Logic gates, flip-flops, adders
+C) Control unit, registers, data paths
+D) Digital logic devices that perform arithmetic and logical operations
+
+**Answer: D**
+*Explanation: The ALU is implemented using simple digital logic devices that store binary digits and perform Boolean logic operations for arithmetic and logical functions.*
+
+**202. In sign-magnitude representation, what does the most significant bit (MSB) represent?**
+A) The magnitude of the number
+B) The sign of the number (0 for positive, 1 for negative)
+C) The exponent
+D) The least significant digit
+
+**Answer: B**
+*Explanation: In sign-magnitude representation, the MSB indicates the sign (0 = positive, 1 = negative), and the remaining bits represent the magnitude.*
+
+**203. What is the range of a 4-bit sign-magnitude integer?**
+A) -7 to +7
+B) -8 to +7
+C) -7 to +8
+D) -8 to +8
+
+**Answer: A**
+*Explanation: With 4 bits in sign-magnitude, 1 bit for sign leaves 3 bits for magnitude (0-7), so range is -7 to +7. Two representations for zero (+0 and -0).*
+
+**204. What is the two's complement representation of -5 in 4 bits?**
+A) 1011
+B) 1101
+C) 1010
+D) 1110
+
+**Answer: A**
+*Explanation: +5 = 0101; take one's complement: 1010; add 1: 1011₂ = -5. Option B (1101) is -3, C (1010) is -6, D (1110) is -2.*
+
+**205. What is the range of a 4-bit two's complement integer?**
+A) -7 to +7
+B) -8 to +7
+C) -7 to +8
+D) -8 to +8
+
+**Answer: B**
+*Explanation: 4-bit two's complement ranges from -2³ = -8 to +2³-1 = +7. Only one representation for zero, giving one more negative value than positive.*
+
+**206. What is the two's complement negation procedure?**
+A) Complement each bit and add 1
+B) Subtract from zero
+C) Add 1 and complement
+D) Complement each bit
+
+**Answer: A**
+*Explanation: To negate a two's complement number, take the bitwise complement (flip all bits) and add 1 to the result.*
+
+**207. What is sign extension used for?**
+A) Extending the range of numbers by increasing bit length
+B) Converting between sign-magnitude and two's complement
+C) Reducing bit length
+D) Adding sign bits
+
+**Answer: A**
+*Explanation: Sign extension increases bit length while preserving value. For two's complement, fill with copies of the sign bit; for positive numbers fill with zeros, for negative fill with ones.*
+
+**208. In two's complement addition, when does overflow occur?**
+A) When both operands are positive
+B) When result has opposite sign to both operands when they have the same sign
+C) When carry out of MSB occurs
+D) When sum exceeds 16 bits
+
+**Answer: B**
+*Explanation: Overflow occurs when adding two numbers of the same sign produces a result of the opposite sign, indicating the result cannot be represented in the available bits.*
+
+**209. What is the subtraction rule for two's complement?**
+A) Add the subtrahend directly
+B) Take two's complement of subtrahend and add to minuend
+C) Subtract directly using borrow
+D) Complement minuend and add
+
+**Answer: B**
+*Explanation: To subtract S from M, take the two's complement of S (negate it) and add to M: M - S = M + (-S) in two's complement.*
+
+**210. What is the Booth's algorithm used for?**
+A) Division of binary numbers
+B) Multiplication of two's complement numbers
+C) Addition of floating-point numbers
+D) Subtraction of binary numbers
+
+**Answer: B**
+*Explanation: Booth's algorithm efficiently multiplies two's complement binary numbers by examining pairs of bits to reduce the number of addition operations required.*
+
+**211. In unsigned binary multiplication, what is the size of the product for two n-bit numbers?**
+A) n bits
+B) 2n bits
+C) n+1 bits
+D) n² bits
+
+**Answer: B**
+*Explanation: The product of two n-bit unsigned numbers can require up to 2n bits to represent, as the maximum product (2ⁿ-1) × (2ⁿ-1) is less than 2²ⁿ.*
+
+**212. What is the IEEE 754 single-precision (binary32) format size?**
+A) 16 bits
+B) 32 bits
+C) 64 bits
+D) 128 bits
+
+**Answer: B**
+*Explanation: IEEE 754 single-precision (binary32) uses 32 bits: 1 sign bit, 8 exponent bits, and 23 significand (mantissa) bits.*
+
+**213. In IEEE 754 single-precision, what is the bias value for the exponent?**
+A) 64
+B) 1023
+C) 127
+D) 15
+
+**Answer: C**
+*Explanation: Single-precision uses a bias of 127. The stored exponent = actual exponent + 127, allowing representation of both positive and negative exponents.*
+
+**214. What is the IEEE 754 double-precision (binary64) format size?**
+A) 32 bits
+B) 64 bits
+C) 128 bits
+D) 80 bits
+
+**Answer: B**
+*Explanation: Double-precision uses 64 bits: 1 sign bit, 11 exponent bits (bias 1023), and 52 significand bits, providing greater precision and range.*
+
+**215. What is the purpose of the "implied bit" in IEEE 754 normalized numbers?**
+A) Always 1 and not stored
+B) Always 0
+C) Indicates sign
+D) Indicates exponent
+
+**Answer: A**
+*Explanation: In normalized IEEE 754 numbers, the leading 1 of the significand is implied and not stored, effectively giving one extra bit of precision.*
+
+**216. What is a subnormal (denormal) number in IEEE 754?**
+A) Number with exponent all zeros and non-zero significand
+B) Number with exponent all ones
+C) Normalized number
+D) Infinity
+
+**Answer: A**
+*Explanation: Subnormal numbers have exponent field all zeros and a non-zero significand, allowing representation of numbers smaller than the smallest normalized number.*
+
+**217. In floating-point addition, what is the first step?**
+A) Add the significands
+B) Align the binary points by shifting the smaller exponent's significand
+C) Normalize the result
+D) Check for overflow
+
+**Answer: B**
+*Explanation: Before adding floating-point numbers, the binary points must be aligned by shifting the significand of the number with the smaller exponent to match the larger exponent.*
+
+**218. What is a guard bit in floating-point arithmetic?**
+A) Bit that protects against overflow
+B) Extra precision bits retained during intermediate calculations
+C) Bit that indicates sign
+D) Bit used for rounding
+
+**Answer: B**
+*Explanation: Guard bits are extra bits of precision retained during floating-point operations to improve accuracy before final rounding, reducing rounding errors.*
+
+**219. Which rounding mode rounds to the nearest representable number?**
+A) Round toward +∞
+B) Round toward -∞
+C) Round toward zero
+D) Round to nearest
+
+**Answer: D**
+*Explanation: Round to nearest is the default rounding mode in IEEE 754, selecting the closest representable number (ties round to even).*
+
+**220. What is interval arithmetic used for?**
+A) Improving performance
+B) Monitoring and controlling floating-point errors
+C) Reducing precision
+D) Simplifying calculations
+
+**Answer: B**
+*Explanation: Interval arithmetic produces two values (lower and upper bounds) that contain the true result, with the interval width indicating accuracy and allowing error monitoring.*
+
+---
+
+## Chapter 12: Digital Logic
+
+**221. Who proposed that Boolean algebra could be used for relay-switching circuit design?**
+A) George Boole
+B) Claude Shannon
+C) John von Neumann
+D) Alan Turing
+
+**Answer: B**
+*Explanation: While George Boole proposed Boolean algebra in 1854, Claude Shannon suggested its application to relay-switching circuit design in the 1930s.*
+
+**222. In Boolean algebra, what does the AND operation produce?**
+A) True if either operand is true
+B) True only if both operands are true
+C) Inverts the operand
+D) True if operands are different
+
+**Answer: B**
+*Explanation: AND yields true (1) if and only if both operands are true. In Boolean algebra, AND is often represented by concatenation or dot operator.*
+
+**223. What is the Boolean expression for the NAND gate?**
+A) NOT (A AND B)
+B) NOT (A OR B)
+C) (NOT A) AND (NOT B)
+D) (NOT A) OR (NOT B)
+
+**Answer: A**
+*Explanation: NAND = NOT AND = (A · B)'. It produces the opposite output of an AND gate: false only when both inputs are true.*
+
+**224. Which Boolean identity states that A + A = A?**
+A) Commutative law
+B) Idempotent law
+C) Associative law
+D) Distributive law
+
+**Answer: B**
+*Explanation: Idempotent laws: A + A = A and A · A = A. These indicate that ORing or ANDing a variable with itself yields the same variable.*
+
+**225. What is the dual of the expression A · (B + C) = A·B + A·C?**
+A) A + (B·C) = (A+B)·(A+C)
+B) A + (B+C) = (A+B)+C
+C) A·(B·C) = (A·B)·C
+D) A·(B+C) = A·B + A·C
+
+**Answer: A**
+*Explanation: This is the distributive law. Its dual is obtained by swapping AND and OR: A + (B·C) = (A+B)·(A+C), the other distributive law.*
+
+**226. What is the function of a multiplexer?**
+A) Selects one of several inputs to pass to output based on select lines
+B) Distributes one input to multiple outputs
+C) Performs addition
+D) Stores data
+
+**Answer: A**
+*Explanation: A multiplexer (MUX) selects one of several input signals and routes it to a single output based on control (select) signals. A 4-to-1 MUX has 4 data inputs and 2 select lines.*
+
+**227. What does a decoder do?**
+A) Converts binary code to a one-hot output
+B) Selects one of several inputs
+C) Performs encoding
+D) Adds binary numbers
+
+**Answer: A**
+*Explanation: A decoder converts an n-bit binary input to a 2ⁿ output where exactly one output is active (1) corresponding to the input value.*
+
+**228. How many outputs does a 3-input decoder have?**
+A) 3
+B) 6
+C) 8
+D) 4
+
+**Answer: C**
+*Explanation: A decoder with n inputs has 2ⁿ outputs. For n=3, 2³ = 8 outputs. Each input combination activates exactly one output line.*
+
+**229. What is the difference between a combinational circuit and a sequential circuit?**
+A) Combinational circuits have memory; sequential do not
+B) Sequential circuits have memory; combinational outputs depend only on current inputs
+C) Combinational circuits have feedback; sequential do not
+D) Sequential circuits are faster
+
+**Answer: B**
+*Explanation: Combinational circuits have no memory; output depends only on current inputs. Sequential circuits use memory (flip-flops) and output depends on current inputs and past state.*
+
+**230. What is a flip-flop?**
+A) A combinational circuit
+B) A bistable device that functions as 1-bit memory
+C) A type of logic gate
+D) A multiplexer
+
+**Answer: B**
+*Explanation: A flip-flop is a bistable sequential circuit that can store one bit. It has two stable states and remains in its current state until a clock edge or control signal changes it.*
+
+**231. What are the two properties of a flip-flop?**
+A) It has one output and one input
+B) It is bistable and has two complementary outputs
+C) It has three states
+D) It is always clocked
+
+**Answer: B**
+*Explanation: Flip-flops are bistable (two stable states) and have two outputs (Q and Q') that are always complements of each other.*
+
+**232. What is the difference between an S-R latch and a clocked S-R flip-flop?**
+A) S-R latch has clock, flip-flop does not
+B) S-R latch is level-sensitive; clocked flip-flop is edge-triggered
+C) No difference
+D) S-R flip-flop has more inputs
+
+**Answer: B**
+*Explanation: An S-R latch is level-sensitive and changes when inputs change; a clocked flip-flop only changes on a clock edge (rising or falling), providing synchronization.*
+
+**233. What does a D flip-flop do?**
+A) Toggles on each clock pulse
+B) Sets and resets
+C) Captures the D input on clock edge
+D) Counts pulses
+
+**Answer: C**
+*Explanation: A D flip-flop (Data flip-flop) captures the value of the D input on the clock edge and holds it until the next clock edge, effectively providing 1-bit storage.*
+
+**234. What is a J-K flip-flop known for?**
+A) Only setting and resetting
+B) Toggling when J=K=1
+C) Storing data
+D) Complementing input
+
+**Answer: B**
+*Explanation: The J-K flip-flop can set, reset, hold, or toggle. When J=K=1, it toggles (changes state) on each clock pulse, a useful counting feature.*
+
+**235. What is a register in digital logic?**
+A) A single flip-flop
+B) A group of flip-flops storing multiple bits
+C) A type of gate
+D) A counter
+
+**Answer: B**
+*Explanation: A register is a collection of flip-flops that together store multiple bits of data. An 8-bit register uses 8 flip-flops to store one byte.*
+
+**236. What is a shift register?**
+A) Register that can shift its contents left or right
+B) Register that counts pulses
+C) Register that holds addresses
+D) Register that stores data permanently
+
+**Answer: A**
+*Explanation: A shift register allows bits to be moved (shifted) left or right on each clock pulse, used for serial-to-parallel conversion and other operations.*
+
+**237. What is a counter in CPU architecture?**
+A) A register that can be incremented by 1 modulo its capacity
+B) A circuit that counts transistors
+C) A flip-flop that toggles
+D) A memory location
+
+**Answer: A**
+*Explanation: A counter is a register designed to increment by 1 modulo its capacity. The program counter (PC) is an example that increments to fetch the next instruction.*
+
+**238. What is the difference between synchronous and asynchronous counters?**
+A) Synchronous counters are slower; asynchronous are faster
+B) Asynchronous counters are faster; synchronous are used in CPUs
+C) Synchronous counters use a common clock; asynchronous have ripple timing
+D) No difference
+
+**Answer: C**
+*Explanation: Synchronous counters have all flip-flops change state simultaneously on the same clock edge. Asynchronous (ripple) counters have outputs triggering the next flip-flop, creating propagation delays.*
+
+**239. What is a Programmable Logic Array (PLA)?**
+A) Fixed logic circuit
+B) Programmable combinational circuit with AND and OR arrays
+C) Type of memory
+D) Sequential circuit
+
+**Answer: B**
+*Explanation: A PLA is a programmable combinational circuit with a programmable AND array followed by a programmable OR array, allowing implementation of custom logic functions.*
+
+**240. What is an FPGA (Field-Programmable Gate Array)?**
+A) Fixed gate array
+B) Configurable logic blocks with programmable interconnects
+C) Type of memory
+D) Processor
+
+**Answer: B**
+*Explanation: FPGAs consist of configurable logic blocks (CLBs) with programmable interconnects that can be programmed to implement complex digital circuits, allowing reconfiguration.*
+
+---
+
+## Chapter 13: Instruction Sets: Characteristics and Functions
+
+**241. What is an instruction set?**
+A) The collection of data types supported by the processor
+B) The collection of different instructions a processor can execute
+C) The set of registers in the CPU
+D) The memory addressing modes
+
+**Answer: B**
+*Explanation: The instruction set is the complete collection of instructions that a processor can execute, defining the interface between software and hardware.*
+
+**242. What are the four possible locations for operands in machine instructions?**
+A) Cache, memory, disk, network
+B) Main memory, I/O device, processor register, immediate
+C) Stack, heap, data, code
+D) Local, global, static, dynamic
+
+**Answer: B**
+*Explanation: Operands can be in main/virtual memory, I/O devices (with memory-mapped I/O), processor registers, or provided as immediate values in the instruction.*
+
+**243. What is a mnemonic in assembly language?**
+A) A memory address
+B) An abbreviation representing an opcode (e.g., ADD, SUB)
+C) A data value
+D) A comment
+
+**Answer: B**
+*Explanation: Mnemonics are symbolic abbreviations for machine instructions, such as ADD for addition, SUB for subtraction, making assembly language more readable than binary machine code.*
+
+**244. What are the three common numeric data types in computers?**
+A) Integer, float, double
+B) Binary integer/fixed point, binary floating point, decimal
+C) Byte, word, doubleword
+D) Signed, unsigned, floating
+
+**Answer: B**
+*Explanation: Computers commonly support binary integer (fixed-point), binary floating-point, and decimal (packed decimal) numeric data types.*
+
+**245. What is packed decimal representation?**
+A) Each decimal digit stored in one byte
+B) Each decimal digit stored in 4 bits, two digits per byte
+C) Decimal stored as binary
+D) Decimal stored as ASCII
+
+**Answer: B**
+*Explanation: Packed decimal uses 4-bit BCD (Binary Coded Decimal) codes for each digit, storing two digits per byte for efficient decimal arithmetic.*
+
+**246. What is the most commonly used character code?**
+A) EBCDIC
+B) ASCII (International Reference Alphabet)
+C) Unicode
+D) Baudot code
+
+**Answer: B**
+*Explanation: ASCII (American Standard Code for Information Interchange), which is the US version of the International Reference Alphabet (IRA), is the most common character encoding.*
+
+**247. What are SIMD (Single Instruction Multiple Data) data types used for?**
+A) Single-threaded operations
+B) Optimizing multimedia and vector applications
+C) Character processing
+D) Floating-point only
+
+**Answer: B**
+*Explanation: SIMD extensions (MMX, SSE) allow a single instruction to operate on multiple data elements simultaneously, optimizing multimedia and vector applications.*
+
+**248. Which of the following is a data transfer operation?**
+A) ADD
+B) LOAD
+C) COMPARE
+D) BRANCH
+
+**Answer: B**
+*Explanation: LOAD transfers data from memory to a register. ADD is arithmetic, COMPARE is logical, BRANCH is control transfer.*
+
+**249. What is the purpose of a skip instruction?**
+A) To jump to another location unconditionally
+B) To skip the next instruction based on a condition
+C) To call a procedure
+D) To return from a procedure
+
+**Answer: B**
+*Explanation: Skip instructions test a condition and if true, skip the following instruction, providing a compact way to implement conditional branching.*
+
+**250. What are the two basic instructions for procedure handling?**
+A) JUMP and BRANCH
+B) CALL and RETURN
+C) PUSH and POP
+D) ENTER and LEAVE
+
+**Answer: B**
+*Explanation: CALL transfers control to a procedure, saving the return address. RETURN transfers control back to the calling point after procedure completion.*
+
+**251. What is a stack frame?**
+A) A single location in stack
+B) A contiguous block of stack allocated for a procedure's local variables and data
+C) The stack pointer
+D) The base pointer
+
+**Answer: B**
+*Explanation: A stack frame (activation record) is a contiguous block of stack memory allocated for a procedure's parameters, return address, local variables, and saved registers.*
+
+**252. What is the purpose of the x86 ENTER instruction?**
+A) To exit a procedure
+B) To set up a stack frame for a procedure
+C) To call a procedure
+D) To allocate memory
+
+**Answer: B**
+*Explanation: ENTER creates a stack frame for a procedure, pushing the current frame pointer, copying the stack pointer as new frame pointer, and allocating space for local variables.*
+
+**253. What are condition codes (flags) used for?**
+A) Storing arithmetic results
+B) Indicating results of arithmetic/logical operations for conditional execution
+C) Controlling I/O
+D) Addressing memory
+
+**Answer: B**
+*Explanation: Condition codes (status flags) like zero, carry, overflow, sign are set by arithmetic/logical operations and used for conditional branching and decision making.*
+
+**254. What is the purpose of the x86 MMX instruction set?**
+A) Floating-point operations
+B) Optimized instructions for multimedia tasks
+C) System control
+D) I/O operations
+
+**Answer: B**
+*Explanation: MMX (Multimedia Extensions) is a set of SIMD instructions optimized for video, audio, and graphics processing, operating on packed data types.*
+
+**255. What are the three MMX data types?**
+A) Byte, word, doubleword
+B) Packed byte, packed word, packed doubleword
+C) Single, double, extended
+D) Integer, float, character
+
+**Answer: B**
+*Explanation: MMX defines three 64-bit packed data types: packed byte (8 bytes), packed word (4 words), and packed doubleword (2 doublewords), each containing multiple smaller data fields.*
+
+**256. What does ARM's conditional execution allow?**
+A) All instructions to be conditional
+B) Instructions to execute only if condition codes match
+C) Only branch instructions to be conditional
+D) Only load instructions to be conditional
+
+**Answer: B**
+*Explanation: ARM allows most instructions to be conditionally executed based on condition codes, reducing the need for branch instructions and pipeline flushes.*
+
+**257. What is a system control instruction used for?**
+A) Data processing
+B) Controlling privileged system functions like cache management and interrupts
+C) I/O operations
+D) Arithmetic operations
+
+**Answer: B**
+*Explanation: System control instructions manage privileged operations including cache control, interrupt handling, memory management, and processor configuration.*
+
+**258. What is the difference between a branch and a jump instruction?**
+A) Branch is unconditional; jump is conditional
+B) Branch is conditional; jump may be unconditional or conditional
+C) No difference
+D) Branch uses registers; jump uses memory
+
+**Answer: B**
+*Explanation: Branch instructions are typically conditional transfers of control based on condition codes; jump instructions are often unconditional but can also be conditional.*
+
+**259. What is the purpose of a return instruction?**
+A) To call a procedure
+B) To return from a procedure to the calling point
+C) To jump to a new location
+D) To skip the next instruction
+
+**Answer: B**
+*Explanation: RETURN transfers control back to the instruction following the CALL that invoked the procedure, using the saved return address from the stack.*
+
+**260. What are the x86 instructions for procedure call/return?**
+A) PUSH and POP
+B) CALL, ENTER, LEAVE, RETURN
+C) JMP and RET
+D) BSR and RET
+
+**Answer: B**
+*Explanation: x86 provides CALL (invoke procedure), RETURN (return from procedure), ENTER (create stack frame), and LEAVE (destroy stack frame) for procedure handling.*
+
+---
+
+## Chapter 14: Instruction Sets: Addressing Modes and Formats
+
+**261. In immediate addressing, where is the operand located?**
+A) In a register
+B) In a memory location
+C) In the instruction itself
+D) In the program counter
+
+**Answer: C**
+*Explanation: Immediate addressing has the operand value directly in the instruction's address field, eliminating the need for a memory reference to fetch the operand.*
+
+**262. What is the effective address (EA) in direct addressing?**
+A) EA = A (the address field value)
+B) EA = (A) (contents of address A)
+C) EA = PC + A
+D) EA = (R) + A
+
+**Answer: A**
+*Explanation: In direct addressing, the effective address is the address field itself (A). The operand is at memory location A.*
+
+**263. In indirect addressing, what does EA = (A) mean?**
+A) The address field contains the operand
+B) The address field contains the address of the operand
+C) The address field is added to a register
+D) The address field is relative to PC
+
+**Answer: B**
+*Explanation: Indirect addressing uses the address field to point to a memory location that contains the actual operand address: EA = contents of address A.*
+
+**264. What is the advantage of register addressing?**
+A) Larger address space
+B) No memory reference for operand access
+C) Simpler instruction format
+D) Smaller instruction size
+
+**Answer: B**
+*Explanation: Register addressing accesses operands in registers without a memory reference, making it the fastest addressing mode.*
+
+**265. In register indirect addressing, where is the operand located?**
+A) In the register specified
+B) In a memory location whose address is in the register
+C) In the instruction
+D) In the program counter
+
+**Answer: B**
+*Explanation: Register indirect addressing uses a register that contains the memory address of the operand: EA = (R). This provides large address space with fast register access.*
+
+**266. What is the general form of displacement addressing?**
+A) EA = A
+B) EA = (R)
+C) EA = A + (R)
+D) EA = (A) + (R)
+
+**Answer: C**
+*Explanation: Displacement addressing combines direct addressing (A) and register indirect ((R)): effective address = A + contents of register R.*
+
+**267. What are the three common uses of displacement addressing?**
+A) Direct, indirect, immediate
+B) Relative addressing, base-register addressing, indexing
+C) Stack, queue, heap
+D) Preindexing, postindexing, autoindexing
+
+**Answer: B**
+*Explanation: The three common displacement addressing types are: relative (PC-relative), base-register (base + displacement), and indexing (base + index).*
+
+**268. What is relative addressing?**
+A) EA = A + PC
+B) EA = (A) + PC
+C) EA = (PC) + A
+D) EA = (A) + (R)
+
+**Answer: A**
+*Explanation: Relative addressing computes effective address by adding the address field to the program counter: EA = A + PC. Useful for position-independent code.*
+
+**269. What is indexing in addressing modes?**
+A) EA = A + (R) where R is index register
+B) EA = (A) + (R)
+C) EA = A + (R) with auto-increment
+D) EA = (R) + (R')
+
+**Answer: A**
+*Explanation: Indexing uses an index register containing a displacement added to a base address A. It's efficient for array processing and iterative operations.*
+
+**270. What is autoindexing?**
+A) Automatically increment or decrement the index register after each reference
+B) Indexing without explicit instruction
+C) Index register auto-initialization
+D) Hardware indexing
+
+**Answer: A**
+*Explanation: Autoindexing automatically increments or decrements the index register after (or before) each use, simplifying loop handling and sequential data access.*
+
+**271. How does stack addressing work?**
+A) EA is the top of stack
+B) Explicit address field references stack location
+C) Stack pointer implicitly provides effective address
+D) Both A and C
+
+**Answer: D**
+*Explanation: Stack addressing uses an implicit stack pointer register; operands are implicitly at the top of stack. Push/pop operations manipulate the stack pointer.*
+
+**272. What is the ARM branch instruction addressing mode?**
+A) Register indirect
+B) Immediate (PC-relative)
+C) Direct addressing
+D) Stack addressing
+
+**Answer: B**
+*Explanation: ARM branch instructions use immediate addressing with a 24-bit value that is shifted left 2 bits and added to the PC, providing a ±32MB range.*
+
+**273. What is the trade-off in instruction length design?**
+A) Longer instructions increase speed
+B) Shorter instructions improve code density but limit addressing
+C) Fixed-length simplifies decoding but may waste space
+D) All of the above
+
+**Answer: D**
+*Explanation: Instruction length design involves trade-offs: shorter instructions improve code density but limit addressing capabilities; fixed-length simplifies decoding; variable-length improves density but complicates decoding.*
+
+**274. What is the advantage of variable-length instructions?**
+A) Simpler processor design
+B) Efficient and compact representation of operations
+C) Faster decoding
+D) Larger address space
+
+**Answer: B**
+*Explanation: Variable-length instructions allow efficient encoding by using shorter instructions for common operations and longer ones for complex operations, improving code density.*
+
+**275. What is the Thumb instruction set?**
+A) 32-bit ARM instructions
+B) 16-bit compressed ARM instructions for better code density
+C) ARM floating-point instructions
+D) ARM SIMD instructions
+
+**Answer: B**
+*Explanation: Thumb is a 16-bit compressed version of ARM instructions, providing better code density for memory-constrained applications while maintaining most ARM functionality.*
+
+**276. What is Thumb-2?**
+A) 16-bit only Thumb
+B) Mix of 16-bit and 32-bit instructions that can be intermixed
+C) 32-bit only instructions
+D) ARM's floating-point extension
+
+**Answer: B**
+*Explanation: Thumb-2 enhances Thumb by adding 32-bit instructions that can be freely intermixed with 16-bit instructions, delivering code density of Thumb with performance of ARM.*
+
+**277. In instruction format design, how should instruction length relate to memory organization?**
+A) No relationship needed
+B) Should equal memory transfer length or be a multiple
+C) Always shorter than memory word
+D) Always longer than memory word
+
+**Answer: B**
+*Explanation: Instruction length should equal the memory transfer length or be a multiple thereof to optimize memory bandwidth utilization and simplify instruction fetching.*
+
+**278. What is the x86 instruction format characteristic?**
+A) Fixed-length 32-bit instructions
+B) Variable-length instructions (1 to 15 bytes)
+C) Fixed-length 16-bit instructions
+D) 64-bit fixed instructions
+
+**Answer: B**
+*Explanation: x86 uses variable-length instructions ranging from 1 to 15 bytes, allowing compact encoding of common instructions and complex instructions when needed.*
+
+**279. What does the x86 MOD field in instruction format specify?**
+A) Operation code
+B) Addressing mode and register usage
+C) Immediate value
+D) Memory offset
+
+**Answer: B**
+*Explanation: The MOD (modifier) field in x86 instructions, along with the R/M (register/memory) field, specifies the addressing mode and which registers are used.*
+
+**280. What is the purpose of the ARM immediate constant formation using rotated 8-bit values?**
+A) To limit constant range
+B) To allow any 32-bit constant
+C) To encode a wide range of constants in 12 bits using rotation
+D) To simplify decoding
+
+**Answer: C**
+*Explanation: ARM encodes 12-bit immediate constants as an 8-bit value rotated by an even number of bits, allowing representation of a wide range of useful constants in a compact format.*
+
+---
+
+## Chapter 15: Assembly Language and Related Topics
+
+**281. What is the primary characteristic of assembly language?**
+A) It is hardware independent
+B) One assembly instruction typically translates to one machine instruction
+C) It is the same as machine language
+D) It runs without translation
+
+**Answer: B**
+*Explanation: Assembly language provides a one-to-one mapping between symbolic instructions and machine instructions, making it hardware-dependent and architecture-specific.*
+
+**282. What is the main disadvantage of assembly language programming?**
+A) Too fast execution
+B) Development time, reliability, maintainability, portability issues
+C) Too many instructions
+D) Cannot access hardware directly
+
+**Answer: B**
+*Explanation: Assembly language has disadvantages including longer development time, reduced reliability, difficult debugging, poor maintainability, and lack of portability across architectures.*
+
+**283. When is assembly language still advantageous?**
+A) For all applications
+B) For embedded systems, hardware drivers, performance-critical code, and accessing special instructions
+C) Never
+D) Only for simple programs
+
+**Answer: B**
+*Explanation: Assembly remains useful for embedded systems, hardware drivers, system code, accessing instructions not available in HLLs, self-modifying code, and optimizing for size/speed.*
+
+**284. What is a label in assembly language?**
+A) A comment
+B) A symbolic name assigned to an address
+C) A mnemonic
+D) An operand
+
+**Answer: B**
+*Explanation: A label is a symbolic name assigned to a memory address, making program locations easier to reference without calculating absolute addresses.*
+
+**285. What is a mnemonic in assembly language?**
+A) A symbolic name for an address
+B) The symbolic name for an opcode (e.g., ADD, MOV)
+C) A comment
+D) A directive to the assembler
+
+**Answer: B**
+*Explanation: A mnemonic is the symbolic name associated with a particular machine instruction opcode, making assembly language more readable than binary machine code.*
+
+**286. What is a pseudo-instruction (directive)?**
+A) A machine instruction
+B) An instruction to the assembler, not translated into machine code
+C) A comment
+D) A macro
+
+**Answer: B**
+*Explanation: Pseudo-instructions (directives) are commands to the assembler to perform actions during assembly, such as defining constants or reserving memory, not generating machine instructions.*
+
+**287. What is the difference between a macro and a subroutine?**
+A) Macros are faster; subroutines use less memory
+B) Macros expand at assembly time; subroutines are called at runtime
+C) No difference
+D) Macros are hardware; subroutines are software
+
+**Answer: B**
+*Explanation: Macros are expanded by the assembler at assembly time (inline code); subroutines are called at runtime with call/return overhead, saving memory but with execution overhead.*
+
+**288. What is a macro expansion?**
+A) Calling a macro
+B) Replacing a macro call with the macro's code during assembly
+C) Expanding a subroutine
+D) Compiling a macro
+
+**Answer: B**
+*Explanation: When the assembler encounters a macro call, it replaces the call with the macro's code (expansion), avoiding runtime overhead but increasing code size.*
+
+**289. What is a cross-assembler?**
+A) Assembler that runs on the same machine as target code
+B) Assembler that runs on one machine and produces code for another
+C) Assembler for cross-platform code
+D) Assembler that translates multiple languages
+
+**Answer: B**
+*Explanation: A cross-assembler runs on one type of processor but generates machine code for a different target processor, commonly used in embedded systems development.*
+
+**290. What is a two-pass assembler?**
+A) Requires two passes through source code
+B) Runs on two processors
+C) Produces two output files
+D) Requires two memory passes
+
+**Answer: A**
+*Explanation: A two-pass assembler makes two passes through the source code: first pass collects symbol definitions; second pass generates machine code using resolved symbols.*
+
+**291. What problem does a one-pass assembler face?**
+A) Memory limitations
+B) Forward references to labels not yet defined
+C) Cannot handle macros
+D) Cannot generate object code
+
+**Answer: B**
+*Explanation: One-pass assemblers struggle with forward references where a label is used before it is defined, requiring special handling (leaving placeholder and resolving later).*
+
+**292. What is the loader's primary function?**
+A) Compile source code
+B) Load executable code into memory and prepare for execution
+C) Link object modules
+D) Assemble programs
+
+**Answer: B**
+*Explanation: The loader loads an executable program into main memory, performs address relocation if needed, and transfers control to the program's entry point.*
+
+**293. What is linking?**
+A) Loading multiple programs
+B) Combining object modules and resolving external references
+C) Assembling code
+D) Compiling source code
+
+**Answer: B**
+*Explanation: Linking combines separately compiled/assembled object modules into a single executable, resolving references between modules to produce a complete program.*
+
+**294. What is dynamic linking?**
+A) Linking at compile time
+B) Deferring linking of some external modules until load time or runtime
+C) Linking multiple programs
+D) Linking libraries
+
+**Answer: B**
+*Explanation: Dynamic linking postpones linking of some external modules until load time or runtime, allowing shared libraries and easier updates.*
+
+**295. What is a DLL (Dynamic Link Library) in Windows?**
+A) A static library
+B) A shared library that can be loaded at runtime and shared among processes
+C) An executable file
+D) A device driver
+
+**Answer: B**
+*Explanation: DLLs are shared libraries that can be loaded at runtime and used by multiple processes simultaneously, saving memory and facilitating code reuse.*
+
+**296. What is "DLL hell"?**
+A) Too many DLLs
+B) Version conflicts where processes expect different versions of the same DLL
+C) DLL loading errors
+D) DLL size problems
+
+**Answer: B**
+*Explanation: DLL hell occurs when different applications require different versions of the same DLL, causing conflicts when they are installed or loaded simultaneously.*
+
+**297. What is a symbol table in an assembler?**
+A) Table of numeric values
+B) Data structure mapping symbolic names to memory addresses
+C) Table of mnemonics
+D) Table of directives
+
+**Answer: B**
+*Explanation: The symbol table stores associations between symbolic names (labels) and their assigned memory addresses, used for resolving references during assembly.*
+
+**298. What is an absolute loader?**
+A) Loader that loads programs to fixed memory addresses
+B) Loader that performs relocation
+C) Loader that links modules
+D) Loader for absolute binaries
+
+**Answer: A**
+*Explanation: An absolute loader loads programs to predetermined, fixed memory addresses without performing relocation, used in simple systems with fixed memory maps.*
+
+**299. What is a relocatable loader?**
+A) Loader that cannot move programs
+B) Loader that can load programs to any available memory location with address relocation
+C) Loader that moves programs during execution
+D) Loader that loads from removable media
+
+**Answer: B**
+*Explanation: A relocatable loader can load a program into any available memory location by adjusting (relocating) address references to match the actual load address.*
+
+**300. What are the x86 registers used for system calls?**
+A) RAX, RBX, RCX
+B) EBX, ECX, EDX, ESI, EDI, EBP
+C) EAX, EBX, ECX
+D) AX, BX, CX
+
+**Answer: B**
+*Explanation: x86 system calls use registers EBX, ECX, EDX, ESI, EDI, and EBP to pass arguments, with the first argument in EBX, up to six arguments total.*
+
+---
+
+## Chapter 16: Processor Structure and Function
+
+**301. What are the five basic processor requirements?**
+A) Input, output, storage, processing, control
+B) Fetch instruction, interpret instruction, fetch data, process data, write data
+C) Read, write, execute, store, transfer
+D) Load, store, add, subtract, branch
+
+**Answer: B**
+*Explanation: The processor must fetch instructions, interpret them, fetch required data, process the data, and write results back to memory or I/O.*
+
+**302. What is the function of the Program Counter (PC)?**
+A) Stores the current instruction
+B) Contains the address of the next instruction to fetch
+C) Stores data from memory
+D) Holds the memory address for I/O
+
+**Answer: B**
+*Explanation: The Program Counter holds the address of the next instruction to be fetched from memory, automatically incrementing after each fetch.*
+
+**303. What is the Instruction Register (IR)?**
+A) Contains the address of the next instruction
+B) Contains the instruction most recently fetched
+C) Contains the result of arithmetic operations
+D) Contains status flags
+
+**Answer: B**
+*Explanation: The Instruction Register holds the instruction currently being executed, allowing the control unit to decode and execute it.*
+
+**304. What is the Program Status Word (PSW)?**
+A) Contains the program counter
+B) Contains status information including condition codes and control flags
+C) Contains the instruction being executed
+D) Contains memory protection information
+
+**Answer: B**
+*Explanation: The PSW contains condition codes (flags), interrupt enable/disable bits, privilege level, and other status information controlling processor operation.*
+
+**305. What is the Memory Address Register (MAR)?**
+A) Holds data to be written to memory
+B) Contains the address of a location in memory to be accessed
+C) Holds the program counter
+D) Contains the instruction being executed
+
+**Answer: B**
+*Explanation: The MAR holds the memory address for a read or write operation, connected directly to the address bus.*
+
+**306. What is the Memory Buffer Register (MBR)?**
+A) Holds memory address
+B) Holds data to be written to or read from memory
+C) Holds the program counter
+D) Holds the instruction register
+
+**Answer: B**
+*Explanation: The MBR holds data to be written to memory or the data most recently read from memory, connected to the data bus.*
+
+**307. What are the two categories of processor registers?**
+A) Data and address registers
+B) User-visible registers and control/status registers
+C) General-purpose and special-purpose
+D) Integer and floating-point
+
+**Answer: B**
+*Explanation: Processor registers are classified as user-visible registers (accessible to programmers) and control/status registers (used by control unit and OS).*
+
+**308. What are condition codes?**
+A) Codes for conditional branching
+B) Bits set by ALU operations indicating results (zero, carry, overflow, sign)
+C) Instruction opcodes
+D) Memory protection bits
+
+**Answer: B**
+*Explanation: Condition codes (status flags) are bits in the PSW set by arithmetic/logical operations to indicate results: zero, carry, overflow, sign, etc., used for conditional execution.*
+
+**309. What is pipelining in processor design?**
+A) Connecting processors in a line
+B) Overlapping instruction execution stages to improve throughput
+C) A type of memory
+D) A bus architecture
+
+**Answer: B**
+*Explanation: Pipelining overlaps the execution of multiple instructions by dividing the instruction cycle into stages, allowing different instructions to be at different stages simultaneously.*
+
+**310. What are the typical stages in a basic two-stage pipeline?**
+A) Fetch and Execute
+B) Fetch and Decode
+C) Fetch instruction (FI) and Execute instruction (EI)
+D) Fetch and Write
+
+**Answer: A**
+*Explanation: The simplest two-stage pipeline separates instruction fetch and instruction execute, allowing one instruction to execute while another is fetched.*
+
+**311. In a pipeline, what is a structural hazard?**
+A) When data dependencies cause stalls
+B) When instructions need the same hardware resource simultaneously
+C) When branch prediction is wrong
+D) When cache is missed
+
+**Answer: B**
+*Explanation: Structural hazards occur when multiple instructions in the pipeline require the same hardware resource (e.g., same memory port) at the same time.*
+
+**312. What is a data hazard?**
+A) Instructions accessing same data causing dependency
+B) Hardware resource conflict
+C) Branch misprediction
+D) Cache miss
+
+**Answer: A**
+*Explanation: Data hazards occur when instructions depend on results of previous instructions that have not yet completed, potentially causing incorrect execution if not handled.*
+
+**313. What is a Read After Write (RAW) hazard?**
+A) Instruction reads before previous write completes
+B) Instruction writes after previous read
+C) Two writes to same location
+D) Branch causing flush
+
+**Answer: A**
+*Explanation: RAW (true dependency) occurs when a later instruction reads a value that an earlier instruction is still computing, requiring the read to wait for the write.*
+
+**314. What is a Write After Write (WAW) hazard?**
+A) Instruction reads before write
+B) Two instructions writing to same location in wrong order
+C) Write after previous read
+D) Structural hazard
+
+**Answer: B**
+*Explanation: WAW (output dependency) occurs when two instructions write to the same location and the later write completes before the earlier write, causing incorrect final value.*
+
+**315. What is a control hazard (branch hazard)?**
+A) Data dependency
+B) Pipeline making wrong branch prediction causing instruction discard
+C) Resource conflict
+D) Cache miss
+
+**Answer: B**
+*Explanation: Control hazards occur when the pipeline makes the wrong prediction on a conditional branch, fetching instructions that must be discarded when branch outcome is known.*
+
+**316. What is branch prediction?**
+A) Predicting whether a branch will be taken to keep pipeline full
+B) Calculating branch target
+C) Delaying branch execution
+D) Eliminating branches
+
+**Answer: A**
+*Explanation: Branch prediction guesses whether a conditional branch will be taken, allowing the pipeline to fetch instructions from the predicted path and avoid stalls.*
+
+**317. What is a branch target buffer (BTB)?**
+A) Buffer for branch instructions
+B) Cache that stores information about recently encountered branch instructions and targets
+C) Buffer for branch targets
+D) Branch prediction logic
+
+**Answer: B**
+*Explanation: BTB caches information about branch instructions including their addresses and target addresses, improving branch prediction accuracy.*
+
+**318. What is a delayed branch?**
+A) Branch that takes effect after following instruction executes
+B) Branch that is delayed by pipeline
+C) Branch that always taken
+D) Branch that never taken
+
+**Answer: A**
+*Explanation: Delayed branch executes the instruction immediately following the branch before the branch takes effect, filling the pipeline slot that would otherwise be a stall.*
+
+**319. What is the ARM processor's primary architectural classification?**
+A) CISC
+B) RISC
+C) VLIW
+D) Superscalar
+
+**Answer: B**
+*Explanation: ARM is primarily a RISC (Reduced Instruction Set Computer) architecture with uniform registers, load/store architecture, and fixed-length instructions.*
+
+**320. What are the ARM processor modes?**
+A) User, Supervisor, Interrupt
+B) User, FIQ, IRQ, Supervisor, Abort, Undefined, System
+C) Real, Protected, Virtual
+D) Kernel, User, System
+
+**Answer: B**
+*Explanation: ARM supports multiple processor modes including User, Fast Interrupt (FIQ), Interrupt (IRQ), Supervisor (SVC), Abort, Undefined, and System for different execution contexts.*
+
+---
+
+## Chapter 17: Reduced Instruction Set Computers (RISC)
+
+**321. What are the three primary characteristics of RISC architectures?**
+A) Complex instructions, microcode, variable-length instructions
+B) Large register file, optimized pipeline, predictable instruction costs
+C) Memory-memory operations, complex addressing, microprogrammed control
+D) Variable-length instructions, complex ALU, microcode
+
+**Answer: B**
+*Explanation: RISC architectures feature: 1) large register file or compiler register optimization, 2) careful pipeline design, and 3) instructions with predictable costs for high-performance implementation.*
+
+**322. What is the primary motivation for using a large register file in RISC?**
+A) To reduce cost
+B) To minimize memory references by keeping more variables in registers
+C) To increase instruction count
+D) To simplify compiler design
+
+**Answer: B**
+*Explanation: A large register file allows more variables to be kept in registers, reducing memory accesses which are much slower than register accesses.*
+
+**323. What are overlapping register windows?**
+A) Register windows that share memory
+B) Overlapping sets of registers for procedure calls to reduce saving/restoring
+C) Windows that display registers
+D) Overlapping address spaces
+
+**Answer: B**
+*Explanation: Overlapping register windows allow parameters to be passed between procedures without saving/restoring by having overlapping regions between caller and callee register sets.*
+
+**324. In overlapping register windows, what are global variables typically stored?**
+A) In local registers
+B) In a fixed set of global registers available to all procedures
+C) In memory only
+D) In the stack
+
+**Answer: B**
+*Explanation: A fixed set of global registers is typically provided for frequently accessed global variables, separate from the windowed registers used for procedure parameters and local variables.*
+
+**325. What is the trade-off between large register file and cache?**
+A) Cache is always better
+B) Register file provides lower latency; cache handles larger working sets
+C) No difference
+D) Register file is larger
+
+**Answer: B**
+*Explanation: Registers provide faster access than cache but are limited in number. Cache can handle larger working sets but with higher latency. A balanced design may use both.*
+
+**326. Why did CISC (Complex Instruction Set Computer) architectures develop?**
+A) To simplify hardware
+B) To simplify compilers and improve performance with smaller programs
+C) To increase instruction count
+D) To reduce register usage
+
+**Answer: B**
+*Explanation: CISC architectures evolved to simplify compilers by providing complex instructions close to HLL statements and to improve performance with smaller programs requiring fewer instruction fetches.*
+
+**327. What is a RISC characteristic regarding instruction execution?**
+A) Variable-length instructions
+B) One instruction per cycle (with pipelining)
+C) Microprogrammed control
+D) Complex addressing modes
+
+**Answer: B**
+*Explanation: RISC processors are designed so that most instructions execute in one cycle with efficient pipelining, achieving high throughput.*
+
+**328. What is delayed load in RISC pipelines?**
+A) Load instruction is delayed
+B) Register to be loaded is locked; execution continues until register needed
+C) Load is postponed
+D) Load uses delayed addressing
+
+**Answer: B**
+*Explanation: Delayed load allows the processor to continue executing instructions after a load while the target register is locked, useful work can be done during the load latency.*
+
+**329. What is loop unrolling?**
+A) Replicating loop body multiple times to reduce loop overhead
+B) Rolling loop into single iteration
+C) Removing loops
+D) Adding loops
+
+**Answer: A**
+*Explanation: Loop unrolling replicates the loop body multiple times, reducing the number of loop iterations and loop overhead, improving instruction parallelism and locality.*
+
+**330. What is the MIPS R4000 pipeline depth?**
+A) 5 stages
+B) 8 stages
+C) 4 stages
+D) 10 stages
+
+**Answer: B**
+*Explanation: The MIPS R4000 uses an 8-stage superpipeline: IF (first half), IS (second half), RF (register fetch), EX (execute), DF (data fetch first), DS (data fetch second), TC (tag check), WB (write back).*
+
+**331. What is a superpipelined architecture?**
+A) Multiple pipelines in parallel
+B) More fine-grained pipeline stages with higher clock frequency
+C) Wider pipelines
+D) Longer pipelines
+
+**Answer: B**
+*Explanation: Superpipelining uses more, finer-grained pipeline stages, allowing higher clock frequencies and more instructions in the pipeline simultaneously.*
+
+**332. What is a superscalar architecture?**
+A) Single instruction per cycle
+B) Multiple pipelines allowing multiple instructions per cycle
+C) Very long instruction words
+D) Deep pipelines
+
+**Answer: B**
+*Explanation: Superscalar architectures replicate pipeline stages so multiple instructions can be processed simultaneously, achieving more than one instruction per cycle.*
+
+**333. What is SPARC (Scalable Processor Architecture)?**
+A) Intel's RISC architecture
+B) Sun Microsystems' RISC architecture based on Berkeley RISC
+C) ARM variant
+D) MIPS variant
+
+**Answer: B**
+*Explanation: SPARC is Sun Microsystems' RISC architecture, inspired by the Berkeley RISC I design, featuring overlapping register windows and a load/store architecture.*
+
+**334. What is a reservation station in pipeline organization?**
+A) Station for waiting instructions
+B) Buffer between instruction decode and functional units for out-of-order execution
+C) Memory for reservations
+D) Branch prediction buffer
+
+**Answer: B**
+*Explanation: Reservation stations buffer instructions between decode and execution units, allowing instructions to wait for their operands and be dispatched when ready.*
+
+**335. What is data forwarding (bypassing)?**
+A) Sending data to next instruction without waiting for write back
+B) Forwarding data to memory
+C) Branch forwarding
+D) Cache forwarding
+
+**Answer: A**
+*Explanation: Data forwarding makes results available to subsequent instructions as soon as they are produced, bypassing the write-back stage to eliminate RAW hazards.*
+
+**336. What is a reorder buffer (ROB)?**
+A) Buffer for reordering instructions
+B) Buffer that supports out-of-order execution by allowing instructions to complete in order
+C) Buffer for branch targets
+D) Cache buffer
+
+**Answer: B**
+*Explanation: The reorder buffer allows instructions to execute out-of-order but commit results in program order, supporting precise exceptions and correct program state.*
+
+**337. What is out-of-order execution (OoOE)?**
+A) Instructions executed in any order
+B) Instructions begin execution as soon as operands ready, not necessarily program order
+C) Random execution order
+D) Reverse order execution
+
+**Answer: B**
+*Explanation: Out-of-order execution allows instructions to start execution when their operands are ready, potentially reordering them to avoid stalls while maintaining correct final results.*
+
+**338. What is the advantage of out-of-order execution?**
+A) Simpler hardware
+B) Avoids stalls caused by data dependencies
+C) Reduces register usage
+D) Increases pipeline depth
+
+**Answer: B**
+*Explanation: OoOE allows the processor to continue executing independent instructions while waiting for dependent instructions' operands, reducing pipeline stalls.*
+
+**339. What is the MIPS R4000's approach to dealing with branches?**
+A) Branch prediction only
+B) Delayed branch with one delay slot
+C) Static branch prediction
+D) No branch handling
+
+**Answer: B**
+*Explanation: The MIPS R4000 uses a delayed branch strategy with one delay slot, executing the instruction following the branch before the branch takes effect.*
+
+**340. What characteristic makes RISC processors more responsive to interrupts?**
+A) Complex instructions
+B) Simple instructions with interrupts checked between elementary operations
+C) No interrupts
+D) Hardware interrupts only
+
+**Answer: B**
+*Explanation: RISC's simple instructions allow interrupts to be checked between elementary operations, providing more precise and responsive interrupt handling compared to complex instructions.*
+
+---
+
+## Chapter 18: Instruction-Level Parallelism and Superscalar Processors
+
+**341. What is instruction-level parallelism (ILP)?**
+A) Parallel execution of instructions from different programs
+B) The degree to which instructions in a program can be executed in parallel
+C) Parallel execution on multiple processors
+D) Parallel execution of threads
+
+**Answer: B**
+*Explanation: ILP refers to the potential for overlapping the execution of instructions within a program stream, determined by dependencies and available hardware resources.*
+
+**342. What is the difference between ILP and machine parallelism?**
+A) ILP is software; machine parallelism is hardware
+B) ILP is the parallelism in the program; machine parallelism is the hardware's ability to exploit it
+C) No difference
+D) ILP is hardware; machine parallelism is software
+
+**Answer: B**
+*Explanation: ILP is inherent in the instruction sequence; machine parallelism is the hardware's capacity to execute multiple instructions simultaneously, limited by pipeline resources.*
+
+**343. What is an antidependency (Write After Read - WAR)?**
+A) Instruction reads before previous write
+B) Instruction writes after previous read
+C) Two writes to same location
+D) Branch dependency
+
+**Answer: B**
+*Explanation: WAR occurs when an instruction writes to a location that a previous instruction has read; reversing order would cause incorrect execution.*
+
+**344. What is an output dependency (Write After Write - WAW)?**
+A) Instruction reads before write
+B) Two instructions writing to same location
+C) Instruction writes after read
+D) Structural dependency
+
+**Answer: B**
+*Explanation: WAW occurs when two instructions write to the same location; the second write must not occur before the first to maintain correct final value.*
+
+**345. What is register renaming?**
+A) Changing register names
+B) Mapping architectural registers to a larger set of physical registers to eliminate false dependencies
+C) Renaming instructions
+D) Register allocation
+
+**Answer: B**
+*Explanation: Register renaming eliminates WAR and WAW hazards by mapping architectural registers to a larger pool of physical registers, allowing multiple uses of the same logical register without conflict.*
+
+**346. What are the three types of instruction issue policies?**
+A) Single, multiple, parallel
+B) In-order issue with in-order completion, in-order with out-of-order completion, out-of-order with out-of-order completion
+C) Scalar, superscalar, superpipeline
+D) Static, dynamic, hybrid
+
+**Answer: B**
+*Explanation: The three instruction issue policies differ in whether instructions are issued and completed in program order or can be reordered for performance.*
+
+**347. In the Intel Core microarchitecture, what are micro-ops?**
+A) Very small operations
+B) RISC-like operations that x86 instructions are decoded into (1-4 per instruction)
+C) Microcode instructions
+D) Pipeline stages
+
+**Answer: B**
+*Explanation: Complex x86 instructions are decoded into simpler RISC-like micro-ops (118-bit each) that can be executed by the out-of-order execution engine.*
+
+**348. What is the branch prediction unit in Intel Core microarchitecture?**
+A) Predicts all branches
+B) Dedicated hardware for predicting various branch types (conditional, indirect, call, return)
+C) Branch target buffer only
+D) Static branch predictor
+
+**Answer: B**
+*Explanation: The branch prediction unit uses dedicated hardware for different branch types with a branch target buffer (BTB) caching information about recent branch instructions.*
+
+**349. What is the ARM Cortex-A8 pipeline structure?**
+A) Single pipeline
+B) Dual pipeline structure (pipe0 and pipe1) for dual instruction issue
+C) Triple pipeline
+D) Superscalar with 4 pipelines
+
+**Answer: B**
+*Explanation: Cortex-A8 uses dual pipelines (pipe0 and pipe1) that can issue two instructions per cycle, with pipe0 handling older instructions in program order.*
+
+**350. What is the NEON unit in ARM Cortex-A8?**
+A) Integer unit
+B) SIMD (Single Instruction Multiple Data) and floating-point pipeline
+C) Memory unit
+D) Branch unit
+
+**Answer: B**
+*Explanation: NEON is ARM's SIMD engine providing parallel processing for multimedia and signal processing applications, with its own pipeline structure.*
+
+**351. What is the ARM Cortex-M3 pipeline structure?**
+A) 5-stage pipeline
+B) 3-stage pipeline (fetch, decode, execute)
+C) 8-stage pipeline
+D) 2-stage pipeline
+
+**Answer: B**
+*Explanation: Cortex-M3 uses a simple 3-stage pipeline (fetch, decode, execute) optimized for microcontroller applications with low power and deterministic timing.*
+
+**352. What limits ILP in programs?**
+A) Only hardware resources
+B) True data dependencies, procedural dependencies, resource conflicts
+C) Only branch instructions
+D) Only memory accesses
+
+**Answer: B**
+*Explanation: ILP is limited by: true data dependencies (RAW), procedural dependencies (branches), resource conflicts (structural hazards), output dependencies (WAW), and antidependencies (WAR).*
+
+**353. In superscalar processors, what determines maximum issue rate?**
+A) Only pipeline depth
+B) Number of parallel functional units and ability to find independent instructions
+C) Only clock speed
+D) Only cache size
+
+**Answer: B**
+*Explanation: The maximum issue rate is determined by the number of parallel functional units and the instruction fetch/decode logic's ability to find and issue multiple independent instructions per cycle.*
+
+**354. What is the ARM Cortex-A8 instruction decode unit's main concern?**
+A) Out-of-order execution
+B) Prevention of RAW hazards
+C) Speculative execution
+D) Branch prediction
+
+**Answer: B**
+*Explanation: The decode pipeline's main concern is preventing RAW hazards while issuing instructions in program order, with pipe0 containing the older instruction.*
+
+**355. What are the two methods for dealing with branches in superscalar processors?**
+A) Static and dynamic scheduling
+B) Branch prediction and speculative execution
+C) Delayed branch and branch prediction
+D) Loop unrolling and branch prediction
+
+**Answer: C**
+*Explanation: Superscalar processors use branch prediction to guess branch direction and may also use delayed branch techniques, though delayed branch is less effective with multiple issue.*
+
+**356. What is the purpose of the instruction window in reservation stations?**
+A) To display instructions
+B) To hold instructions waiting for operands before dispatch
+C) To decode instructions
+D) To fetch instructions
+
+**Answer: B**
+*Explanation: The instruction window (reservation stations) holds decoded instructions awaiting their operands, allowing independent instructions to execute when ready.*
+
+**357. What is the difference between issue and dispatch in superscalar pipelines?**
+A) Same operation
+B) Issue: instruction sent from decode to reservation station; Dispatch: from reservation station to functional unit
+C) Issue: execution; Dispatch: write back
+D) Issue: fetch; Dispatch: decode
+
+**Answer: B**
+*Explanation: Issue moves instructions from decode to reservation stations; dispatch moves instructions from reservation stations to functional units when operands are ready.*
+
+**358. What does the allocate stage in Intel Core microarchitecture do?**
+A) Allocates memory
+B) Allocates resources (ROB entry, physical register, load/store buffer) for micro-ops
+C) Allocates cache space
+D) Allocates branch prediction resources
+
+**Answer: B**
+*Explanation: The allocate stage assigns resources needed for execution: reorder buffer entries, physical registers for results, and load/store buffers for memory operations.*
+
+**359. What is the maximum number of micro-ops that can be in process in Intel Core at any time?**
+A) 64
+B) 126
+C) 32
+D) 256
+
+**Answer: B**
+*Explanation: Intel Core microarchitecture can track up to 126 micro-ops in process at any time using the reorder buffer (ROB).*
+
+**360. How many physical registers are available for renaming in Intel Core?**
+A) 16
+B) 128
+C) 64
+D) 32
+
+**Answer: B**
+*Explanation: Intel Core uses 128 physical registers (both integer and floating-point) for register renaming, mapping the 16 architectural registers to this larger pool.*
+
+---
+
+## Chapter 19: Control Unit Operation and Microprogrammed Control
+
+**361. What are micro-operations?**
+A) Very small instructions
+B) The functional, atomic operations of a processor
+C) Microcode instructions
+D) Pipeline stages
+
+**Answer: B**
+*Explanation: Micro-operations are the fundamental, atomic operations (e.g., register transfers, ALU operations) that a processor performs during instruction execution.*
+
+**362. What is the sequence of micro-operations for the fetch cycle?**
+A) MAR ← PC, MBR ← Memory, IR ← MBR, PC ← PC + 1
+B) IR ← MAR, PC ← PC + 1
+C) MAR ← IR, MBR ← Memory
+D) PC ← MAR, IR ← MBR
+
+**Answer: A**
+*Explanation: Fetch cycle: MAR ← PC (address to memory), MBR ← Memory (read instruction), IR ← MBR (load instruction), PC ← PC + 1 (increment for next instruction).*
+
+**363. What registers are involved in the fetch cycle?**
+A) MAR, MBR, PC, IR
+B) MAR, MBR only
+C) PC, IR only
+D) MAR, PC, ALU
+
+**Answer: A**
+*Explanation: The fetch cycle uses MAR (memory address), MBR (memory data), PC (next instruction address), and IR (current instruction).*
+
+**364. What happens during the indirect cycle?**
+A) Instruction is fetched
+B) The address field of instruction is used to fetch the actual operand address
+C) Interrupt is processed
+D) Operand is processed
+
+**Answer: B**
+*Explanation: For indirect addressing, the indirect cycle uses the address field to fetch the actual operand address, then updates the instruction's address field for direct execution.*
+
+**365. What happens during the interrupt cycle?**
+A) Instruction is executed
+B) Current PC is saved, interrupt service routine address is loaded
+C) Indirect address is resolved
+D) Instruction is fetched
+
+**Answer: B**
+*Explanation: Interrupt cycle saves the current PC, loads the interrupt service routine address, and transfers control, allowing interrupts to be serviced.*
+
+**366. What are the two basic tasks of the control unit?**
+A) Fetch and execute
+B) Sequencing and execution
+C) Decode and execute
+D) Read and write
+
+**Answer: B**
+*Explanation: The control unit performs sequencing (determining next micro-operation) and execution (generating control signals to perform micro-operations).*
+
+**367. What is the difference between hardwired and microprogrammed control?**
+A) Hardwired is software; microprogrammed is hardware
+B) Hardwired uses logic circuits; microprogrammed uses microcode in control memory
+C) No difference
+D) Hardwired is faster; microprogrammed is slower
+
+**Answer: B**
+*Explanation: Hardwired control uses fixed logic circuits (state machine); microprogrammed control uses microcode stored in control memory that generates control signals.*
+
+**368. Who coined the term "microprogrammed" and proposed the approach?**
+A) John von Neumann
+B) M.V. Wilkes
+C) Maurice Wilkes
+D) Alan Turing
+
+**Answer: B**
+*Explanation: M.V. Wilkes first proposed microprogrammed control in the early 1950s as an organized, systematic approach to control unit design.*
+
+**369. What is a microinstruction?**
+A) A machine instruction
+B) A single micro-operation encoding
+C) A word in control memory that specifies one or more micro-operations
+D) A microcode instruction
+
+**Answer: C**
+*Explanation: A microinstruction is a word stored in control memory that specifies control signals to execute one or more micro-operations.*
+
+**370. What is control memory?**
+A) Main memory
+B) Memory storing microinstructions
+C) Cache memory
+D) ROM storing boot code
+
+**Answer: B**
+*Explanation: Control memory is the memory (often ROM) that stores the microprogram, containing microinstructions that define the processor's behavior.*
+
+**371. What is the advantage of microprogramming?**
+A) Faster execution
+B) Simpler hardware, easier to design and modify
+C) Less control memory
+D) Smaller processor
+
+**Answer: B**
+*Explanation: Microprogramming simplifies control unit design, makes it systematic, easier to modify, and allows complex instructions to be implemented with structured microcode.*
+
+**372. What is the disadvantage of microprogramming?**
+A) Slower than hardwired control
+B) More complex hardware
+C) Cannot implement complex instructions
+D) Not flexible
+
+**Answer: A**
+*Explanation: Microprogrammed control is generally slower than hardwired control because it requires reading microinstructions from control memory and sequencing through multiple micro-operations.*
+
+**373. What is a microprogram?**
+A) A small program
+B) A sequence of microinstructions implementing machine instructions
+C) A diagnostic program
+D) A bootstrap program
+
+**Answer: B**
+*Explanation: A microprogram is a sequence of microinstructions stored in control memory that implements the machine instruction set.*
+
+**374. In Wilkes's microprogrammed control unit, what do the control signals come from?**
+A) Decoder outputs
+B) Control memory word bits
+C) Microinstruction register
+D) ALU outputs
+
+**Answer: B**
+*Explanation: In Wilkes's design, each bit (or group of bits) in the microinstruction directly controls a specific control signal or functional unit.*
+
+**375. What is the purpose of the next address field in microinstructions?**
+A) To specify the next machine instruction
+B) To specify the next microinstruction address
+C) To store data
+D) To control ALU
+
+**Answer: B**
+*Explanation: The next address field specifies the address of the next microinstruction to execute, enabling sequential and branching microprogram control.*
+
+**376. In microprogrammed control, what determines the sequence of microinstructions?**
+A) Machine instruction opcode
+B) Next address field and sequencing logic
+C) Program counter
+D) ALU result
+
+**Answer: B**
+*Explanation: Microinstruction sequencing is determined by the next address field (explicit or implicit) and sequencing logic that may consider condition codes and opcodes.*
+
+**377. What is a horizontal microinstruction?**
+A) Microinstruction with many bits, each controlling a separate control point
+B) Microinstruction with few bits
+C) Microinstruction stored horizontally
+D) Microinstruction for horizontal operations
+
+**Answer: A**
+*Explanation: Horizontal microinstructions have many bits (often one per control signal), allowing multiple operations in parallel but requiring wider control memory.*
+
+**378. What is a vertical microinstruction?**
+A) Microinstruction with many bits
+B) Microinstruction with fewer bits, requiring decoding to generate control signals
+C) Microinstruction for vertical operations
+D) Microinstruction stored vertically
+
+**Answer: B**
+*Explanation: Vertical microinstructions are more compact, using encoded fields that are decoded to generate control signals, requiring more decoding but less control memory.*
+
+**379. What is the Intel 8085?**
+A) A 16-bit microprocessor
+B) An 8-bit microprocessor with block diagram showing internal structure
+C) A 32-bit processor
+D) A RISC processor
+
+**Answer: B**
+*Explanation: The Intel 8085 is an 8-bit microprocessor with registers, ALU, control unit, and external signals organized as a typical CPU architecture example.*
+
+**380. What does the timing diagram for Intel 8085 OUT instruction show?**
+A) Instruction execution steps
+B) Sequence of control signals and data transfers over time
+C) Memory access pattern
+D) ALU operations
+
+**Answer: B**
+*Explanation: The timing diagram shows the sequence and timing of control signals (address latch, read/write, data) for executing an instruction, illustrating bus cycles.*
+
+---
+
+## Chapter 20: Parallel Processing
+
+**381. What does SISD (Single Instruction, Single Data) represent?**
+A) Vector processor
+B) Traditional uniprocessor
+C) SIMD machine
+D) Multiprocessor
+
+**Answer: B**
+*Explanation: SISD represents the traditional uniprocessor architecture where a single processor executes a single instruction stream on a single data stream.*
+
+**382. What does SIMD (Single Instruction, Multiple Data) represent?**
+A) Multiple processors executing different instructions
+B) Single instruction controlling multiple processing elements on different data
+C) Vector processor only
+D) Multiprocessor
+
+**Answer: B**
+*Explanation: SIMD executes the same instruction across multiple processing elements simultaneously on different data, typical of vector and array processors.*
+
+**383. What does MIMD (Multiple Instruction, Multiple Data) represent?**
+A) Single processor
+B) Multiple processors executing different instruction streams on different data
+C) Vector processor
+D) SIMD machine
+
+**Answer: B**
+*Explanation: MIMD represents multiprocessor systems where multiple processors independently execute different instructions on different data, including SMPs and clusters.*
+
+**384. What is a Symmetric Multiprocessor (SMP)?**
+A) Multiple processors sharing a single memory with symmetric access
+B) Processors with private memories
+C) Processors arranged in a ring
+D) Asymmetric processing
+
+**Answer: A**
+*Explanation: SMP systems have multiple processors sharing a single main memory with symmetric access, typically connected via a shared bus or crossbar.*
+
+**385. What is the main advantage of bus-based SMP organization?**
+A) High bandwidth
+B) Simplicity, flexibility, and reliability
+C) Low latency
+D) Scalability to many processors
+
+**Answer: B**
+*Explanation: Bus-based SMP offers simplicity, easy expansion by adding processors, and reliability since the bus is passive and failure of one device doesn't crash the system.*
+
+**386. What is the main disadvantage of bus-based SMP?**
+A) Complexity
+B) Performance limited by bus bandwidth
+C) High cost
+D) Unreliable
+
+**Answer: B**
+*Explanation: All memory references go through the common bus, making bus bandwidth the primary performance limitation, especially with many processors.*
+
+**387. What is cache coherence?**
+A) Caches having same data
+B) Ensuring multiple caches have consistent copies of shared data
+C) Cache synchronization
+D) Cache sharing
+
+**Answer: B**
+*Explanation: Cache coherence ensures that when one processor updates data in its cache, other caches containing the same data are updated or invalidated to maintain consistency.*
+
+**388. What are the two categories of hardware cache coherence protocols?**
+A) MESI and MOESI
+B) Directory protocols and snoopy protocols
+C) Write-through and write-back
+D) Inclusive and exclusive
+
+**Answer: B**
+*Explanation: Hardware cache coherence solutions are divided into directory protocols (centralized directory tracking) and snoopy protocols (broadcast-based).*
+
+**389. What is the MESI protocol?**
+A) Memory protocol
+B) Cache coherence protocol with states: Modified, Exclusive, Shared, Invalid
+C) Multiprocessor protocol
+D) Bus arbitration protocol
+
+**Answer: B**
+*Explanation: MESI is a snoopy cache coherence protocol using four states per cache line: Modified, Exclusive, Shared, Invalid to track cache line status.*
+
+**390. In MESI protocol, what does the "Modified" state indicate?**
+A) Line is same as memory, may be in other caches
+B) Line has been modified and is only in this cache (dirty)
+C) Line is invalid
+D) Line is exclusive to this cache
+
+**Answer: B**
+*Explanation: Modified means the cache line has been modified and is present only in this cache; main memory copy is stale (dirty).*
+
+**391. In MESI protocol, what does the "Exclusive" state indicate?**
+A) Line is modified
+B) Line matches main memory and is only in this cache
+C) Line may be in other caches
+D) Line is invalid
+
+**Answer: B**
+*Explanation: Exclusive means the cache line matches main memory and is present only in this cache; no other caches have a copy (clean, exclusive).*
+
+**392. In MESI protocol, what does the "Shared" state indicate?**
+A) Line is modified
+B) Line matches main memory and may be in other caches
+C) Line is exclusive
+D) Line is invalid
+
+**Answer: B**
+*Explanation: Shared means the cache line matches main memory and may be present in multiple caches; all copies are consistent with main memory.*
+
+**393. What is multithreading?**
+A) Multiple threads in one process
+B) Dividing instruction stream into multiple streams executed in parallel
+C) Multiple processes
+D) Multiple cores
+
+**Answer: B**
+*Explanation: Multithreading divides a program into multiple threads that can be executed in parallel, increasing instruction-level parallelism without increasing circuit complexity.*
+
+**394. What is Simultaneous Multithreading (SMT)?**
+A) Threads executed sequentially
+B) Instructions from multiple threads issued simultaneously to superscalar execution units
+C) One thread at a time
+D) Time-sliced threads
+
+**Answer: B**
+*Explanation: SMT (e.g., Intel Hyper-Threading) issues instructions from multiple threads to the execution units of a superscalar processor in the same cycle.*
+
+**395. What is Chip Multiprocessing (CMP)?**
+A) Single core on chip
+B) Multiple processor cores replicated on a single chip
+C) Multiple chips
+D) Multiprocessor system
+
+**Answer: B**
+*Explanation: CMP places multiple complete processor cores on a single chip, each handling separate threads, effectively using available logic area for parallelism.*
+
+**396. What is a cluster?**
+A) Single computer
+B) Group of interconnected whole computers working as unified resource
+C) Multiple cores
+D) NUMA system
+
+**Answer: B**
+*Explanation: A cluster is a group of interconnected complete computers (nodes) that work together as a unified computing resource, providing scalability and high availability.*
+
+**397. What are the benefits of clustering?**
+A) Single point of failure
+B) Absolute scalability, incremental scalability, high availability, superior price/performance
+C) Limited scalability
+D) High cost
+
+**Answer: B**
+*Explanation: Clustering offers absolute scalability (large maximum size), incremental scalability (add nodes as needed), high availability (failover), and good price/performance.*
+
+**398. What is NUMA (Non-Uniform Memory Access)?**
+A) Uniform memory access
+B) All processors have access to all memory, but access time differs based on location
+C) Distributed memory only
+D) Shared memory only
+
+**Answer: B**
+*Explanation: NUMA systems provide shared memory across all processors, but access time varies depending on whether memory is local or remote to the processor.*
+
+**399. What is CC-NUMA (Cache-Coherent NUMA)?**
+A) NUMA without cache coherence
+B) NUMA system with cache coherence maintained across processors
+C) Uniform memory access
+D) Distributed memory
+
+**Answer: B**
+*Explanation: CC-NUMA combines NUMA's scalable memory architecture with hardware cache coherence, allowing shared memory programming with scalable performance.*
+
+**400. What is the main advantage of CC-NUMA over SMP?**
+A) Simpler programming
+B) Better scalability beyond bus bandwidth limits
+C) Lower latency
+D) Higher cost
+
+**Answer: B**
+*Explanation: CC-NUMA can scale to more processors than SMP because bus traffic is limited to each node, avoiding the shared bus bottleneck of SMP.*
+
+---
+
+## Chapter 21: Multicore Computers
+
+**401. What is the primary motivation for multicore processors?**
+A) Increased clock speed
+B) Power consumption and heat dissipation limitations preventing further single-core speed increases
+C) Reduced cost
+D) Simpler design
+
+**Answer: B**
+*Explanation: Power density and heat dissipation became limiting factors for increasing single-core clock speeds; multicore provides performance scaling with better power efficiency.*
+
+**402. What is the relationship between power consumption and clock frequency?**
+A) Linear relationship
+B) Power consumption increases with frequency cubed (P ∝ f³)
+C) No relationship
+D) Inverse relationship
+
+**Answer: B**
+*Explanation: Dynamic power consumption is proportional to frequency times voltage squared; increasing frequency requires voltage increase, leading to cubic power growth.*
+
+**403. What types of applications benefit from multicore processors?**
+A) Only single-threaded applications
+B) Multi-threaded native applications, multi-process applications, Java applications, multi-instance applications
+C) Only database applications
+D) Only scientific computing
+
+**Answer: B**
+*Explanation: Multicore benefits multi-threaded applications (thread-level parallelism), multi-process applications (multiple single-threaded processes), Java applications (inherent threading), and multi-instance applications.*
+
+**404. What is threading granularity?**
+A) Size of threads
+B) The minimal unit of work that can be beneficially parallelized
+C) Number of threads
+D) Thread scheduling granularity
+
+**Answer: B**
+*Explanation: Threading granularity is the minimal unit of work that can be parallelized effectively. Finer granularity allows more parallelization but increases overhead.*
+
+**405. What is heterogeneous multicore?**
+A) All cores identical
+B) Cores with different architectures or capabilities (e.g., big.LITTLE)
+C) Different number of cores
+D) Different cache sizes
+
+**Answer: B**
+*Explanation: Heterogeneous multicore uses cores with different architectures or capabilities, such as ARM big.LITTLE combining high-performance and power-efficient cores.*
+
+**406. What is ARM big.LITTLE technology?**
+A) Single core design
+B) Combining high-performance cores (big) with power-efficient cores (LITTLE)
+C) Large cache design
+D) Multiple processors
+
+**Answer: B**
+*Explanation: big.LITTLE pairs high-performance Cortex-A cores with power-efficient Cortex-A cores, using the appropriate cores based on workload to optimize performance and power.*
+
+**407. What is Heterogeneous System Architecture (HSA)?**
+A) Different processors
+B) Unified view where CPU and GPU share virtual memory space with coherence
+C) Separate CPU and GPU memory
+D) Only GPU computing
+
+**Answer: B**
+*Explanation: HSA provides unified virtual memory visible to both CPU and GPU, coherent memory policy, and unified programming interface for seamless CPU-GPU computing.*
+
+**408. What is ACE (Advanced Extensible Interface Coherence Extensions)?**
+A) ARM's cache coherence protocol
+B) ARM's bus interface
+C) ARM's power management
+D) ARM's virtualization
+
+**Answer: A**
+*Explanation: ACE is ARM's hardware cache coherence capability supporting coherent masters with differing capabilities, enabling big.LITTLE and I/O coherency.*
+
+**409. What is the MOESI protocol?**
+A) MESI extension adding "Owned" state
+B) New protocol replacing MESI
+C) Memory protocol
+D) Bus protocol
+
+**Answer: A**
+*Explanation: MOESI adds an "Owned" state to MESI, indicating a line is modified and shared; the owning cache can supply data to other caches without writing back to memory.*
+
+**410. What does the "Owned" state in MOESI indicate?**
+A) Line is exclusive
+B) Line is modified and may be shared; owner can supply data to other caches
+C) Line is shared
+D) Line is invalid
+
+**Answer: B**
+*Explanation: Owned state means the cache line is modified but may be present in other caches; the owning cache is responsible for providing data to other caches on misses.*
+
+**411. What is the Generic Interrupt Controller (GIC) in ARM multicore?**
+A) Single interrupt controller
+B) Centralized interrupt management supporting multiple cores with states (Inactive, Pending, Active)
+C) Interrupt vector table
+D) Interrupt service routine
+
+**Answer: B**
+*Explanation: GIC manages interrupts across multiple cores, tracking each interrupt's state (Inactive, Pending, Active) for each CPU to enable proper interrupt distribution.*
+
+**412. What is Direct Data Intervention (DDI) in ARM Cortex-A15?**
+A) Direct memory access
+B) Enables copying clean data between L1 caches without accessing external memory
+C) Data transfer between processors
+D) Cache bypass
+
+**Answer: B**
+*Explanation: DDI allows L1 caches to transfer data directly to other L1 caches, reducing latency and memory bandwidth usage for coherence operations.*
+
+**413. What are duplicated tag RAMs used for in ARM Cortex-A15?**
+A) Redundant storage
+B) Cache tags duplicated for Snoop Control Unit to check data availability without accessing full cache
+C) Increased cache capacity
+D) Error correction
+
+**Answer: B**
+*Explanation: Duplicated tag RAMs allow the SCU to check data availability before sending coherency commands, reducing unnecessary coherence traffic.*
+
+**414. What is the Snoop Control Unit (SCU) in ARM Cortex-A15?**
+A) Control unit for snooping
+B) Hardware that manages L1 cache coherency and reduces scalability bottlenecks
+C) Bus controller
+D) Memory controller
+
+**Answer: B**
+*Explanation: The SCU manages cache coherence between L1 caches, implements the MESI protocol, and provides DDI and duplicated tags to improve scalability.*
+
+**415. What is a "migratory line" in cache coherence?**
+A) Moving data between cores
+B) Allows moving dirty data between CPUs without writing to L2 and reading back
+C) Cache line migration
+D) Data migration
+
+**Answer: B**
+*Explanation: Migratory lines enable efficient transfer of dirty data between processors, avoiding the overhead of writing to L2 and reading back from external memory.*
+
+**416. What is the main performance advantage of multicore over single-core?**
+A) Higher clock speed
+B) Higher throughput for parallel workloads with better power efficiency
+C) Lower cost
+D) Simpler programming
+
+**Answer: B**
+*Explanation: Multicore provides higher throughput for parallel applications while managing power consumption, delivering better performance per watt than increasing single-core frequency.*
+
+**417. What is the IBM z13 cache hierarchy?**
+A) Single-level cache
+B) Multi-level cache with L1, L2, and L3 caches across cores and nodes
+C) No cache
+D) Only L1 cache
+
+**Answer: B**
+*Explanation: IBM z13 uses a complex cache hierarchy with multiple levels (L1, L2, L3) distributed across cores and nodes for high-performance mainframe computing.*
+
+**418. In multicore systems, what is the trade-off with finer threading granularity?**
+A) More parallelization opportunities but increased overhead
+B) Less parallelization but lower overhead
+C) No trade-off
+D) Only benefits
+
+**Answer: A**
+*Explanation: Finer granularity allows parallelization in more situations but increases the overhead from threading system (synchronization, scheduling) relative to useful work.*
+
+**419. What is the effect of multiple cores on database workloads?**
+A) Linear scaling always
+B) Scaling depends on workload parallelism and memory architecture
+C) No scaling
+D) Negative scaling
+
+**Answer: B**
+*Explanation: Database workload scaling with more cores depends on query parallelism, data partitioning, and memory access patterns; not all workloads scale linearly.*
+
+**420. What is the purpose of the Intel Core i7-5960X block diagram?**
+A) Show only CPU cores
+B) Illustrate multicore organization with multiple cores, shared L3 cache, memory controllers, and I/O
+C) Show single core design
+D) Show GPU only
+
+**Answer: B**
+*Explanation: The i7-5960X block diagram shows a multicore processor with multiple cores, shared last-level cache, integrated memory controllers, and PCIe interfaces, illustrating modern multicore design.*
+
+## Chapter 20: Parallel Processing (Continued)
+
+**421. What is the difference between multiprogramming and multiprocessing?**
+A) Multiprogramming runs multiple programs on one CPU; multiprocessing uses multiple CPUs
+B) They are the same
+C) Multiprocessing runs one program; multiprogramming runs multiple
+D) Multiprogramming requires multiple CPUs
+
+**Answer: A**
+*Explanation: Multiprogramming interleaves execution of multiple programs on a single CPU; multiprocessing uses multiple CPUs (physical processors) to execute programs simultaneously.*
+
+**422. What is the main OS design challenge in symmetric multiprocessing?**
+A) Memory allocation only
+B) OS routines must be reentrant, scheduling must be coordinated, synchronization needed
+C) I/O management only
+D) Process creation only
+
+**Answer: B**
+*Explanation: SMP OS must ensure OS routines are reentrant (multiple processors can execute same code), coordinate scheduling across processors, provide synchronization for shared resources, and manage memory coherence.*
+
+**423. What is a reentrant routine?**
+A) Routine that enters again
+B) Routine that can be safely executed by multiple processors simultaneously
+C) Routine that reenters memory
+D) Recursive routine
+
+**Answer: B**
+*Explanation: A reentrant routine can be called by multiple processors at the same time without causing conflicts, essential for OS code in multiprocessor systems.*
+
+**424. In write-invalidate cache coherence protocol, what happens when a processor writes to a shared line?**
+A) All other caches are updated
+B) All other copies of the line are invalidated
+C) The write is ignored
+D) Memory is updated only
+
+**Answer: B**
+*Explanation: Write-invalidate invalidates all other copies of the cache line when a write occurs, ensuring only one processor has a writable copy at any time.*
+
+**425. In write-update (write-broadcast) cache coherence, what happens when a processor writes to a shared line?**
+A) Other caches are invalidated
+B) Other caches are updated with the new value
+C) Nothing happens
+D) Only memory is updated
+
+**Answer: B**
+*Explanation: Write-update broadcasts the new value to all caches containing the line, keeping all copies consistent but generating more bus traffic.*
+
+**426. What is the primary advantage of directory-based cache coherence over snoopy protocols?**
+A) Simpler implementation
+B) Better scalability to many processors
+C) Lower latency
+D) Less hardware
+
+**Answer: B**
+*Explanation: Directory protocols maintain a central directory tracking which caches have copies, scaling better than snoopy protocols which broadcast to all processors.*
+
+**427. What is the main advantage of snoopy cache coherence protocols?**
+A) Better scalability
+B) Simpler implementation for bus-based systems
+C) Lower overhead
+D) No broadcast needed
+
+**Answer: B**
+*Explanation: Snoopy protocols are simpler to implement in bus-based systems because the shared bus naturally provides broadcast for all cache controllers to "snoop" on.*
+
+**428. What is a read-with-intent-to-modify (RWITM) bus transaction?**
+A) Normal read
+B) Read that indicates the processor will write to the line, used to gain exclusive ownership
+C) Write-only transaction
+D) Read-modify-write
+
+**Answer: B**
+*Explanation: RWITM signals to other caches that the processor intends to modify the line, causing other copies to be invalidated before the line is loaded.*
+
+**429. What happens in MESI protocol when a processor experiences a read miss on a line that another cache has in Modified state?**
+A) Line is read from memory
+B) The owning cache supplies the data (cache-to-cache transfer) and transitions to Shared
+C) The read fails
+D) Both caches are invalidated
+
+**Answer: B**
+*Explanation: The cache with Modified state supplies the data to the requesting cache, writes back to memory (optional), and transitions to Shared state.*
+
+**430. What is the primary benefit of simultaneous multithreading (SMT) over traditional multithreading?**
+A) Higher single-thread performance
+B) Better utilization of superscalar execution units by mixing instructions from multiple threads
+C) Simpler hardware
+D) Lower power consumption
+
+**Answer: B**
+*Explanation: SMT issues instructions from multiple threads in the same cycle, filling execution slots that might otherwise be idle due to dependencies in a single thread.*
+
+**431. In a CC-NUMA system, what does "cache-coherent" mean?**
+A) All caches are identical
+B) Hardware maintains cache coherence across all nodes
+C) Software manages coherence
+D) No coherence needed
+
+**Answer: B**
+*Explanation: Cache-coherent NUMA uses hardware protocols (directory or snoopy across nodes) to maintain cache coherence transparently to software.*
+
+**432. What is the typical maximum number of processors in a bus-based SMP?**
+A) Unlimited
+B) Usually 4-8 due to bus bandwidth limitations
+C) 2
+D) 64
+
+**Answer: B**
+*Explanation: Bus-based SMP typically scales to 4-8 processors before bus bandwidth becomes a severe bottleneck, limiting performance gains.*
+
+**433. What is the purpose of a crossbar switch in multiprocessor systems?**
+A) Simple bus replacement
+B) Provides multiple simultaneous connections between processors and memory banks
+C) Power management
+D) Clock distribution
+
+**Answer: B**
+*Explanation: A crossbar switch allows multiple simultaneous connections, enabling higher bandwidth than a shared bus and better scalability.*
+
+**434. What is the main disadvantage of crossbar switches?**
+A) Low bandwidth
+B) Complexity and cost increase as O(n²) with number of processors
+C) High latency
+D) Unreliability
+
+**Answer: B**
+*Explanation: Crossbar switches require O(n²) crosspoints, making cost and complexity grow rapidly with the number of processors, limiting scalability.*
+
+**435. What is a multiprocessor system's "coherence granularity"?**
+A) Size of cache lines
+B) The unit of data for which coherence is maintained (typically cache line)
+C) Number of processors
+D) Memory size
+
+**Answer: B**
+*Explanation: Coherence granularity is the size of the data block (usually a cache line) for which coherence is tracked and maintained across caches.*
+
+---
+
+## Chapter 20: Parallel Processing (Continued) - NUMA and Clusters
+
+**436. What is the difference between UMA and NUMA?**
+A) UMA has uniform access time; NUMA has non-uniform access time based on memory location
+B) UMA is faster; NUMA is slower
+C) No difference
+D) UMA uses multiple buses; NUMA uses one bus
+
+**Answer: A**
+*Explanation: UMA (Uniform Memory Access) provides equal access time to all memory; NUMA (Non-Uniform Memory Access) has faster access to local memory and slower to remote memory.*
+
+**437. What is a node in a NUMA system?**
+A) Single processor
+B) A group of processors with local memory forming a unit
+C) Memory controller
+D) I/O device
+
+**Answer: B**
+*Explanation: A NUMA node typically contains one or more processors and a portion of main memory that is "local" to those processors, connected to other nodes via interconnects.*
+
+**438. What is the primary programming challenge for NUMA systems?**
+A) Lack of memory
+B) Data placement to minimize remote accesses
+C) No shared memory
+D) Single-threaded only
+
+**Answer: B**
+*Explanation: To achieve good performance, programs must place data close to the processors that access it, minimizing expensive remote memory accesses.*
+
+**439. What is the advantage of clustered systems over SMP?**
+A) Better single-thread performance
+B) Higher scalability (thousands of nodes) and better fault isolation
+C) Simpler programming
+D) Lower cost per node
+
+**Answer: B**
+*Explanation: Clusters can scale to thousands of nodes and provide fault isolation—failure of one node doesn't affect others—while SMP has limited scalability.*
+
+**440. What is a "shared-nothing" cluster architecture?**
+A) No shared memory between nodes
+B) Shared disk only
+C) Shared memory
+D) Shared everything
+
+**Answer: A**
+*Explanation: In shared-nothing clusters, each node has its own memory and disks; nodes communicate via messages, providing the highest scalability and fault isolation.*
+
+**441. What is a "shared-disk" cluster architecture?**
+A) Shared memory only
+B) Multiple nodes access shared storage devices
+C) No shared resources
+D) Shared CPU only
+
+**Answer: B**
+*Explanation: Shared-disk clusters allow multiple nodes to access the same storage devices, requiring distributed lock management to maintain data consistency.*
+
+**442. What is the primary advantage of message-passing over shared memory for large-scale parallel systems?**
+A) Higher performance
+B) Better scalability and explicit communication control
+C) Simpler programming
+D) Lower latency
+
+**Answer: B**
+*Explanation: Message-passing scales to thousands of nodes with explicit communication patterns, while shared memory coherence becomes prohibitively complex at large scale.*
+
+**443. What is the purpose of a barrier synchronization in parallel programs?**
+A) To stop execution
+B) A synchronization point where all threads must arrive before proceeding
+C) To create barriers between threads
+D) To protect memory
+
+**Answer: B**
+*Explanation: Barrier synchronization ensures that all threads or processes reach a certain point before any continue, used to coordinate phases of parallel execution.*
+
+**444. What is false sharing?**
+A) Sharing that doesn't exist
+B) When unrelated data in same cache line cause unnecessary coherence traffic
+C) False memory sharing
+D) Cache line sharing
+
+**Answer: B**
+*Explanation: False sharing occurs when multiple processors access different variables that happen to reside in the same cache line, causing unnecessary coherence traffic and performance degradation.*
+
+**445. How can false sharing be mitigated?**
+A) Larger cache lines
+B) Aligning data structures to cache line boundaries and padding
+C) Smaller caches
+D) Disabling caching
+
+**Answer: B**
+*Explanation: Padding structures to ensure each processor's data is in separate cache lines eliminates false sharing by preventing unrelated data from sharing a line.*
+
+**446. What is a "race condition" in parallel programming?**
+A) Fast execution
+B) When program outcome depends on unpredictable timing of thread execution
+C) Racing condition
+D) Speed competition
+
+**Answer: B**
+*Explanation: Race conditions occur when multiple threads access shared data without proper synchronization, and the result depends on the order of execution.*
+
+**447. What is a "deadlock" in parallel systems?**
+A) System stops completely
+B) Circular waiting where each process holds resources another needs
+C) Dead process
+D) Lock failure
+
+**Answer: B**
+*Explanation: Deadlock occurs when processes form a circular chain where each holds a resource needed by another, causing all to wait indefinitely.*
+
+**448. What is "livelock"?**
+A) Live system
+B) Processes continuously change state but make no progress
+C) Fast execution
+D) Lock-free system
+
+**Answer: B**
+*Explanation: Livelock occurs when processes continually change state in response to each other but no process completes its work, making no progress.*
+
+**449. What is the primary goal of parallel programming models?**
+A) Maximize single-thread performance
+B) Provide abstraction for expressing parallelism and managing communication/synchronization
+C) Minimize code size
+D) Simplify hardware
+
+**Answer: B**
+*Explanation: Parallel programming models (OpenMP, MPI, etc.) abstract the complexity of parallelism, providing mechanisms for creating threads, synchronizing, and communicating.*
+
+**450. What is Amdahl's Law's implication for massively parallel systems?**
+A) Speedup is unlimited
+B) Speedup is bounded by the sequential portion of the program
+C) No effect
+D) Linear speedup always
+
+**Answer: B**
+*Explanation: Amdahl's Law shows that even with unlimited processors, speedup is limited by 1/(1-P), where P is the parallelizable portion; the sequential fraction is the bottleneck.*
+
+---
+
+## Chapter 21: Multicore Computers (Complete)
+
+**451. What is the relationship between power consumption and voltage in CMOS circuits?**
+A) P ∝ V
+B) P ∝ V²
+C) P ∝ V³
+D) P ∝ V⁴
+
+**Answer: B**
+*Explanation: Dynamic power consumption in CMOS is proportional to frequency times voltage squared (P = C × f × V²). Reducing voltage dramatically reduces power.*
+
+**452. What is "dark silicon"?**
+A) Silicon that doesn't work
+B) Portions of a chip that cannot be powered simultaneously due to thermal constraints
+C) Black silicon
+D) Unused transistors
+
+**Answer: B**
+*Explanation: Dark silicon refers to the phenomenon where, due to power and thermal constraints, not all transistors on a chip can be active at the same time, limiting performance scaling.*
+
+**453. In multicore systems, how does performance scale with number of cores?**
+A) Linearly for all workloads
+B) Depends on workload parallelism and memory bandwidth
+C) Quadratically
+D) Not at all
+
+**Answer: B**
+*Explanation: Performance scaling varies by workload—embarrassingly parallel tasks scale well, while serial workloads don't; memory bandwidth often becomes bottleneck before computation.*
+
+**454. What is the advantage of homogeneous multicore?**
+A) Better power efficiency
+B) Simpler programming and scheduling
+C) Specialized cores
+D) Lower cost
+
+**Answer: B**
+*Explanation: Homogeneous multicore (identical cores) simplifies programming because all cores have same capabilities, and OS scheduling is straightforward.*
+
+**455. What is the advantage of heterogeneous multicore?**
+A) Simpler programming
+B) Better power/performance by matching cores to workloads
+C) Lower design complexity
+D) All cores identical
+
+**Answer: B**
+*Explanation: Heterogeneous cores (e.g., big.LITTLE) allow using power-efficient cores for background tasks and high-performance cores for demanding tasks, optimizing power/performance.*
+
+**456. In ARM big.LITTLE, how does task migration work?**
+A) Manual assignment
+B) Hardware or software migration of threads between core types based on load
+C) Fixed assignment
+D) No migration
+
+**Answer: B**
+*Explanation: Tasks can migrate between big and LITTLE cores using hardware coherence (CCI) or software scheduling (Global Task Scheduling) based on workload demands.*
+
+**457. What is the ARM CoreLink CCI (Cache Coherent Interconnect)?**
+A) Cache only
+B) Interconnect providing hardware cache coherence between clusters of processors
+C) Memory controller
+D) I/O bridge
+
+**Answer: B**
+*Explanation: CCI provides coherent connection between processor clusters (e.g., big and LITTLE) and other masters, enabling seamless task migration with coherent caches.*
+
+**458. In the Intel Core i7-5960X, what is the role of the shared L3 cache?**
+A) Only for one core
+B) Shared last-level cache reducing off-chip memory accesses
+C) No function
+D) Only for I/O
+
+**Answer: B**
+*Explanation: Shared L3 cache (up to 20MB) serves as a last-level cache before main memory, reducing latency for all cores and improving performance.*
+
+**459. What is the Intel Core i7 ring interconnect?**
+A) Circular bus
+B) Ring topology connecting cores, caches, and memory controller
+C) Point-to-point only
+D) Mesh network
+
+**Answer: B**
+*Explanation: The ring interconnect (ring bus) connects cores, L3 cache slices, memory controller, and I/O in a ring topology, providing high-bandwidth communication.*
+
+**460. What is the ARM Cortex-A15 MPCore configuration?**
+A) Single core
+B) Up to 4 cores with coherent interconnect and GIC
+C) 8 cores
+D) 16 cores
+
+**Answer: B**
+*Explanation: Cortex-A15 MPCore supports up to 4 cores with integrated L2 cache, Snoop Control Unit, and Generic Interrupt Controller for multiprocessing.*
+
+**461. What is the purpose of the Generic Interrupt Controller (GIC) in ARM multicore?**
+A) Single interrupt
+B) Distributes interrupts to cores based on affinity and priority
+C) No interrupts
+D) Software interrupts only
+
+**Answer: B**
+*Explanation: GIC manages interrupt distribution to multiple cores, supporting per-core interrupt states and allowing interrupts to be targeted to specific cores or groups.*
+
+**462. What are the three interrupt states in GIC?**
+A) Enabled, Disabled, Masked
+B) Inactive, Pending, Active
+C) High, Medium, Low
+D) Hardware, Software, Timer
+
+**Answer: B**
+*Explanation: GIC tracks each interrupt per CPU: Inactive (not asserted), Pending (asserted but not yet processed), Active (being processed, can be preempted).*
+
+**463. What is the purpose of the Snoop Control Unit (SCU) in ARM Cortex-A15?**
+A) Power management
+B) Manages L1 cache coherence, DDI, and reduces external traffic
+C) Clock control
+D) I/O management
+
+**Answer: B**
+*Explanation: SCU maintains L1 cache coherence between cores, implements Direct Data Intervention (DDI), duplicated tags, and reduces off-chip memory traffic.*
+
+**464. What is the IBM z13 drawer structure?**
+A) Single chip
+B) Multiple processor chips, memory, and I/O organized in drawers
+C) Only memory
+D) Only I/O
+
+**Answer: B**
+*Explanation: IBM z13 organizes processors, memory, and I/O in physical drawers (processor drawers, memory drawers, I/O drawers) connected via high-speed links for scalability.*
+
+**465. What is the IBM z13 cache hierarchy?**
+A) Single-level
+B) Multiple levels: L1 per core, L2 per core, L3 shared across cores, L4 across drawers
+C) Only L3
+D) Only L1
+
+**Answer: B**
+*Explanation: z13 has a complex multi-level hierarchy: L1 instruction/data per core, L2 per core, L3 shared across cores in a chip, and L4 cache across drawers for coherency.*
+
+**466. What is the advantage of using eDRAM in IBM z13 caches?**
+A) Lower cost than SRAM
+B) Higher density than SRAM, faster than off-chip DRAM
+C) Simpler design
+D) Lower power
+
+**Answer: B**
+*Explanation: eDRAM provides higher density (more cache per area) than SRAM, while being faster than off-chip DRAM, balancing capacity and latency.*
+
+**467. In multicore processors, what is "core gating"?**
+A) Blocking cores
+B) Powering down idle cores to save power
+C) Core selection
+D) Core switching
+
+**Answer: B**
+*Explanation: Core gating (power gating) shuts off power to idle cores, reducing leakage power and overall power consumption.*
+
+**468. What is "dynamic voltage and frequency scaling" (DVFS) in multicore?**
+A) Fixed voltage
+B) Adjusting voltage and frequency based on workload demand
+C) Scaling cores
+D) Only frequency scaling
+
+**Answer: B**
+*Explanation: DVFS adjusts voltage and frequency (often per core or domain) to match performance requirements, reducing power during low-demand periods.*
+
+**469. What is the main challenge in programming multicore systems?**
+A) Single-thread performance
+B) Decomposing problems into parallel tasks, synchronization, load balancing
+C) Memory size
+D) I/O speed
+
+**Answer: B**
+*Explanation: Writing parallel software requires identifying independent tasks, managing synchronization to avoid races, balancing load across cores, and dealing with non-determinism.*
+
+**470. What is the difference between parallelism and concurrency?**
+A) Same thing
+B) Parallelism is simultaneous execution; concurrency is managing multiple tasks that may interleave
+C) Concurrency requires multiple cores
+D) Parallelism is logical
+
+**Answer: B**
+*Explanation: Concurrency is about dealing with multiple tasks at once (structuring programs); parallelism is about executing multiple tasks simultaneously (hardware execution).*
+
+---
+
+## Additional Questions for Earlier Chapters to Reach 500
+
+**471. (Chapter 1) What is the significance of the IAS computer's stored program concept?**
+A) First use of cache
+B) Program stored in memory as data, enabling easy modification
+C) First use of interrupts
+D) First commercial computer
+
+**Answer: B**
+*Explanation: The stored program concept meant programs could be stored in memory like data, allowing programs to be loaded, modified, and executed without rewiring.*
+
+**472. (Chapter 1) What is a multichip module (MCM)?**
+A) Single chip
+B) Package containing multiple interconnected chips
+C) Memory module
+D) Processor module
+
+**Answer: B**
+*Explanation: MCM packages multiple chips (processor, cache, etc.) in a single module, improving interconnect density and performance compared to separate packages.*
+
+**473. (Chapter 2) What is the formula for effective access time in a two-level memory system?**
+A) T = T₁ + T₂
+B) T = H × T₁ + (1-H) × (T₁ + T₂)
+C) T = H × T₁ + (1-H) × T₂
+D) T = H × T₂ + (1-H) × T₁
+
+**Answer: C**
+*Explanation: Effective access time = Hit rate × Access time L1 + Miss rate × Access time L2 (assuming L1 miss goes to L2).*
+
+**474. (Chapter 3) What is the difference between memory-mapped I/O and isolated I/O?**
+A) Memory-mapped uses I/O instructions; isolated uses memory instructions
+B) Memory-mapped uses same address space as memory; isolated uses separate I/O address space
+C) No difference
+D) Memory-mapped is faster
+
+**Answer: B**
+*Explanation: Memory-mapped I/O shares the memory address space; isolated I/O uses separate I/O address space with special IN/OUT instructions.*
+
+**475. (Chapter 4) What is the advantage of interleaved memory?**
+A) Simpler controller
+B) Allows multiple memory accesses in parallel by interleaving addresses across banks
+C) Lower cost
+D) Higher density
+
+**Answer: B**
+*Explanation: Interleaved memory spreads consecutive addresses across multiple memory banks, allowing simultaneous access to consecutive words.*
+
+**476. (Chapter 5) What is the difference between inclusive and exclusive cache policies?**
+A) Inclusive: data in L1 also in L2; Exclusive: data in L1 not in L2
+B) Inclusive: L1 holds only exclusive data; Exclusive: L1 holds all data
+C) No difference
+D) Inclusive: data in L1 not in L2; Exclusive: data in L1 also in L2
+
+**Answer: A**
+*Explanation: Inclusive policy ensures data in higher cache levels is also in lower levels; exclusive policy avoids duplication, with data present in only one cache level.*
+
+**477. (Chapter 6) What is the difference between EPROM and EEPROM?**
+A) EPROM is faster
+B) EPROM erased with UV light; EEPROM erased electrically
+C) No difference
+D) EEPROM is faster
+
+**Answer: B**
+*Explanation: EPROM (Erasable Programmable ROM) requires UV light for erasure; EEPROM (Electrically Erasable) can be erased electrically, usually byte-wise.*
+
+**478. (Chapter 7) What is areal density in magnetic disks?**
+A) Number of bits per inch
+B) Product of track density and bit density (bits per square inch)
+C) Disk capacity
+D) Number of tracks
+
+**Answer: B**
+*Explanation: Areal density is bits per square inch, combining track density (tracks per inch) and linear bit density (bits per inch).*
+
+**479. (Chapter 8) What is an I/O channel?**
+A) I/O cable
+B) Specialized I/O processor with its own instruction set
+C) I/O port
+D) DMA controller
+
+**Answer: B**
+*Explanation: An I/O channel is a specialized processor that executes I/O programs, offloading I/O management from the CPU.*
+
+**480. (Chapter 9) What is the difference between paging and segmentation?**
+A) Paging divides memory into fixed-size blocks; segmentation uses variable-size logical units
+B) No difference
+C) Paging uses variable blocks; segmentation uses fixed blocks
+D) Paging is faster
+
+**Answer: A**
+*Explanation: Paging uses fixed-size blocks (pages) invisible to programmer; segmentation uses variable-size logical segments visible to programmer for organization and protection.*
+
+**481. (Chapter 10) Convert hexadecimal 3F to decimal.**
+A) 63
+B) 31
+C) 47
+D) 55
+
+**Answer: A**
+*Explanation: 3F₁₆ = (3 × 16) + 15 = 48 + 15 = 63 decimal.*
+
+**482. (Chapter 11) In floating-point representation, what is a normalized number?**
+A) Significand has leading 1 (in binary)
+B) Exponent is zero
+C) Number is zero
+D) Significand is zero
+
+**Answer: A**
+*Explanation: Normalized floating-point numbers have the most significant digit of the significand non-zero; in binary, this means the leading bit is 1 (implied in IEEE 754).*
+
+**483. (Chapter 12) What is the difference between a latch and a flip-flop?**
+A) Latch is level-sensitive; flip-flop is edge-triggered
+B) No difference
+C) Latch is edge-triggered; flip-flop is level-sensitive
+D) Latch stores 2 bits
+
+**Answer: A**
+*Explanation: Latches are level-sensitive (output follows input while enabled); flip-flops are edge-triggered (output changes only on clock edge).*
+
+**484. (Chapter 13) What is a "branch target" in instruction execution?**
+A) Branch instruction
+B) The address to which a branch transfers control
+C) Branch condition
+D) Branch prediction
+
+**Answer: B**
+*Explanation: Branch target is the memory address where execution continues after a taken branch instruction.*
+
+**485. (Chapter 14) What is the effective address for base-register addressing?**
+A) EA = (R) + A
+B) EA = (A)
+C) EA = (R)
+D) EA = A
+
+**Answer: A**
+*Explanation: Base-register addressing: effective address = contents of base register + displacement (A).*
+
+**486. (Chapter 15) What is an assembler directive?**
+A) Machine instruction
+B) Instruction to assembler (e.g., define data, reserve memory)
+C) Comment
+D) Macro
+
+**Answer: B**
+*Explanation: Directives (pseudo-instructions) tell the assembler to perform actions like reserving memory, defining constants, or controlling assembly options.*
+
+**487. (Chapter 16) What is a pipeline bubble (stall)?**
+A) Fast execution
+B) Pipeline stage with no valid instruction due to hazard
+C) Branch instruction
+D) Cache hit
+
+**Answer: B**
+*Explanation: A bubble (or stall) occurs when a pipeline stage contains no useful instruction, typically due to hazards or resource conflicts.*
+
+**488. (Chapter 17) What is register window overlapping?**
+A) Windows that overlap in time
+B) Overlapping sets of registers for caller/callee to pass parameters without memory
+C) Overlapping memory windows
+D) Register sharing
+
+**Answer: B**
+*Explanation: Overlapping register windows allow parameters to be passed between procedures through overlapping register sets, reducing save/restore overhead.*
+
+**489. (Chapter 18) What is the difference between in-order and out-of-order completion?**
+A) In-order completes in program order; out-of-order may complete in different order
+B) No difference
+C) In-order is faster
+D) Out-of-order is simpler
+
+**Answer: A**
+*Explanation: In-order completion writes results in program order; out-of-order may complete instructions in different order but must preserve architectural state.*
+
+**490. (Chapter 19) What is microprogrammed control unit's control memory?**
+A) Main memory
+B) Memory storing microinstructions
+C) Cache
+D) Register file
+
+**Answer: B**
+*Explanation: Control memory is dedicated memory (often ROM) storing the microprogram—sequences of microinstructions defining machine instruction execution.*
+
+**491. (Chapter 20) What is the difference between fine-grained and coarse-grained multithreading?**
+A) Fine-grained switches per cycle; coarse-grained switches on long latency events
+B) No difference
+C) Fine-grained is slower
+D) Coarse-grained switches per cycle
+
+**Answer: A**
+*Explanation: Fine-grained multithreading switches threads every cycle; coarse-grained switches only on long latency events (e.g., cache misses).*
+
+**492. (Chapter 21) What is the purpose of the L3 cache in multicore processors?**
+A) Only for one core
+B) Shared last-level cache reducing off-chip accesses and improving inter-core communication
+C) No purpose
+D) Only for I/O
+
+**Answer: B**
+*Explanation: Shared L3 cache serves as a large last-level cache before main memory, reducing off-chip traffic and enabling efficient data sharing between cores.*
+
+**493. (Chapter 21) What is the MOESI protocol's "Owned" state used for?**
+A) Exclusive access
+B) Modified line that can be shared; owner supplies data to others
+C) Invalid line
+D) Shared unmodified
+
+**Answer: B**
+*Explanation: Owned state allows a modified line to be shared; the owning cache can supply data to other caches without writing back to memory first.*
+
+**494. (Chapter 3) What is the purpose of the system interconnection structure?**
+A) Power delivery
+B) Provides communication among CPU, memory, and I/O
+C) Clock distribution
+D) Cooling
+
+**Answer: B**
+*Explanation: System interconnection (bus, point-to-point) enables data transfer and control between CPU, main memory, and I/O modules.*
+
+**495. (Chapter 6) What is the difference between SDRAM and DDR SDRAM?**
+A) DDR transfers on both clock edges; SDRAM on one edge
+B) SDRAM is faster
+C) No difference
+D) DDR uses more power
+
+**Answer: A**
+*Explanation: SDRAM transfers data on one clock edge; DDR transfers on both rising and falling edges, doubling data rate for same clock frequency.*
+
+**496. (Chapter 8) What is the difference between programmed I/O and interrupt-driven I/O?**
+A) Programmed I/O requires polling; interrupt-driven I/O allows CPU to continue
+B) No difference
+C) Programmed I/O is faster
+D) Interrupt-driven I/O uses polling
+
+**Answer: A**
+*Explanation: Programmed I/O requires CPU to actively wait (poll); interrupt-driven I/O lets CPU continue execution until I/O completion interrupt.*
+
+**497. (Chapter 9) What is the translation lookaside buffer (TLB) used for?**
+A) Cache for page table entries
+B) Cache for data
+C) Cache for instructions
+D) Branch prediction
+
+**Answer: A**
+*Explanation: TLB caches recently used virtual-to-physical address translations, avoiding full page table walks for each memory access.*
+
+**498. (Chapter 11) What is the floating-point subnormal (denormal) number range used for?**
+A) Large numbers
+B) Gradual underflow to represent very small numbers
+C) Integers
+D) Infinity
+
+**Answer: B**
+*Explanation: Subnormal numbers fill the gap between zero and the smallest normalized number, providing gradual underflow and preserving precision near zero.*
+
+**499. (Chapter 13) What is the difference between a subroutine call and a jump?**
+A) Call saves return address; jump does not
+B) No difference
+C) Jump saves return address
+D) Call does not save return address
+
+**Answer: A**
+*Explanation: Call instructions save the return address (usually on stack or in register) to allow return; jump simply transfers control with no return mechanism.*
+
+**500. (Chapter 17) What is the primary benefit of RISC's load/store architecture?**
+A) Complex memory operations
+B) Only load/store instructions access memory; ALU operations use registers
+C) Variable-length instructions
+D) Microprogrammed control
+
+**Answer: B**
+*Explanation: Load/store architecture restricts memory access to explicit load/store instructions; ALU operations work only on registers, simplifying pipeline design and instruction timing.*
+
