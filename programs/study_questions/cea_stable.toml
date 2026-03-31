@@ -1,4 +1,4 @@
-version = 2
+version = 3
 
 [[questions]]
 question = "The stored-program concept means a computer could get its instructions by reading them from memory, and a program could be set or altered by setting the values of a portion of memory."
@@ -842,7 +842,7 @@ answer = "Hard Disk - NAND Flash - DRAM - SRAM"
 
 [[questions]]
 question = "Which of the following are the four basic functions that a computer performs?"
-choices = ["Data processing, Data storage, Data movement, Control", "Data processing, Data storage, Data movement, Interrupt", "Data processing, Data storage, Interrupt, Control", "Data processing, Interrupt, Data movement, Control"]
+choices = ["Data processing, Interrupt, Data movement, Control", "Data processing, Data storage, Data movement, Control", "Data processing, Data movement, Interrupt.", "Data processing, Data storage, Interrupt, Control"]
 answer = "Data processing, Data storage, Data movement, Control"
 
 [[questions]]
@@ -872,8 +872,8 @@ answer = "Main memory, CPU, I/O modules and system interconnection"
 
 [[questions]]
 question = "Which is the correct choice for sorting in increasing speed average of memory?"
-choices = ["SSD < Main Memory < Cache Memory", "Magnetic Tape < SSD < Main Memory", "Magnetic Disk < Man Memory < Cache Memory", "Magnetic Disk < Magnetic Tape < Main Memory"]
-answer = "Magnetic Disk < Man Memory < Cache Memory"
+choices = ["Magnetic Disk < Magnetic Tape < Main Memory", "Magnetic Tape < SSD < Main Memory", "Magnetic Disk < Main Memory < Cache Memory", "SSD < Main Memory < Cache Memory"]
+answer = "Magnetic Disk < Main Memory < Cache Memory"
 
 [[questions]]
 question = "What are the most basic functions of an I/O module?"
@@ -1087,8 +1087,8 @@ answer = "RAID is only used for Windows OS"
 
 [[questions]]
 question = "Which of the following are the 4 basic functions of a computer?"
-choices = ["Data processing; Data storage; CPU interconnection.", "CPU; Main memory, I/O; System interconnection.", "Control unit, ALU Registers; CPU interconnection.", "Data processing; Data storage; Control."]
-answer = "Data processing; Data storage; Control."
+choices = ["Control unit, ALU Registers; CPU interconnection.", "Data processing; Data storage; CPU interconnection.", "CPU; Main memory, I/O; System interconnection.", "Data processing; Data storage; Data movement; Control."]
+answer = "Data processing; Data storage; Data movement; Control."
 
 [[questions]]
 question = "Which of the following determines the Bus Width?"
