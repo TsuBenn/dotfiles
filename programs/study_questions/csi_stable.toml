@@ -751,7 +751,7 @@ choices = ["A node", "Two nodes", "Data and a link", "A null head pointer"]
 answer = ["A null head pointer"]
 
 [[questions]]
-question = "The queue operation \"queueName\" is used to"
+question = "The queue operation \"queue(queueName)\" is used to"
 choices = ["Delete queue", "Check status of queue", "Create an empty queue", "Insert queue"]
 answer = ["Create an empty queue"]
 

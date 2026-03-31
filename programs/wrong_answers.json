@@ -1133,5 +1133,40 @@
       "Symmetric-key"
     ],
     "timestamp": "2026-03-30T18:44:35.651475"
+  },
+  {
+    "question": "is a collection of logically coherent data used by the application programs in an organization.",
+    "answer": [
+      "Database"
+    ],
+    "timestamp": "2026-03-31T01:16:12.515920"
+  },
+  {
+    "question": "A 17th-century computing machine that could perform addition and subtraction was the",
+    "answer": [
+      "Pascaline"
+    ],
+    "timestamp": "2026-03-31T01:23:34.216476"
+  },
+  {
+    "question": "If we need to access one specific record without having to retrieve all records before it, we use",
+    "answer": [
+      "random file structure"
+    ],
+    "timestamp": "2026-03-31T01:24:08.829701"
+  },
+  {
+    "question": "Communication by phone is indeed a ______ activity, no party needs to be running forever waiting for the other party to call",
+    "answer": [
+      "P2P"
+    ],
+    "timestamp": "2026-03-31T01:48:36.584352"
+  },
+  {
+    "question": "An instruction that transfers program control to one or more possible paths is known as",
+    "answer": [
+      "None of the others"
+    ],
+    "timestamp": "2026-03-31T01:50:04.193782"
   }
 ]
