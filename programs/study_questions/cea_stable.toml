@@ -1,4 +1,4 @@
-version = 3
+version = 4
 
 [[questions]]
 question = "The stored-program concept means a computer could get its instructions by reading them from memory, and a program could be set or altered by setting the values of a portion of memory."
@@ -107,8 +107,8 @@ answer = "00101100"
 
 [[questions]]
 question = "What is the output of Left Shift Operator << on (00110010<<2)?"
-choices = ["01100000", "11000000", "0000110", "0000011"]
-answer = "01100000"
+choices = ["0000011", "11000000", "0000110", "11001000"]
+answer = "11001000"
 
 [[questions]]
 question = "Express an integer number +16 (using 8-bits length) in twos complement representation"
@@ -267,13 +267,13 @@ answer = ["Because there is a significant speed gap between the processor and th
 
 [[questions]]
 question = "In the computer, what categories do external devices include? (choose 3 correct answers)"
-choices = ["Human readable", "Communication", "Data Conversion", "Machine readable"]
-answer = ["Human readable", "Communication", "Data Conversion"]
+choices = ["Human readable", "Communication", "Machine readable", "Data Conversion"]
+answer = ["Human readable", "Communication", "Machine readable"]
 
 [[questions]]
 question = "Regarding the ALU (Arithmetic Logic Unit), besides basic arithmetic operations, what operations can it perform? (choose two correct answers)"
-choices = ["It handles logical operations such as AND, OR, XOR, NOT", "It handles data transfer operations like MOVE, GO, JUMP", "It handles decoding operations after an instruction is fetched", "It handles bit shifting operations like multi and div operations by powers of two"]
-answer = ["It handles logical operations such as AND, OR, XOR, NOT", "It handles data transfer operations like MOVE, GO, JUMP"]
+choices = ["It handles bit shifting operations like multi and div operations by powers of two", "It handles data transfer operations like MOVE, GO, JUMP", "It handles decoding operations after an instruction is fetched", "It handles logical operations such as AND, OR, XOR, NOT"]
+answer = ["It handles bit shifting operations like multi and div operations by powers of two", "It handles logical operations such as AND, OR, XOR, NOT"]
 
 [[questions]]
 question = " is a set of physical disk drives viewed by the operating system as a single logical drive"
@@ -342,8 +342,8 @@ answer = "NOT A AND NOT B"
 
 [[questions]]
 question = "Consider an expression. NOT (A OR B) Choose the correct expression that is equal to the given expression."
-choices = ["A NOR B", "A NAND B", "NOT A NOR B", "NOT A OR B"]
-answer = "A NAND B"
+choices = ["A NAND B", "NOT A OR B", "NOT A NOR B", "A NOR B"]
+answer = "A NOR B"
 
 [[questions]]
 question = "Assume that a truth table:\nX Y OUTPUT\n1 1 1\n1 0 1\n0 1 1\n0 0 0\nWhich basic operator matches the table above?"
@@ -842,7 +842,7 @@ answer = "Hard Disk - NAND Flash - DRAM - SRAM"
 
 [[questions]]
 question = "Which of the following are the four basic functions that a computer performs?"
-choices = ["Data processing, Interrupt, Data movement, Control", "Data processing, Data storage, Data movement, Control", "Data processing, Data movement, Interrupt.", "Data processing, Data storage, Interrupt, Control"]
+choices = ["Data processing, Data storage, Interrupt, Control", "Data processing, Data movement, Interrupt.", "Data processing, Interrupt, Data movement, Control", "Data processing, Data storage, Data movement, Control"]
 answer = "Data processing, Data storage, Data movement, Control"
 
 [[questions]]
