@@ -1,4 +1,4 @@
-version = 2
+version = 3
 
 [[questions]]
 filename = "slide_001.png"
@@ -130,7 +130,7 @@ answer = "double average( double, double);"
 filename = "slide_022.png"
 question = "Which implicit type casting is used in the following codes in C programming? Ho\u00e0ng Ho\u00e0ng"
 choices = ["int i = (double)123.5;", "double t = double(2);", "double t = (double) 2;", "double t = (int) 2.7;"]
-answer = "double t = (double) 2;"
+answer = "int i = (double)123.5;"
 
 [[questions]]
 filename = "slide_023.png"
@@ -140,9 +140,9 @@ answer = "char arr[] = \"Hello\";"
 
 [[questions]]
 filename = "slide_024.png"
-question = "Which of the following statements has a different result from the other statements?\nA. char c1 = 'B'; printf(\"%c\",c1);\nB. char c2 = 066; printf(\"%c\",c2);\nC. char c3 = 0x42; printf(\"%c\",c3);\nD. char c4 = 0102; printf(\"%c\",c4);"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option B"
+question = "Which of the following statements has a different result from the other statements?"
+choices = ["char c1 = 'B'; printf(\"%c\",c1);", "char c2 = 066; printf(\"%c\",c2);", "char c3 = 0x42; printf(\"%c\",c3);", "char c4 = 0102; printf(\"%c\",c4);"]
+answer = "char c2 = 066; printf(\"%c\",c2);"
 
 [[questions]]
 filename = "slide_025.png"
@@ -153,8 +153,8 @@ answer = "printf(\"\\\\\");"
 [[questions]]
 filename = "slide_026.png"
 question = "Which of the following is the correct syntax of the do-while statement?"
-choices = ["do{ statements; } while(condition);", "do while(condition) { statements;}", "do{ statements; } while (condition)", "do{ statements; } while (condition);"]
-answer = "do{ statements; } while(condition);"
+choices = ["do{ statements; } while(condition) ;", "do while(condition) { statements;}", "do{ statements; } while (condition)", "do{ statements; } while (condition) ;"]
+answer = "do{ statements; } while(condition) ;"
 
 [[questions]]
 filename = "slide_027.png"
@@ -212,13 +212,13 @@ answer = "FILE *f = fopen(\"output.txt\", \"a\");"
 
 [[questions]]
 filename = "slide_036.png"
-question = "int *ptr = malloc( sizeof( int ) ); To reallocate ptr to be an array of 5 elements, which of the following statements generates an error?"
+question = "int *ptr = malloc( sizeof( int ) );\nTo reallocate ptr to be an array of 5 elements, which of the following statements generates an error?"
 choices = ["ptr = realloc( ptr, 5 * sizeof(int) );", "realloc( ptr, 5 * sizeof(int) );", "ptr += malloc( 5 * sizeof( int ) );", "realloc( ptr, 20);", "ptr = realloc( ptr, 20);"]
 answer = "ptr += malloc( 5 * sizeof( int ) );"
 
 [[questions]]
 filename = "slide_037.png"
-question = "int *ptr = malloc( sizeof( int ) ); To reallocate ptr to be an array of 5 elements, which of the following statements generates an error?"
+question = "int *ptr = malloc( sizeof( int ) );\nTo reallocate ptr to be an array of 5 elements, which of the following statements generates an error?"
 choices = ["ptr = realloc( ptr, 5 * sizeof(int) );", "realloc( ptr, 5 * sizeof(int) );", "ptr += malloc( 5 * sizeof( int ) );", "realloc( ptr, 20);", "ptr = realloc( ptr, 20);"]
 answer = "ptr += malloc( 5 * sizeof( int ) );"
 
@@ -254,7 +254,7 @@ answer = "continue;"
 
 [[questions]]
 filename = "slide_044.png"
-question = "A one dimensional array A has indices 1...100. Each element is a string and takes up three byte. The starting address of the array A[1] is 1110 decimal. The address of A[49] is _____."
+question = "A one dimensional array A has indices 1...100. Each element is a string and takes up three byte. The starting address of the array A[1] is 1110 decimal. The address of A[49] is ____"
 choices = ["1254", "1158", "1159", "1257"]
 answer = "1254"
 
@@ -273,14 +273,14 @@ answer = "0000 0000 1111 1011(2)"
 [[questions]]
 filename = "slide_048.png"
 question = "The strcmp() compares two strings character by character. If the strings are equal, the function returns..."
-choices = ["1", "0", "-1"]
+choices = ["1", "0", "-1", "text of option D"]
 answer = "0"
 
 [[questions]]
 filename = "slide_049.png"
 question = "What is the result of the statement strcmp(\"abcdef\", \"abdc\")?"
-choices = ["1", "0", "-1", "-1"]
-answer = "-1"
+choices = ["1", "0", "-1", ""]
+answer = "1"
 
 [[questions]]
 filename = "slide_050.png"
@@ -290,9 +290,9 @@ answer = "0"
 
 [[questions]]
 filename = "slide_051.png"
-question = "Given two character strings s1=\"C\" and s2=\"C and C++\", the function strcmp(s1, s2) will return the value _____."
+question = "Given two character strings s1=\"C\" and s2=\"C and C++\", the function strcmp(s1, s2) will return the value _____"
 choices = ["0", "1", "-1", "<0", ">0"]
-answer = "<0"
+answer = "0"
 
 [[questions]]
 filename = "slide_052.png"
@@ -310,49 +310,49 @@ answer = "1"
 filename = "slide_054.png"
 question = "What is the return value of the strcmp(\"abc\", \"Abcdef\") function?"
 choices = ["1", "0", "-1", "2"]
-answer = "-1"
+answer = "1"
 
 [[questions]]
 filename = "slide_055.png"
-question = "What will the following if-else statement output if x = 10?\n\nif (x > 5)\n    printf(\"Greater\");\nelse\n    printf(\"Smaller\");"
+question = "What will the following if-else statement output if x = 10?\nif (x > 5)\n    printf(\"Greater\");\nelse\n    printf(\"Smaller\");"
 choices = ["Greater", "Smaller", "Equal", "None of the others"]
 answer = "Greater"
 
 [[questions]]
 filename = "slide_068.png"
-question = "What will the following program output?\n\n#include <stdio.h>\n\nint main()\n{\n    int n, m;\n    m = 6;\n    n = 2 * ++m;\n    printf(\"n is %d and m is %d\\n\", n, m);\n    n = 3 - m++;\n    printf(\"and n is %d and m is %d\\n\", n, m);\n    return 0;\n}"
-choices = ["14 7 and -4 8", "6 2 and 3 5", "option C", "option D"]
+question = "What will the following program output?\n\n#include <stdio.h>\n\nint main()\n{\n    int n, m;\n    m = 6;\n    n = 2 * ++m;\n    printf(\"n is %d and m is %d\\n\", n, m);\n    n = 3 - m++;\n    printf(\"and n is %d and m is %d\\n\", n, m);\n    return 0;\n}\n\nA. 14 7 and -4 8\nB. 6 2 and 3 5"
+choices = ["14 7 and -4 8", "6 2 and 3 5"]
 answer = "14 7 and -4 8"
 
 [[questions]]
 filename = "slide_081.png"
-question = "What does the following program print?\n#include <stdio.h>\nfloat max(float a, float b) {\n    return a > b ? a : b;\n}\n\nint main() {\n    float x = 5.5, y = 4.5, z = 2;\n    printf(\"%f\", max(x++, y--, ++z));\n    return 0;\n}"
+question = "What does the following program print?\n#include <stdio.h>\nfloat max(float a, float b) {\n    return a > b ? a : b;\n}\n\nint main() {\n    float x = 5.5, y = 4.5, z = 2;\n    printf(\"%f\", max(x++, y--, ++z));\n    return 0;\n}\n\nA. 5.5\nB. 5.500000\nC. 4.500000\nD. An error will be raised."
 choices = ["5.5", "5.500000", "4.500000", "An error will be raised."]
 answer = "An error will be raised."
 
 [[questions]]
 filename = "slide_122.png"
-question = "What will be the output of the C program?\nchar temp;\nchar arr[10] = {1, 2, 3, 4, 5, 6, 7, 8};\ntemp = (arr + 1)[2];\nprintf(\"%d\\n\", temp);"
+question = "What will be the output of the C program?  \nchar temp;  \nchar arr[10] = {1, 2, 3, 4, 5, 6, 7, 8};  \ntemp = (arr + 1)[2];  \nprintf(\"%d\\n\", temp);"
 choices = ["1", "2", "3", "4"]
 answer = "4"
 
 [[questions]]
 filename = "slide_134.png"
-question = "What will be the output of the following code?\n#include <stdio.h>\n\nint main() {\n    int a = 1, b = 1;\n    int result = ++a + ++b;\n    printf(\"%d %d %d\\n\", result, a, b);\n    return 0;\n}"
+question = "What will be the output of the following code?\n#include <stdio.h>\nint main() {\n    int a = 1, b = 1;\n    int result = ++a + ++b;\n    printf(\"%d %d %d\\n\", result, a, b);\n    return 0;\n}"
 choices = ["4 2 2", "0 2 2", "1 2 2", "2 2 2"]
 answer = "4 2 2"
 
 [[questions]]
 filename = "slide_144.png"
 question = "What is the output of this code?\n\nint i = 5;\n\nfor (; i > 0; i--) {\n    printf(\"%d\", i);\n}\n\nA. 5 4 3 2 1\nB. 5 4 3 2 1 0\nC. 5 3 1\nD. 5 4 2"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option A"
+choices = ["5 4 3 2 1", "5 4 3 2 1 0", "5 3 1", "5 4 2"]
+answer = "5 4 3 2 1"
 
 [[questions]]
 filename = "slide_145.png"
 question = "What is the output of the following code?\nchar s[] = \"fpt\";\nint i = strlen(s);\nwhile (i)\n    printf(\"%s\", s + --i);"
-choices = ["tptft", "fpttp", "tfptp", "Compile error"]
-answer = "tptft"
+choices = ["tptfpt", "fpttp", "tfptp", "Compile error"]
+answer = "tptfpt"
 
 [[questions]]
 filename = "slide_146.png"
@@ -362,21 +362,21 @@ answer = "1005"
 
 [[questions]]
 filename = "slide_147.png"
-question = "What is the result displayed on the screen of the following program?\n#include <stdio.h>\n\nint main()\n{\n    int x, *p;\n    x = 3;\n    x = 6;\n    p = &x;\n    *p = 9;\n    printf(\"%d\", x);\n    printf(\"%d\", *p);\n}"
+question = "What is the result displayed on the screen of the following program?\n#include <stdio.h>\n\nint main()\n{\n    int x, *p;\n    x = 3;\n    x = 6;\n    p = &x;\n    *p = 9;\n    printf(\"%d\", x);\n    printf(\"%d\", *p);\n}\n\nA. None of these\nB. 99\nC. 39\nD. 69"
 choices = ["None of these", "99", "39", "69"]
 answer = "99"
 
 [[questions]]
 filename = "slide_148.png"
-question = "What is the output of the following code snippet?\nvoid main(){\n    int x = 4;\n    int *p = &x;\n    int *k = p++;\n    int r = p - k;\n    printf(\"%d\", r);\n}"
+question = "What is the output of the following code snippet?\nvoid main(){\nint x = 4;\nint *p = &x;\nint *k = p++;\nint r = p - k;\nprintf(\"%d\", r);\n}\nA. 1\nB. 4\nC. 5\nD. 0"
 choices = ["1", "4", "5", "0"]
 answer = "1"
 
 [[questions]]
 filename = "slide_149.png"
-question = "What is the result displayed on the screen of the following program?\n#include <stdio.h>\nint main()\n{\n    int i;\n    i = 10;\n    printf(\"%o\", i);\n}"
+question = "What is the result displayed on the screen of the following program?\n#include <stdio.h>\nint main()\n{\n    int i;\n    i = 10;\n    printf(\"%o\", i);\n}\nA. 12\nB. 8\nC. 10\nD. None of these"
 choices = ["12", "8", "10", "None of these"]
-answer = "8"
+answer = "12"
 
 [[questions]]
 filename = "slide_150.png"
@@ -398,7 +398,7 @@ answer = "14"
 
 [[questions]]
 filename = "slide_153.png"
-question = "Suppose there is a function in C as follows:\ndouble g (double x, double y){\nreturn (x - 2)(x - 2) + yy;\n}\nWhat is the value of z after executing the statement z=g(2,0)?"
+question = "Suppose there is a function in C as follows:\ndouble g (double x, double y){\nreturn (x - 2)(x - 2) + yy;\n}\nWhat is the value of z after executing the statement z=g(2,0)?\nA. 0\nB. 4\nC. 2\nD. 8"
 choices = ["0", "4", "2", "8"]
 answer = "0"
 
@@ -434,13 +434,13 @@ answer = "x is less than y"
 
 [[questions]]
 filename = "slide_159.png"
-question = "What is the output when the sample code below is executed?\n#include <stdio.h>\nint main()\n{\n    int i, j, result=0;\n    for(i=3; i<=5; i++){\n        for(j=5; j>i; j--)\n            result+=j;\n    }\n    printf(\"%d\", result);\n    return 0;\n}\nA. 14\nB. 15\nC. 16\nD. 20"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option A"
+question = "What is the output when the sample code below is executed?\n#include <stdio.h>\nint main()\n{\n    int i, j, result=0;\n    for(i=3; i<=5; i++){\n        for(j=5; j>i; j--)\n            result+=j;\n    }\n    printf(\"%d\", result);\n    return 0;\n}"
+choices = ["14", "15", "16", "20"]
+answer = "14"
 
 [[questions]]
 filename = "slide_161.png"
-question = "What is the result displayed on the screen of the following program?\n\n#include<stdio.h>\nint isTriangle(float a, float b, float c)\n{\n    if ((a>0)&&(b>0)&&(c>0)&&(a<b+c)&&(b<c+a)&&(c<a+b))\n        return 1;\n    else\n        return 0;\n}\nint main()\n{\n    float a = 1, b = 1, c = 1.25;\n    if(isTriangle(a, b, c))\n        printf(\"%2.2f, %2.2f, %2.2f: a triangle \\n\", a, b, c);\n    else\n        printf(\"%2.2f, %2.2f, %2.2f: not a triangle \\n\", a, b, c);\n    return 0;\n}"
+question = "What is the result displayed on the screen of the following program?\n#include<stdio.h>\nint isTriangle(float a, float b, float c)\n{\nif ((a>0)&&(b>0)&&(c>0)&&(a<b+c)&&(b<c+a)&&(c<a+b))\nreturn 1;\nelse\nreturn 0;\n}\nint main()\n{\nfloat a = 1, b = 1, c = 1.25;\nif(isTriangle(a, b, c))\nprintf(\"%2.2f, %2.2f, %2.2f: a triangle \\n\", a, b, c);\nelse\nprintf(\"%2.2f, %2.2f, %2.2f: not a triangle \\n\", a, b, c);\nreturn 0;\n}\nA. a, b, c: a triangle\nB. 1.00, 1.00, 1.25: a triangle\nC. 1, 1, 1.25: a triangle\nD. 1.00, 1.00, 1.25: not a triangle"
 choices = ["a, b, c: a triangle", "1.00, 1.00, 1.25: a triangle", "1, 1, 1.25: a triangle", "1.00, 1.00, 1.25: not a triangle"]
 answer = "1.00, 1.00, 1.25: a triangle"
 
@@ -452,7 +452,7 @@ answer = "9"
 
 [[questions]]
 filename = "slide_163.png"
-question = "What is the result of the \"printf(\"%d\", 0x11 | 010);\" command?"
+question = "What is the result of the \"printf(\"%d\", 0x11 | 010),\" command?"
 choices = ["5", "22", "18", "25", "28"]
 answer = "25"
 
@@ -464,15 +464,15 @@ answer = "25"
 
 [[questions]]
 filename = "slide_165.png"
-question = "Assume we have the following code:\nint i=4;\nint *p = &i;\nWhat is the result of the following expression: ++*p?"
+question = "Assume we have the following code: int i=4; int *p = &i; What is the result of the following expression: ++*p? Ho\u00e0ng Ho\u00e0ng"
 choices = ["5", "4", "9", "12"]
 answer = "5"
 
 [[questions]]
 filename = "slide_175.png"
-question = "Assume we have a snippet code in C:\nint main() {\n    int *p = NULL;\n    printf(\"%d\", p);\n    getchar();\n    return 0;\n}\nThe output will be:\nA. 0\nB. 1\nC. 10\nD. 100"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option A"
+question = "Assume we have a snippet code in C:\nint main() {\n    int *p = NULL;\n    printf(\"%d\",p);\n    getchar();\n    return 0;\n}\nThe output will be:\nA. 0\nB. 1\nC. 10\nD. 100"
+choices = ["0", "1", "10", "100"]
+answer = "0"
 
 [[questions]]
 filename = "slide_176.png"
@@ -488,19 +488,13 @@ answer = "11,11"
 
 [[questions]]
 filename = "slide_178.png"
-question = "What is the output of the following code snippet?\n#include <stdio.h>\nint num(int a, int b){\n    int sum;\n    sum = a + b;\n    return sum;\n}\nint main()\n{\n    int a, b, result;\n    a = 10;\n    b= 12;\n    result = num(a, b);\n    printf(\"%d\", result);\n    return 0;\n}"
+question = "What is the output of the following code snippet?\n#include <stdio.h>\nint num(int a, int b){\n    int sum;\n    sum = a + b;\n    return sum;\n}\nint main()\n{\n    int a, b, result;\n    a = 10;\n    b= 12;\n    result = num(a, b);\n    printf(\"%d\", result);\n    return 0;\n}\n\nA. 22\nB. 10\nC. 12\nD. 21"
 choices = ["22", "10", "12", "21"]
 answer = "22"
 
 [[questions]]
-filename = "slide_179.png"
-question = "How many times will the loop execute?\nint i = 0;\nwhile (i < 4) {\n    printf(\"%d\", i);\n    i += 2;\n}"
-choices = ["2", "1", "3", "4"]
-answer = "2"
-
-[[questions]]
 filename = "slide_180.png"
-question = "What is the value of z after the \"int a = 8, b = 6, c = 4, b++ * ++c + --a;\" command?"
+question = "What is the value of z after the \"int a = 8, b = 6, c = 4, b++ * ++c + --a,\" command?"
 choices = ["16", "28", "37", "32", "-28"]
 answer = "37"
 
@@ -508,7 +502,7 @@ answer = "37"
 filename = "slide_181.png"
 question = "What is the result when converting 0101010 in binary system to decimal system?"
 choices = ["78", "76", "74", "72"]
-answer = "74"
+answer = "78"
 
 [[questions]]
 filename = "slide_182.png"
@@ -524,15 +518,15 @@ answer = "1264"
 
 [[questions]]
 filename = "slide_184.png"
-question = "What will be the output of the following C code?\n#include <stdio.h>\nvoid main()\n{\nint total=0;\nfor(int s=1; s<15; s++)\ntotal=total+s;\nprintf(\"%d\",total);\n}"
+question = "What will be the output of the following C code?\n#include <stdio.h>\nvoid main()\n{\nint total=0;\nfor(int s=1; s<15; s++)\ntotal=total+s;\nprintf(\"%d\",total);\n}\nA. 105\nB. 150\nC. 120\nD. 210"
 choices = ["105", "150", "120", "210"]
 answer = "105"
 
 [[questions]]
 filename = "slide_185.png"
-question = "What will be the output of the following C code?\n#include <stdio.h>\nvoid main()\n{\nchar result = 125;\nresult = result + 5;\nprintf(\"%d\", result);\n}"
+question = "What will be the output of the following C code?\n#include <stdio.h>\nvoid main()\n{\nchar result = 125;\nresult = result + 5;\nprintf(\"%d\", result);\n}\nA. 130\nB. -130\nC. 126\nD. -126"
 choices = ["130", "-130", "126", "-126"]
-answer = "-130"
+answer = "-126"
 
 [[questions]]
 filename = "slide_186.png"
@@ -544,19 +538,13 @@ answer = "3 7"
 filename = "slide_187.png"
 question = "What will be printed when the following code is executed?\n#include <stdio.h>\nint main() {\n    int a[] = {1,2,3,4,5,6};\n    int* p = a;\n    p += 3;\n    printf(\"%d, %d\", *(a+3), *(p++));\n    return 0;\n}"
 choices = ["4 5", "3 4", "3 3", "4 4"]
-answer = "4 4"
+answer = "4 5"
 
 [[questions]]
 filename = "slide_188.png"
-question = "What is the output when the sample code below is executed?\n#include<stdio.h>\nint main()\n{\n    int a=5, b=10;\n    while(a>0)\n    {\n        label:{\n            a--;\n            b--;\n        }\n        while(b>5)\n        {\n            goto label;\n        }\n    }\n    printf(\"%d %d\",a,b);\n    return 0;\n}"
+question = "What is the output when the sample code below is executed?\n#include<stdio.h>\nint main()\n{\n    int a=5, b=10;\n    while(a>0)\n    {\n        label:{\n            a--;\n            b--;\n        }\n    }\n    while(b>5)\n    {\n        goto label;\n    }\n    printf(\"%d %d\",a,b);\n    return 0;\n}\nA. 0 5\nB. 5 10\nC. 10 5\nD. 0 0"
 choices = ["0 5", "5 10", "10 5", "0 0"]
 answer = "0 5"
-
-[[questions]]
-filename = "slide_189.png"
-question = "What will be printed when the following code is executed?\n#include <stdio.h>\nint a = 5, b = 6;\nvoid cal1(int a, int b){\n    a++;\n    b--;\n}\nvoid cal2(){\n    a++;\n    b--;\n}\nint main() {\n    cal1(a,b);\n    printf(\"a = %d, b = %d\\n\", a, b);\n    cal2(a,b);\n    printf(\"a = %d, b = %d\\n\", a, b);\n    cal2(a,b);\n    printf(\"a = %d, b = %d\\n\", a, b);\n    return 0;\n}"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option D"
 
 [[questions]]
 filename = "slide_190.png"
@@ -602,9 +590,9 @@ answer = "11,11"
 
 [[questions]]
 filename = "slide_197.png"
-question = "#include <stdio.h>\nint main()\n{\n    int a[]={7,4,8,5,9};\n    int* b=a;\n    b++;\n    printf(\"%d %d\", *(b++), *(a+3));\n    getchar();\n    return 0;\n}\n\nWhat will be printed when the following code is executed?\n\nA. 8 8\nB. 4 8\nC. 8 5\nD. 4 5"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option C"
+question = "#include <stdio.h>\nint main()\n{\n    int a[]={7,4,8,5,9};\n    int* b=a;\n    b++;\n    printf(\"%d %d\", *(b++), *(a+3));\n    getchar();\n    return 0;\n}\n\nWhat will be printed when the following code is executed?"
+choices = ["8 8", "4 8", "8 5", "4 5"]
+answer = "8 8"
 
 [[questions]]
 filename = "slide_198.png"
@@ -638,19 +626,19 @@ answer = "-20;90;8"
 
 [[questions]]
 filename = "slide_203.png"
-question = "What is the results will be displayed on the screen after executing the following code:\nchar s[] = \"AbCd\";\nprintf(\"%d,%d,%d,%d\", s[1], s[2], s[3], s[4]);"
+question = "What is the results will be displayed on the screen after executing the following code: char s[] = \"AbCd\"; printf(\"%d,%d,%d,%d\", s[1], s[2], s[3], s[4]);"
 choices = ["97;98;99;100", "65;66;67;68", "65;98;67;100", "98;67;100;0"]
-answer = "98;67;100;0"
+answer = "97;98;99;100"
 
 [[questions]]
 filename = "slide_204.png"
-question = "What is the output when the sample code below is executed?"
+question = "What is the output when the sample code below is executed? Ho\u00e0ng Ho\u00e0ng\n#include <stdio.h>\nint main() {\n    int i = 10;\n    do {\n        printf(\"%d \", i);\n        i -= 2;\n    } while (i >= 1);\n    return 0;\n}"
 choices = ["10 8 6 4 2", "10 8 6 4 2 0", "10 8 6 4 2 0 -2 -4", "10 9 8 7 6 5 4 3 2"]
 answer = "10 8 6 4 2"
 
 [[questions]]
 filename = "slide_205.png"
-question = "What will the following program print?\n\n#include <stdio.h>\n\nint main()\n{\n    int i, j;\n\n    for(i = 0, j = 9; i < j; i--, j -= 1)\n        printf(\"%d %d \", i, j);\n\n    return 0;\n}"
+question = "What will the following program print?\n#include <stdio.h>\nint main()\n{\n    int i, j;\n    for(i = 0, j = 9; i < j; i--, j -= 1)\n        printf(\"%d %d \", i, j);\n    return 0;\n}\n\nA. 0 1 0 1 9 2 8 3 7 4 6\nB. 0 1 0 1 8 2 6 3 4\nC. 0 9 1 8 2 7 3 6 4 5\nD. An error will be raised."
 choices = ["0 1 0 1 9 2 8 3 7 4 6", "0 1 0 1 8 2 6 3 4", "0 9 1 8 2 7 3 6 4 5", "An error will be raised."]
 answer = "0 9 1 8 2 7 3 6 4 5"
 
@@ -687,8 +675,8 @@ answer = "2.000000"
 [[questions]]
 filename = "slide_212.png"
 question = "What will be the output of the C program?\n#include<stdio.h>\nvoid myFunction(int i)\n{\nprintf(\"%d\",i);\n}\nint main()\n{\nmyFunction();\nreturn 0;\n}\nA. 0\nB. 2\nC. Compiler error.\nD. 4"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option C"
+choices = ["0", "2", "Compiler error.", "4"]
+answer = "Compiler error."
 
 [[questions]]
 filename = "slide_213.png"
@@ -698,9 +686,9 @@ answer = "1"
 
 [[questions]]
 filename = "slide_214.png"
-question = "What is the output when the sample code below is executed?\n#include<stdio.h>\nint main()\n{\n    20 > 30? return 1 : return 2;\n}\n\nA. Compile time error\nB. 1\nC. 2\nD. return 1:return 2"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option A"
+question = "What is the output when the sample code below is executed?\n#include<stdio.h>\nint main()\n{\n20 > 30? return 1 : return 2;\n}\n\nA. Compile time error\nB. 1\nC. 2\nD. return 1:return 2"
+choices = ["Compile time error", "1", "2", "return 1:return 2"]
+answer = "Compile time error"
 
 [[questions]]
 filename = "slide_215.png"
@@ -710,43 +698,43 @@ answer = "1"
 
 [[questions]]
 filename = "slide_216.png"
-question = "What does the following program display?\n#include<stdio.h>\nint main()\n{\n    int x[] = {1, 2, 3, 4, 5};\n    int y = 3;\n    printf(\"%d\", x[y]);\n    return 0;\n}"
+question = "What does the following program display?\n#include<stdio.h>\nint main()\n{\nint x[] = {1, 2, 3, 4, 5};\nint y = 3;\nprintf(\"%d\", x[y]);\n\nreturn 0;\n}"
 choices = ["2", "3", "4", "An error will be raised."]
 answer = "4"
 
 [[questions]]
 filename = "slide_217.png"
-question = "What does the following program display?\n\n#include <stdio.h>\n\nint main()\n{\n    int a[5] = {1, 2, 3};\n    printf(\"%d\", a[0]);\n    return 0;\n}\n\nA. 3\nB. 2\nC. 1\nD. An error will be raised"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option C"
+question = "What does the following program display?\n#include <stdio.h>\nint main()\n{\n    int a[5] = {1, 2, 3};\n    printf(\"%d\", a[0]);\n    return 0;\n}\nA. 3\nB. 2\nC. 1\nD. An error will be raised"
+choices = ["3", "2", "1", "An error will be raised"]
+answer = "1"
 
 [[questions]]
 filename = "slide_218.png"
 question = "What will be the output of the C program?\nint default = 5, a = 3;\nif(a > 2)\nprintf(\"%d\", default);"
-choices = ["2", "5", "Compilation error", "3"]
-answer = "Compilation error"
+choices = ["2", "5", "Compilation error.", "3"]
+answer = "5"
 
 [[questions]]
 filename = "slide_219.png"
-question = "What is the result of this code?\n\nint a = 10;\nint b = 3;\nfloat c = a / b;\nprintf(\"%.1f\", c);"
+question = "What is the result of this code?\nint a = 10;\nint b = 3;\nfloat c = a / b;\nprintf(\"%.1f\", c);"
 choices = ["3", "3.3", "3.0", "Compile error"]
 answer = "3.0"
 
 [[questions]]
 filename = "slide_220.png"
-question = "What is the output when the sample code below is executed?"
+question = "What is the output when the sample code below is executed? Ho\u00e0ng Ho\u00e0ng\n#include<stdio.h>\nint main()\n{\n    const int a=5;\n    if(a>3)\n        a++;\n        break;\n    else\n        a--;\n    printf(\"%d\",a);\n    return 0;\n}"
 choices = ["Compile time error", "6", "4", "5"]
 answer = "Compile time error"
 
 [[questions]]
 filename = "slide_221.png"
-question = "What is the output of the following code snippet?\nvoid main()\n{\n    int const *p = 5;\n    printf(\"%d\", ++(*p));\n    getchar();\n}"
+question = "What is the output of the following code snippet?\nvoid main()\n{\nint const *p = 5;\nprintf(\"%d\", ++(*p));\ngetchar();\n}\nA. Compile error\nB. 5\nC. NULL\nD. 6"
 choices = ["Compile error", "5", "NULL", "6"]
 answer = "Compile error"
 
 [[questions]]
 filename = "slide_222.png"
-question = "What will be the output of the following C code?\n#include <stdio.h>\nvoid main()\n{\n    int k = 5;\n    int *p = &k;\n    int **m = &p;\n    **m = 6;\n    printf(\"%d\\n\", k);\n}"
+question = "What will be the output of the following C code?\n#include <stdio.h>\nvoid main()\n{\nint k = 5;\nint *p = &k;\nint **m = &p;\n**m = 6;\nprintf(\"%d\\n\", k);\n}\nA. 5\nB. Run time error\nC. 6\nD. Junk"
 choices = ["5", "Run time error", "6", "Junk"]
 answer = "6"
 
@@ -764,7 +752,7 @@ answer = "10"
 
 [[questions]]
 filename = "slide_225.png"
-question = "What is the output of the following code snippet?\n#include<stdio.h>\nint main()\n{\n    const int *p;\n    int a = 100;\n    p = &a;\n    printf(\"%d\", *p);\n    return 0;\n}"
+question = "What is the output of the following code snippet?\n#include<stdio.h>\nint main()\n{\nconst int *p;\nint a = 100;\np = &a;\nprintf(\"%d\", *p);\nreturn 0;\n}"
 choices = ["100", "0", "101", "Compile error"]
 answer = "100"
 
@@ -782,7 +770,7 @@ answer = "48 2"
 
 [[questions]]
 filename = "slide_228.png"
-question = "What will be printed when the following code is executed?\n\n#include <stdio.h>\n\nint main() {\n    int a = 7, b = 6;\n    printf(\"%d\", ++a > b ? a : b);\n    return 0;\n}"
+question = "What will be printed when the following code is executed?\n#include <stdio.h>\nint main() {\n    int a = 7, b = 6;\n    printf(\"%d\", ++a > b ? a : b);\n    return 0;\n}\nA. 6\nB. Results are not printed\nC. 8\nD. Error\nE. 7"
 choices = ["6", "Results are not printed", "8", "Error", "7"]
 answer = "8"
 
@@ -794,15 +782,15 @@ answer = "333"
 
 [[questions]]
 filename = "slide_230.png"
-question = "What will be the output of the following C code?\n#include <stdio.h>\nvoid main()\n{\n    int i = 10, j = 3, k = 3;\n    printf(\"%d %d\", i, j, k);\n}"
+question = "What will be the output of the following C code?\n#include <stdio.h>\nvoid main()\n{\nint i = 10, j = 3, k = 3;\nprintf(\"%d %d\", i, j, k);\n}\nA. Compile time error\nB. 10 3 3\nC. 10 3\nD. 10 3 somegarbage value"
 choices = ["Compile time error", "10 3 3", "10 3", "10 3 somegarbage value"]
 answer = "10 3"
 
 [[questions]]
 filename = "slide_231.png"
 question = "What will be the output of the C program?\nint 2_var = 15;\nprintf(\"%d\", 2_var);\nA. 0\nB. 15\nC. Compilation error\nD. Runtime error"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option C"
+choices = ["0", "15", "Compilation error", "Runtime error"]
+answer = "Compilation error"
 
 [[questions]]
 filename = "slide_232.png"
@@ -812,7 +800,7 @@ answer = "10"
 
 [[questions]]
 filename = "slide_234.png"
-question = "Given the following code snippet:  \n#include <stdio.h>  \n#define MONTHS_IN_YEAR 12  \nint main() {  \n    const int WORKING_DAYS = 22;  \n    printf(\"%d \", MONTHS_IN_YEAR);  \n    printf(\"%d\", WORKING_DAYS);  \n    return 0;  \n}  \nChoose the correct statement:"
+question = "Given the following code snippet: Ho\u00e0ng Ho\u00e0ng #include <stdio.h> #define MONTHS_IN_YEAR 12 int main() { const int WORKING_DAYS = 22; printf(\"%d \", MONTHS_IN_YEAR); printf(\"%d\", WORKING_DAYS); return 0; } Choose the correct statement:"
 choices = ["The output will be: 12 22", "No output", "Compile error", "Runtime error"]
 answer = "The output will be: 12 22"
 
@@ -824,7 +812,7 @@ answer = "No the output"
 
 [[questions]]
 filename = "slide_236.png"
-question = "What does the following code print?\nint i = 0;\nwhile (i < 5) {\n    printf(\"%d \", i);\n    i--;\n}"
+question = "What does the following code print?\nint i = 0;\nwhile (i < 5) {\n    printf(\"%d \", i);\n    i--;\n}\nA. infinite loop\nB. 0 1 2 3 4\nC. 5 4 3 2 1 0\nD. No output\nE. Compiler error\nF. 0"
 choices = ["infinite loop", "0 1 2 3 4", "5 4 3 2 1 0", "No output", "Compiler error", "0"]
 answer = "infinite loop"
 
@@ -848,14 +836,14 @@ answer = "Runtime error."
 
 [[questions]]
 filename = "slide_240.png"
-question = "How many times will the loop execute?\nfor (int i = 0; i < 5; i++) {\n    printf(\"%d \", i);\n}"
+question = "How many times will the loop execute?\nfor (int i = 0; i < 5; i++) {\nprintf(\"%d \", i);\n}\nA. 5\nB. 4\nC. 6\nD. 0"
 choices = ["5", "4", "6", "0"]
 answer = "5"
 
 [[questions]]
 filename = "slide_242.png"
 question = "What represents dynamic allocation in C?"
-choices = ["int* a = (int*)malloc(5*sizeof(int));", "int a[5];", "int a[5][5];", "free(a);"]
+choices = ["int* a = (int*)malloc(5*sizeof(int));", "int a[5],", "int a[5][5],", "free(a),"]
 answer = "int* a = (int*)malloc(5*sizeof(int));"
 
 [[questions]]
@@ -878,15 +866,15 @@ answer = "{1, 2, 4, 5, 5}"
 
 [[questions]]
 filename = "slide_246.png"
-question = "Consider the following array of integers: {8, 1, 2, 7, 9} What will be the state of the array after one pass of selection sort? Ho\u00e0ng Ho\u00e0ng"
+question = "Consider the following array of integers: {8, 1, 2, 7, 9}\nWhat will be the state of the array after one pass of selection sort? Ho\u00e0ng Ho\u00e0ng"
 choices = ["{1, 8, 2, 7, 9}", "{8, 1, 2, 7, 9}", "{1, 2, 8, 7, 9}", "{1, 2, 7, 8, 9}"]
 answer = "{1, 8, 2, 7, 9}"
 
 [[questions]]
 filename = "slide_248.png"
 question = "Consider the following program and answer the following questions.\n#include <stdio.h>\nvoid updatePosition(int *time, float *position, float v)\n{\n    if ((*position <= 5) && (*position > -5))\n        *position += v;\n    else\n        *position += -0.1 * (*position);\n    *time += 1;\n}\nint main()\n{\n    float p = 4.0, v = 1;\n    int t = 0;\n    printf(\"t = %d, p = %f\\n\", t, p);\n    updatePosition(&t, &p, v);\n    updatePosition(&t, &p, v);\n    printf(\"t = %d, p = %f\\n\", t, p);\n}\nWhat is the result displayed to the screen?\nA. t = 0, p = 4.000000\n   t = 2, p = 6.000000\nB. t = 0, p = 4.000000\n   t = 2, p = 5.000000\nC. t = 0, p = 4.000000\n   t = 2, p = 4.500000\nD. t = 0, p = 4.000000\n   t = 2, p = 4.000000"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option A"
+choices = ["t = 0, p = 4.000000\n   t = 2, p = 6.000000", "t = 0, p = 4.000000\n   t = 2, p = 5.000000", "t = 0, p = 4.000000\n   t = 2, p = 4.500000", "t = 0, p = 4.000000\n   t = 2, p = 4.000000"]
+answer = "t = 0, p = 4.000000\n   t = 2, p = 6.000000"
 
 [[questions]]
 filename = "slide_249.png"
@@ -910,7 +898,7 @@ answer = "4 bytes"
 filename = "slide_252.png"
 question = "What is the maximum size required to store the string \"Hello\" in C?"
 choices = ["5 bytes", "6 bytes", "4 bytes", "10 bytes"]
-answer = "6 bytes"
+answer = "5 bytes"
 
 [[questions]]
 filename = "slide_253.png"
@@ -926,13 +914,13 @@ answer = "-6 and 5"
 
 [[questions]]
 filename = "slide_255.png"
-question = "What are the sizes of the memory blocks allocated for d and e?\n\nint size = 100;\nfloat *d = malloc(size);\nfloat *e = calloc(size, sizeof(float));\n\nA. 400 bytes and 400 bytes\nB. 400 bytes and 100 bytes\nC. 100 bytes and 800 bytes\nD. 100 bytes and 400 bytes"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option D"
+question = "What are the sizes of the memory blocks allocated for d and e?\nint size = 100;\nfloat *d = malloc(size);\nfloat *e = calloc(size, sizeof(float));\n\nA. 400 bytes and 400 bytes\nB. 400 bytes and 100 bytes\nC. 100 bytes and 800 bytes\nD. 100 bytes and 400 bytes"
+choices = ["400 bytes and 400 bytes", "400 bytes and 100 bytes", "100 bytes and 800 bytes", "100 bytes and 400 bytes"]
+answer = "100 bytes and 400 bytes"
 
 [[questions]]
 filename = "slide_258.png"
-question = "In linear search, if the size of the array is n and the expected value does NOT exist in the array, how many comparisons will be made between the searching item and elements in the array?"
+question = "In linear search, if the size of the array is n and the expected value does NOT exist in the array, how many comparisons will be made between the searching item and elements in the array?\nHo\u00e0ng Ho\u00e0ng"
 choices = ["n", "2n + 1", "n - 1", "n + 1"]
 answer = "n"
 
@@ -945,8 +933,8 @@ answer = "ha"
 [[questions]]
 filename = "slide_260.png"
 question = "What is the result displayed on the screen of the following program?\n#include <stdio.h>\n#include <ctype.h>\nint main() {\n    char a[] = \"hello world\";\n    int i = 0;\n    while (isspace(a[i]))\n        i++;\n    printf(\"%d, %c\", i, a[i-1]);\n    return 0;\n}\nA. 0, h\nB. 5, o\nC. 5,\nD. 5, w"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option B"
+choices = ["0, h", "5, o", "5,", "5, w"]
+answer = "5, o"
 
 [[questions]]
 filename = "slide_261.png"
@@ -986,57 +974,51 @@ answer = "abcd"
 
 [[questions]]
 filename = "slide_267.png"
-question = "What does the following program display?\n#include <stdio.h>\nint main()\n{\n    char str[] = \"Hello\";\n    printf(\"%c\", *(str + 1));\n    return 0;\n}"
+question = "What does the following program display?\n#include <stdio.h>\nint main()\n{\nchar str[] = \"Hello\";\nprintf(\"%c\", *(str + 1));\nreturn 0;\n}\nA. H\nB. I\nC. e\nD. o"
 choices = ["H", "I", "e", "o"]
 answer = "e"
 
 [[questions]]
 filename = "slide_268.png"
-question = "What does this code print?\n\nint n = 30, m = 5;\nfloat x = 3.5F, y = 8.12F;\n\nprintf(\"%d, %d\\n\", (n < m || x >= y), !(x > y));"
+question = "What does this code print?\nint n = 30, m = 5;\nfloat x = 3.5F, y = 8.12F;\nprintf(\"%d, %d\\n\", (n < m || x >= y), !(x > y));"
 choices = ["1, 0", "0, 1", "1, 1", "0, 0"]
 answer = "0, 1"
 
 [[questions]]
-filename = "slide_269.png"
-question = "What will be the output of the C program?\nint i = 5, j = 8;\nwhile (++i < -j)\nprintf(\"loop\");\nA. loop\nB. Infinite loop\nC. loop loop loop\nD. loop loop"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option A"
-
-[[questions]]
 filename = "slide_270.png"
-question = "What will be the output of the following C code?\n#include <stdio.h>\nvoid main()\n{\n    int k = 4;\n    int const p = k;\n    int r = 3;\n    printf(\"%d\", p);\n}"
+question = "What will be the output of the following C code?\n#include <stdio.h>\nvoid main()\n{\nint k = 4;\nint const p = k;\nint r = 3;\nprintf(\"%d\", p);\n}"
 choices = ["The value of p is 4", "Run time error", "Compile time error", "The value of p is a garbage value"]
 answer = "The value of p is 4"
 
 [[questions]]
 filename = "slide_271.png"
-question = "char str1[20] = \"Hello\";\nchar str2[20] = \"World\";\nstrcat(str1, str2);\nprintf(\"%s\", str1);\n\nWhat will be the result of the following C code?"
+question = "Question 1 (Choose 1 answer) char str1[20] = \"Hello\"; char str2[20] = \"World\"; strcat(str1, str2); printf(\"%s\", str1); What will be the result of the following C code?"
 choices = ["WorldHello", "HelloWorld", "Hello World", "World Helio"]
 answer = "HelloWorld"
 
 [[questions]]
 filename = "slide_272.png"
-question = "What is the result will be displayed on the screen after executing the following code:\n\nchar a[] = \"AbCdEf\";\nchar *s = a;\nfor (; s, s += 3)\n    printf(\"%s\", s);"
+question = "What is the result will be displayed on the screen after executing the following code:\nchar a[] = \"AbCdEf\";\nchar *s = a;\nfor (; s, s += 3)\nprintf(\"%s\", s);"
 choices = ["Runtime error", "Ad", "Compiler error", "AbCdEf dEf", "AbC", "dEf"]
 answer = "AbCdEf dEf"
 
 [[questions]]
 filename = "slide_273.png"
-question = "What is the output when the sample code below is executed?\n#include <stdio.h>\nint main() {\n    int x = 7;\n    for (; x > 3;)\n        printf(\"Yes\");\n    x--;\n    return 0;\n}"
+question = "What is the output when the sample code below is executed?\n#include <stdio.h>\nint main() {\n    int x = 7;\n    for (; x > 3;)\n        printf(\"Yes\");\n    x--;\n    return 0;\n}\nA. Infinite loop\nB. Compile time error\nC. YesYesYesYes\nD. Yes"
 choices = ["Infinite loop", "Compile time error", "YesYesYesYes", "Yes"]
 answer = "Infinite loop"
 
 [[questions]]
 filename = "slide_274.png"
 question = "What is the output when the sample code below is executed?\n#include <stdio.h>\nint main() {\n    int x = 10, i;\n    for (i = 0; i < x; i += 3) {\n        printf(\"One\");\n        continue;\n        printf(\"Two\");\n    }\n    return 0;\n}\nA. OneOneOneOne\nB. OneTwoOneOne\nC. OneTwoTwoTwo\nD. TwoTwoTwoOne"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option A"
+choices = ["OneOneOneOne", "OneTwoOneOne", "OneTwoTwoTwo", "TwoTwoTwoOne"]
+answer = "OneOneOneOne"
 
 [[questions]]
 filename = "slide_275.png"
 question = "What is the output when the sample code below is executed?\n#include <stdio.h>\nint main() {\n    int a = 1;\n    switch (a) {\n        case 2: printf(\"Two\");\n        case 1: printf(\"One\");\n        case 3: printf(\"Three\");\n        case 4: printf(\"Four\");\n    }\n    return 0;\n}\nA. OneThreeFour\nB. OneTwoThreeFour\nC. One\nD. TwoOneThreeFour"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option A"
+choices = ["OneThreeFour", "OneTwoThreeFour", "One", "TwoOneThreeFour"]
+answer = "OneThreeFour"
 
 [[questions]]
 filename = "slide_276.png"
@@ -1052,13 +1034,13 @@ answer = "Hi-Hi-Hi-Hi-Hello-Hello-Hello-Hi-"
 
 [[questions]]
 filename = "slide_278.png"
-question = "Choose the best comment about the output of the following C code:\n#include <stdio.h>\nvoid main() {\n    int i = 0;\n    while (i < 5) {\n        i++;\n        printf(\"Hi-\");\n        while (i < 4) {\n            i++;\n            printf(\"Hello.\");\n        }\n    }\n}"
+question = "Choose the best comment about the output of the following C code:\n#include <stdio.h>\nvoid main() {\nint i = 0;\nwhile (i < 5) {\ni++;\nprintf(\"Hi-\");\nwhile (i < 4) {\ni++;\nprintf(\"Hello.\");\n}\n}\n}"
 choices = ["Hi-Hi-Hi-Hi-Hello-Hello-Hello-Hi-", "Hi-Hi-Hi-Hi-Hi-Hello-Hello-Hello-", "Hi-Hello-Hello-Hello-Hello-Hi-", "Hi-Hello-Hello-Hello-Hi-"]
 answer = "Hi-Hi-Hi-Hi-Hello-Hello-Hello-Hi-"
 
 [[questions]]
 filename = "slide_279.png"
-question = "Consider the following program. What will be printed to the screen?\n```c\n#include <stdio.h>\nint main() {\n    char i, j;\n    for (i = 'A'; i <= 'E'; i++) {\n        for (j = 'A'; j <= i; j++) {\n            printf(\"%c\", j);\n        }\n        printf(\"\\n\");\n    }\n    return 0;\n}\n```"
+question = "Consider the following program. What will be printed to the screen?\n#include <stdio.h>\nint main() {\n    char i, j;\n    for (i = 'A'; i <= 'E'; i++) {\n        for (j = 'A'; j <= i; j++) {\n            printf(\"%c\", j);\n        }\n        printf(\"\\n\");\n    }\n    return 0;\n}"
 choices = ["A\nBB\nCCC\nDDDD\nEEEEE", "AAAAA\nBBBB\nCCC\nDD\nE", "A\nAB\nABC\nABCD\nABCDE", "A\nAA\nAAA\nAAAA\nAAAAA"]
 answer = "A\nBB\nCCC\nDDDD\nEEEEE"
 
@@ -1076,9 +1058,9 @@ answer = "b c d e f"
 
 [[questions]]
 filename = "slide_283.png"
-question = "Consider the following code snippet that reads and prints the contents of a text file named \"data.txt\":\n#include <stdio.h>\nint main() {\n    FILE *file_ptr;\n    char ch;\n    file_ptr = fopen(\"data.txt\", \"r\");\n    if (file_ptr == NULL) {\n        printf(\"Unable to open the file.\\n\");\n        return 1;\n    }\n    while ((ch = fgetc(file_ptr)) != EOF) {\n        printf(\"%c\", ch);\n    }\n    fclose(file_ptr);\n    return 0;\n}\nIf \"data.txt\" contains:\nHello\nThis is a sample text file.\nWhat will be the output?\nA. Hello\n   This is a sample text file.\nB. Hello\nC. This is a sample text file.\nD. This is a sample text file.\n   Hello"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option A"
+question = "Consider the following code snippet that reads and prints the contents of a text file named \"data.txt\":\n#include <stdio.h>\nint main() {\n    FILE *file_ptr;\n    char ch;\n    file_ptr = fopen(\"data.txt\", \"r\");\n    if (file_ptr == NULL) {\n        printf(\"Unable to open the file.\\n\");\n        return 1;\n    }\n    while ((ch = fgetc(file_ptr)) != EOF) {\n        printf(\"%c\", ch);\n    }\n    fclose(file_ptr);\n    return 0;\n}\nIf \"data.txt\" contains:\nHello\nThis is a sample text file.\nWhat will be the output?\nA. Hello\nThis is a sample text file.\nB. Hello\nC. This is a sample text file.\nD. This is a sample text file.\nHello"
+choices = ["Hello\nThis is a sample text file.", "Hello", "This is a sample text file.", "This is a sample text file.\nHello"]
+answer = "Hello\nThis is a sample text file."
 
 [[questions]]
 filename = "slide_284.png"
@@ -1088,13 +1070,13 @@ answer = "That is 1 hours and 25 minutes"
 
 [[questions]]
 filename = "slide_287.png"
-question = "Consider the following program.  \n```c\n#include <stdio.h>\nvoid announce(int i) {\n    switch (i) {\n        case 0: printf(\"\\nYou got nothing\\nGood luck next time\\n\"); break;\n        case 1: printf(\"\\nYou got in... a beer\\nCheers!\\n\"); break;\n        case 2: printf(\"\\nYou got in... a car!\\nGet your license!\\n\"); break;\n        case 3: printf(\"\\nYou got in... a tour around the world in a year!\\nSee you next year!\\n\"); break;\n        default: break;\n    }\n}\nvoid draw5times(int arr[]) {\n    printf(\"Input 5 integers\\n\");\n    scanf(\"%d %d %d %d %d\", &arr[0], &arr[1], &arr[2], &arr[3], &arr[4]);\n}\nint main() {\n    int arr[5];\n    draw5times(arr);\n    for (int i = 1; i < 5; ++i) {\n        announce((arr[i] + i) % 4);\n    }\n}\n```  \nIf user inputs: 5 4 3 2 1  \nWhat is the output?"
-choices = ["You got a beer! Cheers!", "... (other options not fully visible)"]
+question = "Consider the following program.\n#include <stdio.h>\nvoid announce(int i) {\n    switch (i) {\n        case 0: printf(\"\\nYou got nothing\\nGood luck next time\\n\");\n            break;\n        case 1: printf(\"\\nYou got in... a beer\\nCheers!\\n\");\n            break;\n        case 2: printf(\"\\nYou got in... a car!\\nGet your license!\\n\");\n            break;\n        case 3: printf(\"\\nYou got in... a tour around the world in a year!\\nSee you next year!\\n\"); break;\n        default: break;\n    }\n}\nvoid draw5times(int arr[]) {\n    printf(\"Input 5 integers \\n\");\n    scanf(\"%d %d %d %d %d\", &arr[0], &arr[1], &arr[2], &arr[3], &arr[4]);\n}\nint main() {\n    int arr[5];\n    draw5times(arr);\n    for (int i = 1; i < 5; ++i) {\n        announce((arr[i] + i) % 4);\n    }\n}\nIf user inputs: 5 4 3 2 1\nWhat is the output?\nA. You got a beer! Cheers!\nB."
+choices = ["You got a beer! Cheers!", "C.", ""]
 answer = "You got a beer! Cheers!"
 
 [[questions]]
 filename = "slide_290.png"
-question = "What will the following program output?\n#include <stdio.h>\n\nint main()\n{\n    int a = -5;\n    if (a%2 == 0)\n        printf(\"a is an positive number.\");\n    else if (a == 0)\n        printf(\"a is zero.\");\n    else\n        printf(\"a is an negative number.\");\n\n    return 0;\n}"
+question = "What will the following program output?\n#include <stdio.h>\nint main()\n{\n    int a = -5;\n    if (a%2 == 0)\n        printf(\"a is an positive number.\");\n    else if (a == 0)\n        printf(\"a is zero.\");\n    else\n        printf(\"a is an negative number.\");\n    return 0;\n}"
 choices = ["a is an positive number.", "a is an negative number.", "a is zero.", "An error will be raised."]
 answer = "a is an negative number."
 
@@ -1107,8 +1089,8 @@ answer = "20"
 [[questions]]
 filename = "slide_294.png"
 question = "Why the following code is wrong?\n#include<stdio.h>\nint main()\n{\nint choice;\nscanf(\"%d\",&choice);\nswitch(choice)\n{\ncase 1.5:\nprintf(\"You choice 1.5\");\ncase 2.3:\nprintf(\"You choice 2.3\");\n}\nreturn 0;\n}\n\nA. The case label is the real number\nB. Missing \"break\" command\nC. Missing \"default\" command\nD. The variable name is wrong"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option A"
+choices = ["The case label is the real number", "Missing \"break\" command", "Missing \"default\" command", "The variable name is wrong"]
+answer = "The case label is the real number"
 
 [[questions]]
 filename = "slide_295.png"
@@ -1124,13 +1106,13 @@ answer = "Copy s2 string to s1 string"
 
 [[questions]]
 filename = "slide_298.png"
-question = "What is the result displayed on the screen of the following program?\n#include <stdio.h>\nvoid level2(int** ppa)\n{\n    printf(\"%d\\n\", **ppa);\n}\nvoid level1(int* pa)\n{\n    level2(&pa);\n}\nmain()\n{\n    int a = 10;\n    level1(&a);\n}"
+question = "What is the result displayed on the screen of the following program?\n#include <stdio.h>\nvoid level2(int** ppa)\n{\n    printf(\"%d\\n\", **ppa);\n}\nvoid level1(int* pa)\n{\n    level2(&pa);\n}\nmain()\n{\n    int a = 10;\n    level1(&a);\n}\n\nA. The address of variable a\nB. The address of the pointer pa\nC. The address of the double pointer ppa\nD. 10"
 choices = ["The address of variable a", "The address of the pointer pa", "The address of the double pointer ppa", "10"]
 answer = "10"
 
 [[questions]]
 filename = "slide_299.png"
-question = "What does the following code print?\nint x = 10;\nif (x == 0)\n    printf(\"Zero\");\nelse\n    printf(\"Non-zero\");"
+question = "What does the following code print?\nint x = 10;\nif (x = 0)\n    printf(\"Zero\");\nelse\n    printf(\"Non-zero\");\n\nA. Runs and prints \"Non-zero\".\nB. Compiler error.\nC. Runs but prints nothing.\nD. Runs and prints garbage value.\nE. Runs and prints \"Zero\".\nF. Runtime error."
 choices = ["Runs and prints \"Non-zero\".", "Compiler error.", "Runs but prints nothing.", "Runs and prints garbage value.", "Runs and prints \"Zero\".", "Runtime error."]
 answer = "Runs and prints \"Non-zero\"."
 
@@ -1148,7 +1130,7 @@ answer = "a and b do not change values."
 
 [[questions]]
 filename = "slide_304.png"
-question = "Consider an array a with n elements. The code snippet above is executed to calculate the value s. Which of the following options correctly describes the value of s after executing the code snippet?\nint a[MAX_SIZE];\nint s = 0;\nfor (int i = 0; i < n; i++)\n    s = s + a[i] * a[i],"
+question = "Consider an array a with n elements. The code snippet above is executed to calculate the value s. Which of the following options correctly describes the value of s after executing the code snippet?\nint a[MAX_SIZE];\nint s = 0;\nfor (int i = 0; i < n; i++)\n    s = s + a[i] * a[i],\nHo\u00e0ng Ho\u00e0ng\n\nA. The sum of squares of all elements in the array a.\nB. The sum of all even elements in the array a.\nC. The sum of all odd elements in the array a.\nD. The sum of all elements in the array a."
 choices = ["The sum of squares of all elements in the array a.", "The sum of all even elements in the array a.", "The sum of all odd elements in the array a.", "The sum of all elements in the array a."]
 answer = "The sum of squares of all elements in the array a."
 
@@ -1162,13 +1144,13 @@ answer = "Calculates the sum of all odd elements in the array a of size n."
 filename = "slide_306.png"
 question = "Consider the following code:\nint func(int* a, int n){\n    int S = 0;\n    for(int i = 0; i < n; i++) {\n        S = S + (a[i] % 2) * a[i];\n    }\n    return S;\n}\nWhat does the above code snippet do?"
 choices = ["Calculates the sum of the absolute value of all odd elements in the array a of size n.", "Calculates the sum of all odd elements in the array a of size n.", "Calculates the sum of all even elements in the array a of size n.", "Calculates the sum of squares of all elements in the array a of size n."]
-answer = "Calculates the sum of the absolute value of all odd elements in the array a of size n."
+answer = "Calculates the sum of all odd elements in the array a of size n."
 
 [[questions]]
 filename = "slide_308.png"
 question = "Choose the correct statement about the following statement: scanf(\"%d, %d\", &a, &b);"
-choices = ["scanf will expect two integers inputted by user and write them to variables a and b", "scanf will expect two floating-point numbers inputted by user and write them to variables a and b", "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the comma to variable b", "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the second integer to variable b"]
-answer = "scanf will expect two integers inputted by user and write them to variables a and b"
+choices = ["scanf will expect two integers inputted by user and write them to variables a and b.", "scanf will expect two floating-point numbers inputted by user and write them to variables a and b.", "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the comma to variable b.", "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the second integer to variable b."]
+answer = "scanf will expect two integers inputted by user and write them to variables a and b."
 
 [[questions]]
 filename = "slide_310.png"
@@ -1196,15 +1178,15 @@ answer = "/* Comment */"
 
 [[questions]]
 filename = "slide_315.png"
-question = "Assume we have the following code:\n\nint i = 4;\nint *p = &i;\n\nSuppose that an int occupies a memory block of 4 bytes, and the address of i is 1008.\nWhat is the result of the following expression: p + 4?"
+question = "Assume we have the following code:\nint i = 4;\nint *p = &i;\nSuppose that an int occupies a memory block of 4 bytes, and the address of i is 1008.\nWhat is the result of the following expression: p + 4?"
 choices = ["1024", "1020", "1016", "1012"]
 answer = "1024"
 
 [[questions]]
 filename = "slide_321.png"
-question = "The image contains a mix of Vietnamese text explaining C programming functions (scanf, getchar), an English snippet about ASCII codes for Enter key, and a user input at the bottom in Vietnamese. What is the correct extraction of all visible text from the image?"
-choices = ["Only the Vietnamese explanation of scanf and getchar", "Only the English ASCII code note", "Only the user input \"Nh\u1eadp 20 r\u1ed3i \u201cEnter\u201d (enter l\u00e0 \\n)\"", "All visible text including Vietnamese explanations, English note, and user input"]
-answer = "All visible text including Vietnamese explanations, English note, and user input"
+question = "Nh\u1eadp 20 r\u1ed3i \u201cEnter\u201d (enter l\u00e0 \\n)"
+choices = ["text of option A", "text of option B", "text of option C", "text of option D"]
+answer = "text of option A"
 
 [[questions]]
 filename = "slide_323.png"
@@ -1228,13 +1210,13 @@ answer = "Pointer"
 filename = "slide_326.png"
 question = "What is the result when converting 0111 1011 in binary system to decimal system?"
 choices = ["120", "121", "122", "123"]
-answer = "123"
+answer = "120"
 
 [[questions]]
 filename = "slide_327.png"
 question = "What is the result when converting 7B in hexa system to a decimal system?"
 choices = ["123", "124", "125", "126"]
-answer = "125"
+answer = "123"
 
 [[questions]]
 filename = "slide_328.png"
@@ -1412,15 +1394,15 @@ answer = "The initialization block"
 
 [[questions]]
 filename = "slide_360.png"
-question = "The fopen function is used to open a file. Is the following true or false? \"r\" - tells fopen you will be reading data from the file. If no such file exists, fopen will fail."
+question = "The fopen function is used to open a file. Is the following true or false?\n\"r\" - tells fopen you will be reading data from the file. If no such file exists, fopen will fail.\nA. True\nB. False"
 choices = ["True", "False"]
 answer = "True"
 
 [[questions]]
 filename = "slide_362.png"
-question = "The statement for( ; ) does indeed represent an infinite loop, as it lacks the conditions that would cause the loop to terminate naturally. However, an infinite loop can still be terminated by using ________\nHo\u00e0ng Ho\u00e0ng\nA. exit(0)\nB. abort()\nC. break\nD. terminate"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option C"
+question = "The statement for( ; ;) does indeed represent an infinite loop, as it lacks the conditions that would cause the loop to terminate naturally. However, an infinite loop can still be terminated by using ________\nHo\u00e0ng Ho\u00e0ng\nA. exit(0)\nB. abort()\nC. break\nD. terminate"
+choices = ["exit(0)", "abort()", "break", "terminate"]
+answer = "break"
 
 [[questions]]
 filename = "slide_363.png"
@@ -1437,7 +1419,7 @@ answer = "A lowercase letter"
 [[questions]]
 filename = "slide_365.png"
 question = "The & operator in the C programming language is used to ____"
-choices = ["AND two bit sequences.", "AND two conditionals.", "OR two bit sequences.", "OR two conditionals.", "XOR two bit sequences.", "NOT a conditional"]
+choices = ["AND two bit sequences.", "AND two conditionals.", "OR two bit sequences.", "OR two conditionals.", "XOR two bit sequences.", "NOT a conditional."]
 answer = "AND two bit sequences."
 
 [[questions]]
@@ -1478,7 +1460,7 @@ answer = "break"
 
 [[questions]]
 filename = "slide_373.png"
-question = "What is the returned type of the sqrt() function from the math.h library in C?"
+question = "What is the returned type of the sqrt() function from the math.h library in C? Ho\u00e0ng Ho\u00e0ng"
 choices = ["double", "float", "int", "long"]
 answer = "double"
 
@@ -1543,12 +1525,6 @@ choices = ["fgets", "fgetc", "fputs", "fpusc"]
 answer = "fgets"
 
 [[questions]]
-filename = "slide_384.png"
-question = "Which of the following functions provide buffered input facilities on the standard input stream?\nHo\u00e0ng Ho\u00e0ng\nA. getchar(), scanf()\nB. getchar(), fgets()\nC. scanf(), fgetc()\nD. fgets(), fgetc()"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option B"
-
-[[questions]]
 filename = "slide_385.png"
 question = "Which function is used to write a string to a file in C?"
 choices = ["fputs()", "fscanf()", "fgets()", "fopen()"]
@@ -1581,7 +1557,7 @@ answer = "strcat()"
 [[questions]]
 filename = "slide_390.png"
 question = "Which of the following function is used to find the first occurrence of a given string in another string?"
-choices = ["strchr()", "strcchr()", "strstr()", "strnset()"]
+choices = ["strchr()", "strrchr()", "strstr()", "strnset()"]
 answer = "strstr()"
 
 [[questions]]
@@ -1622,7 +1598,7 @@ answer = "putchar, printf"
 
 [[questions]]
 filename = "slide_397.png"
-question = "The fopen function is used to open a file. Is the following true or false? \"r\" - tells fopen you will be reading data from the file. If no such file exists, fopen will fail."
+question = "The fopen function is used to open a file. Is the following true or false?\n\"r\" - tells fopen you will be reading data from the file. If no such file exists, fopen will fail."
 choices = ["True", "False"]
 answer = "True"
 
@@ -1640,7 +1616,7 @@ answer = "fopen(\"file.txt\", \"r\")"
 
 [[questions]]
 filename = "slide_400.png"
-question = "Which format specifier is used to print the value of a double variable?"
+question = "Which format specifier is used to print the value of a double variable? Ho\u00e0ng Ho\u00e0ng"
 choices = ["%lf", "%d", "%c", "%f"]
 answer = "%lf"
 
@@ -1803,7 +1779,7 @@ answer = "Allocate memory and initialize it to zero"
 [[questions]]
 filename = "slide_433.png"
 question = "What is the rewind() function used for?"
-choices = ["To reset the file pointer to the beginning of the file", "To read the entire file into memory", "To close the file", "To move the file pointer to the end of the file"]
+choices = ["To reset the file pointer to the beginning of the file", "To read the entire file into memory.", "To close the file.", "To move the file pointer to the end of the file."]
 answer = "To reset the file pointer to the beginning of the file"
 
 [[questions]]
@@ -1868,9 +1844,9 @@ answer = "Dynamic allocated data through explicit statements for memory allocati
 
 [[questions]]
 filename = "slide_448.png"
-question = "What is the incorrect definition? Ho\u00e0ng Ho\u00e0ng\nA. Algorithm: a way to find out a solution\nB. Data: Values are used to describe information. So, information can be called as the mean of data\nC. Solution: A situation in which something is hidden\nD. Information: Knowledge about something"
-choices = ["option A", "option B", "option C", "option D"]
-answer = "option C"
+question = "What is the incorrect definition? Ho\u00e0ng Ho\u00e0ng"
+choices = ["Algorithm: a way to find out a solution", "Data: Values are used to describe information. So, information can be called as the mean of data", "Solution: A situation in which something is hidden", "Information: Knowledge about something"]
+answer = "Solution: A situation in which something is hidden"
 
 [[questions]]
 filename = "slide_449.png"
@@ -2025,7 +2001,7 @@ answer = "The loop will never execute if the condition is initially false."
 [[questions]]
 filename = "slide_494.png"
 question = "Which of the following is true regarding the declaration of a two-dimensional array in C? Ho\u00e0ng Ho\u00e0ng"
-choices = ["Both the number of rows and columns must be specified.", "The number of columns must be specified.", "The number of rows must be specified.", "The number of rows and columns can be determined dynamically at runtime"]
+choices = ["Both the number of rows and columns must be specified.", "The number of columns must be specified.", "The number of rows must be specified.", "The number of rows and columns can be determined dynamically at runtime."]
 answer = "Both the number of rows and columns must be specified."
 
 [[questions]]
@@ -2079,8 +2055,8 @@ answer = "Compilation involves converting source code to machine code, while int
 [[questions]]
 filename = "slide_508.png"
 question = "How does a \"for\" loop differ from a \"while\" loop in C programming?"
-choices = ["A \"for\" loop is used for iterating over a sequence of elements, while a \"while\" loop is used to execute a block of code repeatedly as long as a condition is true", "A \"for\" loop is primarily used for conditional statements, while a \"while\" loop is designed for sequential processing", "The use of \"for\" and \"while\" loops is interchangeable; there is no substantial difference between them", "A \"for\" loop is exclusively used with arrays, while a \"while\" loop is used with numerical calculations"]
-answer = "A \"for\" loop is used for iterating over a sequence of elements, while a \"while\" loop is used to execute a block of code repeatedly as long as a condition is true"
+choices = ["A \"for\" loop is used for iterating over a sequence of elements, while a \"while\" loop is used to execute a block of code repeatedly as long as a condition is true.", "A \"for\" loop is primarily used for conditional statements, while a \"while\" loop is designed for sequential processing.", "The use of \"for\" and \"while\" loops is interchangeable; there is no substantial difference between them.", "A \"for\" loop is exclusively used with arrays, while a \"while\" loop is used with numerical calculations."]
+answer = "A \"for\" loop is used for iterating over a sequence of elements, while a \"while\" loop is used to execute a block of code repeatedly as long as a condition is true."
 
 [[questions]]
 filename = "slide_510.png"
@@ -2096,9 +2072,9 @@ answer = "Arrays provide constant-time access to elements."
 
 [[questions]]
 filename = "slide_515.png"
-question = "Choose the correct statement about the following statement: scanf(\"%d, %d\", &a, &b);"
+question = "Choose the correct statement about the following statement:\nscanf(\"%d, %d\", &a, &b);"
 choices = ["scanf will expect two integers inputted by user and write them to variables a and b.", "scanf will expect two floating-point numbers inputted by user and write them to variables a and b.", "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the comma to variable b.", "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the second integer to variable b."]
-answer = "scanf will expect two integers inputted by user and write them to variables a and b."
+answer = "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the second integer to variable b."
 
 [[questions]]
 filename = "slide_517.png"
@@ -2109,7 +2085,7 @@ answer = "A category of data that represents individual, non-complex elements su
 [[questions]]
 filename = "slide_519.png"
 question = "Choose the correct statement about the following statement: scanf(\"%d, %d\", &a, &b); Ho\u00e0ng Ho\u00e0ng"
-choices = ["scanf will expect two integers inputted by user and write them to variables a and b", "scanf will expect two floating-point numbers inputted by user and write them to variables a and b", "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the coming to variable b", "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the second integer to variable b"]
+choices = ["scanf will expect two integers inputted by user and write them to variables a and b.", "scanf will expect two floating-point numbers inputted by user and write them to variables a and b.", "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the coming to variable b", "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the second integer to variable b"]
 answer = "scanf will expect two integers inputted by user separated by a comma, and write the first integer to variable a, the second integer to variable b"
 
 [[questions]]
@@ -2157,8 +2133,8 @@ answer = "It moved to the end of the sorted part"
 [[questions]]
 filename = "slide_532.png"
 question = "In the context of arrays in the C language, what does traversal refer to?"
-choices = ["The process of accessing elements in an array sequentially", "The process of searching for a specific element in an array", "The process of resizing the array during runtime", "The process of inserting elements into an array"]
-answer = "The process of accessing elements in an array sequentially"
+choices = ["The process of accessing elements in an array sequentially.", "The process of searching for a specific element in an array.", "The process of resizing the array during runtime.", "The process of inserting elements into an array."]
+answer = "The process of accessing elements in an array sequentially."
 
 [[questions]]
 filename = "slide_533.png"
@@ -2169,8 +2145,8 @@ answer = "To handle values that are not matched by any case label"
 [[questions]]
 filename = "slide_534.png"
 question = "The rand() function in C is used for:"
-choices = ["Generating random integer", "Generating random integer from min to max", "Generating random float from min to max", "Generating random float", "Generating random double", "Generating random double from min to max"]
-answer = "Generating random integer"
+choices = ["Generating random integer.", "Generating random integer from min to max.", "Generating random float from min to max.", "Generating random float.", "Generating random double.", "Generating random double from min to max."]
+answer = "Generating random integer."
 
 [[questions]]
 filename = "slide_536.png"
@@ -2183,3 +2159,27 @@ filename = "slide_539.png"
 question = "The ^ operator in the C programming language is used to______"
 choices = ["XOR two bit sequences.", "OR two bit sequences.", "AND two bit sequences.", "SHIFT UP a bit sequences.", "NOT a bit sequences.", "Calculate the exponential value, for example 2^3 = 8."]
 answer = "XOR two bit sequences."
+
+[[questions]]
+filename = "slide_179.png"
+question = "How many times will the loop execute?\nint i = 0;\nwhile (i < 4) {\n    printf(\"%d\", i);\n    i += 2;\n}\nA. 2\nB. 1\nC. 3\nD. 4"
+choices = ["2", "1", "3", "4"]
+answer = "2"
+
+[[questions]]
+filename = "slide_189.png"
+question = "What will be printed when the following code is executed?\n#include <stdio.h>\nint a = 5, b = 6;\nvoid cal1(int a, int b){\na++;\nb--;\n}\nvoid cal2(){\na++;\nb--;\n}\nint main() {\ncal1(a,b);\nprintf(\"a = %d, b = %d\\n\", a, b);\ncal2(a,b);\nprintf(\"a = %d, b = %d\\n\", a, b);\ncal2(a,b);\nprintf(\"a = %d, b = %d\\n\", a, b);\nreturn 0;\n}"
+choices = ["a = 6, b = 5\na = 6, b = 5\na = 6, b = 5", "a = 5, b = 6\na = 6, b = 5\na = 7, b = 4", "a = 6, b = 5\na = 6, b = 5\na = 7, b = 4", "a = 5, b = 6\na = 7, b = 4\na = 7, b = 4"]
+answer = "a = 5, b = 6\na = 7, b = 4\na = 7, b = 4"
+
+[[questions]]
+filename = "slide_269.png"
+question = "What will be the output of the C program?\n\nint i = 5, j = 8;\nwhile (++i < -j)\n    printf(\"loop\");\n\nA. loop\nB. Infinite loop\nC. loop loop loop\nD. loop loop"
+choices = ["loop", "Infinite loop", "loop loop loop", "loop loop"]
+answer = "loop"
+
+[[questions]]
+filename = "slide_384.png"
+question = "Which of the following functions provide buffered input facilities on the standard input stream?\nHo\u00e0ng Ho\u00e0ng"
+choices = ["getchar(), scanf()", "getchar(), fgets()", "scanf(), fgetc()", "fgets(), fgetc()"]
+answer = "getchar(), fgets()"

@@ -34,14 +34,19 @@ MODEL = "qwen3.5:9b"
 
 PROMPT = """Extract the text of the following image.
 Your output must follow this format:
+```
 Question: text of question
+
 Choices:
 A. text of option A
 B. text of option B 
 C. text of option C 
 D. text of option D
-Answers: A
 
+Answers: A
+```
+
+Always include "Question:", "Choices:", and "Answers:"
 Do not reason on the choices or the answers."""
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -126,7 +131,7 @@ def extract_questions(image_path: Path) -> list[dict]:
             options={
                 'num_predict': 2048, # Ensures it has enough tokens for long questions
                 'num_ctx': 8192,
-                'temperature': 0.1,
+                'temperature': 0.2,
                 # 'repeat_penalty': 1.2,
             }
         )
