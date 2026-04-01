@@ -34,8 +34,12 @@ MODEL = "qwen3.5:9b"
 
 PROMPT = """Extract the text of the following image.
 Your output must follow this format:
-Question: <question>
-Choices: A. option A B. option B C. option C D. option D
+Question: text of question
+Choices:
+A. text of option A
+B. text of option B 
+C. text of option C 
+D. text of option D
 Answers: A
 
 Do not reason on the choices or the answers."""

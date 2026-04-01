@@ -3,5 +3,30 @@
     "question": "What is a Translation Lookaside Buffer (TLB)?",
     "answer": "A cache for page table entries",
     "timestamp": "2026-04-01T10:42:40.142476"
+  },
+  {
+    "question": "What is the results will be displayed on the screen after executing the following code:\nchar a[] = \"Ab\";\nchar *s = a;\nint t = 1;\nfor (; *s; ++s)\nt *= *s;\nprintf(\"%d\", t);",
+    "answer": "6370",
+    "timestamp": "2026-04-02T00:05:17.013480"
+  },
+  {
+    "question": "Assume we have the following codes: double d=9; double *p = &d; Suppose that a double occupies the memory block of 8 bytes, and the address of d is 1200. What is the result of the following expression: p + 8?",
+    "answer": "1264",
+    "timestamp": "2026-04-02T00:05:26.938525"
+  },
+  {
+    "question": "What will be the output of the C program?\nint 2_var = 15;\nprintf(\"%d\", 2_var);\nA. 0\nB. 15\nC. Compilation error\nD. Runtime error",
+    "answer": "option C",
+    "timestamp": "2026-04-02T00:06:03.055827"
+  },
+  {
+    "question": "What does the following program print?\n#include <stdio.h>\nfloat max(float a, float b) {\n    return a > b ? a : b;\n}\n\nint main() {\n    float x = 5.5, y = 4.5, z = 2;\n    printf(\"%f\", max(x++, y--, ++z));\n    return 0;\n}",
+    "answer": "An error will be raised.",
+    "timestamp": "2026-04-02T00:11:48.456726"
+  },
+  {
+    "question": "Which of the following functions provide buffered input facilities on the standard input stream?\nHo\u00e0ng Ho\u00e0ng\nA. getchar(), scanf()\nB. getchar(), fgets()\nC. scanf(), fgetc()\nD. fgets(), fgetc()",
+    "answer": "option B",
+    "timestamp": "2026-04-02T00:12:26.349191"
   }
 ]

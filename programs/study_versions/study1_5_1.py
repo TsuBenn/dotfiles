@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-VERSION = "1.5.2"
+VERSION = "1.5.1"
 
 import time
 import json
@@ -265,7 +265,6 @@ def wrap_text(text: str, width: int) -> list[str]:
             continue
         words = paragraph.split()
         current = ""
-        """
         for word in words:
             if len(current) + len(word) + 1 <= width:
                 current = (current + " " + word).strip()
@@ -273,14 +272,6 @@ def wrap_text(text: str, width: int) -> list[str]:
                 if current:
                     result.append(current)
                 current = word
-        """
-        for char in paragraph:
-            if len(current) + 1 + 1 <= width:
-                current = (current + char)
-            else:
-                if current:
-                    result.append(current)
-                current = char
         if current:
             result.append(current)
     return result or [""]
