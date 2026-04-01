@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """
 png_to_toml.py
@@ -29,61 +30,15 @@ except ImportError:
 
 # ─── Config ───────────────────────────────────────────────────────────────────
 
-MODEL = "qwen3-vl:8b"
+MODEL = "qwen3.5:9b"
 
-PROMPT = """You are a data extraction assistant. Your task is to analyze the provided image containing a multiple-choice question and extract the question, choices, and correct answer into a strict JSON format.
+PROMPT = """Extract the text of the following image.
+Your output must follow this format:
+Question: <question>
+Choices: A. option A B. option B C. option C D. option D
+Answers: A
 
-### STEP 1: TOP SECTION (White Background)
-- Ignore any diagrams or images.
-- Transcribe the English question.
-- Pay extra attention to characters like '.
-- Transcribe the choices (A, B, C, D) into a dictionary. 
-
-### STEP 2: BOTTOM SECTION (Colored Background Bar)
-- Find the large, bold letter(s) at the very start of the bottom bar (e.g., "A" or "BC").
-- These letters are the ONLY source for the 'answer' field.
-
-Here is a generic example showing the EXACT structure you must use:
-[
-  {
-    "question": "What is the capital of France?",
-    "choices": [
-      "A. Berlin",
-      "B. London",
-      "C. Paris",
-      "D. Madrid"
-    ],
-    "answer": "A"
-  }
-]
-
-Here is a example of multiple answers:
-[
-  {
-    "question": "What is a component of a computer?",
-    "choices": [
-      "A. CPU",
-      "B. RAM",
-      "C. KEYBOARD",
-      "D. MOUSE"
-    ],
-    "answer": ["A","B"]
-  }
-]
-
-Please follow these rules carefully:
-1. Format: Output a JSON array containing an object with the keys "question", "choices", and "answer".
-2. Question: Extract the question UNTIL it hits the first choice.
-3. Choices: Extract all available options (Must have letters prefixes) into a list of strings. 
-4. Answer: Identify the correct answer from the image. Only output the letter of the answer (A, B ,C ,etc.)
-    * If there is only one correct answer, format it as a string: "answer": "Correct option"
-    * If there are multiple correct answers (e.g. "ADE", "A, B, C, D", etc.), format them as a list of answers: "answer": ["correct option 1", "correct option 2"]
-5. Explanations: Completely ignore any explanatory text, translations, or extra commentary below the answer(s).
-6. Output: Return ONLY valid JSON. Do not include any conversational text, introductions, or markdown formatting blocks (like ```json). Remember to always escape characters like " with \\".
-7. DO NOT SOLVE THE PROBLEM: Do not perform any calculations, math, or logical reasoning.
-8. Do NOT output in any other languages apart from English for question, choices and answer(s).
-
-Analyze the provided image and generate the JSON output now."""
+Do not reason on the choices or the answers."""
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -91,42 +46,84 @@ def encode_image(path: Path) -> str:
     with open(path, "rb") as f:
         return base64.b64encode(f.read()).decode("utf-8")
 
-
 def natural_sort_key(path: Path):
     """Sort filenames naturally so page2 comes before page10."""
     parts = re.split(r'(\d+)', path.stem)
     return [int(p) if p.isdigit() else p.lower() for p in parts]
 
+def parse_question(raw_text, filename):
+    text = raw_text.strip()
 
-def try_fix_json(raw: str) -> str:
-    # Replace smart/curly quotes with straight ones
-    raw = raw.replace('\u2018', "'").replace('\u2019', "'")
-    raw = raw.replace('\u201c', '"').replace('\u201d', '"')
-    return raw
+    # Normalize line endings + spacing
+    text = re.sub(r'\r\n?', '\n', text)
+
+    # --- Extract QUESTION ---
+    q_match = re.search(
+        r'question\s*:\s*(.*?)(?=\n\s*choices\s*:|\n\s*answers\s*:|$)',
+        text,
+        re.IGNORECASE | re.DOTALL
+    )
+    question = q_match.group(1).strip() if q_match else ""
+
+    # --- Extract CHOICES BLOCK ---
+    c_match = re.search(
+        r'choices\s*:\s*(.*?)(?=\n\s*answers\s*:|$)',
+        text,
+        re.IGNORECASE | re.DOTALL
+    )
+    choices_block = c_match.group(1).strip() if c_match else ""
+
+    # --- Extract ANSWER ---
+    a_match = re.search(
+        r'answers\s*:\s*([A-Z])',
+        text,
+        re.IGNORECASE
+    )
+    answer = a_match.group(1).upper() if a_match else ""
+
+    # --- Extract INDIVIDUAL CHOICES (robust regex) ---
+    choices = re.findall(
+        r'([A-Z])\.\s*(.*?)(?=\s+[A-Z]\.|$)',
+        choices_block,
+        re.DOTALL
+    )
+
+    # Format choices nicely
+    formatted_choices = [
+        f"{letter}. {content.strip()}"
+        for letter, content in choices
+    ]
+
+    if not question or not formatted_choices or not answer:
+        return []
+
+    return [{
+        "filename": filename,
+        "question": question,
+        "choices": formatted_choices,
+        "answer": answer
+    }]
 
 def extract_questions(image_path: Path) -> list[dict]:
-    """Send image to Ollama and parse returned JSON."""
+
     image_b64 = encode_image(image_path)
 
     try:
         response = ollama.chat(
             model=MODEL,
+            think= False,
             messages=[
                 {
-                    "role": "system",
-                    "content": PROMPT,
-                },
-                {
                     "role": "user",
-                    "content": "Extract the content from this image",
-                    "images": [image_path],
+                    "content": PROMPT,
+                    "images": [image_b64],
                 }
             ],
             options={
-                'num_predict': 8192, # Ensures it has enough tokens for long questions
+                'num_predict': 2048, # Ensures it has enough tokens for long questions
                 'num_ctx': 8192,
                 'temperature': 0.1,
-                'repeat_penalty': 1.2,
+                # 'repeat_penalty': 1.2,
             }
         )
     except Exception as e:
@@ -135,21 +132,22 @@ def extract_questions(image_path: Path) -> list[dict]:
 
     raw = response["message"]["content"].strip()
 
-    # Strip markdown fences if model ignores instructions
-    raw = re.sub(r"^```(?:json)?\s*", "", raw)
-    raw = re.sub(r"\s*```$", "", raw)
-    raw = re.sub(r'\\_', '_', raw)
-    print(f"  Raw response: {raw}")
+
+    result = parse_question(raw, Path(image_path).name)
+
 
     try:
-        data = json.loads(raw)
-        if isinstance(data, list):
-            return data
+        if isinstance(result, list) and result:
+            return result
         print(f"  ✗ Unexpected JSON shape, skipping")
+        print(raw)
+        print(json.dumps(result,indent=4))
         return []
     except json.JSONDecodeError as e:
         print(f"  ✗ Failed to parse JSON: {e}")
         print(f"  Raw response: {raw}")
+        print(raw)
+        print(json.dumps(result,indent=4))
         return []
 
 
@@ -198,6 +196,7 @@ def transform_json_to_string(data):
 
     return (
         f"[[questions]]\n"
+        f"filename = {json.dumps(data['filename'])}\n"
         f"question = {json.dumps(data['question'])}\n"
         f"choices = [{', '.join(json.dumps(c) for c in clean_choices)}]\n"
         f"answer = {answer_toml}"
@@ -284,6 +283,7 @@ def main():
     all_questions = []
     failed_pages = []
 
+    """
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = {executor.submit(process_image, png): png for png in pngs}
 
@@ -308,6 +308,24 @@ def main():
                 print(f"✗ error: {e}")
                 failed_pages.append(png.name)
                 break
+    """
+
+    for i, png in enumerate(pngs, 1):
+        print(f"[{i}/{len(pngs)}] Processing {png.name} ...", end=" ", flush=True)
+        name, valid, skipped, attempt = process_image(png)
+
+
+        if valid:
+            all_questions.extend(valid)
+            mark_processed(name)
+            print(f"✓ {len(valid)} question(s) extracted" + (f" ({skipped} skipped)" if skipped else ""))
+            toml_content = to_toml_str(all_questions)
+            temp_output.write_text(toml_content, encoding="utf-8")
+        else:
+            print("— no questions found")
+            failed_pages.append(png.name)
+
+
 
     print(f"\n─────────────────────────────")
     print(f"Total questions extracted: {len(all_questions)}")
