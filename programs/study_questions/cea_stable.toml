@@ -462,8 +462,8 @@ answer = "F = NOT (A + B)"
 
 [[questions]]
 question = "What is the initial state of a process when it is admitted by the high-level scheduler, but not yet ready to execute?"
-choices = ["New", "Ready", "Running", "Halted"]
-answer = "Running"
+choices = ["Running", "Ready", "New", "Halted"]
+answer = "New"
 
 [[questions]]
 question = "What is the most common mapping technique used in cache memory in modern computers?"

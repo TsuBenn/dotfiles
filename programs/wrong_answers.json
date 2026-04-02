@@ -28,5 +28,178 @@
     "question": "Which of the following functions provide buffered input facilities on the standard input stream?\nHo\u00e0ng Ho\u00e0ng\nA. getchar(), scanf()\nB. getchar(), fgets()\nC. scanf(), fgetc()\nD. fgets(), fgetc()",
     "answer": "option B",
     "timestamp": "2026-04-02T00:12:26.349191"
+  },
+  {
+    "question": "What will be the output of the following C code?\n#include <stdio.h>\nvoid main()\n{\nint total=0;\nfor(int s=1; s<15; s++)\ntotal=total+s;\nprintf(\"%d\",total);\n}\nA. 105\nB. 150\nC. 120\nD. 210",
+    "answer": "105",
+    "timestamp": "2026-04-02T17:45:14.373839"
+  },
+  {
+    "question": "What is a characteristic of Many Integrated Core (MIC) chips?",
+    "answer": "They consist of homogeneous general-purpose processors on a single chip.",
+    "timestamp": "2026-04-02T17:18:04.838638"
+  },
+  {
+    "question": "The ___ scheduler executes relatively infrequently and makes the coarse-grained decision of whether or not to take on a new process, and which one to take. The ___ scheduler, also known as the dispatcher, executes frequently and makes the fine-grained decision of which job to execute next.",
+    "answer": "long-term; short-term",
+    "timestamp": "2026-04-02T17:18:36.121547"
+  },
+  {
+    "question": "What is the primary purpose of index registers within the processor?",
+    "answer": "To facilitate indexed addressing",
+    "timestamp": "2026-04-02T17:21:06.445320"
+  },
+  {
+    "question": "The task of subdivision is carried out dynamically by the OS and is known as",
+    "answer": "Memory management",
+    "timestamp": "2026-04-02T17:23:02.853714"
+  },
+  {
+    "question": "What electronic component is used to govern operations such as fetching, decoding, and performing arithmetic operations executed by a processor?",
+    "answer": "Using a system clock",
+    "timestamp": "2026-04-02T17:23:17.417005"
+  },
+  {
+    "question": "What is incorrect about SSDs have the following advantages over HDDs?",
+    "answer": "Higher access times and latency rates. Over 10 times slower than the HDD.",
+    "timestamp": "2026-04-02T17:26:43.867267"
+  },
+  {
+    "question": "Which method allows the programmer to view memory as consisting of multiple address spaces and is used to map logical addresses of variable length onto physical memory?",
+    "answer": "Segmentation",
+    "timestamp": "2026-04-02T17:26:59.357435"
+  },
+  {
+    "question": "Which of the following is not an operand type?",
+    "answer": "Value",
+    "timestamp": "2026-04-02T17:29:39.291880"
+  },
+  {
+    "question": "Central processing unit (CPU) of IAS computer consists of",
+    "answer": "ALU (Arithmetic and Logic Unit) and CU (Control Unit)",
+    "timestamp": "2026-04-02T17:30:05.095072"
+  },
+  {
+    "question": "Using Hamming Code with one error correction to store an 12-bit word in memory, the stored word 11001001101 consists of 8 bits data and 4 bit parity check. What are the parity bits?",
+    "answer": "0101",
+    "timestamp": "2026-04-02T17:33:17.026211"
+  },
+  {
+    "question": "What is a primary disadvantage of CISC (Complex Instruction Set) architectures?",
+    "answer": "Slower execution due to complex instructions",
+    "timestamp": "2026-04-02T17:33:36.545490"
+  },
+  {
+    "question": "In the computer, what categories do external devices include? (choose 3 correct answers)",
+    "answer": [
+      "Human readable",
+      "Communication",
+      "Machine readable"
+    ],
+    "timestamp": "2026-04-02T17:46:34.084108"
+  },
+  {
+    "question": "Which of the following statements is NOT part of the Von Neumann principle?",
+    "answer": "Each statement must have a memory area containing the address of the next instruction",
+    "timestamp": "2026-04-02T17:47:27.695703"
+  },
+  {
+    "question": "How many general-purpose registers are there in the Microprocessor Register Organizations of Intel 80386 - Pentium 4?",
+    "answer": "8",
+    "timestamp": "2026-04-02T17:47:33.345628"
+  },
+  {
+    "question": "Which of the following PDP series computers is known for its use of 12-bit instructions and a single general purpose register, the accumulator?",
+    "answer": "PDP-8",
+    "timestamp": "2026-04-02T17:48:24.519916"
+  },
+  {
+    "question": "is (are) determined by the number of instructions that can be fetched and executed at the same time (the number of parallel pipelines) and by the speed and sophistication of the mechanisms that the processor uses to find independent instructions.",
+    "answer": "Machine parallelism",
+    "timestamp": "2026-04-02T17:48:35.571289"
+  },
+  {
+    "question": "What is the initial state of a process when it is admitted by the high-level scheduler, but not yet ready to execute?",
+    "answer": "Running",
+    "timestamp": "2026-04-02T17:48:51.806256"
+  },
+  {
+    "question": "Which technique involves dividing physical memory into fixed-size or variable-size blocks to allocate memory to processes?",
+    "answer": "Partitioning",
+    "timestamp": "2026-04-02T17:49:18.223416"
+  },
+  {
+    "question": "Which of the following components of CPU is responsible to direct the system to execute instructions?",
+    "answer": "Control Unit (CU)",
+    "timestamp": "2026-04-02T17:55:24.052044"
+  },
+  {
+    "question": "Which is incorrect about RAID?",
+    "answer": "RAID is only used for Windows OS",
+    "timestamp": "2026-04-02T17:59:00.683535"
+  },
+  {
+    "question": "Why is cache design used in high-performance computing (HPC)? (Choose three answers)",
+    "answer": [
+      "Because there is a significant speed gap between the processor and the internal memory in HPC.",
+      "Because applications in HPC often require a large bandwidth to support intensive data processing.",
+      "Because power consumption can be a significant operational cost in HPC environments."
+    ],
+    "timestamp": "2026-04-02T17:59:26.184697"
+  },
+  {
+    "question": "In modern processors, why is cache memory typically organized into multiple levels, such as L1, L2 and L3 caches?",
+    "answer": "To balance the trade-off between speed and size by having different cache levels",
+    "timestamp": "2026-04-02T18:00:09.103073"
+  },
+  {
+    "question": "What is true about IAS Memory Formats?",
+    "answer": "Both data and instructions are stored in the memory",
+    "timestamp": "2026-04-02T18:00:42.528695"
+  },
+  {
+    "question": "How does multithreading improve the performance of a processor?",
+    "answer": "All of the mentioned",
+    "timestamp": "2026-04-02T18:00:52.679586"
+  },
+  {
+    "question": "Which registers can interact with the secondary storage?",
+    "answer": "MAR",
+    "timestamp": "2026-04-02T18:06:49.433815"
+  },
+  {
+    "question": "Which of the following Boolean expressions is equivalent to F = (A + B)C\u2019?",
+    "answer": "A' + BC",
+    "timestamp": "2026-04-02T18:16:01.304968"
+  },
+  {
+    "question": "The speed of data delivery is your main concern when configuring a RAID for a Media Streaming Server. This server has two hard disks installed. What type of RAID should you install and what type of data will be stored on Disk 1 and Disk 2?",
+    "answer": "RAID 0 - Disk 1 (Stripe) and Disk 2 (Stripe)",
+    "timestamp": "2026-04-02T18:16:20.219171"
+  },
+  {
+    "question": "What is the distinction between Computer Architecture and Computer Organization?",
+    "answer": "Computer Architecture is those attributes of a system that are visible to the user, while Computer Organization is the way the system is structured",
+    "timestamp": "2026-04-02T18:26:18.878941"
+  },
+  {
+    "question": "In MASM32, which command is incorrect?",
+    "answer": "ADD a, b",
+    "timestamp": "2026-04-02T18:26:35.105316"
+  },
+  {
+    "question": "How many check bits are needed for a Hamming error correction code to detect single-error correction in a 1 Kbyte data word?",
+    "answer": "14 bits",
+    "timestamp": "2026-04-02T18:31:09.150631"
+  },
+  {
+    "question": "Given the following Karnaugh map, what is the sum of product expression in the sum of product format (X' means Not X)?",
+    "answer": "B + AC'",
+    "timestamp": "2026-04-02T18:31:43.180968"
+  },
+  {
+    "question": "In the direct mapping method from 256MB main memory with 512KB cache, what is the number of bits for the TAG element in the address?",
+    "answer": "9",
+    "timestamp": "2026-04-02T18:55:15.755075"
   }
 ]

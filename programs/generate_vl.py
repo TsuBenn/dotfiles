@@ -47,6 +47,8 @@ Answers: A
 ```
 
 Always include "Question:", "Choices:", and "Answers:"
+If there are multiple answers, connect them into 1 string (e.g. ABCD).
+Do not include choices in question.
 Do not reason on the choices or the answers."""
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -84,7 +86,7 @@ def parse_question(raw_text, filename):
 
     # --- Extract ANSWER ---
     a_match = re.search(
-        r'answers\s*:\s*([A-Z])',
+        r'answers\s*:\s*([A-Z]+)',
         text,
         re.IGNORECASE
     )
@@ -144,6 +146,10 @@ def extract_questions(image_path: Path) -> list[dict]:
 
     result = parse_question(raw, Path(image_path).name)
 
+    """
+    print(raw)
+    print(json.dumps(result,indent=4))
+    """
 
     try:
         if isinstance(result, list) and result:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-VERSION = "1.5.3 (Beta)"
+VERSION = "1.5.2"
 
 import time
 import json
@@ -259,33 +259,38 @@ def init_colors():
 
 def wrap_text(text: str, width: int) -> list[str]:
     result = []
-    
-    lines = text.split('\n')  # handle explicit newlines
-
-    for line in lines:
-        # detect indentation (leading spaces)
-        indent = len(line) - len(line.lstrip(' '))
-        indent_str = ' ' * indent
-
-        words = line.strip().split()
-
-        current_line = indent_str
-
+    for paragraph in text.splitlines():
+        if not paragraph.strip():
+            result.append("")
+            continue
+        words = paragraph.split()
+        current = ""
+        """
         for word in words:
-            # if adding word exceeds width → push current line
-            if len(current_line.rstrip()) + len(word) + 1 > width:
-                result.append(current_line.rstrip())
-                current_line = indent_str + word
+            if len(current) + len(word) + 1 <= width:
+                current = (current + " " + word).strip()
             else:
-                if current_line.strip() == "":
-                    current_line += word
-                else:
-                    current_line += " " + word
-
-        if current_line.strip():
-            result.append(current_line.rstrip())
-
-    return result
+                if current:
+                    result.append(current)
+                current = word
+        """
+        for char in paragraph:
+            if len(current) + 1 + 1 <= width:
+                current = (current + char)
+            else:
+                if current:
+                    result.append(current)
+                current = char
+        for char in paragraph:
+            if len(current) + 1 + 1 <= width:
+                current = (current + char)
+            else:
+                if current:
+                    result.append(current)
+                current = char
+        if current:
+            result.append(current)
+    return result or [""]
 
 def draw_header(stdscr, text: str):
     _, w = stdscr.getmaxyx()
