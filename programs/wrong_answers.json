@@ -201,5 +201,10 @@
     "question": "In the direct mapping method from 256MB main memory with 512KB cache, what is the number of bits for the TAG element in the address?",
     "answer": "9",
     "timestamp": "2026-04-02T18:55:15.755075"
+  },
+  {
+    "question": "In two's complement addition, when does overflow occur?",
+    "answer": "When result has opposite sign to both operands when they have the same sign",
+    "timestamp": "2026-04-02T22:03:35.610478"
   }
 ]

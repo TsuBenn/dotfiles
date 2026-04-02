@@ -285,7 +285,7 @@ def wrap_text(text: str, width: int) -> list[str]:
         if current_line.strip():
             result.append(current_line.rstrip())
 
-    return result
+    return result or [""]
 
 def draw_header(stdscr, text: str):
     _, w = stdscr.getmaxyx()
