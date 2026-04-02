@@ -1,1341 +1,1615 @@
-version = 4
+version = 5
 
 [[questions]]
+filename = "2026-03-28-114101_hyprshot.png"
 question = "The stored-program concept means a computer could get its instructions by reading them from memory, and a program could be set or altered by setting the values of a portion of memory."
 choices = ["True", "False"]
 answer = "True"
 
 [[questions]]
+filename = "2026-03-28-114127_hyprshot.png"
 question = "The stored-program concept means a computer could get its instructions by reading them from memory, and a program could be set or altered by setting the values of a portion of memory."
 choices = ["True", "False"]
 answer = "True"
 
 [[questions]]
-question = "Indirect addressing, the length of the address field is usually greater than the word length because unlimiting the address range."
+filename = "2026-03-28-114130_hyprshot.png"
+question = "Indirect addressing, the length of the address field is usually greater than the word length, because unlimiting the address range."
 choices = ["True", "False"]
 answer = "False"
 
 [[questions]]
+filename = "2026-03-28-114136_hyprshot.png"
 question = "How many check bits are needed if the Hamming error correction code is used to detect single bit error in a 128-bit data word?"
 choices = ["6 bits", "7 bits", "8 bits", "9 bits", "5 bits"]
 answer = "8 bits"
 
 [[questions]]
-question = "How many check bits are needed for a Hamming error correction code to detect single-error correction in a 1 Kbyte data word?"
+filename = "2026-03-28-114138_hyprshot.png"
+question = "How many check bits are needed for a Hamming error correction code to detect single-error correction in a 1 KByte data word?"
 choices = ["11 bits", "12 bits", "13 bits", "14 bits", "15 bits"]
 answer = "14 bits"
 
 [[questions]]
-question = "How many bytes of data does each sector in the Winchester hard drive have?"
+filename = "2026-03-28-114143_hyprshot.png"
+question = "How many bytes of data does each sector in the Winchester hard drive disk have?"
 choices = ["128 bytes", "256 bytes", "512 bytes", "1024 bytes", "4096 bytes"]
 answer = "512 bytes"
 
 [[questions]]
-question = "A byte addressable microprocessor has 24 bit address. What is maximum memory capacity?"
+filename = "2026-03-28-114147_hyprshot.png"
+question = "A byte addressable microprocessor has 24 bit address. What is maximum memory capacity?\nHo\u00e0ng Ho\u00e0ng"
 choices = ["4 MegaByte", "8 MegaByte", "16 MegaByte", "32 MegaByte"]
 answer = "16 MegaByte"
 
 [[questions]]
+filename = "2026-03-28-114159_hyprshot.png"
 question = "What is the maximum addressable memory of a 32-bit microprocessor with 24-bit address?"
 choices = ["16 GB", "16 MB", "16 Gbits", "16 Mbits"]
 answer = "16 MB"
 
 [[questions]]
-question = "A two-way set associative cache has lines of 16 bytes and a total size of 8 Kbytes. The 64-Mbyte main memory is byte addressable. How many bits are there in the set field of the cache?"
+filename = "2026-03-28-114202_hyprshot.png"
+question = "A two-way set-associative cache has lines of 16 bytes and a total size of 8 Kbytes. The 64-Mbyte main memory is byte addressable. How many bits are there in the set field of the cache?"
 choices = ["5", "6", "7", "8", "9"]
 answer = "8"
 
 [[questions]]
-question = "Assume an instruction set that uses a fixed 16-bit instruction length. Operand specifiers are 6 bits in length.\nWhat is the maximum number of one-operand instructions that can be supported?"
+filename = "2026-03-28-114204_hyprshot.png"
+question = "Assume an instruction set that uses a fixed 16-bit instruction length. Operand specifiers are 6 bits in length. What is the maximum number of one-operand instructions that can be supported?"
 choices = ["256", "512", "1024", "2048"]
 answer = "1024"
 
 [[questions]]
-question = "A EPROM has 20 address lines and 8 bit data line, what is maximum memory capacity of this chip?"
-choices = ["1 Mbit", "2 Mbits", "4 Mbits", "8 Mbits", "16 Mbits"]
+filename = "2026-03-28-114205_hyprshot.png"
+question = "A EPROM has 20 address lines and 8 bit data lines, what is maximum memory capacity of this chip?"
+choices = ["1 Mbits", "2 Mbits", "4 Mbits", "8 Mbits", "16 Mbits"]
 answer = "8 Mbits"
 
 [[questions]]
-question = "Consider a 5-drive, 200 GB/bytes-per-drive RAID levels. What is the available data storage capacity for each of the RAID levels?"
+filename = "2026-03-28-114209_hyprshot.png"
+question = "Consider a 5-drive, 200 GBytes-per-drive RAID array. What is the available data storage capacity for each of the RAID levels 5?"
 choices = ["200 GBytes", "400 GBytes", "600 GBytes", "800 GBytes", "None of the mentioned"]
 answer = "800 GBytes"
 
 [[questions]]
-question = "Consider a 5-drive, 100 GB/eyes-per-drive RAID array. What is the available data storage capacity for each of the RAID levels?"
-choices = ["400 GB/eyes", "200 GB/eyes", "300 GB/eyes", "500 GB/eyes"]
-answer = "400 GB/eyes"
+filename = "2026-03-28-114213_hyprshot.png"
+question = "Consider a 5-drive, 100 GBytes-per-drive RAID array. What is the available data storage capacity for each of the RAID levels 5?"
+choices = ["400 GBytes", "200 GBytes", "300 GBytes", "500 GBytes"]
+answer = "400 GBytes"
 
 [[questions]]
+filename = "2026-03-28-114219_hyprshot.png"
 question = "In the direct mapping method from 256MB main memory with 512KB cache, what is the number of bits for the TAG element in the address?"
 choices = ["6", "7", "8", "9"]
 answer = "9"
 
 [[questions]]
+filename = "2026-03-28-114222_hyprshot.png"
 question = "In error correcting code (single ECC), how many bits are used to correct one bit in 8-bit data?"
-choices = ["4", "5", "6", "7"]
-answer = "4"
+choices = ["4.", "5", "6", "7"]
+answer = "5"
 
 [[questions]]
+filename = "2026-03-28-114235_hyprshot.png"
 question = "Consider an expression: NOT (1111 1010) What is the result of this expression?"
 choices = ["0000 1010", "0000 0101", "1111 0101", "1111 1010"]
 answer = "0000 0101"
 
 [[questions]]
-question = "Consider an expression 1000 0000 OR 1111 1010\nWhat is the result of this expression?"
+filename = "2026-03-28-114240_hyprshot.png"
+question = "Consider an expression: 1000 0000 OR 1111 1010 What is the result of this expression?"
 choices = ["1000 0000", "1111 1010", "1001 1010", "1001 0101"]
-answer = "1111 1010"
+answer = "1001 1010"
 
 [[questions]]
-question = "Consider an expression: 1000 0000 AND 1111 1010\nWhat is the result of this expression?"
+filename = "2026-03-28-114244_hyprshot.png"
+question = "(Choose 1 answer) Consider an expression: 1000 0000 AND 1111 1010 What is the result of this expression?"
 choices = ["1000 0000", "1111 0000", "1001 1010", "1001 0101"]
 answer = "1000 0000"
 
 [[questions]]
-question = "What is result of 1010101 xor 1100100?"
-choices = ["1100101", "1000001", "0110100", "1010100"]
-answer = "0110100"
+filename = "2026-03-28-114247_hyprshot.png"
+question = "What is result of 10100101 xor 11001001?"
+choices = ["11101101", "10000001", "01101100", "10101100"]
+answer = "01101100"
 
 [[questions]]
+filename = "2026-03-28-114305_hyprshot.png"
 question = "What is result left rotate of 10110101 by 2 bit?"
-choices = ["01101010", "10110101", "01101101", "11010100", "11010100"]
-answer = "11010100"
+choices = ["01101011", "10101101", "01101101", "11010110", "11010100"]
+answer = "11010110"
 
 [[questions]]
+filename = "2026-03-28-114310_hyprshot.png"
 question = "What is result logical right shift of 10110000 by 2 bit?"
-choices = ["01011000", "01001100", "00110000", "00101100"]
+choices = ["00101100", "01011000", "01001100", "00110000"]
 answer = "00101100"
 
 [[questions]]
-question = "What is the output of Left Shift Operator << on (00110010<<2)?"
-choices = ["0000011", "11000000", "0000110", "11001000"]
-answer = "11001000"
+filename = "2026-03-28-114315_hyprshot.png"
+question = "What is the output of Left Shift Operator << on (00011000<<2)?"
+choices = ["01100000", "11000000", "00000110", "00000011"]
+answer = "01100000"
 
 [[questions]]
-question = "Express an integer number +16 (using 8-bits length) in twos complement representation"
-choices = ["00010010", "10010010", "00001001", "10011010"]
+filename = "2026-03-28-114320_hyprshot.png"
+question = "Express an integer number +18 (using 8-bits length) in twos complement representation.\nA. 00010010\nB. 10010010\nC. 00001101\nD. 10011101"
+choices = ["00010010", "10010010", "00001101", "10011101"]
 answer = "00010010"
 
 [[questions]]
-question = "If you have an integer number +18 in sign magnitude representation, which is 00010010, what is the correct option for -18?"
+filename = "2026-03-28-114324_hyprshot.png"
+question = "(Choose 1 answer) If you have an integer number +18 in sign magnitude representation, which is 00010010, what is the correct option for -18?"
 choices = ["00010010", "10010010", "11110010", "01110010"]
 answer = "10010010"
 
 [[questions]]
+filename = "2026-03-28-114325_hyprshot.png"
 question = "Convert the 64 from decimal to their binary number equivalents."
-choices = ["100000", "100100", "110000", "101010"]
+choices = ["100000", "100100", "111000", "101010"]
 answer = "100000"
 
 [[questions]]
-question = "What is the output of a NOT gate when the input is 0? Ho\u00e0ng"
+filename = "2026-03-28-114327_hyprshot.png"
+question = "Using Hamming Code with one error correction to store an 12-bit word in memory, the stored word 111001001101 consists of 8 bits data and 4 bit bits parity check. What are the parity bits?"
+choices = ["0110", "0111", "1110", "0101", "None of the mentioned"]
+answer = "0101"
+
+[[questions]]
+filename = "2026-03-28-114350_hyprshot.png"
+question = "What is the output of a NOT gate when the input is 0? Ho\u00e0ng Ho\u00e0ng"
 choices = ["0", "1", "Undefined", "2"]
 answer = "1"
 
 [[questions]]
-question = "Using Hamming Code with one error correction to store an 12-bit word in memory, the stored word 11001001101 consists of 8 bits data and 4 bit parity check. What are the parity bits?"
-choices = ["0110", "0111", "1101", "0101", "None of the mentioned"]
-answer = "0101"
-
-[[questions]]
+filename = "2026-03-28-114354_hyprshot.png"
 question = "When both inputs are 0, what is the result of a NOR gate?"
-choices = ["0", "1", "2", "Undefined", "N/A"]
+choices = ["0", "1", "2", "Undefined", "#NA"]
 answer = "1"
 
 [[questions]]
+filename = "2026-03-28-114357_hyprshot.png"
 question = "When both inputs are 1, what is the result of a NAND gate?"
-choices = ["0", "1", "2", "Undefined", "N/A"]
+choices = ["0", "1", "2", "Undefined", "#NA"]
 answer = "0"
 
 [[questions]]
-question = "A set-associative cache consists of 64 lines, divided into four-line sets. 2^19 words memory contains 4K blocks of 128 words each. How many bits are there in the tag field of the cache?"
+filename = "2026-03-28-114400_hyprshot.png"
+question = "A set-associative cache consists of 64 lines, divided into four-line sets. 2^19-words main memory contains 4K blocks of 128 words each. How many bits are there in the tag field of the cache?"
 choices = ["5", "6", "7", "8", "9"]
 answer = "8"
 
 [[questions]]
-question = "Consider a machine with a byte addressable main memory of 2^16 bytes and block size of 8 bytes. Assume that a direct mapped cache consisting of 32 lines is used with this machine. How many bits are there in the field of the cache?"
+filename = "2026-03-28-114403_hyprshot.png"
+question = "Consider a machine with a byte addressable main memory of 2^16 bytes and block size of 8 bytes. Assume that a direct mapped cache consisting of 32 lines is used with this machine. How many bits are there in the line field of the cache?\nA. 3\nB. 4\nC. 5\nD. 6\nE. 7"
 choices = ["3", "4", "5", "6", "7"]
 answer = "5"
 
 [[questions]]
-question = "The instruction, which adds 1 to the value in a memory location, has five stages: fetch opcode (four cycles), add operand (three cycles), add 1 to operand (three cycles) and store operand (three cycles). An interrupt request at beginning of fetch operand stage. How many cycles does the processor enter the interrupt processing cycle?"
+filename = "2026-03-28-114412_hyprshot.png"
+question = "The instruction, which adds 1 to the value in a memory location, has five stages: fetch opcode (four cycles), fetch operand address (three cycles), fetch operand (three cycles), add 1 to operand (three cycles), and store operand (three cycles). An interrupt sends request at beginning of fetch operand stage. How many cycles does the processor enter the interrupt processing cycle?"
 choices = ["6", "7", "8", "9", "10"]
 answer = "9"
 
 [[questions]]
-question = "The instruction, which adds 1 to the value in a memory location, has five stages: fetch opcode (2 bus cycles), fetch operand address (2 bus cycles), add 1 to operand (1 bus cycle), and store operand (3 bus cycles). An interrupt sends request at beginning of fetch operand address stage. How many cycles does the processor enter the interrupt processing cycle?"
+filename = "2026-03-28-114420_hyprshot.png"
+question = "The instruction, which adds 1 to the value in a memory location, has five stages: fetch opcode (2 bus cycles), fetch operand address (2 bus cycles), fetch operand (2 bus cycles), add 1 to operand (1 bus cycle), and store operand (3 bus cycles). An interrupt sends request at beginning of fetch operand address stage. How many cycles does the processor enter the interrupt processing cycle?"
 choices = ["6", "7", "8", "9", "5"]
 answer = "8"
 
 [[questions]]
+filename = "2026-03-28-114426_hyprshot.png"
 question = "In the concept of Register Windows, how many register groups are there?"
 choices = ["4", "3", "2", "No distinction"]
 answer = "4"
 
 [[questions]]
-question = "How many classifications of parallel systems are there as proposed by Flynn?"
+filename = "2026-03-28-114429_hyprshot.png"
+question = "How many common classifications of parallel systems are there as proposed by Flynn?"
 choices = ["2", "3", "4", "5"]
 answer = "4"
 
 [[questions]]
-question = "How many general-purpose registers are there in the Microprocessor Register Organizations of Intel 80386 - Pentium 4?"
+filename = "2026-03-28-114450_hyprshot.png"
+question = "How many general-purpose registers are there in the Microprocessor Register Organizations of Intel 80386-Pentium 4?"
 choices = ["8", "16", "4", "12"]
 answer = "8"
 
 [[questions]]
+filename = "2026-03-28-114457_hyprshot.png"
 question = "If you have a boolean function with 3 variables, how many rows are there in the truth table?"
 choices = ["8 rows", "3 rows", "6 rows", "12 rows"]
 answer = "8 rows"
 
 [[questions]]
-question = "Follow the Amdahl's law for multiprocessors, if 10% of the code is inherently serial (f=0.1), running the program on a multicore system with 4 processors, a performance gain (speedup factor) would be"
+filename = "2026-03-28-114503_hyprshot.png"
+question = "Follow the Amdahl's law for multiprocessors, if only 10% of the code is inherently serial (f = 0.9), running the program on a multicore system with 4 processors, a performance gain (speedup factor) would be _____. Ho\u00e0ng Ho\u00e0ng\nA. 307%\nB. 297%\nC. 317%\nD. 327%"
 choices = ["307%", "297%", "317%", "327%"]
 answer = "307%"
 
 [[questions]]
-question = "Follow Amdahl\u2019s law for multiprocessing, if only 20% of the code is inherently serial (f = 0.8), running the program on a multicore system with 8 processors, a performance gain (speedup factor) would be"
+filename = "2026-03-28-114506_hyprshot.png"
+question = "Follow the Amdahl's law for multiprocessors, if only 20% of the code is inherently serial (f = 0.8), running the program on a multicore system with 8 processors, a performance gain (speedup factor) would be _____."
 choices = ["333%", "303%", "313%", "323%"]
 answer = "333%"
 
 [[questions]]
-question = "A benchmark program is running on a 400 MHz processor. The executed program consists of 500 instruction executions, with the following instruction mix and clock cycle count in Table below:\nArithmetic 300 1\nData transfer 100 2\nControl transfer 100 2"
-choices = ["MIPS rate = 285.7", "MIPS rate = 275.7", "MIPS rate = 265.7", "MIPS rate = 285.7"]
+filename = "2026-03-28-114508_hyprshot.png"
+question = "A benchmark program is running on a 400 MHz processor. The executed program consists of 500 instruction executions, with the following instruction mix and clock cycle count in Table below: Instruction type Instruction count Cycles per Instruction Arithmetic 300 1 Data transfer 100 2 Control transfer 100 2 Calculate MIPS rate for this case. A. MIPS rate = 285.7 B. MIPS rate = 275.7 C. MIPS rate = 265.7 D. MIPS rate = 295.7"
+choices = ["MIPS rate = 285.7", "MIPS rate = 275.7", "MIPS rate = 265.7", "MIPS rate = 295.7"]
 answer = "MIPS rate = 285.7"
 
 [[questions]]
-question = "In one-cache system using direct mapping technique, with the cache containing 10 lines which memory block\u2019s data can be transferred to the cache line?"
-choices = ["7, 17, 27, 37, ...", "0, 1, 2, 3, 4, 5, 6, 7, ...", "0, 7, 17, 27, 37, ...", "0, 7, 17, 27, 37, ..."]
+filename = "2026-03-28-114515_hyprshot.png"
+question = "In one-cache system using direct mapping technique, with the cache containing 10 lines, which memory block's data can be transferred to the cache line 7?"
+choices = ["7, 17, 27, 37, ...", "0, 1, 2, 3, 4, 5, 6, 7, ...", "0, 7, 17, 27, 37, ...", "0, 7, 77, 777, ..."]
 answer = "7, 17, 27, 37, ..."
 
 [[questions]]
+filename = "2026-03-28-114517_hyprshot.png"
 question = "A two-way set-associative cache has lines of 16 bytes and a total size of 8 Kbytes. The 64-Mbyte main memory is byte addressable. What are the values of Tag, Set and Byte offset fields?"
-choices = ["14/8/4", "16/8/4", "12/8/4", "15/7/4", "13/9/4"]
+choices = ["14/8/4", "16/6/4", "12/10/4", "15/7/4", "13/9/4"]
 answer = "14/8/4"
 
 [[questions]]
-question = "The use of Hamming code (n=4) is illustrated in the below Venn diagrams. We assign the 4 bits to the inner compartments. The remaining compartments are filled with what are called parity bits. Each parity bit is chosen so that the total number of 1s in the circle is even. Choose the correct value of the corresponding parity bit in circles A, B, C."
-choices = ["100", "010", "001", "101"]
-answer = "100"
+filename = "2026-03-28-114522_hyprshot.png"
+question = "Kizspy | Question: 16 (Choose 1 answer) The use of Hamming code on 4-bit words (M = 4) is illustrated in the below Venn diagrams. With three intersecting circles, there are seven compartments. We assign the 4 data bits to the inner compartments. The remaining compartments are filled with what are called parity bits. Each parity bit is chosen so that the total number of 1s in its circle is even. Choose the correct value of the corresponding parity bit in circles A, B, C."
+choices = ["1; 0; 0", "0; 1; 0", "0; 0; 1", "1; 0; 1"]
+answer = "1; 0; 0"
 
 [[questions]]
+filename = "2026-03-28-114524_hyprshot.png"
 question = "Using Hamming Code with one error correction to store a 12-bit word in memory, the stored word 101001011101 consists of 8 bits data and 4 bits parity check. What are the data bits?"
 choices = ["01001101", "10100100", "10101011", "01011101", "None of the mentioned"]
 answer = "10101011"
 
 [[questions]]
-question = "Using Hamming Code with one error correction to store a 12-bit word in memory, the stored word 11001001101 consists of 8 bits data and 4 bits parity check. What are the parity bits?"
+filename = "2026-03-28-114526_hyprshot.png"
+question = "Using Hamming Code with one error correction to store a 12-bit word in memory, the stored word 111001001101 consists of 8 bits data and 4 bits parity check. What are the parity bits?"
 choices = ["0110", "0111", "1110", "0101"]
 answer = "0101"
 
 [[questions]]
+filename = "2026-03-28-114648_hyprshot.png"
 question = "What is the primary role of the IO module? (choose two correct answers)"
-choices = ["Its role is data transfer, it will transfer data to and from peripheral devices.", "Its role is device communication control, it manages and controls the flow of data between CPU and peripherals.", "Its role is data formatting and converting signals into digital audio data for CPU.", "Its role is protecting data from user, ensuring that sensitive information is not lost or intercepted."]
-answer = ["Its role is data transfer, it will transfer data to and from peripheral devices.", "Its role is device communication control, it manages and controls the flow of data between CPU and peripherals."]
-
-[[questions]]
-question = "What is the primary role of the I/O module? (choose two correct answers)"
-choices = ["Its role is data transfer, it will transfer data to and from peripheral devices.", "Its role is device communication control, it manages and controls the flow of data between the CPU and peripherals.", "Its role is data formatting and converting analog signals into digital audio data for CPU", "Its role is protecting data user, ensuring that sensitive information is not lost or intercepted."]
+choices = ["Its role is data transfer, it will transfer data to and from peripheral devices.", "Its role is device communication control, it manages and controls the flow of data between the CPU and peripherals.", "Its role is data formatting and converting analog signals into digital audio data for CPU.", "Its role is protecting data from user, ensuring that sensitive information is not lost or intercepted."]
 answer = ["Its role is data transfer, it will transfer data to and from peripheral devices.", "Its role is device communication control, it manages and controls the flow of data between the CPU and peripherals."]
 
 [[questions]]
+filename = "2026-03-28-114651_hyprshot.png"
+question = "What is the primary role of the IO module? (choose two correct answers)"
+choices = ["Its role is data transfer, it will transfer data to and from peripheral devices.", "Its role is device communication control, it manages and controls the flow of data between the CPU and peripherals", "Its role is data formatting and converting analog signals into digital audio data for CPU", "Its role is protecting data from user, ensuring that sensitive information is not lost or intercepted."]
+answer = ["Its role is data transfer, it will transfer data to and from peripheral devices.", "Its role is device communication control, it manages and controls the flow of data between the CPU and peripherals"]
+
+[[questions]]
+filename = "2026-03-28-114706_hyprshot.png"
+question = "What is the primary role of the I/O module? (choose two correct answers)"
+choices = ["Its role is data transfer, it will transfer data to and from peripheral devices.", "Its role is device communication control, it manages and controls the flow of data between the CPU and peripherals.", "Its role is data formatting and converting analog signals into digital audio data for CPU.", "Its role is protecting data from user, ensuring that sensitive information is not lost or intercepted."]
+answer = ["Its role is data transfer, it will transfer data to and from peripheral devices.", "Its role is device communication control, it manages and controls the flow of data between the CPU and peripherals."]
+
+[[questions]]
+filename = "2026-03-28-114715_hyprshot.png"
 question = "Which of the following issues are peculiar to SSDs compared to HDDs?"
 choices = ["Performance slows down as the device is used.", "A certain number of writes make the flash memory unusable.", "They are more vulnerable to physical damage.", "They require defragmentation to maintain performance.", "They are slower at data retrieval compared to HDDs."]
 answer = ["Performance slows down as the device is used.", "A certain number of writes make the flash memory unusable."]
 
 [[questions]]
-question = "What is the primary role of the I/O module? (choose two correct answers)"
-choices = ["Its role is data transfer, it will transfer data to and from peripheral devices.", "Its role is device communication control, it manages and controls the flow of data between the CPU and peripherals.", "Its role is data formatting and converting analog signals into digital audio for CPU.", "Its role is protecting data from user, ensuring that sensitive information is not lost or intercepted."]
-answer = ["Its role is data transfer, it will transfer data to and from peripheral devices.", "Its role is device communication control, it manages and controls the flow of data between the CPU and peripherals."]
-
-[[questions]]
+filename = "2026-03-28-114722_hyprshot.png"
 question = "Which of the following are examples of architectural attributes in computer systems?"
 choices = ["Instruction set", "Control signals", "Memory technology", "Number of bits used for data types", "Interfaces between peripherals and the computer"]
 answer = ["Instruction set", "Number of bits used for data types", "Interfaces between peripherals and the computer"]
 
 [[questions]]
-question = "Which of the following attributes do not belong to computer architecture?"
-choices = ["Number of bits used to represent data types", "The instruction set", "Interface between the computer and peripherals", "Techniques for addressing memory", "The memory technology used", "I/O mechanismms"]
-answer = "I/O mechanismms"
-
-[[questions]]
+filename = "2026-03-28-114918_hyprshot.png"
 question = "Which of the following attributes do not belong to computer architecture?"
 choices = ["Number of bits used to represent data types", "The instruction set", "Interface between the computer and peripherals", "Techniques for addressing memory", "The memory technology used", "I/O mechanisms"]
-answer = "I/O mechanisms"
+answer = ["Interface between the computer and peripherals", "The memory technology used"]
 
 [[questions]]
-question = "Why is cache design used in high-performance computing (HPC)? (Choose three answers)"
-choices = ["Because there is a significant speed gap between the processor and the internal memory in HPC.", "Because applications in HPC often require a large bandwidth to support intensive data processing.", "Because power consumption can be a significant operational cost in HPC environments.", "Because multiple processors are often working in parallel, caches provide a way to efficiently manage the data required by these processors."]
-answer = ["Because there is a significant speed gap between the processor and the internal memory in HPC.", "Because applications in HPC often require a large bandwidth to support intensive data processing.", "Because power consumption can be a significant operational cost in HPC environments."]
+filename = "2026-03-28-114920_hyprshot.png"
+question = "Which of the following attributes do not belong to computer architecture?"
+choices = ["Number of bits used to represent data types", "The instruction set", "Interface between the computer and peripherals", "Techniques for addressing memory", "The memory technology used", "I/O mechanisms"]
+answer = "The memory technology used"
 
 [[questions]]
+filename = "2026-03-28-114923_hyprshot.png"
+question = "Why is cache design used in high-performance computing (HPC)? (Choose three correct answers)"
+choices = ["Because there is a significant speed gap between the processor and the internal memory in HPC.", "Because applications in HPC often require a large bandwidth to support intensive data processing.", "Because power consumption can be a significant operational cost in HPC environments.", "Because multiple processors are often working in parallel, caches provide a way to efficiently manage data required by these processors."]
+answer = ["Because there is a significant speed gap between the processor and the internal memory in HPC.", "Because applications in HPC often require a large bandwidth to support intensive data processing.", "Because multiple processors are often working in parallel, caches provide a way to efficiently manage data required by these processors."]
+
+[[questions]]
+filename = "2026-03-28-114930_hyprshot.png"
 question = "In the computer, what categories do external devices include? (choose 3 correct answers)"
-choices = ["Human readable", "Communication", "Machine readable", "Data Conversion"]
+choices = ["Human readable", "Communication", "Data Conversion", "Machine readable"]
 answer = ["Human readable", "Communication", "Machine readable"]
 
 [[questions]]
+filename = "2026-03-28-114933_hyprshot.png"
 question = "Regarding the ALU (Arithmetic Logic Unit), besides basic arithmetic operations, what operations can it perform? (choose two correct answers)"
-choices = ["It handles bit shifting operations like multi and div operations by powers of two", "It handles data transfer operations like MOVE, GO, JUMP", "It handles decoding operations after an instruction is fetched", "It handles logical operations such as AND, OR, XOR, NOT"]
-answer = ["It handles bit shifting operations like multi and div operations by powers of two", "It handles logical operations such as AND, OR, XOR, NOT"]
+choices = ["It handles logical operations such as AND, OR, XOR, NOT.", "It handles data transfer operations like MOVE, GO, JUMP.", "It handles decoding operations after an instruction is fetched.", "It handles bit shifting operations like multi and div operations by powers of two."]
+answer = ["It handles logical operations such as AND, OR, XOR, NOT.", "It handles bit shifting operations like multi and div operations by powers of two."]
 
 [[questions]]
-question = " is a set of physical disk drives viewed by the operating system as a single logical drive"
+filename = "2026-03-28-114944_hyprshot.png"
+question = "________ is a set of physical disk drives viewed by the operating system as a single logical drive."
 choices = ["CLV", "SSD", "RAID", "CAV"]
 answer = "RAID"
 
 [[questions]]
-question = "there are multiple functional units, each of which is implemented as a pipeline."
+filename = "2026-03-28-114954_hyprshot.png"
+question = "________ there are multiple functional units, each of which is implemented as a pipeline."
 choices = ["Scalar", "Superpipelined", "Superscalar", "Vector"]
 answer = "Superscalar"
 
 [[questions]]
-question = "refers to the operational units and their interconnections that realize the architectural"
+filename = "2026-03-28-114959_hyprshot.png"
+question = "________ refers to the operational units and their interconnections that realize the architectural specifications."
 choices = ["Computer architecture", "Computer function", "Computer organization", "Instruction set architecture"]
 answer = "Computer organization"
 
 [[questions]]
-question = "If the operation involves reference to an operand in memory or available via I/O, then determine the address of the operand."
-choices = ["Operand fetch", "Data operation", "Operand store", "Operand address calculation"]
-answer = "Operand address calculation"
-
-[[questions]]
-question = "interprets the instructions in memory and causes them to be executed"
+filename = "2026-03-28-115021_hyprshot.png"
+question = "________ interprets the instructions in memory and causes them to be executed."
 choices = ["Registers", "CPU interconnection", "Arithmetic and Logic Unit (ALU)", "I/O Modules", "Control Unit (CU)"]
 answer = "Control Unit (CU)"
 
 [[questions]]
-question = "Determine the address of the next instruction to be executed. Usually, this involves adding a fixed number to the address of the previous instruction."
-choices = ["Instruction fetch", "Instruction operation decoding", "Instruction address calculation", "Operand fetch", "Operand address calculation"]
-answer = "Instruction address calculation"
+filename = "2026-03-28-115024_hyprshot.png"
+question = "________ : If the operation involves reference to an operand in memory or available via I/O, then determine the address of the operand."
+choices = ["Operand fetch", "Data operation", "Operand store", "Operand address calculation"]
+answer = "Operand address calculation"
 
 [[questions]]
-question = "can exchange data directly with the processor. Just as the processor can initiate a read or write with memory, designating the specific location, the processor can also read data from or write data to"
+filename = "2026-03-28-115030_hyprshot.png"
+question = "(Choose 1 answer) __________ can exchange data directly with the processor. Just as the processor can initiate a read or write with memory, designating the address of a specific location, the processor can also read data from or write data to __________."
 choices = ["I/O module / Memory", "Interrupts / I/O module", "I/O module / Interrupts", "Interrupts / Interrupts", "Memory / I/O module"]
 answer = "I/O module / Memory"
 
 [[questions]]
-question = "Read instruction from its memory location into the processor."
-choices = ["Instruction operation decoding", "Data operation", "Operand address calculation", "Instruction fetch"]
-answer = "Instruction fetch"
+filename = "2026-03-28-115039_hyprshot.png"
+question = "________ : Determine the address of the next instruction to be executed. Usually, this involves adding a fixed number to the address of the previous instruction."
+choices = ["Instruction fetch", "Instruction operation decoding", "Instruction address calculation", "Operand fetch", "Operand address calculation"]
+answer = "Instruction address calculation"
 
 [[questions]]
-question = "is (are) determined by the number of instructions that can be fetched and executed at the same time (the number of parallel pipelines) and by the speed and sophistication of the mechanisms that the processor uses to find independent instructions."
+filename = "2026-03-28-115048_hyprshot.png"
+question = "________ is (are) determined by the number of instructions that can be fetched and executed at the same time (the number of parallel pipelines) and by the speed and sophistication of the mechanisms that the processor uses to find independent instructions."
 choices = ["Instruction-level parallelism", "Machine parallelism", "Both instruction-level parallelism and machine parallelism", "None of the mentioned"]
 answer = "Machine parallelism"
 
 [[questions]]
-question = "Given the following Karnaugh map, what is the sum of product expression in the sum of product format (X' means Not X)?"
-choices = ["B + AC'", "B + AB'", "B + A C", "AB + BC"]
+filename = "2026-03-28-115053_hyprshot.png"
+question = "____________: Read instruction from its memory location into the processor."
+choices = ["Instruction fetch", "Instruction operation decoding", "Operand address calculation", "Data operation"]
+answer = "Instruction fetch"
+
+[[questions]]
+filename = "2026-03-28-115101_hyprshot.png"
+question = "Given the following Karnaugh map, what is the optimal expression in the sum of product format (X' means Not X)?"
+choices = ["B + AC'", "B + AB'C'", "B + AC", "AB + B'C"]
 answer = "B + AC'"
 
 [[questions]]
-question = "Given the following Karnaugh map, what is the optimal expression in the sum of product format X? "
-choices = ["AB' + AC'D' + ACD'", "AB + AC\u2019 + AD\u2019", "AB + AD + ACD\u2019", "AB - CD + BCD'"]
-answer = "AB' + AC'D' + ACD'"
-
-[[questions]]
+filename = "2026-03-28-115119_hyprshot.png"
 question = "Given the following Karnaugh map, what is the optimal expression in the sum of product format (X' means Not X)?"
-choices = ["A'+C'", "A+B", "B+C'", "A + BC' + BC"]
-answer = "A + BC' + BC"
+choices = ["A'B + AC'D + ACD'", "AB + AC' + ACD'", "AB' + AD + ACD'", "A'B + C'D + BCD'"]
+answer = "A'B + AC'D + ACD'"
 
 [[questions]]
-question = "Consider the expression NOT(A + B) = ?"
-choices = ["NOT A AND NOT B", "NOT A OR NOT B", "A AND B", "A OR B"]
+filename = "2026-03-28-115150_hyprshot.png"
+question = "Given the following Karnaugh map, what is the optimal expression in the sum of product format (X' means Not X)?"
+choices = ["A' + C'", "A + B", "B + C'", "A + B'C' + BC'"]
+answer = "A' + C'"
+
+[[questions]]
+filename = "2026-03-28-115232_hyprshot.png"
+question = "Consider the expression: NOT(A + B) = ? Apply DeMorgan's Theorem to replace at \"?\"."
+choices = ["NOT A AND NOT B", "NOT A OR NOT B", "NOT A AND B", "A OR NOT B"]
 answer = "NOT A AND NOT B"
 
 [[questions]]
-question = "Consider an expression. NOT (A OR B) Choose the correct expression that is equal to the given expression."
-choices = ["A NAND B", "NOT A OR B", "NOT A NOR B", "A NOR B"]
+filename = "2026-03-28-115238_hyprshot.png"
+question = "(Choose 1 answer) Consider an expression: NOT (A OR B) Choose the correct expression that is equal to the given expression."
+choices = ["A NOR B", "A NAND B", "NOT A NOR B", "NOT A OR B"]
 answer = "A NOR B"
 
 [[questions]]
-question = "Assume that a truth table:\nX Y OUTPUT\n1 1 1\n1 0 1\n0 1 1\n0 0 0\nWhich basic operator matches the table above?"
+filename = "2026-03-28-115245_hyprshot.png"
+question = "Assume that a truth table: X Y OUTPUT 1 1 1 1 0 1 0 1 1 0 0 0 Which basic operator matches the table above? A. AND B. OR C. NAND D. NOR"
 choices = ["AND", "OR", "NAND", "NOR"]
 answer = "OR"
 
 [[questions]]
-question = "The operation ______ yields true (binary value 1) if and only if both of its operands are true"
+filename = "2026-03-28-115251_hyprshot.png"
+question = "The operation _______ yields true (binary value 1) if and only if both of its operands are true."
 choices = ["OR", "AND", "XOR", "NAND"]
 answer = "AND"
 
 [[questions]]
-question = "_____ is made with cells that store data as capacitors."
+filename = "2026-03-28-115256_hyprshot.png"
+question = "____ is made with cells that store data as charge on capacitors."
 choices = ["SRAM", "DRAM", "RDRAM", "CDRAM"]
 answer = "DRAM"
 
 [[questions]]
+filename = "2026-03-28-115259_hyprshot.png"
 question = "Which gate can be used to create an inverted output of an input signal in digital logic?"
 choices = ["NOT gate", "OR gate", "AND gate", "XOR gate"]
 answer = "NOT gate"
 
 [[questions]]
-question = "The effective address of \nEA = A + (R)\n(R) = (R) + 1"
+filename = "2026-03-28-115305_hyprshot.png"
+question = "The effective address of _____ is EA = A + (R) (R) = (R) + 1"
 choices = ["relative addressing", "autoindexing", "postindexing", "preindexing"]
 answer = "autoindexing"
 
 [[questions]]
-question = "The effective address of Register indirect addressing mode is"
-choices = ["EA = R", "EA = (R)", "EA = R + A", "EA = (R) + A"]
+filename = "2026-03-28-115329_hyprshot.png"
+question = "The effective address of Register indirect addressing mode is _______."
+choices = ["EA = R", "EA = (R)", "EA = (R) + A", "EA = (R) + (A)"]
 answer = "EA = (R)"
 
 [[questions]]
-question = "Which of the following PDP series computers is known for its use of 12-bit instructions and a single general purpose register, the accumulator?"
+filename = "2026-03-28-115334_hyprshot.png"
+question = "Which of the following PDP series computers is known for its use of 12-bit instructions and a single general-purpose register, the accumulator?"
 choices = ["PDP-8", "PDP-10", "PDP-11", "PDP-6"]
 answer = "PDP-8"
 
 [[questions]]
-question = "Which instruction is used by MASM32 to return from a procedure?"
-choices = ["RET", "EXIT", "END", "RES"]
-answer = "RET"
-
-[[questions]]
+filename = "2026-03-28-115351_hyprshot.png"
 question = "Which RAID level uses striping technique with a minimum of 3 disks and provides fault tolerance through the use of parity bit?"
 choices = ["RAID 0", "RAID 1", "RAID 2", "RAID 3"]
 answer = "RAID 3"
 
 [[questions]]
+filename = "2026-03-28-115356_hyprshot.png"
+question = "Which instruction is used by MASM32 to return from a procedure?"
+choices = ["RET", "EXIT", "END", "RES"]
+answer = "RET"
+
+[[questions]]
+filename = "2026-03-28-115400_hyprshot.png"
 question = "Which register is the memory address register?"
 choices = ["MAR", "MBR", "IR", "PC"]
 answer = "MAR"
 
 [[questions]]
+filename = "2026-03-28-115404_hyprshot.png"
 question = "Which registers can interact with the secondary storage?"
 choices = ["MAR", "PC", "IR", "R0", "All of the mentioned"]
 answer = "MAR"
 
 [[questions]]
-question = "Which of the following is not an operand type?"
-choices = ["Addresses", "Logical data", "Value", "Characters"]
-answer = "Value"
-
-[[questions]]
+filename = "2026-03-28-115408_hyprshot.png"
 question = "Which technique involves dividing physical memory into fixed-size or variable-size blocks to allocate memory to processes?"
 choices = ["Partitioning", "Swapping", "Paging", "Translation Lookaside Buffer"]
 answer = "Partitioning"
 
 [[questions]]
+filename = "2026-03-28-115412_hyprshot.png"
+question = "Which of the following is not an operand type?"
+choices = ["Addresses", "Logical data", "Value", "Characters"]
+answer = "Value"
+
+[[questions]]
+filename = "2026-03-28-115416_hyprshot.png"
 question = "Which type of instruction format is more flexible but can lead to inefficient use of memory?"
 choices = ["Fixed-Length Instruction Format", "Variable-Length Instruction Format", "Compact Instruction Format", "Standardized Instruction Format"]
 answer = "Variable-Length Instruction Format"
 
 [[questions]]
-question = "For reads to and writes from main memory, ______ translates each virtual address into a physical address in main memory."
+filename = "2026-03-28-115419_hyprshot.png"
+question = "For reads to and writes from main memory, _______ translates each virtual address into a physical address in main memory."
 choices = ["MAR", "MMU", "Overlays", "TLB", "Accumulator"]
 answer = "MMU"
 
 [[questions]]
-question = "What are basic registers that help CPU establish a connection with an I/O device?"
-choices = ["IIOAR, IIOBR", "IIOAR, MAR", "IIOBR, MAR", "MAR, MBR"]
-answer = "IIOAR, IIOBR"
+filename = "2026-03-28-115424_hyprshot.png"
+question = "(Choose 1 answer) What are basic registers that help CPU establish a connection with an I/O device?"
+choices = ["I/OAR, I/OBR", "I/OAR, MAR", "I/OBR, MBR", "MAR, MBR"]
+answer = "I/OAR, I/OBR"
 
 [[questions]]
-question = "Choose an operation in which no operating system\u2019s utility is called"
+filename = "2026-03-28-115428_hyprshot.png"
+question = "Choose an operation in which no operating system's utility is called."
 choices = ["Y = 10 + 7", "Read an integer from the keyboard.", "Print data to monitor.", "Read data from a file.", "None of the others"]
 answer = "Y = 10 + 7"
 
 [[questions]]
-question = "Consider an expression: A + (B C) Ho\u00e0ng Ho\u00e0ng\nWhat expression is equal to the given expression?"
-choices = ["(A + B) |(A + C)", "(A + B) \u2229 (A + C)", "A (B + C)", "NOT ((A + B) \u2229 (A + C))"]
-answer = "(A + B) |(A + C)"
+filename = "2026-03-28-115430_hyprshot.png"
+question = "Choose the appropriate words to fill in the corresponding blanks in the following definitions: ____ contains a word to be stored in memory or sent to the I/O unit, or is used to receive a word from memory or from the I/O unit. ____ specifies the address in memory of the word to be written from or read into the MBR. ____ is employed to hold temporarily the right hand instruction from a word in memory."
+choices = ["MBR; MAR; IBR", "AC; MAR; IR", "MAR; MBR; IBR", "AC; MBR; MAR"]
+answer = "MBR; MAR; IBR"
 
 [[questions]]
-question = "Choose the appropriate words to fill in the following definitions:\n\n contains a word to be stored in memory or sent to the I/O unit, or is used to receive a word from memory or from the I/O unit.\nspecifies the address in memory of a word to be written from or read into the MBR.\nis employed to hold temporarily the right hand instruction from a word in memory."
-choices = ["MBR, MAR, IBR", "AC, MAR, IR", "MAR, MBR, IBR", "AC, MBR, MAR"]
-answer = "MBR, MAR, IBR"
+filename = "2026-03-28-115453_hyprshot.png"
+question = "Consider an expression: A + (B.C) Ho\u00e0ng Ho\u00e0ng What expression is equal to the given expression?"
+choices = ["(A + B).(A + C)", "(A + B).C", "A.(B + C)", "NOT (A.(B + C))"]
+answer = "(A + B).(A + C)"
 
 [[questions]]
+filename = "2026-03-28-115458_hyprshot.png"
 question = "In MASM32, which command is incorrect?"
 choices = ["ADD EAX, a", "ADD EAX, EBX", "ADD a, EAX", "ADD a, b"]
 answer = "ADD a, b"
 
 [[questions]]
+filename = "2026-03-28-115502_hyprshot.png"
 question = "In an arithmetic left shift operation, what is appended to the rightmost bits?"
 choices = ["Zeros", "Ones", "The original leftmost bit", "Random bits"]
 answer = "Zeros"
 
 [[questions]]
-question = "Consider some computer generations\n1. the first computer generation\n2. the second computer generation\n3. the third computer generation\nAnd some technologies are used in computer generations"
-choices = ["Vacuum Tubes", "Transistors", "Integrated Circuits (IC)", "Microprocessors"]
-answer = "Integrated Circuits (IC)"
+filename = "2026-03-28-115505_hyprshot.png"
+question = "Consider some computer generations\n1: the first computer generation\n2: the second computer generation\n3: the third computer generation\n\nAnd some technologies are used in computer generations\nA: Vacuum Tubes\nB: Transistors\nC: Integrated Circuits (IC)\nD: Microprocessors\n\nSelect the main technology applied in each computer generation\nA. 1-D; 2-C; 3-B\nB. 1-A; 2-C; 3-D\nC. 1-A; 2-B; 3-C\nD. 1-D; 2-B; 3-C"
+choices = ["1-D; 2-C; 3-B", "1-A; 2-C; 3-D", "1-A; 2-B; 3-C", "1-D; 2-B; 3-C"]
+answer = "1-A; 2-B; 3-C"
 
 [[questions]]
-question = "Consider the truth table\nA B F\n0 0 1\n0 1 0\n1 0 0\n1 1 0\nChoose the correct Algebraic Functions with given truth"
-choices = ["F = NOT (A + B)", "F = A XOR B", "F = A AND NOT B", "F = A AND B"]
+filename = "2026-03-28-115518_hyprshot.png"
+question = "Consider the truth table\nA B F\n0 0 1\n0 1 0\n1 0 0\n1 1 0\nChoose the correct Algebraic Functions matches with given truth table"
+choices = ["F = NOT (A + B)", "F = A XOR B", "F = A AND NOT B", "F = NOT A AND B"]
 answer = "F = NOT (A + B)"
 
 [[questions]]
+filename = "2026-03-28-115522_hyprshot.png"
 question = "What is the initial state of a process when it is admitted by the high-level scheduler, but not yet ready to execute?"
-choices = ["Running", "Ready", "New", "Halted"]
+choices = ["New", "Ready", "Running", "Halted"]
 answer = "New"
 
 [[questions]]
+filename = "2026-03-28-115531_hyprshot.png"
 question = "What is the most common mapping technique used in cache memory in modern computers?"
 choices = ["Direct Mapping", "Fully Associative", "Set Associative", "None of the mentioned"]
 answer = "Set Associative"
 
 [[questions]]
+filename = "2026-03-28-115535_hyprshot.png"
 question = "What is the cache memory level that is integrated into the processor chip and has the lowest latency?"
 choices = ["L1 cache", "L2 cache", "L3 cache", "L4 cache"]
 answer = "L1 cache"
 
 [[questions]]
+filename = "2026-03-28-115546_hyprshot.png"
 question = "What is the primary purpose of index registers within the processor?"
 choices = ["To manage control signals", "To hold condition codes", "To facilitate indexed addressing", "To execute arithmetic operations"]
 answer = "To facilitate indexed addressing"
 
 [[questions]]
+filename = "2026-03-28-115552_hyprshot.png"
 question = "What is the primary advantage of indirect addressing mode?"
 choices = ["Faster access to operands", "Ability to access a larger data set", "Flexibility in data location", "Reduced instruction size"]
 answer = "Flexibility in data location"
 
 [[questions]]
+filename = "2026-03-28-115602_hyprshot.png"
 question = "What is the primary method used to cope with storage conflicts in registers?"
 choices = ["Increasing the size of the instruction set", "Register renaming", "Using shared memory", "Using technique of out-of-order issue with out-of-order completion"]
 answer = "Register renaming"
 
 [[questions]]
+filename = "2026-03-28-115609_hyprshot.png"
 question = "What electronic component is used to govern operations such as fetching, decoding, and performing arithmetic operations executed by a processor?"
-choices = ["Using a system clock", "Using a quartz crystal", "Using an analog to digital converter", "Using a counter"]
+choices = ["Using a system clock", "Using a quartz crystal", "Using a analog to digital converter", "Using a counter"]
 answer = "Using a system clock"
 
 [[questions]]
-question = "What does CISC stand for?"
-choices = ["Complex Instruction Set Computer", "Computer Instruction Set Complex", "Computer Instruction Summarize Complex", "Computer Instruction Summarize Computer"]
-answer = "Complex Instruction Set Computer"
-
-[[questions]]
-question = "What type of addressing is primarily used by almost all RISC instructions?"
-choices = ["Immediate addressing", "Register addressing", "Indirect addressing", "Direct addressing"]
-answer = "Register addressing"
-
-[[questions]]
-question = "What type of instruction is used for converting data formats?"
-choices = ["Transfer", "Arithmetic", "Control", "Conversion"]
-answer = "Conversion"
-
-[[questions]]
-question = "Which type of interrupt is exemplified by \u201cdivision by zero, attempt to execute an illegal machine instruction\u201d?"
-choices = ["Program", "Timer", "I/O", "Hardware failure"]
-answer = "Program"
-
-[[questions]]
-question = "Which cache is not a shared cache?"
-choices = ["L4 cache", "L3 cache", "L2 cache", "L1 cache"]
-answer = "L1 cache"
-
-[[questions]]
-question = "Which is the correct choice for the description \"A single machine controls the simultaneous execution of a number of processing elements such as vector and array processors\"?"
-choices = ["Single instruction, single data (SISD)", "Single instruction, multiple data (SIMD)", "Multiple instruction, single data (MISD)", "Multiple instruction, multiple data (MIMD)"]
-answer = "Single instruction, multiple data (SIMD)"
-
-[[questions]]
-question = "Which computing model is characterized by a large number of processors working on different parts of a problem simultaneously?"
-choices = ["Single instruction, single data (SISD)", "Single instruction, multiple data (SIMD)", "Multiple instruction, multiple data (MIMD)", "Multiple instruction, single data (MISD)"]
-answer = "Multiple instruction, multiple data (MIMD)"
-
-[[questions]]
-question = "Which of the following component does not belong to central processing unit?"
-choices = ["System interconnection", "Arithmetic and logic unit", "Registers", "Control unit", "CPU interconnection"]
-answer = "System interconnection"
-
-[[questions]]
-question = "Which of the following memory devices has the lowest access speed?"
-choices = ["ROM", "Flash memory", "Magnetic tape", "HDD", "Cache"]
-answer = "Magnetic tape"
-
-[[questions]]
-question = "Which portion of a computer consists of an ALU, a control unit, and registers, uses for fetching and executing instructions?"
-choices = ["Main memory", "CPU", "I/O", "System interconnection"]
-answer = "CPU"
-
-[[questions]]
-question = "Which of the following components was used in the first ENIAC computer?"
-choices = ["Bipolar transistors", "Field transistors", "Semiconductor ICs", "Vacuum tubes"]
-answer = "Vacuum tubes"
-
-[[questions]]
-question = "Which portion of a computer consists of an ALU, a control unit, and registers, uses for fetching and executing instructions?"
-choices = ["Main memory", "CPU", "I/O", "System interconnection"]
-answer = "CPU"
-
-[[questions]]
-question = "Which of the following algorithms is not typically used in cache memory replacement?"
-choices = ["Least Recently Used (LRU)", "First-In,First-Out (FIFO)", "Least Frequently Used (LFU)", "Round Robin (RR)"]
-answer = "Round Robin (RR)"
-
-[[questions]]
-question = "Which of the following components was used in the first ENIAC computer?"
-choices = ["Bipolar transistors", "Field transistors", "Vacuum tubes", "Semiconductor ICs"]
-answer = "Vacuum tubes"
-
-[[questions]]
-question = "Which of the following algorithms is not typically used in cache memory replacement?"
-choices = ["Least Recently Used (LRU)", "First-In,First-Out (FIFO)", "Least Frequently Used (LFU)", "Round Robin (RR)"]
-answer = "Round Robin (RR)"
-
-[[questions]]
-question = "Which of the following components of CPU is responsible to direct the system to execute instructions?"
-choices = ["Arithmetic and Logic Unit (ALU)", "Control Unit (CU)", "Registers", "Random Access Memory (RAM)"]
-answer = "Control Unit (CU)"
-
-[[questions]]
-question = "Which of the following is a DISADVANTAGE of using programmed I/O?"
-choices = ["Increases system efficiency", "Reduces CPU involvement in I/O operations", "Requires the CPU to be constantly busy with I/O tasks", "Increases system complexity"]
-answer = "Requires the CPU to be constantly busy with I/O tasks"
-
-[[questions]]
-question = "Which of the following describes a RISC (Reduced Instruction Set Computer) architecture?"
-choices = ["Many complex instructions", "Fixed instruction length", "Extensive use of memory addressing modes", "Emphasis on multi-tasking capabilities"]
-answer = "Fixed instruction length"
-
-[[questions]]
-question = "Which of the following types of processors typically offer better performance for parallel processing?"
-choices = ["Single-core processors", "Multi-core processors", "Microelectronics", "Digital signal processors (DSPs)"]
-answer = "Multi-core processors"
-
-[[questions]]
-question = "Which addressing mode allows direct specification of the memory address within the instruction?"
-choices = ["Direct", "Indirect", "Register indirect", "Displacement"]
-answer = "Direct"
-
-[[questions]]
-question = "Which architectural concept involves replicating register banks to facilitate the sharing of pipeline resources among multiple threads?"
-choices = ["Pipelining", "Superscalar", "Simultaneous multithreading", "Superpipelining"]
-answer = "Simultaneous multithreading"
-
-[[questions]]
-question = "Which memory has the fastest speed and smallest capacity?"
-choices = ["Cache", "Main memory", "HDD", "Magnetic Disk"]
-answer = "Cache"
-
-[[questions]]
-question = "Which write technique in which all write operations are made to main memory as well as to the cache, ensuring that main memory is always valid?"
-choices = ["Write through", "Write back", "Write around", "No write allocate"]
-answer = "Write through"
-
-[[questions]]
-question = "Which one of four basic functions of computer describes the following statement?\n\n\"The paths among components are used to move data from memory to memory and from memory to peripheral gates to memory\"."
-choices = ["Data storage", "Data processing", "Data movement", "Control"]
-answer = "Data movement"
-
-[[questions]]
-question = "Which registers can be assigned to a variety of functions by the programmer?"
-choices = ["Data registers", "General purpose registers", "Address registers", "Condition codes (flags)"]
-answer = "General purpose registers"
-
-[[questions]]
-question = "Which representation is most efficient to perform arithmetic operations on the signed integer numbers?"
-choices = ["Sign-magnitude", "2's complement", "1\u2019s & 2\u2019s compliment", "1\u2019s complement"]
-answer = "2's complement"
-
-[[questions]]
-question = "Which state indicates that a process is currently being executed by the processor?"
-choices = ["Running", "Ready", "NewBorn", "Halted"]
-answer = "Running"
-
-[[questions]]
-question = "Which component defines the system call interface to the operating system and facilitates binary portability?"
-choices = ["Application Binary Interface", "Application Programming Interface", "Instruction Set Architecture", "Central Processing Unit"]
-answer = "Application Binary Interface"
-
-[[questions]]
-question = "Which method of accessing units of data is used to copy a block in main memory into cache memory?"
-choices = ["Direct access", "Random access", "Sequential access", "Associative"]
-answer = "Associative"
-
-[[questions]]
-question = "Which method allows the programmer to view memory as consisting of multiple address spaces and is used to map logical addresses of variable length onto physical memory?"
-choices = ["Paging", "Overlays", "Segmentation", "Paging with segmentation"]
-answer = "Segmentation"
-
-[[questions]]
-question = "Which portion of a computer consists of an ALU, a control unit, registers, uses for fetching and executing instructions?"
-choices = ["Main memory", "CPU", "I/O", "System interconnection"]
-answer = "CPU"
-
-[[questions]]
-question = "Which type of interrupt is exemplified by \u201cdivision by zero, attempt to execute an illegal instruction\u201d?"
-choices = ["Program", "Timer", "I/O", "Hardware failure"]
-answer = "Program"
-
-[[questions]]
-question = "Which kind of cache mapping maps each block of main memory into one unique line of the cache?"
-choices = ["Direct mapping", "Set associative mapping", "Fully associative mapping", "Direct access"]
-answer = "Direct mapping"
-
-[[questions]]
-question = "Which type is not an interconnection bus?"
-choices = ["Data lines", "Control lines", "Signal lines", "Address lines"]
-answer = "Signal lines"
-
-[[questions]]
-question = "Which of the following is a characteristic of sequential circuits compared to combinational circuits?"
-choices = ["Do not use gates", "Output depends only on current inputs", "Output depends on current inputs and past inputs", "Simpler to design and implement"]
-answer = "Output depends on current inputs and past inputs"
-
-[[questions]]
-question = "Control and status registers are used by which entities to control the operation of the processor?"
-choices = ["Privileged, operating system programs", "Machine or assembly language programmers", "External I/O devices", "Main memory modules"]
-answer = "Privileged, operating system programs"
-
-[[questions]]
-question = "(1) An I/O module must recognize one unique address for each peripheral it controls.\n(2) I/O channels are commonly seen on microcomputers, whereas I/O controllers are used on mainframes\nThe statement (1) is ___ and (2) is ___"
-choices = ["true, false", "true, true", "false, true", "false, false"]
-answer = "true, false"
-
-[[questions]]
-question = "Choose the register that controls sequential execution."
-choices = ["Program counter (PC)", "Instruction register (IR)", "Memory address register (MAR)", "Memory buffer register (MBR)"]
-answer = "Program counter (PC)"
-
-[[questions]]
-question = "For interrupts, all I/O modules share a common interrupt request line. When the processor senses an interrupt, it sends out an interrupt acknowledge. This signal propagates through a series of I/O modules until it gets to a requesting module.\nWhich kind of interrupt technique is it?"
-choices = ["Multiple interrupt lines", "Software poll", "Daisy chain", "Bus arbitration"]
-answer = "Daisy chain"
-
-[[questions]]
-question = "EEPROM is read-mostly memory and volatile"
-choices = ["True", "False"]
-answer = "False"
-
-[[questions]]
-question = "For reads to and writes from main memory, ______ translates each virtual address into a physical address"
-choices = ["MAR", "MMU", "Overlays", "TLB", "Accumulator"]
-answer = "MMU"
-
-[[questions]]
-question = "From a structural point of view, the external devices are controlled by"
-choices = ["Control signals", "Peripheral device", "I/O modules", "Remote devices"]
-answer = "I/O modules"
-
-[[questions]]
-question = "In MASM32, which OPCODE is used to compare two values?"
-choices = ["COM", "CMP", "IF .ELSE", "TEST"]
-answer = "CMP"
-
-[[questions]]
-question = "In modern computers, which devices among the memory types have the smallest capacity?"
-choices = ["RAM", "Magnetic Tape", "Hard Disk Drive", "Cache Memory"]
-answer = "Cache Memory"
-
-[[questions]]
-question = "In which I/O technique does an I/O channel or processor manage transfer of data, thus freeing the CPU?"
-choices = ["Programmed I/O", "Interrupt-driven I/O", "Channel I/O", "Memory-mapped I/O"]
-answer = "Channel I/O"
-
-[[questions]]
-question = "In terms of organization, what is the basic element of semiconductor memory?"
-choices = ["Memory capacity", "Memory block", "Memory cell", "Memory location"]
-answer = "Memory cell"
-
-[[questions]]
-question = "In various statement types in a high-level programming language, what is not the most common statement?"
-choices = ["GOTO statement", "IF statement", "CLOOP statement", "CALL procedure statement"]
-answer = "GOTO statement"
-
-[[questions]]
-question = "Multiple processors share a single memory or pool of memories by means of a shared bus or other interconnection mechanism, a distinguishing feature is that the memory access time to any region of memory is approximately the same for each processor. Which concept does the statement belong to?"
-choices = ["Symmetric multiprocessor (SMP)", "Nonuniform memory access (NUMA)", "Cluster", "Single instruction, multiple data (SIMD)"]
-answer = "Symmetric multiprocessor (SMP)"
-
-[[questions]]
-question = "Performs the computer\u2019s data processing functions is ?"
-choices = ["Arithmetic and logic unit (ALU)", "Control unit", "CPU interconnection", "Registers"]
-answer = "Arithmetic and logic unit (ALU)"
-
-[[questions]]
-question = "The pulse rate in the ck system is known as the"
-choices = ["ck cycle", "ck speed", "ck time", "ck tick"]
-answer = "ck speed"
-
-[[questions]]
-question = "The first generation of computers used _____ for digital logic elements and memory?"
-choices = ["Transistor", "Integrated Circuits", "Large-scale integration", "Vacuum Tubes"]
-answer = "Vacuum Tubes"
-
-[[questions]]
-question = "The effective address of _____ is EA = top of stack"
-choices = ["Immediate", "Direct", "Indirect", "Displacement", "Implicit"]
-answer = "Implicit"
-
-[[questions]]
-question = "The ___ scheduler executes relatively infrequently and makes the coarse-grained decision of whether or not to take on a new process, and which one to take. The ___ scheduler, also known as the dispatcher, executes frequently and makes the fine-grained decision of which job to execute next."
-choices = ["short-term; medium-term", "medium-term; short-term", "long-term; short-term", "long-term; medium-term"]
-answer = "long-term; short-term"
-
-[[questions]]
-question = "The stored-program concept means a computer could get its instructions by reading them from memory, and a program could be set or altered by setting the values of a portion of memory"
-choices = ["True", "False"]
-answer = "True"
-
-[[questions]]
-question = "The I/O technique where the processor busy waits for an I/O operation to complete is called"
-choices = ["Programmed I/O or DMA", "Interrupt-driven I/O", "Direct Memory Access (DMA)", "Programmed I/O"]
-answer = "Programmed I/O"
-
-[[questions]]
-question = "The task of subdivision is carried out dynamically by the OS and is known as"
-choices = ["Scheduling", "Memory management", "Virtual Memory", "All of the mentioned"]
-answer = "Memory management"
-
-[[questions]]
-question = "The PC, IR, MAR, MBR registers belong to which of the following groups?"
-choices = ["Control and Status Registers", "User-Visible Registers", "General Registers", "Handle Registers"]
-answer = "Control and Status Registers"
-
-[[questions]]
-question = "To enhance performance in a superscalar processor, which method(s) should we apply?"
-choices = ["Duplication of resources.", "Out-of-order issue.", "Renaming registers.", "All of the mentioned."]
-answer = "All of the mentioned."
-
-[[questions]]
-question = "The hardware mechanism that allows a device to notify the CPU is called"
-choices = ["polling", "interrupt", "driver", "controlling"]
-answer = "interrupt"
-
-[[questions]]
-question = "The decision as to which process shall be handled by an available I/O device"
-choices = ["Medium-term scheduling", "Short-term scheduling", "I/O scheduling", "Long-term scheduling"]
-answer = "I/O scheduling"
-
-[[questions]]
-question = "The chunks of a program, known as pages, could be assigned to available chunks of memory, known as frames, is called"
-choices = ["Swapping", "Partitioning", "Paging", "Virtual Memory", "Segmentation"]
-answer = "Paging"
-
-[[questions]]
-question = "We have a long-term queue of process requests, typically stored on"
-choices = ["main memory", "disk", "cache memory", "registers"]
-answer = "disk"
-
-[[questions]]
-question = "With the hard disk data layout, the set of all the tracks in the same relative position on the platter, is called"
-choices = ["Cylinder", "Tracks", "Inter-track gap", "Sector"]
-answer = "Cylinder"
-
-[[questions]]
-question = "Steps for executing a machine instruction are concerned, given an assembly code: ADD EAX, V. What step will access the variable V?"
-choices = ["The fetch data step.", "The fetch instruction step.", "The process data step.", "The interpret instruction step."]
-answer = "The fetch data step."
-
-[[questions]]
-question = "What is the main advantage of using DMA over Programmed I/O or Interrupt Driven I/O?"
-choices = ["DMA reduces the CPU involvement and overhead in data transfer", "DMA increases the data transfer rate and efficiency", "DMA allows concurrent execution of CPU and I/O operations", "All of the mentioned"]
-answer = "All of the mentioned"
-
-[[questions]]
-question = "What are the most important general categories of data that machine instructions operate on?"
-choices = ["Addresses, numbers, characters, and logical data", "Text, images, functions, and audio", "Variables, functions, and arrays", "Instructions, control signals, and registers"]
-answer = "Addresses, numbers, characters, and logical data"
-
-[[questions]]
-question = "What is the correct order of memory speed from fastest to slowest?"
-choices = ["Registers > Cache > RAM > SSD", "Cache > Registers > RAM > SSD", "Registers > Cache > SSD > RAM", "Cache > Registers > SSD > RAM", "All of the mentioned are wrong"]
-answer = "Registers > Cache > RAM > SSD"
-
-[[questions]]
-question = "Sort the following memory types in ascending order by access speed:"
-choices = ["HDD - L2 cache - L1 cache", "HDD - Main Memory - L1 cache - L2 cache", "HDD - L2 cache - L1 cache - Main Memory", "Main Memory - L2 cache - L1 cache - HDD"]
-answer = "HDD - L2 cache - L1 cache"
-
-[[questions]]
-question = "What is correct about increasing performance and endurance? Ho\u00e0ng H\u00f9ng"
-choices = ["Hard Disk - DRAM - NAND Flash - SRAM", "Hard Disk - NAND Flash - DRAM - SRAM", "NAND Flash - Hard Disk - SRAM - DRAM", "Hard Disk - DRAM - SRAM - NAND Flash"]
-answer = "Hard Disk - NAND Flash - DRAM - SRAM"
-
-[[questions]]
-question = "Which of the following are the four basic functions that a computer performs?"
-choices = ["Data processing, Data storage, Interrupt, Control", "Data processing, Data movement, Interrupt.", "Data processing, Interrupt, Data movement, Control", "Data processing, Data storage, Data movement, Control"]
-answer = "Data processing, Data storage, Data movement, Control"
-
-[[questions]]
-question = "The speed of data delivery is your main concern when configuring a RAID for a Media Streaming Server. This server has two hard disks installed. What type of RAID should you install and what type of data will be stored on Disk 1 and Disk 2?"
-choices = ["RAID 0 - Disk 1 (Stripe) and Disk 2 (Stripe)", "RAID 0 - Disk 1 (Mirror) and Disk 2 (Mirror)", "RAID 1 - Disk 1 (Stripe) and Disk 2 (Stripe)", "RAID 1 - Disk 1 (Mirror) and Disk 2 (Mirror)"]
-answer = "RAID 0 - Disk 1 (Stripe) and Disk 2 (Stripe)"
-
-[[questions]]
-question = "What methods can be used to access units of data in memory?"
-choices = ["Indirect access, Direct access, Random access, Associative", "Sequential access, Indirect access, Random access, Associative", "Sequential access, Direct access, Random access, Associative", "Sequential access, Direct access, Random access, Indirect access"]
-answer = "Sequential access, Direct access, Random access, Associative"
-
-[[questions]]
-question = "Which of the following are the four basic functions that a computer performs?"
-choices = ["Data processing, Data storage, Control", "Data processing, Data movement, Interrupt.", "Data processing, Data storage, Interrupt, Control", "Data processing, Interrupt, Data movement, Control"]
-answer = "Data processing, Data storage, Control"
-
-[[questions]]
-question = "What methods can be used to access units of data in memory?"
-choices = ["Indirect access, Direct access, Random access, Associative", "Sequential access, Indirect access, Random access, Associative", "Sequential access, Direct access, Random access, Associative", "Sequential access, Direct access, Random access, Indirect access"]
-answer = "Sequential access, Direct access, Random access, Associative"
-
-[[questions]]
-question = "The basic components of a computer are:"
-choices = ["Main memory, CPU, I/O modules and system interconnection", "Main memory, CPU, I/O modules and Storage device", "Main Memory, CPU, Peripherals and Storage device", "Main memory, CPU, I/O modules and Storage device"]
-answer = "Main memory, CPU, I/O modules and system interconnection"
-
-[[questions]]
-question = "Which is the correct choice for sorting in increasing speed average of memory?"
-choices = ["Magnetic Disk < Magnetic Tape < Main Memory", "Magnetic Tape < SSD < Main Memory", "Magnetic Disk < Main Memory < Cache Memory", "SSD < Main Memory < Cache Memory"]
-answer = "Magnetic Disk < Main Memory < Cache Memory"
-
-[[questions]]
-question = "What are the most basic functions of an I/O module?"
-choices = ["Control and timing, processor communication, device communication, data buffering, error detection.", "Control and timing, processor communication, data buffering, error detection, writing data to memory", "Control and timing, processor communication, device communication, data buffering, blocking device.", "Control and timing, processor communication, device communication, error detection, data processing."]
-answer = "Control and timing, processor communication, device communication, data buffering, error detection."
-
-[[questions]]
-question = "What is the primary purpose of the \"Fetch instruction\" phase in the operation of a processor?"
-choices = ["To read an instruction from memory", "To interpret the instruction", "To perform arithmetic operations on data", "To write data to memory"]
-answer = "To read an instruction from memory"
-
-[[questions]]
-question = "What is the purpose of using an API?"
-choices = ["To enable application software to be ported easily to other systems that support the same API", "To define the repertoire of machine language instructions", "To standardize portability across programs", "To manage system resources"]
-answer = "To enable application software to be ported easily to other systems that support the same API"
-
-[[questions]]
-question = "What is the main benefit of using ARM processors over other processors?"
-choices = ["Low cost and low power consumption", "Higher degree of multi-tasking", "Lower error or glitches", "Efficient memory management"]
-answer = "Low cost and low power consumption"
-
-[[questions]]
-question = "What is an interrupt vector?"
-choices = ["Part of memory which contains the addresses of interrupt handlers", "A signal an I/O device sends to CPU", "A signal an I/O software sends to CPU", "None of the mentioned"]
-answer = "Part of memory which contains the addresses of interrupt handlers"
-
-[[questions]]
-question = "What is a characteristic of Many Integrated Core (MIC) chips?"
-choices = ["They include only specialized cores for specific tasks.", "They consist of homogeneous general-purpose processors on a single chip.", "They are designed to eliminate the need for GPUs in high-performance applications.", "They have limited scalability beyond four cores per chip."]
-answer = "They consist of homogeneous general-purpose processors on a single chip."
-
-[[questions]]
-question = "What is the function of the bus system in the computer?"
-choices = ["Extend the communication function of the computer", "Connect components in the computer", "Control peripherals", "Transform signals in the computer", "All of the mentioned"]
-answer = "Connect components in the computer"
-
-[[questions]]
-question = "What is a characteristic of Many Integrated Core (MIC) chips?"
-choices = ["They include only specialized cores for specific tasks.", "They consist of homogeneous general-purpose processors on a single chip.", "They are designed to eliminate the need for GPUs in high-performance applications.", "They have limited scalability beyond four cores per chip."]
-answer = "They consist of homogeneous general-purpose processors on a single chip."
-
-[[questions]]
-question = "What is the special feature of Memory Cache?"
-choices = ["Allows faster access than DRAM memory", "Memory cache is outboard storage memory", "Allows faster access than CPU registers", "Fixed memory - Read Only Memory", "Has a larger capacity than HDD"]
-answer = "Allows faster access than DRAM memory"
-
-[[questions]]
-question = "What is the primary function of the Arithmetic and Logic Unit (ALU) in a processor?"
-choices = ["Perform actual computations and data processing", "Control the movement of data and instructions", "Act as an interface to the system bus", "Manage the internal processor memory"]
-answer = "Perform actual computations and data processing"
-
-[[questions]]
-question = "What is one of the advantages of using a register file in computer architecture?"
-choices = ["Reduction in memory accesses, saving time", "More efficient use of space due to dynamic adaptation", "Efficient handling of both local and global variables", "Easier management of cache residency"]
-answer = "Reduction in memory accesses, saving time"
-
-[[questions]]
-question = "What is true about IAS Memory Formats?"
-choices = ["The memory of the IAS consists of 1000 storage locations (called words) of 32 bits each", "Only data is stored in the memory", "Both data and instructions are stored in the memory", "Only instructions are stored in the memory"]
-answer = "Both data and instructions are stored in the memory"
-
-[[questions]]
-question = "What is the benefit of using a superscalar organization over a scalar organization?"
-choices = ["It increases the power consumption and improves the performance", "It reduces the power consumption and the heat dissipation", "It simplifies the instruction set and the compiler design", "All of the mentioned", "None of the mentioned"]
-answer = "It increases the power consumption and improves the performance"
-
-[[questions]]
-question = "What is the benefit of cache memory in terms of computer performance?"
-choices = ["It reduces the power consumption.", "It speeds up data access and improves system performance.", "It increases the storage capacity of the computer.", "It serves as a backup storage for critical files."]
-answer = "It speeds up data access and improves system performance."
-
-[[questions]]
-question = "What is the most important characteristic of the Synchronous Bus?"
-choices = ["Data is transmitted at the same time", "The occurrence of one event on a bus follows and depends on the occurrence of a previous event.", "The occurrence of events on the bus is determined by a clock", "No common clock signal controlling operation"]
-answer = "The occurrence of events on the bus is determined by a clock"
-
-[[questions]]
-question = "What is one advantage of Nonuniform Memory Access (NUMA) over Uniform Memory Access (UMA)?"
-choices = ["NUMA provides each processor with its own local memory, reducing memory access times", "NUMA allows all processors to access the same memory location simultaneously", "NUMA is easier to implement than UMA", "NUMA provides limited memory capacity"]
-answer = "NUMA provides each processor with its own local memory, reducing memory access times"
-
-[[questions]]
-question = "What is a branch instruction?"
-choices = ["The instructions that are used to divide a program into multiple subprograms", "The instructions that have as one of its operands the address of the next instruction to be executed", "The instructions that are used to pause the program", "The instructions that are used to return to the beginning of the program"]
-answer = "The instructions that have as one of its operands the address of the next instruction to be executed"
-
-[[questions]]
-question = "What is one way to control power density in microprocessor chips?"
-choices = ["Increase the clock speed of the chip.", "Use more of the chip area for cache memory", "Reduce the size of the chip die.", "Use more transistors for logic operations."]
-answer = "Use more of the chip area for cache memory"
-
-[[questions]]
-question = "What is the main difference between x86 and ARM instruction formats?"
-choices = ["x86 instructions are variable in length, while ARM instructions are fixed", "x86 instructions are fixed in length, while ARM instructions are variable", "Both x86 and ARM instructions are fixed in length", "Both x86 and ARM instructions are variable in length"]
-answer = "x86 instructions are variable in length, while ARM instructions are fixed"
-
-[[questions]]
-question = "What is the main benefit of using RISC over CISC?"
-choices = ["RISC has more instructions and addressing modes than CISC", "RISC has faster instruction execution and simpler instruction decoding than CISC", "RISC has variable-length instruction formats and direct memory access than CISC", "RISC has more registers and pipelines than CISC"]
-answer = "RISC has faster instruction execution and simpler instruction decoding than CISC"
-
-[[questions]]
-question = "What is the main distinction between Interrupt-Driven I/O and Direct Memory Access (DMA)?"
-choices = ["Interrupt-Driven I/O involves the CPU in every data transfer, while DMA bypasses the CPU and transfers data directly between a memory.", "Interrupt-Driven I/O requires special hardware support, while DMA does not need any additional components.", "Interrupt-Driven I/O is suitable for small and frequent data transfers, while DMA is suitable for large and infrequent data transfers", "All of the mentioned"]
-answer = "Interrupt-Driven I/O involves the CPU in every data transfer, while DMA bypasses the CPU and transfers data directly between a memory."
-
-[[questions]]
-question = "What is Memory Address Register (MAR)?"
-choices = ["Contains a word to be stored in memory or sent to the I/O unit, or is used to receive a word from memory or from the I/O unit.", "Employed to hold temporarily the righthand instruction from a word in memory.", "Contains the address of the word to be written from or read into the MBR.", "Contains the address of the next instruction pair to be fetched from memory."]
-answer = "Contains the address of the word to be written from or read into the MBR."
-
-[[questions]]
-question = "What is false about the von Neumann architecture?"
-choices = ["Data and instructions are stored in a single read-write memory.", "The contents of this memory are addressable by location, without regard to the type of data contained there.", "Execution occurs in a sequential fashion (unless explicitly modified) from one instruction to the next.", "Data is stored in main memory and instructions are stored in cache memory."]
-answer = "Data is stored in main memory and instructions are stored in cache memory."
-
-[[questions]]
-question = "What is the significance of the program counter (PC) in the fetch phase of the instruction cycle? Hoang Hoang"
-choices = ["The program counter (PC) is only relevant in multi-core processors and does not contribute to the fetch phase of the instruction cycle in single-core systems", "The program counter (PC) is not used in the fetch phase, and its role is limited to tracking the number of instructions executed by the CPU", "The program counter (PC) in the fetch phase holds the memory address of the next instruction to be fetched and executed", "The program counter (PC) is responsible for executing instructions and has no specific role during the fetch phase"]
-answer = "The program counter (PC) in the fetch phase holds the memory address of the next instruction to be fetched and executed"
-
-[[questions]]
-question = "What is the significance of the program counter (PC) in the fetch phase of the instruction cycle?"
-choices = ["The program counter (PC) is not used in the fetch phase, and its role is limited to tracking the number of instructions executed by the CPU", "The program counter (PC) in the fetch phase holds the memory address of the next instruction to be fetched and executed", "The program counter (PC) is responsible for executing instructions and has no specific role during the fetch phase", "The program counter (PC) is only relevant in multi-core processors and does not contribute to the fetch phase of the instruction cycle in single-core systems"]
-answer = "The program counter (PC) in the fetch phase holds the memory address of the next instruction to be fetched and executed"
-
-[[questions]]
-question = "What is the distinction between Computer Architecture and Computer Organization?"
-choices = ["Computer Architecture is the way the system is structured, while Computer Organization is those attributes of a system that are visible to the user", "Computer Architecture is those attributes of a system that are visible to the user, while Computer Organization is the way the system is structured", "Computer Architecture and Computer Organization are the same", "Computer Architecture is slower than Computer Organization"]
-answer = "Computer Architecture is those attributes of a system that are visible to the user, while Computer Organization is the way the system is structured"
-
-[[questions]]
-question = "What is incorrect about SSDs have the following advantages over HDDs?"
-choices = ["Higher access times and latency rates. Over 10 times slower than the HDD.", "Durability: Less susceptible to physical shock and vibration.", "Longer lifespan: SSDs are not susceptible to mechanical wear.", "Lower power consumption: SSDs use considerably less power than comparable-size HDDs.", "Quieter and cooler running capabilities. Less space required, lower energy costs, and a greener enterprise."]
-answer = "Higher access times and latency rates. Over 10 times slower than the HDD."
-
-[[questions]]
-question = "What is the role of registers in a processor? Ho\u00e0ng"
-choices = ["Registers provide fast, temporary storage for data and instructions, facilitating efficient access during instruction execution.", "Registers are only used to store data temporarily during the execution of a program and do not contribute to the processing of instructions.", "Registers are solely responsible for storing data from the main memory and have no involvement in instructing or facilitating data manipulation.", "Registers are only necessary when the CPU is idle and have no impact on the speed or efficiency of instruction execution."]
-answer = "Registers provide fast, temporary storage for data and instructions, facilitating efficient access during instruction execution."
-
-[[questions]]
-question = "What is the role of the control unit in a processor?"
-choices = ["The control unit\u2019s primary role is to perform arithmetic and logical operations within the processor, orchestrating the manipulation of data", "The control unit manages the flow of data between the CPU and external devices and does not play a significant role in executing instructions", "The control unit is solely responsible for managing the flow of instructions from secondary storage to RAM and does not have a role in the internal operation of the CPU.", "The control unit in a processor directs and coordinates the execution of instructions, interpreting and managing the flow of operations within the CPU."]
-answer = "The control unit in a processor directs and coordinates the execution of instructions, interpreting and managing the flow of operations within the CPU."
-
-[[questions]]
-question = "What is the main idea of using Hamming code for error correction?"
-choices = ["Adding extra parity bits to the data bits such that the number of 1s in each subset of bits is even", "Adding extra parity bits to the data bits such that the number of 1s in each subset of bits is odd", "Adding extra parity bits to the data bits such that the parity bits form a binary number indicating the position of the error bit", "Adding extra parity bits to the data bits such that the parity bits form a binary number indicating the number of error bits"]
-answer = "Adding extra parity bits to the data bits such that the parity bits form a binary number indicating the position of the error bit"
-
-[[questions]]
-question = "What is the role of the memory address register (MAR) in a computer system?"
-choices = ["It holds data being transferred between memory and the processor.", "It specifies the address in memory for the next read or write operation.", "It performs arithmetic operations on data stored in memory.", "It stores program instructions after they are executed."]
-answer = "It specifies the address in memory for the next read or write operation."
-
-[[questions]]
-question = "What is the key advantage of double-data-rate SDRAM compared to standard SDRAM?"
-choices = ["It has a larger memory capacity.", "It can send data twice per clock cycle.", "It uses less power than SDRAM.", "It is only compatible with desktop computers."]
-answer = "It can send data twice per clock cycle."
-
-[[questions]]
-question = "What is a primary disadvantage of CISC (Complex Instruction Set) architectures?"
-choices = ["Increased implementation complexity", "Limited instruction set", "Slower execution due to complex instructions", "Higher energy consumption"]
-answer = "Slower execution due to complex instructions"
-
-[[questions]]
-question = "What is a drawback of Instruction Pipelining?"
-choices = ["It increases the instruction throughput", "It allows more CPU throughout than a multicyle computer at a given ck rate", "It may increase latency due to the added overhead of the pipelining process itself", "It decreases the complexity of the computer system"]
-answer = "It may increase latency due to the added overhead of the pipelining process itself"
-
-[[questions]]
-question = "What is a scalar instruction?"
-choices = ["An instruction in which all operands must be single values.", "An instruction in which all operands are groups such as arrays.", "An instruction in which all operands can be single values or groups.", "An instruction in which has no operand."]
-answer = "An instruction in which all operands must be single values."
-
-[[questions]]
-question = "What are the key differences in the architecture of NOR and NAND flash memory?"
-choices = ["NOR flash memory cells are connected in series, while NAND flash memory cells are connected in parallel", "NOR flash memory cells are connected in parallel, while NAND flash memory cells are connected in series", "Both NOR and NAND flash memory cells are connected in series", "Both NOR and NAND flash memory cells are connected in parallel", "All of the mentioned are wrong"]
-answer = "NOR flash memory cells are connected in parallel, while NAND flash memory cells are connected in series"
-
-[[questions]]
+filename = "2026-03-28-115618_hyprshot.png"
 question = "What does CISC stand for?"
 choices = ["Complex Instruction Set Computer", "Computer Instruction Set Complex", "Complex Instruction Summarize Computer", "Computer Instruction Summarize Complex"]
 answer = "Complex Instruction Set Computer"
 
 [[questions]]
-question = "What does the x86 assembly instruction \"jmp label\" typically do?"
-choices = ["Jumps to the memory address stored in the label", "Jumps to the next instruction", "Jumps to the label if a specific condition is met", "Moves the label\u2019s address to the EIP register"]
-answer = "Moves the label\u2019s address to the EIP register"
+filename = "2026-03-28-115627_hyprshot.png"
+question = "What type of addressing is primarily used by almost all RISC instructions?"
+choices = ["Immediate addressing", "Register addressing", "Indirect addressing", "Direct addressing"]
+answer = "Register addressing"
 
 [[questions]]
+filename = "2026-03-28-115633_hyprshot.png"
+question = "What type of instruction is used for converting data formats?"
+choices = ["Transfer", "Arithmetic", "Control", "Conversion"]
+answer = "Conversion"
+
+[[questions]]
+filename = "2026-03-28-115641_hyprshot.png"
+question = "Which type of interrupt is exemplified by \"division by zero, attempt to execute an illegal machine instruction\"?"
+choices = ["Program", "Timer", "I/O", "Hardware failure"]
+answer = "Program"
+
+[[questions]]
+filename = "2026-03-28-115703_hyprshot.png"
+question = "Which cache is not a shared cache?"
+choices = ["L4 cache", "L3 cache", "L2 cache", "L1 cache"]
+answer = "L1 cache"
+
+[[questions]]
+filename = "2026-03-28-115709_hyprshot.png"
+question = "Which is the correct choice for the decription: \u201cA single machine instruction controls the simultaneous execution of a number of processing elements such as vector and array processors\u201d?"
+choices = ["Single instruction, single data (SISD)", "Single instruction, multiple data (SIMD)", "Multiple instruction, single data (MISD)", "Multiple instruction, multiple data (MIMD)"]
+answer = "Single instruction, multiple data (SIMD)"
+
+[[questions]]
+filename = "2026-03-28-115835_hyprshot.png"
+question = "Which computing model is characterized by a large number of processors working on different parts of a problem simultaneously?"
+choices = ["Single instruction, single data (SISD)", "Single instruction, multiple data (SIMD)", "Multiple instruction, multiple data (MIMD)", "Multiple instruction, single data (MISD)"]
+answer = "Multiple instruction, multiple data (MIMD)"
+
+[[questions]]
+filename = "2026-03-28-115843_hyprshot.png"
+question = "Which of the following component does not belong to central processing unit?"
+choices = ["System interconnection", "Arithmetic and logic unit", "Registers", "Control unit", "CPU interconnection"]
+answer = "System interconnection"
+
+[[questions]]
+filename = "2026-03-28-115850_hyprshot.png"
+question = "Which of the following memory devices has the lowest access speed?"
+choices = ["ROM", "Flash memory", "Magnetic tape", "HDD", "Cache"]
+answer = "Magnetic tape"
+
+[[questions]]
+filename = "2026-03-28-115857_hyprshot.png"
+question = "Which portion of a computer consists of an ALU, a control unit, and registers, uses for fetching and executing instructions?"
+choices = ["Main memory", "CPU", "I/O", "System interconnection"]
+answer = "CPU"
+
+[[questions]]
+filename = "2026-03-28-115904_hyprshot.png"
+question = "Which of the following components was used in the first ENIAC computer?"
+choices = ["Bipolar transistors", "Field transistors", "Vacuum tubes", "Semiconductor ICs"]
+answer = "Vacuum tubes"
+
+[[questions]]
+filename = "2026-03-28-115910_hyprshot.png"
+question = "Which of the following algorithms is not typically used in cache memory replacement?"
+choices = ["Least Recently Used (LRU)", "First-In-First-Out (FIFO)", "Least Frequently Used (LFU)", "Round Robin (RR)"]
+answer = "Round Robin (RR)"
+
+[[questions]]
+filename = "2026-03-28-115931_hyprshot.png"
+question = "Which portion of a computer consists of an ALU, a control unit, and registers, uses for fetching and executing instructions?"
+choices = ["Main memory", "CPU", "I/O", "System interconnection"]
+answer = "CPU"
+
+[[questions]]
+filename = "2026-03-28-115936_hyprshot.png"
+question = "Which of the following components was used in the first ENIAC computer?"
+choices = ["Bipolar transistors", "Field transistors", "Vacuum tubes", "Semiconductor ICs"]
+answer = "Vacuum tubes"
+
+[[questions]]
+filename = "2026-03-28-115940_hyprshot.png"
+question = "Which of the following algorithms is not typically used in cache memory replacement?"
+choices = ["Least Recently Used (LRU)", "First-In-First-Out (FIFO)", "Least Frequently Used (LFU)", "Round Robin (RR)"]
+answer = "Round Robin (RR)"
+
+[[questions]]
+filename = "2026-03-28-115944_hyprshot.png"
+question = "Which of the following components of CPU is responsible to direct the system to execute instructions?"
+choices = ["Arithmetic and Logic Unit (ALU)", "Control Unit (CU)", "Registers", "Random Access Memory (RAM)"]
+answer = "Control Unit (CU)"
+
+[[questions]]
+filename = "2026-03-28-115949_hyprshot.png"
+question = "Which of the following is a DISADVANTAGE of using programmed I/O?"
+choices = ["Increases system efficiency", "Reduces CPU involvement in I/O operations", "Requires the CPU to be constantly busy with I/O tasks", "Increases system complexity"]
+answer = "Requires the CPU to be constantly busy with I/O tasks"
+
+[[questions]]
+filename = "2026-03-28-120001_hyprshot.png"
+question = "Which of the following describes a RISC (Reduced Instruction Set Computer) architecture?"
+choices = ["Many complex instructions", "Fixed instruction length", "Extensive use of memory addressing modes", "Emphasis on multi-tasking capabilities"]
+answer = "Fixed instruction length"
+
+[[questions]]
+filename = "2026-03-28-120005_hyprshot.png"
+question = "Which of the following types of processors typically offer better performance for parallel processing?"
+choices = ["Single-core processors", "Multi-core processors", "Microelectronics", "Digital signal processors (DSPs)"]
+answer = "Multi-core processors"
+
+[[questions]]
+filename = "2026-03-28-120010_hyprshot.png"
+question = "Which addressing mode allows direct specification of the memory address within the instruction?"
+choices = ["Direct", "Indirect", "Register Indirect", "Displacement"]
+answer = "Direct"
+
+[[questions]]
+filename = "2026-03-28-120028_hyprshot.png"
+question = "Which architectural concept involves replicating register banks to facilitate the sharing of pipeline resources among multiple threads?"
+choices = ["Pipelining", "Superscalar", "Simultaneous multithreading", "Superpipelining"]
+answer = "Simultaneous multithreading"
+
+[[questions]]
+filename = "2026-03-28-120030_hyprshot.png"
+question = "Which memory has the fastest speed and smallest capacity?"
+choices = ["Cache", "Main memory", "HDD", "Magnetic Disk"]
+answer = "Cache"
+
+[[questions]]
+filename = "2026-03-28-120035_hyprshot.png"
+question = "Which write technique in which all write operations are made to main memory as well as to the cache, ensuring that main memory is always valid."
+choices = ["Write through", "Write back", "Write around", "No write allocate"]
+answer = "Write through"
+
+[[questions]]
+filename = "2026-03-28-120044_hyprshot.png"
+question = "Which one of four basic functions of computer describes the following statement? \"The paths among components are used to move data from memory to memory and from memory through gates to memory\". Ho\u00e0ng Ho\u00e0ng"
+choices = ["Data storage", "Data processing", "Data movement", "Control"]
+answer = "Data movement"
+
+[[questions]]
+filename = "2026-03-28-120050_hyprshot.png"
+question = "Which registers can be assigned to a variety of functions by the programmer?"
+choices = ["Data registers", "General purpose registers", "Address registers", "Condition codes (flags)"]
+answer = "General purpose registers"
+
+[[questions]]
+filename = "2026-03-28-120056_hyprshot.png"
+question = "Which representation is most efficient to perform arithmetic operations on the signed integer numbers?"
+choices = ["Sign-magnitude", "2's complement", "1's & 2's compliment", "1's complement"]
+answer = "2's complement"
+
+[[questions]]
+filename = "2026-03-28-120100_hyprshot.png"
+question = "Which state indicates that a process is currently being executed by the processor?"
+choices = ["Running", "Ready", "NewBorn", "Halted"]
+answer = "Running"
+
+[[questions]]
+filename = "2026-03-28-120111_hyprshot.png"
+question = "Which component defines the system call interface to the operating system and facilitates binary portability?"
+choices = ["Application Binary Interface", "Application Programming Interface", "Instruction Set Architecture", "Central Processing Unit"]
+answer = "Application Binary Interface"
+
+[[questions]]
+filename = "2026-03-28-120112_hyprshot.png"
+question = "Which method of accessing units of data is used to copy a block in main memory into cache memory?"
+choices = ["Direct access", "Random access", "Sequential access", "Associative"]
+answer = "Random access"
+
+[[questions]]
+filename = "2026-03-28-120118_hyprshot.png"
+question = "Which method allows the programmer to view memory as consisting of multiple address spaces and is used to map logical addresses of variable length onto physical memory?"
+choices = ["Paging", "Overlays", "Segmentation", "Paging with segmentation"]
+answer = "Segmentation"
+
+[[questions]]
+filename = "2026-03-28-120122_hyprshot.png"
+question = "Which portion of a computer consists of an ALU, a control unit, and registers, uses for fetching and executing instructions?"
+choices = ["Main memory", "CPU", "I/O", "System interconnection"]
+answer = "CPU"
+
+[[questions]]
+filename = "2026-03-28-120127_hyprshot.png"
+question = "Which kind of cache mapping maps each block of main memory into one unique line of the cache?"
+choices = ["Direct mapping", "Set associative mapping", "Fully associative mapping", "Direct access"]
+answer = "Direct mapping"
+
+[[questions]]
+filename = "2026-03-28-120138_hyprshot.png"
+question = "Which type of interrupt is exemplified by \"division by zero, attempt to execute an illegal machine instruction\"?"
+choices = ["Program", "Timer", "I/O", "Hardware failure"]
+answer = "Program"
+
+[[questions]]
+filename = "2026-03-28-120140_hyprshot.png"
+question = "Which type is not an Interconnection bus?"
+choices = ["Data lines", "Control lines", "Signal lines", "Address lines"]
+answer = "Signal lines"
+
+[[questions]]
+filename = "2026-03-28-120144_hyprshot.png"
+question = "Which of the following is a characteristic of sequential circuits compared to combinational circuits?"
+choices = ["Do not use gates", "Output depends only on current inputs", "Output depends on current inputs and past inputs", "Simpler to design and implement"]
+answer = "Output depends on current inputs and past inputs"
+
+[[questions]]
+filename = "2026-03-28-120150_hyprshot.png"
+question = "(1) An I/O module must recognize one unique address for each peripheral it controls.\n(2) I/O channels are commonly seen on microcomputers, whereas I/O controllers are used on mainframes.\nThe statement (1) is _____ and (2) is _____.\nA. true, false\nB. true, true\nC. false, true\nD. false, false"
+choices = ["true, false", "true, true", "false, true", "false, false"]
+answer = "true, false"
+
+[[questions]]
+filename = "2026-03-28-120158_hyprshot.png"
+question = "Control and status registers are used by which entities to control the operation of the processor?"
+choices = ["Privileged, operating system programs", "Machine or assembly language programmers", "External I/O devices", "Main memory modules"]
+answer = "Privileged, operating system programs"
+
+[[questions]]
+filename = "2026-03-28-120203_hyprshot.png"
+question = "Choose the register that controls sequential execution."
+choices = ["Program counter (PC)", "Instruction register (IR)", "Memory address register (MAR)", "Memory buffer register (MBR)"]
+answer = "Program counter (PC)"
+
+[[questions]]
+filename = "2026-03-28-120206_hyprshot.png"
+question = "For interrupts, all I/O modules share a common interrupt request line. When the processor senses an interrupt, it sends out an interrupt acknowledge. This signal propagates through a series of I/O modules until it gets to a requesting module. Which kind of interrupt technique is it? Ho\u00e0ng Ho\u00e0ng"
+choices = ["Multiple interrupt lines", "Software poll", "Daisy chain", "Bus arbitration"]
+answer = "Daisy chain"
+
+[[questions]]
+filename = "2026-03-28-120214_hyprshot.png"
+question = "EEPROM is read-mostly-memory and volatile"
+choices = ["True", "False"]
+answer = "False"
+
+[[questions]]
+filename = "2026-03-28-120219_hyprshot.png"
+question = "For reads to and writes from main memory, ________ translates each virtual address into a physical address in main memory."
+choices = ["MAR", "MMU", "Overlays", "TLB", "Accumulator"]
+answer = "MMU"
+
+[[questions]]
+filename = "2026-03-28-120223_hyprshot.png"
+question = "From a structural point of view, the external devices are controlled by ____."
+choices = ["Control signals", "Peripheral device", "I/O modules", "Remote devices"]
+answer = "I/O modules"
+
+[[questions]]
+filename = "2026-03-28-120228_hyprshot.png"
+question = "In MASM32, which OPCODE is used to compare two values?"
+choices = ["COM", "CMP", "IF ... ELSE", "TEST"]
+answer = "CMP"
+
+[[questions]]
+filename = "2026-03-28-120233_hyprshot.png"
+question = "In modern computers, which devices among the memory types usually have the smallest capacity?"
+choices = ["RAM", "Magnetic Tape", "Hard Disk Drive", "Cache Memory"]
+answer = "Cache Memory"
+
+[[questions]]
+filename = "2026-03-28-120238_hyprshot.png"
+question = "In which I/O technique does an I/O channel or processor manage transfer of data, thus freeing the CPU?"
+choices = ["Programmed I/O", "Interrupt-driven I/O", "Channel I/O", "Memory-mapped I/O"]
+answer = "Channel I/O"
+
+[[questions]]
+filename = "2026-03-28-120248_hyprshot.png"
+question = "In terms of organization, what is the basic element of semiconductor memory?"
+choices = ["Memory capacity", "Memory block", "Memory cell", "Memory location"]
+answer = "Memory cell"
+
+[[questions]]
+filename = "2026-03-28-120254_hyprshot.png"
+question = "In various statement types in a high-level programming language, what is not the most common statement?"
+choices = ["GOTO statement", "IF statement", "CLOOP statement", "CALL procedure statement"]
+answer = "GOTO statement"
+
+[[questions]]
+filename = "2026-03-28-120323_hyprshot.png"
+question = "\"Multiple processors share a single memory or pool of memory by means of a shared bus or other interconnection mechanism; a distinguishing feature is that the memory access time to any region of memory is approximately the same for each processor\". Which concept does the statement belong to?"
+choices = ["Symmetric multiprocessor (SMP)", "Nonuniform memory access (NUMA)", "Cluster", "Single instruction, multiple data (SIMD)"]
+answer = "Symmetric multiprocessor (SMP)"
+
+[[questions]]
+filename = "2026-03-28-120327_hyprshot.png"
+question = "Performs the computer's data processing functions is ________?"
+choices = ["Arithmetic and logic unit (ALU)", "Control unit", "CPU interconnection", "Registers"]
+answer = "Arithmetic and logic unit (ALU)"
+
+[[questions]]
+filename = "2026-03-28-120331_hyprshot.png"
+question = "The pulse rate in the ck system is known as the ________."
+choices = ["ck cycle", "ck speed", "ck time", "ck tick"]
+answer = "ck speed"
+
+[[questions]]
+filename = "2026-03-28-120334_hyprshot.png"
+question = "The first generation of computers used ________ for digital logic elements and memory?"
+choices = ["Transistor", "Integrated Circuits", "Large-scale integration", "Vacuum Tubes"]
+answer = "Vacuum Tubes"
+
+[[questions]]
+filename = "2026-03-28-120338_hyprshot.png"
+question = "The ____ scheduler executes relatively infrequently and makes the coarse-grained decision of whether or not to take on a new process, and which one to take. The ____ scheduler, also known as the dispatcher, executes frequently and makes the fine-grained decision of which job to execute next."
+choices = ["short-term; medium-term", "medium-term; short-term", "long-term; short-term", "long-term; medium-term"]
+answer = "long-term; short-term"
+
+[[questions]]
+filename = "2026-03-28-120344_hyprshot.png"
+question = "The effective address of _______ is EA = top of stack"
+choices = ["Immediate", "Direct", "Indirect", "Displacement", "Implicit"]
+answer = "Implicit"
+
+[[questions]]
+filename = "2026-03-28-120349_hyprshot.png"
+question = "The stored-program concept means a computer could get its instructions by reading them from memory, and a program could be set or altered by setting the values of a portion of memory."
+choices = ["True", "False"]
+answer = "True"
+
+[[questions]]
+filename = "2026-03-28-120358_hyprshot.png"
+question = "The I/O technique where the processor busy waits for an I/O operation to complete is called ________."
+choices = ["Programmed I/O or DMA", "Interrupt-driven I/O", "Direct Memory Access (DMA)", "Programmed I/O"]
+answer = "Programmed I/O"
+
+[[questions]]
+filename = "2026-03-28-120403_hyprshot.png"
+question = "The task of subdivision is carried out dynamically by the OS and is known as ____?"
+choices = ["Scheduling", "Memory management", "Virtual Memory", "All of the mentioned"]
+answer = "Memory management"
+
+[[questions]]
+filename = "2026-03-28-120408_hyprshot.png"
+question = "The PC, IR, MAR, MBR registers belong to which of the following groups?"
+choices = ["Control and Status Registers", "User-Visible Registers", "General Registers", "Handle Registers"]
+answer = "Control and Status Registers"
+
+[[questions]]
+filename = "2026-03-28-120412_hyprshot.png"
+question = "To enhance performance in a superscalar processor, which method(s) should we apply?\nHo\u00e0ng Ho\u00e0ng"
+choices = ["Duplication of resources.", "Out-of-order issue.", "Renaming registers.", "All of the mentioned."]
+answer = "All of the mentioned."
+
+[[questions]]
+filename = "2026-03-28-120416_hyprshot.png"
+question = "The hardware mechanism that allows a device to notify the CPU is called ________."
+choices = ["polling", "interrupt", "driver", "controlling"]
+answer = "interrupt"
+
+[[questions]]
+filename = "2026-03-28-120423_hyprshot.png"
+question = "The chunks of a program, known as pages, could be assigned to available chunks of memory, known as frames, is called __________."
+choices = ["Swapping", "Partitioning", "Paging", "Virtual Memory", "Segmentation"]
+answer = "Paging"
+
+[[questions]]
+filename = "2026-03-28-120427_hyprshot.png"
+question = "(Choose 1 answer) The decision as to which process's pending I/O request shall be handled by an available I/O device"
+choices = ["Medium-term scheduling", "Short-term scheduling", "I/O scheduling", "Long-term scheduling"]
+answer = "I/O scheduling"
+
+[[questions]]
+filename = "2026-03-28-120433_hyprshot.png"
+question = "With the hard disk data layout, the set of all the tracks in the same relative position on the platter, is called ____."
+choices = ["Cylinder", "Tracks", "Inter-track gap", "Sector"]
+answer = "Cylinder"
+
+[[questions]]
+filename = "2026-03-28-120437_hyprshot.png"
+question = "We have a long-term queue of process requests, typically stored on ________."
+choices = ["main memory", "disk", "cache memory", "registers"]
+answer = "disk"
+
+[[questions]]
+filename = "2026-03-28-120442_hyprshot.png"
+question = "Steps for executing a machine instruction are concerned, given an assembly code: ADD EAX, V. What step will access the variable V?"
+choices = ["The fetch data step.", "The fetch instruction step.", "The process data step.", "The interpret instruction step."]
+answer = "The fetch data step."
+
+[[questions]]
+filename = "2026-03-28-120450_hyprshot.png"
+question = "What is the main advantage of using DMA over Programmed I/O or Interrupt-Driven I/O?"
+choices = ["DMA reduces the CPU involvement and overhead in data transfer", "DMA increases the data transfer rate and efficiency", "DMA allows concurrent execution of CPU and I/O operations", "All of the mentioned"]
+answer = "All of the mentioned"
+
+[[questions]]
+filename = "2026-03-28-120452_hyprshot.png"
+question = "What are the most important general categories of data that machine instructions operate on?"
+choices = ["Addresses, numbers, characters, and logical data", "Text, images, and audio", "Variables, functions, and arrays", "Instructions, control signals, and registers"]
+answer = "Addresses, numbers, characters, and logical data"
+
+[[questions]]
+filename = "2026-03-28-120455_hyprshot.png"
+question = "What is the correct order of memory access speed from fastest to slowest?"
+choices = ["Registers > Cache > RAM > SSD", "Cache > Registers > RAM > SSD", "Registers > Cache > SSD > RAM", "Cache > Registers > SSD > RAM", "All of the mentioned are wrong"]
+answer = "Registers > Cache > RAM > SSD"
+
+[[questions]]
+filename = "2026-03-28-120507_hyprshot.png"
+question = "Sort the following memory types in ascending order by access speed: A. HDD - Main Memory - L2 cache - L1 cache B. HDD - Main Memory - L1 cache - L2 cache C. HDD - L2 cache - L1 cache - Main Memory D. Main Memory - L2 cache - L1 cache - HDD"
+choices = ["HDD - Main Memory - L2 cache - L1 cache", "HDD - Main Memory - L1 cache - L2 cache", "HDD - L2 cache - L1 cache - Main Memory", "Main Memory - L2 cache - L1 cache - HDD"]
+answer = "HDD - Main Memory - L2 cache - L1 cache"
+
+[[questions]]
+filename = "2026-03-28-120523_hyprshot.png"
+question = "What is correct about increasing performance and endurance? Ho\u00e0ng Ho\u00e0ng"
+choices = ["Hard Disk - DRAM - NAND Flash - SRAM", "Hard Disk - NAND Flash - DRAM - SRAM", "NAND Flash - Hard Disk - SRAM - DRAM", "Hard Disk - DRAM - SRAM - NAND Flash"]
+answer = "Hard Disk - NAND Flash - DRAM - SRAM"
+
+[[questions]]
+filename = "2026-03-28-120524_hyprshot.png"
+question = "The speed of data delivery is your main concern when configuring a RAID drive for a Media Streaming Server. This server has two hard disks installed. What type of RAID should you install, and what type of data will be stored on Disk 1 and Disk 2?"
+choices = ["RAID 0 - Disk 1 (Stripe) and Disk 2 (Stripe)", "RAID 0 - Disk 1 (Mirror) and Disk 2 (Mirror)", "RAID 1 - Disk 1 (Stripe) and Disk 2 (Stripe)", "RAID 1 - Disk 1 (Mirror) and Disk 2 (Mirror)"]
+answer = "RAID 0 - Disk 1 (Stripe) and Disk 2 (Stripe)"
+
+[[questions]]
+filename = "2026-03-28-120527_hyprshot.png"
+question = "Which of the following are the four basic functions that a computer performs?"
+choices = ["Data processing, Data storage, Data movement, Control", "Data processing, Data storage, Data movement, Interrupt", "Data processing, Data storage, Interrupt, Control", "Data processing, Interrupt, Data movement, Control"]
+answer = "Data processing, Data storage, Data movement, Control"
+
+[[questions]]
+filename = "2026-03-28-120531_hyprshot.png"
+question = "What methods can be used to access units of data in memory?"
+choices = ["Indirect access, Direct access, Random access, Associative", "Sequential access, Indirect access, Random access, Associative", "Sequential access, Direct access, Random access, Associative", "Sequential access, Direct access, Random access, Indirect access"]
+answer = "Sequential access, Direct access, Random access, Associative"
+
+[[questions]]
+filename = "2026-03-28-120542_hyprshot.png"
+question = "Which of the following are the four basic functions that a computer performs?"
+choices = ["Data processing, Data storage, Data movement, Control", "Data processing, Data storage, Data movement, Interrupt", "Data processing, Data storage, Interrupt, Control", "Data processing, Interrupt, Data movement, Control"]
+answer = "Data processing, Data storage, Data movement, Control"
+
+[[questions]]
+filename = "2026-03-28-120545_hyprshot.png"
+question = "What methods can be used to access units of data in memory?"
+choices = ["Indirect access, Direct access, Random access, Associative", "Sequential access, Indirect access, Random access, Associative", "Sequential access, Direct access, Random access, Associative", "Sequential access, Direct access, Random access, Indirect access"]
+answer = "Sequential access, Direct access, Random access, Associative"
+
+[[questions]]
+filename = "2026-03-28-120606_hyprshot.png"
+question = "The basic components of a computer are:"
+choices = ["Main memory, CPU, I/O modules and system interconnection", "Main memory, CPU, I/O modules and Storage device", "Main Memory, CPU, Peripherals and Storage device", "Main memory, CPU, I/O modules and Storage device"]
+answer = "Main memory, CPU, I/O modules and system interconnection"
+
+[[questions]]
+filename = "2026-03-28-120615_hyprshot.png"
+question = "Which is the correct choice for sorting in increasing speed average of memory?\nA. SSD < Main Memory < Cache Memory < Magnetic Tape\nB. Magnetic Tape < SSD < Cache Memory < Main Memory\nC. Magnetic Disk < SSD < Main Memory < Cache Memory\nD. Magnetic Disk < Magnetic Tape < Main Memory < Cache Memory"
+choices = ["SSD < Main Memory < Cache Memory < Magnetic Tape", "Magnetic Tape < SSD < Cache Memory < Main Memory", "Magnetic Disk < SSD < Main Memory < Cache Memory", "Magnetic Disk < Magnetic Tape < Main Memory < Cache Memory"]
+answer = "Magnetic Disk < SSD < Main Memory < Cache Memory"
+
+[[questions]]
+filename = "2026-03-28-120622_hyprshot.png"
+question = "What are the most basic functions of an I/O module?"
+choices = ["Control and timing, processor communication, device communication, data buffering, error detection.", "Control and timing, processor communication, data buffering, error detection, writing data to memory.", "Control and timing, processor communication, device communication, data buffering, blocking device.", "Control and timing, processor communication, device communication, error detection, data processing."]
+answer = "Control and timing, processor communication, device communication, data buffering, error detection."
+
+[[questions]]
+filename = "2026-03-28-120629_hyprshot.png"
+question = "What is the primary purpose of the \"Fetch instruction\" phase in the operation of a processor?"
+choices = ["To read an instruction from memory", "To interpret the instruction", "To perform arithmetic operations on data", "To write data to memory"]
+answer = "To read an instruction from memory"
+
+[[questions]]
+filename = "2026-03-28-120635_hyprshot.png"
+question = "What is the purpose of using an API?"
+choices = ["To enable application software to be ported easily to other systems that support the same API", "To define the repertoire of machine language instructions", "To standardize binary portability across programs", "To manage system resources"]
+answer = "To enable application software to be ported easily to other systems that support the same API"
+
+[[questions]]
+filename = "2026-03-28-120643_hyprshot.png"
+question = "What is the main benefit of using ARM processors over other processors?"
+choices = ["Low cost and low power consumption", "Higher degree of multi-tasking", "Lower error or glitches", "Efficient memory management"]
+answer = "Low cost and low power consumption"
+
+[[questions]]
+filename = "2026-03-28-120647_hyprshot.png"
+question = "What is an interrupt vector? Ho\u00e0ng Ho\u00e0ng"
+choices = ["Part of memory which contains the addresses of interrupt handlers", "A signal an I/O device sends to CPU", "A signal an I/O software sends to CPU", "None of the mentioned"]
+answer = "Part of memory which contains the addresses of interrupt handlers"
+
+[[questions]]
+filename = "2026-03-28-120652_hyprshot.png"
+question = "What is a characteristic of Many Integrated Core (MIC) chips?"
+choices = ["They include only specialized cores for specific tasks.", "They consist of homogeneous general-purpose processors on a single chip.", "They are designed to eliminate the need for GPUs in high-performance applications.", "They have limited scalability beyond four cores per chip."]
+answer = "They consist of homogeneous general-purpose processors on a single chip."
+
+[[questions]]
+filename = "2026-03-28-120656_hyprshot.png"
+question = "What is the function of the bus system in the computer?"
+choices = ["Extend the communication function of the computer", "Connect components in the computer", "Control peripherals", "Transform signals in the computer", "All of the mentioned"]
+answer = "Connect components in the computer"
+
+[[questions]]
+filename = "2026-03-28-120659_hyprshot.png"
+question = "What is a characteristic of Many Integrated Core (MIC) chips?"
+choices = ["They include only specialized cores for specific tasks.", "They consist of homogeneous general-purpose processors on a single chip.", "They are designed to eliminate the need for GPUs in high-performance applications.", "They have limited scalability beyond four cores per chip."]
+answer = "They consist of homogeneous general-purpose processors on a single chip."
+
+[[questions]]
+filename = "2026-03-28-120701_hyprshot.png"
+question = "What is the special feature of Memory Cache?"
+choices = ["Allows faster access than DRAM memory", "Memory cache is outboard storage memory", "Allows faster access than CPU registers", "Fixed memory - Read Only Memory", "Has a larger capacity than HDD"]
+answer = "Allows faster access than DRAM memory"
+
+[[questions]]
+filename = "2026-03-28-120705_hyprshot.png"
+question = "What is the primary function of the Arithmetic and Logic Unit (ALU) in a processor?"
+choices = ["Perform actual computations and data processing", "Control the movement of data and instructions", "Act as an interface to the system bus", "Manage the internal processor memory"]
+answer = "Perform actual computations and data processing"
+
+[[questions]]
+filename = "2026-03-28-120711_hyprshot.png"
+question = "What is one of the advantages of using a register file in computer architecture?"
+choices = ["Reduction in memory accesses, saving time", "More efficient use of space due to dynamic adaptation", "Efficient handling of both local and global variables", "Easier management of cache residency"]
+answer = "Reduction in memory accesses, saving time"
+
+[[questions]]
+filename = "2026-03-28-120718_hyprshot.png"
+question = "What is true about IAS Memory Formats?"
+choices = ["The memory of the IAS consists of 1000 storage locations (called words) of 32 bits each", "Only data is stored in the memory", "Both data and instructions are stored in the memory", "Only instructions are stored in the memory"]
+answer = "Both data and instructions are stored in the memory"
+
+[[questions]]
+filename = "2026-03-28-120721_hyprshot.png"
+question = "What is the benefit of using a superscalar organization over a scalar organization?"
+choices = ["It increases the instruction throughput and improves the performance", "It reduces the power consumption and the heat dissipation", "It simplifies the instruction set and the compiler design", "All of the mentioned", "None of the mentioned"]
+answer = "It increases the instruction throughput and improves the performance"
+
+[[questions]]
+filename = "2026-03-28-120725_hyprshot.png"
+question = "What is the benefit of cache memory in terms of computer performance?"
+choices = ["It reduces the computer's power consumption.", "It speeds up data access and improves system performance.", "It increases the storage capacity of the computer.", "It serves as a backup storage for critical files."]
+answer = "It speeds up data access and improves system performance."
+
+[[questions]]
+filename = "2026-03-28-120730_hyprshot.png"
+question = "What is the most important characteristic of the Synchronous Bus?"
+choices = ["Data is transmitted at the same time", "The occurrence of one event on a bus follows and depends on the occurrence of a previous event.", "The occurrence of events on the bus is determined by a clock", "No common clock signal controlling operation"]
+answer = "The occurrence of events on the bus is determined by a clock"
+
+[[questions]]
+filename = "2026-03-28-120738_hyprshot.png"
+question = "What is one advantage of Nonuniform Memory Access (NUMA) over Uniform Memory Access (UMA)?"
+choices = ["NUMA provides each processor with its own local memory, reducing memory access times", "NUMA allows all processors to access the same memory location simultaneously", "NUMA is easier to implement than UMA", "NUMA provides limited memory capacity"]
+answer = "NUMA provides each processor with its own local memory, reducing memory access times"
+
+[[questions]]
+filename = "2026-03-28-120742_hyprshot.png"
+question = "What is a branch instruction?\nHo\u00e0ng Ho\u00e0ng\nA. The instructions that are used to divide a program into multiple subprograms\nB. The instructions that have as one of its operands the address of the next instruction to be executed\nC. The instructions that are used to pause the program\nD. The instructions that are used to return to the beginning of the program"
+choices = ["The instructions that are used to divide a program into multiple subprograms", "The instructions that have as one of its operands the address of the next instruction to be executed", "The instructions that are used to pause the program", "The instructions that are used to return to the beginning of the program"]
+answer = "The instructions that have as one of its operands the address of the next instruction to be executed"
+
+[[questions]]
+filename = "2026-03-28-120754_hyprshot.png"
+question = "What is one way to control power density in microprocessor chips?"
+choices = ["Increase the clock speed of the chip.", "Use more of the chip area for cache memory.", "Reduce the size of the chip die.", "Use more transistors for logic operations."]
+answer = "Use more of the chip area for cache memory."
+
+[[questions]]
+filename = "2026-03-28-120758_hyprshot.png"
+question = "What is the main difference between x86 and ARM instruction formats?"
+choices = ["x86 instructions are variable in length, while ARM instructions are fixed", "x86 instructions are fixed in length, while ARM instructions are variable", "Both x86 and ARM instructions are fixed in length", "Both x86 and ARM instructions are variable in length"]
+answer = "x86 instructions are variable in length, while ARM instructions are fixed"
+
+[[questions]]
+filename = "2026-03-28-120803_hyprshot.png"
+question = "What is the main benefit of using RISC over CISC?"
+choices = ["RISC has more instructions and addressing modes than CISC", "RISC has faster instruction execution and simpler instruction decoding than CISC", "RISC has variable-length instruction formats and direct memory access than CISC", "RISC has more registers and pipelines than CISC"]
+answer = "RISC has faster instruction execution and simpler instruction decoding than CISC"
+
+[[questions]]
+filename = "2026-03-28-120810_hyprshot.png"
+question = "What is the main distinction between Interrupt-Driven I/O and Direct Memory Access (DMA)?"
+choices = ["Interrupt-Driven I/O involves the CPU in every data transfer, while DMA bypasses the CPU and transfers data directly between I/O device and memory", "Interrupt-Driven I/O requires special hardware and software support, while DMA does not need any additional components", "Interrupt-Driven I/O is suitable for small and frequent data transfers, while DMA is suitable for large and infrequent data transfers", "All of the mentioned"]
+answer = "All of the mentioned"
+
+[[questions]]
+filename = "2026-03-28-120814_hyprshot.png"
+question = "What is Memory Address Register (MAR)?"
+choices = ["Contains a word to be stored in memory or sent to the I/O unit, or is used to receive a word from memory or from the I/O unit.", "Employed to hold temporarily the righthand instruction from a word in memory.", "Contains the address in memory of the word to be written from or read into the MBR.", "Contains the address of the next instruction pair to be fetched from memory."]
+answer = "Contains the address in memory of the word to be written from or read into the MBR."
+
+[[questions]]
+filename = "2026-03-28-120820_hyprshot.png"
+question = "What is false about the von Neumann architecture?"
+choices = ["Data and instructions are stored in a single read-write memory.", "The contents of this memory are addressable by location, without regard to the type of data contained there.", "Execution occurs in a sequential fashion (unless explicitly modified) from one instruction to the next.", "Data is stored in main memory and instructions are stored in cache memory"]
+answer = "Data is stored in main memory and instructions are stored in cache memory"
+
+[[questions]]
+filename = "2026-03-28-120825_hyprshot.png"
+question = "What is the significance of the program counter (PC) in the fetch phase of the instruction cycle?"
+choices = ["The program counter (PC) is not used in the fetch phase, and its role is limited to tracking the number of instructions executed by the CPU", "The program counter (PC) in the fetch phase holds the memory address of the next instruction to be fetched and executed", "The program counter (PC) is responsible for executing instructions and has no specific role during the fetch phase", "The program counter (PC) is only relevant in multi-core processors and does not contribute to the fetch phase of the instruction cycle in single-core systems"]
+answer = "The program counter (PC) in the fetch phase holds the memory address of the next instruction to be fetched and executed"
+
+[[questions]]
+filename = "2026-03-28-120831_hyprshot.png"
+question = "What is the significance of the program counter (PC) in the fetch phase of the instruction cycle?"
+choices = ["The program counter (PC) is not used in the fetch phase, and its role is limited to tracking the number of instructions executed by the CPU", "The program counter (PC) in the fetch phase holds the memory address of the next instruction to be fetched and executed", "The program counter (PC) is responsible for executing instructions and has no specific role during the fetch phase", "The program counter (PC) is only relevant in multi-core processors and does not contribute to the fetch phase of the instruction cycle in single-core systems"]
+answer = "The program counter (PC) in the fetch phase holds the memory address of the next instruction to be fetched and executed"
+
+[[questions]]
+filename = "2026-03-28-120843_hyprshot.png"
+question = "What is the distinction between Computer Architecture and Computer Organization?"
+choices = ["Computer Architecture is the way the system is structured, while Computer Organization is those attributes of a system that are visible to the user", "Computer Architecture is those attributes of a system that are visible to the user, while Computer Organization is the way the system is structured", "Computer Architecture and Computer Organization are the same", "Computer Architecture is slower than Computer Organization"]
+answer = "Computer Architecture is those attributes of a system that are visible to the user, while Computer Organization is the way the system is structured"
+
+[[questions]]
+filename = "2026-03-28-120848_hyprshot.png"
+question = "What is incorrect about SSDs have the following advantages over HDDs?\nA. Higher access times and latency rates: Over 10 times slower than the HDD.\nB. Durability: Less susceptible to physical shock and vibration.\nC. Longer lifespan: SSDs are not susceptible to mechanical wear.\nD. Lower power consumption: SSDs use considerably less power than comparable-size HDDs.\nE. Quieter and cooler running capabilities: Less space required, lower energy costs, and a greener enterprise."
+choices = ["Higher access times and latency rates: Over 10 times slower than the HDD.", "Durability: Less susceptible to physical shock and vibration.", "Longer lifespan: SSDs are not susceptible to mechanical wear.", "Lower power consumption: SSDs use considerably less power than comparable-size HDDs.", "Quieter and cooler running capabilities: Less space required, lower energy costs, and a greener enterprise."]
+answer = "Higher access times and latency rates: Over 10 times slower than the HDD."
+
+[[questions]]
+filename = "2026-03-28-120852_hyprshot.png"
+question = "What is the role of the registers in a processor? Ho\u00e0ng Ho\u00e0ng"
+choices = ["Registers in a processor provide fast, temporary storage for data and instructions, facilitating efficient access during instruction execution", "Registers are only used to store data temporarily during the execution of a program and do not contribute to the processing of instructions", "Registers are solely responsible for storing data from the main memory and have no involvement in holding instructions or facilitating data manipulation", "Registers are only necessary when the CPU is idle and have no impact on the speed or efficiency of instruction execution"]
+answer = "Registers in a processor provide fast, temporary storage for data and instructions, facilitating efficient access during instruction execution"
+
+[[questions]]
+filename = "2026-03-28-120859_hyprshot.png"
+question = "What is the role of the control unit in a processor?"
+choices = ["The control unit's primary role is to perform arithmetic and logical operations within the processor, orchestrating the manipulation of data", "The control unit only manages the flow of data between the CPU and external devices and does not play a significant role in executing instructions", "The control unit is solely responsible for managing the flow of instructions from secondary storage to RAM and does not have a role in the internal operation of the CPU", "The control unit in a processor directs and coordinates the execution of instructions, interpreting and managing the flow of operations within the CPU"]
+answer = "The control unit in a processor directs and coordinates the execution of instructions, interpreting and managing the flow of operations within the CPU"
+
+[[questions]]
+filename = "2026-03-28-120903_hyprshot.png"
+question = "What is the main idea of using Hamming code for error correction?"
+choices = ["Adding extra parity bits to the data bits such that the number of 1s in each subset of bits is even", "Adding extra parity bits to the data bits such that the number of 1s in each subset of bits is odd", "Adding extra parity bits to the data bits such that the parity bits form a binary number indicating the position of the error bit", "Adding extra parity bits to the data bits such that the parity bits form a binary number indicating the number of error bits"]
+answer = "Adding extra parity bits to the data bits such that the parity bits form a binary number indicating the position of the error bit"
+
+[[questions]]
+filename = "2026-03-28-120907_hyprshot.png"
+question = "What is the role of the memory address register (MAR) in a computer system?"
+choices = ["It holds data being transferred between memory and the processor.", "It specifies the address in memory for the next read or write operation.", "It performs arithmetic operations on data stored in memory.", "It stores program instructions after they are executed."]
+answer = "It specifies the address in memory for the next read or write operation."
+
+[[questions]]
+filename = "2026-03-28-120914_hyprshot.png"
+question = "What is the key advantage of double-data-rate SDRAM compared to standard SDRAM?"
+choices = ["It has a larger memory capacity.", "It can send data twice per clock cycle.", "It uses less power than SDRAM.", "It is only compatible with desktop computers."]
+answer = "It can send data twice per clock cycle."
+
+[[questions]]
+filename = "2026-03-28-120923_hyprshot.png"
+question = "What is a drawback of Instruction Pipelining?"
+choices = ["It increases the instruction throughput", "It allows more CPU throughput than a multicycle computer at a given ck rate", "It may increase latency due to the added overhead of the pipelining process itself", "It decreases the complexity of the computer system"]
+answer = "It may increase latency due to the added overhead of the pipelining process itself"
+
+[[questions]]
+filename = "2026-03-28-120931_hyprshot.png"
+question = "What is a primary disadvantage of CISC (Complex Instruction Set Computer) architectures?"
+choices = ["Increased implementation complexity", "Limited instruction set", "Slower execution due to complex instructions", "Higher energy consumption"]
+answer = "Slower execution due to complex instructions"
+
+[[questions]]
+filename = "2026-03-28-120935_hyprshot.png"
+question = "What is a scalar instruction?"
+choices = ["An instruction in which all operands must be single values.", "An instruction in which all operands must be groups such as arrays.", "An instruction in which all operands can be single values or groups.", "An instruction in which has no operand."]
+answer = "An instruction in which all operands must be single values."
+
+[[questions]]
+filename = "2026-03-28-120939_hyprshot.png"
+question = "What are the key differences in the architecture of NOR and NAND flash memory?"
+choices = ["NOR flash memory cells are connected in series, while NAND flash memory cells are connected in parallel", "NOR flash memory cells are connected in parallel, while NAND flash memory cells are connected in series", "Both NOR and NAND flash memory cells are connected in series", "Both NOR and NAND flash memory cells are connected in parallel", "All of the mentioned are wrong"]
+answer = "NOR flash memory cells are connected in parallel, while NAND flash memory cells are connected in series"
+
+[[questions]]
+filename = "2026-03-28-120943_hyprshot.png"
+question = "What does CISC stand for?"
+choices = ["Complex Instruction Set Computer", "Computer Instruction Set Complex", "Complex Instruction Summarize Computer", "Computer Instruction Summarize Complex"]
+answer = "Complex Instruction Set Computer"
+
+[[questions]]
+filename = "2026-03-28-120946_hyprshot.png"
+question = "What does the x86 assembly instruction \"jmp label\" typically do?"
+choices = ["Jumps to the memory address stored in the label", "Jumps to the next instruction", "Jumps to the label if a specific condition is met", "Moves the label's address to the EIP register"]
+answer = "Moves the label's address to the EIP register"
+
+[[questions]]
+filename = "2026-03-28-120949_hyprshot.png"
 question = "What does the term \"instruction-level parallelism\" refer to in computer architecture?"
 choices = ["The degree to which instructions in a program can be executed in parallel", "The number of processor cores in a multi-core CPU with multiple resources", "The complexity of the instruction set architecture", "The length of an instruction cycle with high level programming language"]
 answer = "The degree to which instructions in a program can be executed in parallel"
 
 [[questions]]
+filename = "2026-03-28-120953_hyprshot.png"
 question = "What role does an Application Programming Interface (API) play in software development?"
 choices = ["It allows program access to hardware resources using high-level language libraries", "It defines low-level machine instructions", "It provides a standard for binary portability", "It manages system resources for the operating system and machine language instructions"]
 answer = "It allows program access to hardware resources using high-level language libraries"
 
 [[questions]]
+filename = "2026-03-28-120958_hyprshot.png"
 question = "What role does branch prediction play in superscalar processors?"
 choices = ["It reduces the need for registers", "It prevents the execution of any branches", "It minimizes pipeline stalling by guessing the paths of branches", "It reduces the number of functional units required"]
 answer = "It minimizes pipeline stalling by guessing the paths of branches"
 
 [[questions]]
+filename = "2026-03-28-121004_hyprshot.png"
 question = "Which is incorrect about RAID?"
 choices = ["RAID is a set of physical disk drives viewed by the operating system as a single logical drive.", "Data are distributed across the physical drives of an array in a scheme known as striping, described subsequently.", "RAID is only used for Windows OS", "Redundant disk capacity is used to store parity information, which guarantees data recoverability in case of a disk failure."]
 answer = "RAID is only used for Windows OS"
 
 [[questions]]
+filename = "2026-03-28-121007_hyprshot.png"
 question = "Which of the following are the 4 basic functions of a computer?"
-choices = ["Control unit, ALU Registers; CPU interconnection.", "Data processing; Data storage; CPU interconnection.", "CPU; Main memory, I/O; System interconnection.", "Data processing; Data storage; Data movement; Control."]
+choices = ["Data processing; Data storage; Data movement; CPU.", "CPU; Main memory; I/O; System interconnection.", "Control unit; ALU; Registers; CPU interconnection.", "Data processing; Data storage; Data movement; Control."]
 answer = "Data processing; Data storage; Data movement; Control."
 
 [[questions]]
+filename = "2026-03-28-121021_hyprshot.png"
+question = "Which of the following statements is incorrect about Translation Look-aside Buffer (TLB)?"
+choices = ["The use of TLB eliminates the need for keeping a page table in memory", "TLB only maintains a subset of the entries stored in the full memory-based page table", "When there is a TLB miss the system needs to access the page table", "A translation lookaside buffer (TLB) is a memory cache that stores the recent translations of virtual memory to physical memory"]
+answer = "The use of TLB eliminates the need for keeping a page table in memory"
+
+[[questions]]
+filename = "2026-03-28-121030_hyprshot.png"
 question = "Which of the following determines the Bus Width?"
 choices = ["The clock speed of the CPU", "The number of cores in the processor", "The size of the motherboard", "The number of parallel lines in the data bus", "Number of components connected to Bus"]
 answer = "The number of parallel lines in the data bus"
 
 [[questions]]
-question = "Which of the following statements is incorrect about Translation Look-aside Buffer (TLB)?"
-choices = ["The use of TLB eliminates the need for keeping a page table in memory", "TLB only maintains a subset of the entries stored in the full memory-based page table", "When there is a TLB miss, the system needs to access the page table", "A translation lookaside buffer (TLB) is a memory cache that stores the recent translations of virtual memory to physical memory"]
-answer = "The use of TLB eliminates the need for keeping a page table in memory"
+filename = "2026-03-28-121034_hyprshot.png"
+question = "Which one of the following is an invalid about RAM? Ho\u00e0ng Ho\u00e0ng A. Both static and dynamic RAMs are volatile; that is, power must be continuously supplied to the memory to preserve the bit values. B. A dynamic memory cell is simpler and smaller than a static memory cell. C. Both static and dynamic RAMs requires the supporting refresh circuitry D. SRAMs are somewhat faster than DRAMs"
+choices = ["Both static and dynamic RAMs are volatile; that is, power must be continuously supplied to the memory to preserve the bit values.", "A dynamic memory cell is simpler and smaller than a static memory cell.", "Both static and dynamic RAMs requires the supporting refresh circuitry", "SRAMs are somewhat faster than DRAMs"]
+answer = "Both static and dynamic RAMs requires the supporting refresh circuitry"
 
 [[questions]]
+filename = "2026-03-28-121039_hyprshot.png"
 question = "Which of the following statements is true for Von Neumann architecture?"
 choices = ["Shared bus between the program memory and data memory", "Separate bus between the program memory and data memory", "External bus for program memory and data memory", "External bus for data memory only"]
-answer = "Separate bus between the program memory and data memory"
+answer = "Shared bus between the program memory and data memory"
 
 [[questions]]
-question = "Which one of the following is an invalid about RAM? Ho\u00e0ng"
-choices = ["Both static and dynamic RAMs are volatile; that is, power must be continuously supplied to preserve the bit values.", "A dynamic memory cell is simpler than a static memory cell.", "Both static RAMs requires the supporting refresh circuitry", "SRAMs are somewhat faster than DRAMs"]
-answer = "Both static RAMs requires the supporting refresh circuitry"
-
-[[questions]]
-question = "Which of the following statements is part of the Von Neumann principle?"
-choices = ["The computer uses a program counter to indicate the next statement", "Computer can control all operations with a single program", "Computer memory is not addressable", "Each instruction must have a memory area containing the address of the next instruction"]
-answer = "The computer uses a program counter to indicate the next statement"
-
-[[questions]]
-question = "Which of the following statements is NOT part of the Von Neumann principle?"
-choices = ["Computers can operate according to a stored program", "The computer uses a program counter to indicate the location of the next statement", "A computer\u2019s memory is addressable", "Each statement must have a memory area containing the address of the next instruction"]
+filename = "2026-03-28-121043_hyprshot.png"
+question = "Which of the following statements is NOT part of the Von Newmann principle?"
+choices = ["Computers can operate according to a stored program", "The computer uses a program counter to indicate the location of the next statement", "A computer's memory is addressable", "Each statement must have a memory area containing the address of the next instruction"]
 answer = "Each statement must have a memory area containing the address of the next instruction"
 
 [[questions]]
+filename = "2026-03-28-121048_hyprshot.png"
+question = "Which of the following statements is part of the Von Neumann principle?"
+choices = ["The computer uses a program counter to indicate the location of the next statement", "Computer can control all operations with a single program", "Computer memory is not addressable", "Each instruction must have a memory area containing the address of the next instruction"]
+answer = "The computer uses a program counter to indicate the location of the next statement"
+
+[[questions]]
+filename = "2026-03-28-121103_hyprshot.png"
 question = "Which of the following statements is incorrect about Translation Look-aside Buffer (TLB)?"
-choices = ["The use of TLB eliminates the need for keeping a page table in memory", "TLB only maintains a subset of the entries stored in the full memory-based page table", "When there is a TLB miss, the system needs to access the page table", "A translation lookaside buffer (TLB) is a memory cache that stores the recent translations of virtual memory to physical memory"]
+choices = ["The use of TLB eliminates the need for keeping a page table in memory", "TLB only maintains a subset of the entries stored in the full memory-based page table", "When there is a TLB miss the system needs to access the page table", "A translation lookaside buffer (TLB) is a memory cache that stores the recent translations of virtual memory to physical memory"]
 answer = "The use of TLB eliminates the need for keeping a page table in memory"
 
 [[questions]]
+filename = "2026-03-28-121106_hyprshot.png"
 question = "Which of the following statement is correct in the context of Instruction Pipelining?"
-choices = ["Instruction Pipelining reduces the efficiency of instruction execution by introducing delays and dependencies between instructions", "Instruction Pipelining is only effective for specific types of instructions and has no impact on the overall efficiency of instruction execution", "Instruction Pipelining enhances efficiency by enabling simultaneous execution of multiple instructions in different stages, boosting overall throughput.", "Instruction Pipelining improves efficiency by processing multiple instructions simultaneously, reducing execution time. However, it can face challenges like hazards, introducing delays and impacting overall performance."]
-answer = "Instruction Pipelining improves efficiency by processing multiple instructions simultaneously, reducing execution time. However, it can face challenges like hazards, introducing delays and impacting overall performance."
+choices = ["Instruction Pipelining reduces the efficiency of instruction execution by introducing delays and dependencies between instructions", "Instruction Pipelining is only effective for specific types of instructions and has no impact on the overall efficiency of instruction execution", "Instruction Pipelining enhances efficiency by enabling simultaneous execution of multiple instructions in different stages, boosting overall throughput", "Instruction Pipelining improves efficiency by processing multiple instructions simultaneously, reducing execution time. However, it can face challenges like hazards, introducing delays and impacting overall performance"]
+answer = "Instruction Pipelining improves efficiency by processing multiple instructions simultaneously, reducing execution time. However, it can face challenges like hazards, introducing delays and impacting overall performance"
 
 [[questions]]
+filename = "2026-03-28-121110_hyprshot.png"
+question = "Which of the following statement is correct about addressing modes?"
+choices = ["They define how the operands of an instruction are specified, including immediate, register, direct, and indirect addressing modes", "Addressing modes are irrelevant in computer architecture, and all instructions only operate on values stored in registers", "Addressing modes are limited to only immediate and direct modes; register and indirect addressing modes are not used in modern computer systems", "All instructions in computer architecture use indirect addressing modes, making it the only relevant mode for operand specification"]
+answer = "They define how the operands of an instruction are specified, including immediate, register, direct, and indirect addressing modes"
+
+[[questions]]
+filename = "2026-03-28-121120_hyprshot.png"
 question = "Which statement is incorrect about RISC and CISC architecture?"
 choices = ["CISC architecture is more convenient for programmers than RISC architecture.", "CISC architecture has more operands in a instruction compared to RISC architecture.", "CISC architecture has a more flexible instruction set than RISC architecture.", "CISC architecture requires more general-purpose registers than RISC architecture."]
 answer = "CISC architecture requires more general-purpose registers than RISC architecture."
 
 [[questions]]
-question = "Which of the following statement is correct about addressing modes?"
-choices = ["They define how the operands of an instruction are specified, including immediate, register, direct, and indirect addressing modes", "Addressing modes are irrelevant in computer architecture, and all instructions only operate on values stored in registers", "Addressing modes are limited to only immediate and register addressing modes and are not used in modern computer systems.", "All instructions in computer architecture use indirect addressing modes, making it the only relevant mode for operand specification"]
-answer = "They define how the operands of an instruction are specified, including immediate, register, direct, and indirect addressing modes"
-
-[[questions]]
+filename = "2026-03-28-121124_hyprshot.png"
 question = "Which statement is correct in memory-mapped I/O?"
 choices = ["The I/O devices and the memory share the same address space", "The I/O devices have a separate address space", "The memory and I/O devices have an associated address space", "A part of the memory is specifically set aside for the I/O operation"]
 answer = "The I/O devices and the memory share the same address space"
 
 [[questions]]
+filename = "2026-03-28-121136_hyprshot.png"
 question = "How do data registers and address registers differ in some computer systems?"
-choices = ["Address registers can be employed in calculating operand addresses, while data registers hold data.", "Data registers are only used for stack-related operations", "Data registers are used for indexed addressing, while address registers are used for data storage", "Address registers are reserved for segmented addressing, while data registers are general-purpose."]
+choices = ["Address registers can be employed in calculating operand addresses, while data registers hold data.", "Data registers are only used for stack-related operations", "Data registers are used for indexed addressing, while address registers are used for data storage", "Address registers are reserved for segmented addressing, while data registers are general-purpose"]
 answer = "Address registers can be employed in calculating operand addresses, while data registers hold data."
 
 [[questions]]
-question = "How does Boolean algebra contribute to the design of digital circuits?"
+filename = "2026-03-28-121142_hyprshot.png"
+question = "How does Boolean algebra contribute to the design of digital circuits? Ho\u00e0ng Ho\u00e0ng"
 choices = ["It simplifies the implementation of desired functions", "It helps in the analysis of economic data", "It facilitates the design of analog circuits", "It is primarily used for chemical engineering and physical engineering"]
 answer = "It simplifies the implementation of desired functions"
 
 [[questions]]
-question = "How does pipelining in a RISC architecture handle branch instructions?"
-choices = ["By using NOOP instructions inserted by the compiler or assembler", "By eliminating branch instructions from the instruction stream", "By executing branch instructions in a separate pipeline", "By delaying all branch instructions until they are executed"]
+filename = "2026-03-28-121146_hyprshot.png"
+question = "How does pipelining in a RISC architecture handle branch instruction?"
+choices = ["By using NOOP instructions inserted by the compiler or assembler", "By eliminating branch instructions from the instruction stream", "By executing branch instructions in a separate pipeline", "By delaying all instructions until branch instructions are executed"]
 answer = "By using NOOP instructions inserted by the compiler or assembler"
 
 [[questions]]
-question = "How does multithreading improve the performance of a processor?"
-choices = ["It increases the instruction-level parallelism by issuing multiple instructions from different threads in the same cycle", "It increases the thread-level parallelism by executing multiple threads on different cores or processors", "It increases the processor resources by hiding the latency of long-latency events such as cache misses or branch mispredictions", "All of the mentioned"]
-answer = "All of the mentioned"
-
-[[questions]]
-question = "How does multithreading improve the performance of a processor?"
-choices = ["It increases the instruction-level parallelism by issuing multiple instructions from different threads in the same cycle.", "It increases the thread level parallelism by executing multiple threads on different cores or processors", "It increases the utilization of the processor resources by hiding the latency of long-latency events such as cache misses or branch mispredictions", "All of the mentioned"]
-answer = "All of the mentioned"
-
-[[questions]]
-question = "When considering the number of pipeline stages, what trade-offs must be made in computer architecture?"
-choices = ["Trade-offs between potential speedup and increased cost and delays", "Trade-offs between software and hardware", "Trade-offs between speed and efficiency", "Trade-offs between branching and executing instructions with conditions"]
-answer = "Trade-offs between potential speedup and increased cost and delays"
-
-[[questions]]
+filename = "2026-03-28-121151_hyprshot.png"
 question = "How does multithreading improve the performance of a processor?"
 choices = ["It increases the instruction-level parallelism by issuing multiple instructions from different threads in the same cycle", "It increases the thread-level parallelism by executing multiple threads on different cores or processors", "It increases the utilization of the processor resources by hiding the latency of long-latency events such as cache misses or branch mispredictions", "All of the mentioned"]
 answer = "All of the mentioned"
 
 [[questions]]
+filename = "2026-03-28-121201_hyprshot.png"
+question = "How does multithreading improve the performance of a processor?"
+choices = ["It increases the instruction-level parallelism by issuing multiple instructions from different threads in the same cycle", "It increases the thread-level parallelism by executing multiple threads on different cores or processors", "It increases the utilization of the processor resources by hiding the latency of long-latency events such as cache misses or branch mispredictions", "All of the mentioned"]
+answer = "All of the mentioned"
+
+[[questions]]
+filename = "2026-03-28-121203_hyprshot.png"
+question = "How does multithreading improve the performance of a processor?"
+choices = ["It increases the instruction-level parallelism by issuing multiple instructions from different threads in the same cycle", "It increases the thread-level parallelism by executing multiple threads on different cores or processors", "It increases the utilization of the processor resources by hiding the latency of long-latency events such as cache misses or branch mispredictions", "All of the mentioned"]
+answer = "All of the mentioned"
+
+[[questions]]
+filename = "2026-03-28-121205_hyprshot.png"
+question = "When considering the number of pipeline stages, what trade-offs must be made in computer architecture?"
+choices = ["Trade-offs between potential speedup and increased cost and delays", "Trade-offs between software and hardware", "Trade-offs between speed and efficiency", "Trade-offs between branching and executing instructions with conditions"]
+answer = "Trade-offs between potential speedup and increased cost and delays"
+
+[[questions]]
+filename = "2026-03-28-121212_hyprshot.png"
 question = "When an interrupt is about to execute next, where is the Program Counter (PC) positioned?"
 choices = ["Add 1 to PC", "At the address of the last executed instruction", "Jump to random unknown position", "At the started address of an interrupt handler routine", "At the beginning of the memory address space"]
 answer = "At the started address of an interrupt handler routine"
 
 [[questions]]
+filename = "2026-03-28-121216_hyprshot.png"
 question = "Why is it essential to use symbolic representation of machine instructions?"
 choices = ["It makes machine instructions more human-readable and understandable", "It reduces the overall complexity of computer systems and user programs", "It minimizes the need for memory storage for the user programs", "It enables fastest execution of high level language instructions"]
 answer = "It makes machine instructions more human-readable and understandable"
 
 [[questions]]
-question = "Choose an INCORRECT trend in contemporary processor designs"
-choices = ["The number of processes accepted is infinite.", "The number of integrated transistors is getting increasing and more larger.", "Higher clock frequency is applied.", "More cores are integrated in one chip."]
-answer = "The number of processes accepted is infinite."
+filename = "2026-03-28-121222_hyprshot.png"
+question = "Choose the most four basic functions of a computer.\nA. Moving data, storing data, processing data, controlling.\nB. Supporting operating system, accessing hard disks, supporting network connections, supporting HDMI ports.\nC. Reading disks, accessing network resources.\nD. Reading data from keyboard, printing data to monitor, allowing network connections."
+choices = ["Moving data, storing data, processing data, controlling.", "Supporting operating system, accessing hard disks, supporting network connections, supporting HDMI ports.", "Reading disks, accessing network resources.", "Reading data from keyboard, printing data to monitor, allowing network connections."]
+answer = "Moving data, storing data, processing data, controlling."
 
 [[questions]]
-question = "Choose the most four basic functions of a computer:"
-choices = ["Moving data, storing data, processing data, controlling", "Supporting operating system, accessing hard disks, supporting network connections, supporting HDMI ports", "Reading disks, accessing network resources.", "Reading data from keyboard, printing data to monitor, allowing network connections"]
-answer = "Moving data, storing data, processing data, controlling"
+filename = "2026-03-28-121226_hyprshot.png"
+question = "Choose an INCORRECT trend in contemporary processor designs."
+choices = ["The number of processes accepted is infinitive.", "The number of integrated transistors is getting increasing and more larger.", "Higher clock frequency is applied.", "More cores are integrated in one chip."]
+answer = "The number of processes accepted is infinitive."
 
 [[questions]]
+filename = "2026-03-28-121230_hyprshot.png"
+question = "Choose an INCORRECT statement about high-level programming languages (HLLs)."
+choices = ["HLLs support directives for accessing the CPU's registers.", "HLLs allow the programmer to express algorithms more concisely.", "HLLs allow the compiler to take care of details that are not important in the programmer\u2019s expression of algorithms.", "HLLs often support the use of structured programming and/or object-oriented design."]
+answer = "HLLs support directives for accessing the CPU's registers."
+
+[[questions]]
+filename = "2026-03-28-121236_hyprshot.png"
 question = "Control and status registers are used by which entities to control the operation of the processor?"
-choices = ["Privileged operating system programs", "Machine or assembly language programmers", "External I/O devices", "Main memory modules"]
-answer = "Privileged operating system programs"
+choices = ["Privileged, operating system programs", "Machine or assembly language programmers", "External I/O devices", "Main memory modules"]
+answer = "Privileged, operating system programs"
 
 [[questions]]
-question = "Choose an INCORRECT statement about high-level programming languages (HLLs)"
-choices = ["HLLs support directives for accessing the CPU\u2019s registers.", "HLLs allow the programmer to express algorithms more concisely", "HLLs allow the compiler to take care of details that are not important in the expression of algorithms.", "HLLs often support the use of structured and/or object-oriented design."]
-answer = "HLLs support directives for accessing the CPU\u2019s registers."
-
-[[questions]]
-question = "Central processing unit (CPU) of IAS computer consists of"
-choices = ["Main memory and ALU (arithmetic logic unit)", "ALU (Arithmetic and Logic Unit) and CU (Control Unit)", "CU (Control Unit) and IO Module", "ALU (Arithmetic and Logic Unit) and IO Module"]
+filename = "2026-03-28-121240_hyprshot.png"
+question = "Central processing unit (CPU) of IAS computer consists of _________."
+choices = ["Main memory and ALU (arithmetic and logic unit)", "ALU (Arithmetic and Logic Unit) and CU (Control Unit)", "CU (Control Unit) and IO Module", "ALU (Arithmetic and Logic Unit) and IO Module"]
 answer = "ALU (Arithmetic and Logic Unit) and CU (Control Unit)"
 
 [[questions]]
+filename = "2026-03-28-121244_hyprshot.png"
 question = "During the development process of the computer, which of the following statements is false?"
 choices = ["The second generation uses transistors", "The first generation uses vacuum tubes", "The fourth generation uses integrated circuit", "The third generation uses transistor"]
 answer = "The third generation uses transistor"
 
 [[questions]]
+filename = "2026-03-28-121248_hyprshot.png"
 question = "In a conditional branch instruction, what happens if the specified condition is met?"
 choices = ["The program counter is updated to equal the address specified in the operand.", "The program counter increments as usual.", "The instruction is skipped.", "The program terminates."]
 answer = "The program counter is updated to equal the address specified in the operand."
 
 [[questions]]
+filename = "2026-03-28-121251_hyprshot.png"
 question = "In the context of addressing modes with both indirect addressing and indexing, what is postindexing?"
 choices = ["Indexing is performed after the indirection", "Indexing is performed before the indirection", "Both indexing and indirection are avoided", "Indexing and indirection occur simultaneously"]
 answer = "Indexing is performed after the indirection"
 
 [[questions]]
+filename = "2026-03-28-121300_hyprshot.png"
 question = "In programmed I/O, who does initialize the transfer of data?"
 choices = ["I/O controller", "CPU", "DMA controller", "Operating system"]
 answer = "CPU"
 
 [[questions]]
-question = "In the context of instruction execution, how is a product on an assembly line conceptually similar to an instruction in a pipeline?"
+filename = "2026-03-28-121303_hyprshot.png"
+question = "In the context of instruction execution, how is a product on an assembly line conceptually similar to an instruction in a pipeline? Ho\u00e0ng Ho\u00e0ng"
 choices = ["Both undergo multiple stages of production", "Both are executed in a single clock cycle", "Both follow a linear sequence of tasks", "Both are processed by the control unit"]
 answer = "Both undergo multiple stages of production"
 
 [[questions]]
+filename = "2026-03-28-121310_hyprshot.png"
 question = "In the context of the basic instruction cycle, when the fifth instruction is executing, which of the following is the correct statement?"
 choices = ["The sixth instruction is fetched.", "The fifth instruction is fetched.", "The fourth instruction is fetched.", "All program's instructions are fetched."]
 answer = "The sixth instruction is fetched."
 
 [[questions]]
+filename = "2026-03-28-121322_hyprshot.png"
 question = "In the CPU, what is the functionality of the control unit?"
 choices = ["To decode program instructions", "To controls the sequence of operations", "To store program instructions", "To transfer data to primary storage"]
 answer = "To controls the sequence of operations"
 
 [[questions]]
+filename = "2026-03-28-121327_hyprshot.png"
 question = "In terms of performance, what is the main advantage of a solid state drive over a magnetic disk?"
-choices = ["A solid state drive has faster access time, and higher reliability", "A solid state drive has larger capacity, and lower power consumption, and lower cost", "A solid state drive has better compatibility, longer lifespan, and higher security", "A solid state drive has none of the mentioned advantages over a magnetic disk"]
-answer = "A solid state drive has faster access time, and higher reliability"
+choices = ["A solid state drive has faster access time, lower latency, and higher reliability", "A solid state drive has larger capacity, lower power consumption, and lower cost", "A solid state drive has better compatibility, longer lifespan, and higher security", "A solid state drive has none of the mentioned advantages over a magnetic disk"]
+answer = "A solid state drive has faster access time, lower latency, and higher reliability"
 
 [[questions]]
+filename = "2026-03-28-121334_hyprshot.png"
 question = "In terms of data storage, what is the main distinction between a solid state drive and a magnetic disk?"
-choices = ["A magnetic disk uses a spinning platter and a read/write head, while a solid state drive uses flash memory chips.", "A magnetic disk uses flash memory chips, while a solid state drive uses a spinning platter and a read/write head", "A magnetic disk and a solid state drive use flash memory chips, but with different interfaces.", "A magnetic disk and a solid state drive use a spinning platter and a read/write head, but with different speeds."]
-answer = "A magnetic disk uses a spinning platter and a read/write head, while a solid state drive uses flash memory chips."
+choices = ["A magnetic disk uses a spinning platter and a read/write head, while a solid state drive uses flash memory chips", "A magnetic disk uses flash memory chips, while a solid state drive uses a spinning platter and a read/write head", "A magnetic disk and a solid state drive both use flash memory chips, but with different interfaces", "A magnetic disk and a solid state drive both use a spinning platter and a read/write head, but with different speeds"]
+answer = "A magnetic disk uses a spinning platter and a read/write head, while a solid state drive uses flash memory chips"
 
 [[questions]]
+filename = "2026-03-28-121335_hyprshot.png"
 question = "In SuperScalar computer architecture, the primary goal of utilizing multiple processors concurrently is to"
 choices = ["Increase processing speed by increasing CPU frequency.", "Improve performance by executing more than one instruction per machine cycle.", "Reduce the size of the CPU to conserve energy.", "Enhance computational power by increasing the number of CPU cores."]
 answer = "Improve performance by executing more than one instruction per machine cycle."
 
 [[questions]]
-question = "In isolated I/O"
-choices = ["The I/O devices and the memory share the same address space", "The I/O devices have a separate space from memory", "The memory and I/O devices have an associated address space", "A part of the memory is specifically set aside for the I/O operation", "None of the mentioned"]
-answer = "The I/O devices have a separate space from memory"
+filename = "2026-03-28-121353_hyprshot.png"
+question = "In isolated I/O, _____________"
+choices = ["The I/O devices and the memory share the same address space", "The I/O devices have a separate address space from memory", "The memory and I/O devices have an associated address space", "A part of the memory is specifically set aside for the I/O operation", "None of the mentioned"]
+answer = "The I/O devices have a separate address space from memory"
 
 [[questions]]
-question = "In modern processors, why is cache memory typically organized into multiple levels, such as L1, L2 and L3 caches?"
+filename = "2026-03-28-121356_hyprshot.png"
+question = "In modern processors, why is cache memory typically organized into multiple levels, such as L1, L2, and L3 caches?"
 choices = ["To balance the trade-off between speed and size by having different cache levels", "To conserve chip area by reducing the cache size and increasing the memory size", "To provide redundancy in case of cache failures", "To improve cache coherence in multi-processor systems"]
 answer = "To balance the trade-off between speed and size by having different cache levels"
 
 [[questions]]
-question = "If a program accesses data in a specified file, how to manage the file\u2019s properties such as disk position, file attributes?"
+filename = "2026-03-28-121403_hyprshot.png"
+question = "If a program accesses data in a specified file, how to manage the file's properties such as disk position, file's attributes?"
 choices = ["They are managed by the current operating system.", "They are managed using variables of the running program.", "They are stored on the hard disk.", "They are managed by the programmer."]
 answer = "They are managed by the current operating system."
 
 [[questions]]
+filename = "2026-03-28-121406_hyprshot.png"
 question = "Steps for executing a machine instruction are concerned, choose the correct statement which specifies the role of the fetching instruction step."
-choices = ["The processor reads an instruction from memory (cache, main memory)", "The instruction is decoded to determine what action is required", "The execution of an instruction may require performing some arithmetic or logical operation on data", "The results of an execution may require writing data to memory or an I/O module"]
-answer = "The processor reads an instruction from memory (cache, main memory)"
+choices = ["The processor reads an instruction from memory (cache, main memory).", "The instruction is decoded to determine what action is required.", "The execution of an instruction may require performing some arithmetic or logical operation on data.", "The results of an execution may require writing data to memory or an I/O module."]
+answer = "The processor reads an instruction from memory (cache, main memory)."
 
 [[questions]]
-question = "Sort the following memory types in ascending order by access speed."
+filename = "2026-03-28-121410_hyprshot.png"
+question = "Sort the following memory types in ascending order by access speed:"
 choices = ["HDD - Main Memory - L2 cache - L1 cache", "HDD - Main Memory - L1 cache - L2 cache", "HDD - L2 cache - L1 cache - Main Memory", "Main Memory - L2 cache - L1 cache - HDD"]
 answer = "HDD - Main Memory - L2 cache - L1 cache"
 
 [[questions]]
+filename = "2026-03-28-121413_hyprshot.png"
 question = "Steps for executing a machine instruction are concerned, choose the most suitable statement for the role of the interpret instruction step."
-choices = ["The instruction is decoded to determine action required", "The processor reads an instruction from memory (cache, main memory).", "The execution of an instruction may require performing some arithmetic or logical operation on data.", "The results of an execution may require writing data to memory or an I/O module."]
-answer = "The instruction is decoded to determine action required"
+choices = ["The instruction is decoded to determine what action is required.", "The processor reads an instruction from memory (cache, main memory).", "The execution of an instruction may require performing some arithmetic or logical operation on data.", "The results of an execution may require writing data to memory or an I/O module."]
+answer = "The instruction is decoded to determine what action is required."
 
 [[questions]]
-question = "The advantage of interrupt driven I/O over programmed I/O is"
+filename = "2026-03-28-121419_hyprshot.png"
+question = "The advantage of interrupt driven I/O over programmed I/O is _________."
 choices = ["the latter offers faster transfer of data", "the former does not have to wait until I/O operation is complete", "the devices have to deal with fewer address lines", "no advantage as such"]
 answer = "the former does not have to wait until I/O operation is complete"
 
 [[questions]]
+filename = "2026-03-28-121420_hyprshot.png"
 question = "With respect to elements of a machine instruction, what does the instruction code mean?"
 choices = ["It specifies the operation to be performed.", "It specifies data which will be processed.", "It specifies memory access.", "It specifies an I/O device."]
 answer = "It specifies the operation to be performed."
 
 [[questions]]
+filename = "2026-03-28-121432_hyprshot.png"
 question = "With respect to multi-threading technique, choose an INCORRECT statement."
-choices = ["A thread is a dispatchable unit of work within a process.", "Each thread needs an individual program counter and stack pointer.", "Each thread has its own data area (to enable subroutine branching).", "A thread executes sequentially and interrupts cannot be allowed."]
+choices = ["A thread is a dispatchable unit of work within a process.", "Each thread needs an individual program counter and stack pointer.", "Each thread has its own data area for a stack (to enable subroutine branching).", "A thread executes sequentially and interrupts cannot be allowed."]
 answer = "A thread executes sequentially and interrupts cannot be allowed."
 
 [[questions]]
-question = "Simplify the following Boolean expression: AB + A'B'"
-choices = ["A + B\u2019", "A\u2019 + B", "A\u2019 + B\u2019", "A\u201d + B"]
-answer = "A\u2019 + B"
+filename = "2026-03-28-121456_hyprshot.png"
+question = "C\u00e2u h\u1ecfi 15 (SINGLECHOICE) Simplify the following Boolean expression: AB + A'B' + AB'"
+choices = ["A + B'", "A' + B'", "A + B", "A' + B"]
+answer = "A + B'"
 
 [[questions]]
-question = "Which of the following Boolean expressions is equivalent to F = (A + B)C\u2019?"
-choices = ["A' + B'", "A'BC", "A' + BC", "A' + B'"]
-answer = "A' + BC"
+filename = "2026-03-28-121501_hyprshot.png"
+question = "C\u00c2U H\u1eceI 12 (SINGLECHOICE) Which of the following Boolean expressions is equivalent to F = (A + B')(C' + A + B)"
+choices = ["F = A + B'C'", "F = A' + BC", "F = A + BC", "F = A' + B'C'"]
+answer = "F = A + BC"
 
 [[questions]]
-question = "Which of the following Boolean expressions is equivalent to F = BC + A'BC?"
-choices = ["AC", "ABC", "AC + B\u2019C", "AC + B\u2019C"]
-answer = "AC"
+filename = "2026-03-28-121505_hyprshot.png"
+question = "C\u00c2U H\u1eceI 4 (SINGLECHOICE) Which of the following Boolean expressions is equivalent to F = BC + A'B'C?"
+choices = ["F = A'C + BC", "F = AC + BC", "F = AC + B'C", "F = A'C + B'C"]
+answer = "F = A'C + BC"
 
 [[questions]]
-question = "Convert the following SOP expression to an equivalent POS expression. ABC + AB'C + A'BC"
-choices = ["(A+B)(A'+B')(C)", "(A+B)(A'+B)(C')", "(A+B') (A+B) C'", "(A' + B) (A + B) C'"]
-answer = "(A+B)(A'+B)(C')"
+filename = "2026-03-28-121518_hyprshot.png"
+question = "C\u00c2U H\u1eceI 24 (SINGLECHOICE) Convert the following SOP expression to an equivalent POS expression: ABC' + A'B'C + AB'C'"
+choices = ["(A + B + C')(A' + B' + C)(A' + B' + C')(A + B' + C)(A + B' + C')", "(A + B + C)(A + B' + C)(A' + B' + C')(A + B + C')(A' + B' + C')", "(A + B + C)(A + B' + C')(A' + B' + C)(A + B' + C')(A + B' + C)", "(A' + B + C')(A' + B' + C)(A + B' + C)(A + B' + C')(A' + B' + C)"]
+answer = "(A + B + C)(A + B' + C)(A' + B' + C')(A + B + C')(A' + B' + C')"
 
 [[questions]]
-question = "Convert the following SOP expression to an equivalent POS expression: ABC + A'B'C"
-choices = ["(A+B+C)(A'+B'+C')", "(A+B')(A'+C)", "(A+B)+(A'+C)", "(A+B')+(A'+C)"]
-answer = "(A+B)+(A'+C)"
+filename = "2026-03-28-121526_hyprshot.png"
+question = "C\u00c2U H\u1eceI 26 (SINGLECHOICE) Convert the following SOP expression to an equivalent POS expression: ABC + A'BC' + AB'C + A'B'C"
+choices = ["(A + B + C)(A + B' + C)(A' + B + C')(A' + B' + C)", "(A + B + C')(A + B' + C)(A' + B + C)(A' + B' + C)", "(A + B + C)(A + B' + C')(A' + B + C)(A' + B' + C)", "(A' + B + C')(A' + B' + C)(A + B' + C)(A + B + C')"]
+answer = "(A + B + C)(A + B' + C')(A' + B + C)(A' + B' + C)"
 
 [[questions]]
-question = "Write the Boolean expression of each of the logic circuits"
-choices = ["F = ABD\u2019 + ACD\u2019\u201d,\nF = ABCD\u2019,\nF=ABD\u201d", "F = A'CD\u2019\u201d,\nF = ABC',\nF=ABCD'", "F = AB\u2019D\u2019 + AC\u2019D\u201d,\nF = ABCD',\nF=ABD\u201d", "F = ABD\u2019 + ACD\u2019\u201d,\nF = ABCD\u2019,\nF=AB'CD'"]
-answer = "F = AB\u2019D\u2019 + AC\u2019D\u201d,\nF = ABCD',\nF=ABD\u201d"
+filename = "2026-03-28-121530_hyprshot.png"
+question = "C\u00c2U H\u1eceI 6 (SINGLECHOICE) From Karnaugh maps below. Derive a simplify Boolean expression F(A,B,C,D) = A'B+CD+BD+B'C'D F(A,B,C,D) = A'B+C'D+BD+B'C'D F(A,B,C,D) = A'B+CD+BD+B'C'D' F(A,B,C,D) = A'B+CD+BD+B'C'D"
+choices = ["F(A,B,C,D) = A'B+CD+BD+B'C'D", "F(A,B,C,D) = A'B+C'D+BD+B'C'D", "F(A,B,C,D) = A'B+CD+BD+B'C'D'", "F(A,B,C,D) = A'B+CD+BD+B'C'D"]
+answer = "F(A,B,C,D) = A'B+CD+BD+B'C'D'"
+
+[[questions]]
+filename = "2026-03-28-121536_hyprshot.png"
+question = "C\u00c2U H\u1eceI 3 (SINGLECHOICE) Write the Boolean expression for each of the logic circuits. F = A'B'D' + AC'D + ABD F = A'B'D + AC'D + ABD F = A'B'D + AC'D' + ABD F = A'B'D + A'C'D + ABD"
+choices = ["F = A'B'D' + AC'D + ABD", "F = A'B'D + AC'D + ABD", "F = A'B'D + AC'D' + ABD", "F = A'B'D + A'C'D + ABD"]
+answer = "F = A'B'D + AC'D + ABD"
