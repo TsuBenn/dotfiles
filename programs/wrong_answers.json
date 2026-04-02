@@ -206,5 +206,10 @@
     "question": "In two's complement addition, when does overflow occur?",
     "answer": "When result has opposite sign to both operands when they have the same sign",
     "timestamp": "2026-04-02T22:03:35.610478"
+  },
+  {
+    "question": "Which portion of a computer consists of an ALU, a control unit, and registers, uses for fetching and executing instructions?",
+    "answer": "CPU",
+    "timestamp": "2026-04-02T22:50:16.324142"
   }
 ]

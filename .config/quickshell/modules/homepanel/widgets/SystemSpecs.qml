@@ -1204,7 +1204,7 @@ Item {
                                     if (phydisk_loader.type.toLowerCase() == "ata" || phydisk_loader.type.toLowerCase() == "nvme") {
                                         return "\uf0a0"
                                     } else  if (phydisk_loader.type.toLowerCase() == "usb") {
-                                        return "\udb84\ude9f"
+                                        return "\uf287"
                                     } else {
                                         return "\ueb32"
                                     }

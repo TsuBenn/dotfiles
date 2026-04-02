@@ -13,7 +13,7 @@ Singleton {
         }
     )
 
-    property string current: "gruvbox"
+    property string current: "monokaiPro"
 
     onCurrentChanged: {
         apply()
