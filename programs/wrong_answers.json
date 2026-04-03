@@ -231,5 +231,212 @@
     "question": "Which of the following components of CPU is responsible to direct the system to execute instructions?",
     "answer": "Control Unit (CU)",
     "timestamp": "2026-04-03T09:06:17.967983"
+  },
+  {
+    "question": "Which method of accessing units of data is used to copy a block in main memory into cache memory?",
+    "answer": "Random access",
+    "timestamp": "2026-04-03T09:08:05.960761"
+  },
+  {
+    "question": "In terms of organization, what is the basic element of semiconductor memory?",
+    "answer": "Memory cell",
+    "timestamp": "2026-04-03T09:21:50.939660"
+  },
+  {
+    "question": "The I/O technique where the processor busy waits for an I/O operation to complete is called ________.",
+    "answer": "Programmed I/O",
+    "timestamp": "2026-04-03T09:22:26.863173"
+  },
+  {
+    "question": "Steps for executing a machine instruction are concerned, choose the most suitable statement for the role of the interpret instruction step.",
+    "answer": "The instruction is decoded to determine what action is required.",
+    "timestamp": "2026-04-03T09:48:25.955653"
+  },
+  {
+    "question": "Which of the following component does not belong to central processing unit?",
+    "answer": "System interconnection",
+    "timestamp": "2026-04-03T09:50:13.316468"
+  },
+  {
+    "question": "During the development process of the computer, which of the following statements is false?",
+    "answer": "The third generation uses transistor",
+    "timestamp": "2026-04-03T09:50:33.021614"
+  },
+  {
+    "question": "The basic components of a computer are:",
+    "answer": "Main memory, CPU, I/O modules and system interconnection",
+    "timestamp": "2026-04-03T09:50:52.584925"
+  },
+  {
+    "question": "What is the main idea of using Hamming code for error correction?",
+    "answer": "Adding extra parity bits to the data bits such that the parity bits form a binary number indicating the position of the error bit",
+    "timestamp": "2026-04-03T09:51:28.877074"
+  },
+  {
+    "question": "Which kind of cache mapping maps each block of main memory into one unique line of the cache?",
+    "answer": "Direct mapping",
+    "timestamp": "2026-04-03T09:52:02.490266"
+  },
+  {
+    "question": "(Choose 1 answer) __________ can exchange data directly with the processor. Just as the processor can initiate a read or write with memory, designating the address of a specific location, the processor can also read data from or write data to __________.",
+    "answer": "I/O module / Memory",
+    "timestamp": "2026-04-03T10:18:28.830801"
+  },
+  {
+    "question": "Follow the Amdahl's law for multiprocessors, if only 10% of the code is inherently serial (f = 0.9), running the program on a multicore system with 4 processors, a performance gain (speedup factor) would be _____.",
+    "answer": "307%",
+    "timestamp": "2026-04-03T10:19:21.029187"
+  },
+  {
+    "question": "When an interrupt is about to execute next, where is the Program Counter (PC) positioned?",
+    "answer": "At the started address of an interrupt handler routine",
+    "timestamp": "2026-04-03T10:27:05.855813"
+  },
+  {
+    "question": "Convert the following SOP expression to an equivalent POS expression: ABC' + A'B'C + AB'C'",
+    "answer": "(A + B + C)(A + B' + C)(A' + B' + C')(A + B + C')(A' + B' + C')",
+    "timestamp": "2026-04-03T10:40:55.604582"
+  },
+  {
+    "question": "Which statement is correct in memory-mapped I/O?",
+    "answer": "The I/O devices and the memory share the same address space",
+    "timestamp": "2026-04-03T10:41:03.071399"
+  },
+  {
+    "question": "From Karnaugh maps below. Derive a simplify Boolean expression",
+    "answer": "F(A,B,C,D) = A'B+CD+BD+B'C'D'",
+    "timestamp": "2026-04-03T10:46:35.869022"
+  },
+  {
+    "question": "Which of the following statements is true for Von Neumann architecture?",
+    "answer": "Shared bus between the program memory and data memory",
+    "timestamp": "2026-04-03T10:50:33.656849"
+  },
+  {
+    "question": "A two-way set-associative cache has lines of 16 bytes and a total size of 8 Kbytes. The 64-Mbyte main memory is byte addressable. What are the values of Tag, Set and Byte offset fields?",
+    "answer": "14/8/4",
+    "timestamp": "2026-04-03T10:51:17.999253"
+  },
+  {
+    "question": "Given the following Karnaugh map, what is the optimal expression in the sum of product format (X' means Not X)?",
+    "answer": "A' + C'",
+    "timestamp": "2026-04-03T11:08:24.366283"
+  },
+  {
+    "question": "Which statement is incorrect about RISC and CISC architecture?",
+    "answer": "CISC architecture requires more general-purpose registers than RISC architecture.",
+    "timestamp": "2026-04-03T11:08:56.607672"
+  },
+  {
+    "question": "What is the special feature of Memory Cache?",
+    "answer": "Allows faster access than DRAM memory",
+    "timestamp": "2026-04-03T11:10:11.293137"
+  },
+  {
+    "question": "Given the following Karnaugh map, what is the optimal expression in the sum of product format (X' means Not X)?",
+    "answer": "A'B + AC'D + ACD'",
+    "timestamp": "2026-04-03T11:11:46.884121"
+  },
+  {
+    "question": "In the context of the basic instruction cycle, when the fifth instruction is executing, which of the following is the correct statement?",
+    "answer": "The sixth instruction is fetched.",
+    "timestamp": "2026-04-03T11:12:01.774205"
+  },
+  {
+    "question": "Steps for executing a machine instruction are concerned, given an assembly code: ADD EAX, V. What step will access the variable V?",
+    "answer": "The fetch data step.",
+    "timestamp": "2026-04-03T11:12:17.341333"
+  },
+  {
+    "question": "What is the most common mapping technique used in cache memory in modern computers?",
+    "answer": "Set Associative",
+    "timestamp": "2026-04-03T11:14:53.165641"
+  },
+  {
+    "question": "Which of the following statements is incorrect about Translation Look-aside Buffer (TLB)?",
+    "answer": "The use of TLB eliminates the need for keeping a page table in memory",
+    "timestamp": "2026-04-03T11:15:11.382851"
+  },
+  {
+    "question": "The instruction, which adds 1 to the value in a memory location, has five stages: fetch opcode (four cycles), fetch operand address (three cycles), fetch operand (three cycles), add 1 to operand (three cycles), and store operand (three cycles). An interrupt sends request at beginning of fetch operand stage. How many cycles does the processor enter the interrupt processing cycle?",
+    "answer": "9",
+    "timestamp": "2026-04-03T11:17:01.499713"
+  },
+  {
+    "question": "Which of the following statements is part of the Von Neumann principle?",
+    "answer": "The computer uses a program counter to indicate the location of the next statement",
+    "timestamp": "2026-04-03T11:17:45.134990"
+  },
+  {
+    "question": "Which type of interrupt is exemplified by \"division by zero, attempt to execute an illegal machine instruction\"?",
+    "answer": "Program",
+    "timestamp": "2026-04-03T11:22:02.593295"
+  },
+  {
+    "question": "Which of the following Boolean expressions is equivalent to F = BC + A'B'C?",
+    "answer": "F = A'C + BC",
+    "timestamp": "2026-04-03T11:22:40.800261"
+  },
+  {
+    "question": "Which of the following are examples of architectural attributes in computer systems?",
+    "answer": [
+      "Instruction set",
+      "Number of bits used for data types",
+      "Interfaces between peripherals and the computer"
+    ],
+    "timestamp": "2026-04-03T11:23:07.242473"
+  },
+  {
+    "question": "What does the x86 assembly instruction \"jmp label\" typically do?",
+    "answer": "Moves the label's address to the EIP register",
+    "timestamp": "2026-04-03T11:23:25.483701"
+  },
+  {
+    "question": "________ refers to the operational units and their interconnections that realize the architectural specifications.",
+    "answer": "Computer organization",
+    "timestamp": "2026-04-03T12:13:13.201463"
+  },
+  {
+    "question": "What is the main distinction between Interrupt-Driven I/O and Direct Memory Access (DMA)?",
+    "answer": "All of the mentioned",
+    "timestamp": "2026-04-03T12:14:06.030794"
+  },
+  {
+    "question": "Which type is not an Interconnection bus?",
+    "answer": "Signal lines",
+    "timestamp": "2026-04-03T12:15:48.828727"
+  },
+  {
+    "question": "Regarding the ALU (Arithmetic Logic Unit), besides basic arithmetic operations, what operations can it perform? (choose two correct answers)",
+    "answer": [
+      "It handles logical operations such as AND, OR, XOR, NOT.",
+      "It handles bit shifting operations like multi and div operations by powers of two."
+    ],
+    "timestamp": "2026-04-03T12:16:02.652601"
+  },
+  {
+    "question": "A benchmark program is running on a 400 MHz processor. The executed program consists of 500 instruction executions, with the following instruction mix and clock cycle count in Table below: Instruction type Instruction count Cycles per Instruction Arithmetic 300 1 Data transfer 100 2 Control transfer 100 2 Calculate MIPS rate for this case.",
+    "answer": "MIPS rate = 285.7",
+    "timestamp": "2026-04-03T12:16:24.871049"
+  },
+  {
+    "question": "The task of subdivision is carried out dynamically by the OS and is known as ____?",
+    "answer": "Memory management",
+    "timestamp": "2026-04-03T12:19:15.781063"
+  },
+  {
+    "question": "Convert the following SOP expression to an equivalent POS expression: ABC + A'BC' + AB'C + A'B'C",
+    "answer": "(A + B + C)(A + B' + C')(A' + B + C)(A' + B' + C)",
+    "timestamp": "2026-04-03T12:19:38.924666"
+  },
+  {
+    "question": "Consider an expression: 1000 0000 OR 1111 1010 What is the result of this expression?",
+    "answer": "1111 1010",
+    "timestamp": "2026-04-03T12:21:28.697715"
+  },
+  {
+    "question": "What thinking skill involves 'combining sources into a meaningful whole'?",
+    "answer": "Synthesis",
+    "timestamp": "2026-04-03T14:06:32.071428"
   }
 ]
