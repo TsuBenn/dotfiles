@@ -211,5 +211,25 @@
     "question": "Which portion of a computer consists of an ALU, a control unit, and registers, uses for fetching and executing instructions?",
     "answer": "CPU",
     "timestamp": "2026-04-02T22:50:16.324142"
+  },
+  {
+    "question": "Which state indicates that a process is currently being executed by the processor?",
+    "answer": "Running",
+    "timestamp": "2026-04-03T00:27:46.462981"
+  },
+  {
+    "question": "Which of the following memory devices has the lowest access speed?",
+    "answer": "Magnetic tape",
+    "timestamp": "2026-04-03T00:27:54.503198"
+  },
+  {
+    "question": "Central processing unit (CPU) of IAS computer consists of _________.",
+    "answer": "ALU (Arithmetic and Logic Unit) and CU (Control Unit)",
+    "timestamp": "2026-04-03T09:04:26.711261"
+  },
+  {
+    "question": "Which of the following components of CPU is responsible to direct the system to execute instructions?",
+    "answer": "Control Unit (CU)",
+    "timestamp": "2026-04-03T09:06:17.967983"
   }
 ]
