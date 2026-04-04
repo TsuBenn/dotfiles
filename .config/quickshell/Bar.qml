@@ -24,15 +24,24 @@ Scope {
 
             required property var modelData
 
+            signal screenPressed()
+            signal screenEntered()
+            signal screenExited()
+            signal screenReleased()
+
             function gainScreenAccess() {
+                screenLocked = true
                 item.implicitHeight = bar.monitor.height
                 bar.focusable = true
             }
             function returnScreenAccess() {
+                screenLocked = false
                 item.implicitHeight = 31
                 bar.focusable = false
 
             }
+
+            property bool screenLocked: false
 
             property string screen_name: screen.name
             property var monitor: HyprInfo.monitors[screen_name] != undefined ? HyprInfo.monitors[screen_name] : {"width": 1920, "height": 1080}
@@ -105,6 +114,33 @@ Scope {
 
                     implicitHeight: 31
 
+                    MouseArea {
+
+                        z: -9999
+
+                        visible: bar.screenLocked
+
+                        anchors.fill: parent
+
+                        hoverEnabled: true
+
+                        onEntered: {
+                            console.log("entered screen")
+                            bar.screenEntered()
+                        }
+                        onExited: {
+                            console.log("exited screen")
+                            bar.screenExited()
+                        }
+                        onPressed: {
+                            console.log("pressed screen")
+                            bar.screenPressed()
+                        }
+                        onReleased: {
+                            console.log("released screen")
+                            bar.screenReleased()
+                        }
+                    }
 
                     RowLayout {
 
@@ -343,60 +379,19 @@ Scope {
                                     else bar.returnScreenAccess()
                                 }
 
-                                Rectangle {
-
-                                    width: HyprInfo.focusedMonitor.width*2
-                                    height: HyprInfo.focusedMonitor.height*2
-
-                                    x:-HyprInfo.focusedMonitor.width
-                                    y:-HyprInfo.focusedMonitor.height
-
-                                    color: "transparent"
-
-                                    z: -3
-
-                                    focus: true
-
-                                    Keys.onPressed: (events) => {
-                                        events.accepted = true
-                                        KeyHandlers.signalPressed(events.key, events.modifiers, events.isAutoRepeat)
-                                    }
-                                    Keys.onReleased: (events) => {
-                                        events.accepted = true
-                                        KeyHandlers.signalReleased(events.key, events.modifiers, events.isAutoRepeat)
-                                    }
-
-                                    Component.onCompleted: {
-                                        KeyHandlers.pressed.connect((key) => {
-                                            if (!media_player.visible) return
-                                            if (key == Qt.Key_Right) {
-                                                MediaPlayerInfo.nextMedia()
-                                            } else if (key == Qt.Key_Left) {
-                                                MediaPlayerInfo.prevMedia()
-                                            } else if (key == Qt.Key_Escape) {
-                                                media_player.opacity = 0
-                                            }
-                                        })
-                                    }
-
-                                    MouseControl {
-
-                                        anchors.fill: parent
-
-                                        hoverEnabled: true
-
-                                        onEntered: {
-                                            media_player_timer.restart()
-                                        }
-                                        onExited: {
-                                            media_player_timer.stop()
-                                        }
-
-                                        onReleased: {
-                                            media_player.opened = 0
-                                        }
-
-                                    }
+                                Component.onCompleted: {
+                                    bar.screenEntered.connect(() => {
+                                        if (!media_player.opened) return
+                                        media_player_timer.restart()
+                                    })
+                                    bar.screenExited.connect(() => {
+                                        if (!media_player.opened) return
+                                        media_player_timer.stop()
+                                    })
+                                    bar.screenPressed.connect(() => {
+                                        if (!media_player.opened) return
+                                        media_player.opened = 0
+                                    })
                                 }
 
                                 Timer {
@@ -413,7 +408,7 @@ Scope {
                                     z:-2
 
                                     anchors.fill: parent
-                                    anchors.margins: -200
+                                    anchors.margins: -100
 
                                     hoverEnabled: true
 
@@ -755,39 +750,111 @@ Scope {
 
                         id: rightSide
 
-                        anchors.topMargin: Math.round(31/2 - implicitHeight/2)
-                        anchors.top: parent.top
                         anchors.right: parent.right
                         anchors.rightMargin: 19
+                        anchors.verticalCenter: workspaces.verticalCenter
 
                         spacing: 2
 
+                        layoutDirection: Qt.RightToLeft
+
+                        PillButton {
+
+                            box_height: 28
+                            text_padding: 8
+
+                            verticalOffset: !SystemInfo.wifi.ethernet ? 1 : 1.2
+                            horizontalOffset: !SystemInfo.wifi.ethernet ? -0.2 : -0.3
+
+                            text: {
+                                if (SystemInfo.wifi.ethernet) return "\udb80\udf79" + "  \uf423"
+                                if (SystemInfo.wifi.freq) return "\udb81\udda9" + "  \uf423"
+                                return "\udb81\uddaa" + "  \uf423"
+                            }
+
+                            bg_color: [
+                                Color.bgSurface,
+                                Color.bgMuted,
+                                Color.accentStrong,
+                            ]
+                            fg_color: [
+                                Color.textPrimary,
+                                Color.textPrimary,
+                                Color.textSecondary,
+                            ]
+
+                            border_width: [0, 0, 0]
+
+                            font_size: 12
+
+                        }
+
                         ClippingRectangle {
 
-                            z: 1*volume.expanded
+                            z: -1
 
                             id: volume
 
                             property bool expanded: false
 
                             implicitHeight: 28
-                            implicitWidth: (150 + 10) + 28
+                            implicitWidth: 150 + 10 + 28
                             radius: implicitHeight/2
-
 
                             color: "transparent"
 
+                            Timer {
+                                id: volume_timer
+
+                                interval: 500
+                                onTriggered: {
+                                    volume.expanded = false
+                                }
+                            }
+
+                            MouseArea {
+
+                                anchors.fill: parent
+                                anchors.margins: -50
+
+                                hoverEnabled: true
+
+                                onPressed: {
+                                    volume.expanded = false
+                                }
+
+                            }
+
+                            Component.onCompleted: {
+                                bar.screenEntered.connect(() => {
+                                    if (!volume.expanded) return
+                                    volume_timer.restart()
+                                })
+                                bar.screenExited.connect(() => {
+                                    if (!volume.expanded) return
+                                    volume_timer.stop()
+                                })
+                                bar.screenPressed.connect(() => {
+                                    if (!volume.expanded) return
+                                    volume.expanded = false
+                                })
+                            }
+
                             onExpandedChanged: {
                                 if (expanded) {
-                                    gainScreenAccess()
+                                    bar.gainScreenAccess()
                                     return
                                 }
-                                returnScreenAccess()
+                                bar.returnScreenAccess()
                             }
 
                             RowLayout {
 
+                                id: volume_item
+
                                 anchors.right: parent.right
+
+                                layoutDirection: Qt.RightToLeft
 
                                 PillButton {
 
@@ -851,7 +918,7 @@ Scope {
                                     box_height: 20
                                     box_width: volume.expanded*150
 
-                                    Behavior on implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+                                    Behavior on implicitWidth {NumberAnimation {duration: 300; easing.type: Easing.OutCubic}}
 
                                     interactive: volume.expanded
 
@@ -871,84 +938,6 @@ Scope {
                                 }
 
                             }
-
-                            MouseArea {
-
-                                z: -2
-
-                                visible: volume.expanded
-
-                                anchors.fill: parent
-                                anchors.margins: -100
-
-                                hoverEnabled: true
-
-                                onEntered: {
-                                    volume_timer.stop()
-                                }
-                                onPressed: {
-                                    volume.expanded = false
-                                }
-                                onExited: {
-                                    volume_timer.restart()
-                                }
-                            }
-
-                            MouseArea {
-
-                                z: -1
-
-                                visible: volume.expanded
-
-                                anchors.fill: parent
-
-                                hoverEnabled: true
-
-                                onEntered: {
-                                    volume_timer.stop()
-                                }
-
-                            }
-
-                            Timer {
-                                id: volume_timer
-
-                                interval: 100
-                                onTriggered: {
-                                    volume.expanded = false
-                                }
-                            }
-
-                        }
-
-                        PillButton {
-
-                            box_height: 28
-                            text_padding: 8
-
-                            verticalOffset: !SystemInfo.wifi.ethernet ? 1 : 1.2
-                            horizontalOffset: !SystemInfo.wifi.ethernet ? -0.2 : -0.3
-
-                            text: {
-                                if (SystemInfo.wifi.ethernet) return "\udb80\udf79" + "  \uf423"
-                                if (SystemInfo.wifi.freq) return "\udb81\udda9" + "  \uf423"
-                                return "\udb81\uddaa" + "  \uf423"
-                            }
-
-                            bg_color: [
-                                Color.bgSurface,
-                                Color.bgMuted,
-                                Color.accentStrong,
-                            ]
-                            fg_color: [
-                                Color.textPrimary,
-                                Color.textPrimary,
-                                Color.textSecondary,
-                            ]
-
-                            border_width: [0, 0, 0]
-
-                            font_size: 12
 
                         }
 

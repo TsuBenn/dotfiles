@@ -24,6 +24,7 @@ ClippingRectangle {
 
     property bool round              : true
     property bool interactive        : false
+    property bool animation          : true
     property bool containsMouse      : mouse.containsMouse
     property bool containsPress      : mouse.containsPress
 
@@ -121,7 +122,7 @@ ClippingRectangle {
         anchors.left: parent.left
 
         implicitWidth: parent.width*root.percentage/100
-        Behavior on implicitWidth {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+        Behavior on implicitWidth {NumberAnimation {duration: 200*root.animation; easing.type: Easing.OutCubic}}
 
         topRightRadius: (root.box_height/2)*root.round
         bottomRightRadius: (root.box_height/2)*root.round
