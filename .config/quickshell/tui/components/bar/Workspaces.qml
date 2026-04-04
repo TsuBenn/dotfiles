@@ -29,11 +29,11 @@ RowLayout {
             }
 
 
-            color: wb.isActive ? Colors.accentStrong : "transparent"
+            color: wb.isActive ? Colors.accentStrong : Colors.bgOverlay
 
             Text {
                 id: wb_text
-                text: wb.isActive ? (wb.winCount ? ` ${wb.index} ` : ` • `) : (wb.winCount ? ` ${wb.index} ` : ` • `)
+                text: wb.isActive ? (wb.winCount ? `  ${wb.index}  ` : `  •  `) : (wb.winCount ? ` ${wb.index} ` : ` • `)
                 font: wb.isActive ? Cell.fontB : Cell.font
                 color: wb.isActive ? Colors.fgBase : Colors.fgSubtle
             }
@@ -82,11 +82,11 @@ RowLayout {
             implicitWidth: Cell.w(spwb_text.text.length)
             implicitHeight: Cell.h(1)
 
-            color: spwb.isActive ? Colors.secondary : "transparent"
+            color: spwb.isActive ? Colors.secondary : Colors.bgOverlay
 
             Text {
                 id: spwb_text
-                text: spwb.isActive ? ` ${spwb.name} ` : `[${spwb.name}]`
+                text: spwb.isActive ? ` ${spwb.name} ` : ` ${spwb.name} `
                 font: spwb.isActive ? Cell.fontB : Cell.font
                 color: spwb.isActive ? Colors.bgBase : Colors.fgSubtle
             }
