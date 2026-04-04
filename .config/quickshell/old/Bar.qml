@@ -806,7 +806,7 @@ Scope {
                             Timer {
                                 id: volume_timer
 
-                                interval: 500
+                                interval: 200
                                 onTriggered: {
                                     volume.expanded = false
                                 }
@@ -853,8 +853,6 @@ Scope {
                                 id: volume_item
 
                                 anchors.right: parent.right
-
-                                layoutDirection: Qt.RightToLeft
 
                                 PillButton {
 

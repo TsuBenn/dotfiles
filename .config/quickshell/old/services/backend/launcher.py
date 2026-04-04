@@ -77,7 +77,7 @@ def load_apps():
 
     icons = dict(sorted(icons.items()))
 
-    with open(os.environ['HOME'] + "/.config/quickshell/services/backend/icons.json", "w") as f:
+    with open(os.environ['HOME'] + "/.config/quickshell/old/services/backend/icons.json", "w") as f:
         json.dump(icons, f, indent=4)
 
     return apps

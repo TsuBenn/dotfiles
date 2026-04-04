@@ -11,7 +11,7 @@ ShellRoot {
 
         Item {
             Component.onCompleted: {
-                execOnce.exec(["bash", ".config/quickshell/execOnce.sh"])
+                execOnce.exec(["bash", ".config/quickshell/old/execOnce.sh"])
             }
         }
 

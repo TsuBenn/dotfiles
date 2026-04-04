@@ -1,5 +1,4 @@
 pragma Singleton
-
 import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
@@ -10,10 +9,12 @@ Singleton {
     id: root
 
     property int focusedworkspace: Hyprland.focusedWorkspace?.id
+    property int focusedspecial: 0
 
     property var focusedwindow: {"title": "", "class": ""}
 
     property var workspaces
+    property var specialworkspaces
     property var monitors: ({})
 
     property var focusedMonitor: ({})
@@ -23,7 +24,11 @@ Singleton {
     signal hyprEvent(event : string)
 
     function switchWorkspace(n) {
-        Hyprland.dispatch("workspace " + n)
+        if (Number.isInteger(n)) {
+            Hyprland.dispatch("workspace " + n)
+            return
+        }
+        Hyprland.dispatch("togglespecialworkspace " + n)
     }
 
     function windowCount(n) {
@@ -60,9 +65,11 @@ Singleton {
                 case "openwindow":
                 case "closewindow":
                 case "movewindow":
+                case "workspace":
                 case "activewindow": {
                     process.running = true
-                    get_icons.reload()
+                    specials.running = true
+                    //get_icons.reload()
                     break
                 }
                 case "focusedmon": {
@@ -86,6 +93,29 @@ Singleton {
     }
 
     Process {
+        id: specials
+
+        command: ["hyprctl", "workspaces", "-j"]
+
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: {
+                var special = []
+                const datas = JSON.parse(text)
+                for (const data of datas) {
+                    const id = data.id ?? 0
+                    const name = data.name ?? ""
+                    const windows = data.windows ?? 0
+                    if (id < 0) {
+                        special.push({"id":id,"name":name,"windows":windows})
+                    }
+                }
+                root.specialworkspaces = special
+            }
+        }
+    }
+
+    Process {
         id: process
 
         command: ["hyprctl", "clients", "-j"]
@@ -93,7 +123,7 @@ Singleton {
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
-                const workspaces = {}
+                var workspaces = {}
                 const datas = JSON.parse(text)
                 for (const data of datas) {
                     const workspace = data.workspace.id ?? ""
@@ -111,11 +141,14 @@ Singleton {
                         "windowtitle": windowtitle,
                         "focused": focused
                     })
-                    if (focused) root.focusedwindow = {
-                        "title": windowtitle,
-                        "class": windowclass,
-                        "address": address,
-                        "monitor": monitor,
+                    if (focused) {
+                        root.focusedspecial = workspace < 0 ? workspace : 0
+                        root.focusedwindow = {
+                            "title": windowtitle,
+                            "class": windowclass,
+                            "address": address,
+                            "monitor": monitor,
+                        }
                     }
                 }
                 if (root.windowCount(root.focusedworkspace) == 0) root.focusedwindow = {

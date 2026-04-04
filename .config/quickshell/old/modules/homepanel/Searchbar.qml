@@ -188,7 +188,7 @@ Rectangle {
     }
 
     function updateQuery(query: string) {
-        backend.exec(["python", ".config/quickshell/services/backend/launcher.py", query])
+        backend.exec(["python", ".config/quickshell/old/services/backend/launcher.py", query])
     }
 
     Process {

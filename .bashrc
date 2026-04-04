@@ -42,11 +42,11 @@ ayano() {
     print() {
         tree -I "venv|logs|audio|__pycache__|__init__.py|.pyc|.git|*.png"
     }
-    run() {
-        pkill -f main.py
-        python main.py &
-        clear
-    }
+run() {
+    pkill -f main.py
+    python main.py &
+    clear
+}
 }
 ayanoSetup() {
     cd ~/ayano || return
@@ -85,8 +85,14 @@ alias ghosttyconf='cd ~/dotfiles/ && nvim ~/.config/ghostty/config'
 alias tmuxconf='cd ~/dotfiles/ && nvim ~/.tmux.conf'
 alias nvimconf='cd ~/.config/nvim && nvim ~/.config/nvim/'
 alias bashconf='cd ~/dotfiles/ && nvim ~/.bashrc'
-alias qsconf='cd ~/dotfiles/.config/quickshell/ && nvim ~/.config/quickshell/shell.qml'
-qsDebug() {
+qsconf() {
+    cd ~/dotfiles/.config/quickshell/$1
+    nvim ~/.config/quickshell/$1
+}
+qsS() {
+    qs -c ~/.config/quickshell/$1
+}
+qsD() {
     qs kill
     clear
     qs
@@ -95,8 +101,10 @@ qsDebug() {
 alias programs='cd ~/dotfiles/programs/ && nvim .'
 
 # QUICK RESET
-alias qsRestart='qs kill & qs -d'
-alias qsR='qs kill & qs -d'
+qsR() {
+    qs kill
+    qs -c ~/.config/quickshell/$1 -d
+}
 alias easyeffectsRestart='easyeffects -q && easyeffects --gapplication-service &'
 
 # QUICK INSTALL

@@ -180,11 +180,6 @@ ClippingRectangle {
 
                 SequentialAnimation {
                     id: addAnimation
-                    ScriptAction {
-                        script: {
-                            root.animationRunning = true
-                        }
-                    }
                     PropertyAction {
                         target: app
                         property: "x"
@@ -214,11 +209,6 @@ ClippingRectangle {
                             from: 0
                             to: 1
                             easing.type: Easing.OutCubic
-                        }
-                    }
-                    ScriptAction {
-                        script: {
-                            root.animationRunning = false
                         }
                     }
                 }
