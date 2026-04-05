@@ -1,4 +1,5 @@
 import qs.components.bar
+import qs.modules
 import qs.config
 import qs.services
 
@@ -39,89 +40,64 @@ Scope {
                 right: true
             }
 
-            implicitHeight: Cell.h(1.5) + 1
+            implicitHeight: Cell.h(2)
 
             color: Colors.bgSurface
 
-            RowLayout {
+            Item {
 
-                y: Cell.h(0.25)
-                x: Cell.w(0.5)
+                anchors.fill: parent
 
-                spacing: 0
+                RowLayout {
 
-                Workspaces {}
+                    spacing: Cell.w(1)
 
-                Rectangle {
-
-                    visible: window_title.text
-
-                    implicitWidth: Cell.w(4)
-                    implicitHeight: Cell.h(1)
-
-                    color: "transparent"
-
-                    Text {
-                        text: " || "
-                        font: Cell.fontB
-                        color: Colors.fgSubtle
+                    Workspaces {
+                        id: workspaces
                     }
+
+                    Cells {
+                        h: 1
+                        w: 1
+
+                        color: "transparent"
+
+                        Text {
+
+                            id: window_title
+
+                            property string wTitle: HyprInfo.focusedwindow.title
+                            property string wClass: HyprInfo.focusedwindow.class
+
+                            width: Cell.toW(system.x-workspaces.implicitWidth) - Cell.w(2)
+
+                            elide: Qt.ElideRight
+
+                            text: `${wClass}`
+                            font: Cell.font
+                            color: Colors.fgBase
+                        }
+                    }
+
                 }
 
-                Rectangle {
-                    implicitHeight: Cell.h(1)
-                    implicitWidth: Cell.w(1)
-
-                    color: "transparent"
-
-                    Text {
-
-                        id: window_title
-
-                        property string wTitle: HyprInfo.focusedwindow.title
-                        property string wClass: HyprInfo.focusedwindow.class
-
-                        width: Cell.w(30)
-
-                        elide: Qt.ElideRight
-
-                        text: `${wClass}`
-                        font: Cell.font
-                        color: Colors.fgBase
-                    }
+                System {
+                    id: system
+                    anchors.right: clock.left
+                    anchors.rightMargin: Cell.w(2)
                 }
 
+                Clock {
+                    id: clock
+                    x: Cell.toW(root.width/2 - implicitWidth/2)
+                }
 
-            }
+                MediaPlayer {
+                    id: media_player
+                    anchors.left: clock.right
+                    anchors.leftMargin: Cell.w(2)
+                }
 
-            System {
-                y: Cell.h(0.25)
-
-                anchors.right: clock.left
-                anchors.rightMargin: Cell.w(2)
-            }
-
-            Clock {
-                id: clock
-                y: Cell.h(0.25)
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-
-            MediaPlayer {
-                y: Cell.h(0.25)
-
-                anchors.left: clock.right
-                anchors.leftMargin: Cell.w(2)
-            }
-
-            Rectangle {
-                anchors.bottom: parent.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-
-                implicitHeight: 1
-
-                color: Colors.fgDim
             }
 
         }

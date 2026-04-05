@@ -4,22 +4,25 @@ import Quickshell
 import QtQuick
 
 Singleton {
+
     id: root
+
+    property real pointSize: 11
 
     readonly property font font: Qt.font({
         family: "JetBrainsMono Nerd Font",
-        pointSize: 11,
+        pointSize: root.pointSize,
         contextFontMerging: true,
     })
     readonly property font fontB: Qt.font({
         family: "JetBrainsMono Nerd Font",
-        pointSize: 11,
+        pointSize: root.pointSize,
         weight: Font.Bold,
         contextFontMerging: true
     })
     readonly property font fontBB: Qt.font({
         family: "JetBrainsMono Nerd Font",
-        pointSize: 11,
+        pointSize: root.pointSize,
         weight: Font.Black,
         contextFontMerging: true
     })
@@ -33,6 +36,13 @@ Singleton {
 
     function h(n: real): real {
         return Math.round(cellHeight * n)
+    }
+
+    function toW(n: real): real {
+        return w(Math.round(n/cellWidth))
+    }
+    function toH(n: real): real {
+        return h(Math.round(n/cellWidth))
     }
 
     FontMetrics {

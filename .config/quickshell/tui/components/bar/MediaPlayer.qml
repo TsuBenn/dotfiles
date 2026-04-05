@@ -9,22 +9,23 @@ RowLayout {
 
     spacing: 0
 
-    Rectangle {
-        implicitWidth: Cell.w(3)
-        implicitHeight: Cell.h(1)
+    Cells {
+        w: 3
+        h: 1
 
         color: Colors.accentStrong
 
-        Text {
-            text: "[⏸]"
+        CellText {
+            text: " ⏸ "
             font: Cell.fontB
             color: Colors.bgBase
         }
     }
 
-    Rectangle {
-        implicitWidth: Cell.w(22)
-        implicitHeight: Cell.h(1)
+    Cells {
+        visible: MediaPlayerInfo.activePlayer
+        w: 22
+        h: 1
 
         color: Colors.accentStrong
 

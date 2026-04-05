@@ -1,8 +1,9 @@
 import qs.config
+import qs.modules
 
 import QtQuick
 
-Rectangle {
+Cells {
     property int cellw: 10
     property string text: "Sample of super long text"
     property font font: Cell.font
@@ -20,10 +21,10 @@ Rectangle {
 
     color: "transparent"
 
-    implicitWidth: Cell.w(cellw)
-    implicitHeight: Cell.h(1)
+    w: cellw
+    h: 1
 
-    Text {
+    CellText {
         text: parent.text.length > parent.cellw ? parent.displayed : parent.text
         font: parent.font
         color: parent.fg

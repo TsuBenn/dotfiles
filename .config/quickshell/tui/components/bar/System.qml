@@ -1,5 +1,6 @@
 import qs.config
 import qs.services
+import qs.modules
 
 import QtQuick.Layouts
 import QtQuick
@@ -12,19 +13,19 @@ RowLayout {
 
         spacing: 0
 
-        Text {
+        CellText {
             text: parent.stat + " "
             font: Cell.font
             color: Colors.fgBase
         }
 
-        Rectangle {
+        Cells {
 
-            implicitWidth: Cell.w(1)
-            implicitHeight: Cell.h(1)
+            w: 1
+            h: 1
             color: Colors.bgOverlay
 
-            Text {
+            CellText {
                 text: SystemInfo.toBar(stat.percent)
                 font: Cell.font
                 color: {

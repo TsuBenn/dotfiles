@@ -1,4 +1,5 @@
 import qs.config
+import qs.modules
 import qs.services
 
 import QtQuick.Layouts
@@ -12,7 +13,7 @@ RowLayout {
 
         model: 5
 
-        delegate: Rectangle {
+        delegate: Cells {
 
             id: wb
 
@@ -21,8 +22,8 @@ RowLayout {
             property bool isActive: HyprInfo.focusedworkspace == wb.index
             property int winCount: HyprInfo.windowCount(wb.index) 
 
-            implicitWidth: Cell.w(wb_text.text.length)
-            implicitHeight: Cell.h(1)
+            w: wb_text.text.length
+            h: 1
 
             Component.onCompleted: {
                 wb.index += 1
@@ -31,9 +32,9 @@ RowLayout {
 
             color: wb.isActive ? Colors.accentStrong : Colors.bgOverlay
 
-            Text {
+            CellText {
                 id: wb_text
-                text: wb.isActive ? (wb.winCount ? `  ${wb.index}  ` : `  •  `) : (wb.winCount ? ` ${wb.index} ` : ` • `)
+                text: wb.isActive ? (wb.winCount ? ` ${wb.index} ` : ` • `) : (wb.winCount ? ` ${wb.index} ` : ` • `)
                 font: wb.isActive ? Cell.fontB : Cell.font
                 color: wb.isActive ? Colors.fgBase : Colors.fgSubtle
             }
@@ -49,14 +50,14 @@ RowLayout {
 
     }
 
-    Rectangle {
+    Cells {
         visible: HyprInfo.specialworkspaces?.length ?? false
-        implicitWidth: Cell.w(2)
-        implicitHeight: Cell.h(1)
+        w: 1
+        h: 1
         color: "transparent"
 
-        Text {
-            text: "  "
+        CellText {
+            text: " "
             font: Cell.font
             color: Colors.fgBase
         }
@@ -66,7 +67,7 @@ RowLayout {
 
         model: HyprInfo.specialworkspaces
 
-        delegate: Rectangle {
+        delegate: Cells {
 
             id: spwb
 
@@ -79,12 +80,12 @@ RowLayout {
 
             property bool isActive: HyprInfo.focusedspecial == spwb.id
 
-            implicitWidth: Cell.w(spwb_text.text.length)
-            implicitHeight: Cell.h(1)
+            w: spwb_text.text.length
+            h: 1
 
             color: spwb.isActive ? Colors.secondary : Colors.bgOverlay
 
-            Text {
+            CellText {
                 id: spwb_text
                 text: spwb.isActive ? ` ${spwb.name} ` : ` ${spwb.name} `
                 font: spwb.isActive ? Cell.fontB : Cell.font
