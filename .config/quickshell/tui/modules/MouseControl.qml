@@ -12,6 +12,8 @@ Item {
     signal held(button: string)
 
     property bool hovered: false
+    property bool holdEnabled: false
+    property int holdInterval: 100
 
     MouseArea {
 
@@ -34,29 +36,24 @@ Item {
         }
 
         onPressed: (event) => {
-            timer.running = true
+            if (root.holdEnabled) timer.running = true
             var result = ""
-            if (event.modifiers == Qt.ShiftModifier) result = "S"
-            if (event.modifiers == Qt.ControlModifier) result = "C"
-            if (event.modifiers == Qt.AltModifier) result = "A"
-            if (event.modifiers == Qt.MetaModifier) result = "W"
-            if (event.button == Qt.LeftButton) result += "L"
-            else if (event.button == Qt.RightButton) result += "R"
-            else if (event.button == Qt.MiddleButton) result += "M"
+            if (event.button == Qt.LeftButton) result = "L"
+            else if (event.button == Qt.RightButton) result = "R"
+            else if (event.button == Qt.MiddleButton) result = "M"
             timer.button = result
             root.pressed(result)
+        }
+        onPressAndHold: {
+            if (!root.holdEnabled) console.log("MouseControl: \"hold\" is turned off")
         }
         onReleased: (event) => {
             timer.running = false
             timer.button = ""
             var result = ""
-            if (event.modifiers == Qt.ShiftModifier) result = "S"
-            if (event.modifiers == Qt.ControlModifier) result = "C"
-            if (event.modifiers == Qt.AltModifier) result = "A"
-            if (event.modifiers == Qt.MetaModifier) result = "W"
-            if (event.button == Qt.LeftButton) result += "L"
-            else if (event.button == Qt.RightButton) result += "R"
-            else if (event.button == Qt.MiddleButton) result += "M"
+            if (event.button == Qt.LeftButton) result = "L"
+            else if (event.button == Qt.RightButton) result = "R"
+            else if (event.button == Qt.MiddleButton) result = "M"
             root.released(result)
         }
 
@@ -65,7 +62,7 @@ Item {
 
             property string button: ""
 
-            interval: 1
+            interval: root.holdInterval
             repeat: true
 
             onTriggered: {

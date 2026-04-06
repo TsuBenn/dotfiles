@@ -78,6 +78,7 @@ Scope {
                     }
 
                     CellButton {
+                        fg: Colors.fgContrast
                     }
 
                 }

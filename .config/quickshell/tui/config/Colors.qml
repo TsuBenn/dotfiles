@@ -17,6 +17,7 @@ Singleton {
 
     // Foreground
     property color fgBase
+    property color onAccent
     property color fgDim
     property color fgSubtle
 
@@ -57,6 +58,7 @@ Singleton {
         bgOverlay      = theme.bgOverlay
 
         fgBase         = theme.fgBase
+        onAccent       = theme.onAccent
         fgDim          = theme.fgDim
         fgSubtle       = theme.fgSubtle
 
@@ -82,6 +84,7 @@ Singleton {
             bgOverlay:      "#2A2428",
 
             fgBase:         "#EDE6E8",
+            onAccent:       "#EDE6E8",
             fgDim:          "#A89BA0",
             fgSubtle:       "#7A6F74",
 
