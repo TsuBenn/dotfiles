@@ -32,14 +32,20 @@ Cells {
     Cells {
         id: volume
 
-        w: children[1].w
+        w: state ? text_based.w : Cell.wCount(slider_based.implicitWidth)
         h: 1
+
+        property bool state: true
 
         color: Colors.bgOverlay
 
         CellText {
 
-            text: ` ${root.getDynamicVolumeText(AudioInfo.volume)} `
+            id: text_based
+
+            visible: volume.state
+
+            text: ` ${AudioInfo.mute ? "MUTED" : root.getDynamicVolumeText(AudioInfo.volume)} `
             font: Cell.fontB
 
             CellProgress {
@@ -54,6 +60,8 @@ Cells {
                 syncDelay: 200
                 adjustOnHold: true
                 drag: false
+                wheel: !AudioInfo.mute
+                interactive: true
 
                 color: "transparent"
                 fg: "transparent"
@@ -62,8 +70,70 @@ Cells {
                     AudioInfo.setVolume(AudioInfo.sinkDefault, percent)
                 }
 
+                onReleased: (button) => {
+                    if (button == "L") {
+                        AudioInfo.muteVolume(AudioInfo.sinkDefault)
+                    } else if (button == "R") {
+                        volume.state = !volume.state
+                    }
+                }
+
             }
 
+        }
+
+        RowLayout {
+
+            id: slider_based
+
+            visible: !volume.state
+
+            spacing: 0
+
+            CellButton {
+
+                text: AudioInfo.mute ? "MUTED" : "VOL"
+
+                font: Cell.fontB
+
+                fg: Colors.fgBase
+                color: Colors.bgOverlay
+
+                onReleased: (button) => {
+                    if (button == "R") {
+                        volume.state = !volume.state
+                    }
+                    else if (button == "L") {
+                        AudioInfo.muteVolume(AudioInfo.sinkDefault)
+                    }
+                }
+
+            }
+
+            CellProgress {
+
+                w: 10
+                h: 1
+
+                vertical: false
+
+                percent: AudioInfo.volume
+
+                syncDelay: 200
+                adjustOnHold: true
+                wheel: !AudioInfo.mute
+                interactive: true
+
+                onAdjusted: (percent) => {
+                    AudioInfo.setVolume(AudioInfo.sinkDefault, percent)
+                }
+
+                onReleased: (button) => {
+                    if (button != "L") return
+                    AudioInfo.muteVolume(AudioInfo.sinkDefault)
+                }
+
+            }
         }
 
     }

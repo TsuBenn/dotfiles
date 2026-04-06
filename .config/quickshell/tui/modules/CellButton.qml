@@ -108,7 +108,11 @@ Item {
                 root.pressed(button)
             }
             onReleased: (button) => {
-                root.released(button)
+                if (!root.safeRelease) {
+                    root.released(button)
+                } else if (hovered) {
+                    root.released(button)
+                }
             }
             onHeld: (button) => {
                 root.held(button)
