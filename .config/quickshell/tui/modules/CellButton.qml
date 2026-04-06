@@ -9,14 +9,13 @@ Item {
 
     property int w: 0
     property int h: 0
-     
 
     property string text: "Sample"
     property font font: Cell.font
     property color fg: Colors.bgBase
     property color color: Colors.accentStrong
 
-    property int padding: 0
+    property int padding: 1
     property bool centered: true
     property bool marquee: false
 
@@ -43,9 +42,9 @@ Item {
 
             id: text
 
-            x: root.centered ? Cell.toW(parent.implicitWidth/2-implicitWidth/2) : Cell.w(root.padding)
+            x: root.centered ? Cell.w(button.w/2 - w/2) : Cell.w(root.padding)
 
-            preferedW: Cell.wCount(root.implicitWidth) - root.padding-2
+            preferedW: root.w > 0 ? Cell.wCount(root.implicitWidth) - root.padding-2 : 0
 
             text: root.text
             font: root.font

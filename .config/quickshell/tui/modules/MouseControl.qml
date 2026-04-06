@@ -1,6 +1,6 @@
 import QtQuick
 
-Rectangle {
+Item {
 
     id: root
 
@@ -16,6 +16,8 @@ Rectangle {
     MouseArea {
 
         id: mouse
+
+        anchors.fill: parent
 
         acceptedButtons: Qt.AllButtons
 
