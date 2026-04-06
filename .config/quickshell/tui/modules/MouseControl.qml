@@ -12,12 +12,15 @@ Item {
     signal held(button: string)
     signal moved(x: real, y: real)
 
-    property bool clicked: mouse.pressed
+    property string buttonDown: ""
     property bool hovered: mouse.containsMouse
 
     property bool holdEnabled: false
     property int holdInterval: 100
     property int holdOffset: 0
+
+    property int mouseX: mouse.mouseX
+    property int mouseY: mouse.mouseY
 
     MouseArea {
 
@@ -50,6 +53,7 @@ Item {
             else if (event.button == Qt.RightButton) result = "R"
             else if (event.button == Qt.MiddleButton) result = "M"
             timer.button = result
+            root.buttonDown = result
             root.pressed(result)
         }
         onPressAndHold: {
@@ -63,6 +67,7 @@ Item {
             if (event.button == Qt.LeftButton) result = "L"
             else if (event.button == Qt.RightButton) result = "R"
             else if (event.button == Qt.MiddleButton) result = "M"
+            root.buttonDown = ""
             root.released(result)
         }
 

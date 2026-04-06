@@ -95,6 +95,12 @@ Scope {
                     anchors.leftMargin: Cell.w(2)
                 }
 
+                RowLayout {
+                    x: Cell.toW(root.width - implicitWidth)
+
+                    Volume {}
+                }
+
             }
 
         }

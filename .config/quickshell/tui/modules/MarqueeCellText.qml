@@ -13,6 +13,7 @@ Cells {
     property font font: Cell.font
     property color fg: Colors.fgBase
     property int interval: 300
+    property int pause: 300
 
     property int offset: 0
     property int excess: 0
@@ -63,7 +64,7 @@ Cells {
     }
     Timer {
         id: pauseTimer
-        interval: 2000
+        interval: root.pause
         repeat: false
         onTriggered: parent.paused = false
     }
