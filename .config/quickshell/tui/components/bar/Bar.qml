@@ -33,14 +33,13 @@ Scope {
                 }
             }
 
-
             anchors {
                 top: true
                 left: true
                 right: true
             }
 
-            implicitHeight: Cell.h(2)
+            implicitHeight: Cell.h(1)
 
             color: Colors.bgSurface
 
@@ -62,21 +61,23 @@ Scope {
 
                         color: "transparent"
 
-                        Text {
+                        CellText {
 
                             id: window_title
 
                             property string wTitle: HyprInfo.focusedwindow.title
                             property string wClass: HyprInfo.focusedwindow.class
 
-                            width: Cell.toW(system.x-workspaces.implicitWidth) - Cell.w(2)
-
-                            elide: Qt.ElideRight
+                            preferedW: Cell.wCount(root.width/2-clock.implicitWidth/2-system.implicitWidth-workspaces.implicitWidth) - 10
 
                             text: `${wClass}`
                             font: Cell.font
                             color: Colors.fgBase
+
                         }
+                    }
+
+                    CellButton {
                     }
 
                 }

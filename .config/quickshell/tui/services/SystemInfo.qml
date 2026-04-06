@@ -84,16 +84,41 @@ Singleton {
         return usage.toFixed(2)
     }
 
-    function toBar(percent) {
-        if (percent == 0) return " "
-        if (percent < 15) return "▁"
-        if (percent < 30) return "▂"
-        if (percent < 40) return "▃"
-        if (percent < 60) return "▄"
-        if (percent < 75) return "▅"
-        if (percent < 80) return "▆"
-        if (percent < 90) return "▇"
-        return "█"
+    function toVBar(percent, cells) {
+        const bars = [" ", "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
+        const totalUnits = (bars.length - 1) * cells
+        const filled = Math.round(percent / 100 * totalUnits)
+
+        const fullCells = Math.floor(filled / (bars.length - 1))
+        const remainder = filled % (bars.length - 1)
+
+        let rows = []
+        for (let i = 0; i < cells; i++) {
+            if (i < cells - fullCells - (remainder > 0 ? 1 : 0)) {
+                rows.push(" ")
+            } else if (i === cells - fullCells - 1 && remainder > 0) {
+                rows.push(bars[remainder])
+            } else {
+                rows.push("█")
+            }
+        }
+
+        return rows.join("\n")
+    }
+
+    function toHBar(percent, cells) {
+        const bars = [" ", "▏", "▎", "▍", "▌", "▋", "▊", "▉", "█"]
+        const totalUnits = (bars.length - 1) * cells
+        const filled = Math.round(percent / 100 * totalUnits)
+
+        const fullCells = Math.floor(filled / (bars.length - 1))
+        const remainder = filled % (bars.length - 1)
+
+        const full = "█".repeat(fullCells)
+        const partial = fullCells < cells ? bars[remainder] : ""
+        const empty = " ".repeat(Math.max(0, cells - fullCells - (partial ? 1 : 0)))
+
+        return full + partial + empty
     }
 
     function formatNum(num, i) {

@@ -12,11 +12,50 @@ Item {
     property font font: Cell.font
     property color color: Colors.fgBase
 
-    readonly property int w: Cell.toW(cell_text.implicitWidth)
-    readonly property int h: Cell.toW(cell_text.implicitHeight)
+    property int preferedW: 0
 
-    implicitHeight: h
-    implicitWidth: w
+    property int w: 0
+    property int h: 0
+
+    onTextChanged: {
+        w = 0
+        h = 0
+    }
+
+    implicitHeight: Cell.h(h)
+    implicitWidth: Cell.w(w)
+
+    function truncate(str, maxCells) {
+        if (maxCells <= 0) return str
+
+        let result = ""
+        let count = 0
+
+        for (const c of str) {
+            const isCJK = /[\u4e00-\u9fff\u3040-\u30ff\u31f0-\u31ff\uff00-\uffef]/.test(c)
+            const costs = isCJK ? 2 : 1
+
+            count += costs
+
+            if (count > maxCells) {
+                if (count - maxCells != costs) {
+                    result += "…"
+                    break
+                } else {
+                    if (result.length > 1) {
+                        result = result.slice(0, -1) + "…"
+                    } else {
+                        result = "…"
+                    }
+                    break
+                }
+            }
+
+            result += c
+        }
+
+        return result
+    }
 
     function splitCJK(str) {
         let result = []
@@ -66,22 +105,39 @@ Item {
 
             delegate: RowLayout {
 
+                id: cell_row
+
                 required property int index
                 required property string modelData
+
+                Component.onCompleted: {
+                    var count = 0
+                    var excess = 0
+                    root.h += 1
+                    for (const c of root.splitCJK(modelData)) {
+                        count += c.cells
+                    }
+                    if (count > root.w) {
+                        root.w = count
+                    }
+                }
 
                 spacing: 0
 
                 Repeater {
 
-                    model: root.splitCJK(parent.modelData)
+                    model: root.preferedW > 0 ? root.splitCJK(root.truncate(parent.modelData, root.preferedW)) : root.splitCJK(parent.modelData)
 
-                    delegate: Item {
+
+                    delegate: Cells {
 
                         required property string text
                         required property int cells
 
-                        implicitHeight: Cell.h(1)
-                        implicitWidth: Cell.w(cells)
+                        h: 1
+                        w: cells
+
+                        color: root.parent.color ?? "transparent"
 
                         Text {
 
@@ -97,6 +153,7 @@ Item {
                     }
 
                 }
+
             }
         }
     }

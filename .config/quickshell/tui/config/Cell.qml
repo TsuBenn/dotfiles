@@ -45,6 +45,13 @@ Singleton {
         return h(Math.round(n/cellWidth))
     }
 
+    function wCount(n: real): real {
+        return Math.round(n/cellWidth)
+    }
+    function hCount(n: real): real {
+        return Math.round(n/cellWidth)
+    }
+
     FontMetrics {
         id: metrics
         font: root.font

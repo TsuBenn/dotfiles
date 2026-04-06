@@ -14,25 +14,22 @@ RowLayout {
         spacing: 0
 
         CellText {
-            text: parent.stat + " "
+            text: `${parent.stat} `
             font: Cell.font
             color: Colors.fgBase
         }
 
-        Cells {
+        ProgressBar {
 
             w: 1
             h: 1
-            color: Colors.bgOverlay
 
-            CellText {
-                text: SystemInfo.toBar(stat.percent)
-                font: Cell.font
-                color: {
-                    if (stat.percent > 90) return Colors.danger
-                    if (stat.percent > 80) return Colors.warning
-                    return Colors.fgBase
-                }
+            percent: stat.percent
+
+            fg: {
+                if (percent > 90) return Colors.danger
+                if (percent > 80) return Colors.warning
+                return Colors.fgBase
             }
 
         }

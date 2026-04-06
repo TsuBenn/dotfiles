@@ -9,9 +9,12 @@ Item {
 
     id: root
 
-    property int w
-    property int h
+    property real w
+    property real h
+
     property bool grid: false
+    property bool whole: true
+
     property color color: "white"
     property color color2: "lightgray"
 
@@ -19,8 +22,8 @@ Item {
     implicitHeight: Cell.h(h)
 
     Rectangle {
-        implicitWidth: Cell.w(root.w)
-        implicitHeight: Cell.h(root.h)
+        implicitWidth: root.whole ? Cell.w(root.w) : Cell.w(root.w).toPrecision(1)
+        implicitHeight: root.whole ? Cell.h(root.h) : Cell.h(root.h).toPrecision(1)
 
         color: root.color
 

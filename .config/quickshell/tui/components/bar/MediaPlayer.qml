@@ -7,33 +7,51 @@ import QtQuick
 
 RowLayout {
 
-    spacing: 0
+    spacing: Cell.w(0)
 
     Cells {
+
         w: 3
         h: 1
 
-        color: Colors.accentStrong
-
+        color: MediaPlayerInfo.activePlayer ? Colors.accentStrong : Colors.bgOverlay
         CellText {
-            text: " ⏸ "
+
+            text: MediaPlayerInfo.status == "playing" ? " 1 " : " 0 "
             font: Cell.fontB
-            color: Colors.bgBase
+            color: MediaPlayerInfo.activePlayer ? Colors.bgBase : Colors.fgSubtle
+
         }
+
     }
 
     Cells {
+
         visible: MediaPlayerInfo.activePlayer
-        w: 22
+        w: 24
         h: 1
 
-        color: Colors.accentStrong
+        color: Colors.bgOverlay
 
-        MarqueeText {
-            x: Cell.w(1)
-            cellw: 20
-            text: ` ${MediaPlayerInfo.title} - ${MediaPlayerInfo.artist} `
+        RowLayout {
+
+            spacing: 0
+
+            CellText {
+                text: "│"
+                color: Colors.fgDim
+            }
+
+            MarqueeCellText {
+
+                cellw: 22
+                text: `${MediaPlayerInfo.title} - ${MediaPlayerInfo.artist}`
+
+            }
+
         }
+
+
     }
 
 }
