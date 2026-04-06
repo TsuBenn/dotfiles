@@ -9,18 +9,17 @@ RowLayout {
 
     spacing: Cell.w(0)
 
-    Cells {
+    CellButton {
 
-        w: 3
-        h: 1
+        text: MediaPlayerInfo.status == "playing" ? "⏸" : "▶"
+        font: Cell.fontB
+        fg: MediaPlayerInfo.activePlayer ? Colors.fgBase : Colors.fgSubtle
 
-        color: MediaPlayerInfo.activePlayer ? Colors.accentStrong : Colors.bgOverlay
-        CellText {
+        color: MediaPlayerInfo.activePlayer ? [Colors.accentStrong, Colors.accentDim] : Colors.bgOverlay
 
-            text: MediaPlayerInfo.status == "playing" ? " 1 " : " 0 "
-            font: Cell.fontB
-            color: MediaPlayerInfo.activePlayer ? Colors.bgBase : Colors.fgSubtle
-
+        onPressed: (button) => {
+            if (button != "L") return
+            MediaPlayerInfo.playPauseMedia()
         }
 
     }

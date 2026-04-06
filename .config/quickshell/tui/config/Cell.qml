@@ -12,19 +12,16 @@ Singleton {
     readonly property font font: Qt.font({
         family: "JetBrainsMono Nerd Font",
         pointSize: root.pointSize,
-        contextFontMerging: true,
     })
     readonly property font fontB: Qt.font({
         family: "JetBrainsMono Nerd Font",
         pointSize: root.pointSize,
         weight: Font.Bold,
-        contextFontMerging: true
     })
     readonly property font fontBB: Qt.font({
         family: "JetBrainsMono Nerd Font",
         pointSize: root.pointSize,
         weight: Font.Black,
-        contextFontMerging: true
     })
 
     readonly property real cellWidth: metrics.averageCharacterWidth

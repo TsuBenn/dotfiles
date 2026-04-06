@@ -13,63 +13,42 @@ RowLayout {
 
         model: 5
 
-        delegate: Cells {
-
-            id: wb
+        delegate: CellButton {
 
             required property int index
 
-            property bool isActive: HyprInfo.focusedworkspace == wb.index
-            property int winCount: HyprInfo.windowCount(wb.index) 
-
-            w: wb_text.text.length
-            h: 1
+            property bool isActive: HyprInfo.focusedworkspace == index
+            property int winCount: HyprInfo.windowCount(index) 
 
             Component.onCompleted: {
-                wb.index += 1
+                index += 1
             }
 
+            text: isActive ? (winCount ? `${index}` : `•`) : (winCount ? `${index}` : `•`)
+            font: isActive ? Cell.fontB : Cell.font
+            fg: isActive ? Colors.fgBase : Colors.fgSubtle
+            color: isActive ? Colors.accentStrong : Colors.bgOverlay
 
-            color: wb.isActive ? Colors.accentStrong : Colors.bgOverlay
-
-            CellText {
-                id: wb_text
-                text: wb.isActive ? (wb.winCount ? ` ${wb.index} ` : ` • `) : (wb.winCount ? ` ${wb.index} ` : ` • `)
-                font: wb.isActive ? Cell.fontB : Cell.font
-                color: wb.isActive ? Colors.fgBase : Colors.fgSubtle
-            }
-
-            MouseArea {
-                anchors.fill: parent
-
-                onPressed: {
-                    HyprInfo.switchWorkspace(wb.index)
-                }
+            onPressed: (button) => {
+                if (button != "L") return
+                HyprInfo.switchWorkspace(index)
             }
         }
 
     }
 
-    Cells {
-        visible: HyprInfo.specialworkspaces?.length ?? false
-        w: 1
-        h: 1
-        color: "transparent"
-
-        CellText {
-            text: " "
-            font: Cell.font
-            color: Colors.fgBase
-        }
+    CellText {
+        visible: HyprInfo.specialworkspaces?.length > 0
+        text: " "
+        font: Cell.font
+        color: Colors.fgDim
     }
 
     Repeater {
 
         model: HyprInfo.specialworkspaces
 
-        delegate: Cells {
-
-            id: spwb
+        delegate: CellButton {
 
             required property int id 
             required property string name 
@@ -78,27 +57,19 @@ RowLayout {
                 name = name.match(/special:(.*)/)?.[1]
             }
 
-            property bool isActive: HyprInfo.focusedspecial == spwb.id
+            property bool isActive: HyprInfo.focusedspecial == id
 
-            w: spwb_text.text.length
-            h: 1
+            text: isActive ? `${name}` : `${name}`
+            font: isActive ? Cell.fontB : Cell.font
+            fg: isActive ? Colors.bgBase : Colors.fgSubtle
 
-            color: spwb.isActive ? Colors.secondary : Colors.bgOverlay
+            color: isActive ? Colors.secondary : Colors.bgOverlay
 
-            CellText {
-                id: spwb_text
-                text: spwb.isActive ? ` ${spwb.name} ` : ` ${spwb.name} `
-                font: spwb.isActive ? Cell.fontB : Cell.font
-                color: spwb.isActive ? Colors.bgBase : Colors.fgSubtle
+            onPressed: (button) => {
+                if (button != "L") return
+                HyprInfo.switchWorkspace(name)
             }
 
-            MouseArea {
-                anchors.fill: parent
-
-                onPressed: {
-                    HyprInfo.switchWorkspace(spwb.name)
-                }
-            }
         }
 
     }

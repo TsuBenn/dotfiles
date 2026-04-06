@@ -11,6 +11,7 @@ Item {
     property string text: "cell text"
     property font font: Cell.font
     property color color: Colors.fgBase
+    property color bg: "transparent"
 
     property int preferedW: 0
 
@@ -28,30 +29,36 @@ Item {
     function truncate(str, maxCells) {
         if (maxCells <= 0) return str
 
+        let overflowed = str.length > maxCells
         let result = ""
+        let cells = []
         let count = 0
+        let excess = 0
+        let ellipses = ""
 
         for (const c of str) {
             const isCJK = /[\u4e00-\u9fff\u3040-\u30ff\u31f0-\u31ff\uff00-\uffef]/.test(c)
             const costs = isCJK ? 2 : 1
-
-            count += costs
-
+            cells.push(costs)
+        }
+        for (const i in cells) {
+            count += cells[i]
             if (count > maxCells) {
-                if (count - maxCells != costs) {
-                    result += "…"
-                    break
-                } else {
-                    if (result.length > 1) {
-                        result = result.slice(0, -1) + "…"
-                    } else {
-                        result = "…"
-                    }
+                if (count - maxCells < cells[i]) {
+                    result = str.slice(0, i) + "…"
                     break
                 }
+                if (overflowed) {
+                    for (let k = 1; k < cells[i-1]; k++) {
+                        ellipses += " "
+                    }
+                    result = str.slice(0, i-1) + ellipses + "…"
+                    break
+                }
+                result = str.slice(0, i)
+                break
             }
-
-            result += c
+            result = str
         }
 
         return result
@@ -137,7 +144,7 @@ Item {
                         h: 1
                         w: cells
 
-                        color: root.parent.color ?? "transparent"
+                        color: root.bg
 
                         Text {
 

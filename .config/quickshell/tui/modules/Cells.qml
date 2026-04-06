@@ -9,8 +9,8 @@ Item {
 
     id: root
 
-    property real w
-    property real h
+    property int w
+    property int h
 
     property bool grid: false
     property bool whole: true
@@ -22,8 +22,8 @@ Item {
     implicitHeight: Cell.h(h)
 
     Rectangle {
-        implicitWidth: root.whole ? Cell.w(root.w) : Cell.w(root.w).toPrecision(1)
-        implicitHeight: root.whole ? Cell.h(root.h) : Cell.h(root.h).toPrecision(1)
+
+        anchors.fill: parent
 
         color: root.color
 

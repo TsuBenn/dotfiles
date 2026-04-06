@@ -21,10 +21,15 @@ Item {
 
     property bool safeRelease: true
 
+    property bool holdEnabled: false
+    property int holdInterval: 100
+    property int holdOffset: 0
+
     signal entered()
     signal exited()
-    signal pressed()
-    signal released()
+    signal pressed(button: string)
+    signal released(button: string)
+    signal held(button: string)
 
     implicitWidth: button.implicitWidth
     implicitHeight: button.implicitHeight
@@ -33,20 +38,17 @@ Item {
 
         id: button
 
-        property bool pressed: false
-        property bool hovered: false
-
         w: root.w > 0 ? root.w : text.w + root.padding*2
         h: root.h > 0 ? root.h : text.h
 
         color: {
             if (Array.isArray(root.color)) {
                 if (root.color.length == 2) {
-                    if (pressed) return root.color[1]
+                    if (mouse.clicked) return root.color[1]
                     else return root.color[0]
                 } else if (root.color.length == 3) {
-                    if (hovered) return root.color[1]
-                    else if (pressed) return root.color[2]
+                    if (mouse.hovered) return root.color[1]
+                    else if (mouse.clicked) return root.color[2]
                     else return root.color[0]
                 } else {
                     console.error("CellButton: \"color\" can only either be color or list of colors with size of 2 and 3")
@@ -68,11 +70,11 @@ Item {
             color: {
                 if (Array.isArray(root.fg)) {
                     if (root.fg.length == 2) {
-                        if (button.pressed) return root.fg[1]
+                        if (mouse.clicked) return root.fg[1]
                         else return root.fg[0]
                     } else if (root.fg.length == 3) {
-                        if (button.hovered) return root.fg[1]
-                        else if (button.pressed) return root.fg[2]
+                        if (mouse.hovered) return root.fg[1]
+                        else if (mouse.clicked) return root.fg[2]
                         else return root.fg[0]
                     } else {
                         console.error("CellButton: \"fg\" can only either be color or list of colors with size of 2 and 3")
@@ -85,12 +87,28 @@ Item {
 
         MouseControl {
 
+            id: mouse
+
             anchors.fill: parent
 
-            holdEnabled: true
+            holdEnabled: root.holdEnabled
+            holdOffset: root.holdOffset
+            holdInterval: root.holdInterval
 
+            onEntered: {
+                root.entered()
+            }
+            onExited: {
+                root.exited()
+            }
+            onPressed: (button) => {
+                root.pressed(button)
+            }
+            onReleased: (button) => {
+                root.released(button)
+            }
             onHeld: (button) => {
-                console.log(button)
+                root.held(button)
             }
 
         }

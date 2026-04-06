@@ -19,12 +19,14 @@ RowLayout {
             color: Colors.fgBase
         }
 
-        ProgressBar {
+        CellProgress {
 
             w: 1
             h: 1
 
             percent: stat.percent
+
+            vertical: true
 
             fg: {
                 if (percent > 90) return Colors.danger

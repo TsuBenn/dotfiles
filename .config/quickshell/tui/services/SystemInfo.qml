@@ -84,43 +84,6 @@ Singleton {
         return usage.toFixed(2)
     }
 
-    function toVBar(percent, cells) {
-        const bars = [" ", "▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
-        const totalUnits = (bars.length - 1) * cells
-        const filled = Math.round(percent / 100 * totalUnits)
-
-        const fullCells = Math.floor(filled / (bars.length - 1))
-        const remainder = filled % (bars.length - 1)
-
-        let rows = []
-        for (let i = 0; i < cells; i++) {
-            if (i < cells - fullCells - (remainder > 0 ? 1 : 0)) {
-                rows.push(" ")
-            } else if (i === cells - fullCells - 1 && remainder > 0) {
-                rows.push(bars[remainder])
-            } else {
-                rows.push("█")
-            }
-        }
-
-        return rows.join("\n")
-    }
-
-    function toHBar(percent, cells) {
-        const bars = [" ", "▏", "▎", "▍", "▌", "▋", "▊", "▉", "█"]
-        const totalUnits = (bars.length - 1) * cells
-        const filled = Math.round(percent / 100 * totalUnits)
-
-        const fullCells = Math.floor(filled / (bars.length - 1))
-        const remainder = filled % (bars.length - 1)
-
-        const full = "█".repeat(fullCells)
-        const partial = fullCells < cells ? bars[remainder] : ""
-        const empty = " ".repeat(Math.max(0, cells - fullCells - (partial ? 1 : 0)))
-
-        return full + partial + empty
-    }
-
     function formatNum(num, i) {
         const str = num.toString();
         return str.padStart(i, ' ');

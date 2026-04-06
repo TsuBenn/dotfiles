@@ -8,7 +8,7 @@ Cells {
 
     id: root
 
-    property int cellw: 10
+    property int cellw: 1
     property string text: "Sample of super long text"
     property font font: Cell.font
     property color fg: Colors.fgBase
@@ -19,7 +19,7 @@ Cells {
     property bool paused: false
 
     readonly property string displayed: {
-        const padded = text.trim() + "    "
+        const padded = text + "    "
         const doubled = padded + padded
         return doubled.slice(offset, offset + cellw)
     }
@@ -51,7 +51,7 @@ Cells {
 
     Timer {
         interval: parent.interval
-        running: parent.text.length > parent.cellw && !parent.paused
+        running: buffer.w > root.cellw && !parent.paused
         repeat: true
         onTriggered: {
             parent.offset = (parent.offset + 1) % (parent.text.length + 4)

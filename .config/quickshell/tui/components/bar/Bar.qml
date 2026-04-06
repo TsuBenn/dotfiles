@@ -49,36 +49,31 @@ Scope {
 
                 RowLayout {
 
-                    spacing: Cell.w(1)
+                    spacing: 0
 
                     Workspaces {
                         id: workspaces
                     }
 
-                    Cells {
-                        h: 1
-                        w: 1
-
-                        color: "transparent"
-
-                        CellText {
-
-                            id: window_title
-
-                            property string wTitle: HyprInfo.focusedwindow.title
-                            property string wClass: HyprInfo.focusedwindow.class
-
-                            preferedW: Cell.wCount(root.width/2-clock.implicitWidth/2-system.implicitWidth-workspaces.implicitWidth) - 10
-
-                            text: `${wClass}`
-                            font: Cell.font
-                            color: Colors.fgBase
-
-                        }
+                    CellText {
+                        visible: window_title.text
+                        text: "│ "
+                        color: Colors.fgSubtle
                     }
 
-                    CellButton {
-                        fg: Colors.fgContrast
+                    CellText {
+
+                        id: window_title
+
+                        property string wTitle: HyprInfo.focusedwindow.title
+                        property string wClass: HyprInfo.focusedwindow.class
+
+                        preferedW: Cell.wCount(root.width/2-clock.implicitWidth/2-system.implicitWidth-workspaces.implicitWidth) - 10
+
+                        text: `${wClass}`
+                        font: Cell.font
+                        color: Colors.fgBase
+
                     }
 
                 }

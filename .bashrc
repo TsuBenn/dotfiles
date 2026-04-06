@@ -89,7 +89,7 @@ qsconf() {
     cd ~/dotfiles/.config/quickshell/$1
     nvim ~/.config/quickshell/$1
 }
-qsS() {
+qss() {
     qs -c ~/.config/quickshell/$1
 }
 qsD() {
