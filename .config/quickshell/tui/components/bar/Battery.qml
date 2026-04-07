@@ -23,10 +23,23 @@ Cells {
         CellText {
 
             text: SystemInfo.battery
+            color: {
+                if (progress.percent == 100 || SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
+                    return Colors.success
+                } else if (progress.percent <= 20) {
+                    return Colors.warning
+                } else if (progress.percent <= 10) {
+                    return Colors.danger
+                }
+                return Colors.fgBase
+            }
+
 
         }
-        
+
         CellProgress {
+
+            id: progress
 
             w: 1
             h: 1
