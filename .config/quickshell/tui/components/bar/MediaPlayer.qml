@@ -11,6 +11,26 @@ RowLayout {
 
     CellButton {
 
+        text: " < "
+
+        font: Cell.fontB
+        fg: MediaPlayerInfo.canPrev ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+
+        clickable: MediaPlayerInfo.canPrev
+
+        padding: 0
+
+        color: MediaPlayerInfo.canPrev ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
+
+        onReleased: (button) => {
+            if (button != "L") return
+            MediaPlayerInfo.prevMedia()
+        }
+
+    }
+
+    CellButton {
+
         id: button
 
         text: MediaPlayerInfo.status == "playing" ? " ⏸ " : " ▶ "
@@ -21,9 +41,29 @@ RowLayout {
 
         color: MediaPlayerInfo.activePlayer ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
 
-        onPressed: (button) => {
+        onReleased: (button) => {
             if (button != "L") return
             MediaPlayerInfo.playPauseMedia()
+        }
+
+    }
+
+    CellButton {
+
+        text: " > "
+
+        font: Cell.fontB
+        fg: MediaPlayerInfo.canNext ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+
+        clickable: MediaPlayerInfo.canNext
+
+        padding: 0
+
+        color: MediaPlayerInfo.canNext ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
+
+        onReleased: (button) => {
+            if (button != "L") return
+            MediaPlayerInfo.nextMedia()
         }
 
     }

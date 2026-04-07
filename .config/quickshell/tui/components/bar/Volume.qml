@@ -35,7 +35,7 @@ Cells {
         w: text_state ? text_based.w : Cell.wCount(slider_based.implicitWidth)
         h: 1
 
-        property bool text_state: false
+        property bool text_state: true
 
         color: "transparent"
 
@@ -46,7 +46,7 @@ Cells {
             visible: volume.text_state
 
             text: `${AudioInfo.mute ? "<s>" + root.getDynamicVolumeText(AudioInfo.volume) + "</s>" : root.getDynamicVolumeText(AudioInfo.volume)}`
-            font: Cell.font
+            font: Cell.fontB
 
             CellProgress {
 
@@ -94,7 +94,7 @@ Cells {
 
                 text: AudioInfo.mute ? "<s>vol</s>" : "vol"
 
-                font: Cell.font
+                font: Cell.fontB
 
                 fg: Colors.fgBase
                 color: "transparent"

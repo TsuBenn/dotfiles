@@ -26,10 +26,39 @@ Item {
     implicitHeight: Cell.h(h)
     implicitWidth: Cell.w(w)
 
+    function encodeRichText(str) {
+        const map = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        };
+
+        return str
+        .split(/(<[^>]+>)/g) // split into [text, tag, text, tag...]
+        .map(part => {
+            if (part.startsWith("<") && part.endsWith(">")) {
+                return part; // keep tags untouched
+            }
+            return part.replace(/[&<>"']/g, char => map[char]);
+        })
+        .join("");
+    }
+
+    function decodeRichText(str) {
+        return str
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&amp;/g, "&")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'");
+    }
+
     function truncate(str, maxCells) {
         if (maxCells <= 0) return str
 
-        str = str.replace(/<[^>]*>/g, "")
+        str = decodeRichText(str.replace(/<[^>]*>/g, ""))
 
         let overflowed = str.length > maxCells
         let result = ""
@@ -67,6 +96,7 @@ Item {
     }
 
     function splitCJK(str) {
+        str = encodeRichText(str)
         let result = []
         let i = 0
         while (i < str.length) {
@@ -93,8 +123,8 @@ Item {
                 result.push({
                     text: latin.replace(/ /g, "&nbsp;"),
                     raw: latin,
-                    count: latin.replace(/<[^>]*>/g,"").length,
-                    cells: latin.replace(/<[^>]*>/g,"").length,
+                    count: decodeRichText(latin.replace(/<[^>]*>/g,"")).length,
+                    cells: decodeRichText(latin.replace(/<[^>]*>/g,"")).length,
                     isCJK: false
                 })
             }
