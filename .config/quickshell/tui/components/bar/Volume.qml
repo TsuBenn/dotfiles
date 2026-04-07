@@ -37,7 +37,7 @@ Cells {
 
         property bool text_state: true
 
-        color: Colors.bgOverlay
+        color: "transparent"
 
         CellText {
 
@@ -46,7 +46,7 @@ Cells {
             visible: volume.text_state
 
             text: ` ${AudioInfo.mute ? "<s>" + root.getDynamicVolumeText(AudioInfo.volume) + "</s>" : root.getDynamicVolumeText(AudioInfo.volume)} `
-            font: Cell.fontB
+            font: Cell.font
 
             CellProgress {
 
@@ -92,15 +92,16 @@ Cells {
 
             CellButton {
 
-                text: AudioInfo.mute ? "<s>VOL</s>" : "VOL"
+                text: AudioInfo.mute ? "<s>vol</s>" : "vol"
 
                 font: Cell.fontB
 
                 fg: Colors.fgBase
-                color: Colors.bgOverlay
+                color: "transparent"
 
                 onReleased: (button) => {
-                    if (button == "R") {                        volume.text_state = !volume.text_state
+                    if (button == "R") { 
+                        volume.text_state = !volume.text_state
                     }
                     else if (button == "L") {
                         AudioInfo.muteVolume(AudioInfo.sinkDefault)
@@ -109,7 +110,11 @@ Cells {
 
             }
 
-            CellProgress {
+            CellText {
+                text: "["
+            } 
+
+            CellProgressSquare {
 
                 w: 10
                 h: 1
@@ -131,6 +136,11 @@ Cells {
                 }
 
             }
+
+            CellText {
+                text: "]"
+            } 
+
         }
 
     }

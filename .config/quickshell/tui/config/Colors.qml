@@ -81,7 +81,7 @@ Singleton {
         hutao: {
             bgBase:         "#151214",
             bgSurface:      "#1D191C",
-            bgOverlay:      "#2A2428",
+            bgOverlay:      "#302A2F",
 
             fgBase:         "#EDE6E8",
             onAccent:       "#EDE6E8",

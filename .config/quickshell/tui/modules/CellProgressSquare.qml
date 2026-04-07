@@ -4,16 +4,20 @@ import qs.config
 import qs.services
 import qs.modules
 
+import QtQuick.Layouts
 import QtQuick
 
-Cells {
+Item {
 
     id: root
 
-    w: 1
-    h: 1
+    property int w: 10
+    property int h: 10
 
-    color: Colors.bgOverlay
+    implicitWidth: Cell.w(w)
+    implicitHeight: Cell.h(h)
+
+    property color color: Colors.bgOverlay
 
     property color fg: Colors.fgBase 
     property int percent: SystemInfo.cpuusage
@@ -30,6 +34,8 @@ Cells {
     property bool safeRelease: true
     property bool interactive: false
 
+    property int cellInterval: 1
+
     property bool hovered: false
 
     property int wheelInterval: 5
@@ -44,11 +50,63 @@ Cells {
     signal released(button: string)
     signal adjusted(percent: int)
 
-    Rectangle {
-        anchors.bottom: parent.bottom
-        implicitWidth: root.vertical ? Cell.w(root.w) : Math.min(Cell.w(Math.round(root.w*(root.raw_percent/100)*8)/8),Cell.w(root.w))
-        implicitHeight: root.vertical ? Math.min(Cell.h(Math.round(root.h*(root.raw_percent/100)*8)/8),Cell.h(root.h)) : Cell.h(root.h) 
-        color: root.fg
+    function sections(n, percent) {
+        const filled = percent/100 * n
+        let result = []
+        for (let i = 0; i < n; i++) {
+            if (i < Math.floor(filled)) {
+                result.push(1)
+            } else if (i === Math.floor(filled)) {
+                result.push(filled - Math.floor(filled))
+            } else {
+                result.push(0)
+            }
+        }
+        return result
+    }
+
+    RowLayout {
+
+        spacing: 0
+
+        Repeater {
+
+            model: root.w
+
+            delegate: CellText {
+
+                required property real modelData
+
+                text: "■"
+
+                color: root.color
+
+            }
+
+        }
+
+    }
+
+    RowLayout {
+
+        spacing: 0
+
+        Repeater {
+
+            model: root.sections(root.w, root.percent)
+
+            delegate: CellText {
+
+                required property real modelData
+
+                text: "■"
+
+                color: Colors.transparent(root.fg, Math.round(modelData*root.cellInterval)/root.cellInterval)
+
+            }
+
+        }
+
     }
 
     function clamp(n) {

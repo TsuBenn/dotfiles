@@ -1,7 +1,3 @@
-Alright, full final plan with the additions:
-
----
-
 **PROJECT STRUCTURE**
 ```
 ~/.config/quickshell/new/
@@ -249,7 +245,3 @@ Alright, full final plan with the additions:
 **BACKLOG**
 - TUI themed file explorer with mouse + drag and drop
 - Ayano integration as chat overlay
-
----
-
-That's everything. Ready to build?

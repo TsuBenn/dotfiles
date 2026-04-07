@@ -27,6 +27,22 @@ Singleton {
     readonly property real cellWidth: metrics.averageCharacterWidth
     readonly property real cellHeight: metrics.height
 
+    function centerWCell(item: double, container: double) : double {
+        return Cell.toW(container/2 - item/2)
+    }
+
+    function alignRightWCell(item: double, container: double) : double {
+        return Cell.toW(container - item)
+    }
+
+    function centerHCell(item: double, container: double) : double {
+        return Cell.toH(container/2 - item/2)
+    }
+
+    function alignRightHCell(item: double, container: double) : double {
+        return Cell.toH(container - item)
+    }
+
     function w(n: real): real {
         return Math.round(cellWidth * n)
     }

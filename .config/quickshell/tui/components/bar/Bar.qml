@@ -86,7 +86,7 @@ Scope {
 
                 Clock {
                     id: clock
-                    x: Cell.toW(root.width/2 - implicitWidth/2)
+                    x: Cell.centerWCell(implicitWidth,root.width)
                 }
 
                 MediaPlayer {
@@ -97,13 +97,26 @@ Scope {
 
                 RowLayout {
 
-                    x: Cell.toW(root.width - implicitWidth)
+                    x: Cell.alignRightWCell(implicitWidth, root.width)
 
-                    spacing: Cell.w(2)
-
-                    Battery {}
+                    spacing: Cell.w(0)
 
                     Volume {}
+
+                    CellText {
+                        text: " │"
+                        color: Colors.fgSubtle
+                    }
+
+                    ControlPanel {}
+
+                    CellText {
+                        text: " "
+                    }
+
+                    Search {
+                        id: search
+                    }
 
                 }
 
