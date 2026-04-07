@@ -104,8 +104,7 @@ Scope {
                     Volume {}
 
                     CellText {
-                        text: "│"
-                        color: Colors.fgSubtle
+                        text: " "
                     }
 
                     ControlPanel {}

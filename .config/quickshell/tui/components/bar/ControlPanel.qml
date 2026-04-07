@@ -20,18 +20,22 @@ Cells {
 
         id: control
 
+        CellText {
+            text: " "
+        }
+
         CellButton {
 
             id: wifi
 
-            text: SystemInfo.wifi.ethernet ? "Ethernet" : SystemInfo.wifi.name
-            font: Cell.font
+            text: (SystemInfo.wifi.freq ? SystemInfo.wifi.ethernet ? "Ethernet" : `${SystemInfo.wifi.name}` : "WiFi×") + " "
+            font: Cell.fontB
 
-            padding: 1
+            padding: 0
             clickable: false
 
-            fg: Colors.fgBase
-            color: Colors.bgOverlay
+            fg: SystemInfo.wifi.freq ? Colors.success : Colors.danger
+            color: "transparent"
 
         }
 
@@ -48,36 +52,47 @@ Cells {
                 w: 1
                 h: 1
 
+                vertical: true
+
                 percent: SystemInfo.onbattery ? parseInt(SystemInfo.battery) : 100
+
+                color: Colors.bgSurface
 
                 fg: {
                     if (percent == 100 || SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
                         return Colors.success
-                    } else if (percent <= 20) {
-                        return Colors.warning
                     } else if (percent <= 10) {
                         return Colors.danger
+                    } else if (percent <= 20) {
+                        return Colors.warning
                     }
-                    return Colors.fgBase
+                    return Colors.fgSubtle
                 }
+
 
             }
 
             CellText {
 
-                text: SystemInfo.battery + " "
+                id: battery_stat
+
+                font: Cell.fontB
+
+                text: (SystemInfo.battery == "100%" ? "MAX" : SystemInfo.battery) + " "
+
                 color: {
                     if (battery_progress.percent == 100 || SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
                         return Colors.success
-                    } else if (battery_progress.percent <= 20) {
-                        return Colors.warning
                     } else if (battery_progress.percent <= 10) {
                         return Colors.danger
+                    } else if (battery_progress.percent <= 20) {
+                        return Colors.warning
                     }
                     return Colors.fgBase
                 }
 
             }
+
 
         }
 

@@ -11,11 +11,15 @@ RowLayout {
 
     CellButton {
 
-        text: MediaPlayerInfo.status == "playing" ? "⏸" : "▶"
-        font: Cell.fontB
-        fg: MediaPlayerInfo.activePlayer ? Colors.fgBase : Colors.fgSubtle
+        id: button
 
-        color: MediaPlayerInfo.activePlayer ? [Colors.accentStrong, Colors.accentDim] : Colors.bgOverlay
+        text: MediaPlayerInfo.status == "playing" ? " ⏸ " : " ▶ "
+        font: Cell.fontB
+        fg: MediaPlayerInfo.activePlayer ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+
+        padding: 0
+
+        color: MediaPlayerInfo.activePlayer ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
 
         onPressed: (button) => {
             if (button != "L") return
@@ -27,7 +31,7 @@ RowLayout {
     Cells {
 
         visible: MediaPlayerInfo.activePlayer
-        w: 26
+        w: 25
         h: 1
 
         color: Colors.bgOverlay
@@ -37,7 +41,7 @@ RowLayout {
             spacing: 0
 
             CellText {
-                text: "[ "
+                text: "▏"
                 color: Colors.fgDim
                 font: Cell.fontB
             }
@@ -50,7 +54,7 @@ RowLayout {
             }
 
             CellText {
-                text: " ]"
+                text: " │"
                 color: Colors.fgDim
                 font: Cell.fontB
             }

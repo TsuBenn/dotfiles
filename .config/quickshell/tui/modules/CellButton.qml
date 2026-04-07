@@ -22,6 +22,8 @@ Item {
     property bool safeRelease: true
     property bool clickable: true
 
+    property string buttonDown: mouse.buttonDown
+
     property bool holdEnabled: false
     property int holdInterval: 100
     property int holdOffset: 0

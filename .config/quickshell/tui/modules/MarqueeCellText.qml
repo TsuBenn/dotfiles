@@ -13,11 +13,11 @@ Cells {
     property font font: Cell.font
     property color fg: Colors.fgBase
     property int interval: 300
-    property int pause: 300
+    property int pause: 2000
 
     property int offset: 0
     property int excess: 0
-    property bool paused: false
+    property bool paused: true
 
     readonly property string displayed: {
         const padded = text + "    "
