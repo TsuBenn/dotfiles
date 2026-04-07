@@ -104,7 +104,7 @@ Scope {
                     Volume {}
 
                     CellText {
-                        text: " │"
+                        text: "│"
                         color: Colors.fgSubtle
                     }
 

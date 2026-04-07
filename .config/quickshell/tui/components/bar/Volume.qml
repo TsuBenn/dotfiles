@@ -94,7 +94,7 @@ Cells {
 
                 text: AudioInfo.mute ? "<s>vol</s>" : "vol"
 
-                font: Cell.fontB
+                font: Cell.font
 
                 fg: Colors.fgBase
                 color: "transparent"
@@ -138,7 +138,7 @@ Cells {
             }
 
             CellText {
-                text: "]"
+                text: "] "
             } 
 
         }
