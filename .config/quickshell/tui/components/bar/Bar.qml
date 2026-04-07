@@ -96,9 +96,15 @@ Scope {
                 }
 
                 RowLayout {
+
                     x: Cell.toW(root.width - implicitWidth)
 
+                    spacing: Cell.w(2)
+
+                    Battery {}
+
                     Volume {}
+
                 }
 
             }

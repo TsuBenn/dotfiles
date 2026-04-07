@@ -29,6 +29,8 @@ Item {
     function truncate(str, maxCells) {
         if (maxCells <= 0) return str
 
+        str = str.replace(/<[^>]*>/g, "")
+
         let overflowed = str.length > maxCells
         let result = ""
         let cells = []
@@ -91,8 +93,8 @@ Item {
                 result.push({
                     text: latin.replace(/ /g, "&nbsp;"),
                     raw: latin,
-                    count: latin.length,
-                    cells: latin.length,
+                    count: latin.replace(/<[^>]*>/g,"").length,
+                    cells: latin.replace(/<[^>]*>/g,"").length,
                     isCJK: false
                 })
             }

@@ -32,10 +32,10 @@ Cells {
     Cells {
         id: volume
 
-        w: state ? text_based.w : Cell.wCount(slider_based.implicitWidth)
+        w: text_state ? text_based.w : Cell.wCount(slider_based.implicitWidth)
         h: 1
 
-        property bool state: true
+        property bool text_state: true
 
         color: Colors.bgOverlay
 
@@ -43,9 +43,9 @@ Cells {
 
             id: text_based
 
-            visible: volume.state
+            visible: volume.text_state
 
-            text: ` ${AudioInfo.mute ? "MUTED" : root.getDynamicVolumeText(AudioInfo.volume)} `
+            text: ` ${AudioInfo.mute ? "<s>" + root.getDynamicVolumeText(AudioInfo.volume) + "</s>" : root.getDynamicVolumeText(AudioInfo.volume)} `
             font: Cell.fontB
 
             CellProgress {
@@ -74,7 +74,7 @@ Cells {
                     if (button == "L") {
                         AudioInfo.muteVolume(AudioInfo.sinkDefault)
                     } else if (button == "R") {
-                        volume.state = !volume.state
+                        volume.text_state = !volume.text_state
                     }
                 }
 
@@ -86,13 +86,13 @@ Cells {
 
             id: slider_based
 
-            visible: !volume.state
+            visible: !volume.text_state
 
             spacing: 0
 
             CellButton {
 
-                text: AudioInfo.mute ? "MUTED" : "VOL"
+                text: AudioInfo.mute ? "<s>VOL</s>" : "VOL"
 
                 font: Cell.fontB
 
@@ -100,8 +100,7 @@ Cells {
                 color: Colors.bgOverlay
 
                 onReleased: (button) => {
-                    if (button == "R") {
-                        volume.state = !volume.state
+                    if (button == "R") {                        volume.text_state = !volume.text_state
                     }
                     else if (button == "L") {
                         AudioInfo.muteVolume(AudioInfo.sinkDefault)
@@ -119,18 +118,16 @@ Cells {
 
                 percent: AudioInfo.volume
 
+                fg: AudioInfo.mute ? Colors.fgDim : Colors.fgBase
+
                 syncDelay: 200
                 adjustOnHold: true
                 wheel: !AudioInfo.mute
+                drag: !AudioInfo.mute
                 interactive: true
 
                 onAdjusted: (percent) => {
                     AudioInfo.setVolume(AudioInfo.sinkDefault, percent)
-                }
-
-                onReleased: (button) => {
-                    if (button != "L") return
-                    AudioInfo.muteVolume(AudioInfo.sinkDefault)
                 }
 
             }

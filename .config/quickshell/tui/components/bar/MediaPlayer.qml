@@ -39,6 +39,7 @@ RowLayout {
             CellText {
                 text: "[ "
                 color: Colors.fgDim
+                font: Cell.fontB
             }
 
             MarqueeCellText {
@@ -51,6 +52,7 @@ RowLayout {
             CellText {
                 text: " ]"
                 color: Colors.fgDim
+                font: Cell.fontB
             }
 
         }
