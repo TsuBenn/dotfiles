@@ -220,6 +220,7 @@ git clone https://github.com/abba23/spotify-adblock.git
 cd spotify-adblock
 make
 sudo make install
+cd ..
 echo -e "${GREEN}✔ Ad-blocked Spotify successfully!${NC}"
 
 echo "${BLUE}Creating Hyprland's monitor config file..."
