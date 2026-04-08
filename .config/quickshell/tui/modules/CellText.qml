@@ -170,6 +170,8 @@ Item {
 
                     delegate: Cells {
 
+                        id: text_cell
+
                         required property string text
                         required property int cells
 
@@ -184,7 +186,7 @@ Item {
 
                             id: texts
                             textFormat: Text.RichText
-                            text: parent.text
+                            text: text_cell.text
                             font: root.font
                             color: root.color
 

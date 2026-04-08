@@ -29,13 +29,13 @@ Cells {
 
             id: wifi
 
-            text: (SystemInfo.wifi.freq ? SystemInfo.wifi.ethernet ? "Ethernet" : `${SystemInfo.wifi.name}` : "WiFi×") + " "
+            text: (SystemInfo.wifi.ethernet ? "Ethernet" : SystemInfo.wifi.freq ? `${SystemInfo.wifi.name}` : "WiFi×") + " "
             font: Cell.fontB
 
             padding: 0
             clickable: false
 
-            fg: SystemInfo.wifi.freq ? Colors.success : Colors.danger
+            fg: SystemInfo.wifi.ethernet || SystemInfo.wifi.freq ? Colors.success : Colors.danger
             color: "transparent"
 
         }
@@ -67,7 +67,7 @@ Cells {
                     } else if (percent <= 20) {
                         return Colors.warning
                     }
-                    return Colors.fgSubtle
+                    return Colors.fgBase
                 }
 
 
@@ -98,7 +98,5 @@ Cells {
         }
 
     }
-
-    ControlPanel {}
 
 }

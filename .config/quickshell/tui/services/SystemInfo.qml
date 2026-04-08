@@ -278,7 +278,7 @@ Singleton {
                         "signal": datas[13].result[0]?.conn.signalQuality,
                         "channel": datas[13].result[0]?.conn.channel,
                         "freq": datas[13].result[0]?.conn.frequency,
-                        "ethernet": datas[12].result?.length && !datas[13].result?.length
+                        "ethernet": datas[12].result[0]?.name.startsWith("en")
                     }
 
                     // PHYSICAL DISKS
