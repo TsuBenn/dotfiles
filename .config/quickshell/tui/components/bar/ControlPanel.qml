@@ -1,6 +1,7 @@
 import qs.config
 import qs.modules
 import qs.services
+import qs.components.popups.ControlPanel
 
 import QtQuick.Layouts
 import QtQuick
@@ -97,5 +98,7 @@ Cells {
         }
 
     }
+
+    ControlPanel {}
 
 }
