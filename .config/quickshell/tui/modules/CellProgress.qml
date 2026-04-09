@@ -80,13 +80,19 @@ Cells {
                 return
             }
             if (buttonDown != "L") return
-            root.raw_percent = mouseX/Cell.w(root.w)*100
+            if (!root.vertical) {
+                root.raw_percent = mouseX/Cell.w(root.w)*100
+            } else {
+                root.raw_percent = 100 - mouseY/Cell.h(root.h)*100
+            }
         }
         onMoved: (x, y) => {
             if (!root.drag) return
             if (buttonDown != "L") return
             if (!root.vertical) {
                 root.raw_percent = x/Cell.w(root.w)*100
+            } else {
+                root.raw_percent = 100 - y/Cell.h(root.h)*100
             }
         }
         onHeld: {

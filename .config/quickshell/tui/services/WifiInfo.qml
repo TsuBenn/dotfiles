@@ -72,8 +72,8 @@ Singleton {
                         const subdatas = data.split(":")
                         let duplicate = false
                         if (subdatas[1] == "") continue
-                        for (const wifi of root.wifi_scan) {
-                            if (subdatas[1] == wifi.name) {
+                        for (const wifi of wifi_scan) {
+                            if (subdatas[1].trim() == wifi.name.trim()) {
                                 duplicate = true
                             }
                         }
@@ -82,7 +82,7 @@ Singleton {
 
                         wifi_scan.push({
                             "in_use": subdatas[0] == "*",
-                            "name": subdatas[1],
+                            "name": subdatas[1].trim(),
                             "signal": subdatas[2],
                             "freq": (parseInt(subdatas[3],0)/1000).toPrecision(2),
                             "security": subdatas[4],

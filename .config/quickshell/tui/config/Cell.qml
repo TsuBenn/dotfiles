@@ -44,25 +44,25 @@ Singleton {
     }
 
     function w(n: real): real {
-        return Math.round(cellWidth * n)
+        return Math.round(cellWidth)*n
     }
 
     function h(n: real): real {
-        return Math.round(cellHeight * n)
+        return Math.round(cellHeight)*n
     }
 
     function toW(n: real): real {
         return w(Math.round(n/cellWidth))
     }
     function toH(n: real): real {
-        return h(Math.round(n/cellWidth))
+        return h(Math.round(n/cellHeight))
     }
 
     function wCount(n: real): real {
         return Math.round(n/cellWidth)
     }
     function hCount(n: real): real {
-        return Math.round(n/cellWidth)
+        return Math.round(n/cellHeight)
     }
 
     FontMetrics {

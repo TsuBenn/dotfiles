@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import qs.config
 import qs.modules
 import qs.services
@@ -78,16 +80,28 @@ ColumnLayout {
 
     CellList {
 
+        id: list
+
         w: root.box.contentW
         h: root.box.contentH - 2
 
         model: WifiInfo.wifi_scan
 
-        item: CellText {
+        item: Cells {
 
             required property string name
 
-            text: name
+            w: list.contentW
+            h: 1
+
+            color: "transparent"
+
+            CellText {
+
+                text: parent.name
+                preferedW: parent.w
+
+            }
 
         }
 

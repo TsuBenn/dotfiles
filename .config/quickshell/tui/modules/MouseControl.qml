@@ -15,6 +15,8 @@ Item {
     property string buttonDown: ""
     property bool hovered: mouse.containsMouse
 
+    property bool hoverEnabled: true
+
     property bool holdEnabled: false
     property int holdInterval: 100
     property int holdOffset: 0
@@ -32,7 +34,7 @@ Item {
 
         acceptedButtons: root.acceptedButtons
 
-        hoverEnabled: true
+        hoverEnabled: root.hoverEnabled
 
         onWheel: (mouse) => {mouse.angleDelta.y > 0 ? root.wheel(1) : root.wheel(-1)}
 
