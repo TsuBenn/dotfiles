@@ -22,13 +22,15 @@ Item {
     property int mouseX: mouse.mouseX
     property int mouseY: mouse.mouseY
 
+    property var acceptedButtons: Qt.AllButtons
+
     MouseArea {
 
         id: mouse
 
         anchors.fill: parent
 
-        acceptedButtons: Qt.AllButtons
+        acceptedButtons: root.acceptedButtons
 
         hoverEnabled: true
 
@@ -40,10 +42,12 @@ Item {
 
         onEntered: {
             root.hovered = true
+            root.entered()
         }
 
         onExited: {
             root.hovered = false
+            root.exited()
         }
 
         onPressed: (event) => {

@@ -95,7 +95,7 @@ qss() {
 qsD() {
     qs kill
     clear
-    qs
+    qs -c ~/.config/quickshell/$1
 }
 
 alias programs='cd ~/dotfiles/programs/ && nvim .'

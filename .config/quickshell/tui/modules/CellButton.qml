@@ -12,7 +12,7 @@ Item {
 
     property string text: "Sample"
     property font font: Cell.font
-    property var fg: Colors.bgBase
+    property var fg: Colors.onAccent
     property var color: Colors.accentStrong
 
     property int padding: 1
@@ -50,8 +50,8 @@ Item {
                     if (mouse.buttonDown) return root.color[1]
                     else return root.color[0]
                 } else if (root.color.length == 3) {
-                    if (mouse.hovered) return root.color[1]
-                    else if (mouse.buttonDown) return root.color[2]
+                    if (mouse.buttonDown) return root.color[2]
+                    else if (mouse.hovered) return root.color[1]
                     else return root.color[0]
                 } else {
                     console.error("CellButton: \"color\" can only either be color or list of colors with size of 2 and 3")
@@ -76,8 +76,8 @@ Item {
                         if (mouse.buttonDown) return root.fg[1]
                         else return root.fg[0]
                     } else if (root.fg.length == 3) {
-                        if (mouse.hovered) return root.fg[1]
-                        else if (mouse.buttonDown) return root.fg[2]
+                        if (mouse.buttonDown) return root.fg[2]
+                        else if (mouse.hovered) return root.fg[1]
                         else return root.fg[0]
                     } else {
                         console.error("CellButton: \"fg\" can only either be color or list of colors with size of 2 and 3")

@@ -1,10 +1,12 @@
 import qs.components.bar
+import qs.components.popups
 import qs.modules
 import qs.config
 import qs.services
 
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Wayland
 import QtQuick.Layouts
 import QtQuick
 
@@ -16,6 +18,8 @@ Scope {
 
             id: root
 
+            WlrLayershell.layer: WlrLayer.Overlay
+
             required property var modelData
 
             screen: modelData
@@ -24,6 +28,8 @@ Scope {
             property var monitor: HyprInfo.monitors[screen_name] != undefined ? HyprInfo.monitors[screen_name] : {"width": 1920, "height": 1080}
 
             property HyprlandMonitor monitorObject
+
+            property bool shield: false
 
             Component.onCompleted: {
                 for (const m of Hyprland.monitors.values) {
@@ -119,6 +125,40 @@ Scope {
 
                 }
 
+            }
+
+            PopupWindow {
+
+                anchor {
+                    window: root
+                    rect.x: 0
+                    rect.y: 0
+                }
+
+                implicitWidth: root.monitor.width
+                implicitHeight: root.monitor.height
+
+                visible: true
+
+                color: "transparent"
+
+                mask: Region {
+                    item: shield
+                }
+
+                Item {
+
+                    id: shield
+
+                    anchors.topMargin: root.implicitHeight
+                    anchors.fill: root.shield ? parent : undefined
+
+                }
+
+            }
+
+            Popups {
+                monitor: root.monitor
             }
 
         }

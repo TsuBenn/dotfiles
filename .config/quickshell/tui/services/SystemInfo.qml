@@ -50,6 +50,7 @@ Singleton {
     property string board: "MOTHERBOARD"
 
     property var wifi: {
+        "enabled": false,
         "ethernet": false,
         "device": "wlan0",
         "name": "Wifi",
@@ -57,6 +58,11 @@ Singleton {
         "signal": 0,
         "channel": 0,
         "freq": 0,
+    }
+
+    property var bluetooth: {
+        "enabled": false,
+        "devices": [],
     }
 
     property string rootstoragename: "ROOT"
@@ -278,7 +284,8 @@ Singleton {
                         "signal": datas[13].result[0]?.conn.signalQuality,
                         "channel": datas[13].result[0]?.conn.channel,
                         "freq": datas[13].result[0]?.conn.frequency,
-                        "ethernet": datas[12].result[0]?.name.startsWith("en")
+                        "ethernet": datas[12].result[0]?.name.startsWith("en"),
+                        "enabled": datas[13].result[0]?.inf.status == "up"
                     }
 
                     // PHYSICAL DISKS
@@ -292,6 +299,11 @@ Singleton {
                         } else {
                             phydisks.unshift({"name": name, "size": size, "type": type})
                         }
+                    }
+
+                    root.bluetooth = {
+                        "enabled": datas[16].result[0]?.enabled,
+                        "devices": datas[15].result,
                     }
 
                     root.phydisks = phydisks

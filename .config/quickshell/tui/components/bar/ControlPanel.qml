@@ -99,4 +99,14 @@ Cells {
 
     }
 
-}
+    MouseControl {
+        anchors.fill: parent
+
+        onReleased: (button) => {
+            if (button == "L") {
+                PopupManager.toggle("control_panel")
+            }
+        }
+    }
+
+} 

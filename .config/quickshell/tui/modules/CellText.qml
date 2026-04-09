@@ -153,6 +153,10 @@ Item {
                     var count = 0
                     var excess = 0
                     root.h += 1
+                    if (root.preferedW > 0) {
+                        root.w = root.preferedW
+                        return
+                    }
                     for (const c of root.splitCJK(modelData)) {
                         count += c.cells
                     }

@@ -40,6 +40,7 @@
             "type": "physicaldisk",
             "temp": true
         },
-        "tpm"
+        "bluetooth",
+        "bluetoothradio"
     ]
 }

@@ -49,6 +49,8 @@ Item {
     implicitWidth: Cell.w(w) - Cell.w(2)
     implicitHeight: Cell.h(h) - Cell.h(2)
 
+    property bool grid: false
+
     Component.onCompleted: {
         x += Cell.w(1)
         y += Cell.h(1)
@@ -68,6 +70,8 @@ Item {
 
         x: -Cell.w(1)
         y: -Cell.h(1)
+
+        grid: root.grid
 
         color: root.color
 

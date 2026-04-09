@@ -91,7 +91,7 @@ Singleton {
             accentStrong:   "#a32435",
             accentDim:      "#6B1825",
             secondary:      "#f59b75",
-            info:           "#8ba3b0",
+            info:           "#3AA5DE",
 
             success:        "#98BB6C",
             warning:        "#eea022",
