@@ -13,7 +13,7 @@ CellPopup {
     id: root
 
     w: 40
-    h: 10
+    h: 30
 
     CellBox {
 
@@ -27,7 +27,6 @@ CellPopup {
         Main {
 
             visible: box.view == "main"
-
             box: box
 
         }
@@ -35,7 +34,6 @@ CellPopup {
         Wifi {
 
             visible: box.view == "wifi"
-
             box: box
 
         }

@@ -33,7 +33,7 @@ Item {
             }
             let result = ""
             for (let i = 1; i <= root.w; i++) {
-                if (i == root.padding || i == root.w - root.padding + 1) {
+                if (i <= root.padding || i >= root.w - root.padding + 1) {
                     result += " "
                     continue
                 }

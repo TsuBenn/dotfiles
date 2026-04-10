@@ -11,27 +11,27 @@ Singleton {
     id: root
 
     property bool enabled: SystemInfo.wifi.enabled
+    property string wifi_name: SystemInfo.wifi.name
     property var wifi_save: []
     property var wifi_scan: []
+    property bool scanning: scanner.running || connect.running 
 
-    function isScanning() {
-        return scanner.running
+    onWifi_nameChanged: {
+        scan()
     }
 
-    function connect(wifi, password = "") {
-        if (!wifi.in_use) return -1
-        if (!wifi.name) return -1
-        if (!wifi.signal) return -1
-        if (!wifi.freq) return -1
-        if (!wifi.security) return -1
-
+    function connect(wifi: string, password = "") {
         if (connect.running) return 1
 
-        if (wifi.security == "--") {
-            connect.exec(["nmcli", "device", "wifi", "connect", wifi.name])
+        if (password == "") {
+            connect.exec(["nmcli", "device", "wifi", "connect", wifi])
         } else {
-            connect.exec(["nmcli", "device", "wifi", "connect", wifi.name, "password", wifi.password])
+            connect.exec(["nmcli", "device", "wifi", "connect", wifi, "password", password])
         }
+    }
+
+    function isSaved(wifi: string): bool {
+        return wifi_save.includes(wifi)
     }
 
     function toggleWifi() {
@@ -40,25 +40,59 @@ Singleton {
         return 0
     }
 
-    function scan() {
+    function scan(rescan = false) {
         if (scanner.running) return 1
+        scanner.rescan = rescan
         scanner.running = true
         return 0
     }
 
     Process {
         id: connect
+        stdout: StdioCollector {
+            onStreamFinished: {
+                console.log(text)
+            }
+        }
     }
 
     Process {
         id: status
         command: ["bash", "-c", "nmcli radio wifi " + (root.enabled ? "off" : "on") ]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                console.log("WifiInfo: turned " + (root.enabled ? "off" : "on"))
+            }
+        }
+    }
+
+    Process {
+        id: saved
+
+        running: true
+        command: ["bash", "-c" ,"nmcli -t -f NAME connection show"]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+
+                    const wifi_save = text.split("\n").slice(0, -1)
+
+                    root.wifi_save = wifi_save
+
+                }
+            }
+        }
+
     }
 
     Process {
         id: scanner
 
-        command: ["bash", "-c" ,"nmcli -t -f IN-USE,SSID,SIGNAL,FREQ,SECURITY device wifi list --rescan yes"]
+        property bool rescan
+
+        running: true
+        command: ["bash", "-c" ,"nmcli -t -f IN-USE,SSID,SIGNAL,FREQ,SECURITY device wifi list" + (rescan ? " --rescan yes" : "")]
 
         stdout: StdioCollector {
             onStreamFinished: {
@@ -80,17 +114,27 @@ Singleton {
 
                         if (duplicate) continue
 
-                        wifi_scan.push({
-                            "in_use": subdatas[0] == "*",
-                            "name": subdatas[1].trim(),
-                            "signal": subdatas[2],
-                            "freq": (parseInt(subdatas[3],0)/1000).toPrecision(2),
-                            "security": subdatas[4],
-                        })
+                        if (subdatas[0] == "*") {
+                            wifi_scan.unshift({
+                                "in_use": true,
+                                "name": subdatas[1].trim(),
+                                "signal": subdatas[2],
+                                "freq": (parseInt(subdatas[3],0)/1000).toPrecision(2),
+                                "security": subdatas[4],
+                            })
+                        } else {
+                            wifi_scan.push({
+                                "in_use": false,
+                                "name": subdatas[1].trim(),
+                                "signal": subdatas[2],
+                                "freq": (parseInt(subdatas[3],0)/1000).toPrecision(2),
+                                "security": subdatas[4],
+                            })
+                        }
                     }
 
+                    saved.running = true
                     root.wifi_scan = wifi_scan
-
                 }
             }
         }

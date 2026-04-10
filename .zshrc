@@ -1,17 +1,21 @@
-#!/bin/bash
-
+# Interactive check (zsh way)
 [[ $- != *i* ]] && return
 
-if [[ $- == *i* ]]; then
-    bind '"\C-f":"fzf\n"'
-fi
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh
 
-alias ls='ls --color=auto'
-alias grep='grep --color=auto'
+# bind arrow keys for history search
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+
+# fzf keybind
+bindkey -s '^f' 'fzf\n'
 
 # ESSENTIAL
 alias vim='nvim'
-alias ls='ls -Alh'
+alias ls='ls -Alh --color=auto'
+alias grep='grep --color=auto'
 alias fetch='clear && fastfetch'
 alias cls='clear'
 alias home='cd ~'
@@ -20,6 +24,8 @@ alias ..='cd ..'
 alias ....='cd ../..'
 alias ......='cd ../../..'
 alias shutdown='shutdown -h now'
+
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#585858'
 
 # QUICK ACCESS
 alias setup='cd ~/dotfiles/ && bash ./arch_autosetup.sh'
@@ -44,12 +50,13 @@ ayano() {
     print() {
         tree -I "venv|logs|audio|__pycache__|__init__.py|.pyc|.git|*.png"
     }
-run() {
-    pkill -f main.py
-    python main.py &
-    clear
+    run() {
+        pkill -f main.py
+        python main.py &
+        clear
+    }
 }
-}
+
 ayanoSetup() {
     cd ~/ayano || return
     echo "Setting up Ayano Project"
@@ -60,15 +67,9 @@ ayanoSetup() {
     echo "Installing required Python Libraries"
     source venv/bin/activate
     echo ""
-    echo "Installing PySide6..."
     pip install PySide6
-    echo ""
-    echo "Installing requests..."
     pip install requests
     echo ""
-    echo "Finished Installing Python Libraries"
-    echo ""
-    echo "Installing Ollama"
     sudo pacman -S ollama-cuda --needed
     sudo systemctl enable --now ollama.service
     echo ""
@@ -87,6 +88,8 @@ alias ghosttyconf='cd ~/dotfiles/ && nvim ~/.config/ghostty/config'
 alias tmuxconf='cd ~/dotfiles/ && nvim ~/.tmux.conf'
 alias nvimconf='cd ~/.config/nvim && nvim ~/.config/nvim/'
 alias bashconf='cd ~/dotfiles/ && nvim ~/.bashrc'
+alias zshconf='cd ~/dotfiles/ && nvim ~/.zshrc'
+
 qsconf() {
     cd ~/dotfiles/.config/quickshell/$1
     nvim ~/.config/quickshell/$1
@@ -99,14 +102,12 @@ qsD() {
     clear
     qs -c ~/.config/quickshell/$1
 }
-
-alias programs='cd ~/dotfiles/programs/ && nvim .'
-
-# QUICK RESET
 qsR() {
     qs kill
     qs -c ~/.config/quickshell/$1 -d
 }
+
+alias programs='cd ~/dotfiles/programs/ && nvim .'
 alias easyeffectsRestart='easyeffects -q && easyeffects --gapplication-service &'
 
 # QUICK INSTALL
@@ -122,23 +123,24 @@ alias yayInstall='echo "yay -S" && yay -S'
 alias yayClearCache='echo "yay -Sc" && yay -Sc'
 alias yayClearAllCache='echo "yay -Scc" && yay -Scc'
 
+# tmux auto-attach
 if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then
     tmux attach || tmux
 fi
 
-PS1='  \[\e[36m\]\u \[\e[37m\](\@): \[\e[37m\]\w \[\e[33m\]$ \[\e[37m\]'
+# Prompt
+PROMPT='  %F{cyan}%n %F{white}(%@): %F{white}%~ %F{yellow}$ %F{white}'
 
-eval "$(zoxide init bash)"
+# Zoxide
+eval "$(zoxide init zsh)"
 
+# Exports
 export EDITOR=nvim
 export VISUAL=nvim
-
 export MOZ_DISABLE_RDD_SANDBOX=1
 export LIBVA_DRIVER_NAME=nvidia
 export NVD_BACKEND=direct
-
 export QML_IMPORT_PATH=/usr/lib/qt6/qml
 export QML2_IMPORT_PATH=/usr/lib/qt6/qml
-
 export PATH=$PATH:/usr/lib/qt6/bin
 export PATH="/home/tsubenn/.local/bin:$PATH"

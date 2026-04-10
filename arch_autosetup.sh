@@ -66,7 +66,7 @@ fi
 
 BASE_PKGS=(
     base amd-ucode linux-firmware sudo git base-devel grub timeshift
-    networkmanager reflector man openssh keyd
+    networkmanager reflector man openssh keyd zsh
 )
 
 BLUETOOTH=(
@@ -79,7 +79,7 @@ DEV_PKGS=(
     tmux ollama
 )
 
-TERMINALS=(kitty)
+TERMINALS=(kitty ghostty)
 
 HYPR_PKGS=(
     hyprland qt6-wayland xdg-desktop-portal-hyprland hyprshot archlinux-xdg-menu
@@ -115,7 +115,6 @@ ESSENTIAL_APPS=(
     discord obs-studio 7zip zoxide filelight ark mpv yazi dolphin libreoffice
     vlc vlc-plugin-x264 vlc-plugin-ffmpeg lame libmad pinta openrgb github-cli libva-utils ffmpegthumbs
     glow
-    ghostty
     flatpak avahi
     rofi rofi-emoji wtype
     fastfetch
@@ -129,7 +128,7 @@ INPUT_METHOD=(
 )
 
 RICING=(
-    quickshell swww ttf-jetbrains-mono-nerd cava
+    quickshell awww ttf-jetbrains-mono-nerd cava
     qt6-base qt6-declarative qt6-svg qt6-wayland
 )
 
@@ -240,6 +239,11 @@ sudo sed -i 's/\(HOOKS=([^)]*udev\)/\1 plymouth/' /etc/mkinitcpio.conf
 sudo plymouth-set-default-theme -R bgrt
 
 echo -e "${GREEN}✔ Plymouth setup complete!${NC}"
+
+# ===== Switching to ZSH =====
+echo -e "${BLUE}Switching to ZSH...${NC}"
+chsh -s /bin/zsh
+echo -e "${GREEN}Switched to ZSH!${NC}"
 
 # ===== Enable Services =====
 echo -e "${BLUE}Enabling system services...${NC}"

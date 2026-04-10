@@ -144,6 +144,8 @@ ColumnLayout {
 
             MouseControl {
 
+                visible: SystemInfo.wifi.enabled
+
                 anchors.fill: parent
 
                 onEntered: {
@@ -252,6 +254,7 @@ ColumnLayout {
             }
 
             MouseControl {
+
 
                 anchors.fill: parent
 

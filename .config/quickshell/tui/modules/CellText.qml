@@ -114,6 +114,19 @@ Item {
                     cells: cjk.length * 2,
                     isCJK: true
                 })
+            } else if ((/[\u2800-\u28ff]/.test(ch))) {
+                let braille = ""
+                while (i < str.length && /[\u2800-\u28ff]/.test(str[i])) {
+                    braille += str[i]
+                    i++
+                }
+                result.push({
+                    text: `<span style="font-family:'Noto Sans Mono';">${braille}</span>`,
+                    raw: braille,
+                    count: braille.length,
+                    cells: braille.length,
+                    isCJK: true
+                })
             } else {
                 let latin = ""
                 while (i < str.length && !/[\u4e00-\u9fff\u3040-\u30ff\u31f0-\u31ff\uff00-\uffef]/.test(str[i])) {

@@ -36,6 +36,11 @@ Item {
 
     implicitWidth: button.implicitWidth
     implicitHeight: button.implicitHeight
+    
+    onClickableChanged: {
+        mouse.buttonDown = ""
+        mouse.hovered = false
+    }
 
     Cells {
 
