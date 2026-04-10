@@ -16,18 +16,34 @@ Singleton {
     property var wifi_scan: []
     property bool scanning: scanner.running || connect.running 
 
+    signal error(text: string)
+    signal success(text: string)
+    signal info(text: string)
+    signal rescanned()
+
     onWifi_nameChanged: {
-        scan()
+        scan(false, true)
     }
 
     function connect(wifi: string, password = "") {
         if (connect.running) return 1
+
+        connect.wifi = wifi
 
         if (password == "") {
             connect.exec(["nmcli", "device", "wifi", "connect", wifi])
         } else {
             connect.exec(["nmcli", "device", "wifi", "connect", wifi, "password", password])
         }
+    }
+
+    function disconnect(wifi: string, password = "") {
+        if (connect.running) return 1
+        if (forget.running) return 1
+
+        connect.wifi = ""
+
+        forget.exec(["nmcli", "connection", "down", wifi])
     }
 
     function isSaved(wifi: string): bool {
@@ -40,18 +56,44 @@ Singleton {
         return 0
     }
 
-    function scan(rescan = false) {
-        if (scanner.running) return 1
+    function scan(rescan = false, force = false) {
+        if (scanner.running && !force) return 1
         scanner.rescan = rescan
         scanner.running = true
         return 0
     }
 
+    function forget(wifi: string) {
+        forget.exec(["nmcli", "connection", "delete", wifi])
+    }
+
     Process {
         id: connect
+
+        property string wifi
+
         stdout: StdioCollector {
             onStreamFinished: {
-                console.log(text)
+            }
+        }
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (!text) {
+                    root.success(`Connected to ${connect.wifi}`)
+                    root.scan()
+                    return
+                }
+                root.error(`Failed to connect to ${connect.wifi}`)
+                root.forget(connect.wifi)
+            }
+        }
+    }
+
+    Process {
+        id: forget
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.scan()
             }
         }
     }
@@ -135,6 +177,7 @@ Singleton {
 
                     saved.running = true
                     root.wifi_scan = wifi_scan
+                    root.rescanned()
                 }
             }
         }

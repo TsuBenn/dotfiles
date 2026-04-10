@@ -38,7 +38,7 @@ Item {
 
         onWheel: (mouse) => {mouse.angleDelta.y > 0 ? root.wheel(1) : root.wheel(-1)}
 
-        onPositionChanged: {
+        onPositionChanged: (mouse) => {
             root.moved(mouseX, mouseY)
         }
 

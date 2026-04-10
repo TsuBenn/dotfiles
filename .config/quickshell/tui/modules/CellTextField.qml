@@ -1,6 +1,9 @@
+pragma ComponentBehavior: Bound
+
 import qs.config
 import qs.modules
 
+import QtQuick.Layouts
 import QtQuick
 
 Item {
@@ -19,8 +22,10 @@ Item {
 
     property font font: Cell.font
     property color color: Colors.fgBase
+    property color disabled_color: Colors.fgSubtle
 
     property bool hidden: false
+    property bool disabled: false
 
     signal entered(text: string)
 
@@ -42,7 +47,7 @@ Item {
 
         id: cursor_timer
 
-        running: root.blinkCursor
+        running: root.blinkCursor && !root.disabled
         interval: 500
         repeat: true
         onTriggered: {
@@ -53,17 +58,43 @@ Item {
 
     CellText {
 
+        visible: !root.hidden
+
         id: input
 
         preferedW: root.w
 
-        text: (root.hidden ? "*".repeat(root.text.length) : root.text) + (root.showCursor ? "█" : "")
+        text: root.text + (root.showCursor ? "█" : "")
         font: root.font
-        color: root.color
+        color: root.disabled ? root.disabled_color : root.color
 
     }
 
+    RowLayout {
+
+        visible: root.hidden
+
+        spacing: 0
+
+        Repeater {
+            model: Math.min(input.text.length - 1,input.preferedW-1)
+
+            delegate: CellText {
+                text: "*"
+                font: root.font
+                color: root.disabled ? root.disabled_color : root.color
+            }
+        }
+
+        CellText {
+            text: (root.showCursor ? "█" : "")
+            font: root.font
+            color: root.disabled ? root.disabled_color : root.color
+        }
+    }
+
     Keys.onPressed: (event) => {
+        if (root.disabled) return
         if (event.key == Qt.Key_Return) {
             root.entered(root.text)
         } else if (event.key == Qt.Key_Backspace && event.modifiers == Qt.ControlModifier) {

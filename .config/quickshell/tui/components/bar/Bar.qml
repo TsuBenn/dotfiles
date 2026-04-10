@@ -22,6 +22,16 @@ Scope {
 
             required property var modelData
 
+            property bool shield: false
+
+            onShieldChanged: {
+                if (root.shield) {
+                    console.log("Shield on!")
+                    return
+                }
+                    console.log("Shield off!")
+            }
+
             screen: modelData
 
             property string screen_name: screen.name
@@ -29,9 +39,13 @@ Scope {
 
             property HyprlandMonitor monitorObject
 
-            property bool shield: false
-
             Component.onCompleted: {
+                PopupManager.opened.connect((name) => {
+                    root.shield = true
+                })
+                PopupManager.closed.connect((name) => {
+                    if (name == "") root.shield = false
+                })
                 for (const m of Hyprland.monitors.values) {
                     if (m.name == screen.name) {
                         monitorObject = m
@@ -127,18 +141,21 @@ Scope {
 
             }
 
-            PopupWindow {
+            PanelWindow {
 
-                anchor {
-                    window: root
-                    rect.x: 0
-                    rect.y: 0
+                anchors {
+                    top: true
+                    left: true
+                    right: true
+                    bottom: true
                 }
 
                 implicitWidth: root.monitor.width
                 implicitHeight: root.monitor.height
 
                 visible: true
+
+                focusable: root.shield
 
                 color: "transparent"
 
@@ -150,16 +167,50 @@ Scope {
 
                     id: shield
 
+                    property bool mouse_check: false
+
                     anchors.topMargin: root.implicitHeight
-                    anchors.fill: root.shield ? parent : undefined
+                    anchors.top: parent.top
+                    anchors.right: parent.right
+                    anchors.left: parent.left
+
+                    implicitHeight: root.shield ? root.monitor.height : 0
+
+                    MouseControl {
+
+                        anchors.fill: parent
+
+                        onPressed: {
+                            PopupManager.close()
+                        }
+                    }
+
+                    Popups {
+                        id: popups
+                        monitor: root.monitor
+                    }
+
+                    MouseControl {
+
+                        visible: context_menu.visible
+
+                        anchors.fill: parent
+
+                        onPressed: {
+                            ContextMenuManager.hide()
+                        }
+                    }
+
+                    CellContextMenu {
+                        id: context_menu
+                        monitor: root.monitor
+                    }
 
                 }
 
             }
 
-            Popups {
-                monitor: root.monitor
-            }
+
 
         }
 

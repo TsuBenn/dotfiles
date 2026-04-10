@@ -17,10 +17,10 @@ Item {
 
     ControlPanelPopup {
 
-        visible: PopupManager.isOpen("control_panel")
+        name: "control_panel"
 
-        x: Cell.wCount(root.monitor.width-Cell.w(w))
-        y: 0
+        cellX: Cell.wCount(root.monitor.width-Cell.w(w))
+        cellY: -1
 
     }
 

@@ -65,6 +65,8 @@ ColumnLayout {
             color: ["transparent", Colors.bgOverlay, Colors.fgBase]
             fg: [ SystemInfo.wifi.enabled ? Colors.fgBase : Colors.fgDim, Colors.bgSurface]
 
+            clickable: !SystemInfo.wifi.ethernet
+
             onReleased: (button) => {
                 if (button == "L") {
                     WifiInfo.toggleWifi()
@@ -144,7 +146,7 @@ ColumnLayout {
 
             MouseControl {
 
-                visible: SystemInfo.wifi.enabled
+                visible: SystemInfo.wifi.enabled && !SystemInfo.wifi.ethernet
 
                 anchors.fill: parent
 
@@ -268,7 +270,7 @@ ColumnLayout {
 
                 onReleased: (button) => {
                     if (button == "L") {
-                        root.box.view = "wifi"
+                        root.box.view = "bluetooth"
                     }
                 }
 

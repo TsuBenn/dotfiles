@@ -12,8 +12,8 @@ CellPopup {
 
     id: root
 
-    w: 40
-    h: 30
+    w: 50
+    h: Cell.hCount(content.implicitHeight) + 2
 
     CellBox {
 
@@ -21,22 +21,35 @@ CellPopup {
 
         property string view: "main"
 
+        onVisibleChanged: {
+            view = "main"
+        }
+
         w: root.w
         h: root.h
 
-        Main {
+        ColumnLayout {
 
-            visible: box.view == "main"
-            box: box
+            id: content
 
+            spacing: 0
+
+            Main {
+
+                visible: box.view == "main"
+                box: box
+
+            }
+
+            Wifi {
+
+                visible: box.view == "wifi"
+                box: box
+
+            }
         }
 
-        Wifi {
 
-            visible: box.view == "wifi"
-            box: box
-
-        }
 
     }
 

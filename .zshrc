@@ -25,7 +25,7 @@ alias ....='cd ../..'
 alias ......='cd ../../..'
 alias shutdown='shutdown -h now'
 
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#585858'
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=#585858'
 
 # QUICK ACCESS
 alias setup='cd ~/dotfiles/ && bash ./arch_autosetup.sh'

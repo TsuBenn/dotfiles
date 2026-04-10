@@ -4,38 +4,32 @@ import qs.modules
 import QtQuick
 import Quickshell
 
-PanelWindow {
+Item {
 
     id: root
+
+    visible: PopupManager.isOpen(name)
 
     property int w: 3
     property int h: 3
 
-    property int x: 0
-    property int y: 0
+    property int cellX
+    property int cellY
 
-    focusable: true
+    property string name
 
-    anchors {
-        top: true
-        left: true
-    }
+    property int safeMargin: 0
 
-    margins {
-        left: Cell.w(root.x)
-        top: Cell.h(root.y)
-    }
+    x: Cell.w(cellX)
+    y: Cell.h(cellY)
+
+    focus: true
 
     implicitWidth: Cell.w(w)
     implicitHeight: Cell.h(h)
 
-    Cells {
-
-        w: root.w
-        h: root.h
-
-        grid: true
-
+    MouseControl {
+        anchors.fill: parent
     }
 
 }

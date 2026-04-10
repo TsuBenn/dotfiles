@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import qs.config
 import qs.modules
 
@@ -97,11 +99,11 @@ Item {
 
                         text: {
                             switch (root.border.type) {
-                                case 0: return " "; break;
-                                case 1: return "┌"; break;
-                                case 2: return "┏"; break;
-                                case 3: return "╔"; break;
-                                case 4: return "╭"; break;
+                                case 0: return " ";
+                                case 1: return "┌";
+                                case 2: return "┏";
+                                case 3: return "╔";
+                                case 4: return "╭";
                             }
                         }
 
@@ -118,11 +120,11 @@ Item {
 
                             text: {
                                 switch (root.border.type) {
-                                    case 0: return " "; break;
-                                    case 1: return "─"; break;
-                                    case 2: return "━"; break;
-                                    case 3: return "═"; break;
-                                    case 4: return "─"; break;
+                                    case 0: return " ";
+                                    case 1: return "─";
+                                    case 2: return "━";
+                                    case 3: return "═";
+                                    case 4: return "─";
                                 }
                             }
 
@@ -137,11 +139,11 @@ Item {
 
                         text: {
                             switch (root.border.type) {
-                                case 0: return " "; break;
-                                case 1: return "┐"; break;
-                                case 2: return "┓"; break;
-                                case 3: return "╗"; break;
-                                case 4: return "╮"; break;
+                                case 0: return " ";
+                                case 1: return "┐";
+                                case 2: return "┓";
+                                case 3: return "╗";
+                                case 4: return "╮";
                             }
                         }
 
@@ -183,11 +185,11 @@ Item {
 
                             text: {
                                 switch (root.border.type) {
-                                    case 0: return " "; break;
-                                    case 1: return "│"; break;
-                                    case 2: return "┃"; break;
-                                    case 3: return "║"; break;
-                                    case 4: return "│"; break;
+                                    case 0: return " ";
+                                    case 1: return "│";
+                                    case 2: return "┃";
+                                    case 3: return "║";
+                                    case 4: return "│";
                                 }
                             }
 

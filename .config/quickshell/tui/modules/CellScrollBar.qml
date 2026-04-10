@@ -84,6 +84,8 @@ Item {
 
                         delegate: CellText {
 
+                            clip: true
+
                             text: {
                                 switch (root.type.bg) {
                                     case 1: return "│"; 
@@ -124,6 +126,8 @@ Item {
                             model: thumb.h
 
                             delegate: CellText {
+
+                                clip: true
 
                                 text: {
                                     switch (root.type.fg) {

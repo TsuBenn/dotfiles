@@ -11,9 +11,13 @@ Singleton {
 
     property var active_popups: []
 
+    signal opened(name: string)
+    signal closed(name: string)
+
     function open(name: string, isolate = true) {
         if (isolate) close()
         active_popups = [...active_popups, name]
+        root.opened(name)
     }
 
     function toggle(name: string, isolate = true) {
@@ -21,6 +25,7 @@ Singleton {
     }
 
     function close(name = "") {
+        closed(name)
         if (name == "") active_popups = [] 
         else active_popups = active_popups.filter(p => p != name)
     }

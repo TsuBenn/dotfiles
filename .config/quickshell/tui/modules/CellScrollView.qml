@@ -43,6 +43,10 @@ Cells {
 
     color: "transparent"
 
+    function reset() {
+        offset = 0
+    }
+
     Cells {
 
         w: root.w - root.padding*2

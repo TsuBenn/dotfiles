@@ -121,7 +121,7 @@ Item {
                     i++
                 }
                 result.push({
-                    text: `<span style="font-family:'Noto Sans Mono';">${braille}</span>`,
+                    text: `<span style="font-family:'Noto Sans Symbols 2';">${braille}</span>`,
                     raw: braille,
                     count: braille.length,
                     cells: braille.length,

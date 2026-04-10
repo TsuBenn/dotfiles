@@ -13,6 +13,8 @@ ColumnLayout {
 
     required property var box
 
+    property int h: 20
+
     onVisibleChanged: {
         if (visible) {
             WifiInfo.scan()
@@ -102,9 +104,11 @@ ColumnLayout {
         id: list
 
         w: root.box.contentW
-        h: root.box.contentH - 2
+        h: root.h - 2 - 2*(wifi_report.status != "")
 
         model: WifiInfo.wifi_scan
+
+        signal collapse(wifi: string)
 
         item: Cells {
 
@@ -127,9 +131,38 @@ ColumnLayout {
 
             color: "transparent"
 
-            function connect(pass: string) {
+            function connect(pass = "") {
+                if (pass.length < 8) {
+                    if (!password) {
+                        password = true
+                        return
+                    }
+                    wifi_report.status = "Info"
+                    wifi_report.report = "Password must be 8 characters or more"
+                    return
+                }
                 WifiInfo.connect(name, pass)
                 password = false
+            }
+
+            Component.onCompleted: {
+                WifiInfo.error.connect((error_wifi) => {
+                    wifi_report.status = "Error"
+                    wifi_report.report = error_wifi
+                })
+                WifiInfo.success.connect((success_wifi) => {
+                    wifi_report.status = "Success"
+                    wifi_report.report = success_wifi
+                })
+                WifiInfo.rescanned.connect(() => {
+                    list.reset()
+                })
+                list.collapse.connect((name) => {
+                    if (!name) return
+                    if (name != wifi?.name) {
+                        wifi.password = false
+                    }
+                })
             }
 
             ColumnLayout {
@@ -139,7 +172,6 @@ ColumnLayout {
                 spacing: 0
 
                 Cells {
-
 
                     w: list.contentW
                     h: 1
@@ -208,12 +240,12 @@ ColumnLayout {
                     spacing: 0
 
                     CellText {
-                        text: " Pass: "
+                        text: "  Pass: "
                     }
 
                     Cells {
 
-                        w: list.contentW - 9
+                        w: list.contentW - 10
                         h: 1
 
                         color: Colors.bgOverlay
@@ -300,16 +332,86 @@ ColumnLayout {
                 }
 
                 onPressed: (button) => {
+                    const global = mapToGlobal(mouseX, mouseY)
                     if (button == "L") {
                         if (wifi.in_use) return
                         if (wifi.security == "--" || WifiInfo.isSaved(wifi.name)) {
                             console.log(WifiInfo.connect(wifi.name))
                         } else {
+                            list.collapse(wifi.name)
                             wifi.password = !wifi.password
                         }
+                    } else if (button == "R") {
+                        if (wifi.in_use) {
+                            ContextMenuManager.show([
+                                {label: "Disconnect", action: () => WifiInfo.disconnect(wifi.name)},
+                                {label: "Forget network", action: () => WifiInfo.forget(wifi.name)}
+                            ],Cell.wCount(global.x),Cell.hCount(global.y),undefined,wifi.name)
+                            return
+                        } 
+                        if (WifiInfo.isSaved(wifi.name)) {
+                            ContextMenuManager.show([
+                                {label: "Connect", action: () => WifiInfo.connect(wifi.name)},
+                                {label: "Forget network", action: () => WifiInfo.forget(wifi.name)}
+                            ],Cell.wCount(global.x),Cell.hCount(global.y),undefined,wifi.name)
+                            return
+                        } 
+                        ContextMenuManager.show([
+                            {label: "Connect", action: () => wifi.connect()}
+                            ],Cell.wCount(global.x),Cell.hCount(global.y),undefined,wifi.name)
                     }
+
                 }
 
+            }
+        }
+
+    }
+
+    CellSeparator {
+
+        visible: wifi_report.status != ""
+
+        w: root.box.contentW
+
+    }
+
+    Timer {
+
+        id: report_cooldown
+
+        interval: 5000
+        onTriggered: {
+            wifi_report.status = ""
+        }
+
+    }
+
+    CellText {
+
+        id: wifi_report
+
+        visible: status != ""
+
+        onTextChanged: {
+            report_cooldown.start()
+        }
+
+        property string report: ""
+        property string status: ""
+
+        text: " " + status + ": " + report
+        preferedW: root.box.contentW - 2
+
+        color: {
+            if (status == "Error") {
+                return Colors.danger
+            } else if (status == "Success") {
+                return Colors.success
+            } else if (status == "Info") {
+                return Colors.info
+            } else if (status == "Warning") {
+                return Colors.warning
             }
         }
 
