@@ -57,6 +57,10 @@ ColumnLayout {
 
         spacing: 0
 
+        CellText {
+            text: " "
+        }
+
         CellButton {
 
             padding: 0
@@ -122,7 +126,7 @@ ColumnLayout {
 
                     font: SystemInfo.wifi.enabled ? Cell.fontB : Cell.font
 
-                    preferedW: root.box.contentW - 12 - 5
+                    preferedW: root.box.contentW - 12 - 6
 
                     color: {
                         if (!SystemInfo.wifi.enabled) {
@@ -138,7 +142,7 @@ ColumnLayout {
 
                 CellText {
 
-                    text: "  >"
+                    text: " >"
                     color: SystemInfo.wifi.enabled ? Colors.fgBase : Colors.fgSubtle
 
                 }
@@ -170,9 +174,25 @@ ColumnLayout {
 
     }
 
+    CellSeparator {
+
+        visible: false
+
+        w: root.box.contentW
+        type: 0
+
+        padding: 2
+        color: Colors.bgOverlay
+
+    }
+
     RowLayout {
 
         spacing: 0
+
+        CellText {
+            text: " "
+        }
 
         CellButton {
 
@@ -234,7 +254,7 @@ ColumnLayout {
 
                     font: SystemInfo.bluetooth.devices.length > 0 ? Cell.fontB : Cell.font
 
-                    preferedW: root.box.contentW - 12 - 5
+                    preferedW: root.box.contentW - 12 - 6
 
                     color: {
                         if (!SystemInfo.bluetooth.enabled) {
@@ -250,7 +270,7 @@ ColumnLayout {
 
                 CellText {
 
-                    text: "  >"
+                    text: " >"
                     color: SystemInfo.bluetooth.enabled ? Colors.fgBase : Colors.fgSubtle
 
                 }
