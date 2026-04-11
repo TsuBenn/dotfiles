@@ -57,11 +57,13 @@ ColumnLayout {
             CellButton {
 
                 text: "<"
-                fg: Colors.fgBase
-                color: Colors.bgOverlay
+                fg: [Colors.onAccent, Colors.fgBase]
+                color: [Colors.accentStrong, Colors.bgOverlay]
 
-                onPressed: {
-                    root.back()
+                onReleased: (button) => {
+                    if (button == "L") {
+                        root.back()
+                    }
                 }
 
             }

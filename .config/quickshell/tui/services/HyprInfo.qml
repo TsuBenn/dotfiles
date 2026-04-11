@@ -8,7 +8,7 @@ Singleton {
 
     id: root
 
-    property int focusedworkspace: Hyprland.focusedWorkspace?.id
+    property int focusedworkspace: Hyprland.focusedWorkspace?.id ?? 1
     property int focusedspecial: 0
 
     property var focusedwindow: {"title": "", "class": ""}

@@ -131,9 +131,8 @@ Singleton {
     Process {
         id: scanner
 
-        property bool rescan
+        property bool rescan: false
 
-        running: true
         command: ["bash", "-c" ,"nmcli -t -f IN-USE,SSID,SIGNAL,FREQ,SECURITY device wifi list" + (rescan ? " --rescan yes" : "")]
 
         stdout: StdioCollector {
@@ -178,6 +177,7 @@ Singleton {
                     saved.running = true
                     root.wifi_scan = wifi_scan
                     root.rescanned()
+                    console.log("WifiInfo: scanned!")
                 }
             }
         }

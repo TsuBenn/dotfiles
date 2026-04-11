@@ -31,15 +31,7 @@ Item {
                 case 3: char = "-"; break;
                 case 4: char = "="; break;
             }
-            let result = ""
-            for (let i = 1; i <= root.w; i++) {
-                if (i <= root.padding || i >= root.w - root.padding + 1) {
-                    result += " "
-                    continue
-                }
-                result += char
-            }
-            return result
+            return " ".repeat(root.padding) + char.repeat(root.w - root.padding*2) + " ".repeat(root.padding)
         }
 
     }

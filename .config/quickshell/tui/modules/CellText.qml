@@ -13,6 +13,8 @@ Item {
     property color color: Colors.fgBase
     property color bg: "transparent"
 
+    property bool centered: false
+
     property int preferedW: 0
 
     property int w: 0
@@ -156,6 +158,8 @@ Item {
             model: root.text.split("\n")
 
             delegate: RowLayout {
+
+                Layout.leftMargin: root.centered ? Cell.centerWCell(implicitWidth, Cell.w(root.w)) : 0
 
                 id: cell_row
 

@@ -293,4 +293,27 @@ ColumnLayout {
 
     }
 
+    CellSeparator {
+
+        visible: true
+
+        w: root.box.contentW
+        type: 2
+
+        padding: 1
+        color: Colors.bgOverlay
+
+    }
+
+    CellTabs {
+
+        type: 0
+        w: root.box.contentW
+        items: [
+            "Audio",
+            "Notifications"
+        ]
+
+    }
+
 }

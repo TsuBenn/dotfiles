@@ -73,6 +73,7 @@ Item {
 
             preferedW: root.w > 0 ? Cell.wCount(root.implicitWidth) - root.padding-2 : 0
 
+            centered: root.centered
             text: root.text
             font: root.font
             color: {
