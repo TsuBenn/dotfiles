@@ -21,6 +21,17 @@ Item {
     implicitWidth: Cell.w(w)
     implicitHeight: Cell.h(h)
 
+    onWChanged: {
+        if (w < 0) {
+            w = 0
+        }
+    }
+    onHChanged: {
+        if (h < 0) {
+            h = 0
+        }
+    }
+
     Rectangle {
 
         anchors.fill: parent

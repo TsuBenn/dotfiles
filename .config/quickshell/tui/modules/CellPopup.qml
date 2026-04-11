@@ -8,6 +8,8 @@ Item {
 
     id: root
 
+    property var monitor
+
     visible: PopupManager.isOpen(name)
 
     property int w: 3
@@ -20,8 +22,21 @@ Item {
 
     property int safeMargin: 0
 
-    x: Cell.w(cellX)
-    y: Cell.h(cellY)
+    x: {
+        if (!monitor) return Cell.w(cellX)
+        if (cellX + w <= Cell.wCount(monitor.width)) {
+            return Cell.w(cellX)
+        }
+        return Cell.w(cellX - w)
+    }
+    y: {
+        if (!monitor) return Cell.h(cellY)
+        if (cellY + h <= Cell.hCount(monitor.height)) {
+            return Cell.h(cellY)
+        }
+        return Cell.h(cellY - h)
+    }
+
 
     focus: true
 

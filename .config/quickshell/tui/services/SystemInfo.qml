@@ -90,6 +90,10 @@ Singleton {
         return usage.toFixed(2)
     }
 
+    function shutdown() {power.exec(["shutdown", "-h", "now"])}
+    function sleep() {power.exec(["systemctl", "suspend"])}
+    function reboot() {power.exec(["reboot"])}
+
     function formatNum(num, i) {
         const str = num.toString();
         return str.padStart(i, ' ');
@@ -155,6 +159,10 @@ Singleton {
             fastfetch.running = true
             batterystat.running = true
         }
+    }
+
+    Process {
+        id: power
     }
 
     Process {

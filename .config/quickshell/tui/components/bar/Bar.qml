@@ -24,14 +24,6 @@ Scope {
 
             property bool shield: false
 
-            onShieldChanged: {
-                if (root.shield) {
-                    console.log("Shield on!")
-                    return
-                }
-                    console.log("Shield off!")
-            }
-
             screen: modelData
 
             property string screen_name: screen.name
@@ -45,6 +37,13 @@ Scope {
                 })
                 PopupManager.closed.connect((name) => {
                     if (name == "") root.shield = false
+                })
+                ContextMenuManager.opened.connect((name) => {
+                    root.shield = true
+                })
+                ContextMenuManager.closed.connect((name) => {
+                    if (PopupManager.active_popups.length > 0) return
+                    root.shield = false
                 })
                 for (const m of Hyprland.monitors.values) {
                     if (m.name == screen.name) {
@@ -137,6 +136,16 @@ Scope {
                         id: search
                     }
 
+                }
+
+                MouseArea {
+                    visible: context_menu.visible
+
+                    anchors.fill: parent
+
+                    onPressed: {
+                        ContextMenuManager.hide()
+                    }
                 }
 
             }

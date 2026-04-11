@@ -23,12 +23,17 @@ ColumnLayout {
 
     spacing: 0
 
+    function back() {
+        root.box.view = "main"
+    }
+
     Cells {
 
         w: root.box.contentW
         h: 1
 
         color: "transparent"
+
 
         RowLayout {
 
@@ -47,7 +52,7 @@ ColumnLayout {
                 color: Colors.bgOverlay
 
                 onPressed: {
-                    root.box.view = "main"
+                    root.back()
                 }
 
             }
@@ -81,9 +86,11 @@ ColumnLayout {
 
                 clickable: !WifiInfo.scanning
 
-                onPressed: {
-                    if (WifiInfo.scan(true) == 1) {
-                        console.log("Wifi: Still scanning...")
+                onPressed: (button) => {
+                    if (button == "L") {
+                        if (WifiInfo.scan(true) == 1) {
+                            console.log("Wifi: Still scanning...")
+                        }
                     }
                 }
 
@@ -158,8 +165,8 @@ ColumnLayout {
                     list.reset()
                 })
                 list.collapse.connect((name) => {
-                    if (!name) return
-                    if (name != wifi?.name) {
+                    if (!name || !wifi) return
+                    if (name != wifi.name) {
                         wifi.password = false
                     }
                 })
@@ -223,13 +230,10 @@ ColumnLayout {
 
                 }
 
-                CellSeparator {
+                CellText {
 
                     visible: wifi.password
-
-                    padding: 2
-                    w: list.contentW
-                    color: Colors.bgOverlay
+                    text: ""
 
                 }
 
@@ -346,19 +350,19 @@ ColumnLayout {
                             ContextMenuManager.show([
                                 {label: "Disconnect", action: () => WifiInfo.disconnect(wifi.name)},
                                 {label: "Forget network", action: () => WifiInfo.forget(wifi.name)}
-                            ],Cell.wCount(global.x),Cell.hCount(global.y),undefined,wifi.name)
+                            ],global.x,global.y,undefined,wifi.name)
                             return
                         } 
                         if (WifiInfo.isSaved(wifi.name)) {
                             ContextMenuManager.show([
                                 {label: "Connect", action: () => WifiInfo.connect(wifi.name)},
                                 {label: "Forget network", action: () => WifiInfo.forget(wifi.name)}
-                            ],Cell.wCount(global.x),Cell.hCount(global.y),undefined,wifi.name)
+                            ],global.x,global.y,undefined,wifi.name)
                             return
                         } 
                         ContextMenuManager.show([
                             {label: "Connect", action: () => wifi.connect()}
-                            ],Cell.wCount(global.x),Cell.hCount(global.y),undefined,wifi.name)
+                        ],global.x,global.y,undefined,wifi.name)
                     }
 
                 }
@@ -413,6 +417,7 @@ ColumnLayout {
             } else if (status == "Warning") {
                 return Colors.warning
             }
+            return Colors.fgBase
         }
 
     }

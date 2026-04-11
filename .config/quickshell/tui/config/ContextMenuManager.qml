@@ -1,9 +1,13 @@
 pragma Singleton 
 
+import qs.config
+
 import Quickshell
 import QtQuick
 
 Singleton {
+
+    id: root
 
     property bool visible: false
     property int x: 0
@@ -12,19 +16,24 @@ Singleton {
     property string header: ""
     property var items: []
 
+    signal opened()
+    signal closed()
+
     function show(itemList, mx, my, mw = 20, mheader = "") {
         items = itemList
         w = mw
-        x = mx
-        y = my
+        x = Cell.wCount(mx)
+        y = Cell.hCount(my,"floor")
         header = mheader
         visible = true
+        root.opened()
     }
 
     function hide() {
         visible = false
         items = []
         header = ""
+        root.closed()
     }
 
 }

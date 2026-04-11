@@ -59,6 +59,7 @@ Item {
                         case 1: return "↑"; 
                         case 2: return "▲"; 
                     }
+                    return ""
                 }
                 color: root.progress > 0 ? root.color : root.bg
             }
@@ -154,6 +155,7 @@ Item {
                         case 1: return "↓"; 
                         case 2: return "▼"; 
                     }
+                    return ""
                 }
                 color: root.progress < 1 && root.contentH > root.h ? root.color : root.bg
             }

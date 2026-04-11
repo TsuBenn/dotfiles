@@ -103,8 +103,21 @@ Cells {
         anchors.fill: parent
 
         onReleased: (button) => {
+            const global = mapToGlobal(mouseX, mouseY)
             if (button == "L") {
                 PopupManager.toggle("control_panel")
+            } else if (button == "R") {
+                PopupManager.close()
+                ContextMenuManager.show([
+                    {label: "Sleep", action: () => {PowerManager.call("Sleep", 3)}},
+                    {label: "Reboot", action: () => {PowerManager.call("Reboot", 3)}},
+                    {label: "Shutdown", action: () => {PowerManager.call("Shutdown", 3)}},
+                    {label: "---"},
+                    {label: "Wifi " + (WifiInfo.enabled ? "      [ON ]" : "      [OFF]"), action: () => {WifiInfo.toggle()}},
+                    {label: "Bluetooth " + (SystemInfo.bluetooth.enabled ? " [ON ]" : " [OFF]"), action: () => {WifiInfo.toggle()}},
+                    {label: "---"},
+                    {label: "Control Panel", action: () => {PopupManager.open("control_panel")}},
+                ],global.x,global.y,undefined,"")
             }
         }
     }

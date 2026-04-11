@@ -52,16 +52,26 @@ Singleton {
     }
 
     function toW(n: real): real {
-        return w(Math.round(n/cellWidth))
+        return w(Math.floor(n/cellWidth))
     }
     function toH(n: real): real {
-        return h(Math.round(n/cellHeight))
+        return h(Math.floor(n/cellHeight))
     }
 
-    function wCount(n: real): real {
+    function wCount(n: real, mode = ""): real {
+        if (mode == "ceil") {
+            return Math.ceil(n/cellWidth)
+        } else if (mode == "floor") {
+            return Math.floor(n/cellWidth)
+        }
         return Math.round(n/cellWidth)
     }
-    function hCount(n: real): real {
+    function hCount(n: real, mode = ""): real {
+        if (mode == "ceil") {
+            return Math.ceil(n/cellHeight)
+        } else if (mode == "floor") {
+            return Math.floor(n/cellHeight)
+        }
         return Math.round(n/cellHeight)
     }
 

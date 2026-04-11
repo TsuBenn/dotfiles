@@ -69,7 +69,7 @@ ColumnLayout {
 
             onReleased: (button) => {
                 if (button == "L") {
-                    WifiInfo.toggleWifi()
+                    WifiInfo.toggle()
                 }
             }
 
@@ -170,6 +170,17 @@ ColumnLayout {
 
     }
 
+    CellSeparator {
+
+        visible: true
+
+        w: root.box.contentW
+        type: 2
+
+        padding: 1
+        color: Colors.bgOverlay
+    }
+
     RowLayout {
 
         spacing: 0
@@ -184,7 +195,7 @@ ColumnLayout {
 
             onReleased: (button) => {
                 if (button == "L") {
-                    WifiInfo.toggleWifi()
+                    BluetoothInfo.toggle()
                 }
             }
 
@@ -231,6 +242,7 @@ ColumnLayout {
                         }
                     }
 
+
                     font: SystemInfo.bluetooth.devices.length > 0 ? Cell.fontB : Cell.font
 
                     preferedW: root.box.contentW - 12 - 5
@@ -257,6 +269,7 @@ ColumnLayout {
 
             MouseControl {
 
+                visible: SystemInfo.bluetooth.enabled
 
                 anchors.fill: parent
 

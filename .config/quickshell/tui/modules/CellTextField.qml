@@ -77,7 +77,7 @@ Item {
         spacing: 0
 
         Repeater {
-            model: Math.min(input.text.length - 1,input.preferedW-1)
+            model: Math.max(Math.min(input.text.length - 1,input.preferedW-1),0)
 
             delegate: CellText {
                 text: "*"

@@ -47,6 +47,13 @@ CellPopup {
                 box: box
 
             }
+
+            Bluetooth {
+
+                visible: box.view == "bluetooth"
+                box: box
+
+            }
         }
 
 

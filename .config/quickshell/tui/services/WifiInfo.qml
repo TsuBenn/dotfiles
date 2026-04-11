@@ -50,7 +50,7 @@ Singleton {
         return wifi_save.includes(wifi)
     }
 
-    function toggleWifi() {
+    function toggle() {
         if (status.running) return 1
         status.running = true
         return 0

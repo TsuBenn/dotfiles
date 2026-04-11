@@ -10,8 +10,6 @@ CellPopup {
 
     id: root
 
-    property var monitor
-
     visible: ContextMenuManager.visible
 
     w: ContextMenuManager.w
@@ -19,6 +17,9 @@ CellPopup {
 
     cellX: ContextMenuManager.x
     cellY: ContextMenuManager.y - 1
+
+    property var items: ContextMenuManager.items
+    property string header: ContextMenuManager.header
 
     CellBox {
 
@@ -28,7 +29,7 @@ CellPopup {
         h: Cell.hCount(layout.implicitHeight) + 2
 
         header {
-            text: ` ${ContextMenuManager.header} `
+            text: root.header ? ` ${root.header} ` : ""
         }
 
         ColumnLayout {
@@ -39,35 +40,53 @@ CellPopup {
 
             Repeater {
 
-                model: ContextMenuManager.items
+                model: root.items
 
 
                 delegate: Item {
+
+                    id: button
 
                     implicitWidth: Cell.w(root.w)
                     implicitHeight: Cell.h(1)
 
                     required property var modelData
 
+                    property bool disabled: modelData.disabled ?? false
+
                     CellSeparator {
 
-                        visible: parent.modelData.label == "---"
+                        visible: parent.modelData.label.startsWith("---")
+
+                        w: root.w - 2
 
                         padding: 1
+
+                        CellText {
+
+                            x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                            text: button.modelData.label.replace("---","") != "" ? ` ${button.modelData.label.replace("---","")} ` : ""
+                            color: Colors.fgSubtle
+                            bg: Colors.bgSurface
+
+                        }
 
                     }
 
                     CellButton {
 
-                        visible: parent.modelData.label != "---"
+                        visible: !parent.modelData.label.startsWith("---")
 
                         text: parent.modelData.label
 
                         w: root.w
                         centered: false
 
+                        clickable: !button.disabled
+
                         color: ["transparent", Colors.bgOverlay, Colors.fgBase]
-                        fg: [Colors.fgBase, Colors.bgSurface]
+                        fg: clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
 
                         onReleased: (button) => {
                             if (button == "L") {
