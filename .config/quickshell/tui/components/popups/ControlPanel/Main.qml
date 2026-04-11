@@ -170,17 +170,6 @@ ColumnLayout {
 
     }
 
-    CellSeparator {
-
-        visible: true
-
-        w: root.box.contentW
-        type: 2
-
-        padding: 1
-        color: Colors.bgOverlay
-    }
-
     RowLayout {
 
         spacing: 0
@@ -307,12 +296,22 @@ ColumnLayout {
 
     CellTabs {
 
+        id: tab
+
         type: 0
         w: root.box.contentW
         items: [
             "Audio",
             "Notifications"
         ]
+
+    }
+
+    Audio {
+
+        box: root.box
+
+        visible: tab.selected == 0
 
     }
 

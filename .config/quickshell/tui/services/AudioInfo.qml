@@ -246,7 +246,13 @@ Singleton {
                         case ".config/quickshell/assets/sfx/mambo_wow.mp3": continue
                     }
 
-                    streams.push({"id": id, "volume": volume, "app": app, "name": name, "binary": binary})
+                    streams.push({
+                        "id": id, 
+                        "volume": volume, 
+                        "app": app, 
+                        "name": name, 
+                        "binary": binary
+                    })
 
                 }
 

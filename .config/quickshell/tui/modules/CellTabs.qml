@@ -13,7 +13,7 @@ Item {
     property bool centered: true
     property bool distributed: true
 
-    property int padding: 2
+    property int padding: 1
 
     property int spacing: 2
 
@@ -68,7 +68,7 @@ Item {
 
         w: root.w
         y: Cell.h(1)
-        padding: 1
+        padding: root.padding
         type: 1
         color: root.color.fg
 
