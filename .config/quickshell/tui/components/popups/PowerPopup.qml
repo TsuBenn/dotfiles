@@ -91,6 +91,7 @@ CellPopup {
 
                     onReleased: (button) => {
                         if (button == "L") {
+                            timer.stop()
                             root.active = false
                             PopupManager.close()
                         }
