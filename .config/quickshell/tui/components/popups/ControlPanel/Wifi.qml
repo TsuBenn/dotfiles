@@ -218,7 +218,7 @@ ColumnLayout {
                                 CellText {
 
                                     text: `${wifi.name}`
-                                    preferedW: list.contentW - 12
+                                    preferedW: list.contentW - 14
                                     color: !WifiInfo.scanning ? (wifi.in_use ? Colors.success : Colors.fgBase) : Colors.fgSubtle
                                     font: wifi.in_use ? Cell.fontB : Cell.font
 
@@ -226,7 +226,7 @@ ColumnLayout {
 
                                 CellText {
 
-                                    text: ` ${wifi.freq >= 5 ? "[5G]" : "[2.4G]"}`
+                                    text: ` ${wifi.security == "--" ? "" : "\uf023"} ${wifi.freq >= 5 ? `[5G]` : `[2.4G]`}`
                                     preferedW: list.contentW - 4
                                     color: Colors.fgSubtle
 

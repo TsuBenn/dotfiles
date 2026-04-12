@@ -20,7 +20,7 @@ ColumnLayout {
         id: list
 
         w: root.box.contentW
-        h: 12
+        h: 20
 
         ColumnLayout {
 
@@ -82,7 +82,7 @@ ColumnLayout {
 
                                 CellText {
 
-                                    text: ` ${stream.app} | ${stream.name}`
+                                    text: stream.app.toLowerCase() == stream.name.toLowerCase() ? ` ${stream.app}` : ` ${stream.app} | ${stream.name}`
 
                                     preferedW: stream.w - 8
 
@@ -149,7 +149,7 @@ ColumnLayout {
         type: 0
         padding: 1
         w: root.box.contentW
-        color: Colors.fgSubtle
+        color: Qt.darker(Colors.fgSubtle,1.5)
         title.text: "MASTER VOLUME"
         title.font: Cell.fontB
 

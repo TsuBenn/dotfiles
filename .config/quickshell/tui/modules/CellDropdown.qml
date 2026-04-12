@@ -29,7 +29,7 @@ Item {
     property Type button: Type {
         color: Colors.bgOverlay
         fg: Colors.fgBase
-        active: Qt.darker(Colors.fgSubtle,1.4)
+        active: Colors.bgOverlay
         active_invert: Colors.fgBase
     }
 
@@ -74,7 +74,7 @@ Item {
             }
 
             CellText {
-                text: " ▾" + " ".repeat(root.padding)
+                text: (!root.active ? " ⏷" : " ⏶") + " ".repeat(root.padding)
                 color: root.active ? root.button.active_invert : root.button.fg
             }
 

@@ -320,7 +320,7 @@ ColumnLayout {
         type: 0
         padding: 1
         w: root.box.contentW
-        color: Colors.fgSubtle
+        color: Qt.darker(Colors.fgSubtle,1.5)
         title.text: "BRIGHTNESS"
         title.font: Cell.fontB
 
@@ -363,7 +363,7 @@ ColumnLayout {
         visible: true
 
         w: root.box.contentW
-        type: 0
+        type: 2
 
         padding: 0
         color: Colors.fgSubtle
