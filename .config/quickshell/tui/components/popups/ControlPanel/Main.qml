@@ -365,7 +365,7 @@ ColumnLayout {
         w: root.box.contentW
         type: 0
 
-        padding: 1
+        padding: 0
         color: Colors.fgSubtle
 
     }
