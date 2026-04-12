@@ -68,7 +68,7 @@ Item {
         w: root.w
         y: Cell.h(1)
         padding: root.padding
-        type: 1
+        type: 0
         color: root.color.fg
 
     }

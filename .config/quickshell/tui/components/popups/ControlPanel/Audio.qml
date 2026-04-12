@@ -102,8 +102,8 @@ ColumnLayout {
                                         w: stream.w - 10
                                         percent: stream.volume
                                         interactive: true
-                                        syncDelay: 200
-                                        adjustOnHold: true
+                                        syncDelay: 1500
+                                        adjustOnHold: false
                                         cellInterval: 2
 
                                         fg: Colors.accentStrong
