@@ -37,6 +37,11 @@ Item {
     implicitWidth: button.implicitWidth
     implicitHeight: button.implicitHeight
     
+    onVisibleChanged: {
+        mouse.buttonDown = ""
+        mouse.hovered = false
+    }
+
     onClickableChanged: {
         mouse.buttonDown = ""
         mouse.hovered = false

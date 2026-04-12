@@ -81,7 +81,7 @@ ColumnLayout {
 
         CellText {
 
-            text: "█"
+            text: " █"
 
             color: {
                 if (!SystemInfo.wifi.enabled) {
@@ -126,7 +126,7 @@ ColumnLayout {
 
                     font: SystemInfo.wifi.enabled ? Cell.fontB : Cell.font
 
-                    preferedW: root.box.contentW - 12 - 6
+                    preferedW: root.box.contentW - 12 - 7
 
                     color: {
                         if (!SystemInfo.wifi.enabled) {
@@ -212,7 +212,7 @@ ColumnLayout {
 
         CellText {
 
-            text: "█"
+            text: " █"
 
             color: {
                 if (!SystemInfo.bluetooth.enabled) {
@@ -254,7 +254,7 @@ ColumnLayout {
 
                     font: SystemInfo.bluetooth.devices.length > 0 ? Cell.fontB : Cell.font
 
-                    preferedW: root.box.contentW - 12 - 6
+                    preferedW: root.box.contentW - 12 - 7
 
                     color: {
                         if (!SystemInfo.bluetooth.enabled) {

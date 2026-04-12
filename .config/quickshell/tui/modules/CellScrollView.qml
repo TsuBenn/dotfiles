@@ -47,6 +47,12 @@ Cells {
         offset = 0
     }
 
+    onChildrenChanged: {
+        for (let i = 3; i < children.length; i++) {
+            children[i].parent = content
+        }
+    }
+
     Cells {
 
         w: root.w - root.padding*2
@@ -55,23 +61,17 @@ Cells {
         clip: true
         color: "transparent"
 
-        ColumnLayout {
+        Item {
 
             id: content
 
-            spacing: Cell.h(root.spacing)
-
             y: -Cell.h(1)*root.offset
 
-            Repeater {
-
-                model: root.model
-
-                delegate: root.item
-
-            }
+            implicitHeight: childrenRect.height
+            implicitWidth: childrenRect.width
 
         }
+
 
     }
 

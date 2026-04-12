@@ -52,7 +52,6 @@ Item {
             count += 2
         }
         count = Cell.w(Math.round((w - count)/(items.length+1)))
-        console.log(count)
         return count
     }
 

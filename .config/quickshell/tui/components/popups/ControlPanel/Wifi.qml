@@ -115,261 +115,268 @@ ColumnLayout {
         w: root.box.contentW
         h: root.h - 2 - 2*(wifi_report.status != "")
 
-        model: WifiInfo.wifi_scan
-
         signal collapse(wifi: string)
 
-        item: Cells {
+        ColumnLayout {
 
-            id: wifi
+            spacing: 0
 
-            required property string name
-            required property string security
-            required property real freq
-            required property int signal
-            required property bool in_use
+            Repeater {
+                model: WifiInfo.wifi_scan
+                delegate: Cells {
 
-            w: list.contentW
-            h: Cell.hCount(wifi_button.implicitHeight)
+                    id: wifi
 
-            property bool password: false
-
-            onVisibleChanged: {
-                password = false
-            }
-
-            color: "transparent"
-
-            function connect(pass = "") {
-                if (pass.length < 8) {
-                    if (!password) {
-                        password = true
-                        return
-                    }
-                    wifi_report.status = "Info"
-                    wifi_report.report = "Password must be 8 characters or more"
-                    return
-                }
-                WifiInfo.connect(name, pass)
-                password = false
-            }
-
-            Component.onCompleted: {
-                WifiInfo.error.connect((error_wifi) => {
-                    wifi_report.status = "Error"
-                    wifi_report.report = error_wifi
-                })
-                WifiInfo.success.connect((success_wifi) => {
-                    wifi_report.status = "Success"
-                    wifi_report.report = success_wifi
-                })
-                WifiInfo.rescanned.connect(() => {
-                    list.reset()
-                })
-                list.collapse.connect((name) => {
-                    if (!name || !wifi) return
-                    if (name != wifi.name) {
-                        wifi.password = false
-                    }
-                })
-            }
-
-            ColumnLayout {
-
-                id: wifi_button
-
-                spacing: 0
-
-                Cells {
+                    required property string name
+                    required property string security
+                    required property real freq
+                    required property int signal
+                    required property bool in_use
 
                     w: list.contentW
-                    h: 1
+                    h: Cell.hCount(wifi_button.implicitHeight)
+
+                    property bool password: false
+
+                    onVisibleChanged: {
+                        password = false
+                    }
 
                     color: "transparent"
 
-                    Cells {
-
-                        id: wifi_select
-
-                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
-
-                        w: list.contentW - 2
-                        h: 1
-
-                        color: "transparent"
-
+                    function connect(pass = "") {
+                        if (pass.length < 8) {
+                            if (!password) {
+                                password = true
+                                return
+                            }
+                            wifi_report.status = "Info"
+                            wifi_report.report = "Password must be 8 characters or more"
+                            return
+                        }
+                        WifiInfo.connect(name, pass)
+                        password = false
                     }
 
-                    RowLayout {
+                    Component.onCompleted: {
+                        WifiInfo.error.connect((error_wifi) => {
+                            wifi_report.status = "Error"
+                            wifi_report.report = error_wifi
+                        })
+                        WifiInfo.success.connect((success_wifi) => {
+                            wifi_report.status = "Success"
+                            wifi_report.report = success_wifi
+                        })
+                        WifiInfo.rescanned.connect(() => {
+                            list.reset()
+                        })
+                        list.collapse.connect((name) => {
+                            if (!name || !wifi) return
+                            if (name != wifi.name) {
+                                wifi.password = false
+                            }
+                        })
+                    }
+
+                    ColumnLayout {
+
+                        id: wifi_button
 
                         spacing: 0
 
-                        CellText {
+                        Cells {
 
-                            text: ` █  `
-                            color: wifi.in_use ? Colors.success : WifiInfo.isSaved(wifi.name) ? Colors.info : Colors.bgOverlay
-
-                        }
-
-                        CellText {
-
-                            text: `${wifi.name}`
-                            preferedW: list.contentW - 12
-                            color: !WifiInfo.scanning ? (wifi.in_use ? Colors.success : Colors.fgBase) : Colors.fgSubtle
-                            font: wifi.in_use ? Cell.fontB : Cell.font
-
-                        }
-
-                        CellText {
-
-                            text: ` ${wifi.freq >= 5 ? "[5G]" : "[2.4G]"}`
-                            preferedW: list.contentW - 4
-                            color: Colors.fgSubtle
-
-                        }
-
-                    }
-
-                }
-
-                CellText {
-
-                    visible: wifi.password
-                    text: ""
-
-                }
-
-                RowLayout {
-
-                    visible: wifi.password
-
-                    spacing: 0
-
-                    CellText {
-                        text: "  Pass: "
-                    }
-
-                    Cells {
-
-                        w: list.contentW - 10
-                        h: 1
-
-                        color: Colors.bgOverlay
-
-                        CellTextField {
-                            id: pass_input
-                            w: parent.w
+                            w: list.contentW
                             h: 1
-                            hidden: true
-                            focus: visible
 
-                            onEntered: (text) => {
-                                wifi.connect(text)
+                            color: "transparent"
+
+                            Cells {
+
+                                id: wifi_select
+
+                                x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                                w: list.contentW - 2
+                                h: 1
+
+                                color: "transparent"
+
                             }
+
+                            RowLayout {
+
+                                spacing: 0
+
+                                CellText {
+
+                                    text: ` █  `
+                                    color: wifi.in_use ? Colors.success : WifiInfo.isSaved(wifi.name) ? Colors.info : Colors.bgOverlay
+
+                                }
+
+                                CellText {
+
+                                    text: `${wifi.name}`
+                                    preferedW: list.contentW - 12
+                                    color: !WifiInfo.scanning ? (wifi.in_use ? Colors.success : Colors.fgBase) : Colors.fgSubtle
+                                    font: wifi.in_use ? Cell.fontB : Cell.font
+
+                                }
+
+                                CellText {
+
+                                    text: ` ${wifi.freq >= 5 ? "[5G]" : "[2.4G]"}`
+                                    preferedW: list.contentW - 4
+                                    color: Colors.fgSubtle
+
+                                }
+
+                            }
+
                         }
 
+                        CellText {
+
+                            visible: wifi.password
+                            text: ""
+
+                        }
+
+                        RowLayout {
+
+                            visible: wifi.password
+
+                            spacing: 0
+
+                            CellText {
+                                text: "  Pass: "
+                            }
+
+                            Cells {
+
+                                w: list.contentW - 10
+                                h: 1
+
+                                color: Colors.bgOverlay
+
+                                CellTextField {
+                                    id: pass_input
+                                    w: parent.w
+                                    h: 1
+                                    hidden: true
+                                    focus: visible
+
+                                    onEntered: (text) => {
+                                        wifi.connect(text)
+                                    }
+                                }
+
+                            }
+
+                        }
+
+                        CellText {
+
+                            visible: wifi.password
+                            text: ""
+
+                        }
+
+                        RowLayout {
+
+                            Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(list.contentW))
+
+                            visible: wifi.password
+
+                            spacing: Cell.w(6)
+
+                            CellButton {
+                                text: "Connect"
+
+                                onReleased: (button) => {
+                                    if (button == "L") {
+                                        wifi.connect(pass_input.text)
+                                    }
+                                }
+
+                            }
+
+                            CellButton {
+                                text: "Cancel"
+
+                                onReleased: (button) => {
+                                    if (button == "L") {
+                                        wifi.password = !wifi.password
+                                    }
+                                }
+
+                            }
+
+                        }
+
+                        CellSeparator {
+
+                            padding: 1
+                            type: 2
+                            w: list.contentW
+                            color: Colors.bgOverlay
+
+                        }
                     }
 
-                }
+                    MouseControl {
 
-                CellText {
+                        visible: !WifiInfo.scanning
 
-                    visible: wifi.password
-                    text: ""
+                        y: -Cell.h(0.5)
 
-                }
+                        implicitWidth: Cell.w(list.contentW)
+                        implicitHeight: Cell.h(2)
 
-                RowLayout {
+                        onEntered: {
+                            wifi_select.color = Colors.bgOverlay
+                        }
+                        onExited: {
+                            wifi_select.color = "transparent"
+                        }
 
-                    Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(list.contentW))
-
-                    visible: wifi.password
-
-                    spacing: Cell.w(6)
-
-                    CellButton {
-                        text: "Connect"
-
-                        onReleased: (button) => {
+                        onPressed: (button) => {
+                            const global = mapToGlobal(mouseX, mouseY)
                             if (button == "L") {
-                                wifi.connect(pass_input.text)
+                                if (wifi.in_use) return
+                                if (wifi.security == "--" || WifiInfo.isSaved(wifi.name)) {
+                                    console.log(WifiInfo.connect(wifi.name))
+                                } else {
+                                    list.collapse(wifi.name)
+                                    wifi.password = !wifi.password
+                                }
+                            } else if (button == "R") {
+                                if (wifi.in_use) {
+                                    ContextMenuManager.show([
+                                        {label: "Disconnect", action: () => WifiInfo.disconnect(wifi.name)},
+                                        {label: "Forget network", action: () => WifiInfo.forget(wifi.name)}
+                                    ],global.x,global.y,undefined,wifi.name)
+                                    return
+                                } 
+                                if (WifiInfo.isSaved(wifi.name)) {
+                                    ContextMenuManager.show([
+                                        {label: "Connect", action: () => WifiInfo.connect(wifi.name)},
+                                        {label: "Forget network", action: () => WifiInfo.forget(wifi.name)}
+                                    ],global.x,global.y,undefined,wifi.name)
+                                    return
+                                } 
+                                ContextMenuManager.show([
+                                    {label: "Connect", action: () => wifi.connect()}
+                                ],global.x,global.y,undefined,wifi.name)
                             }
+
                         }
 
                     }
-
-                    CellButton {
-                        text: "Cancel"
-
-                        onReleased: (button) => {
-                            if (button == "L") {
-                                wifi.password = !wifi.password
-                            }
-                        }
-
-                    }
-
-                }
-
-                CellSeparator {
-
-                    padding: 1
-                    type: 2
-                    w: list.contentW
-                    color: Colors.bgOverlay
-
                 }
             }
 
-            MouseControl {
-
-                visible: !WifiInfo.scanning
-
-                y: -Cell.h(0.5)
-
-                implicitWidth: Cell.w(list.contentW)
-                implicitHeight: Cell.h(2)
-
-                onEntered: {
-                    wifi_select.color = Colors.bgOverlay
-                }
-                onExited: {
-                    wifi_select.color = "transparent"
-                }
-
-                onPressed: (button) => {
-                    const global = mapToGlobal(mouseX, mouseY)
-                    if (button == "L") {
-                        if (wifi.in_use) return
-                        if (wifi.security == "--" || WifiInfo.isSaved(wifi.name)) {
-                            console.log(WifiInfo.connect(wifi.name))
-                        } else {
-                            list.collapse(wifi.name)
-                            wifi.password = !wifi.password
-                        }
-                    } else if (button == "R") {
-                        if (wifi.in_use) {
-                            ContextMenuManager.show([
-                                {label: "Disconnect", action: () => WifiInfo.disconnect(wifi.name)},
-                                {label: "Forget network", action: () => WifiInfo.forget(wifi.name)}
-                            ],global.x,global.y,undefined,wifi.name)
-                            return
-                        } 
-                        if (WifiInfo.isSaved(wifi.name)) {
-                            ContextMenuManager.show([
-                                {label: "Connect", action: () => WifiInfo.connect(wifi.name)},
-                                {label: "Forget network", action: () => WifiInfo.forget(wifi.name)}
-                            ],global.x,global.y,undefined,wifi.name)
-                            return
-                        } 
-                        ContextMenuManager.show([
-                            {label: "Connect", action: () => wifi.connect()}
-                        ],global.x,global.y,undefined,wifi.name)
-                    }
-
-                }
-
-            }
         }
 
     }
