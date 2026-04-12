@@ -12,7 +12,7 @@ Item {
     id: root
 
     property int w: 10
-    property int h: 10
+    property int h: 1
 
     implicitWidth: Cell.w(w)
     implicitHeight: Cell.h(h)
@@ -27,7 +27,7 @@ Item {
     property int min: 0
     property int max: 100
 
-    property bool vertical: true
+    property bool vertical: false
     property bool adjustOnHold: false
     property bool drag: true
     property bool wheel: true
@@ -93,7 +93,7 @@ Item {
 
         Repeater {
 
-            model: root.sections(root.w, root.percent)
+            model: root.sections(root.w, root.raw_percent)
 
             delegate: CellText {
 

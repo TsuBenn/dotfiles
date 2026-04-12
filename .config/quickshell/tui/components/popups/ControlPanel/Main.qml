@@ -176,7 +176,7 @@ ColumnLayout {
 
     CellSeparator {
 
-        visible: false
+        visible: true
 
         w: root.box.contentW
         type: 0
@@ -307,10 +307,10 @@ ColumnLayout {
         visible: true
 
         w: root.box.contentW
-        type: 2
+        type: 0
 
         padding: 1
-        color: Colors.bgOverlay
+        color: Colors.fgSubtle
 
     }
 

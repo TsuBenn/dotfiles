@@ -112,6 +112,7 @@ Cells {
 
             CellText {
                 text: "["
+                color: Colors.fgSubtle
             } 
 
             CellProgressSquare {
@@ -141,6 +142,7 @@ Cells {
 
             CellText {
                 text: "]"
+                color: Colors.fgSubtle
             } 
 
         }

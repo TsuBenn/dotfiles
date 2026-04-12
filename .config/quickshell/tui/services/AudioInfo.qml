@@ -104,6 +104,8 @@ Singleton {
         running: true
         repeat: true
 
+        triggeredOnStart: true
+
         onTriggered: {
             status.running = true
             mixerstatus.running = true

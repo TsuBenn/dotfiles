@@ -38,9 +38,6 @@ Cells {
         arrow: 0
     }
 
-    property var model
-    property Component item
-
     color: "transparent"
 
     function reset() {
