@@ -144,7 +144,21 @@ ColumnLayout {
 
     }
 
+    CellSeparator {
+
+        type: 0
+        padding: 1
+        w: root.box.contentW
+        color: Colors.fgSubtle
+        title.text: "MASTER VOLUME"
+        title.font: Cell.fontB
+
+    }
+
     CellText {
+
+        visible: false
+
         text: "  MASTER VOLUME"
         font: Cell.fontB
     }
@@ -183,12 +197,96 @@ ColumnLayout {
 
     CellSeparator {
 
-        type: 0
+        type: 2
         padding: 1
         w: root.box.contentW
-        color: Colors.fgSubtle
+        color: Colors.bgOverlay
 
     }
 
+    RowLayout {
+
+        spacing: 0
+
+        CellText {
+            text: " OUTPUT "
+        }
+
+        CellDropdown {
+            w: root.box.contentW - 9
+            text: ""
+            selected: {
+                for (const i in AudioInfo.sinks) {
+                    if (AudioInfo.sinks[i].id == AudioInfo.sinkDefault) {
+                        return i
+                    }
+                }
+                return 0
+            }
+            items: {
+                let items = []
+                for (const sink of AudioInfo.sinks) {
+                    items.push({
+                        label: sink.name,
+                        action: () => {
+                            AudioInfo.switchDefault(sink.id)
+                        }
+                    })
+                }
+                return items
+            }
+        }
+    }
+
+    CellSeparator {
+
+        w: root.box.contentW
+        padding: 2
+        color: Colors.bgOverlay
+
+    }
+
+    RowLayout {
+
+        spacing: 0
+
+        CellText {
+            text: "  INPUT "
+        }
+
+        CellDropdown {
+            w: root.box.contentW - 9
+            text: ""
+            selected: {
+                for (const i in AudioInfo.sources) {
+                    if (AudioInfo.sources[i].id == AudioInfo.sourceDefault) {
+                        return i
+                    }
+                }
+                return 0
+            }
+            items: {
+                let items = []
+                for (const sink of AudioInfo.sources) {
+                    items.push({
+                        label: sink.name,
+                        action: () => {
+                            AudioInfo.switchDefault(sink.id)
+                        }
+                    })
+                }
+                return items
+            }
+        }
+    }
+
+    CellSeparator {
+
+        type: 2
+        padding: 1
+        w: root.box.contentW
+        color: Colors.bgOverlay
+
+    }
 
 }

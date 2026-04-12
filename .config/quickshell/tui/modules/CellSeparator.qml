@@ -19,6 +19,7 @@ Item {
         property int offset: 0
         property bool centered: true
         property color color: Colors.fgBase
+        property font font: Cell.font
     }
 
     property Type title: Type {}
@@ -52,6 +53,7 @@ Item {
             x: root.title.centered ? Cell.centerWCell(implicitWidth, parent.implicitWidth) : Cell.w(root.title.offset)
 
             text: root.title.text == "" ? "" : " ".repeat(root.title.padding) + root.title.text + " ".repeat(root.title.padding)
+            font: root.title.font
             bg: root.bg
             color: root.title.color
 

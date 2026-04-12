@@ -38,6 +38,14 @@ Scope {
                 PopupManager.closed.connect((name) => {
                     if (name == "") root.shield = false
                 })
+                DropdownManager.opened.connect((name) => {
+                    ContextMenuManager.hide()
+                    root.shield = true
+                })
+                DropdownManager.closed.connect((name) => {
+                    if (PopupManager.active_popups.length > 0) return
+                    root.shield = false
+                })
                 ContextMenuManager.opened.connect((name) => {
                     root.shield = true
                 })
@@ -145,6 +153,7 @@ Scope {
 
                     onPressed: {
                         ContextMenuManager.hide()
+                        DropdownManager.hide()
                     }
                 }
 
@@ -201,13 +210,19 @@ Scope {
 
                     MouseControl {
 
-                        visible: context_menu.visible
+                        visible: context_menu.visible || dropdown.visible
 
                         anchors.fill: parent
 
                         onPressed: {
                             ContextMenuManager.hide()
+                            DropdownManager.hide()
                         }
+                    }
+
+                    CellDropdownMenu {
+                        id: dropdown
+                        monitor: root.monitor
                     }
 
                     CellContextMenu {

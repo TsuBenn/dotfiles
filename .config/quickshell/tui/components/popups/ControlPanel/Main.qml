@@ -13,6 +13,10 @@ ColumnLayout {
 
     spacing: 0
 
+    onVisibleChanged: {
+        BrightnessInfo.get()
+    }
+
     Cells {
 
         w: root.box.contentW
@@ -49,7 +53,7 @@ ColumnLayout {
     CellSeparator {
 
         w: root.box.contentW
-        padding: 1
+        padding: 0
 
     }
 
@@ -304,6 +308,58 @@ ColumnLayout {
 
     CellSeparator {
 
+        type: 2
+        padding: 1
+        w: root.box.contentW
+        color: Colors.bgOverlay
+
+    }
+
+    CellSeparator {
+
+        type: 0
+        padding: 1
+        w: root.box.contentW
+        color: Colors.fgSubtle
+        title.text: "BRIGHTNESS"
+        title.font: Cell.fontB
+
+    }
+
+    RowLayout {
+
+        Layout.leftMargin: Cell.centerWCell(implicitWidth,parent.implicitWidth)
+
+        spacing: 0
+
+        CellText{
+            text: "["
+            color: Colors.fgSubtle
+        }
+
+        CellProgressSquare {
+
+            w: root.box.w - 6
+            percent: BrightnessInfo.brightness
+            interactive: true
+            syncDelay: 200
+            adjustOnHold: true
+            cellInterval: 2
+
+            onAdjusted: (percent) => {
+                BrightnessInfo.set(percent)
+            }
+
+        }
+
+        CellText{
+            text: "]"
+            color: Colors.fgSubtle
+        }
+    }
+
+    CellSeparator {
+
         visible: true
 
         w: root.box.contentW
@@ -318,6 +374,7 @@ ColumnLayout {
 
         id: tab
 
+        padding: 1
         type: 0
         w: root.box.contentW
         color.fg: Qt.lighter(Colors.bgOverlay,1.4)
@@ -334,6 +391,22 @@ ColumnLayout {
 
         visible: tab.selected == 0
 
+    }
+
+    CellSeparator {
+
+        w: root.box.contentW
+        padding: 0
+
+    }
+
+    RowLayout {
+        spacing: 0
+
+        CellText {
+            text: ` ${SystemInfo.username}@${SystemInfo.hostname}`
+            color: Colors.fgSubtle
+        }
     }
 
 }

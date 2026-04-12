@@ -18,6 +18,8 @@ Cells {
 
     property int offset: 0
 
+    property bool keyNav: true
+
     component Type: Item {
         property bool enabled: true
         property bool toScale: true
@@ -67,6 +69,7 @@ Cells {
             implicitHeight: childrenRect.height
             implicitWidth: childrenRect.width
 
+
         }
 
 
@@ -104,6 +107,7 @@ Cells {
 
     MouseControl {
 
+
         anchors.fill: parent
 
         acceptedButtons: Qt.NoButton
@@ -115,5 +119,6 @@ Cells {
         }
 
     }
+
 
 }
