@@ -14,15 +14,43 @@ Item {
     property color bg: "transparent"
 
     property bool centered: false
+    property bool wrap: false
 
     property int preferedW: 0
 
     property int w: 0
     property int h: 0
 
+    function wrapText(text, maxLength) {
+        const lines = text.split('\n');
+        const wrappedLines = [];
+
+        for (const line of lines) {
+            const words = line.split(' ');
+            let current = '';
+
+            for (const word of words) {
+                if ((current + word).length > maxLength) {
+                    wrappedLines.push(current.trim());
+                    current = '';
+                }
+                current += word + ' ';
+            }
+
+            if (current.trim()) {
+                wrappedLines.push(current.trim());
+            }
+        }
+
+        return wrappedLines.join('\n');
+    }
+
     onTextChanged: {
         w = 0
         h = 0
+        if (wrap && preferedW > 0) {
+            text = wrapText(text,preferedW)
+        }
     }
 
     implicitHeight: Cell.h(h)

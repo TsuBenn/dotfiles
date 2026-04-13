@@ -155,7 +155,7 @@ ColumnLayout {
                 visible: AudioInfo.streams.length == 0
                 Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(list.contentW))
 
-                text: "No notifications"
+                text: "No media"
                 color: Colors.fgSubtle
             }
 

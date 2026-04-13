@@ -16,17 +16,15 @@ CellPopup {
 
     property var notif: []
 
-    w: 40
+    w: 50
     h: Cell.hCount(layout.implicitHeight)
 
     Component.onCompleted: {
-
         NotificationsInfo.notificationSent.connect((notif) => {
             let new_notif = root.notif
             new_notif = [...new_notif, notif]
             root.notif = new_notif
         })
-
     }
 
     ColumnLayout {
@@ -49,8 +47,21 @@ CellPopup {
                 property string summary: modelData.summary
                 property string body: modelData.body
 
+                property bool focused: false
+
                 w: root.w
                 h: 4 + (body.text.split("\n").length-1)
+
+                MouseControl {
+                    anchors.fill: parent
+
+                    onEntered: {
+                        timer.stop() 
+                    }
+                    onExited: {
+                        timer.restart()
+                    }
+                }
 
                 Cells {
 
@@ -100,7 +111,7 @@ CellPopup {
                             CellText {
                                 id: body
                                 text: popup.body?.length > 0 ? popup.body : ""
-                                preferedW: root.w - 10
+                                preferedW: root.w - 14
                             }
 
                         }
@@ -120,18 +131,23 @@ CellPopup {
                         }
                     }
 
-                }
+                    Timer {
+                        id: timer
 
-                Timer {
-                    id: timer
-
-                    interval: 5000
-                    running: popup.index == 0
-                    onTriggered: {
-                        let notif = root.notif 
-                        root.notif = notif.slice(1)
+                        interval: {
+                            const base = 2000
+                            const extra = popup.body.length*50
+                            return Math.min(base + extra, 5000)
+                        }
+                        running: popup.index == 0
+                        onTriggered: {
+                            let notif = root.notif 
+                            root.notif = notif.slice(1)
+                        }
                     }
+
                 }
+
 
             }
 

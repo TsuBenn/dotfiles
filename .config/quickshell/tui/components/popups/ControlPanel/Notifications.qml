@@ -15,14 +15,25 @@ ColumnLayout {
 
     spacing: 0
 
+    onVisibleChanged: {
+        NotificationsInfo.refresh()
+        list.expanded = 0
+    }
+
     CellScrollView {
 
         id: list
 
         w: root.box.contentW
-        h: 26
+        h: 25
+
+        property int expanded: 0
 
         signal collapse()
+
+        onCollapse: {
+            expanded = 0
+        }
 
         ColumnLayout {
 
@@ -37,6 +48,12 @@ ColumnLayout {
                     id: notif
 
                     required property var modelData
+
+                    property var notif_group: modelData.notifications
+
+                    function refresh() {
+
+                    }
 
                     property bool group: modelData.notifications.length > 1
                     property bool expanded: false
@@ -81,6 +98,11 @@ ColumnLayout {
                             onReleased: (button) => {
                                 if (button == "L") {
                                     notif.expanded = !notif.expanded
+                                    if (notif.expanded) {
+                                        list.expanded += 1
+                                    } else {
+                                        list.expanded -= 1
+                                    }
                                 }
                             }
 
@@ -128,11 +150,26 @@ ColumnLayout {
                                 spacing: 0
 
                                 RowLayout {
+
                                     spacing: 0
+
                                     CellText {
                                         text: notif.group ? notif.modelData.app : notif.modelData.notifications[notif.modelData.notifications.length - 1].summary
                                         font: Cell.fontB
-                                        preferedW: list.contentW - 7 - 4*notif.group
+                                        preferedW: list.contentW - 11
+                                    }
+
+                                    CellButton {
+                                        visible: !notif.group
+                                        padding: 1
+                                        text: "\uea76"
+                                        color: [Colors.bgOverlay, Colors.fgBase]
+                                        fg: [Colors.fgBase, Colors.bgSurface]
+
+                                        onReleased: (button) => {
+                                            NotificationsInfo.dismiss(notif.modelData.app, 0)
+                                            NotificationsInfo.refresh()
+                                        }
                                     }
 
                                     CellText {
@@ -148,11 +185,24 @@ ColumnLayout {
                                     }
                                 }
 
-                                CellText {
+                                RowLayout {
+
                                     visible: !notif.expanded
-                                    text: notif.expanded ? "" : (notif.group ? notif.modelData.notifications[notif.modelData.notifications.length - 1].summary : notif.modelData.notifications[notif.modelData.notifications.length - 1].body)
-                                    preferedW: list.contentW - 7 - 4*notif.group
-                                    color: notif.group ? Colors.fgSubtle : Colors.fgBase
+
+                                    spacing: 0
+
+                                    CellText {
+                                        text: notif.expanded ? "" : (notif.group ? notif.modelData.notifications[notif.modelData.notifications.length - 1].summary : notif.modelData.notifications[notif.modelData.notifications.length - 1].body)
+                                        preferedW: list.contentW - 8 - timer.text.length
+                                        color: notif.group ? Colors.fgSubtle : Colors.fgBase
+                                    }
+
+                                    CellText {
+                                        id: timer
+                                        text: "  " + NotificationsInfo.formatTime(notif.modelData.notifications[notif.modelData.notifications.length - 1].time)
+                                        color: Colors.fgSubtle
+                                    }
+
                                 }
 
                                 ColumnLayout {
@@ -162,15 +212,15 @@ ColumnLayout {
 
                                     Repeater {
 
-                                        model: notif.modelData.notifications
+                                        model: notif.notif_group
 
                                         delegate: ColumnLayout {
 
                                             id: sub_notif
 
+                                            required property int index
                                             required property string summary
                                             required property string body
-                                            required property bool tracked
 
                                             spacing: 0
 
@@ -183,11 +233,13 @@ ColumnLayout {
                                             Cells {
 
                                                 w: list.contentW - 8
-                                                h: 2
+                                                h: Cell.hCount(sub_notif_layout.implicitHeight)
 
                                                 color: "transparent"
 
                                                 ColumnLayout {
+
+                                                    id: sub_notif_layout
 
                                                     spacing: 0
 
@@ -207,13 +259,33 @@ ColumnLayout {
                                                             fg: [Colors.fgBase, Colors.bgSurface]
 
                                                             onReleased: (button) => {
+                                                                NotificationsInfo.dismiss(notif.modelData.app, sub_notif.index)
+                                                                if (notif.notif_group.length == 2) {
+                                                                    NotificationsInfo.refresh()
+                                                                }
+                                                                notif.notif_group = notif.notif_group.filter((_, i) => i !== sub_notif.index);
                                                             }
                                                         }
 
                                                     }
 
-                                                    CellText {
-                                                        text: sub_notif.body
+                                                    RowLayout {
+
+                                                        spacing: 0
+
+                                                        CellText {
+                                                            Layout.alignment: Qt.AlignTop
+                                                            text: sub_notif.body
+                                                            preferedW: list.contentW - 8 - timer.text.length
+                                                            wrap: true
+                                                        }
+
+                                                        CellText {
+                                                            Layout.alignment: Qt.AlignBottom
+                                                            text: "  " + NotificationsInfo.formatTime(notif.modelData.notifications[notif.modelData.notifications.length - 1].time)
+                                                            color: Colors.fgSubtle
+                                                        }
+
                                                     }
 
                                                 }
@@ -307,8 +379,10 @@ ColumnLayout {
 
             text: "Collapse All"
 
+            clickable: list.expanded > 0
+
             color: [Colors.bgOverlay, Colors.fgBase]
-            fg: [Colors.fgBase, Colors.bgSurface]
+            fg: clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
 
             font: buttonDown ? Cell.fontB : Cell.font
 
