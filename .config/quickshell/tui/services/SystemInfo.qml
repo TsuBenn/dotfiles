@@ -96,7 +96,7 @@ Singleton {
     }
 
     onBatterystateChanged: {
-        if (batterystate == "charging") {
+        if (batterystate != "discharging") {
             notified5 = false
             notified10 = false
             notified20 = false
@@ -106,7 +106,7 @@ Singleton {
     }
 
     onBatteryChanged: {
-        if (batterystate == "charging") return
+        if (batterystate != "discharging") return
         notify_low_battery()
     }
 
