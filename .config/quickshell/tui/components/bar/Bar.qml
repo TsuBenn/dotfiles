@@ -176,7 +176,7 @@ Scope {
                 implicitWidth: root.monitor.width
                 implicitHeight: root.monitor.height
 
-                visible: true
+                visible: false
 
                 focusable: true
 

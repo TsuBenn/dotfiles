@@ -8,8 +8,6 @@ Singleton {
 
     id: root
 
-    property int noti_count: 10
-
     property list<Notification> notifications: notificationsServer.trackedNotifications.values
     property var notifications_groups: []
 
@@ -53,8 +51,6 @@ Singleton {
             })
 
             root.notifications_groups = notif_groups
-            console.log("New group")
-            console.log(root.notifications_groups[0].notifications.length)
 
             root.notifications_groupsChanged()
             root.notificationSent(noti)

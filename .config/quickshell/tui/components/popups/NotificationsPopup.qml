@@ -53,6 +53,7 @@ CellPopup {
                 h: 4 + (body.text.split("\n").length-1)
 
                 Cells {
+
                     id: content
 
                     w: popup.contentW
@@ -88,6 +89,8 @@ CellPopup {
 
                         ColumnLayout {
 
+                            spacing: 0
+
                             CellText {
                                 text: popup.summary
                                 preferedW: root.w - 15
@@ -107,7 +110,7 @@ CellPopup {
                     CellButton {
                         x: Cell.alignRightWCell(implicitWidth,content.implicitWidth) - Cell.w(1)
                         padding: 1
-                        text: "X"
+                        text: "\uea76"
                         color: [Colors.bgOverlay, Colors.fgBase]
                         fg: [Colors.fgBase, Colors.bgSurface]
 
@@ -122,7 +125,7 @@ CellPopup {
                 Timer {
                     id: timer
 
-                    interval: 2000
+                    interval: 5000
                     running: popup.index == 0
                     onTriggered: {
                         let notif = root.notif 

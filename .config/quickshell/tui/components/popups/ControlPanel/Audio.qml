@@ -142,6 +142,25 @@ ColumnLayout {
 
         }
 
+        ColumnLayout {
+
+            spacing: 0
+
+            CellText {
+                visible: AudioInfo.streams.length == 0
+                text: " "
+            }
+
+            CellText {
+                visible: AudioInfo.streams.length == 0
+                Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(list.contentW))
+
+                text: "No notifications"
+                color: Colors.fgSubtle
+            }
+
+        }
+
     }
 
     CellSeparator {
