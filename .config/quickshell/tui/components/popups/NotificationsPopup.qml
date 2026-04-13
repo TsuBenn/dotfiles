@@ -44,6 +44,7 @@ CellPopup {
                 required property int index
                 required property var modelData
 
+                property int urgency: modelData.urgency
                 property string summary: modelData.summary
                 property string body: modelData.body
 
@@ -106,12 +107,21 @@ CellPopup {
                                 text: popup.summary
                                 preferedW: root.w - 15
                                 font: Cell.fontB
+                                color: {
+                                    if (popup.urgency == 2) {
+                                        return Colors.blend(Colors.fgBase, Colors.danger, 0.8)
+                                    } else if (popup.urgency == 1) {
+                                        return Colors.blend(Colors.fgBase, Colors.warning, 0.5)
+                                    }
+                                    return Colors.fgBase
+                                }
                             }
 
                             CellText {
                                 id: body
                                 text: popup.body?.length > 0 ? popup.body : ""
                                 preferedW: root.w - 14
+                                wrap: true
                             }
 
                         }
@@ -135,8 +145,8 @@ CellPopup {
                         id: timer
 
                         interval: {
-                            const base = 2000
-                            const extra = popup.body.length*50
+                            const base = 1500
+                            const extra = popup.body.length*100
                             return Math.min(base + extra, 5000)
                         }
                         running: popup.index == 0

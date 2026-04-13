@@ -13,10 +13,18 @@ Singleton {
 
     signal notificationSent(notification: var)
 
+    function clear() {
+        notifications_groups = []
+    }
+
     function dismiss(app: string, index: int) {
         const buffer = notifications_groups
         for (const i in buffer) {
             if (buffer[i].app == app) {
+                if (index == -1) {
+                    buffer.splice(i,1)
+                    break
+                }
                 buffer[i].notifications.splice(index, 1)
             }
             if (buffer[i].notifications.length == 0) {
@@ -46,6 +54,17 @@ Singleton {
         }
     }
 
+    function send(app, icon, summary, body, urgency = 0) {
+        root.notificationSent({
+            "app": app.trim(),
+            "icon": icon.trim(),
+            "summary": summary.trim(),
+            "body": body.trim(),
+            "urgency": urgency,
+            "time": 0,
+        })
+    }
+
     Timer {
         id: counter
         interval: 1000
@@ -60,66 +79,108 @@ Singleton {
         }
     }
 
+    onNotificationSent: (noti) => {
+        add(noti.app, noti.icon, noti.summary, noti.body, noti.urgency)
+    }
+
+    function add(appName, appIcon, summary, body, urgency) {
+        let notif_groups = root.notifications_groups
+        root.notifications_groups = []
+
+        if (notif_groups.length == 0) {
+            notif_groups.unshift({
+                "app": appName,
+                "icon": appIcon,
+                "notifications": [
+                    {
+                        "summary": summary.trim(),
+                        "body": [body.trim()],
+                        "urgency": urgency,
+                        "time": 0,
+                    }
+                ]
+            })
+        } else {
+            let new_group = true
+            for (const i in notif_groups) {
+                if (notif_groups[i].app == appName) {
+                    for (const j in notif_groups[i].notifications) {
+                        if (notif_groups[i].notifications[j].summary == summary) {
+                            if (notif_groups[i].notifications[j].time > 7) {
+                                notif_groups[i].notifications.unshift(
+                                    {
+                                        "summary": summary.trim(),
+                                        "body": [body.trim()],
+                                        "urgency": urgency,
+                                        "time": 0,
+                                    }
+                                )
+                            } else {
+                                notif_groups[i].notifications[j].body.unshift(body)
+                            }
+                            break
+                        }
+                        notif_groups[i].notifications.unshift(
+                            {
+                                "summary": summary.trim(),
+                                "body": [body.trim()],
+                                "urgency": urgency,
+                                "time": 0,
+                            }
+                        )
+                    }
+                    new_group = false
+                    break
+                }
+            }
+            if (new_group) {
+                notif_groups.unshift({
+                    "app": appName,
+                    "icon": appIcon,
+                    "notifications": [
+                        {
+                            "summary": summary.trim(),
+                            "body": [body.trim()],
+                            "urgency": urgency,
+                            "time": 0,
+                        }
+                    ]
+                })
+            }
+        }
+
+        root.notifications_groups = notif_groups
+    }
+
     NotificationServer {
         id: notificationsServer
 
         onNotification: (noti) => {
             console.log("Received Notification: " + noti.summary + " " + noti.body)
 
-            root.notificationSent({
-                "summary": noti.summary,
-                "body": noti.body,
-                "urgency": noti.urgency,
-                "time": 0,
-            })
+            let summary = noti.summary
+            let body = noti.body
 
-            let notif_groups = root.notifications_groups
-            root.notifications_groups = []
+            noti.keepOnReload = false
 
-            if (notif_groups.length == 0) {
-                notif_groups.push({
-                    "app": noti.appName,
-                    "icon": noti.appIcon,
-                    "notifications": [
-                        {
-                            "summary": noti.summary,
-                            "body": noti.body,
-                            "urgency": noti.urgency,
-                            "time": 0,
-                        }
-                    ]
-                })
-            } else {
-                let new_group = true
-                for (const i in notif_groups) {
-                    if (notif_groups[i].app == noti.appName) {
-                        notif_groups[i].notifications.push({
-                            "summary": noti.summary,
-                            "body": noti.body,
-                            "urgency": noti.urgency,
-                            "time": 0,
-                        })
-                        new_group = false
-                        break
-                    }
-                }
-                if (new_group) {
-                    notif_groups.push({
-                        "app": noti.appName,
-                        "icon": noti.appIcon,
-                        "notifications": [
-                            {
-                                "summary": noti.summary,
-                                "body": noti.body,
-                                "urgency": noti.urgency,
-                                "time": 0,
-                            }
-                        ]
-                    })
-                }
+            let urgency = 0
+            if (NotificationUrgency.toString(noti.urgency) == "Critical") {
+                urgency = 2
+            } else if (NotificationUrgency.toString(noti.urgency) == "Normal") {
+                urgency = 1
             }
 
-            root.notifications_groups = notif_groups
+            let appName = noti.appName
+            let appIcon = noti.appIcon
+
+            root.notificationSent({
+                "app": appName,
+                "icon": appIcon,
+                "summary": summary.trim(),
+                "body": body.trim(),
+                "urgency": urgency,
+                "time": 0,
+            })
 
         }
     }

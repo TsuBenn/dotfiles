@@ -51,11 +51,7 @@ ColumnLayout {
 
                     property var notif_group: modelData.notifications
 
-                    function refresh() {
-
-                    }
-
-                    property bool group: modelData.notifications.length > 1
+                    property bool group: modelData.notifications.length > 1 || modelData.notifications[0].body.length > 1
                     property bool expanded: false
 
                     w: list.contentW
@@ -84,8 +80,6 @@ ColumnLayout {
 
                             id: expander
 
-                            visible: notif.group
-
                             anchors.fill: parent
 
                             onEntered: {
@@ -97,12 +91,32 @@ ColumnLayout {
 
                             onReleased: (button) => {
                                 if (button == "L") {
-                                    notif.expanded = !notif.expanded
-                                    if (notif.expanded) {
-                                        list.expanded += 1
-                                    } else {
-                                        list.expanded -= 1
+                                    if (notif.group) {
+                                        notif.expanded = !notif.expanded
+                                        if (notif.expanded) {
+                                            list.expanded += 1
+                                        } else {
+                                            list.expanded -= 1
+                                        }
                                     }
+                                }
+                                if (button == "R") {
+                                    const global = mapToGlobal(mouseX, mouseY)
+                                    ContextMenuManager.show(
+                                        [
+                                            {label: "Dismiss", action: () => {
+                                                NotificationsInfo.dismiss(notif.modelData.app, -1)
+                                                NotificationsInfo.refresh()
+                                            }},
+                                            {label: notif.expanded ? "Collapse" : "Expand", disabled: !notif.group, action: () => {
+                                                notif.expanded = !notif.expanded
+                                            }}
+                                        ],
+                                        global.x,
+                                        global.y,
+                                        undefined,
+                                        notif.modelData.app
+                                    )
                                 }
                             }
 
@@ -154,7 +168,7 @@ ColumnLayout {
                                     spacing: 0
 
                                     CellText {
-                                        text: notif.group ? notif.modelData.app : notif.modelData.notifications[notif.modelData.notifications.length - 1].summary
+                                        text: notif.group ? notif.modelData.app : notif.modelData.notifications[0].summary
                                         font: Cell.fontB
                                         preferedW: list.contentW - 11
                                     }
@@ -192,14 +206,15 @@ ColumnLayout {
                                     spacing: 0
 
                                     CellText {
-                                        text: notif.expanded ? "" : (notif.group ? notif.modelData.notifications[notif.modelData.notifications.length - 1].summary : notif.modelData.notifications[notif.modelData.notifications.length - 1].body)
+                                        text: notif.expanded ? "" : (notif.group ? notif.modelData.notifications[0].summary : notif.modelData.notifications[0].body[0])
                                         preferedW: list.contentW - 8 - timer.text.length
                                         color: notif.group ? Colors.fgSubtle : Colors.fgBase
+                                        wrap: true
                                     }
 
                                     CellText {
                                         id: timer
-                                        text: "  " + NotificationsInfo.formatTime(notif.modelData.notifications[notif.modelData.notifications.length - 1].time)
+                                        text: "  " + NotificationsInfo.formatTime(notif.modelData.notifications[0].time)
                                         color: Colors.fgSubtle
                                     }
 
@@ -220,7 +235,7 @@ ColumnLayout {
 
                                             required property int index
                                             required property string summary
-                                            required property string body
+                                            required property var body
 
                                             spacing: 0
 
@@ -236,6 +251,33 @@ ColumnLayout {
                                                 h: Cell.hCount(sub_notif_layout.implicitHeight)
 
                                                 color: "transparent"
+
+                                                MouseControl {
+
+                                                    anchors.fill: parent
+
+                                                    onReleased: (button) => {
+                                                        if (button == "R") {
+                                                            const global = mapToGlobal(mouseX, mouseY)
+                                                            ContextMenuManager.show(
+                                                                [
+                                                                    {label: "Dismiss", action: () => {
+                                                                        NotificationsInfo.dismiss(notif.modelData.app, sub_notif.index)
+                                                                        if (notif.notif_group.length == 2) {
+                                                                            NotificationsInfo.refresh()
+                                                                        }
+                                                                        notif.notif_group = notif.notif_group.filter((_, i) => i !== sub_notif.index);
+                                                                    }},
+                                                                ],
+                                                                global.x,
+                                                                global.y,
+                                                                undefined,
+                                                                notif.modelData.app
+                                                            )
+                                                        }
+                                                    }
+
+                                                }
 
                                                 ColumnLayout {
 
@@ -273,16 +315,47 @@ ColumnLayout {
 
                                                         spacing: 0
 
-                                                        CellText {
-                                                            Layout.alignment: Qt.AlignTop
-                                                            text: sub_notif.body
-                                                            preferedW: list.contentW - 8 - timer.text.length
-                                                            wrap: true
+                                                        ColumnLayout {
+
+                                                            spacing: 0
+
+                                                            Repeater {
+
+                                                                model: sub_notif.body
+
+                                                                delegate: RowLayout {
+
+                                                                    required property string modelData
+
+                                                                    spacing: 0
+
+                                                                    CellText {
+                                                                        Layout.alignment: Qt.AlignTop
+
+                                                                        text: "· "
+                                                                        color: Colors.fgSubtle
+
+                                                                    }
+
+                                                                    CellText {
+                                                                        Layout.alignment: Qt.AlignTop
+
+                                                                        text: modelData
+                                                                        preferedW: list.contentW - 10 - sub_timer.text.length
+                                                                        color: Colors.fgDim
+                                                                        wrap: true
+                                                                    }
+
+                                                                }
+                                                            }
+
+
                                                         }
 
                                                         CellText {
-                                                            Layout.alignment: Qt.AlignBottom
-                                                            text: "  " + NotificationsInfo.formatTime(notif.modelData.notifications[notif.modelData.notifications.length - 1].time)
+                                                            id: sub_timer
+                                                            Layout.alignment: Qt.AlignTop
+                                                            text: "  " + NotificationsInfo.formatTime(notif.modelData.notifications[sub_notif.index].time)
                                                             color: Colors.fgSubtle
                                                         }
 
@@ -349,8 +422,9 @@ ColumnLayout {
 
     CellSeparator {
         w: root.box.contentW
-        padding: 1
-        color: Colors.fgSubtle
+        padding: 0
+        color: Colors.bgOverlay
+        type: 2
     }
 
     RowLayout {
@@ -368,6 +442,12 @@ ColumnLayout {
             fg: [Colors.fgBase, Colors.bgSurface]
 
             font: buttonDown ? Cell.fontB : Cell.font
+
+            onReleased: (button) => {
+                if (button == "L") {
+                    NotificationsInfo.clear()
+                }
+            }
 
         }
 

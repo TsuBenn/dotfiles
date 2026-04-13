@@ -55,6 +55,15 @@ Scope {
                     if (PopupManager.active_popups.length > 0) return
                     root.shield = false
                 })
+                SystemInfo.lowBattery.connect((percent) => {
+                    if (percent == 20) {
+                        NotificationsInfo.send("System", "", "Low Battery", "20% battery remaining - plug in soon!", 0)
+                    } else if (percent == 10) {
+                        NotificationsInfo.send("System", "", "Low Battery!", "10% battery remaining - best to plug in now!", 1)
+                    } else if (percent == 5) {
+                        NotificationsInfo.send("System", "", "LOW BATTERY!", "5% battery remaining - plug in now!", 2)
+                    }
+                })
                 for (const m of Hyprland.monitors.values) {
                     if (m.name == screen.name) {
                         monitorObject = m

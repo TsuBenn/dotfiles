@@ -68,10 +68,43 @@ Singleton {
     property string rootstoragename: "ROOT"
     property string networkdevice: "Wifi/Ethernet"
 
+    property bool notified5: false
+    property bool notified10: false
+    property bool notified20: false
+    property string curr_bat: ""
     property string battery: "inf"
     property string batterystate
     property string batteryhealth
     property bool onbattery
+
+    signal lowBattery(percent: int)
+
+    onBatteryChanged: {
+        if (curr_bat == battery) return
+        curr_bat = battery
+        const bat = parseInt(root.battery)
+        if (bat > 5 && notified5) {
+            notified5 = false
+        }
+        else if (bat > 10 && notified10) {
+            notified10 = false
+        }
+        else if (bat > 20 && notified20) {
+            notified20 = false
+        }
+        if (bat <= 5 && !notified5) {
+            notified5 = true
+            lowBattery(5)
+        }
+        else if (bat <= 10 && !notified10) {
+            notified10 = true
+            lowBattery(10)
+        }
+        else if (bat <= 20 && !notified20) {
+            notified20 = true
+            lowBattery(20)
+        }
+    }
 
     property real  swaptotal
     property real  swapused
@@ -437,7 +470,6 @@ Singleton {
                         root.batterystate = text.match(/^\s+state:\s+(.*)\s+/m)[1]
                         root.batteryhealth = text.match(/^\s+capacity:\s+(.*%)/m)[1]
                         root.onbattery = true
-
                     } else {
                         root.battery = "inf"
                         root.batterystate = "PSU"
