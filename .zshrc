@@ -103,7 +103,7 @@ qsD() {
     qs -c ~/.config/quickshell/$1
 }
 qsR() {
-    qs kill
+    qs kill -c $1
     qs -c ~/.config/quickshell/$1 -d
 }
 

@@ -7,6 +7,8 @@ Singleton {
 
     id: root
 
+    property bool available: false
+
     property int brightness: 100
 
     function get() {
@@ -29,6 +31,22 @@ Singleton {
 
                     root.brightness = data
 
+                }
+            }
+        }
+    }
+
+    Process {
+        id: availability
+        command: ["brightnessctl", "-l"]
+
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    if (text.includes("backlight")) {
+                        root.available = true
+                    }
                 }
             }
         }
