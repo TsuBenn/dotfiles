@@ -84,73 +84,50 @@ Singleton {
     }
 
     function add(appName, appIcon, summary, body, urgency) {
-        let notif_groups = root.notifications_groups
-        root.notifications_groups = []
+        // 1. Prepare data
+        let groups = root.notifications_groups || [];
+        const cleanSummary = summary.trim();
+        const cleanBody = body.trim();
 
-        if (notif_groups.length == 0) {
-            notif_groups.unshift({
+        // 2. Helper to create a new notification object
+        const createNotif = () => ({
+            "summary": cleanSummary,
+            "body": [cleanBody],
+            "urgency": urgency,
+            "time": 0,
+        });
+
+        // 3. Find if the app group already exists
+        let group = groups.find(g => g.app === appName);
+
+        if (!group) {
+            // Create new group if it doesn't exist
+            groups.unshift({
                 "app": appName,
                 "icon": appIcon,
-                "notifications": [
-                    {
-                        "summary": summary.trim(),
-                        "body": [body.trim()],
-                        "urgency": urgency,
-                        "time": 0,
-                    }
-                ]
-            })
+                "notifications": [createNotif()]
+            });
         } else {
-            let new_group = true
-            for (const i in notif_groups) {
-                if (notif_groups[i].app == appName) {
-                    for (const j in notif_groups[i].notifications) {
-                        if (notif_groups[i].notifications[j].summary == summary) {
-                            if (notif_groups[i].notifications[j].time > 7) {
-                                notif_groups[i].notifications.unshift(
-                                    {
-                                        "summary": summary.trim(),
-                                        "body": [body.trim()],
-                                        "urgency": urgency,
-                                        "time": 0,
-                                    }
-                                )
-                            } else {
-                                notif_groups[i].notifications[j].body.unshift(body)
-                                notif_groups[i].notifications[j].time = 0
-                            }
-                            break
-                        }
-                        notif_groups[i].notifications.unshift(
-                            {
-                                "summary": summary.trim(),
-                                "body": [body.trim()],
-                                "urgency": urgency,
-                                "time": 0,
-                            }
-                        )
-                    }
-                    new_group = false
-                    break
+            // 4. Look for an existing notification with the same summary
+            let existingNotif = group.notifications.find(n => n.summary === cleanSummary);
+
+            if (existingNotif) {
+                if (existingNotif.time > 7) {
+                    // If it's "old", add a fresh one to the top
+                    group.notifications.unshift(createNotif());
+                } else {
+                    // If it's "new", append the text to the existing body
+                    existingNotif.body.unshift(cleanBody);
+                    existingNotif.time = 0;
                 }
-            }
-            if (new_group) {
-                notif_groups.unshift({
-                    "app": appName,
-                    "icon": appIcon,
-                    "notifications": [
-                        {
-                            "summary": summary.trim(),
-                            "body": [body.trim()],
-                            "urgency": urgency,
-                            "time": 0,
-                        }
-                    ]
-                })
+            } else {
+                // Summary not found, add new notification to existing group
+                group.notifications.unshift(createNotif());
             }
         }
 
-        root.notifications_groups = notif_groups
+        // 5. Update the root property once
+        root.notifications_groups = groups;
     }
 
     NotificationServer {

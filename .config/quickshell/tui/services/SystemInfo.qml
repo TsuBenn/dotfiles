@@ -1,5 +1,7 @@
 pragma Singleton 
 
+import qs.services
+
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -77,33 +79,35 @@ Singleton {
     property string batteryhealth
     property bool onbattery
 
-    signal lowBattery(percent: int)
-
-    onBatteryChanged: {
-        if (curr_bat == battery) return
-        curr_bat = battery
+    function notify_low_battery() {
         const bat = parseInt(root.battery)
-        if (bat > 5 && notified5) {
-            notified5 = false
-        }
-        else if (bat > 10 && notified10) {
-            notified10 = false
-        }
-        else if (bat > 20 && notified20) {
-            notified20 = false
-        }
         if (bat <= 5 && !notified5) {
             notified5 = true
-            lowBattery(5)
+            NotificationsInfo.send("System", "", "LOW BATTERY!", "5% battery remaining - plug in now!", 2)
         }
         else if (bat <= 10 && !notified10) {
             notified10 = true
-            lowBattery(10)
+            NotificationsInfo.send("System", "", "Low Battery!", "10% battery remaining - best to plug in now!", 1)
         }
         else if (bat <= 20 && !notified20) {
             notified20 = true
-            lowBattery(20)
+            NotificationsInfo.send("System", "", "Low Battery", "20% battery remaining - plug in soon!", 0)
         }
+    }
+
+    onBatterystateChanged: {
+        if (batterystate == "charging") {
+            notified5 = false
+            notified10 = false
+            notified20 = false
+            return
+        }
+        notify_low_battery()
+    }
+
+    onBatteryChanged: {
+        if (batterystate == "charging") return
+        notify_low_battery()
     }
 
     property real  swaptotal
