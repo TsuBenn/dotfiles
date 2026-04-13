@@ -12,11 +12,15 @@ Singleton {
     property int brightness: 100
 
     function get() {
-        process.running = true
+        if (available) process.running = true
     }
 
     function set(percent) {
-        process.exec(["brightnessctl", "set", percent + "%"])
+        if (available) {
+            process.exec(["brightnessctl", "set", percent + "%"])
+        } else {
+            brightness = percent
+        }
     }
 
     Process {

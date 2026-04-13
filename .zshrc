@@ -1,14 +1,6 @@
 # Interactive check (zsh way)
 [[ $- != *i* ]] && return
 
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source ~/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh
-
-# bind arrow keys for history search
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
-
 # fzf keybind
 bindkey -s '^f' 'fzf\n'
 

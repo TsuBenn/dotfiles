@@ -18,7 +18,9 @@ Scope {
 
             id: root
 
-            WlrLayershell.layer: WlrLayer.Overlay
+
+            WlrLayershell.layer: WlrLayer.Top
+            WlrLayershell.namespace: "bar"
 
             required property var modelData
 
@@ -168,6 +170,45 @@ Scope {
                     bottom: true
                 }
 
+                WlrLayershell.layer: WlrLayer.Top
+                WlrLayershell.namespace: "popups"
+
+                implicitWidth: root.monitor.width
+                implicitHeight: root.monitor.height
+
+                visible: true
+
+                focusable: true
+
+                color: "transparent"
+
+                mask: Region {
+                    item: notif
+                }
+
+                NotificationsPopup {
+
+                    id: notif
+
+                    cellX: Cell.wCount(Cell.alignRightWCell(implicitWidth, root.monitor.width)) + 1
+                    cellY: 2
+
+                }
+
+            }
+
+            PanelWindow {
+
+                anchors {
+                    top: true
+                    left: true
+                    right: true
+                    bottom: true
+                }
+
+                WlrLayershell.layer: WlrLayer.Top
+                WlrLayershell.namespace: "popups"
+
                 implicitWidth: root.monitor.width
                 implicitHeight: root.monitor.height
 
@@ -233,8 +274,6 @@ Scope {
                 }
 
             }
-
-
 
         }
 

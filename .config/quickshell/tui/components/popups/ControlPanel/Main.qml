@@ -308,7 +308,6 @@ ColumnLayout {
 
     CellSeparator {
 
-
         type: 2
         padding: 1
         w: root.box.contentW
@@ -317,8 +316,6 @@ ColumnLayout {
     }
 
     CellSeparator {
-
-        visible: BrightnessInfo.available
 
         type: 0
         padding: 1
@@ -330,8 +327,6 @@ ColumnLayout {
     }
 
     RowLayout {
-
-        visible: BrightnessInfo.available
 
         Layout.leftMargin: Cell.centerWCell(implicitWidth,parent.implicitWidth)
 
@@ -395,6 +390,14 @@ ColumnLayout {
         box: root.box
 
         visible: tab.selected == 0
+
+    }
+
+    Notifications {
+
+        box: root.box
+
+        visible: tab.selected == 1
 
     }
 

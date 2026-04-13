@@ -67,7 +67,7 @@ Item {
             spacing: 0
 
             CellText {
-                text: " ".repeat(root.padding) + (root.text == "" ? root.items[root.selected].label : root.text)
+                text: " ".repeat(root.padding) + (root.text == "" ? root.items[root.selected]?.label : root.text)
                 preferedW: root.w - root.padding - 2
                 color: root.active ? root.button.active_invert : root.button.fg
                 font: root.active ? Cell.fontB : Cell.font

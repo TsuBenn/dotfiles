@@ -13,10 +13,6 @@ Singleton {
     property list<Notification> notifications: notificationsServer.trackedNotifications.values
     property var notifications_groups: []
 
-    onNotifications_groupsChanged: {
-        console.log("notifications_groups changed!")
-    }
-
     signal notificationSent(notification: Notification)
 
     NotificationServer {
@@ -47,6 +43,7 @@ Singleton {
                     }
                 }
             }
+
             notif_groups.push({
                 "app": appName,
                 "icon": appIcon,
