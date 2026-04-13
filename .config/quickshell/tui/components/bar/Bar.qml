@@ -200,7 +200,7 @@ Scope {
                     id: notif
 
                     cellX: Cell.wCount(Cell.alignRightWCell(implicitWidth, root.monitor.width)) + 1
-                    cellY: 2
+                    cellY: 1
 
                 }
 

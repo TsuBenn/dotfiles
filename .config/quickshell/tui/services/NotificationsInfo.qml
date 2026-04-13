@@ -117,6 +117,7 @@ Singleton {
                                 )
                             } else {
                                 notif_groups[i].notifications[j].body.unshift(body)
+                                notif_groups[i].notifications[j].time = 0
                             }
                             break
                         }

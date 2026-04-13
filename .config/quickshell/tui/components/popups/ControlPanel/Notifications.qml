@@ -72,7 +72,7 @@ ColumnLayout {
                         property bool hovered: false
 
                         w: list.contentW - 2
-                        h: 2
+                        h: notif.expanded ? 2 : Cell.hCount(notif_layout.implicitHeight)
 
                         color: "transparent"
 
@@ -171,6 +171,15 @@ ColumnLayout {
                                         text: notif.group ? notif.modelData.app : notif.modelData.notifications[0].summary
                                         font: Cell.fontB
                                         preferedW: list.contentW - 11
+                                        color: {
+                                            if (notif.group) return Colors.fgBase
+                                            if (notif.modelData.notifications[0].urgency == 2) {
+                                                return Colors.blend(Colors.fgBase, Colors.danger, 0.8)
+                                            } else if (notif.modelData.notifications[0].urgency == 1) {
+                                                return Colors.blend(Colors.fgBase, Colors.warning, 0.5)
+                                            }
+                                            return Colors.fgBase
+                                        }
                                     }
 
                                     CellButton {
@@ -235,6 +244,7 @@ ColumnLayout {
 
                                             required property int index
                                             required property string summary
+                                            required property int urgency
                                             required property var body
 
                                             spacing: 0
@@ -292,6 +302,14 @@ ColumnLayout {
                                                         CellText {
                                                             text: sub_notif.summary
                                                             preferedW: list.contentW - 11
+                                                            color: {
+                                                                if (sub_notif.urgency == 2) {
+                                                                    return Colors.blend(Colors.fgBase, Colors.danger, 0.8)
+                                                                } else if (sub_notif.urgency == 1) {
+                                                                    return Colors.blend(Colors.fgBase, Colors.warning, 0.5)
+                                                                }
+                                                                return Colors.fgBase
+                                                            }
                                                         }
 
                                                         CellButton {
@@ -340,7 +358,7 @@ ColumnLayout {
                                                                     CellText {
                                                                         Layout.alignment: Qt.AlignTop
 
-                                                                        text: modelData
+                                                                        text: parent.modelData
                                                                         preferedW: list.contentW - 10 - sub_timer.text.length
                                                                         color: Colors.fgDim
                                                                         wrap: true

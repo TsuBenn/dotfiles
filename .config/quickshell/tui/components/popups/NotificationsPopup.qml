@@ -53,6 +53,15 @@ CellPopup {
                 w: root.w
                 h: 4 + (body.text.split("\n").length-1)
 
+                border.color: {
+                    if (popup.urgency == 2) {
+                        return Colors.blend(Colors.fgBase, Colors.danger, 0.8)
+                    } else if (popup.urgency == 1) {
+                        return Colors.blend(Colors.fgBase, Colors.warning, 0.5)
+                    }
+                    return Colors.fgBase
+                }
+
                 MouseControl {
                     anchors.fill: parent
 
@@ -145,7 +154,7 @@ CellPopup {
                         id: timer
 
                         interval: {
-                            const base = 1500
+                            const base = 2000
                             const extra = popup.body.length*100
                             return Math.min(base + extra, 5000)
                         }
