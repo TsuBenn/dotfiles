@@ -53,6 +53,8 @@ Item {
             focus = true
             return
         }
+        cursorPos = 0
+        visualPos = 0
         focus = false
     }
 
@@ -219,6 +221,20 @@ Item {
             if (root.cursorPos == 0) return
             root.text = root.text.slice(0, root.cursorPos - 1) + root.text.slice(root.cursorPos)
             root.cursorPos -= 1
+        } else if (event.key == Qt.Key_Delete) {
+            if (root.visual) {
+                if (root.visualPos > 0) {
+                    root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
+                }
+                if (root.visualPos < 0) {
+                    root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
+                    root.cursorPos = root.cursorPos+root.visualPos
+                }
+                root.visualPos = 0
+                return
+            }
+            if (root.cursorPos == root.text.length) return
+            root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + 1)
         } else if (event.text.length > 0 && event.text >= " ") {
             if (root.visual) {
                 if (root.visualPos > 0) {
