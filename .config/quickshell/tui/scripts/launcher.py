@@ -14,6 +14,7 @@ SETTINGS_FILE = os.path.join(SCRIPT_DIR, "settings.toml")
 
 DESKTOP_DIRS = [
     "/usr/share/applications",
+    "/usr/local/share/applications/",
     os.path.expanduser("~/.local/share/applications")
 ]
 
@@ -56,6 +57,7 @@ def fuzzy_match(query, target):
     consecutive = 0
     max_consecutive = 0
 
+    """
     for i, ch in enumerate(target):
         if qi < len(query) and ch == query[qi]:
             consecutive += 1
@@ -66,6 +68,7 @@ def fuzzy_match(query, target):
             qi += 1
         else:
             consecutive = 0
+    """
 
     if qi < len(query):
         return 0
@@ -114,7 +117,7 @@ def scan_apps():
                 app = parse_desktop_file(os.path.join(directory, f))
                 if app:
                     apps.append(app)
-    save_icon_cache([{"name": app["name"], "icon": app["icon"]} for app in apps])
+    save_icon_cache([{"name": app["name"], "icon": resolve_icon(app["icon"])} for app in apps])
     return apps
 
 def search_apps(query):
@@ -241,9 +244,63 @@ def calculate(expr):
     except:
         return [{"label": "Error", "type": "info"}]
 
-# ─── Icon ────────────────────────────────────────────────────────────────────
+# ─── Icons ───────────────────────────────────────────────────────────────────
+
+import glob
+ICON_DIRS = [
+    "/usr/share/icons/hicolor",
+    "/usr/share/icons",
+    "/usr/share/pixmaps",
+    os.path.expanduser("~/.local/share/icons")
+]
+
+ICON_SIZES = ["256x256", "128x128", "64x64", "48x48", "32x32", "scalable"]
+ICON_EXTS = ["png", "svg", "xpm"]
 
 ICON_CACHE_FILE = os.path.join(SCRIPT_DIR, "icon_cache.json")
+
+def resolve_icon(query):
+
+    icon_name = query
+
+    if not icon_name:
+        return None  # app exists but no icon
+
+    # search for icon file
+    for directory in ICON_DIRS:
+        for size in ICON_SIZES:
+            for ext in ICON_EXTS:
+                pattern = f"{directory}/{size}/apps/{icon_name}.{ext}"
+                matches = glob.glob(pattern)
+                if matches:
+                    return matches[0]
+        for ext in ICON_EXTS:
+            path = f"{directory}/{icon_name}.{ext}"
+            if os.path.exists(path):
+                return path
+
+    for ext in ICON_EXTS:
+        path = f"/usr/share/pixmaps/{icon_name}.{ext}"
+        if os.path.exists(path):
+            return path
+
+    # fuzzy fallback on icon files
+    all_icons = glob.glob("/usr/share/icons/hicolor/**/apps/*", recursive=True)
+    all_icons += glob.glob("/usr/share/pixmaps/*")
+
+    best_icon_score = 0
+    best_icon_path = ""
+    for path in all_icons:
+        filename = os.path.splitext(os.path.basename(path))[0]
+        score = fuzzy_match(icon_name.lower(), filename.lower())
+        if score > best_icon_score:
+            best_icon_score = score
+            best_icon_path = path
+
+    if best_icon_score > 30:
+        return best_icon_path
+
+    return "exception"  # app found but no icon anywhere
 
 def load_icon_cache():
     try:

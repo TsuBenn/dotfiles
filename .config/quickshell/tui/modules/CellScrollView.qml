@@ -47,7 +47,7 @@ Cells {
     }
 
     onChildrenChanged: {
-        for (let i = 3; i < children.length; i++) {
+        for (let i = 4; i < children.length; i++) {
             children[i].parent = content
         }
     }
@@ -60,14 +60,13 @@ Cells {
         clip: true
         color: "transparent"
 
-        Item {
+        ColumnLayout {
+
+            spacing: 0
 
             id: content
 
             y: -Cell.h(1)*root.offset
-
-            implicitHeight: childrenRect.height
-            implicitWidth: childrenRect.width
 
         }
 
@@ -105,7 +104,6 @@ Cells {
     }
 
     MouseControl {
-
 
         anchors.fill: parent
 

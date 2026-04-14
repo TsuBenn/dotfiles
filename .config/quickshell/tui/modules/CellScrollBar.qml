@@ -172,13 +172,11 @@ Item {
                 if (button == "L") {
                     const progress = Math.min(Math.max(mouseY-thumb.implicitHeight/2,0),scroll.implicitHeight - thumb.implicitHeight)/(scroll.implicitHeight - thumb.implicitHeight)
                     root.adjusted(progress)
-                    console.log(progress)
                 }
             }
             onMoved: {
                 if (buttonDown == "L") {
                     const progress = Math.min(Math.max(mouseY-thumb.implicitHeight/2,0),scroll.implicitHeight - thumb.implicitHeight)/(scroll.implicitHeight - thumb.implicitHeight)
-                    console.log(progress)
                     root.adjusted(progress)
                 }
             }

@@ -1,394 +1,258 @@
 [
   {
-    "name": "Qalculate! (Qt)",
-    "icon": "qalculate-qt"
-  },
-  {
-    "name": "Yazi",
-    "icon": "yazi"
-  },
-  {
-    "name": "Vim",
-    "icon": "gvim"
-  },
-  {
-    "name": "LibreOffice Draw",
-    "icon": "libreoffice-draw"
-  },
-  {
-    "name": "LibreOffice Calc",
-    "icon": "libreoffice-calc"
-  },
-  {
-    "name": "Dolphin",
-    "icon": "org.kde.dolphin"
-  },
-  {
-    "name": "Fcitx 5 Configuration",
-    "icon": "fcitx"
+    "name": "Fcitx 5",
+    "icon": "/usr/share/icons/hicolor/128x128/apps/fcitx.png"
   },
   {
     "name": "Steam",
-    "icon": "steam"
-  },
-  {
-    "name": "Weylus",
-    "icon": "input-tablet"
-  },
-  {
-    "name": "OpenJDK Java 26 Console",
-    "icon": "java26-openjdk"
-  },
-  {
-    "name": "lsfg-vk Configuration Window",
-    "icon": "gay.pancake.lsfg-vk-ui"
-  },
-  {
-    "name": "Code - OSS",
-    "icon": "com.visualstudio.code.oss"
-  },
-  {
-    "name": "Blender",
-    "icon": "blender"
-  },
-  {
-    "name": "UxPlay",
-    "icon": "computer-apple-ipad-symbolic"
-  },
-  {
-    "name": "Discord",
-    "icon": "discord"
-  },
-  {
-    "name": "LibreOffice Base",
-    "icon": "libreoffice-base"
-  },
-  {
-    "name": "uuctl",
-    "icon": "applications-system"
-  },
-  {
-    "name": "Hardware Locality lstopo",
-    "icon": "hwloc"
-  },
-  {
-    "name": "Qt V4L2 test Utility",
-    "icon": "qv4l2"
-  },
-  {
-    "name": "Qt6 Settings",
-    "icon": "preferences-desktop-theme"
-  },
-  {
-    "name": "YAD settings",
-    "icon": "yad"
-  },
-  {
-    "name": "Htop",
-    "icon": "htop"
-  },
-  {
-    "name": "Icon Browser",
-    "icon": "yad"
-  },
-  {
-    "name": "Firefox",
-    "icon": "firefox"
-  },
-  {
-    "name": "CMake",
-    "icon": "CMakeSetup"
-  },
-  {
-    "name": "LibreOffice Writer",
-    "icon": "libreoffice-writer"
-  },
-  {
-    "name": "DaVinci Control Panels Setup",
-    "icon": "davinci-resolve-panels-setup"
-  },
-  {
-    "name": "LocalSend",
-    "icon": "localsend"
-  },
-  {
-    "name": "Spotify",
-    "icon": "spotify-client"
-  },
-  {
-    "name": "Obsidian",
-    "icon": "obsidian"
-  },
-  {
-    "name": "System Settings",
-    "icon": "preferences-system"
-  },
-  {
-    "name": "KRuler",
-    "icon": "kruler"
-  },
-  {
-    "name": "Timeshift",
-    "icon": "timeshift"
-  },
-  {
-    "name": "Qt Assistant",
-    "icon": "assistant"
-  },
-  {
-    "name": "ProtonPlus",
-    "icon": "com.vysp3r.ProtonPlus"
-  },
-  {
-    "name": "OpenJDK Java 26 Shell",
-    "icon": "java26-openjdk"
-  },
-  {
-    "name": "DaVinci Resolve",
-    "icon": "davinci-resolve"
-  },
-  {
-    "name": "LibreOffice Math",
-    "icon": "libreoffice-math"
-  },
-  {
-    "name": "qimgv",
-    "icon": "qimgv"
-  },
-  {
-    "name": "VLC media player",
-    "icon": "vlc"
-  },
-  {
-    "name": "Qt Linguist",
-    "icon": "linguist"
-  },
-  {
-    "name": "Avahi SSH Server Browser",
-    "icon": "network-wired"
-  },
-  {
-    "name": "Blackmagic RAW Speed Test",
-    "icon": "blackmagicraw-speedtest"
-  },
-  {
-    "name": "Krita",
-    "icon": "krita"
-  },
-  {
-    "name": "Winetricks",
-    "icon": "winetricks"
-  },
-  {
-    "name": "NVIDIA X Server Settings",
-    "icon": "nvidia-settings"
-  },
-  {
-    "name": "Qt D-Bus Viewer",
-    "icon": "qdbusviewer"
-  },
-  {
-    "name": "Advanced Network Configuration",
-    "icon": "preferences-system-network"
-  },
-  {
-    "name": "OpenRGB",
-    "icon": "org.openrgb.OpenRGB"
-  },
-  {
-    "name": "Keyboard layout viewer",
-    "icon": "input-keyboard"
-  },
-  {
-    "name": "PortProton",
-    "icon": "ru.linux_gaming.PortProton"
-  },
-  {
-    "name": "LibreOffice Impress",
-    "icon": "libreoffice-impress"
-  },
-  {
-    "name": "Goverlay",
-    "icon": "io.github.benjamimgois.goverlay"
-  },
-  {
-    "name": "Rofi",
-    "icon": "rofi"
-  },
-  {
-    "name": "Qt V4L2 video capture utility",
-    "icon": "qvidcap"
-  },
-  {
-    "name": "Okular",
-    "icon": "okular"
-  },
-  {
-    "name": "Prism Launcher",
-    "icon": "org.prismlauncher.PrismLauncher"
-  },
-  {
-    "name": "Volume Control",
-    "icon": "org.pulseaudio.pavucontrol"
-  },
-  {
-    "name": "Fcitx 5 Migration Wizard",
-    "icon": "fcitx"
-  },
-  {
-    "name": "Neovim",
-    "icon": "nvim"
-  },
-  {
-    "name": "Qtractor",
-    "icon": "org.rncbc.qtractor"
+    "icon": "/usr/share/icons/hicolor/256x256/apps/steam.png"
   },
   {
     "name": "LSP Plugins",
-    "icon": "lsp-plugins"
+    "icon": "/usr/share/icons/hicolor/256x256/apps/lsp-plugins.png"
   },
   {
-    "name": "Filelight",
-    "icon": "filelight"
+    "name": "Rofi",
+    "icon": "/usr/share/icons/hicolor/scalable/apps/rofi.svg"
   },
   {
-    "name": "Fcitx 5",
-    "icon": "fcitx"
-  },
-  {
-    "name": "Easy Effects",
-    "icon": "com.github.wwmm.easyeffects"
-  },
-  {
-    "name": "KDE System Settings",
-    "icon": "preferences-system"
-  },
-  {
-    "name": "shadPS4",
-    "icon": "shadps4"
-  },
-  {
-    "name": "kitty",
-    "icon": "kitty"
-  },
-  {
-    "name": "Avahi VNC Server Browser",
-    "icon": "network-wired"
-  },
-  {
-    "name": "Rofi Theme Selector",
-    "icon": "rofi"
-  },
-  {
-    "name": "Ghostty",
-    "icon": "com.mitchellh.ghostty"
-  },
-  {
-    "name": "ColorGrab",
-    "icon": "colorgrab"
-  },
-  {
-    "name": "mpv Media Player",
-    "icon": "mpv"
-  },
-  {
-    "name": "Qt5 Settings",
-    "icon": "preferences-desktop-theme"
-  },
-  {
-    "name": "nvtop",
-    "icon": "nvtop"
-  },
-  {
-    "name": "Qt Widgets Designer",
-    "icon": "designer"
-  },
-  {
-    "name": "Flatseal",
-    "icon": "com.github.tchx84.Flatseal"
+    "name": "Volume Control",
+    "icon": "/usr/share/icons/hicolor/scalable/apps/org.pulseaudio.pavucontrol.svg"
   },
   {
     "name": "Ark",
-    "icon": "ark"
+    "icon": "/usr/share/icons/hicolor/128x128/apps/ark.png"
   },
   {
-    "name": "OpenTabletDriver",
-    "icon": "otd"
+    "name": "lsfg-vk Configuration Window",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/gay.pancake.lsfg-vk-ui.png"
   },
   {
-    "name": "OBS Studio",
-    "icon": "com.obsproject.Studio"
+    "name": "Krita",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/krita.png"
   },
   {
-    "name": "Blackmagic RAW Player",
-    "icon": "blackmagicraw-player"
+    "name": "LocalSend",
+    "icon": "/usr/share/pixmaps/localsend.png"
+  },
+  {
+    "name": "LibreOffice Math",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/libreoffice-math.png"
+  },
+  {
+    "name": "Winetricks",
+    "icon": "/usr/share/icons/hicolor/scalable/apps/winetricks.svg"
+  },
+  {
+    "name": "LibreOffice Draw",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/libreoffice-draw.png"
+  },
+  {
+    "name": "CMake",
+    "icon": "/usr/share/icons/hicolor/128x128/apps/CMakeSetup.png"
+  },
+  {
+    "name": "Ghostty",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/com.mitchellh.ghostty.png"
+  },
+  {
+    "name": "Easy Effects",
+    "icon": "/usr/share/icons/hicolor/scalable/apps/com.github.wwmm.easyeffects.svg"
+  },
+  {
+    "name": "OpenRGB",
+    "icon": "/usr/share/icons/hicolor/128x128/apps/org.openrgb.OpenRGB.png"
+  },
+  {
+    "name": "PortProton",
+    "icon": "/usr/share/icons/hicolor/scalable/apps/ru.linux_gaming.PortProton.svg"
+  },
+  {
+    "name": "kitty",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/kitty.png"
   },
   {
     "name": "Avahi Zeroconf Browser",
-    "icon": "network-wired"
+    "icon": "exception"
   },
   {
-    "name": "Cloudflare Zero Trust",
-    "icon": "zero-trust-orange"
+    "name": "Qt V4L2 video capture utility",
+    "icon": "/usr/share/icons/hicolor/64x64/apps/qvidcap.png"
   },
   {
-    "name": "Zen Browser",
-    "icon": "zen-browser"
+    "name": "Goverlay",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/io.github.benjamimgois.goverlay.png"
   },
   {
-    "name": "LibreOffice",
-    "icon": "libreoffice-startcenter"
+    "name": "Filelight",
+    "icon": "/usr/share/icons/hicolor/128x128/apps/filelight.png"
   },
   {
-    "name": "Kdenlive",
-    "icon": "kdenlive"
+    "name": "Keyboard layout viewer",
+    "icon": "exception"
+  },
+  {
+    "name": "Hardware Locality lstopo",
+    "icon": "exception"
+  },
+  {
+    "name": "Dolphin",
+    "icon": "/usr/share/icons/hicolor/scalable/apps/org.kde.dolphin.svg"
+  },
+  {
+    "name": "Rofi Theme Selector",
+    "icon": "/usr/share/icons/hicolor/scalable/apps/rofi.svg"
+  },
+  {
+    "name": "Icon Browser",
+    "icon": "/usr/share/icons/hicolor/128x128/apps/yad.png"
+  },
+  {
+    "name": "Htop",
+    "icon": "/usr/share/icons/hicolor/scalable/apps/htop.svg"
+  },
+  {
+    "name": "Avahi VNC Server Browser",
+    "icon": "exception"
+  },
+  {
+    "name": "Yazi",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/yazi.png"
+  },
+  {
+    "name": "nvtop",
+    "icon": "/usr/share/icons/hicolor/scalable/apps/nvtop.svg"
+  },
+  {
+    "name": "uuctl",
+    "icon": "exception"
+  },
+  {
+    "name": "Timeshift",
+    "icon": "/usr/share/icons/hicolor/128x128/apps/timeshift.png"
   },
   {
     "name": "btop++",
-    "icon": "btop"
+    "icon": "/usr/share/icons/hicolor/48x48/apps/btop.png"
   },
   {
-    "name": "Ghost Of Tsushima",
-    "icon": "/home/tsubenn/PortProton/data/img/Ghost_of_Tsushima_DIRECTOR'S_CUT.png"
+    "name": "LibreOffice Impress",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/libreoffice-impress.png"
   },
   {
-    "name": "Sekiro\u2122: Shadows Die Twice",
-    "icon": "/home/tsubenn/PortProton/data/img/Sekiro\u2122:_Shadows_Die_Twice.png"
+    "name": "Advanced Network Configuration",
+    "icon": "exception"
   },
   {
-    "name": "Arknight: Endfield",
-    "icon": "/home/tsubenn/PortProton/data/img/GRYPHLINK.png"
+    "name": "LibreOffice",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/libreoffice-startcenter.png"
   },
   {
-    "name": "Counter-Strike 2",
-    "icon": "steam_icon_730"
+    "name": "Firefox",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/firefox.png"
   },
   {
-    "name": "HoYoPlay",
-    "icon": "/home/tsubenn/PortProton/data/img/HoYoPlay.png"
+    "name": "LibreOffice Calc",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/libreoffice-calc.png"
   },
   {
-    "name": "PUBG: BATTLEGROUNDS",
-    "icon": "steam_icon_578080"
+    "name": "Qalculate! (Qt)",
+    "icon": "/usr/share/icons/hicolor/128x128/apps/qalculate-qt.png"
   },
   {
-    "name": "NieR Automata",
-    "icon": "/home/tsubenn/PortProton/data/img/NieR:Automata.png"
+    "name": "UxPlay",
+    "icon": "exception"
   },
   {
-    "name": "Mecha BREAK",
-    "icon": "steam_icon_2452280"
+    "name": "LibreOffice Base",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/libreoffice-base.png"
   },
   {
-    "name": "Call of Duty: Modern Warfare Remastered",
-    "icon": "/home/tsubenn/PortProton/data/img/Call_of_Duty:_Modern_Warfare_Remastered.png"
+    "name": "Prism Launcher",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/org.prismlauncher.PrismLauncher.png"
   },
   {
-    "name": "Geometry Dash",
-    "icon": "steam_icon_322170"
+    "name": "Avahi SSH Server Browser",
+    "icon": "exception"
   },
   {
-    "name": "Zenless Zone Zero (DX12)",
-    "icon": "/home/tsubenn/PortProton/data/img/ZenlessZoneZero.png"
+    "name": "ProtonPlus",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/com.vysp3r.ProtonPlus.png"
+  },
+  {
+    "name": "OBS Studio",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/com.obsproject.Studio.png"
+  },
+  {
+    "name": "Fcitx 5 Configuration",
+    "icon": "/usr/share/icons/hicolor/128x128/apps/fcitx.png"
+  },
+  {
+    "name": "LibreOffice Writer",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/libreoffice-writer.png"
+  },
+  {
+    "name": "Neovim",
+    "icon": "/usr/share/icons/hicolor/128x128/apps/nvim.png"
+  },
+  {
+    "name": "mpv Media Player",
+    "icon": "/usr/share/icons/hicolor/128x128/apps/mpv.png"
+  },
+  {
+    "name": "Vim",
+    "icon": "/usr/share/icons/hicolor/48x48/apps/gvim.png"
+  },
+  {
+    "name": "Zen Browser",
+    "icon": "/usr/share/icons/hicolor/128x128/apps/zen-browser.png"
+  },
+  {
+    "name": "YAD settings",
+    "icon": "/usr/share/icons/hicolor/128x128/apps/yad.png"
+  },
+  {
+    "name": "Weylus",
+    "icon": "exception"
+  },
+  {
+    "name": "Kdenlive",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/kdenlive.png"
+  },
+  {
+    "name": "Fcitx 5 Migration Wizard",
+    "icon": "/usr/share/icons/hicolor/128x128/apps/fcitx.png"
+  },
+  {
+    "name": "OpenJDK Java 26 Shell",
+    "icon": "/usr/share/icons/hicolor/48x48/apps/java26-openjdk.png"
+  },
+  {
+    "name": "qimgv",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/qimgv.png"
+  },
+  {
+    "name": "OpenJDK Java 26 Console",
+    "icon": "/usr/share/icons/hicolor/48x48/apps/java26-openjdk.png"
+  },
+  {
+    "name": "VLC media player",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/vlc.png"
+  },
+  {
+    "name": "Qtractor",
+    "icon": "/usr/share/icons/hicolor/32x32/apps/org.rncbc.qtractor.png"
+  },
+  {
+    "name": "Discord",
+    "icon": "/usr/share/icons/hicolor/256x256/apps/discord.png"
+  },
+  {
+    "name": "Spotify",
+    "icon": "/usr/share/pixmaps/spotify-client.png"
+  },
+  {
+    "name": "Qt V4L2 test Utility",
+    "icon": "/usr/share/icons/hicolor/64x64/apps/qv4l2.png"
   }
 ]

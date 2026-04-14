@@ -15,6 +15,52 @@ CellPopup {
     w: 80
     h: Cell.hCount(layout.implicitHeight)
 
+    function toASCII(num: string): string {
+        num = num.toLowerCase()
+        if (num == "0") {
+            return "█▀▀█\n█▄▀█\n█▄▄█"
+        }
+        else if (num == "1") {
+            return "▄█ \n █ \n▄█▄"
+        }
+        else if (num == "2") {
+            return "█▀█\n ▄▀\n█▄▄"
+        }
+        else if (num == "3") {
+            return "█▀▀█\n  ▀▄\n█▄▄█"
+        }
+        else if (num == "4") {
+            return " ▄▀█ \n█▄▄█▄\n   █ "
+        }
+        else if (num == "5") {
+            return "█▀▀▀\n▀▀▀▄\n▄▄▄▀"
+        }
+        else if (num == "6") {
+            return "▄▀▀▄\n█▄▄ \n▀▄▄▀"
+        }
+        else if (num == "7") {
+            return "▀▀▀█\n  █ \n ▐▌ "
+        }
+        else if (num == "8") {
+            return "▄▀▀▄\n▄▀▀▄\n▀▄▄▀"
+        }
+        else if (num == "9") {
+            return "▄▀▀▄\n▀▄▄█\n ▄▄▀"
+        }
+        else if (num == ":") {
+            return "▄\n \n▀"
+        }
+        else if (num == "a") {
+            return "▄▀█\n█▀█"
+        }
+        else if (num == "p") {
+            return "█▀█\n█▀▀"
+        }
+        else if (num == "m") {
+            return "█▀▄▀█\n█ ▀ █"
+        }
+    }
+
     CellBox {
 
         id: box
@@ -42,6 +88,32 @@ CellPopup {
 
                     fillMode: Image.PreserveAspectCrop
 
+                }
+
+                RowLayout {
+
+                    visible: false
+
+                    x: Cell.w(2)
+                    y: Cell.h(6)
+
+                    spacing: Cell.w(1)
+
+                    Repeater {
+
+                        model: [...(DateTime.hour12 + ":" + DateTime.minute + DateTime.ampm)]
+
+                        delegate: CellText {
+
+                            Layout.alignment: Qt.AlignBottom
+
+                            required property string modelData
+
+                            text: root.toASCII(modelData)
+                            color: Colors.fgBase
+                        }
+
+                    }
                 }
 
             }
@@ -107,6 +179,12 @@ CellPopup {
                                 return "Search"
                             }
 
+                            Keys.onPressed: (event) => {
+                                if (event.key == Qt.Key_Escape) {
+                                    PopupManager.close("launcher")
+                                }
+                            }
+
                             onTextChanged: {
                                 if (text == ">") {
                                     mode.prefix = ">"
@@ -127,6 +205,7 @@ CellPopup {
                                 const query = text.trim()
 
                                 if (mode.value == "apps") {
+                                    IconInfo.reload()
                                     process.exec(["python", ".config/quickshell/tui/scripts/launcher.py", "--mode", "apps", query])
                                 }
 
@@ -144,6 +223,7 @@ CellPopup {
 
                 id: tab
 
+                padding: 0
                 onSelectedChanged: {
                     switch (selected) {
                         case 0: mode.prefix = ""; textfield.text = ""; break;
@@ -168,6 +248,10 @@ CellPopup {
                 id: apps
 
                 visible: tab.selected == 0
+
+                onVisibleChanged: {
+                    result = []
+                }
 
                 property var result: []
 
@@ -197,7 +281,7 @@ CellPopup {
                             required property string type
 
                             w: apps.contentW
-                            h:3
+                            h: 3
 
                             color: "transparent"
 
@@ -208,26 +292,38 @@ CellPopup {
                                 spacing: 0
 
                                 RowLayout {
+
                                     spacing: 0
-                                    Cells {
 
-                                        w: 5
-                                        h: 2
+                                    CellText {
+                                        text: " "
+                                    }
 
-                                        color: "transparent"
+                                    CellIcon {
+                                        icon: app_result.icon
+                                    }
 
-                                        Image {
+                                    ColumnLayout {
+                                        spacing: 0
 
-                                            width: Cell.h(2)
-                                            height: Cell.h(2)
-
-                                            source: "image://icon/" + app_result.icon
-
-                                            fillMode: Image.PreserveAspectCrop
-
+                                        CellText {
+                                            text: app_result.label
                                         }
 
+                                        CellText {
+                                            text: app_result.description
+                                            color: Colors.fgSubtle
+                                        }
                                     }
+
+                                }
+
+                                CellSeparator {
+
+                                    type: 2
+                                    color: Colors.bgOverlay
+                                    padding: 1
+                                    w: apps.contentW
 
                                 }
 
