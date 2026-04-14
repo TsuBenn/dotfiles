@@ -57,23 +57,14 @@ ColumnLayout {
                                 text: " "
                             }
 
-                            Cells {
-
-                                Layout.alignment: Qt.AlignTop
-
+                            CellIcon {
+                                id: icon
                                 w: 5
-                                h: 2
+                                icon: [stream.app,stream.name,stream.binary]
+                            }
 
-                                color: "transparent"
-
-                                Image {
-                                    source: "image://icon/zen-browser"
-                                    height: Cell.h(2)
-                                    width: Cell.h(2)
-
-                                    fillMode: Image.PreserveAspectCrop
-                                }
-
+                            CellText {
+                                text: " "
                             }
 
                             ColumnLayout {
@@ -82,9 +73,9 @@ ColumnLayout {
 
                                 CellText {
 
-                                    text: stream.app.toLowerCase() == stream.name.toLowerCase() ? ` ${stream.app}` : ` ${stream.app} | ${stream.name}`
+                                    text: stream.app.toLowerCase() == stream.name.toLowerCase() ? `${stream.app}` : `${stream.app} | ${stream.name}`
 
-                                    preferedW: stream.w - 8
+                                    preferedW: stream.w - 3 - 5*icon.success
 
                                 }
 
@@ -93,13 +84,13 @@ ColumnLayout {
                                     spacing: 0
 
                                     CellText {
-                                        text: " ["
+                                        text: "["
                                         color: Colors.fgSubtle
                                     }
 
                                     CellProgressSquare {
 
-                                        w: stream.w - 10
+                                        w: stream.w - 5 - 5*icon.success
                                         percent: stream.volume
                                         interactive: true
                                         syncDelay: 1500

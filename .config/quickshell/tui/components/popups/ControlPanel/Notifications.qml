@@ -138,23 +138,14 @@ ColumnLayout {
                                 text: " "
                             }
 
-                            Cells {
+                            CellIcon {
+                                id: icon
+                                w: 5
+                                icon: [notif.modelData.icon,notif.modelData.app]
+                            }
 
-                                Layout.alignment: Qt.AlignTop
-
-                                w: 6
-                                h: 2
-
-                                color: "transparent"
-
-                                Image {
-                                    source: "image://icon/zen-browser"
-                                    height: Cell.h(2)
-                                    width: Cell.h(2)
-
-                                    fillMode: Image.PreserveAspectCrop
-                                }
-
+                            CellText {
+                                text: " "
                             }
 
                             ColumnLayout {
@@ -170,7 +161,7 @@ ColumnLayout {
                                     CellText {
                                         text: notif.group ? notif.modelData.app : notif.modelData.notifications[0].summary
                                         font: Cell.fontB
-                                        preferedW: list.contentW - 11
+                                        preferedW: list.contentW - 6 - 5*icon.success
                                         color: {
                                             if (notif.group) return Colors.fgBase
                                             if (notif.modelData.notifications[0].urgency == 2) {
@@ -216,7 +207,7 @@ ColumnLayout {
 
                                     CellText {
                                         text: notif.expanded ? "" : (notif.group ? notif.modelData.notifications[0].summary : notif.modelData.notifications[0].body[0])
-                                        preferedW: list.contentW - 8 - timer.text.length
+                                        preferedW: list.contentW - 3 - 5*icon.success - timer.text.length
                                         color: notif.group ? Colors.fgSubtle : Colors.fgBase
                                         wrap: true
                                     }
@@ -252,12 +243,12 @@ ColumnLayout {
                                             CellSeparator {
                                                 padding: 0
                                                 color: Colors.bgOverlay
-                                                w: list.contentW - 8
+                                                w: list.contentW - 3 - 5*icon.success
                                             }
 
                                             Cells {
 
-                                                w: list.contentW - 8
+                                                w: list.contentW - 3 - 5*icon.success
                                                 h: Cell.hCount(sub_notif_layout.implicitHeight)
 
                                                 color: "transparent"
@@ -273,7 +264,7 @@ ColumnLayout {
                                                                 [
                                                                     {label: "Dismiss", action: () => {
                                                                         NotificationsInfo.dismiss(notif.modelData.app, sub_notif.index)
-                                                                        if (notif.notif_group.length == 2) {
+                                                                        if (notif.notif_group.length == 1 || notif.notif_group.length == 2 && notif.notif_group[0].body.length < 2) {
                                                                             NotificationsInfo.refresh()
                                                                         }
                                                                         notif.notif_group = notif.notif_group.filter((_, i) => i !== sub_notif.index);
@@ -301,7 +292,7 @@ ColumnLayout {
 
                                                         CellText {
                                                             text: sub_notif.summary
-                                                            preferedW: list.contentW - 11
+                                                            preferedW: list.contentW - 6 - 5*icon.success
                                                             color: {
                                                                 if (sub_notif.urgency == 2) {
                                                                     return Colors.blend(Colors.fgBase, Colors.danger, 0.8)
@@ -320,7 +311,7 @@ ColumnLayout {
 
                                                             onReleased: (button) => {
                                                                 NotificationsInfo.dismiss(notif.modelData.app, sub_notif.index)
-                                                                if (notif.notif_group.length == 2) {
+                                                                if (notif.notif_group.length == 1 || notif.notif_group.length == 2 && notif.notif_group[0].body.length < 2) {
                                                                     NotificationsInfo.refresh()
                                                                 }
                                                                 notif.notif_group = notif.notif_group.filter((_, i) => i !== sub_notif.index);
@@ -359,7 +350,7 @@ ColumnLayout {
                                                                         Layout.alignment: Qt.AlignTop
 
                                                                         text: parent.modelData
-                                                                        preferedW: list.contentW - 10 - sub_timer.text.length
+                                                                        preferedW: list.contentW - 5 - 5*icon.success - sub_timer.text.length
                                                                         color: Colors.fgDim
                                                                         wrap: true
                                                                     }
@@ -372,7 +363,7 @@ ColumnLayout {
 
                                                         CellText {
                                                             id: sub_timer
-                                                            Layout.alignment: Qt.AlignTop
+                                                            Layout.alignment: Qt.AlignBottom
                                                             text: "  " + NotificationsInfo.formatTime(notif.modelData.notifications[sub_notif.index].time)
                                                             color: Colors.fgSubtle
                                                         }
@@ -391,7 +382,7 @@ ColumnLayout {
                                     CellSeparator {
                                         padding: 0
                                         color: Colors.bgOverlay
-                                        w: list.contentW - 8
+                                        w: list.contentW - 3 - 5*icon.success
                                     }
                                 }
 

@@ -10,17 +10,19 @@ Singleton {
 
     property var icons: []
 
-    function fetch(...queries) {
+    function fetch(queries) {
         cache.reload()
         for (const query of queries) {
-            const result = root.icons.find(item => 
-            item.name.toLowerCase().includes(query.toLowerCase()) || 
-            item.icon.toLowerCase().includes(query.toLowerCase()))
+            if (!query) continue
+            const result = root.icons.find((item) => {
+                const match = item.name.toLowerCase().includes(query.toLowerCase()) || item.icon.toLowerCase().includes(query.toLowerCase())
+                return match
+            })
             if (result) {
                 return result.icon
             }
         }
-        return "exception"
+        return ""
     }
 
     function reload() {
@@ -36,16 +38,6 @@ Singleton {
             root.icons = JSON.parse(text())
         }
 
-    }
-
-    Timer {
-        running: true
-        interval: 1000
-        repeat: true
-
-        onTriggered: {
-            root.reload()
-        }
     }
 
 }

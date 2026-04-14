@@ -18,6 +18,8 @@ DESKTOP_DIRS = [
     os.path.expanduser("~/.local/share/applications")
 ]
 
+FUZZY = False
+
 # ─── Frequency ───────────────────────────────────────────────────────────────
 
 def load_frequency():
@@ -57,18 +59,17 @@ def fuzzy_match(query, target):
     consecutive = 0
     max_consecutive = 0
 
-    """
-    for i, ch in enumerate(target):
-        if qi < len(query) and ch == query[qi]:
-            consecutive += 1
-            max_consecutive = max(max_consecutive, consecutive)
-            score += consecutive * 10
-            if i == 0 or target[i-1] == " ":
-                score += 20
-            qi += 1
-        else:
-            consecutive = 0
-    """
+    if FUZZY:
+        for i, ch in enumerate(target):
+            if qi < len(query) and ch == query[qi]:
+                consecutive += 1
+                max_consecutive = max(max_consecutive, consecutive)
+                score += consecutive * 10
+                if i == 0 or target[i-1] == " ":
+                    score += 20
+                qi += 1
+            else:
+                consecutive = 0
 
     if qi < len(query):
         return 0
@@ -105,7 +106,7 @@ def parse_desktop_file(path):
     except:
         return None
 
-def scan_apps():
+def scan_apps(icon = False):
     apps = []
     seen = set()
     for directory in DESKTOP_DIRS:
@@ -117,7 +118,8 @@ def scan_apps():
                 app = parse_desktop_file(os.path.join(directory, f))
                 if app:
                     apps.append(app)
-    save_icon_cache([{"name": app["name"], "icon": resolve_icon(app["icon"])} for app in apps])
+    if icon:
+        save_icon_cache([{"name": app["name"], "icon": resolve_icon(app["icon"])} for app in apps])
     return apps
 
 def search_apps(query):
@@ -247,6 +249,8 @@ def calculate(expr):
 # ─── Icons ───────────────────────────────────────────────────────────────────
 
 import glob
+from pathlib import Path
+
 ICON_DIRS = [
     "/usr/share/icons/hicolor",
     "/usr/share/icons",
@@ -262,6 +266,9 @@ ICON_CACHE_FILE = os.path.join(SCRIPT_DIR, "icon_cache.json")
 def resolve_icon(query):
 
     icon_name = query
+
+    if Path(icon_name).exists():
+        return icon_name
 
     if not icon_name:
         return None  # app exists but no icon
@@ -300,7 +307,7 @@ def resolve_icon(query):
     if best_icon_score > 30:
         return best_icon_path
 
-    return "exception"  # app found but no icon anywhere
+    return ""  # app found but no icon anywhere
 
 def load_icon_cache():
     try:
@@ -316,7 +323,17 @@ def save_icon_cache(cache):
 # ─── Main ────────────────────────────────────────────────────────────────────
 
 def main():
+
+    global FUZZY
+
     args = sys.argv[1:]
+
+    if "--fuzzy" in args:
+        FUZZY = True
+
+    if "--icons" in args:
+        scan_apps(True)
+        return
 
     if "--mode" not in args:
         print(json.dumps([]))

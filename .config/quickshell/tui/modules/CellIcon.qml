@@ -4,32 +4,52 @@ import qs.services
 
 import QtQuick
 
-Cells {
+Item {
 
     id: root
 
-    w: 5
-    h: 2
+    property var icon: []
 
-    color: "transparent"
+    property bool hideOnFail: true
 
-    property string icon
+    property bool success: base.visible && hideOnFail
 
-    Image {
+    property int w: 5
+    property int h: 2
 
-        width: Cell.h(2)
-        height: Cell.h(2)
+    implicitWidth: Cell.w(the_icon.w)
+    implicitHeight: Cell.h(h)
 
-        source: IconInfo.fetch(root.icon)
-
-        mipmap: true
-
-        onStatusChanged: {
-            console.log(`${progress} ${IconInfo.fetch(root.icon)}`)
-        }
-
-        fillMode: Image.PreserveAspectCrop
-
+    onVisibleChanged: {
+        LauncherInfo.scan_icons(false)
     }
 
+    Cells {
+
+        id: the_icon
+
+        w: root.hideOnFail && base.source == "" ? 0 : root.w
+        h: root.h
+
+        color: "transparent"
+
+
+        Image {
+
+            id: base
+
+            visible: source != ""
+
+            width: Cell.h(root.h)
+            height: Cell.h(root.h)
+
+            source: IconInfo.fetch(root.icon)
+
+            mipmap: true
+
+            fillMode: Image.PreserveAspectCrop
+
+        }
+
+    }
 }

@@ -205,8 +205,7 @@ CellPopup {
                                 const query = text.trim()
 
                                 if (mode.value == "apps") {
-                                    IconInfo.reload()
-                                    process.exec(["python", ".config/quickshell/tui/scripts/launcher.py", "--mode", "apps", query])
+                                    LauncherInfo.search("apps", query)
                                 }
 
                             }
@@ -250,10 +249,8 @@ CellPopup {
                 visible: tab.selected == 0
 
                 onVisibleChanged: {
-                    result = []
+                    LauncherInfo.reset()
                 }
-
-                property var result: []
 
                 w: box.contentW
                 h: 15
@@ -264,7 +261,7 @@ CellPopup {
 
                     Repeater {
 
-                        model: apps.result
+                        model: LauncherInfo.apps
 
                         onModelChanged: {
                             apps.reset()
@@ -300,7 +297,8 @@ CellPopup {
                                     }
 
                                     CellIcon {
-                                        icon: app_result.icon
+                                        icon: [app_result.icon, app_result.label]
+                                        w: 6
                                     }
 
                                     ColumnLayout {
@@ -338,30 +336,6 @@ CellPopup {
 
             }
 
-        }
-
-    }
-
-    Process {
-
-        id: process
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                if (text) {
-                    const data = JSON.parse(text)
-                    if (mode.value == "apps") {
-                        apps.result = data
-                        console.log(text)
-                    } else if (mode.value == "settings") {
-                        console.log(text)
-                    } else if (mode.value == "web") {
-                        console.log(text)
-                    } else if (mode.value == "calc") {
-                        console.log(text)
-                    }
-                }
-            }
         }
 
     }

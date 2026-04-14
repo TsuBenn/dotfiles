@@ -47,6 +47,8 @@ CellPopup {
                 property int urgency: modelData.urgency
                 property string summary: modelData.summary
                 property string body: modelData.body
+                property string app: modelData.app
+                property string icon: modelData.icon
 
                 property bool focused: false
 
@@ -90,22 +92,10 @@ CellPopup {
                             text: " "
                         }
 
-                        Cells {
-
-                            Layout.alignment: Qt.AlignTop
-
+                        CellIcon {
                             w: 6
-                            h: 2
-
-                            color: "transparent"
-
-                            Image {
-                                source: "image://icon/zen-browser"
-                                height: Cell.h(2)
-                                width: Cell.h(2)
-
-                                fillMode: Image.PreserveAspectCrop
-                            }
+                            id: icon
+                            icon: [popup.icon, popup.app]
                         }
 
                         ColumnLayout {
@@ -114,7 +104,7 @@ CellPopup {
 
                             CellText {
                                 text: popup.summary
-                                preferedW: root.w - 15
+                                preferedW: root.w - 10 - 6*icon.success
                                 font: Cell.fontB
                                 color: {
                                     if (popup.urgency == 2) {
