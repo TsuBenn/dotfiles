@@ -1,8 +1,394 @@
-{
-  "zen": "/usr/share/icons/hicolor/128x128/apps/zen-browser.png",
-  "zen-browser": "/usr/share/icons/hicolor/128x128/apps/zen-browser.png",
-  "firefox": "/usr/share/icons/hicolor/256x256/apps/firefox.png",
-  "obs": "/usr/share/pixmaps/obsidian.png",
-  "blender": "/usr/share/icons/hicolor/scalable/apps/blender.svg",
-  "krita": "/usr/share/icons/hicolor/256x256/apps/krita.png"
-}
+[
+  {
+    "name": "Qalculate! (Qt)",
+    "icon": "qalculate-qt"
+  },
+  {
+    "name": "Yazi",
+    "icon": "yazi"
+  },
+  {
+    "name": "Vim",
+    "icon": "gvim"
+  },
+  {
+    "name": "LibreOffice Draw",
+    "icon": "libreoffice-draw"
+  },
+  {
+    "name": "LibreOffice Calc",
+    "icon": "libreoffice-calc"
+  },
+  {
+    "name": "Dolphin",
+    "icon": "org.kde.dolphin"
+  },
+  {
+    "name": "Fcitx 5 Configuration",
+    "icon": "fcitx"
+  },
+  {
+    "name": "Steam",
+    "icon": "steam"
+  },
+  {
+    "name": "Weylus",
+    "icon": "input-tablet"
+  },
+  {
+    "name": "OpenJDK Java 26 Console",
+    "icon": "java26-openjdk"
+  },
+  {
+    "name": "lsfg-vk Configuration Window",
+    "icon": "gay.pancake.lsfg-vk-ui"
+  },
+  {
+    "name": "Code - OSS",
+    "icon": "com.visualstudio.code.oss"
+  },
+  {
+    "name": "Blender",
+    "icon": "blender"
+  },
+  {
+    "name": "UxPlay",
+    "icon": "computer-apple-ipad-symbolic"
+  },
+  {
+    "name": "Discord",
+    "icon": "discord"
+  },
+  {
+    "name": "LibreOffice Base",
+    "icon": "libreoffice-base"
+  },
+  {
+    "name": "uuctl",
+    "icon": "applications-system"
+  },
+  {
+    "name": "Hardware Locality lstopo",
+    "icon": "hwloc"
+  },
+  {
+    "name": "Qt V4L2 test Utility",
+    "icon": "qv4l2"
+  },
+  {
+    "name": "Qt6 Settings",
+    "icon": "preferences-desktop-theme"
+  },
+  {
+    "name": "YAD settings",
+    "icon": "yad"
+  },
+  {
+    "name": "Htop",
+    "icon": "htop"
+  },
+  {
+    "name": "Icon Browser",
+    "icon": "yad"
+  },
+  {
+    "name": "Firefox",
+    "icon": "firefox"
+  },
+  {
+    "name": "CMake",
+    "icon": "CMakeSetup"
+  },
+  {
+    "name": "LibreOffice Writer",
+    "icon": "libreoffice-writer"
+  },
+  {
+    "name": "DaVinci Control Panels Setup",
+    "icon": "davinci-resolve-panels-setup"
+  },
+  {
+    "name": "LocalSend",
+    "icon": "localsend"
+  },
+  {
+    "name": "Spotify",
+    "icon": "spotify-client"
+  },
+  {
+    "name": "Obsidian",
+    "icon": "obsidian"
+  },
+  {
+    "name": "System Settings",
+    "icon": "preferences-system"
+  },
+  {
+    "name": "KRuler",
+    "icon": "kruler"
+  },
+  {
+    "name": "Timeshift",
+    "icon": "timeshift"
+  },
+  {
+    "name": "Qt Assistant",
+    "icon": "assistant"
+  },
+  {
+    "name": "ProtonPlus",
+    "icon": "com.vysp3r.ProtonPlus"
+  },
+  {
+    "name": "OpenJDK Java 26 Shell",
+    "icon": "java26-openjdk"
+  },
+  {
+    "name": "DaVinci Resolve",
+    "icon": "davinci-resolve"
+  },
+  {
+    "name": "LibreOffice Math",
+    "icon": "libreoffice-math"
+  },
+  {
+    "name": "qimgv",
+    "icon": "qimgv"
+  },
+  {
+    "name": "VLC media player",
+    "icon": "vlc"
+  },
+  {
+    "name": "Qt Linguist",
+    "icon": "linguist"
+  },
+  {
+    "name": "Avahi SSH Server Browser",
+    "icon": "network-wired"
+  },
+  {
+    "name": "Blackmagic RAW Speed Test",
+    "icon": "blackmagicraw-speedtest"
+  },
+  {
+    "name": "Krita",
+    "icon": "krita"
+  },
+  {
+    "name": "Winetricks",
+    "icon": "winetricks"
+  },
+  {
+    "name": "NVIDIA X Server Settings",
+    "icon": "nvidia-settings"
+  },
+  {
+    "name": "Qt D-Bus Viewer",
+    "icon": "qdbusviewer"
+  },
+  {
+    "name": "Advanced Network Configuration",
+    "icon": "preferences-system-network"
+  },
+  {
+    "name": "OpenRGB",
+    "icon": "org.openrgb.OpenRGB"
+  },
+  {
+    "name": "Keyboard layout viewer",
+    "icon": "input-keyboard"
+  },
+  {
+    "name": "PortProton",
+    "icon": "ru.linux_gaming.PortProton"
+  },
+  {
+    "name": "LibreOffice Impress",
+    "icon": "libreoffice-impress"
+  },
+  {
+    "name": "Goverlay",
+    "icon": "io.github.benjamimgois.goverlay"
+  },
+  {
+    "name": "Rofi",
+    "icon": "rofi"
+  },
+  {
+    "name": "Qt V4L2 video capture utility",
+    "icon": "qvidcap"
+  },
+  {
+    "name": "Okular",
+    "icon": "okular"
+  },
+  {
+    "name": "Prism Launcher",
+    "icon": "org.prismlauncher.PrismLauncher"
+  },
+  {
+    "name": "Volume Control",
+    "icon": "org.pulseaudio.pavucontrol"
+  },
+  {
+    "name": "Fcitx 5 Migration Wizard",
+    "icon": "fcitx"
+  },
+  {
+    "name": "Neovim",
+    "icon": "nvim"
+  },
+  {
+    "name": "Qtractor",
+    "icon": "org.rncbc.qtractor"
+  },
+  {
+    "name": "LSP Plugins",
+    "icon": "lsp-plugins"
+  },
+  {
+    "name": "Filelight",
+    "icon": "filelight"
+  },
+  {
+    "name": "Fcitx 5",
+    "icon": "fcitx"
+  },
+  {
+    "name": "Easy Effects",
+    "icon": "com.github.wwmm.easyeffects"
+  },
+  {
+    "name": "KDE System Settings",
+    "icon": "preferences-system"
+  },
+  {
+    "name": "shadPS4",
+    "icon": "shadps4"
+  },
+  {
+    "name": "kitty",
+    "icon": "kitty"
+  },
+  {
+    "name": "Avahi VNC Server Browser",
+    "icon": "network-wired"
+  },
+  {
+    "name": "Rofi Theme Selector",
+    "icon": "rofi"
+  },
+  {
+    "name": "Ghostty",
+    "icon": "com.mitchellh.ghostty"
+  },
+  {
+    "name": "ColorGrab",
+    "icon": "colorgrab"
+  },
+  {
+    "name": "mpv Media Player",
+    "icon": "mpv"
+  },
+  {
+    "name": "Qt5 Settings",
+    "icon": "preferences-desktop-theme"
+  },
+  {
+    "name": "nvtop",
+    "icon": "nvtop"
+  },
+  {
+    "name": "Qt Widgets Designer",
+    "icon": "designer"
+  },
+  {
+    "name": "Flatseal",
+    "icon": "com.github.tchx84.Flatseal"
+  },
+  {
+    "name": "Ark",
+    "icon": "ark"
+  },
+  {
+    "name": "OpenTabletDriver",
+    "icon": "otd"
+  },
+  {
+    "name": "OBS Studio",
+    "icon": "com.obsproject.Studio"
+  },
+  {
+    "name": "Blackmagic RAW Player",
+    "icon": "blackmagicraw-player"
+  },
+  {
+    "name": "Avahi Zeroconf Browser",
+    "icon": "network-wired"
+  },
+  {
+    "name": "Cloudflare Zero Trust",
+    "icon": "zero-trust-orange"
+  },
+  {
+    "name": "Zen Browser",
+    "icon": "zen-browser"
+  },
+  {
+    "name": "LibreOffice",
+    "icon": "libreoffice-startcenter"
+  },
+  {
+    "name": "Kdenlive",
+    "icon": "kdenlive"
+  },
+  {
+    "name": "btop++",
+    "icon": "btop"
+  },
+  {
+    "name": "Ghost Of Tsushima",
+    "icon": "/home/tsubenn/PortProton/data/img/Ghost_of_Tsushima_DIRECTOR'S_CUT.png"
+  },
+  {
+    "name": "Sekiro\u2122: Shadows Die Twice",
+    "icon": "/home/tsubenn/PortProton/data/img/Sekiro\u2122:_Shadows_Die_Twice.png"
+  },
+  {
+    "name": "Arknight: Endfield",
+    "icon": "/home/tsubenn/PortProton/data/img/GRYPHLINK.png"
+  },
+  {
+    "name": "Counter-Strike 2",
+    "icon": "steam_icon_730"
+  },
+  {
+    "name": "HoYoPlay",
+    "icon": "/home/tsubenn/PortProton/data/img/HoYoPlay.png"
+  },
+  {
+    "name": "PUBG: BATTLEGROUNDS",
+    "icon": "steam_icon_578080"
+  },
+  {
+    "name": "NieR Automata",
+    "icon": "/home/tsubenn/PortProton/data/img/NieR:Automata.png"
+  },
+  {
+    "name": "Mecha BREAK",
+    "icon": "steam_icon_2452280"
+  },
+  {
+    "name": "Call of Duty: Modern Warfare Remastered",
+    "icon": "/home/tsubenn/PortProton/data/img/Call_of_Duty:_Modern_Warfare_Remastered.png"
+  },
+  {
+    "name": "Geometry Dash",
+    "icon": "steam_icon_322170"
+  },
+  {
+    "name": "Zenless Zone Zero (DX12)",
+    "icon": "/home/tsubenn/PortProton/data/img/ZenlessZoneZero.png"
+  }
+]

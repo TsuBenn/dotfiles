@@ -21,7 +21,7 @@ Cells {
     property bool keyNav: true
 
     component Type: Item {
-        property bool enabled: true
+        override property bool enabled: true
         property bool toScale: true
         property int thumbH: 0
         property int bg: 0
@@ -68,7 +68,6 @@ Cells {
 
             implicitHeight: childrenRect.height
             implicitWidth: childrenRect.width
-
 
         }
 

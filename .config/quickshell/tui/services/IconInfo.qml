@@ -12,16 +12,18 @@ Singleton {
     signal searched()
 
     function fetch(...queries): string {
+        let unknown = []
         for (const query of queries) {
             if (!query) continue
-            if (!icons || !icons[query]) {
+            if (!icons || !(query in root.icons)) {
+                console.log("No Icon found for: " + query)
+                unknown.push(query)
                 continue
             }
             console.log("Found icon: " + query)
             return root.icons[query]
         }
-        console.log("No Icon found for: " + queries)
-        find(...queries)
+        find(...unknown)
         return "nothing"
     }
 
@@ -55,9 +57,10 @@ Singleton {
             onStreamFinished: {
                 console.log(text)
                 const data = JSON.parse(text)
-                if (!Object.values(data).every(v => v === null)) {
+                if (!Object.values(data).every(v => v === null) && Object.keys(data).length > 0) {
                     cache.reload()
                 }
+                icon_search.queue = []
                 root.searched()
             }
         }

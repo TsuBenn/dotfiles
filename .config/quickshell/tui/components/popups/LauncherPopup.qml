@@ -1,7 +1,10 @@
+pragma ComponentBehavior: Bound
+
 import qs.config
 import qs.modules
 import qs.services
 
+import Quickshell.Io
 import QtQuick.Layouts
 import QtQuick
 
@@ -52,7 +55,7 @@ CellPopup {
 
                 CellBox {
 
-                    id: textfield
+                    id: textbox
 
                     x: Cell.centerWCell(implicitWidth+Cell.w(2),parent.implicitWidth)
 
@@ -75,10 +78,10 @@ CellPopup {
                             property string prefix: ""
                             property string value: {
                                 switch (prefix) {
-                                    case ">": return "settings"
-                                    case "?": return "web"
-                                    case "=": return "calc"
-                                    case "": return "apps"
+                                    case ">": tab.selected = 1; return "settings"
+                                    case "?": tab.selected = 2; return "web"
+                                    case "=": tab.selected = 3; return "calc"
+                                    case "": tab.selected = 0; return "apps"
                                 }
                                 return "apps"
                             }
@@ -89,7 +92,9 @@ CellPopup {
 
                         CellTextField {
 
-                            w: textfield.contentW - 2 - mode.text.length - 1
+                            id: textfield
+
+                            w: textbox.contentW - 2 - mode.text.length - 1
                             h: 1
 
                             placeholder: {
@@ -118,6 +123,13 @@ CellPopup {
                                 if (text == "" && mode.prefix != "") {
                                     mode.prefix = ""
                                 }
+
+                                const query = text.trim()
+
+                                if (mode.value == "apps") {
+                                    process.exec(["python", ".config/quickshell/tui/scripts/launcher.py", "--mode", "apps", query])
+                                }
+
                             }
                         }
 
@@ -130,6 +142,17 @@ CellPopup {
 
             CellTabs {
 
+                id: tab
+
+                onSelectedChanged: {
+                    switch (selected) {
+                        case 0: mode.prefix = ""; textfield.text = ""; break;
+                        case 1: mode.prefix = ">"; textfield.text = " "; break;
+                        case 2: mode.prefix = "?"; textfield.text = " "; break;
+                        case 3: mode.prefix = "="; textfield.text = " "; break;
+                    }
+                }
+
                 w: box.contentW
                 items: [
                     "Apps",
@@ -140,10 +163,109 @@ CellPopup {
 
             }
 
-            CellText {
-                text: IconInfo.fetch("minecraft")
+            CellScrollView {
+
+                id: apps
+
+                visible: tab.selected == 0
+
+                property var result: []
+
+                w: box.contentW
+                h: 15
+
+                ColumnLayout {
+
+                    spacing: 0
+
+                    Repeater {
+
+                        model: apps.result
+
+                        onModelChanged: {
+                            apps.reset()
+                        }
+
+                        delegate: Cells {
+
+                            id: app_result
+
+                            required property string id
+                            required property string label
+                            required property string description
+                            required property string icon
+                            required property string type
+
+                            w: apps.contentW
+                            h:3
+
+                            color: "transparent"
+
+                            ColumnLayout {
+
+                                id: app_layout
+
+                                spacing: 0
+
+                                RowLayout {
+                                    spacing: 0
+                                    Cells {
+
+                                        w: 5
+                                        h: 2
+
+                                        color: "transparent"
+
+                                        Image {
+
+                                            width: Cell.h(2)
+                                            height: Cell.h(2)
+
+                                            source: "image://icon/" + app_result.icon
+
+                                            fillMode: Image.PreserveAspectCrop
+
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+
+
+                        }
+
+                    }
+
+                }
+
             }
 
+        }
+
+    }
+
+    Process {
+
+        id: process
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    const data = JSON.parse(text)
+                    if (mode.value == "apps") {
+                        apps.result = data
+                        console.log(text)
+                    } else if (mode.value == "settings") {
+                        console.log(text)
+                    } else if (mode.value == "web") {
+                        console.log(text)
+                    } else if (mode.value == "calc") {
+                        console.log(text)
+                    }
+                }
+            }
         }
 
     }

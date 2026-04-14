@@ -12,18 +12,6 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 FREQ_FILE = os.path.join(SCRIPT_DIR, "frequency.json")
 SETTINGS_FILE = os.path.join(SCRIPT_DIR, "settings.toml")
 
-import glob
-
-ICON_DIRS = [
-    "/usr/share/icons/hicolor",
-    "/usr/share/icons",
-    "/usr/share/pixmaps",
-    os.path.expanduser("~/.local/share/icons")
-]
-
-ICON_SIZES = ["256x256", "128x128", "64x64", "48x48", "32x32", "scalable"]
-ICON_EXTS = ["png", "svg", "xpm"]
-
 DESKTOP_DIRS = [
     "/usr/share/applications",
     os.path.expanduser("~/.local/share/applications")
@@ -50,24 +38,42 @@ def increment_frequency(app_id):
 # ─── Fuzzy Match ─────────────────────────────────────────────────────────────
 
 def fuzzy_match(query, target):
-    query = query.lower()
-    target = target.lower()
-    if not query:
+    query = query.lower().strip()
+    target = target.lower().strip()
+    if not query or not target:
         return 0
+
+    # exact match bonus
+    if query == target:
+        return 1000
+    if target.startswith(query):
+        return 500
+    if query in target:
+        return 300
+
     qi = 0
     score = 0
     consecutive = 0
+    max_consecutive = 0
+
     for i, ch in enumerate(target):
         if qi < len(query) and ch == query[qi]:
             consecutive += 1
+            max_consecutive = max(max_consecutive, consecutive)
             score += consecutive * 10
             if i == 0 or target[i-1] == " ":
                 score += 20
             qi += 1
         else:
             consecutive = 0
+
     if qi < len(query):
         return 0
+
+    # require at least half the query to be consecutive
+    if max_consecutive < len(query) // 2:
+        return 0
+
     score -= len(target) * 2
     return max(0, score)
 
@@ -108,6 +114,7 @@ def scan_apps():
                 app = parse_desktop_file(os.path.join(directory, f))
                 if app:
                     apps.append(app)
+    save_icon_cache([{"name": app["name"], "icon": app["icon"]} for app in apps])
     return apps
 
 def search_apps(query):
@@ -133,7 +140,7 @@ def search_apps(query):
         "description": app["genericName"] or app["description"],
         "icon": app["icon"],
         "type": "action"
-    } for _, app in scored[:10]]
+    } for _, app in scored[:20]]
 
 def select_app(app_id):
     apps = scan_apps()
@@ -243,112 +250,16 @@ def load_icon_cache():
         with open(ICON_CACHE_FILE) as f:
             return json.load(f)
     except:
-        return {}
+        return []
 
 def save_icon_cache(cache):
     with open(ICON_CACHE_FILE, "w") as f:
         json.dump(cache, f, indent=2)
 
-def resolve_icon(query):
-    # scan all apps to find matching app first
-    apps = scan_apps()
-    
-    # find app by matching query against name and icon field
-    matched_app = None
-    best_score = 0
-    for app in apps:
-        score = max(
-            fuzzy_match(query, app["name"]) * 3,
-            fuzzy_match(query, app["id"]) * 2,
-            fuzzy_match(query, app["icon"]) * 2,
-        )
-        if score > best_score:
-            best_score = score
-            matched_app = app
-
-    if not matched_app or best_score < 30:
-        return "not_found"
-
-    icon_name = matched_app["icon"]
-
-    if not icon_name:
-        return None  # app exists but no icon
-
-    # search for icon file
-    for directory in ICON_DIRS:
-        for size in ICON_SIZES:
-            for ext in ICON_EXTS:
-                pattern = f"{directory}/{size}/apps/{icon_name}.{ext}"
-                matches = glob.glob(pattern)
-                if matches:
-                    return matches[0]
-        for ext in ICON_EXTS:
-            path = f"{directory}/{icon_name}.{ext}"
-            if os.path.exists(path):
-                return path
-
-    for ext in ICON_EXTS:
-        path = f"/usr/share/pixmaps/{icon_name}.{ext}"
-        if os.path.exists(path):
-            return path
-
-    # fuzzy fallback on icon files
-    all_icons = glob.glob("/usr/share/icons/hicolor/**/apps/*", recursive=True)
-    all_icons += glob.glob("/usr/share/pixmaps/*")
-
-    best_icon_score = 0
-    best_icon_path = ""
-    for path in all_icons:
-        filename = os.path.splitext(os.path.basename(path))[0]
-        score = fuzzy_match(icon_name.lower(), filename.lower())
-        if score > best_icon_score:
-            best_icon_score = score
-            best_icon_path = path
-
-    if best_icon_score > 30:
-        return best_icon_path
-
-    return None  # app found but no icon anywhere
-
-
-def resolve_icons_mode(names):
-    cache = load_icon_cache()
-    result = {}
-    updated = False
-
-    for name in names:
-        if name in cache:
-            result[name] = cache[name]
-            continue
-
-        path = resolve_icon(name)
-
-        if path == "not_found":
-            # don't cache, app not found
-            result[name] = None
-            continue
-
-        # null means app exists but no icon
-        # string means found
-        cache[name] = path
-        result[name] = path
-        updated = True
-
-    if updated:
-        save_icon_cache(cache)
-
-    return result
-
 # ─── Main ────────────────────────────────────────────────────────────────────
 
 def main():
     args = sys.argv[1:]
-
-    if "--icons" in args:
-        icon_idx = args.index("--icons")
-        names = args[icon_idx + 1:]
-        print(json.dumps(resolve_icons_mode(names)))
-        return
 
     if "--mode" not in args:
         print(json.dumps([]))
