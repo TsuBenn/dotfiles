@@ -21,13 +21,13 @@ Singleton {
     }
 
     function toggle(name: string, isolate = true) {
-        isOpen(name) ? close(name) : open(name)
+        isOpen(name) ? close(name) : open(name,isolate)
     }
 
     function close(name = "") {
-        closed(name)
         if (name == "") active_popups = [] 
         else active_popups = active_popups.filter(p => p != name)
+        closed(name)
     }
 
     function isOpen(name: string): bool {

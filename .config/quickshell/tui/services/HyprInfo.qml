@@ -19,8 +19,6 @@ Singleton {
 
     property var focusedMonitor: ({})
 
-    property var icons
-
     signal hyprEvent(event : string)
 
     function switchWorkspace(n) {
@@ -34,28 +32,6 @@ Singleton {
     function windowCount(n) {
         if (!workspaces) return 0
         return workspaces[n]?.length ?? 0
-    }
-
-    function iconFetch(query, query2) {
-        if (query == "") return "exception"
-        query = query.replace(/\.[^/.]+$/, "").toLowerCase()
-        query2 = query2.replace(/\.[^/.]+$/, "").toLowerCase()
-        var key = Object.keys(root.icons).find(k => k.toLowerCase().includes(query))
-        var value = key ? root.icons[key] : undefined
-        if (!value) {
-            key = Object.entries(root.icons).find(([,k]) => k.toLowerCase().includes(query))
-            value = key ? key[1] : undefined
-        }
-        if (!value) {
-            key = Object.keys(root.icons).find(k => k.toLowerCase().includes(query2))
-            value = key ? root.icons[key] : undefined
-        }
-        if (!value) {
-            key = Object.entries(root.icons).find(([,k]) => k.toLowerCase().includes(query2))
-            value = key ? key[1] : "exception"
-        }
-        if (!value) value = "exception"
-        return value
     }
 
     Component.onCompleted: {
@@ -80,16 +56,6 @@ Singleton {
             root.hyprEvent(event.name)
             //console.log(event.name)
         })
-    }
-
-    FileView {
-        id: get_icons
-
-        path: ".config/quickshell/services/backend/icons.json"
-
-        onLoaded: {
-            root.icons = JSON.parse(text())
-        }
     }
 
     Process {

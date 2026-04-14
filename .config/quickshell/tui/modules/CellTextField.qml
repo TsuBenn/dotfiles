@@ -14,6 +14,9 @@ Item {
     property int h: 0
 
     property string text: ""
+
+    property string placeholder: ""
+
     property bool showCursor : true
     property bool blinkCursor : true
 
@@ -23,6 +26,8 @@ Item {
     property font font: Cell.font
     property color color: Colors.fgBase
     property color disabled_color: Colors.fgSubtle
+
+    property bool focusOnVisible: true
 
     property bool hidden: false
     property bool disabled: false
@@ -37,10 +42,19 @@ Item {
     onVisibleChanged: {
         resetCursor()
         text = ""
+        if (visible && focusOnVisible) {
+            focus = true
+            return
+        }
+        focus = false
     }
 
     onTextChanged: {
         resetCursor()
+    }
+
+    function fieldFocus(on = true) {
+        focus = on
     }
 
     Timer {
@@ -58,6 +72,20 @@ Item {
 
     CellText {
 
+        visible: root.text.trim() == ""
+
+        id: placeholder
+
+        preferedW: root.w
+
+        text: root.placeholder
+        font: root.font
+        color: root.disabled_color
+
+    }
+
+    CellText {
+
         visible: !root.hidden
 
         id: input
@@ -68,6 +96,16 @@ Item {
         font: root.font
         color: root.disabled ? root.disabled_color : root.color
 
+        MouseControl {
+            anchors.fill: parent
+
+            onPressed: (button) => {
+                if (button == "L") {
+                    root.focus = true
+                }
+            }
+        }
+
     }
 
     RowLayout {
@@ -77,7 +115,7 @@ Item {
         spacing: 0
 
         Repeater {
-            model: Math.max(Math.min(input.text.length - 1,input.preferedW-1),0)
+            model: Math.max(Math.min(root.text.length,input.preferedW-1),0)
 
             delegate: CellText {
                 text: "*"

@@ -5,6 +5,7 @@ import qs.config
 import qs.services
 
 import Quickshell
+import Quickshell.Io
 import Quickshell.Hyprland
 import Quickshell.Wayland
 import QtQuick.Layouts
@@ -38,7 +39,7 @@ Scope {
                     root.shield = true
                 })
                 PopupManager.closed.connect((name) => {
-                    if (name == "") root.shield = false
+                    if (name == "" || PopupManager.active_popups.length == 0) root.shield = false
                 })
                 DropdownManager.opened.connect((name) => {
                     ContextMenuManager.hide()
@@ -54,6 +55,19 @@ Scope {
                 ContextMenuManager.closed.connect((name) => {
                     if (PopupManager.active_popups.length > 0) return
                     root.shield = false
+                })
+                HyprInfo.hyprEvent.connect((event)=> {
+                    switch (event) {
+                        case "openwindow":
+                        case "closewindow":
+                        case "closewindow":
+                        case "focusedmon": 
+                        case "workspace": 
+                        case "movewindow": {
+                            PopupManager.close()
+                            ContextMenuManager.hide()
+                        }
+                    }
                 })
                 for (const m of Hyprland.monitors.values) {
                     if (m.name == screen.name) {
@@ -163,6 +177,8 @@ Scope {
 
             PanelWindow {
 
+                id: notifcations
+
                 anchors {
                     top: true
                     left: true
@@ -171,7 +187,7 @@ Scope {
                 }
 
                 WlrLayershell.layer: WlrLayer.Top
-                WlrLayershell.namespace: "popups"
+                WlrLayershell.namespace: "notifcations"
 
                 implicitWidth: root.monitor.width
                 implicitHeight: root.monitor.height
@@ -199,6 +215,8 @@ Scope {
 
             PanelWindow {
 
+                id: popups_screen
+
                 anchors {
                     top: true
                     left: true
@@ -215,6 +233,10 @@ Scope {
                 visible: true
 
                 focusable: root.shield
+                HyprlandFocusGrab {
+                    active: root.shield
+                    windows: [popups_screen]
+                }
 
                 color: "transparent"
 
@@ -273,6 +295,13 @@ Scope {
 
                 }
 
+            }
+
+            IpcHandler {
+                target: "launcher"
+                function toggle(): void {
+                    PopupManager.toggle("launcher", false)
+                }
             }
 
         }

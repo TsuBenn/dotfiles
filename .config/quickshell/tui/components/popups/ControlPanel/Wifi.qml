@@ -265,7 +265,16 @@ ColumnLayout {
                                     w: parent.w
                                     h: 1
                                     hidden: true
-                                    focus: visible
+
+                                    focus: false
+
+                                    onVisibleChanged: {
+                                        if (visible) {
+                                            fieldFocus(true)
+                                            return
+                                        }
+                                        fieldFocus(false)
+                                    }
 
                                     onEntered: (text) => {
                                         wifi.connect(text)
