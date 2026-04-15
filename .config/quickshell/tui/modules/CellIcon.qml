@@ -12,7 +12,7 @@ Item {
 
     property bool hideOnFail: true
 
-    property bool success: base.visible && hideOnFail
+    property bool success: base.visible
 
     property int w: 5
     property int h: 2

@@ -82,6 +82,10 @@ Scope {
                 right: true
             }
 
+            margins {
+                top: -implicitHeight*Hyprland.focusedWorkspace.hasFullscreen
+            }
+
             implicitHeight: Cell.h(1)
 
             color: Colors.bgSurface
@@ -163,7 +167,7 @@ Scope {
                 }
 
                 MouseArea {
-                    visible: context_menu.visible
+                    visible: root.shield
 
                     anchors.fill: parent
 
@@ -186,7 +190,7 @@ Scope {
                     bottom: true
                 }
 
-                WlrLayershell.layer: WlrLayer.Top
+                WlrLayershell.layer: WlrLayer.Overlay
                 WlrLayershell.namespace: "notifcations"
 
                 implicitWidth: root.monitor.width
@@ -224,7 +228,7 @@ Scope {
                     bottom: true
                 }
 
-                WlrLayershell.layer: WlrLayer.Top
+                WlrLayershell.layer: WlrLayer.Overlay
                 WlrLayershell.namespace: "popups"
 
                 implicitWidth: root.monitor.width
@@ -233,9 +237,10 @@ Scope {
                 visible: true
 
                 focusable: root.shield
+
                 HyprlandFocusGrab {
                     active: root.shield
-                    windows: [popups_screen]
+                    windows: [popups_screen,root]
                 }
 
                 color: "transparent"
@@ -243,6 +248,7 @@ Scope {
                 mask: Region {
                     item: shield
                 }
+
 
                 Item {
 
@@ -264,6 +270,9 @@ Scope {
                         onPressed: {
                             PopupManager.close()
                         }
+                    }
+
+                    Keys.onPressed: (event) => {
                     }
 
                     Popups {

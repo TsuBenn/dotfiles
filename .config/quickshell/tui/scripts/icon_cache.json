@@ -348,6 +348,10 @@
     "icon": "/usr/share/icons/hicolor/48x48/apps/btop.png"
   },
   {
+    "name": "Audacity",
+    "icon": "/var/lib/flatpak/exports/share/icons/hicolor//scalable/apps/org.audacityteam.Audacity.svg"
+  },
+  {
     "name": "Ghost Of Tsushima",
     "icon": "/home/tsubenn/PortProton/data/img/Ghost_of_Tsushima_DIRECTOR'S_CUT.png"
   },

@@ -2,6 +2,7 @@ pragma Singleton
 
 import Quickshell
 import Quickshell.Io
+import QtQuick
 
 Singleton {
 
@@ -9,13 +10,19 @@ Singleton {
 
     property var apps: []
     property var settings: []
-    property var web: []
     property var calc: []
+    property var result: []
 
     function search(mode = "apps", query: string) {
         process.mode = mode
-        process.exec(["python", ".config/quickshell/tui/scripts/launcher.py", "--mode", mode, query])
+        process.exec(["python", ".config/quickshell/tui/scripts/launcher.py", "--fuzzy", "--mode", mode, query])
         scan_icons()
+    }
+
+    function select(mode = "apps", query: string, select: string) {
+        process.command = ["python", ".config/quickshell/tui/scripts/launcher.py", "--mode", mode, query, "--select", select]
+        process.startDetached()
+        process.command = []
     }
 
     function scan_icons(force = true) {
@@ -26,7 +33,6 @@ Singleton {
     function reset() {
         apps = []
         settings = []
-        web = []
         calc = []
     }
 
@@ -50,13 +56,22 @@ Singleton {
                     const data = JSON.parse(text)
                     if (process.mode == "apps") {
                         root.apps = data
+                        root.result = data
                     } else if (process.mode == "settings") {
-                        console.log(text)
+                        root.settings = data
+                        root.result = data
                     } else if (process.mode == "web") {
                         console.log(text)
                     } else if (process.mode == "calc") {
                         console.log(text)
                     }
+                }
+            }
+        }
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    console.log("LauncherInfo: " + text)
                 }
             }
         }

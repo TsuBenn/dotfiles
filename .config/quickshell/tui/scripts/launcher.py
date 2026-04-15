@@ -15,8 +15,26 @@ SETTINGS_FILE = os.path.join(SCRIPT_DIR, "settings.toml")
 DESKTOP_DIRS = [
     "/usr/share/applications",
     "/usr/local/share/applications/",
+    "/var/lib/flatpak/exports/share/applications/",
+    os.path.expanduser("~/.local/share/flatpak/exports/share/applications/"),
     os.path.expanduser("~/.local/share/applications")
 ]
+
+ICON_DIRS = [
+    "/usr/share/icons/hicolor",
+    "/usr/share/icons",
+    "/usr/share/pixmaps",
+    "/var/lib/flatpak/exports/share/icons/",
+    "/var/lib/flatpak/exports/share/icons/hicolor/",
+    os.path.expanduser("~/.local/share/icons"),
+    os.path.expanduser("~/.local/share/flatpak/exports/share/icons/"),
+    os.path.expanduser("~/.local/share/flatpak/exports/share/icons/hicolor")
+]
+
+ICON_SIZES = ["256x256", "128x128", "64x64", "48x48", "32x32", "scalable"]
+ICON_EXTS = ["png", "svg", "xpm"]
+
+ICON_CACHE_FILE = os.path.join(SCRIPT_DIR, "icon_cache.json")
 
 FUZZY = False
 
@@ -40,7 +58,7 @@ def increment_frequency(app_id):
 
 # ─── Fuzzy Match ─────────────────────────────────────────────────────────────
 
-def fuzzy_match(query, target):
+def fuzzy_match(query, target, fuzzy = True):
     query = query.lower().strip()
     target = target.lower().strip()
     if not query or not target:
@@ -59,7 +77,7 @@ def fuzzy_match(query, target):
     consecutive = 0
     max_consecutive = 0
 
-    if FUZZY:
+    if FUZZY and fuzzy:
         for i, ch in enumerate(target):
             if qi < len(query) and ch == query[qi]:
                 consecutive += 1
@@ -75,7 +93,7 @@ def fuzzy_match(query, target):
         return 0
 
     # require at least half the query to be consecutive
-    if max_consecutive < len(query) // 2:
+    if max_consecutive < len(query) / 2:
         return 0
 
     score -= len(target) * 2
@@ -144,6 +162,7 @@ def search_apps(query):
         "label": app["name"],
         "description": app["genericName"] or app["description"],
         "icon": app["icon"],
+        "value": app["exec"],
         "type": "action"
     } for _, app in scored[:20]]
 
@@ -236,32 +255,48 @@ def select_web(query):
 
 # ─── Calculator ──────────────────────────────────────────────────────────────
 
+import math
+
 def calculate(expr):
     try:
-        allowed = set("0123456789+-*/().% ")
-        if not all(c in allowed for c in expr):
-            return [{"label": "Invalid expression", "type": "info"}]
-        result = eval(expr)
+        # 1. Define the functions you want to support
+        safe_methods = {
+            "sqrt": math.sqrt,
+            "sin": math.sin,
+            "cos": math.cos,
+            "tan": math.tan,
+            "log": math.log,
+            "pi": math.pi,
+            "e": math.e,
+            "pow": pow,
+            "abs": abs
+        }
+
+        # 2. Update allowed characters to include letters
+        # We allow a-z so the user can type 'sqrt', 'sin', etc.
+        allowed = set("0123456789+-*/().% abcdefghijklmnopqrstuvwxyz")
+        
+        clean_expr = expr.lower().strip()
+        
+        if not all(c in allowed for c in clean_expr):
+            return [{"label": "Invalid characters", "type": "info"}]
+
+        # 3. Use restricted eval
+        # __builtins__: {} blocks access to dangerous system functions
+        result = eval(clean_expr, {"__builtins__": {}}, safe_methods)
+        
+        # Round result for cleaner UI (optional)
+        if isinstance(result, float):
+            result = round(result, 4)
+
         return [{"label": str(result), "type": "result"}]
-    except:
-        return [{"label": "Error", "type": "info"}]
+    except Exception as e:
+        return [{"label": f"Error: {str(e)}", "type": "info"}]
 
 # ─── Icons ───────────────────────────────────────────────────────────────────
 
 import glob
 from pathlib import Path
-
-ICON_DIRS = [
-    "/usr/share/icons/hicolor",
-    "/usr/share/icons",
-    "/usr/share/pixmaps",
-    os.path.expanduser("~/.local/share/icons")
-]
-
-ICON_SIZES = ["256x256", "128x128", "64x64", "48x48", "32x32", "scalable"]
-ICON_EXTS = ["png", "svg", "xpm"]
-
-ICON_CACHE_FILE = os.path.join(SCRIPT_DIR, "icon_cache.json")
 
 def resolve_icon(query):
 
@@ -356,25 +391,39 @@ def main():
     elif mode == "settings":
         if is_select:
             select_idx = args.index("--select")
-            full_id = args[select_idx + 1]
-            path = full_id.split(":")
+            
+            # 1. Safely handle the ID and Query
+            # If the user provides "", we treat the path as None (the root)
+            full_id = args[select_idx + 1] if len(args) > select_idx + 1 else ""
             query = " ".join(args[select_idx + 2:])
+            
+            # Normalize empty ID to None for searching at root
+            path = full_id.split(":") if full_id else None
+
             if query:
-                # searching inside submenu
+                # RECURSIVE SEARCH:
+                # If there's a query, we search everything from the current path downwards
                 print(json.dumps(search_settings(query, path)))
             else:
+                # NAVIGATION:
+                # If no query, we are either opening a folder or running a command
                 node_settings = load_settings()
-                node = find_node(node_settings, path)
-                if node is not None:
-                    # has children, show submenu
-                    print(json.dumps(search_settings("", path)))
+                
+                if not path:
+                    # Case: root menu (no ID provided)
+                    print(json.dumps(search_settings("", None)))
                 else:
-                    # leaf node, execute
-                    select_setting(full_id)
-                    print(json.dumps([]))
-        else:
-            query = " ".join(args[mode_idx + 2:])
-            print(json.dumps(search_settings(query)))
+                    children = find_node(node_settings, path)
+                    if children: 
+                        # Case: It's a folder, show its contents
+                        print(json.dumps(search_settings("", path)))
+                    elif children is None:
+                        # Case: ID doesn't exist
+                        print(json.dumps([]))
+                    else:
+                        # Case: It's a leaf, execute the command
+                        select_setting(full_id)
+                        print(json.dumps([]))
 
     elif mode == "web":
         if is_select:

@@ -61,6 +61,7 @@ ColumnLayout {
                                 id: icon
                                 w: 5
                                 icon: [stream.app,stream.name,stream.binary]
+                                hideOnFail: false
                             }
 
                             CellText {

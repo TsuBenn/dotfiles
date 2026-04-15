@@ -135,7 +135,7 @@ CellPopup {
                     h: parent.h
 
                     border.type: 4
-
+                    border.color: textfield.text.trim().length > 0 ? Colors.secondary : Colors.fgBase
 
                     RowLayout {
 
@@ -144,6 +144,10 @@ CellPopup {
                         CellText {
 
                             visible: text.length > 0
+
+                            onVisibleChanged: {
+                                prefix = ""
+                            }
 
                             id: mode
 
@@ -166,8 +170,27 @@ CellPopup {
 
                             id: textfield
 
+                            property int selected: 0
+
                             w: textbox.contentW - 2 - mode.text.length - 1
                             h: 1
+
+                            Component.onCompleted: {
+                                LauncherInfo.appsChanged.connect(() => {
+                                    reset()
+                                })
+                            }
+
+                            onEntered: (query) => {
+                                if (mode.value == "apps") {
+                                    LauncherInfo.select("apps", query, LauncherInfo.apps[selected].id)
+                                }
+                                PopupManager.close("launcher")
+                            }
+
+                            function reset() {
+                                selected = 0
+                            }
 
                             placeholder: {
                                 switch (mode.value) {
@@ -182,30 +205,57 @@ CellPopup {
                             Keys.onPressed: (event) => {
                                 if (event.key == Qt.Key_Escape) {
                                     PopupManager.close("launcher")
+                                } else if (event.key == Qt.Key_Tab) {
+                                    if (tab.selected < 3) {
+                                        tab.selected += 1
+                                        return
+                                    }
+                                    tab.selected = 0
+                                } else if (event.key == Qt.Key_Up) {
+                                    if (textfield.selected > 0) {
+                                        textfield.selected -= 1
+                                    }
+                                    if (textfield.selected-Math.ceil(apps.offset/3) < 0) {
+                                        apps.offset = Math.max((selected-4)*3,0)
+                                    }
+                                } else if (event.key == Qt.Key_Down) {
+                                    if (textfield.selected < LauncherInfo.result.length - 1) {
+                                        textfield.selected += 1
+                                    }
+                                    if (textfield.selected-Math.floor(apps.offset/3) >= 5) {
+                                        apps.offset = selected*3
+                                    }
                                 }
                             }
 
-                            onTextChanged: {
+                            onTextInput: (text) => {
+                                let query = text.trim()
+
                                 if (text == ">") {
                                     mode.prefix = ">"
-                                    text = " "
+                                    set(" ")
+                                    query = ""
                                 }
                                 if (text == "?") {
                                     mode.prefix = "?"
-                                    text = " "
+                                    set(" ")
+                                    query = ""
                                 }
                                 if (text == "=") {
                                     mode.prefix = "="
-                                    text = " "
+                                    set(" ")
+                                    query = ""
                                 }
                                 if (text == "" && mode.prefix != "") {
                                     mode.prefix = ""
+                                    set("")
+                                    query = ""
                                 }
 
-                                const query = text.trim()
-
-                                if (mode.value == "apps") {
+                                if (mode.value == "apps" && textfield.text.length != 1) {
                                     LauncherInfo.search("apps", query)
+                                } else if (mode.value == "settings") {
+                                    LauncherInfo.search("settings", query)
                                 }
 
                             }
@@ -225,10 +275,10 @@ CellPopup {
                 padding: 0
                 onSelectedChanged: {
                     switch (selected) {
-                        case 0: mode.prefix = ""; textfield.text = ""; break;
-                        case 1: mode.prefix = ">"; textfield.text = " "; break;
-                        case 2: mode.prefix = "?"; textfield.text = " "; break;
-                        case 3: mode.prefix = "="; textfield.text = " "; break;
+                        case 0: mode.prefix = ""; textfield.set(""); break;
+                        case 1: mode.prefix = ">"; textfield.set(" "); break;
+                        case 2: mode.prefix = "?"; textfield.set(" "); break;
+                        case 3: mode.prefix = "="; textfield.set(" "); break;
                     }
                 }
 
@@ -242,91 +292,299 @@ CellPopup {
 
             }
 
-            CellScrollView {
-
-                id: apps
-
-                visible: tab.selected == 0
-
-                onVisibleChanged: {
-                    LauncherInfo.reset()
-                }
+            Cells {
 
                 w: box.contentW
                 h: 15
 
+                color: "transparent"
+
                 ColumnLayout {
+
+                    x: Cell.centerWCell(implicitWidth, parent.implicitWidth) - Cell.w(1)
 
                     spacing: 0
 
-                    Repeater {
+                    CellText {
+                        text: " "
+                    }
 
-                        model: LauncherInfo.apps
+                    CellText {
+                        text: "No result"
+                        color: Colors.fgSubtle
+                    }
 
-                        onModelChanged: {
-                            apps.reset()
-                        }
+                }
 
-                        delegate: Cells {
+                CellScrollView {
 
-                            id: app_result
+                    id: apps
 
-                            required property string id
-                            required property string label
-                            required property string description
-                            required property string icon
-                            required property string type
+                    visible: tab.selected == 0
 
-                            w: apps.contentW
-                            h: 3
+                    onVisibleChanged: {
+                        LauncherInfo.reset()
+                    }
 
-                            color: "transparent"
+                    w: box.contentW
+                    h: 15
 
-                            ColumnLayout {
+                    ColumnLayout {
 
-                                id: app_layout
+                        spacing: 0
 
-                                spacing: 0
+                        Repeater {
 
-                                RowLayout {
+                            model: LauncherInfo.apps
+
+                            onModelChanged: {
+                                apps.reset()
+                            }
+
+                            delegate: Cells {
+
+                                id: app_result
+
+                                required property int index
+
+                                required property string id
+                                required property string label
+                                required property string description
+                                required property string icon
+                                required property string type
+
+                                property bool selected: textfield.selected == index
+
+                                w: apps.contentW
+                                h: 3
+
+                                color: Colors.bgSurface
+
+                                Cells {
+
+                                    w: apps.contentW
+                                    h: 2
+                                    color: "transparent"
+
+                                    MouseControl {
+
+                                        anchors.fill: parent
+
+                                        onEntered: {
+                                            textfield.selected = app_result.index
+                                        }
+
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                textfield.entered(textfield.text)
+                                            }
+                                        }
+
+                                    }
+
+                                }
+
+                                ColumnLayout {
+
+                                    id: app_layout
 
                                     spacing: 0
 
-                                    CellText {
-                                        text: " "
-                                    }
+                                    RowLayout {
 
-                                    CellIcon {
-                                        icon: [app_result.icon, app_result.label]
-                                        w: 6
-                                    }
-
-                                    ColumnLayout {
                                         spacing: 0
 
                                         CellText {
-                                            text: app_result.label
+                                            text: " "
+                                        }
+
+                                        CellIcon {
+                                            id: apps_icon
+                                            icon: [app_result.icon, app_result.label]
+                                            w: 5
                                         }
 
                                         CellText {
-                                            text: app_result.description
-                                            color: Colors.fgSubtle
+                                            text: " "
                                         }
+
+                                        ColumnLayout {
+                                            spacing: 0
+
+                                            CellText {
+                                                text: app_result.label
+                                                preferedW: apps.contentW - 4 - 5*apps_icon.success
+                                            }
+
+                                            CellText {
+                                                text: app_result.description
+                                                preferedW: apps.contentW - 4 - 5*apps_icon.success
+                                                color: Colors.fgSubtle
+                                            }
+                                        }
+
+                                        Cells {
+
+                                            w: 1
+                                            h: 2
+
+                                            color: app_result.selected ? Colors.accentStrong : Colors.bgOverlay
+
+                                        }
+
+                                    }
+
+                                    CellSeparator {
+
+                                        type: 2
+                                        color: Colors.bgOverlay
+                                        padding: 1
+                                        w: apps.contentW
+
                                     }
 
                                 }
 
-                                CellSeparator {
-
-                                    type: 2
-                                    color: Colors.bgOverlay
-                                    padding: 1
-                                    w: apps.contentW
-
-                                }
 
                             }
 
+                        }
+
+                    }
+
+                }
+
+                CellScrollView {
+
+                    id: settings
+
+                    visible: tab.selected == 1
+
+                    onVisibleChanged: {
+                        LauncherInfo.reset()
+                    }
+
+                    w: box.contentW
+                    h: 15
+
+                    ColumnLayout {
+
+                        spacing: 0
+
+                        Repeater {
+
+                            model: LauncherInfo.settings
+
+                            onModelChanged: {
+                                settings.reset()
+                            }
+
+                            delegate: Cells {
+
+                                id: setting_result
+
+                                required property int index
+
+                                required property string id
+                                required property string label
+                                required property string description
+                                required property string icon
+                                required property string type
+
+                                property bool selected: textfield.selected == index
+
+                                w: settings.contentW
+                                h: 3
+
+                                color: Colors.bgSurface
+
+                                Cells {
+
+                                    w: apps.contentW
+                                    h: 2
+                                    color: "transparent"
+
+                                    MouseControl {
+
+                                        anchors.fill: parent
+
+                                        onEntered: {
+                                            textfield.selected = setting_result.index
+                                        }
+
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                textfield.entered(textfield.text)
+                                            }
+                                        }
+
+                                    }
+
+                                }
+
+                                ColumnLayout {
+
+                                    id: setting_layout
+
+                                    spacing: 0
+
+                                    RowLayout {
+
+                                        spacing: 0
+
+                                        CellText {
+                                            text: " "
+                                        }
+
+                                        CellIcon {
+                                            id: setting_icon
+                                            icon: [setting_result.icon, setting_result.label]
+                                            w: 5
+                                        }
+
+                                        CellText {
+                                            text: " "
+                                        }
+
+                                        ColumnLayout {
+                                            spacing: 0
+
+                                            CellText {
+                                                text: setting_result.label
+                                                preferedW: apps.contentW - 4 - 5*setting_icon.success
+                                            }
+
+                                            CellText {
+                                                text: setting_result.description
+                                                preferedW: apps.contentW - 4 - 5*setting_icon.success
+                                                color: Colors.fgSubtle
+                                            }
+                                        }
+
+                                        Cells {
+
+                                            w: 1
+                                            h: 2
+
+                                            color: setting_result.selected ? Colors.accentStrong : Colors.bgOverlay
+
+                                        }
+
+                                    }
+
+                                    CellSeparator {
+
+                                        type: 2
+                                        color: Colors.bgOverlay
+                                        padding: 1
+                                        w: settings.contentW
+
+                                    }
+
+                                }
+
+
+                            }
 
                         }
 
