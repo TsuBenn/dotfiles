@@ -273,6 +273,9 @@ Scope {
                     }
 
                     Keys.onPressed: (event) => {
+                        if (event.key == Qt.Key_Escape) {
+                            PopupManager.close()
+                        }
                     }
 
                     Popups {

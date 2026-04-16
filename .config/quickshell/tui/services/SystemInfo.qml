@@ -11,6 +11,7 @@ Singleton {
 
     //OS level
     property string username: "user"
+    property string homedir: "/home/tsubenn/"
     property string hostname: "host"
     property string os: "Linux"
     property string kernel: "linux"
@@ -70,6 +71,7 @@ Singleton {
     property string rootstoragename: "ROOT"
     property string networkdevice: "Wifi/Ethernet"
 
+    // Battery
     property bool notified5: false
     property bool notified10: false
     property bool notified20: false
@@ -161,10 +163,15 @@ Singleton {
         }
     }
 
-    function notifyerr(error: string) {
-        run.exec(["bash", "-c", "notify-send 'System Error!' '" + error.trim() + "'"])
+    function getHome(): string {
+        return root.homedir
     }
 
+    function notifyerr(error: string) {
+        run.exec(["bash", "-c", "notify-send --urgency=critical 'System Error!' '" + error.trim() + "'"])
+    }
+
+    // IO stuff
     property int  networktransmit
     property int  networkreceive
 
@@ -196,6 +203,10 @@ Singleton {
             fastfetch.running = true
             batterystat.running = true
         }
+    }
+
+    function copy_clipboard(text: string) {
+        power.exec(["bash", "-c", `echo ${text} | wl-copy`])
     }
 
     Process {
@@ -478,6 +489,18 @@ Singleton {
                         root.battery = "inf"
                         root.batterystate = "PSU"
                         root.onbattery = false
+                    }
+                }
+            }
+        }
+
+        Process {
+            running: true
+            command: ["bash", "-c", "echo $HOME"]
+            stdout: StdioCollector {
+                onStreamFinished: {
+                    if (text) {
+                        root.homedir = text.trim()
                     }
                 }
             }

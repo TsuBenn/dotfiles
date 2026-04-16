@@ -17,6 +17,8 @@ Item {
 
     property string placeholder: ""
 
+    property string bindText: ""
+
     property bool showCursor : true
     property bool blinkCursor : true
 
@@ -24,6 +26,8 @@ Item {
     property int visualPos: 0
 
     property bool visual: visualPos != 0
+
+    property bool editable: true
 
     implicitWidth: root.w > 0 ? Cell.w(w) : input.implicitWidth
     implicitHeight: root.h > 0 ? Cell.h(h) : input.implicitHeight
@@ -36,6 +40,7 @@ Item {
     property color disabled_color: Colors.fgSubtle
 
     property bool focusOnVisible: true
+    property bool autoApply: false
 
     property bool hidden: false
     property bool disabled: false
@@ -44,6 +49,13 @@ Item {
     signal textInput(text: string, change: string, mode: string)
     signal textAdded(text: string)
     signal textRemoved(text: string)
+
+    onFocusChanged: {
+        if (autoApply && !focus) {
+            entered(text)
+        }
+        set(bindText)
+    }
 
     onTextAdded: (text) => {
         textInput(root.text, text, "a")
@@ -56,7 +68,7 @@ Item {
         cursorPos = 0
         visualPos = 0
         resetCursor()
-        text = ""
+        text = root.bindText
     }
 
     function set(new_text: string) {
@@ -66,7 +78,7 @@ Item {
 
     function resetCursor() {
         cursor_timer.restart()
-        root.showCursor = true
+        root.showCursor = focus
     }
 
     onVisibleChanged: {
@@ -98,7 +110,11 @@ Item {
         interval: 500
         repeat: true
         onTriggered: {
-            root.showCursor = !root.showCursor
+            if (root.focus) {
+                root.showCursor = !root.showCursor
+                return
+            }
+            root.showCursor = false
         }
 
     }
@@ -177,6 +193,9 @@ Item {
     }
 
     MouseControl {
+
+        visible: !root.disabled
+
         anchors.fill: parent
 
         onPressed: (button) => {
@@ -301,20 +320,24 @@ Item {
             root.cursorPos += 1
             root.textAdded(event.text)
         } else if (event.key == Qt.Key_Left && event.modifiers == Qt.ShiftModifier) {
+            if (!root.editable) return
             if (root.cursorPos == 0) return
             root.cursorPos -= 1
             root.visualPos += 1
         } else if (event.key == Qt.Key_Right && event.modifiers == Qt.ShiftModifier) {
+            if (!root.editable) return
             if (root.cursorPos == root.text.length) return
             root.cursorPos += 1
             root.visualPos -= 1
         } else if (event.key == Qt.Key_Left) {
+            if (!root.editable) return
             root.visualPos = 0
             root.cursorPos -= 1
             if (root.cursorPos < 0) {
                 root.cursorPos = 0
             }
         } else if (event.key == Qt.Key_Right) {
+            if (!root.editable) return
             root.visualPos = 0
             root.cursorPos += 1
             if (root.cursorPos > root.text.length) {

@@ -116,10 +116,13 @@ Item {
 
                         delegate: CellText {
 
+                            required property int index
+
                             bg: root.border.type == 0 ? root.border.color : "transparent"
                             clip: true
 
                             text: {
+                                if (index >= root.header.offset && index < root.header.offset + root.header.text.length) return " "
                                 switch (root.border.type) {
                                     case 0: return " ";
                                     case 1: return "─";
@@ -262,10 +265,13 @@ Item {
 
                         delegate: CellText {
 
+                            required property int index
+
                             bg: root.border.type == 0 ? root.border.color : "transparent"
                             clip: true
 
                             text: {
+                                if (index >= root.footer.offset && index < root.footer.offset + root.footer.text.length) return " "
                                 switch (root.border.type) {
                                     case 0: return " "; 
                                     case 1: return "─"; 

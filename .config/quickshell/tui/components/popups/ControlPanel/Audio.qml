@@ -26,9 +26,24 @@ ColumnLayout {
 
             spacing: 0
 
+            Timer {
+                id: thetimer
+                interval: 200
+            }
+
             Repeater {
 
+                id: repeater
+
+                Component.onCompleted: {
+                    AudioInfo.statusUpdated.connect(()=>{
+                        if (thetimer.running) return
+                        repeater.model = AudioInfo.streams
+                    })
+                }
+
                 model: AudioInfo.streams
+
 
                 delegate: Cells {
 
@@ -94,14 +109,16 @@ ColumnLayout {
                                         w: stream.w - 5 - 5*icon.success
                                         percent: stream.volume
                                         interactive: true
+                                        adjustOnHold: true
                                         syncDelay: 1500
-                                        adjustOnHold: false
+                                        adjustOnPress: true
                                         cellInterval: 2
 
                                         fg: Colors.accentStrong
 
                                         onAdjusted: (percent) => {
                                             AudioInfo.setVolume(stream.id, percent)
+                                            thetimer.restart()
                                         }
 
                                     }

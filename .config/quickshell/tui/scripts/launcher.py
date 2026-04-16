@@ -164,7 +164,7 @@ def search_apps(query):
         "icon": app["icon"],
         "value": app["exec"],
         "type": "action"
-    } for _, app in scored[:20]]
+    } for _, app in scored]
 
 def select_app(app_id):
     apps = scan_apps()
@@ -174,72 +174,6 @@ def select_app(app_id):
     increment_frequency(app_id)
     exec_cmd = re.sub(r"%[a-zA-Z]", "", app["exec"]).strip()
     subprocess.Popen(exec_cmd.split(), start_new_session=True)
-
-# ─── Settings ────────────────────────────────────────────────────────────────
-
-def load_settings():
-    try:
-        with open(SETTINGS_FILE, "rb") as f:
-            return tomllib.load(f).get("settings", [])
-    except:
-        return []
-
-def find_node(settings, path_ids):
-    current = settings
-    for pid in path_ids:
-        match = next((s for s in current if s.get("id") == pid), None)
-        if not match:
-            return None
-        current = match.get("children", [])
-    return current
-
-def search_settings(query, path=None):
-    settings = load_settings()
-    nodes = find_node(settings, path) if path else settings
-    if nodes is None:
-        return []
-    if not query:
-        return [{
-            "id": s["id"],
-            "label": s["label"],
-            "description": s.get("description", ""),
-            "icon": s.get("icon", ""),
-            "type": "submenu" if "children" in s else "action",
-            "value": s.get("value", "")
-        } for s in nodes]
-    scored = []
-    for s in nodes:
-        score = max(
-            fuzzy_match(query, s["label"]) * 3,
-            fuzzy_match(query, s.get("description", "")) * 2,
-        )
-        if score > 0:
-            scored.append((score, s))
-    scored.sort(key=lambda x: x[0], reverse=True)
-    return [{
-        "id": s["id"],
-        "label": s["label"],
-        "description": s.get("description", ""),
-        "icon": s.get("icon", ""),
-        "type": "submenu" if "children" in s else "action",
-        "value": s.get("value", "")
-    } for _, s in scored]
-
-def select_setting(full_id):
-    path = full_id.split(":")
-    settings = load_settings()
-    # walk to the final node
-    current = settings
-    node = None
-    for pid in path:
-        node = next((s for s in current if s.get("id") == pid), None)
-        if not node:
-            return
-        current = node.get("children", [])
-    if not node:
-        return
-    if "children" not in node and "value" in node:
-        subprocess.Popen(node["value"], shell=True, start_new_session=True)
 
 # ─── Web ─────────────────────────────────────────────────────────────────────
 
@@ -387,43 +321,6 @@ def main():
         else:
             query = " ".join(args[mode_idx + 2:])
             print(json.dumps(search_apps(query)))
-
-    elif mode == "settings":
-        if is_select:
-            select_idx = args.index("--select")
-            
-            # 1. Safely handle the ID and Query
-            # If the user provides "", we treat the path as None (the root)
-            full_id = args[select_idx + 1] if len(args) > select_idx + 1 else ""
-            query = " ".join(args[select_idx + 2:])
-            
-            # Normalize empty ID to None for searching at root
-            path = full_id.split(":") if full_id else None
-
-            if query:
-                # RECURSIVE SEARCH:
-                # If there's a query, we search everything from the current path downwards
-                print(json.dumps(search_settings(query, path)))
-            else:
-                # NAVIGATION:
-                # If no query, we are either opening a folder or running a command
-                node_settings = load_settings()
-                
-                if not path:
-                    # Case: root menu (no ID provided)
-                    print(json.dumps(search_settings("", None)))
-                else:
-                    children = find_node(node_settings, path)
-                    if children: 
-                        # Case: It's a folder, show its contents
-                        print(json.dumps(search_settings("", path)))
-                    elif children is None:
-                        # Case: ID doesn't exist
-                        print(json.dumps([]))
-                    else:
-                        # Case: It's a leaf, execute the command
-                        select_setting(full_id)
-                        print(json.dumps([]))
 
     elif mode == "web":
         if is_select:

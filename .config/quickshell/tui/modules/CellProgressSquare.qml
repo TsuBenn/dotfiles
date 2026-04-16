@@ -22,6 +22,8 @@ Item {
     property color fg: Colors.fgBase 
     property int percent: SystemInfo.cpuusage
 
+    property int type: 1
+
     property int raw_percent: percent
 
     property int min: 0
@@ -29,6 +31,7 @@ Item {
 
     property bool vertical: false
     property bool adjustOnHold: false
+    property bool adjustOnPress: true
     property bool drag: true
     property bool wheel: true
     property bool safeRelease: true
@@ -49,6 +52,7 @@ Item {
     signal pressed(button: string)
     signal released(button: string)
     signal adjusted(percent: int)
+    signal synced()
 
     function sections(n, percent) {
         const filled = percent/100 * n
@@ -65,7 +69,20 @@ Item {
         return result
     }
 
+    Rectangle {
+
+        visible: root.type == 0
+
+        anchors.bottom: parent.bottom
+        implicitWidth: root.vertical ? Cell.w(root.w) : Math.min(Cell.w(Math.round(root.w*(root.raw_percent/100)*8)/8),Cell.w(root.w))
+        implicitHeight: root.vertical ? Math.min(Cell.h(Math.round(root.h*(root.raw_percent/100)*8)/8),Cell.h(root.h)) : Cell.h(root.h) 
+        color: root.fg
+
+    }
+
     RowLayout {
+
+        visible: root.type == 1
 
         spacing: 0
 
@@ -88,6 +105,8 @@ Item {
     }
 
     RowLayout {
+
+        visible: root.type == 1
 
         spacing: 0
 
@@ -138,19 +157,28 @@ Item {
                 return
             }
             if (buttonDown != "L") return
-            root.raw_percent = mouseX/Cell.w(root.w)*100
+            if (!root.adjustOnPress) sync.restart()
+            if (!root.vertical) {
+                root.raw_percent = mouseX/Cell.w(root.w)*100
+            } else {
+                root.raw_percent = 100 - mouseY/Cell.h(root.h)*100
+            }
         }
         onMoved: (x, y) => {
             if (!root.drag) return
             if (buttonDown != "L") return
+            sync.restart()
             if (!root.vertical) {
                 root.raw_percent = x/Cell.w(root.w)*100
+            } else {
+                root.raw_percent = 100 - y/Cell.h(root.h)*100
             }
         }
         onHeld: {
-            if (!root.drag) return
+            if (!root.drag && !root.adjustOnHold) return
             if (buttonDown != "L") return
             root.adjusted(root.clamp(root.raw_percent))
+            sync.restart()
         }
         onReleased: (button) => {
             if (!root.drag) {
@@ -178,6 +206,7 @@ Item {
         interval: root.syncDelay
         onTriggered: {
             root.raw_percent = Qt.binding(()=>root.percent)
+            root.synced()
         }
     }
 

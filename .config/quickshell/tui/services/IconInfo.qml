@@ -32,7 +32,7 @@ Singleton {
     FileView {
         id: cache
 
-        path: ".config/quickshell/tui/scripts/icon_cache.json"
+        path: SystemInfo.homedir + "/dotfiles/.config/quickshell/tui/scripts/icon_cache.json"
 
         onLoaded: {
             root.icons = JSON.parse(text())

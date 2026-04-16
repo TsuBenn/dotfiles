@@ -9,6 +9,7 @@ Item {
     id: root
 
     property var icon: []
+    property string image: ""
 
     property bool hideOnFail: true
 
@@ -44,6 +45,23 @@ Item {
             height: Cell.h(root.h)
 
             source: IconInfo.fetch(root.icon)
+
+            mipmap: true
+
+            fillMode: Image.PreserveAspectCrop
+
+        }
+
+        Image {
+
+            id: image
+
+            visible: root.image != ""
+
+            width: Cell.h(root.h)
+            height: Cell.h(root.h)
+
+            source: root.image
 
             mipmap: true
 
