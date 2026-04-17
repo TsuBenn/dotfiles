@@ -5,7 +5,6 @@ import qs.components.bar
 import qs.services
 
 import Quickshell
-import Quickshell.Wayland
 import Quickshell.Io
 import QtQuick
 
@@ -26,41 +25,6 @@ ShellRoot {
     }
 
     Bar {}
-
-    PanelWindow {
-
-        visible: !BrightnessInfo.available
-
-        WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.namespace: "brightness"
-
-        exclusionMode: ExclusionMode.Ignore
-
-        anchors {
-            top: true
-            bottom: true
-            left: true
-            right: true
-        }
-
-        margins {
-            top: -Cell.h(1)
-        }
-
-        focusable: false
-
-        color: Qt.rgba(
-            0,
-            0,
-            0,
-            Math.max(Math.min(1-(BrightnessInfo.brightness/100),0.9),0)
-        )
-
-        mask: Region {
-            item: null
-        }
-
-    }
 
     Process {
         id: process 
