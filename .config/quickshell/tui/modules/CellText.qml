@@ -26,19 +26,34 @@ Item {
         const wrappedLines = [];
 
         for (const line of lines) {
-            const words = line.split(' ');
+            // Use filter(Boolean) to remove empty strings from multiple spaces
+            const words = line.trim().split(/\s+/);
             let current = '';
 
-            for (const word of words) {
-                if ((current + word).length > maxLength) {
-                    wrappedLines.push(current.trim());
-                    current = '';
+            for (let word of words) {
+                // Handle words longer than the terminal width
+                if (word.length > maxLength) {
+                    if (current) wrappedLines.push(current);
+                    while (word.length > maxLength) {
+                        wrappedLines.push(word.substring(0, maxLength));
+                        word = word.substring(maxLength);
+                    }
+                    current = word;
+                    continue;
                 }
-                current += word + ' ';
+
+                // check: current length + space (1) + next word length
+                const space = current.length > 0 ? 1 : 0;
+                if (current.length + space + word.length > maxLength) {
+                    wrappedLines.push(current);
+                    current = word;
+                } else {
+                    current = (current.length === 0) ? word : `${current} ${word}`;
+                }
             }
 
-            if (current.trim()) {
-                wrappedLines.push(current.trim());
+            if (current) {
+                wrappedLines.push(current);
             }
         }
 

@@ -456,7 +456,11 @@ CellPopup {
                     property var selected: ({})
 
                     onPathChanged: {
-                        mode.additional = path.join(" > ")
+                        if (path.length > 0) {
+                            mode.additional = path.join(" > ") + ":"
+                        } else {
+                            mode.additional = ""
+                        }
                     }
 
                     onVisibleChanged: {
