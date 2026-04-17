@@ -440,7 +440,7 @@ CellPopup {
                     clickable: !WallpaperInfo.slideshow
 
                     color: yes && clickable ? Colors.accentStrong : Colors.bgOverlay
-                    fg: yes && clickable ? Colors.onAccent : Colors.fgSubtle
+                    fg: clickable ? (yes ? Colors.onAccent : Colors.fgBase) : Colors.fgSubtle
 
                     onPressed: (button) => {
                         if (button == "L") {
