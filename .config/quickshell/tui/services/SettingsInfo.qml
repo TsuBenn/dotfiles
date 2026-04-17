@@ -14,26 +14,26 @@ Singleton {
 
     property var result: []
 
-    property var palettes: Object.keys(Colors.colors)
+    property var palettes: Colors.colors
 
     property var data: [
         {
             id: "Wallpapers",
-            label: "Wallpapers >",
+            label: "Wallpapers",
             description: "Changes how your wallpaper looks and behaves.",
             type: "function",
             value: () => {PopupManager.open("wallpaper")}
         },
         {
             id: "Color themes",
-            label: "Color themes >",
+            label: "Color themes",
             description: "Changes your shell's color palette that fit your vibe.",
             type: "submenu",
             value: resolvePalettes()
         },
         {
             id: "System checks",
-            label: "System checks >",
+            label: "System checks",
             description: "Making sure that your shell is working normally.",
             type: "submenu",
             value: [
@@ -66,12 +66,12 @@ Singleton {
 
     function resolvePalettes(): var {
         let result = []
-        for (const palette of palettes) {
+        for (const i in palettes) {
             result.push({
-                label: palette,
-                description: "",
+                label: palettes[i].name,
+                description: palettes[i].description,
                 type: "function",
-                value: () => {Colors.current = palette},
+                value: () => {Colors.current = i},
             })
         }
         return result

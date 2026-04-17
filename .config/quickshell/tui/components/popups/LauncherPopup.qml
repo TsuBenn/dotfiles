@@ -405,14 +405,18 @@ CellPopup {
 
                                             CellText {
                                                 text: app_result.label
-                                                preferedW: apps.contentW - 4 - 5*apps_icon.success
+                                                preferedW: apps.contentW - 5 - 5*apps_icon.success
                                             }
 
                                             CellText {
                                                 text: app_result.description
-                                                preferedW: apps.contentW - 4 - 5*apps_icon.success
+                                                preferedW: apps.contentW - 5 - 5*apps_icon.success
                                                 color: Colors.fgSubtle
                                             }
+                                        }
+
+                                        CellText {
+                                            text: " "
                                         }
 
                                         Cells {
@@ -565,14 +569,18 @@ CellPopup {
 
                                             CellText {
                                                 text: setting_result.label
-                                                preferedW: settings.contentW - 4 - 5*setting_icon.success
+                                                preferedW: settings.contentW - 5 - 5*setting_icon.success
                                             }
 
                                             CellText {
                                                 text: setting_result.description
-                                                preferedW: settings.contentW - 4 - 5*setting_icon.success
+                                                preferedW: settings.contentW - 5 - 5*setting_icon.success
                                                 color: Colors.fgSubtle
                                             }
+                                        }
+
+                                        CellText {
+                                            text: " "
                                         }
 
                                         Cells {
@@ -689,14 +697,18 @@ CellPopup {
 
                                             CellText {
                                                 text: calc_result.label
-                                                preferedW: settings.contentW - 4
+                                                preferedW: settings.contentW - 5
                                             }
 
                                             CellText {
                                                 text: calc_result.description
-                                                preferedW: settings.contentW - 4
+                                                preferedW: settings.contentW - 5
                                                 color: Colors.fgSubtle
                                             }
+                                        }
+
+                                        CellText {
+                                            text: " "
                                         }
 
                                         Cells {

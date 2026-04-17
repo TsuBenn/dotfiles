@@ -106,20 +106,26 @@ Singleton {
 
     property var colors: ({
         hutao:            {
+            name:         "Hu Tao",
+            description:  "Deep plum and butterfly crimson; funeral parlor elegance.",
             bgBase:       "#151214", bgSurface:      "#1D191C", bgOverlay: "#302A2F",
             fgBase:       "#EDE6E8", onAccent:       "#EDE6E8", fgDim:     "#A89BA0", fgSubtle: "#7A6F74",
             accentStrong: "#a32435", accentDim:      "#6B1825", secondary: "#f59b75", info:     "#3AA5DE",
             success:      "#98BB6C", warning:        "#eea022", danger:    "#ec2727",
-            borderActive: "#a32435", borderInactive: "#2A2428",
+            borderActive: "#a32435", borderInactive: "#2A2428"
         },
         seele:            {
+            name:         "Seele Vollerei",
+            description:  "Quantum midnight blues with sharp scythe-red accents.",
             bgBase:       "#0e0913", bgSurface:      "#1f1d3e", bgOverlay: "#3b3a7a",
             fgBase:       "#f1eff7", onAccent:       "#ffffff", fgDim:     "#c2c6e1", fgSubtle: "#9796bf",
             accentStrong: "#ff3b5c", accentDim:      "#ba2d4a", secondary: "#ff52bf", info:     "#94afe1",
             success:      "#b8e986", warning:        "#f8a5c2", danger:    "#ff3b5c",
-            borderActive: "#ff3b5c", borderInactive: "#2d2b55",
+            borderActive: "#ff3b5c", borderInactive: "#2d2b55"
         },
         kazuha:           {
+            name:         "Kaedehara Kazuha",
+            description:  "Autumn maple reds, dry wood, and soft Anemo teals.",
             bgBase:       "#1A1817", bgSurface:      "#24211F", bgOverlay: "#36322E",
             fgBase:       "#E6E1DC", onAccent:       "#1A1817", fgDim:     "#B5AEA8", fgSubtle: "#857D75",
             accentStrong: "#C24636", accentDim:      "#7A2C22", secondary: "#D9A166", info:     "#89A7A7",
@@ -127,6 +133,8 @@ Singleton {
             borderActive: "#C24636", borderInactive: "#2E2A27"
         },
         frieren:          {
+            name:         "Frieren",
+            description:  "Muted nostalgic lavenders and grimoire gold.",
             bgBase:       "#1B1C20", bgSurface:      "#25272E", bgOverlay: "#353945",
             fgBase:       "#F0F0F5", onAccent:       "#1B1C20", fgDim:     "#AAB0C0", fgSubtle: "#787E91",
             accentStrong: "#E2D1F9", accentDim:      "#9A8EB3", secondary: "#F8BBD0", info:     "#B3E5FC",
@@ -134,6 +142,8 @@ Singleton {
             borderActive: "#E2D1F9", borderInactive: "#2C2E36"
         },
         furina:           {
+            name:         "Furina de Fontaine",
+            description:  "Oceanic navy and brilliant spotlight cyans.",
             bgBase:       "#0F1724", bgSurface:      "#182336", bgOverlay: "#26354D",
             fgBase:       "#E0F2FE", onAccent:       "#0F1724", fgDim:     "#94A3B8", fgSubtle: "#64748B",
             accentStrong: "#38BDF8", accentDim:      "#0369A1", secondary: "#F0ABFC", info:     "#7DD3FC",
@@ -141,6 +151,8 @@ Singleton {
             borderActive: "#38BDF8", borderInactive: "#1E293B"
         },
         nahida:           {
+            name:         "Nahida",
+            description:  "Lush forest greens and Dendro wisdom yellows.",
             bgBase:       "#121915", bgSurface:      "#1C261F", bgOverlay: "#2A382E",
             fgBase:       "#ECFDF5", onAccent:       "#121915", fgDim:     "#A7F3D0", fgSubtle: "#6EE7B7",
             accentStrong: "#34D399", accentDim:      "#065F46", secondary: "#FDE68A", info:     "#67E8F9",
@@ -148,6 +160,8 @@ Singleton {
             borderActive: "#34D399", borderInactive: "#223026"
         },
         raiden:           {
+            name:         "Raiden Shogun",
+            description:  "Royal electro purples and striking violet lightning.",
             bgBase:       "#12101A", bgSurface:      "#1B1829", bgOverlay: "#2D2845",
             fgBase:       "#F1E9FF", onAccent:       "#F1E9FF", fgDim:     "#B0A1D1", fgSubtle: "#7E71A1",
             accentStrong: "#9D72FF", accentDim:      "#5E4599", secondary: "#FFB8FF", info:     "#82AAFF",
@@ -155,6 +169,8 @@ Singleton {
             borderActive: "#9D72FF", borderInactive: "#242036"
         },
         yaemiko:          {
+            name:         "Yae Miko",
+            description:  "Cherry blossom pinks and sacred shrine reds.",
             bgBase:       "#1A1012", bgSurface:      "#26181B", bgOverlay: "#3D262B",
             fgBase:       "#FFE4E9", onAccent:       "#1A1012", fgDim:     "#DBB4BC", fgSubtle: "#A68087",
             accentStrong: "#F06292", accentDim:      "#AD4769", secondary: "#F8BBD0", info:     "#BA68C8",
@@ -162,6 +178,8 @@ Singleton {
             borderActive: "#F06292", borderInactive: "#2E1D21"
         },
         catppuccin:       {
+            name:         "Catppuccin Mocha",
+            description:  "Soothing pastel-dark high-contrast palette.",
             bgBase:       "#1E1E2E", bgSurface:      "#313244", bgOverlay: "#45475A",
             fgBase:       "#CDD6F4", onAccent:       "#1E1E2E", fgDim:     "#BAC2DE", fgSubtle: "#A6ADC8",
             accentStrong: "#CBA6F7", accentDim:      "#94E2D5", secondary: "#FAB387", info:     "#89B4FA",
@@ -169,6 +187,8 @@ Singleton {
             borderActive: "#CBA6F7", borderInactive: "#313244"
         },
         nord:             {
+            name:         "Nord",
+            description:  "Clean, arctic north-bluish aesthetic.",
             bgBase:       "#2E3440", bgSurface:      "#3B4252", bgOverlay: "#434C5E",
             fgBase:       "#ECEFF4", onAccent:       "#2E3440", fgDim:     "#D8DEE9", fgSubtle: "#4C566A",
             accentStrong: "#88C0D0", accentDim:      "#5E81AC", secondary: "#81A1C1", info:     "#8FBCBB",
@@ -176,6 +196,8 @@ Singleton {
             borderActive: "#88C0D0", borderInactive: "#3B4252"
         },
         gruvbox:          {
+            name:         "Gruvbox",
+            description:  "Retro warm tones for long coding sessions.",
             bgBase:       "#282828", bgSurface:      "#3C3836", bgOverlay: "#504945",
             fgBase:       "#EBDBB2", onAccent:       "#282828", fgDim:     "#BDAE93", fgSubtle: "#928374",
             accentStrong: "#FE8019", accentDim:      "#D65D0E", secondary: "#FABD2F", info:     "#83A598",
@@ -183,13 +205,17 @@ Singleton {
             borderActive: "#FE8019", borderInactive: "#3C3836"
         },
         rosepine:         {
-            bgBase:       "#191724", bgSurface:      "#1f1d2e", bgOverlay: "#26233a",
+            name:         "Rosé Pine",
+            description:  "Ethereal pine, bougainvillea, and dawn colors.",
+            bgBase:       "#191724", bgSurface:      "#1f1d3e", bgOverlay: "#26233a",
             fgBase:       "#e0def4", onAccent:       "#191724", fgDim:     "#908caa", fgSubtle: "#6e6a86",
             accentStrong: "#c4a7e7", accentDim:      "#ebbcba", secondary: "#f6c177", info:     "#31748f",
             success:      "#9ccfd8", warning:        "#f6c177", danger:    "#eb6f92",
             borderActive: "#c4a7e7", borderInactive: "#1f1d2e"
         },
         tokyonight:       {
+            name:         "Tokyo Night",
+            description:  "Vibrant neon lights of night-time Tokyo.",
             bgBase:       "#1a1b26", bgSurface:      "#24283b", bgOverlay: "#414868",
             fgBase:       "#c0caf5", onAccent:       "#1a1b26", fgDim:     "#a9b1d6", fgSubtle: "#565f89",
             accentStrong: "#7aa2f7", accentDim:      "#3d59a1", secondary: "#bb9af7", info:     "#0db9d7",
@@ -197,6 +223,8 @@ Singleton {
             borderActive: "#7aa2f7", borderInactive: "#24283b"
         },
         everforest:       {
+            name:         "Everforest",
+            description:  "Comforting, organic green forest tones.",
             bgBase:       "#2b3339", bgSurface:      "#323c41", bgOverlay: "#3a454a",
             fgBase:       "#d3c6aa", onAccent:       "#2b3339", fgDim:     "#9da9a0", fgSubtle: "#859289",
             accentStrong: "#a7c080", accentDim:      "#738254", secondary: "#d699b6", info:     "#7fbbb3",
@@ -204,6 +232,8 @@ Singleton {
             borderActive: "#a7c080", borderInactive: "#323c41"
         },
         kanagawa:         {
+            name:         "Kanagawa",
+            description:  "Traditional ink and wood-block print aesthetic.",
             bgBase:       "#1f1f28", bgSurface:      "#2a2a37", bgOverlay: "#363646",
             fgBase:       "#dcd7ba", onAccent:       "#1f1f28", fgDim:     "#727169", fgSubtle: "#54546d",
             accentStrong: "#957fb8", accentDim:      "#7e9cd8", secondary: "#ffa066", info:     "#7aa89f",
@@ -211,6 +241,8 @@ Singleton {
             borderActive: "#957fb8", borderInactive: "#223249"
         },
         dracula:          {
+            name:         "Dracula",
+            description:  "Classic gothic high-contrast dark theme.",
             bgBase:       "#282a36", bgSurface:      "#44475a", bgOverlay: "#6272a4",
             fgBase:       "#f8f8f2", onAccent:       "#282a36", fgDim:     "#bd93f9", fgSubtle: "#44475a",
             accentStrong: "#ff79c6", accentDim:      "#bd93f9", secondary: "#8be9fd", info:     "#50fa7b",
@@ -218,6 +250,8 @@ Singleton {
             borderActive: "#ff79c6", borderInactive: "#44475a"
         },
         monokai:          {
+            name:         "Monokai",
+            description:  "The original neon-on-dark developer classic.",
             bgBase:       "#272822", bgSurface:      "#3e3d32", bgOverlay: "#75715e",
             fgBase:       "#f8f8f2", onAccent:       "#272822", fgDim:     "#cfcfc2", fgSubtle: "#a59f85",
             accentStrong: "#a6e22e", accentDim:      "#66d9ef", secondary: "#ae81ff", info:     "#66d9ef",
@@ -225,6 +259,8 @@ Singleton {
             borderActive: "#a6e22e", borderInactive: "#3e3d32"
         },
         oxocarbon:        {
+            name:         "Oxocarbon",
+            description:  "Brutalist, futuristic IBM-inspired palette.",
             bgBase:       "#161616", bgSurface:      "#262626", bgOverlay: "#393939",
             fgBase:       "#ffffff", onAccent:       "#161616", fgDim:     "#dde1e6", fgSubtle: "#525252",
             accentStrong: "#ee5396", accentDim:      "#be95ff", secondary: "#33b1ff", info:     "#08bdba",
