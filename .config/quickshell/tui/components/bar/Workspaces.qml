@@ -26,7 +26,7 @@ RowLayout {
 
             text: isActive ? (winCount ? `${index}` : `•`) : (winCount ? `${index}` : `•`)
             font: isActive ? Cell.fontB : Cell.font
-            fg: isActive ? Colors.fgBase : Colors.fgSubtle
+            fg: isActive ? Colors.onAccent : Colors.fgSubtle
             color: isActive ? Colors.accentStrong : Colors.bgOverlay
 
             onPressed: (button) => {

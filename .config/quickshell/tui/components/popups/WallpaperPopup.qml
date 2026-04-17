@@ -14,12 +14,26 @@ CellPopup {
     w: 100
     h: Cell.hCount(layout.implicitHeight)
 
+    safeMargin: 2
+
+    MouseControl {
+        anchors.fill: parent
+
+        onPressed: {
+            if (!textfield.focus) {
+                textfield.focus = true
+            }
+        }
+
+    }
+
     CellBox {
 
         id: box
 
         w: root.w
         h: root.h+2
+
 
         ColumnLayout {
 
@@ -68,6 +82,8 @@ CellPopup {
                 h: preview.visible ? 8 : 6
 
                 color: "transparent"
+
+                clip: true
 
                 RowLayout {
 
@@ -191,6 +207,8 @@ CellPopup {
 
                     anchors.fill: parent
 
+                    acceptedButtons: Qt.NoButton
+
                     hoverEnabled: false
 
                     onWheel: (delta) => {
@@ -231,6 +249,17 @@ CellPopup {
                         placeholder: "Search wallpaper"
 
                         onTextInput: (query) => {
+                            if (text == " ") {
+                                const current = selection.wallpapers[selection.selected]
+                                if (WallpaperInfo.inSet(current)) {
+                                    WallpaperInfo.remove(current)
+                                } else {
+                                    WallpaperInfo.add(current)
+                                }
+                                repeater.refresh()
+                                set("")
+                                return
+                            }
                             selection.wallpapers = WallpaperInfo.search(text)
                         }
 
@@ -274,19 +303,64 @@ CellPopup {
 
                     property bool on: WallpaperInfo.slideshow
 
+                    text: "<"
+
+                    color: on ? Colors.accentStrong : Colors.bgOverlay
+                    fg: on ? Colors.onAccent : Colors.fgSubtle
+
+                    onPressed: (button) => {
+                        if (button == "L") {
+                            WallpaperInfo.advance(-1)
+                        }
+                    }
+
+                }
+
+                CellText {
+                    text: " "
+                }
+
+                CellButton {
+
+                    property bool on: WallpaperInfo.slideshow
+
                     text: "Slideshow"
 
                     color: on ? Colors.accentStrong : Colors.bgOverlay
                     fg: on ? Colors.onAccent : Colors.fgBase
 
                     onPressed: (button) => {
-                        WallpaperInfo.slideshowToggle()
+                        if (button == "L") {
+                            WallpaperInfo.singlify(selection.wallpapers[selection.selected])
+                            WallpaperInfo.slideshowToggle()
+                        }
                     }
 
                 }
 
                 CellText {
-                    text: "  Slideshow Interval "
+                    text: " "
+                }
+
+                CellButton {
+
+                    property bool on: WallpaperInfo.slideshow
+
+                    text: ">"
+
+                    color: on ? Colors.accentStrong : Colors.bgOverlay
+                    fg: on ? Colors.onAccent : Colors.fgSubtle
+
+                    onPressed: (button) => {
+                        if (button == "L") {
+                            WallpaperInfo.advance(1)
+                        }
+                    }
+
+                }
+
+                CellText {
+                    text: "  Interval "
                     color: WallpaperInfo.slideshow ? Colors.fgBase : Colors.fgSubtle
                 }
 
@@ -307,11 +381,15 @@ CellPopup {
                         bindText: WallpaperInfo.slideshowInterval
                         disabled: !WallpaperInfo.slideshow
 
+                        unit: "ms"
+
                         autoApply: true
 
                         onEntered: (text) => {
-                            WallpaperInfo.slideshowInterval = text
-                            textfield.focus = true
+                            if (/^\d+$/.test(text)) {
+                                WallpaperInfo.slideshowInterval = text
+                                textfield.focus = true
+                            }
                         }
 
                         Keys.onPressed: (event) => {
@@ -338,7 +416,9 @@ CellPopup {
                     fg: [Colors.onAccent, Colors.fgBase]
 
                     onPressed: (button) => {
-                        WallpaperInfo.rescan()
+                        if (button == "L") {
+                            WallpaperInfo.rescan()
+                        }
                     }
 
                 }
@@ -351,20 +431,549 @@ CellPopup {
 
                     id: autoAdvance
 
-                    property bool auto: true && !WallpaperInfo.slideshow
+                    property bool auto: yes && !WallpaperInfo.slideshow
+
+                    property bool yes: true
 
                     text: "Auto advance"
 
-                    clickable: auto
+                    clickable: !WallpaperInfo.slideshow
 
-                    color: auto ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                    fg: auto ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+                    color: yes && clickable ? Colors.accentStrong : Colors.bgOverlay
+                    fg: yes && clickable ? Colors.onAccent : Colors.fgSubtle
 
                     onPressed: (button) => {
-                        auto = !auto
+                        if (button == "L") {
+                            yes = !yes
+                        }
                     }
 
                 }
+
+                CellText {
+                    text: "  "
+                }
+
+                CellButton {
+
+                    text: "Toggle all"
+
+                    property bool notall: WallpaperInfo.wallpapers.length < WallpaperInfo.all.length
+
+                    clickable: WallpaperInfo.slideshow
+
+                    color: WallpaperInfo.slideshow ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                    fg: WallpaperInfo.slideshow ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+
+                    onPressed: (button) => {
+                        if (button == "L") {
+                            if (notall) {
+                                WallpaperInfo.wallpapers = WallpaperInfo.all
+                                return
+                            } else {
+                                WallpaperInfo.singlify(selection.wallpapers[selection.selected])
+                            }
+                        }
+                    }
+
+                }
+
+                CellText {
+                    text: "  "
+                }
+
+                CellButton {
+
+                    id: more
+
+                    text: "More"
+
+                    onVisibleChanged: {
+                        yes = false
+                    }
+
+                    property bool yes: false
+
+                    color: yes ? Colors.accentStrong : Colors.bgOverlay
+                    fg: yes ? Colors.onAccent : Colors.fgSubtle
+
+                    onPressed: (button) => {
+                        if (button == "L") {
+                            yes = !yes
+                        }
+                    }
+
+                }
+
+            }
+
+            ColumnLayout {
+
+                visible: more.yes
+
+                spacing: 0
+
+                CellSeparator {
+                    w: box.contentW
+                    padding: 1
+                    color: Colors.bgOverlay
+                }
+
+                RowLayout {
+
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                    spacing: Cell.w(2)
+
+                    CellText {
+
+                        Layout.alignment: Qt.AlignTop
+
+                        text: "Transition:"
+
+                    }
+
+                    GridLayout {
+
+                        rowSpacing: Cell.h(0)
+                        columnSpacing: Cell.w(2)
+                        columns: WallpaperInfo.transition.type == "random" ? 6 : 100
+
+                        uniformCellHeights: false
+                        uniformCellWidths: false
+
+                        RowLayout {
+
+                            spacing: 0
+
+                            CellText {
+                                text: "Type "
+                            }
+
+                            CellDropdown {
+                                w: 10
+                                text: ""
+                                reversed: true
+                                selected: {
+                                    for (const i in items) {
+                                        if (items[i].label.toLowerCase() == WallpaperInfo.transition.type) {
+                                            return i
+                                        }
+                                    }
+                                    return 0
+                                }
+                                items: [
+                                    {
+                                        label: "Simple",
+                                        action: () => {
+                                            WallpaperInfo.transition.type = "simple"
+                                        },
+                                    },
+                                    {
+                                        label: "Wipe",
+                                        action: () => {
+                                            WallpaperInfo.transition.type = "wipe"
+                                        },
+                                    },
+                                    {
+                                        label: "Wave",
+                                        action: () => {
+                                            WallpaperInfo.transition.type = "wave"
+                                        },
+                                    },
+                                    {
+                                        label: "Grow",
+                                        action: () => {
+                                            WallpaperInfo.transition.type = "grow"
+                                        },
+                                    },
+                                    {
+                                        label: "Outer",
+                                        action: () => {
+                                            WallpaperInfo.transition.type = "outer"
+                                        },
+                                    },
+                                    {
+                                        label: "Random",
+                                        action: () => {
+                                            WallpaperInfo.transition.type = "random"
+                                        },
+                                    },
+                                ]
+                            }
+
+                        }
+
+                        RowLayout {
+
+                            spacing: Cell.w(1)
+
+                            CellText {
+                                text: "Step"
+                            }
+
+                            Cells {
+
+                                w: 3
+                                h: 1
+
+                                color: Colors.bgOverlay
+
+                                CellTextField {
+
+                                    focusOnVisible: false
+
+                                    w: parent.w
+                                    h:1
+
+                                    bindText: WallpaperInfo.transition.step
+
+                                    autoApply: true
+
+                                    onEntered: (text) => {
+                                        if (/^\d+$/.test(text)) {
+                                            WallpaperInfo.transition.step = Math.max(text,1)
+                                            textfield.focus = true
+                                        }
+                                    }
+
+                                    Keys.onPressed: (event) => {
+                                        if (event.key == Qt.Key_Escape) {
+                                            PopupManager.preventClosing = true
+                                            focus = false
+                                        }
+                                    }
+
+                                }
+                            }
+
+                        }
+
+                        RowLayout {
+
+                            visible: WallpaperInfo.transition.type != "simple"
+
+                            spacing: Cell.w(1)
+
+                            CellText {
+                                text: "Duration"
+                            }
+
+                            Cells {
+
+                                w: 4
+                                h: 1
+
+                                color: Colors.bgOverlay
+
+                                CellTextField {
+
+                                    focusOnVisible: false
+
+                                    w: parent.w
+                                    h:1
+
+                                    bindText: WallpaperInfo.transition.duration
+
+                                    autoApply: true
+
+                                    onEntered: (text) => {
+                                        if (/^-?\d*\.?\d+$/.test(text)) {
+                                            WallpaperInfo.transition.duration = Math.max(text,0)
+                                            textfield.focus = true
+                                        }
+                                    }
+
+                                    Keys.onPressed: (event) => {
+                                        if (event.key == Qt.Key_Escape) {
+                                            PopupManager.preventClosing = true
+                                            focus = false
+                                        }
+                                    }
+
+                                }
+                            }
+
+                        }
+
+                        RowLayout {
+
+                            spacing: Cell.w(1)
+
+                            CellText {
+                                text: "FPS"
+                            }
+
+                            Cells {
+
+                                w: 4
+                                h: 1
+
+                                color: Colors.bgOverlay
+
+                                CellTextField {
+
+                                    focusOnVisible: false
+
+                                    w: parent.w
+                                    h:1
+
+                                    bindText: WallpaperInfo.transition.fps
+
+                                    autoApply: true
+
+                                    onEntered: (text) => {
+                                        if (/^\d+$/.test(text)) {
+                                            WallpaperInfo.transition.fps = Math.max(text,1)
+                                            textfield.focus = true
+                                        }
+                                    }
+
+                                    Keys.onPressed: (event) => {
+                                        if (event.key == Qt.Key_Escape) {
+                                            PopupManager.preventClosing = true
+                                            focus = false
+                                        }
+                                    }
+
+                                }
+                            }
+
+                        }
+
+                        RowLayout {
+
+                            visible: (
+                                WallpaperInfo.transition.type == "random" ||
+                                WallpaperInfo.transition.type == "wipe" ||
+                                WallpaperInfo.transition.type == "wave"
+                            )
+
+                            spacing: Cell.w(1)
+
+                            CellText {
+                                text: "Angle"
+                            }
+
+                            Cells {
+
+                                w: 4
+                                h: 1
+
+                                color: Colors.bgOverlay
+
+                                CellTextField {
+
+                                    focusOnVisible: false
+
+                                    w: parent.w
+                                    h:1
+
+                                    bindText: WallpaperInfo.transition.angle
+
+                                    autoApply: true
+
+                                    onEntered: (text) => {
+                                        if (/^\d+$/.test(text)) {
+                                            WallpaperInfo.transition.angle = Math.max(text,0)
+                                            textfield.focus = true
+                                        }
+                                    }
+
+                                    Keys.onPressed: (event) => {
+                                        if (event.key == Qt.Key_Escape) {
+                                            PopupManager.preventClosing = true
+                                            focus = false
+                                        }
+                                    }
+
+                                }
+                            }
+
+                        }
+
+                        RowLayout {
+
+                            visible: (
+                                WallpaperInfo.transition.type == "random" ||
+                                WallpaperInfo.transition.type == "grow" ||
+                                WallpaperInfo.transition.type == "outer"
+                            )
+
+                            spacing: Cell.w(1)
+
+                            CellText {
+                                text: "Pos"
+                            }
+
+                            Cells {
+
+                                w: 5
+                                h: 1
+
+                                color: Colors.bgOverlay
+
+                                CellTextField {
+
+                                    focusOnVisible: false
+
+                                    w: parent.w
+                                    h:1
+
+                                    bindText: WallpaperInfo.transition.pos[0]
+
+                                    autoApply: true
+
+                                    onEntered: (text) => {
+                                        if (/^\d+$/.test(text)) {
+                                            let newpos = WallpaperInfo.transition.pos
+                                            newpos[0] = Math.max(text,0)
+                                            WallpaperInfo.transition.pos = [...newpos]
+                                            textfield.focus = true
+                                        }
+                                    }
+
+                                    Keys.onPressed: (event) => {
+                                        if (event.key == Qt.Key_Escape) {
+                                            PopupManager.preventClosing = true
+                                            focus = false
+                                        }
+                                    }
+
+                                }
+                            }
+
+                            Cells {
+
+                                w: 5
+                                h: 1
+
+                                color: Colors.bgOverlay
+
+                                CellTextField {
+
+                                    focusOnVisible: false
+
+                                    w: parent.w
+                                    h:1
+
+                                    bindText: WallpaperInfo.transition.pos[1]
+
+                                    autoApply: true
+
+                                    onEntered: (text) => {
+                                        if (/^\d+$/.test(text)) {
+                                            let newpos = WallpaperInfo.transition.pos
+                                            newpos[1] = Math.max(text,0)
+                                            WallpaperInfo.transition.pos = [...newpos]
+                                            textfield.focus = true
+                                        }
+                                    }
+
+                                    Keys.onPressed: (event) => {
+                                        if (event.key == Qt.Key_Escape) {
+                                            PopupManager.preventClosing = true
+                                            focus = false
+                                        }
+                                    }
+
+                                }
+                            }
+
+                        }
+
+                        RowLayout {
+
+                            spacing: Cell.w(1)
+
+                            visible: (
+                                WallpaperInfo.transition.type == "random" ||
+                                WallpaperInfo.transition.type == "wave"
+                            )
+
+                            CellText {
+                                text: "Wave"
+                            }
+
+                            Cells {
+
+                                w: 5
+                                h: 1
+
+                                color: Colors.bgOverlay
+
+                                CellTextField {
+
+                                    focusOnVisible: false
+
+                                    w: parent.w
+                                    h:1
+
+                                    bindText: WallpaperInfo.transition.wave[0]
+
+                                    autoApply: true
+
+                                    onEntered: (text) => {
+                                        if (/^\d+$/.test(text)) {
+                                            let newpos = WallpaperInfo.transition.wave
+                                            newpos[0] = Math.max(text,0)
+                                            WallpaperInfo.transition.wave = [...newpos]
+                                            textfield.focus = true
+                                        }
+                                    }
+
+                                    Keys.onPressed: (event) => {
+                                        if (event.key == Qt.Key_Escape) {
+                                            PopupManager.preventClosing = true
+                                            focus = false
+                                        }
+                                    }
+
+                                }
+                            }
+
+                            Cells {
+
+                                w: 5
+                                h: 1
+
+                                color: Colors.bgOverlay
+
+                                CellTextField {
+
+                                    focusOnVisible: false
+
+                                    w: parent.w
+                                    h:1
+
+                                    bindText: WallpaperInfo.transition.wave[1]
+
+                                    autoApply: true
+
+                                    onEntered: (text) => {
+                                        if (/^\d+$/.test(text)) {
+                                            let newpos = WallpaperInfo.transition.wave
+                                            newpos[1] = Math.max(text,0)
+                                            WallpaperInfo.transition.wave = [...newpos]
+                                            textfield.focus = true
+                                        }
+                                    }
+
+                                    Keys.onPressed: (event) => {
+                                        if (event.key == Qt.Key_Escape) {
+                                            PopupManager.preventClosing = true
+                                            focus = false
+                                        }
+                                    }
+
+                                }
+                            }
+
+                        }
+
+                    }
+                }
+
 
             }
 

@@ -11,4 +11,14 @@ CellButton {
     fg: Colors.fgDim
     color: Colors.bgOverlay
 
+    onPressed: (button) => {
+        if (button == "L") {
+            if (PopupManager.isOpen("launcher")) {
+                PopupManager.close("launcher")
+                return
+            }
+            PopupManager.open("launcher",false)
+        }
+    }
+
 }

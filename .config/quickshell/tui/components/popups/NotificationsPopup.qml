@@ -93,6 +93,9 @@ CellPopup {
                         }
 
                         CellIcon {
+
+                            Layout.alignment: Qt.AlignTop
+
                             w: 6
                             id: icon
                             icon: [popup.icon, popup.app]
@@ -118,7 +121,7 @@ CellPopup {
 
                             CellText {
                                 id: body
-                                text: popup.body?.length > 0 ? popup.body : ""
+                                text: popup.body?.length > 0 ? popup.body.trim() : ""
                                 preferedW: root.w - 14
                                 wrap: true
                             }

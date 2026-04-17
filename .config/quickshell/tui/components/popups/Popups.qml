@@ -43,7 +43,7 @@ Item {
         name: "power"
 
         cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2)
-        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 3
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 2
 
     }
 

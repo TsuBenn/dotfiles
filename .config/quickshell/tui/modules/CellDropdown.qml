@@ -17,6 +17,7 @@ Item {
 
     property string text: "Dropdown"
 
+    property bool reversed: false
 
     component Type: Item {
         property int padding: root.padding
@@ -89,7 +90,7 @@ Item {
             if (button == "L") {
                 root.active = true
                 const global = mapToGlobal(x, y)
-                DropdownManager.show(root.items, global.x, global.y, root.w, root.h, root.selected, root.menu.padding, root.menu.color, root.menu.fg, root.menu.active, root.menu.active_invert)
+                DropdownManager.show(root.items, global.x, global.y - root.reversed*Cell.h(root.items.length + 1), root.w, root.h, root.selected, root.menu.padding, root.menu.color, root.menu.fg, root.menu.active, root.menu.active_invert)
             }
         }
 

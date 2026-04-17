@@ -15,52 +15,6 @@ CellPopup {
     w: 80
     h: Cell.hCount(layout.implicitHeight)
 
-    function toASCII(num: string): string {
-        num = num.toLowerCase()
-        if (num == "0") {
-            return "█▀▀█\n█▄▀█\n█▄▄█"
-        }
-        else if (num == "1") {
-            return "▄█ \n █ \n▄█▄"
-        }
-        else if (num == "2") {
-            return "█▀█\n ▄▀\n█▄▄"
-        }
-        else if (num == "3") {
-            return "█▀▀█\n  ▀▄\n█▄▄█"
-        }
-        else if (num == "4") {
-            return " ▄▀█ \n█▄▄█▄\n   █ "
-        }
-        else if (num == "5") {
-            return "█▀▀▀\n▀▀▀▄\n▄▄▄▀"
-        }
-        else if (num == "6") {
-            return "▄▀▀▄\n█▄▄ \n▀▄▄▀"
-        }
-        else if (num == "7") {
-            return "▀▀▀█\n  █ \n ▐▌ "
-        }
-        else if (num == "8") {
-            return "▄▀▀▄\n▄▀▀▄\n▀▄▄▀"
-        }
-        else if (num == "9") {
-            return "▄▀▀▄\n▀▄▄█\n ▄▄▀"
-        }
-        else if (num == ":") {
-            return "▄\n \n▀"
-        }
-        else if (num == "a") {
-            return "▄▀█\n█▀█"
-        }
-        else if (num == "p") {
-            return "█▀█\n█▀▀"
-        }
-        else if (num == "m") {
-            return "█▀▄▀█\n█ ▀ █"
-        }
-    }
-
     CellBox {
 
         id: box
@@ -69,6 +23,7 @@ CellPopup {
         h: root.h + 2
 
         ColumnLayout {
+
 
             id: layout
 
@@ -90,32 +45,6 @@ CellPopup {
 
                     fillMode: Image.PreserveAspectCrop
 
-                }
-
-                RowLayout {
-
-                    visible: false
-
-                    x: Cell.w(2)
-                    y: Cell.h(6)
-
-                    spacing: Cell.w(1)
-
-                    Repeater {
-
-                        model: [...(DateTime.hour12 + ":" + DateTime.minute + DateTime.ampm)]
-
-                        delegate: CellText {
-
-                            Layout.alignment: Qt.AlignBottom
-
-                            required property string modelData
-
-                            text: root.toASCII(modelData)
-                            color: Colors.fgBase
-                        }
-
-                    }
                 }
 
             }
@@ -153,6 +82,8 @@ CellPopup {
 
                             id: mode
 
+                            property string additional: ""
+
                             property string prefix: ""
                             property string value: {
                                 switch (prefix) {
@@ -164,7 +95,7 @@ CellPopup {
                                 return "apps"
                             }
 
-                            text: " " + prefix
+                            text: " " + prefix + (additional ? " " + additional : "")
 
                         }
 
@@ -190,10 +121,9 @@ CellPopup {
                                 } else if (mode.value == "settings") {
                                     const path = SettingsInfo.run(settings.selected)
                                     if (path != "null") {
-                                        settings.path.push(path)
+                                        textfield.set(" ")
+                                        settings.path = [...settings.path, path]
                                         SettingsInfo.search(settings.path, "")
-                                    } else {
-                                        PopupManager.close("launcher")
                                     }
                                 } else if (mode.value == "web") {
                                     LauncherInfo.select("web", "", text)
@@ -227,6 +157,8 @@ CellPopup {
                                 return "Search"
                             }
 
+                            editable: text.trim().length > 0
+
                             Keys.onPressed: (event) => {
                                 let views = apps
                                 let max = LauncherInfo.apps.length
@@ -238,7 +170,24 @@ CellPopup {
                                     max = LauncherInfo.calc.length
                                 }
 
+                                if (!editable) {
+                                    if (event.key == Qt.Key_Right) {
+                                        tab.advance(1)
+                                    } else if (event.key == Qt.Key_Left) {
+                                        tab.advance(-1)
+                                    }
+                                }
+
                                 if (event.key == Qt.Key_Escape) {
+                                    if (settings.path.length > 0) {
+                                        PopupManager.preventClosing = true
+                                        let new_path = settings.path 
+                                        new_path.pop()
+                                        settings.path = []
+                                        settings.path = new_path
+                                        SettingsInfo.search(settings.path, "")
+                                        return
+                                    }
                                     PopupManager.close("launcher")
                                 } else if (event.key == Qt.Key_Tab) {
                                     if (tab.selected < 3) {
@@ -313,6 +262,9 @@ CellPopup {
 
                 padding: 0
                 onSelectedChanged: {
+                    safe_mouse.safe = 1
+                    safe_mouse.visible = true
+
                     switch (selected) {
                         case 0: mode.prefix = ""; textfield.set(""); break;
                         case 1: mode.prefix = ">"; textfield.set(" "); break;
@@ -502,6 +454,10 @@ CellPopup {
 
                     property var path: []
                     property var selected: ({})
+
+                    onPathChanged: {
+                        mode.additional = path.join(" > ")
+                    }
 
                     onVisibleChanged: {
                         path = []
@@ -781,6 +737,192 @@ CellPopup {
 
                 }
 
+            }
+
+            CellSeparator {
+                w: box.contentW
+                type: 2
+                color: Colors.bgOverlay
+            }
+
+            GridLayout {
+
+                rowSpacing: Cell.h(1)
+                columnSpacing: Cell.w(2)
+                columns: 5
+
+                uniformCellHeights: false
+                uniformCellWidths: false
+
+
+                Layout.leftMargin: Cell.centerWCell(implicitWidth,parent.implicitWidth)
+
+                RowLayout {
+
+                    visible: settings.path.length == 0
+
+                    spacing: 0
+
+                    CellText {
+                        text: " Esc "
+                        bg: Colors.bgOverlay
+                    }
+
+                    CellText {
+                        text: " Exit"
+                    }
+                }
+
+                RowLayout {
+
+                    visible: settings.path.length > 0
+
+                    spacing: 0
+
+                    CellText {
+                        text: " Esc "
+                        bg: Colors.bgOverlay
+                    }
+
+                    CellText {
+                        text: " Return"
+                    }
+
+                }
+
+                RowLayout {
+
+                    visible: apps.visible && settings.visible
+
+                    spacing: 0
+
+                    CellText {
+                        text: "[Type]"
+                        bg: Colors.bgOverlay
+                    }
+
+                    CellText {
+                        text: " Search"
+                    }
+                }
+
+                RowLayout {
+
+                    visible: calc.visible
+
+                    spacing: 0
+
+                    CellText {
+                        text: "[Type]"
+                        bg: Colors.bgOverlay
+                    }
+
+                    CellText {
+                        text: " Calculate"
+                    }
+                }
+
+                RowLayout {
+
+                    visible: (textfield.text.length > 1 && apps.visible && LauncherInfo.apps.length > 0) || (settings.visible && SettingsInfo.result.length > 0)
+
+                    spacing: 0
+
+                    CellText {
+                        text: " Enter "
+                        bg: Colors.bgOverlay
+                    }
+
+                    CellText {
+                        text: " Select"
+                    }
+
+                }
+
+                RowLayout {
+
+                    visible: web.visible
+
+                    spacing: 0
+
+                    CellText {
+                        text: " Enter "
+                        bg: Colors.bgOverlay
+                    }
+
+                    CellText {
+                        text: " Search"
+                    }
+
+                }
+
+                RowLayout {
+
+                    visible: calc.visible
+
+                    spacing: 0
+
+                    CellText {
+                        text: " Enter "
+                        bg: Colors.bgOverlay
+                    }
+
+                    CellText {
+                        text: textfield.text.trim().length > 0 ? " Copy" : " Add"
+                    }
+
+                }
+
+                RowLayout {
+
+                    spacing: 0
+
+                    CellText {
+                        text: " ← "
+                        bg: Colors.bgOverlay
+                        color: textfield.text.trim().length > 0 ? Colors.fgSubtle : Colors.fgBase
+                    }
+
+                    CellText {
+                        text: " Prev Tab"
+                        color: textfield.text.trim().length > 0 ? Colors.fgSubtle : Colors.fgBase
+                    }
+                }
+
+                RowLayout {
+
+                    spacing: 0
+
+                    CellText {
+                        text: " → "
+                        bg: Colors.bgOverlay
+                        color: textfield.text.trim().length > 0 ? Colors.fgSubtle : Colors.fgBase
+                    }
+
+                    CellText {
+                        text: " Next Tab"
+                        color: textfield.text.trim().length > 0 ? Colors.fgSubtle : Colors.fgBase
+                    }
+                }
+
+            }
+
+        }
+
+        MouseControl {
+
+            anchors.fill: parent
+
+            id: safe_mouse
+
+            property int safe: 0
+
+            onMoved: {
+                if (safe > 0) {
+                    safe -= 1
+                    return
+                }
+                visible = false
             }
 
         }

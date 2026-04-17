@@ -45,6 +45,10 @@ Item {
         return Cell.h(2)
     }
 
+    function advance(step: int) {
+        selected = (selected + items.length + step)%items.length
+    }
+
     function itemLength(): int {
         let count = 0
         for (const item of items) {

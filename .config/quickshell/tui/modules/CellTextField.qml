@@ -17,6 +17,7 @@ Item {
 
     property string placeholder: ""
 
+    property string unit: "" 
     property string bindText: ""
 
     property bool showCursor : true
@@ -49,6 +50,8 @@ Item {
     signal textInput(text: string, change: string, mode: string)
     signal textAdded(text: string)
     signal textRemoved(text: string)
+
+    clip: true
 
     onFocusChanged: {
         if (autoApply && !focus) {
@@ -121,11 +124,21 @@ Item {
 
     CellText {
 
+        preferedW: root.w
+
+        text: " ".repeat(root.w - root.unit.length) +  root.unit
+        font: root.font
+        color: root.disabled ? root.disabled_color : root.color
+
+    }
+
+    CellText {
+
         visible: root.text.trim() == ""
 
         id: placeholder
 
-        preferedW: root.w
+        preferedW: root.w - (root.unit.length > 0 ? root.unit.length - 1 : 0)
 
         text: root.placeholder
         font: root.font
@@ -139,7 +152,7 @@ Item {
 
         id: input
 
-        preferedW: root.w
+        preferedW: root.w - (root.unit.length > 0 ? root.unit.length + 1 : 0)
 
         text: root.text
         font: root.font
@@ -148,8 +161,6 @@ Item {
     }
 
     CellText {
-
-        preferedW: root.w
 
         text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + "█".repeat(Math.abs(root.visualPos))
         font: root.font
@@ -160,8 +171,6 @@ Item {
     CellText {
 
         id: cursor
-
-        preferedW: root.w
 
         text: " ".repeat(root.cursorPos) + (root.showCursor && !(root.visual && root.cursorPos == root.text.length) ? "█" : "")
         font: root.font
@@ -183,8 +192,6 @@ Item {
         id: visual
 
         visible: !root.hidden
-
-        preferedW: root.w
 
         text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + root.text.slice(root.visualPos > 0 ? root.cursorPos : root.cursorPos+root.visualPos, root.visualPos > 0 ? root.cursorPos+root.visualPos : root.cursorPos)
         font: root.fontB

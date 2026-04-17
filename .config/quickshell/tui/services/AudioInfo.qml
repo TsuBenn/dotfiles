@@ -55,8 +55,8 @@ Singleton {
         timer.restart()
     }
 
-    function playSound(file: string, vol: real) {
-        playsound.exec(["bash","-c","paplay --volume="+ 65536*vol + " -d @DEFAULT_SINK@ " + SystemInfo.homedir + "/dotfiles/.config/quickshell/assets/sfx/" + file + ".mp3"])
+    function playSound(file: string, vol = 1.0) {
+        playsound.exec(["bash","-c","paplay --volume="+ 65536*vol + " -d @DEFAULT_SINK@ " + SystemInfo.homedir + "/dotfiles/.config/quickshell/tui/assets/sfx/" + file + ".mp3"])
     }
 
     function getName(id: int): string {

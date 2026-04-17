@@ -90,9 +90,21 @@ Scope {
 
             color: Colors.bgSurface
 
+
             Item {
 
                 anchors.fill: parent
+
+                MouseArea {
+
+                    visible: PopupManager.active_popups.length > 0
+
+                    anchors.fill: parent
+
+                    onPressed: {
+                        PopupManager.close()
+                    }
+                }
 
                 RowLayout {
 
@@ -167,7 +179,8 @@ Scope {
                 }
 
                 MouseArea {
-                    visible: root.shield
+
+                    visible: ContextMenuManager.visible || ContextMenuManager.visible
 
                     anchors.fill: parent
 
@@ -263,17 +276,12 @@ Scope {
 
                     implicitHeight: root.shield ? root.monitor.height : 0
 
+
                     MouseControl {
 
                         anchors.fill: parent
 
                         onPressed: {
-                            PopupManager.close()
-                        }
-                    }
-
-                    Keys.onPressed: (event) => {
-                        if (event.key == Qt.Key_Escape) {
                             PopupManager.close()
                         }
                     }
@@ -305,6 +313,23 @@ Scope {
                         monitor: root.monitor
                     }
 
+                    Cells {
+
+                        id: grid
+
+                        visible: false
+
+                        y: Cell.h(-1)
+                        h: 100
+                        w: 400
+                        grid: true
+                        opacity: 0.05
+
+                        color: "transparent"
+                        color2: Colors.fgBase
+
+                    }
+
                 }
 
             }
@@ -313,6 +338,13 @@ Scope {
                 target: "launcher"
                 function toggle(): void {
                     PopupManager.toggle("launcher", false)
+                }
+            }
+
+            IpcHandler {
+                target: "debug"
+                function toggleGrid(): void {
+                    grid.visible = !grid.visible
                 }
             }
 

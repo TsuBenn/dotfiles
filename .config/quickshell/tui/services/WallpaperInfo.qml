@@ -26,8 +26,21 @@ Singleton {
 
     property int slideshowInterval: 10000
 
+    component Type: Item {
+        property string type: "wipe"
+        property int step: 10
+        property real duration: 0.5
+        property int fps: 60
+        property int angle: 30
+        property var pos: [0,0]
+        property var wave: [1920/2,1080/2]
+    }
+
+    property Type transition: Type {}
+
     onWallpapersChanged: {
-        selected = 0
+        advance(0)
+        set.running = true
     }
 
     function getIndex(image: string): int {
@@ -50,6 +63,7 @@ Singleton {
         if (!slideshow) {
             singlify()
         }
+        set.running = true
     }
 
     function inSet(image: string): bool {
@@ -75,8 +89,13 @@ Singleton {
         wallpapers = []
     }
 
-    function singlify() {
-        if (wallpapers) wallpapers = [wallpapers[root.selected]]
+    function singlify(image = "") {
+        if (!wallpapers) return
+        if (image != "" && all.includes(image)) {
+            wallpapers = [image]
+            return
+        }
+        wallpapers = [wallpapers[root.selected]]
     }
 
     function advance(step: int) {
@@ -131,7 +150,15 @@ Singleton {
         id: set
 
         running: true
-        command: ["bash", "-c", "awww img --transition-step 10 --transition-duration 0.5 --transition-fps 60 --transition-type wipe --transition-angle 30 Wallpapers/" + root.current]
+        command: ["bash", "-c", `awww img --transition-step ${root.transition.step} --transition-duration ${root.transition.duration} --transition-fps ${root.transition.fps} --transition-type ${root.transition.type} --transition-angle ${root.transition.angle} --transition-pos ${root.transition.pos.join(",")} --transition-wave ${root.transition.wave.join(",")} Wallpapers/` + root.current]
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    console.log("WallpaperInfo: " + text)
+                }
+            }
+        }
 
     }
 

@@ -13,8 +13,14 @@ ShellRoot {
 
     Item {
         Component.onCompleted: {
-            const active_border = "0xff" + Colors.accentStrong.toString().slice(1)
-            const inactive_border = "0xff" + Colors.fgSubtle.toString().slice(1)
+            Colors.applied.connect(() => {
+                init()
+            })
+        }
+
+        function init() {
+            const active_border = "0xff" + Colors.borderActive.toString().slice(1)
+            const inactive_border = "0xff" + Colors.borderInactive.toString().slice(1)
             process.exec(["bash", SystemInfo.homedir + "/dotfiles/.config/quickshell/tui/scripts/init.sh", active_border, inactive_border])
         }
     }

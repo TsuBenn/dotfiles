@@ -37,14 +37,23 @@ Item {
         return Cell.h(cellY - h)
     }
 
-
     focus: true
+
+    Keys.onPressed: (event) => {
+        if (event.key == Qt.Key_Escape) {
+            PopupManager.close()
+        }
+    }
 
     implicitWidth: Cell.w(w)
     implicitHeight: Cell.h(h)
 
     MouseControl {
         anchors.fill: parent
+        anchors.leftMargin: -Cell.w(root.safeMargin)
+        anchors.rightMargin: -Cell.w(root.safeMargin)
+        anchors.topMargin: -Cell.h(root.safeMargin)
+        anchors.bottomMargin: -Cell.h(root.safeMargin)
     }
 
 }
