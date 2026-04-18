@@ -159,14 +159,6 @@ CellPopup {
 
                             editable: text.trim().length > 0
 
-                            onFocusChanged: {
-                                if (settings.path.length > 0) {
-                                    root.preventClosing = true
-                                } else {
-                                    root.preventClosing = true
-                                }
-                            }
-
                             Keys.onPressed: (event) => {
                                 let views = apps
                                 let max = LauncherInfo.apps.length
@@ -188,7 +180,6 @@ CellPopup {
 
                                 if (event.key == Qt.Key_Escape) {
                                     if (settings.path.length > 0) {
-                                        root.preventClosing = true
                                         let new_path = settings.path 
                                         new_path.pop()
                                         settings.path = []
@@ -470,8 +461,10 @@ CellPopup {
                     onPathChanged: {
                         if (path.length > 0) {
                             mode.additional = path.join(" > ") + ":"
+                            root.preventClosing = true
                         } else {
                             mode.additional = ""
+                            root.preventClosing = false
                         }
                     }
 
