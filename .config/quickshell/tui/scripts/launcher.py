@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import sys
+from config import SETTINGS, CALC, COLORS
 import os
+import sys
 import json
 import configparser
-import tomllib
 import re
 import subprocess
 
@@ -27,11 +27,10 @@ ICON_DIRS = [
     "/var/lib/flatpak/exports/share/icons/",
     "/var/lib/flatpak/exports/share/icons/hicolor/",
     os.path.expanduser("~/.local/share/icons"),
-    os.path.expanduser("~/.local/share/flatpak/exports/share/icons/"),
-    os.path.expanduser("~/.local/share/flatpak/exports/share/icons/hicolor")
+    os.path.expanduser("~/.local/share/icons/hicolor"),
 ]
 
-ICON_SIZES = ["256x256", "128x128", "64x64", "48x48", "32x32", "scalable"]
+ICON_SIZES = ["256x256", "192x192", "128x128", "96x96", "64x64", "48x48", "32x32", "24x24", "16x16", "scalable"]
 ICON_EXTS = ["png", "svg", "xpm"]
 
 ICON_CACHE_FILE = os.path.join(SCRIPT_DIR, "icon_cache.json")
@@ -124,7 +123,7 @@ def parse_desktop_file(path):
     except:
         return None
 
-def scan_apps(icon = False):
+def scan_apps(icon = True):
     apps = []
     seen = set()
     for directory in DESKTOP_DIRS:
@@ -140,8 +139,7 @@ def scan_apps(icon = False):
         save_icon_cache([{"name": app["name"], "icon": resolve_icon(app["icon"])} for app in apps])
     return apps
 
-def search_apps(query):
-    apps = scan_apps()
+def search_apps(apps, query):
     freq = load_frequency()
     if not query:
         return []
@@ -158,12 +156,11 @@ def search_apps(query):
         scored.append((final_score, app))
     scored.sort(key=lambda x: x[0], reverse=True)
     return [{
-        "id": app["id"],
         "label": app["name"],
         "description": app["genericName"] or app["description"],
         "icon": app["icon"],
         "value": app["exec"],
-        "type": "action"
+        "type": "exec"
     } for _, app in scored]
 
 def select_app(app_id):
@@ -206,26 +203,40 @@ def calculate(expr):
             "abs": abs
         }
 
-        # 2. Update allowed characters to include letters
-        # We allow a-z so the user can type 'sqrt', 'sin', etc.
         allowed = set("0123456789+-*/().% abcdefghijklmnopqrstuvwxyz")
-        
+
         clean_expr = expr.lower().strip()
-        
+
         if not all(c in allowed for c in clean_expr):
             return [{"label": "Invalid characters", "type": "info"}]
 
         # 3. Use restricted eval
         # __builtins__: {} blocks access to dangerous system functions
         result = eval(clean_expr, {"__builtins__": {}}, safe_methods)
-        
+
         # Round result for cleaner UI (optional)
         if isinstance(result, float):
             result = round(result, 4)
 
-        return [{"label": str(result), "type": "result"}]
+        return [
+            {
+                "label": "= " + str(result),
+                "description": str(result),
+                "icon": "",
+                "type": "exec",
+                "value": ["bash", "-c", f"echo \"{str(result)}\" | wl-copy"],
+            }
+        ]
     except Exception as e:
-        return [{"label": f"Error: {str(e)}", "type": "info"}]
+        return [
+            {
+                "label": "No result",
+                "description": str(e),
+                "icon": "",
+                "type": "exec",
+                "value": [""],
+            }
+        ]
 
 # ─── Icons ───────────────────────────────────────────────────────────────────
 
@@ -289,51 +300,105 @@ def save_icon_cache(cache):
     with open(ICON_CACHE_FILE, "w") as f:
         json.dump(cache, f, indent=2)
 
+# ─── Settings ────────────────────────────────────────────────────────────────
+
+def search_settings(data, query):
+    results = []
+
+    def recurse(items):
+        for item in items:
+            # Calculate scores for both label and description
+            label_score = fuzzy_match(query, item.get("label", ""))
+            desc_score = fuzzy_match(query, item.get("description", ""))
+            
+            # Take the best score of the two
+            final_score = max(label_score, desc_score)
+
+            if final_score > 0:
+                # Store a copy of the item with its score for sorting later
+                match = item.copy()
+                match["search_score"] = final_score
+                results.append(match)
+
+            # If it's a menu, keep digging regardless of whether the menu itself matched
+            if item.get("type") == "menu" and isinstance(item.get("value"), list):
+                recurse(item["value"])
+
+    recurse(data)
+
+    # Sort results: Highest score first
+    results.sort(key=lambda x: x["search_score"], reverse=True)
+
+    for r in results: r.pop("search_score", None)
+    
+    return results
+
+# ─── Input ───────────────────────────────────────────────────────────────────
+
+def parse_input(input):
+    tags = re.findall(r"-(\w+)",input)
+    tags = [char for tag in tags for char in tag]
+    query = " ".join(re.sub(r"-(\w+)","",input).strip().split())
+    return tags, query
+
 # ─── Main ────────────────────────────────────────────────────────────────────
 
 def main():
 
     global FUZZY
 
-    args = sys.argv[1:]
+    apps = scan_apps() 
+    icons = []
 
-    if "--fuzzy" in args:
-        FUZZY = True
+    for app in apps:
+        icons.append({
+            "name": app["id"],
+            "icon": resolve_icon(app["icon"]),
+        })
 
-    if "--icons" in args:
-        scan_apps(True)
-        return
+    while True:
+        result = []
 
-    if "--mode" not in args:
-        print(json.dumps([]))
-        return
+        tags, query = parse_input(input())
 
-    mode_idx = args.index("--mode")
-    mode = args[mode_idx + 1]
-    is_select = "--select" in args
+        if not tags:
+            print("Error: Please add at least a tag!", file=sys.stderr)
+            continue
 
-    if mode == "apps":
-        if is_select:
-            select_idx = args.index("--select")
-            app_id = args[select_idx + 1]
-            select_app(app_id)
-            print(json.dumps([]))
+        if "f" in tags:
+            FUZZY = True
         else:
-            query = " ".join(args[mode_idx + 2:])
-            print(json.dumps(search_apps(query)))
+            FUZZY = False
 
-    elif mode == "web":
-        if is_select:
-            select_idx = args.index("--select")
-            query = " ".join(args[select_idx + 1:])
-            select_web(query)
-            print(json.dumps([]))
+        if "a" in tags:
+            if query:
+                result.extend(search_apps(apps, query))
+            else:
+                result.extend([{
+                    "id": app["id"],
+                    "label": app["name"],
+                    "description": app["genericName"] or app["description"],
+                    "icon": app["icon"],
+                    "value": app["exec"],
+                    "type": "exec"
+                } for app in apps])
 
-    elif mode == "calc":
-        expr = " ".join(args[mode_idx + 2:])
-        print(json.dumps(calculate(expr)))
+        if "s" in tags:
+            if query:
+                result.extend(search_settings(SETTINGS, query))
+            else:
+                result.extend(SETTINGS)
 
-    else:
-        print(json.dumps([]))
+        if "c" in tags:
+            if query:
+                result = [*CALC, calculate(query)]
+            else:
+                result = CALC
+
+        if "t" in tags:
+            result = COLORS
+
+        print(json.dumps(result))
+
 
 main()
