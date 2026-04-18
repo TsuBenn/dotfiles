@@ -20,6 +20,8 @@ CellPopup {
     cellX: DropdownManager.x
     cellY: DropdownManager.y
 
+    safeMargin: 0
+
     property var items: DropdownManager.items
     property int selected: DropdownManager.selected
     property int padding: DropdownManager.padding

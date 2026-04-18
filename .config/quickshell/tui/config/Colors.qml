@@ -107,7 +107,7 @@ Singleton {
     property var colors: ({
         hutao:            {
             name:         "Hu Tao",
-            description:  "Deep plum and butterfly crimson; funeral parlor elegance.",
+            description:  "Deep plum, butterfly crimson - My best girl.",
             bgBase:       "#151214", bgSurface:      "#1D191C", bgOverlay: "#302A2F",
             fgBase:       "#EDE6E8", onAccent:       "#EDE6E8", fgDim:     "#A89BA0", fgSubtle: "#7A6F74",
             accentStrong: "#a32435", accentDim:      "#6B1825", secondary: "#f59b75", info:     "#3AA5DE",
@@ -115,8 +115,8 @@ Singleton {
             borderActive: "#a32435", borderInactive: "#2A2428"
         },
         seele:            {
-            name:         "Seele Vollerei",
-            description:  "Quantum midnight blues with sharp scythe-red accents.",
+            name:         "Seele (HSR)",
+            description:  "Quantum midnight blues, sharp scythe-red accents - Seele is cool.",
             bgBase:       "#0e0913", bgSurface:      "#1f1d3e", bgOverlay: "#3b3a7a",
             fgBase:       "#f1eff7", onAccent:       "#ffffff", fgDim:     "#c2c6e1", fgSubtle: "#9796bf",
             accentStrong: "#ff3b5c", accentDim:      "#ba2d4a", secondary: "#ff52bf", info:     "#94afe1",
@@ -125,7 +125,7 @@ Singleton {
         },
         kazuha:           {
             name:         "Kaedehara Kazuha",
-            description:  "Autumn maple reds, dry wood, and soft Anemo teals.",
+            description:  "Autumn maple reds, dry wood, soft Anemo teals - He's a cool guy.",
             bgBase:       "#1A1817", bgSurface:      "#24211F", bgOverlay: "#36322E",
             fgBase:       "#E6E1DC", onAccent:       "#1A1817", fgDim:     "#B5AEA8", fgSubtle: "#857D75",
             accentStrong: "#C24636", accentDim:      "#7A2C22", secondary: "#D9A166", info:     "#89A7A7",
@@ -134,7 +134,7 @@ Singleton {
         },
         frieren:          {
             name:         "Frieren",
-            description:  "Muted nostalgic lavenders and grimoire gold.",
+            description:  "Muted nostalgic lavenders, grimoire gold - Chill granny.",
             bgBase:       "#1B1C20", bgSurface:      "#25272E", bgOverlay: "#353945",
             fgBase:       "#F0F0F5", onAccent:       "#1B1C20", fgDim:     "#AAB0C0", fgSubtle: "#787E91",
             accentStrong: "#E2D1F9", accentDim:      "#9A8EB3", secondary: "#F8BBD0", info:     "#B3E5FC",
@@ -143,7 +143,7 @@ Singleton {
         },
         furina:           {
             name:         "Furina de Fontaine",
-            description:  "Oceanic navy and brilliant spotlight cyans.",
+            description:  "Oceanic navy, brilliant spotlight cyans - Best director.",
             bgBase:       "#0F1724", bgSurface:      "#182336", bgOverlay: "#26354D",
             fgBase:       "#E0F2FE", onAccent:       "#0F1724", fgDim:     "#94A3B8", fgSubtle: "#64748B",
             accentStrong: "#38BDF8", accentDim:      "#0369A1", secondary: "#F0ABFC", info:     "#7DD3FC",
@@ -152,7 +152,7 @@ Singleton {
         },
         nahida:           {
             name:         "Nahida",
-            description:  "Lush forest greens and Dendro wisdom yellows.",
+            description:  "Lush forest greens, Dendro wisdom yellows - Radish.",
             bgBase:       "#121915", bgSurface:      "#1C261F", bgOverlay: "#2A382E",
             fgBase:       "#ECFDF5", onAccent:       "#121915", fgDim:     "#A7F3D0", fgSubtle: "#6EE7B7",
             accentStrong: "#34D399", accentDim:      "#065F46", secondary: "#FDE68A", info:     "#67E8F9",
@@ -161,7 +161,7 @@ Singleton {
         },
         raiden:           {
             name:         "Raiden Shogun",
-            description:  "Royal electro purples and striking violet lightning.",
+            description:  "Royal electro purples, striking violet lightning - Hot Samurai.",
             bgBase:       "#12101A", bgSurface:      "#1B1829", bgOverlay: "#2D2845",
             fgBase:       "#F1E9FF", onAccent:       "#F1E9FF", fgDim:     "#B0A1D1", fgSubtle: "#7E71A1",
             accentStrong: "#9D72FF", accentDim:      "#5E4599", secondary: "#FFB8FF", info:     "#82AAFF",
@@ -170,7 +170,7 @@ Singleton {
         },
         yaemiko:          {
             name:         "Yae Miko",
-            description:  "Cherry blossom pinks and sacred shrine reds.",
+            description:  "Cherry blossom pinks, sacred shrine reds - Hot Samurai's wife.",
             bgBase:       "#1A1012", bgSurface:      "#26181B", bgOverlay: "#3D262B",
             fgBase:       "#FFE4E9", onAccent:       "#1A1012", fgDim:     "#DBB4BC", fgSubtle: "#A68087",
             accentStrong: "#F06292", accentDim:      "#AD4769", secondary: "#F8BBD0", info:     "#BA68C8",

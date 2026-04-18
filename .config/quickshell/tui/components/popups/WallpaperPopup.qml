@@ -98,6 +98,14 @@ CellPopup {
                         selected = WallpaperInfo.getIndex(WallpaperInfo.current)
                     }
 
+                    Component.onCompleted: {
+                        WallpaperInfo.rescanned.connect(()=> {
+                            wallpapers = []
+                            wallpapers = WallpaperInfo.all
+                            selected = WallpaperInfo.getIndex(WallpaperInfo.current)
+                        })
+                    }
+
                     property int selected
 
                     property var wallpapers: WallpaperInfo.all
@@ -183,7 +191,7 @@ CellPopup {
                                 onReleased: (button) => {
                                     if (button == "L") {
                                         if (thumbnail.selected) {
-                                            const current = selection.wallpapers[selection.selected]
+                                            const current = selection.wallpapers.length > 1 ? selection.wallpapers[selection.selected] : selection.wallpapers[0]
                                             if (WallpaperInfo.inSet(current)) {
                                                 WallpaperInfo.remove(current)
                                             } else {
@@ -248,9 +256,15 @@ CellPopup {
 
                         placeholder: "Search wallpaper"
 
+                        onFocusChanged: {
+                            if (focus) {
+                                root.preventClosing = true
+                            } 
+                        }
+
                         onTextInput: (query) => {
                             if (text == " ") {
-                                const current = selection.wallpapers[selection.selected]
+                                const current = selection.wallpapers.length > 1 ? selection.wallpapers[selection.selected] : selection.wallpapers[0]
                                 if (WallpaperInfo.inSet(current)) {
                                     WallpaperInfo.remove(current)
                                 } else {
@@ -269,13 +283,16 @@ CellPopup {
                             } else if (event.key == Qt.Key_Right || event.key == Qt.Key_Tab) {
                                 selection.advance(1)
                             } else if (event.key == Qt.Key_Return) {
-                                const current = selection.wallpapers[selection.selected]
+                                const current = selection.wallpapers.length > 1 ? selection.wallpapers[selection.selected] : selection.wallpapers[0]
                                 if (WallpaperInfo.inSet(current)) {
                                     WallpaperInfo.remove(current)
                                 } else {
                                     WallpaperInfo.add(current)
                                 }
                                 repeater.refresh()
+                            } else if (event.key == Qt.Key_Escape) {
+                                PopupManager.open("launcher")
+                                PopupManager.close("wallpapers")
                             }
                         }
 
@@ -392,9 +409,15 @@ CellPopup {
                             }
                         }
 
+                        onFocusChanged: {
+                            if (focus) {
+                                root.preventClosing = true
+                            }
+                        }
+
                         Keys.onPressed: (event) => {
                             if (event.key == Qt.Key_Escape) {
-                                PopupManager.preventClosing = true
+                                root.preventClosing = true
                                 focus = false
                             }
                         }
@@ -535,7 +558,7 @@ CellPopup {
 
                     GridLayout {
 
-                        rowSpacing: Cell.h(0)
+                        rowSpacing: Cell.h(1)
                         columnSpacing: Cell.w(2)
                         columns: WallpaperInfo.transition.type == "random" ? 6 : 100
 
@@ -637,9 +660,15 @@ CellPopup {
                                         }
                                     }
 
+                                    onFocusChanged: {
+                                        if (focus) {
+                                            root.preventClosing = true
+                                            return
+                                        }
+                                    }
+
                                     Keys.onPressed: (event) => {
                                         if (event.key == Qt.Key_Escape) {
-                                            PopupManager.preventClosing = true
                                             focus = false
                                         }
                                     }
@@ -684,9 +713,15 @@ CellPopup {
                                         }
                                     }
 
+                                    onFocusChanged: {
+                                        if (focus) {
+                                            root.preventClosing = true
+                                            return
+                                        }
+                                    }
+
                                     Keys.onPressed: (event) => {
                                         if (event.key == Qt.Key_Escape) {
-                                            PopupManager.preventClosing = true
                                             focus = false
                                         }
                                     }
@@ -729,9 +764,15 @@ CellPopup {
                                         }
                                     }
 
+                                    onFocusChanged: {
+                                        if (focus) {
+                                            root.preventClosing = true
+                                            return
+                                        }
+                                    }
+
                                     Keys.onPressed: (event) => {
                                         if (event.key == Qt.Key_Escape) {
-                                            PopupManager.preventClosing = true
                                             focus = false
                                         }
                                     }
@@ -780,9 +821,15 @@ CellPopup {
                                         }
                                     }
 
+                                    onFocusChanged: {
+                                        if (focus) {
+                                            root.preventClosing = true
+                                            return
+                                        }
+                                    }
+
                                     Keys.onPressed: (event) => {
                                         if (event.key == Qt.Key_Escape) {
-                                            PopupManager.preventClosing = true
                                             focus = false
                                         }
                                     }
@@ -833,9 +880,15 @@ CellPopup {
                                         }
                                     }
 
+                                    onFocusChanged: {
+                                        if (focus) {
+                                            root.preventClosing = true
+                                            return
+                                        }
+                                    }
+
                                     Keys.onPressed: (event) => {
                                         if (event.key == Qt.Key_Escape) {
-                                            PopupManager.preventClosing = true
                                             focus = false
                                         }
                                     }
@@ -870,9 +923,15 @@ CellPopup {
                                         }
                                     }
 
+                                    onFocusChanged: {
+                                        if (focus) {
+                                            root.preventClosing = true
+                                            return
+                                        }
+                                    }
+
                                     Keys.onPressed: (event) => {
                                         if (event.key == Qt.Key_Escape) {
-                                            PopupManager.preventClosing = true
                                             focus = false
                                         }
                                     }
@@ -922,9 +981,15 @@ CellPopup {
                                         }
                                     }
 
+                                    onFocusChanged: {
+                                        if (focus) {
+                                            root.preventClosing = true
+                                            return
+                                        }
+                                    }
+
                                     Keys.onPressed: (event) => {
                                         if (event.key == Qt.Key_Escape) {
-                                            PopupManager.preventClosing = true
                                             focus = false
                                         }
                                     }
@@ -959,9 +1024,15 @@ CellPopup {
                                         }
                                     }
 
+                                    onFocusChanged: {
+                                        if (focus) {
+                                            root.preventClosing = true
+                                            return
+                                        }
+                                    }
+
                                     Keys.onPressed: (event) => {
                                         if (event.key == Qt.Key_Escape) {
-                                            PopupManager.preventClosing = true
                                             focus = false
                                         }
                                     }
@@ -974,6 +1045,58 @@ CellPopup {
                     }
                 }
 
+            }
+
+            CellSeparator {
+
+                visible: SettingsInfo.hints
+
+                w: box.contentW
+                type: 2
+                color: Colors.bgOverlay
+            }
+
+            RowLayout {
+
+                visible: SettingsInfo.hints
+
+                Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                spacing: Cell.w(2)
+
+                CellKeyHint {
+                    key: "←"
+                    hint: "Prev"
+                }
+
+                CellKeyHint {
+                    key: "→"
+                    hint: "Next"
+                }
+
+                CellKeyHint {
+                    visible: !autoAdvance.auto && !WallpaperInfo.slideshow && textfield.text.length == 0
+                    key: "Space"
+                    hint: "Select"
+                }
+
+                CellKeyHint {
+                    visible: WallpaperInfo.slideshow && textfield.text.length == 0
+                    key: "Space"
+                    hint: "Toggle"
+                }
+
+                CellKeyHint {
+                    visible: !autoAdvance.auto && !WallpaperInfo.slideshow && textfield.text.length > 0
+                    key: "Enter"
+                    hint: "Select"
+                }
+
+                CellKeyHint {
+                    visible: WallpaperInfo.slideshow && textfield.text.length > 0
+                    key: "Enter"
+                    hint: "Toggle"
+                }
 
             }
 

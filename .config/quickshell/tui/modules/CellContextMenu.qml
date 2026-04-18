@@ -18,6 +18,8 @@ CellPopup {
     cellX: ContextMenuManager.x
     cellY: ContextMenuManager.y - 1
 
+    safeMargin: 0
+
     property var items: ContextMenuManager.items
     property string header: ContextMenuManager.header
 

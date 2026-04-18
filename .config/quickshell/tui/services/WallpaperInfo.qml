@@ -26,6 +26,8 @@ Singleton {
 
     property int slideshowInterval: 10000
 
+    signal rescanned()
+
     component Type: Item {
         property string type: "wipe"
         property int step: 10
@@ -76,7 +78,7 @@ Singleton {
             wallpapers.push(image)
             return
         }
-        wallpapers = [image]
+        singlify(image)
         set.running = true
     }
 
@@ -138,7 +140,9 @@ Singleton {
             onStreamFinished: {
                 if (text) {
                     const data = text.split("\n").slice(0,-1)
+                    root.all = []
                     root.all = data
+                    root.rescanned()
                 }
             }
         }

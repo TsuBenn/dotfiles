@@ -20,7 +20,9 @@ Item {
 
     property string name
 
-    property int safeMargin: 0
+    property int safeMargin: 2
+
+    property bool preventClosing: false
 
     x: {
         if (!monitor) return Cell.w(cellX)
@@ -39,9 +41,15 @@ Item {
 
     focus: true
 
-    Keys.onPressed: (event) => {
-        if (event.key == Qt.Key_Escape) {
-            PopupManager.close()
+    Shortcut {
+        enabled: root.visible
+        sequence: "Escape"
+        onActivated: {
+            if (root.preventClosing) {
+                root.preventClosing = false
+                return
+            }
+            PopupManager.close(root.name)
         }
     }
 

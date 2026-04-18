@@ -12,6 +12,7 @@ ShellRoot {
 
     Item {
         Component.onCompleted: {
+            init()
             Colors.applied.connect(() => {
                 init()
             })

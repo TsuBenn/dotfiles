@@ -16,6 +16,8 @@ Singleton {
 
     property var palettes: Colors.colors
 
+    property bool hints: true
+
     property var data: [
         {
             id: "Wallpapers",
@@ -62,6 +64,14 @@ Singleton {
                 },
             ]
         },
+        {
+            label: "Show hints",
+            description: "Show key binds for navigating menus.",
+            type: "function",
+            value: () => {
+                root.hints = !root.hints
+            },
+        },
     ]
 
     function resolvePalettes(): var {
@@ -75,6 +85,12 @@ Singleton {
             })
         }
         return result
+    }
+
+    function refresh() {
+        const refreshed_result = result
+        result = []
+        result = refreshed_result
     }
 
     function reset() {

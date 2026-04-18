@@ -159,6 +159,14 @@ CellPopup {
 
                             editable: text.trim().length > 0
 
+                            onFocusChanged: {
+                                if (settings.path.length > 0) {
+                                    root.preventClosing = true
+                                } else {
+                                    root.preventClosing = true
+                                }
+                            }
+
                             Keys.onPressed: (event) => {
                                 let views = apps
                                 let max = LauncherInfo.apps.length
@@ -180,7 +188,7 @@ CellPopup {
 
                                 if (event.key == Qt.Key_Escape) {
                                     if (settings.path.length > 0) {
-                                        PopupManager.preventClosing = true
+                                        root.preventClosing = true
                                         let new_path = settings.path 
                                         new_path.pop()
                                         settings.path = []
@@ -756,12 +764,17 @@ CellPopup {
             }
 
             CellSeparator {
+
+                visible: SettingsInfo.hints
+
                 w: box.contentW
                 type: 2
                 color: Colors.bgOverlay
             }
 
             GridLayout {
+
+                visible: SettingsInfo.hints
 
                 rowSpacing: Cell.h(1)
                 columnSpacing: Cell.w(2)
@@ -773,152 +786,60 @@ CellPopup {
 
                 Layout.leftMargin: Cell.centerWCell(implicitWidth,parent.implicitWidth)
 
-                RowLayout {
-
+                CellKeyHint {
                     visible: settings.path.length == 0
-
-                    spacing: 0
-
-                    CellText {
-                        text: " Esc "
-                        bg: Colors.bgOverlay
-                    }
-
-                    CellText {
-                        text: " Exit"
-                    }
+                    key: "Esc"
+                    hint: "Exit"
                 }
 
-                RowLayout {
-
+                CellKeyHint {
                     visible: settings.path.length > 0
-
-                    spacing: 0
-
-                    CellText {
-                        text: " Esc "
-                        bg: Colors.bgOverlay
-                    }
-
-                    CellText {
-                        text: " Return"
-                    }
-
+                    key: "Esc"
+                    hint: "Return"
                 }
 
-                RowLayout {
-
-                    visible: apps.visible && settings.visible
-
-                    spacing: 0
-
-                    CellText {
-                        text: "[Type]"
-                        bg: Colors.bgOverlay
-                    }
-
-                    CellText {
-                        text: " Search"
-                    }
+                CellKeyHint {
+                    visible: apps.visible || settings.visible
+                    key: "[Type]"
+                    hint: "Search"
+                    padding: 0
                 }
 
-                RowLayout {
-
+                CellKeyHint {
                     visible: calc.visible
-
-                    spacing: 0
-
-                    CellText {
-                        text: "[Type]"
-                        bg: Colors.bgOverlay
-                    }
-
-                    CellText {
-                        text: " Calculate"
-                    }
+                    key: "[Type]"
+                    hint: "Calculate"
+                    padding: 0
                 }
 
-                RowLayout {
-
+                CellKeyHint {
                     visible: (textfield.text.length > 1 && apps.visible && LauncherInfo.apps.length > 0) || (settings.visible && SettingsInfo.result.length > 0)
-
-                    spacing: 0
-
-                    CellText {
-                        text: " Enter "
-                        bg: Colors.bgOverlay
-                    }
-
-                    CellText {
-                        text: " Select"
-                    }
-
+                    key: "Enter"
+                    hint: "Select"
                 }
 
-                RowLayout {
-
+                CellKeyHint {
                     visible: web.visible
-
-                    spacing: 0
-
-                    CellText {
-                        text: " Enter "
-                        bg: Colors.bgOverlay
-                    }
-
-                    CellText {
-                        text: " Search"
-                    }
-
+                    key: "Enter"
+                    hint: "Search"
                 }
 
-                RowLayout {
-
+                CellKeyHint {
                     visible: calc.visible
-
-                    spacing: 0
-
-                    CellText {
-                        text: " Enter "
-                        bg: Colors.bgOverlay
-                    }
-
-                    CellText {
-                        text: textfield.text.trim().length > 0 ? " Copy" : " Add"
-                    }
-
+                    key: "Enter"
+                    hint: textfield.text.trim().length > 0 ? "Copy" : "Add"
                 }
 
-                RowLayout {
-
-                    spacing: 0
-
-                    CellText {
-                        text: " ← "
-                        bg: Colors.bgOverlay
-                        color: textfield.text.trim().length > 0 ? Colors.fgSubtle : Colors.fgBase
-                    }
-
-                    CellText {
-                        text: " Prev Tab"
-                        color: textfield.text.trim().length > 0 ? Colors.fgSubtle : Colors.fgBase
-                    }
+                CellKeyHint {
+                    key: "←"
+                    hint: "Prev tab"
+                    disabled: textfield.text.trim().length > 0
                 }
 
-                RowLayout {
-
-                    spacing: 0
-
-                    CellText {
-                        text: " → "
-                        bg: Colors.bgOverlay
-                        color: textfield.text.trim().length > 0 ? Colors.fgSubtle : Colors.fgBase
-                    }
-
-                    CellText {
-                        text: " Next Tab"
-                        color: textfield.text.trim().length > 0 ? Colors.fgSubtle : Colors.fgBase
-                    }
+                CellKeyHint {
+                    key: "→"
+                    hint: "Next tab"
+                    disabled: textfield.text.trim().length > 0
                 }
 
             }
