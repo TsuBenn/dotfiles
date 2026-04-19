@@ -439,11 +439,13 @@ def main():
     """
 
     while True:
-        result = []
 
         tags, query, paths = parse_input(input())
 
+        result = []
         settings = SETTINGS
+
+        freq = load_frequency()
 
         if paths:
             for path in paths:
@@ -464,10 +466,11 @@ def main():
             FUZZY = False
 
         if "a" in tags:
+            app_results = []
             if query:
                 result.extend(search_apps(apps, query))
             else:
-                result.extend([{
+                app_results = [{
                     "id": app["id"],
                     "label": app["name"],
                     "description": app["genericName"] or app["description"],
@@ -475,7 +478,11 @@ def main():
                     "icon": app["icon"],
                     "value": ["bash", "-c", app["exec"]],
                     "type": "exec"
-                } for app in apps])
+                } for app in apps]
+
+            app_results.sort(key=lambda x: freq.get(x["id"], 0), reverse=True)
+            result.extend(app_results)
+
 
         if "s" in tags:
             if query:
@@ -485,7 +492,6 @@ def main():
 
         if query:
             result = search_settings(result, query)
-
 
         if "c" in tags:
             if query:

@@ -16,7 +16,7 @@ CellPopup {
     h: Cell.hCount(layout.implicitHeight)
 
     onVisibleChanged: {
-        if (!visible) {
+        if (visible) {
             LauncherInfo.reset()
         }
         tab.selected = 0

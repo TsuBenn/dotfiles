@@ -63,7 +63,6 @@ Singleton {
 
         id: process
 
-        running: true
         command: ["python", root.backend]
 
         onRunningChanged: {
