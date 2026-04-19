@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import qs.config
 import qs.modules
 
@@ -22,7 +24,7 @@ Item {
 
     property int safeMargin: 2
 
-    property bool preventClosing: false
+    property bool escapeToClose: true
 
     x: {
         if (!monitor) return Cell.w(cellX)
@@ -41,15 +43,16 @@ Item {
 
     focus: true
 
-    Shortcut {
-        enabled: root.visible
-        sequence: "Escape"
-        onActivated: {
-            if (root.preventClosing) {
-                root.preventClosing = false
-                return
-            }
-            PopupManager.close(root.name)
+    Repeater {
+        model: root.escapeToClose ? 1 : 0
+
+        delegate: ShortcutHandler {
+            shortcuts: [
+                {
+                    binds: "Escape",
+                    action: () => PopupManager.close(root.name)
+                }
+            ]
         }
     }
 

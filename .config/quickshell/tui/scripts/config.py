@@ -1,103 +1,6 @@
 import json
 import sys
 
-SETTINGS = [
-    {
-        "id": "Wallpapers",
-        "label": "Wallpapers",
-        "description": "Changes how your wallpaper looks and behaves.",
-        "type": "exec",
-        "value": []
-    },
-    {
-        "id": "Color themes",
-        "label": "Color themes",
-        "description": "Changes your shell's color palette that fit your vibe.",
-        "type": "menu",
-        "value": []
-    },
-    {
-        "id": "System checks",
-        "label": "System checks",
-        "description": "Making sure that your shell is working normally.",
-        "type": "menu",
-        "value": [
-            {
-                "label": "Notification check",
-                "description": "Send a dummy notification.",
-                "type": "exec",
-                "value": ["notify-send", "Notification checker", "Check check check!"],
-            },
-            {
-                "label": "Audio check",
-                "description": "Play a random cute anime girl sound effect at MAX volume.",
-                "type": "exec",
-                "value": []
-            },
-            {
-                "label": "Toggle grid",
-                "description": "Show terminal cells grid making sure everything is aligned properly.",
-                "type": "exec",
-                "value": ["qs", "-c", "tui", "ipc", "call", "debug", "toggleGrid"],
-            },
-        ]
-    },
-    {
-        "label": "Show hints",
-        "description": "Show key binds for navigating menus.",
-        "type": "exec",
-        "value": []
-    },
-]
-
-CALC = [
-    {
-        "label": "abs()",
-        "description": "Absolute",
-        "cursor": 4
-    },
-    {
-        "label": "sqrt()",
-        "description": "Square root",
-        "cursor": 5
-    },
-    {
-        "label": "pow()",
-        "description": "Power",
-        "cursor": 4
-    },
-    {
-        "label": "sin()",
-        "description": "Sine",
-        "cursor": 4
-    },
-    {
-        "label": "cos()",
-        "description": "Cosine",
-        "cursor": 4
-    },
-    {
-        "label": "tan()",
-        "description": "Tangent",
-        "cursor": 4
-    },
-    {
-        "label": "log()",
-        "description": "Logarith",
-        "cursor": 4
-    },
-    {
-        "label": "pi",
-        "description": "Pi",
-        "cursor": 2
-    },
-    {
-        "label": "e",
-        "description": "E",
-        "cursor": 2
-    },
-]
-
 COLORS = {
     "hutao":            {
         "name":         "Hu Tao",
@@ -262,6 +165,118 @@ COLORS = {
         "borderActive": "#ee5396", "borderInactive": "#262626"
     }
 }
+
+SETTINGS = [
+    {
+        "id": "wallpapers",
+        "label": "Wallpapers",
+        "description": "Changes how your wallpaper looks and behaves.",
+        "type": "exec",
+        "value": ["qs", "-c", "tui", "ipc", "call", "config", "open_popup", "wallpaper"]
+    },
+    {
+        "id": "color_themes",
+        "label": "Color themes",
+        "description": "Changes your shell's color palette that fit your vibe.",
+        "type": "menu",
+        "value": [{
+            "label": COLORS[color]["name"],
+            "description": COLORS[color]["description"],
+            "type": "exec",
+            "value": ["qs", "-c", "tui", "ipc", "call", "config", "set_color_theme", color],
+        } for color in COLORS]
+    },
+    {
+        "id": "system_checks",
+        "label": "System checks",
+        "description": "Making sure that your shell is working normally.",
+        "type": "menu",
+        "value": [
+            {
+                "label": "Notification check",
+                "description": "Send a dummy notification.",
+                "type": "exec",
+                "value": ["notify-send", "Notification checker", "Check check check!"],
+            },
+            {
+                "label": "Audio check",
+                "description": "Play a random cute anime girl sound effect at MAX volume.",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "audio_check"],
+            },
+            {
+                "label": "Toggle grids",
+                "description": "Show terminal cells grid making sure everything is aligned properly.",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_grids"],
+            },
+        ]
+    },
+    {
+        "label": "Toggle hints",
+        "description": "Show key binds for navigating menus.",
+        "type": "exec",
+        "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_hints"],
+    },
+]
+
+CALC = [
+    {
+        "label": "abs()",
+        "description": "Absolute",
+        "type": "exec",
+        "value": ["wtype", "abs()", "-k", "Left"],
+    },
+    {
+        "label": "sqrt()",
+        "description": "Square root",
+        "type": "exec",
+        "value": ["wtype", "sqrt()", "-k", "Left"],
+    },
+    {
+        "label": "pow()",
+        "description": "Power",
+        "type": "exec",
+        "value": ["wtype", "pow()", "-k", "Left"],
+    },
+    {
+        "label": "sin()",
+        "description": "Sine",
+        "type": "exec",
+        "value": ["wtype", "sin()", "-k", "Left"],
+    },
+    {
+        "label": "cos()",
+        "description": "Cosine",
+        "type": "exec",
+        "value": ["wtype", "cos()", "-k", "Left"],
+    },
+    {
+        "label": "tan()",
+        "description": "Tangent",
+        "type": "exec",
+        "value": ["wtype", "tan()", "-k", "Left"],
+    },
+    {
+        "label": "log()",
+        "description": "Logarith",
+        "type": "exec",
+        "value": ["wtype", "log()", "-k", "Left"],
+    },
+    {
+        "label": "pi",
+        "description": "Pi",
+        "type": "exec",
+        "value": ["wtype", "pi"],
+    },
+    {
+        "label": "e",
+        "description": "E",
+        "type": "exec",
+        "value": ["wtype", "e"],
+    },
+]
+
 
 def main():
     if len(sys.argv) > 1:

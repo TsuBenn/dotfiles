@@ -14,27 +14,52 @@ Singleton {
 
     property var result: []
 
-    signal searched(data: var)
+    property bool running: process.running
 
-    function search(tags: string, query = "") {
+    signal searched(data: var)
+    signal pathFound(id: string, label: string)
+
+    function search(tags: string, paths = [], query = "") {
+        let le_paths = ""
+        if (paths) {
+            for (const path of paths)  {
+                le_paths += "--" + path.id + " "
+            }
+        }
         if (process.running) {
-            process.write(`${tags} ${query}\n`)
+            console.log(`-${tags} ${le_paths} ${query}\n`)
+            process.write(`-${tags} ${le_paths} ${query}\n`)
         } else {
             console.error("LauncherInfo: Process is not running")
         }
     }
 
+    function run(index: int) {
+        const item = result[index] 
+        if (item.type == "exec") SystemInfo.runDetached(item.value)
+        if (item.type == "menu") root.pathFound(item.id, item.label)
+    }
+
+    function reset() {
+        stop()
+        start()
+    }
+
     function start() {
+        result = []
         process.running = true
     }
 
     function stop() {
+        result = []
         process.running = false
     }
 
     Process {
 
         id: process
+
+        command: ["python", root.backend]
 
         onRunningChanged: {
             root.result = []
@@ -46,6 +71,7 @@ Singleton {
                 if (data) {
                     root.result = data
                     root.searched(data)
+                    //console.log(JSON.stringify(data,null,2))
                 }
             }
         }

@@ -167,6 +167,12 @@ Singleton {
         return root.homedir
     }
 
+    function runDetached(command = []) {
+        run.command = command
+        run.startDetached()
+        run.command = []
+    }
+
     function notifyerr(error: string) {
         run.exec(["bash", "-c", "notify-send --urgency=critical 'System Error!' '" + error.trim() + "'"])
     }

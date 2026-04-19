@@ -15,6 +15,14 @@ CellPopup {
     w: 80
     h: Cell.hCount(layout.implicitHeight)
 
+    onVisibleChanged: {
+        tab.selected = 0
+        textfield.set("")
+        textfield.search("")
+    }
+
+    escapeToClose: false
+
     CellBox {
 
         id: box
@@ -74,29 +82,27 @@ CellPopup {
 
                         CellText {
 
-                            visible: text.length > 0
+                            id: breadcrumbs
 
-                            onVisibleChanged: {
-                                prefix = ""
-                            }
-
-                            id: mode
-
-                            property string additional: ""
-
-                            property string prefix: ""
-                            property string value: {
-                                switch (prefix) {
-                                    case ">": tab.selected = 1; return "settings"
-                                    case "=": tab.selected = 2; return "calc"
-                                    case "?": tab.selected = 3; return "web"
-                                    case "": tab.selected = 0; return "apps"
+                            function updatePath() {
+                                if (textfield.path.length == 0) {
+                                    text = ""
+                                    return
                                 }
-                                return "apps"
-                            }
+                                let result = ""
+                                let paths = []
+                                for (const path of textfield.path) {
+                                    paths.push(path.label)
+                                }
+                                result = paths.join(" > ")
+                                if (result) {
+                                    text = " " + result + ":"
+                                    return
+                                }
+                                text = ""
+                            } 
 
-                            text: " " + prefix + (additional ? " " + additional : "")
-
+                            text: ""
                         }
 
                         CellTextField {
@@ -105,42 +111,89 @@ CellPopup {
 
                             property int selected: 0
 
-                            w: textbox.contentW - 2 - mode.text.length - 1
-                            h: 1
+                            property var path: []
+
+                            ShortcutHandler {
+                                shortcuts: [
+                                    {
+                                        binds: "Up",
+                                        action: () => {
+                                            if (textfield.selected == 0) return
+                                            textfield.selected -= 1
+                                        }
+                                    },
+                                    {
+                                        binds: "Down",
+                                        action: () => {
+                                            if (textfield.selected >= LauncherInfo.result.length) return
+                                            textfield.selected += 1
+                                        }
+                                    },
+                                    {
+                                        binds: ["Right", "Tab"],
+                                        action: () => {
+                                            if (textfield.text.length == 0) {
+                                                tab.advance(1)
+                                            }
+                                        }
+                                    },
+                                    {
+                                        binds: ["Left", "Shift+Tab"],
+                                        action: () => {
+                                            if (textfield.text.length == 0) {
+                                                tab.advance(-1)
+                                            }
+                                        }
+                                    },
+                                    {
+                                        binds: "Escape",
+                                        action: () => {
+                                            if (textfield.path.length > 0) {
+                                                const new_path = textfield.path
+                                                new_path.pop()
+                                                textfield.path = new_path
+                                                textfield.search("")
+                                                breadcrumbs.updatePath()
+                                            } else {
+                                                PopupManager.close("launcher")
+                                            }
+                                        }
+                                    },
+                                ]
+                            }
 
                             Component.onCompleted: {
-                                LauncherInfo.appsChanged.connect(() => {
-                                    reset()
+                                LauncherInfo.pathFound.connect((id, label) => {
+                                    path = [...path, {"id": id, "label": label}]
+                                    textfield.search("")
+                                    breadcrumbs.updatePath()
                                 })
                             }
 
+                            Layout.leftMargin: Cell.w(1)
+
+                            w: textbox.contentW - 2 - breadcrumbs.text.length
+                            h: 1
+
                             onEntered: (query) => {
-                                if (mode.value == "apps") {
-                                    LauncherInfo.select("apps", query, LauncherInfo.apps[selected].id)
-                                    PopupManager.close("launcher")
-                                } else if (mode.value == "settings") {
-                                    const path = SettingsInfo.run(settings.selected)
-                                    if (path != "null") {
-                                        textfield.set(" ")
-                                        settings.path = [...settings.path, path]
-                                        SettingsInfo.search(settings.path, "")
-                                    }
-                                } else if (mode.value == "web") {
-                                    LauncherInfo.select("web", "", text)
-                                } else if (mode.value == "calc") {
-                                    if (textfield.text.trim().length > 0) {
-                                        if (textfield.selected == 0) {
-                                            if (!LauncherInfo.calc[textfield.selected].description) {
-                                                return
-                                            }
-                                            SystemInfo.copy_clipboard(LauncherInfo.calc[textfield.selected].description)
-                                            NotificationsInfo.send("", "", "Calculator","Copied result: " + LauncherInfo.calc[textfield.selected].description)
-                                            return
-                                        }
-                                    }
-                                    text += LauncherInfo.calc[textfield.selected].label
-                                    cursorPos += LauncherInfo.calc[textfield.selected].cursor
+                                LauncherInfo.run(textfield.selected)
+                            }
+
+                            function search(input) {
+                                let tags = ""
+                                switch (tab.selected) {
+                                    case 0: tags = "asf"; break;
+                                    case 1: tags = "af"; break;
+                                    case 2: tags = "sf"; break;
+                                    case 3: tags = "c"; break;
                                 }
+                                safe_mouse.safe = 2
+                                LauncherInfo.search(tags, textfield.path, input)
+                            }
+
+                            onTextInput: (input) => {
+                                if ((tab.selected == 0 || tab.selected == 1) && input.trim().length == 1) return
+                                search(input)
                             }
 
                             function reset() {
@@ -148,104 +201,17 @@ CellPopup {
                             }
 
                             placeholder: {
-                                switch (mode.value) {
-                                    case "settings": return " Settings search"
-                                    case "web": return " Web search"
-                                    case "calc": return " Calculator"
-                                    case "apps": return "Search"
+                                switch (tab.selected) {
+                                    case 0: return "Search"
+                                    case 1: return "Apps Search"
+                                    case 2: return "Settings search"
+                                    case 3: return "Calculator"
                                 }
                                 return "Search"
                             }
 
                             editable: text.trim().length > 0
 
-                            Keys.onPressed: (event) => {
-                                let views = apps
-                                let max = LauncherInfo.apps.length
-                                if (mode.value == "settings") {
-                                    views = settings
-                                    max = SettingsInfo.result.length
-                                } if (mode.value == "calc") {
-                                    views = calc
-                                    max = LauncherInfo.calc.length
-                                }
-
-                                if (!editable) {
-                                    if (event.key == Qt.Key_Right) {
-                                        tab.advance(1)
-                                    } else if (event.key == Qt.Key_Left) {
-                                        tab.advance(-1)
-                                    }
-                                }
-
-                                if (event.key == Qt.Key_Escape) {
-                                    if (settings.path.length > 0) {
-                                        let new_path = settings.path 
-                                        new_path.pop()
-                                        settings.path = []
-                                        settings.path = new_path
-                                        SettingsInfo.search(settings.path, "")
-                                        return
-                                    }
-                                    PopupManager.close("launcher")
-                                } else if (event.key == Qt.Key_Tab) {
-                                    if (tab.selected < 3) {
-                                        tab.selected += 1
-                                        return
-                                    }
-                                    tab.selected = 0
-                                } else if (event.key == Qt.Key_Up) {
-                                    if (textfield.selected > 0) {
-                                        textfield.selected -= 1
-                                    }
-                                    if (textfield.selected-Math.ceil(views.offset/3) < 0) {
-                                        views.offset = Math.max((selected-4)*3,0)
-                                    }
-                                } else if (event.key == Qt.Key_Down) {
-                                    if (textfield.selected < max - 1) {
-                                        textfield.selected += 1
-                                    }
-                                    if (textfield.selected-Math.floor(views.offset/3) >= 5) {
-                                        views.offset = selected*3
-                                    }
-                                }
-                            }
-
-                            onTextInput: (text) => {
-                                let query = text.trim()
-
-                                if (text == ">") {
-                                    mode.prefix = ">"
-                                    set(" ")
-                                    query = ""
-                                }
-                                if (text == "?") {
-                                    mode.prefix = "?"
-                                }
-                                if (text == "=") {
-                                    mode.prefix = "="
-                                    set(" ")
-                                    query = ""
-                                }
-                                if (text == "" && mode.prefix != "") {
-                                    mode.prefix = ""
-                                    set("")
-                                    query = ""
-                                }
-
-                                if (mode.value == "apps" && textfield.text.length != 1) {
-                                    LauncherInfo.search_apps(query)
-                                } else if (mode.value == "settings") {
-                                    SettingsInfo.search(settings.path, query)
-                                } else if (mode.value == "calc") {
-                                    if (textfield.text.trim().length > 0) {
-                                        LauncherInfo.calculate(query)
-                                    } else {
-                                        LauncherInfo.calculate("")
-                                    }
-                                }
-
-                            }
                         }
 
                     }
@@ -260,24 +226,18 @@ CellPopup {
                 id: tab
 
                 padding: 0
-                onSelectedChanged: {
-                    safe_mouse.safe = 1
-                    safe_mouse.visible = true
-
-                    switch (selected) {
-                        case 0: mode.prefix = ""; textfield.set(""); break;
-                        case 1: mode.prefix = ">"; textfield.set(" "); break;
-                        case 2: mode.prefix = "="; textfield.set(" "); break;
-                        case 3: mode.prefix = "?"; textfield.set(" "); break;
-                    }
-                }
 
                 w: box.contentW
+
+                onSelectedChanged: {
+                    textfield.search("")
+                }
+
                 items: [
+                    "All",
                     "Apps",
                     "Settings",
                     "Calc",
-                    "Web",
                 ]
 
             }
@@ -308,9 +268,7 @@ CellPopup {
 
                 CellScrollView {
 
-                    id: apps
-
-                    visible: tab.selected == 0
+                    id: results
 
                     onVisibleChanged: {
                         LauncherInfo.reset()
@@ -323,124 +281,152 @@ CellPopup {
 
                         spacing: 0
 
+                        Timer {
+                            id: debounce
+
+                            property var data: []
+
+                            Component.onCompleted: {
+                                LauncherInfo.searched.connect(() => {
+                                    debounce.restart()
+                                })
+                            }
+
+                            interval: 0
+                            onTriggered: {
+                                data = LauncherInfo.result
+                            }
+
+                        }
+
                         Repeater {
 
-                            model: LauncherInfo.apps
+                            model: debounce.data
 
                             onModelChanged: {
-                                apps.reset()
+                                results.reset()
                                 textfield.selected = 0
                             }
 
-                            delegate: Cells {
+                            delegate: Loader {
 
-                                id: app_result
+                                id: result
+
+                                active: index - Math.round(results.offset/3) < 10
 
                                 required property int index
 
-                                required property string id
-                                required property string label
-                                required property string description
-                                required property string icon
-                                required property string type
+                                required property var modelData
+
+                                property string id: modelData.id ?? ""
+                                property string label: modelData.label ?? ""
+                                property string description: modelData.description ?? ""
+                                property string icon: modelData.icon ?? ""
+                                property string type: modelData.type ?? ""
+                                property var value: modelData.value ?? []
 
                                 property bool selected: textfield.selected == index
 
-                                w: apps.contentW
-                                h: 3
+                                asynchronous: index < 10 ? false : true
 
-                                color: Colors.bgSurface
+                                sourceComponent: Cells {
 
-                                Cells {
+                                    w: results.contentW
+                                    h: 3
 
-                                    w: apps.contentW
-                                    h: 2
-                                    color: "transparent"
+                                    color: Colors.bgSurface
 
-                                    MouseControl {
+                                    Cells {
 
-                                        anchors.fill: parent
+                                        w: results.contentW
+                                        h: 2
+                                        color: "transparent"
 
-                                        onEntered: {
-                                            textfield.selected = app_result.index
-                                        }
+                                        MouseControl {
 
-                                        onReleased: (button) => {
-                                            if (button == "L") {
-                                                textfield.entered(textfield.text)
+                                            anchors.fill: parent
+
+                                            onEntered: {
+                                                textfield.selected = result.index
                                             }
+
+                                            onReleased: (button) => {
+                                                if (button == "L") {
+                                                    textfield.entered(textfield.text)
+                                                }
+                                            }
+
                                         }
 
                                     }
 
-                                }
+                                    ColumnLayout {
 
-                                ColumnLayout {
-
-                                    id: app_layout
-
-                                    spacing: 0
-
-                                    RowLayout {
+                                        id: result_layout
 
                                         spacing: 0
 
-                                        CellText {
-                                            text: " "
-                                        }
+                                        RowLayout {
 
-                                        CellIcon {
-                                            id: apps_icon
-                                            icon: [app_result.icon, app_result.label]
-                                            w: 5
-                                        }
-
-                                        CellText {
-                                            text: " "
-                                        }
-
-                                        ColumnLayout {
                                             spacing: 0
 
                                             CellText {
-                                                text: app_result.label
-                                                preferedW: apps.contentW - 5 - 5*apps_icon.success
+                                                text: " "
+                                            }
+
+                                            CellIcon {
+                                                id: result_icon
+                                                icon: [result.icon, result.icon ? result.label : ""]
+                                                w: 5
                                             }
 
                                             CellText {
-                                                text: app_result.description
-                                                preferedW: apps.contentW - 5 - 5*apps_icon.success
-                                                color: Colors.fgSubtle
+                                                text: " "
                                             }
+
+                                            ColumnLayout {
+                                                spacing: 0
+
+                                                CellText {
+                                                    text: result.label
+                                                    preferedW: results.contentW - 5 - 5*result_icon.success
+                                                }
+
+                                                CellText {
+                                                    text: result.description
+                                                    preferedW: results.contentW - 5 - 5*result_icon.success
+                                                    color: Colors.fgSubtle
+                                                }
+                                            }
+
+                                            CellText {
+                                                text: " "
+                                            }
+
+                                            Cells {
+
+                                                w: 1
+                                                h: 2
+
+                                                color: result.selected ? Colors.accentStrong : Colors.bgOverlay
+
+                                            }
+
                                         }
 
-                                        CellText {
-                                            text: " "
-                                        }
+                                        CellSeparator {
 
-                                        Cells {
-
-                                            w: 1
-                                            h: 2
-
-                                            color: app_result.selected ? Colors.accentStrong : Colors.bgOverlay
+                                            type: 2
+                                            color: Colors.bgOverlay
+                                            padding: 1
+                                            w: results.contentW
 
                                         }
 
                                     }
 
-                                    CellSeparator {
-
-                                        type: 2
-                                        color: Colors.bgOverlay
-                                        padding: 1
-                                        w: apps.contentW
-
-                                    }
 
                                 }
-
-
                             }
 
                         }
@@ -475,45 +461,49 @@ CellPopup {
                 Layout.leftMargin: Cell.centerWCell(implicitWidth,parent.implicitWidth)
 
                 CellKeyHint {
-                    visible: settings.path.length == 0
+                    visible: textfield.path.length == 0
                     key: "Esc"
                     hint: "Exit"
                 }
 
                 CellKeyHint {
-                    visible: settings.path.length > 0
+                    visible: textfield.path.length > 0
                     key: "Esc"
-                    hint: "Return"
+                    hint: "Back"
                 }
 
                 CellKeyHint {
-                    visible: apps.visible || settings.visible
+                    visible: (
+                        tab.selected == 0 || 
+                        tab.selected == 1 ||
+                        tab.selected == 2
+                    )
                     key: "[Type]"
                     hint: "Search"
                     padding: 0
                 }
 
                 CellKeyHint {
-                    visible: calc.visible
+                    visible: tab.selected == 3
                     key: "[Type]"
                     hint: "Calculate"
                     padding: 0
                 }
 
                 CellKeyHint {
-                    visible: (textfield.text.length > 1 && apps.visible && LauncherInfo.apps.length > 0) || (settings.visible && SettingsInfo.result.length > 0)
+                    visible: ( tab.selected == 0 || tab.selected == 1 || tab.selected == 2) && LauncherInfo.result.length > 0 && textfield.text.trim().length > 0
                     key: "Enter"
                     hint: "Select"
                 }
 
                 CellKeyHint {
-                    visible: web.visible
+                    visible: ( tab.selected == 0 || tab.selected == 1 || tab.selected == 2) && LauncherInfo.result.length == 0 && textfield.text.trim().length > 0
                     key: "Enter"
-                    hint: "Search"
+                    hint: "Google Search"
                 }
 
                 CellKeyHint {
-                    visible: calc.visible
+                    visible: tab.selected == 3
                     key: "Enter"
                     hint: textfield.text.trim().length > 0 ? "Copy" : "Add"
                 }

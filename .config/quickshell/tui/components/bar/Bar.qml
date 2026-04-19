@@ -315,6 +315,10 @@ Scope {
 
                     Cells {
 
+                        Component.onCompleted: {
+                            SettingsInfo.showGrid.connect(() => grid.visible = !grid.visible)
+                        }
+
                         id: grid
 
                         visible: false
@@ -338,13 +342,6 @@ Scope {
                 target: "launcher"
                 function toggle(): void {
                     PopupManager.toggle("launcher", false)
-                }
-            }
-
-            IpcHandler {
-                target: "debug"
-                function toggleGrid(): void {
-                    grid.visible = !grid.visible
                 }
             }
 

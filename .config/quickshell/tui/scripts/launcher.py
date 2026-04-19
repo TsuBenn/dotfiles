@@ -8,6 +8,8 @@ import configparser
 import re
 import subprocess
 
+# ─── ENV ──────────────────────────────────────────────────────────────────────
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 FREQ_FILE = os.path.join(SCRIPT_DIR, "frequency.json")
 SETTINGS_FILE = os.path.join(SCRIPT_DIR, "settings.toml")
@@ -222,7 +224,6 @@ def calculate(expr):
             {
                 "label": "= " + str(result),
                 "description": str(result),
-                "icon": "",
                 "type": "exec",
                 "value": ["bash", "-c", f"echo \"{str(result)}\" | wl-copy"],
             }
@@ -232,7 +233,6 @@ def calculate(expr):
             {
                 "label": "No result",
                 "description": str(e),
-                "icon": "",
                 "type": "exec",
                 "value": [""],
             }
@@ -314,15 +314,16 @@ def search_settings(data, query):
             # Take the best score of the two
             final_score = max(label_score, desc_score)
 
+            # If it's a menu, keep digging regardless of whether the menu itself matched
+            if item.get("type") == "menu" and isinstance(item.get("value"), list):
+                recurse(item["value"])
+                continue
+
             if final_score > 0:
                 # Store a copy of the item with its score for sorting later
                 match = item.copy()
                 match["search_score"] = final_score
                 results.append(match)
-
-            # If it's a menu, keep digging regardless of whether the menu itself matched
-            if item.get("type") == "menu" and isinstance(item.get("value"), list):
-                recurse(item["value"])
 
     recurse(data)
 
@@ -336,10 +337,12 @@ def search_settings(data, query):
 # ─── Input ───────────────────────────────────────────────────────────────────
 
 def parse_input(input):
-    tags = re.findall(r"-(\w+)",input)
+    tags = re.findall(r"(?<!\S)-[a-zA-Z]+\b",input)
     tags = [char for tag in tags for char in tag]
-    query = " ".join(re.sub(r"-(\w+)","",input).strip().split())
-    return tags, query
+    paths = re.findall(r"--(\w+)",input)
+    query = " ".join(re.sub(r"(?<!\S)-[a-zA-Z]+\b","",input).strip().split())
+    query = " ".join(re.sub(r"--(\w+)","",query).strip().split())
+    return tags, query, paths
 
 # ─── Main ────────────────────────────────────────────────────────────────────
 
@@ -356,10 +359,35 @@ def main():
             "icon": resolve_icon(app["icon"]),
         })
 
+    init = []
+
+    init.extend([{
+        "id": app["id"],
+        "label": app["name"],
+        "description": app["genericName"] or app["description"],
+        "icon": app["icon"],
+        "value": ["bash", "-c", app["exec"]],
+        "type": "exec"
+    } for app in apps])
+
+    init.extend(SETTINGS)
+
+    print(json.dumps(init))
+
     while True:
         result = []
 
-        tags, query = parse_input(input())
+        tags, query, paths = parse_input(input())
+
+        settings = SETTINGS
+
+        if paths:
+            for path in paths:
+                for setting in settings:
+                    if "id" in setting:
+                        if setting["id"] == path and setting["type"] == "menu":
+                            settings = setting["value"]
+                            break
 
         if not tags:
             print("Error: Please add at least a tag!", file=sys.stderr)
@@ -379,24 +407,26 @@ def main():
                     "label": app["name"],
                     "description": app["genericName"] or app["description"],
                     "icon": app["icon"],
-                    "value": app["exec"],
+                    "value": ["bash", "-c", app["exec"]],
                     "type": "exec"
                 } for app in apps])
 
         if "s" in tags:
             if query:
-                result.extend(search_settings(SETTINGS, query))
+                result.extend(search_settings(settings, query))
             else:
-                result.extend(SETTINGS)
+                result.extend(settings)
 
         if "c" in tags:
             if query:
-                result = [*CALC, calculate(query)]
+                result = [*calculate(query), *CALC]
             else:
                 result = CALC
 
         if "t" in tags:
             result = COLORS
+
+        result = search_settings(result, query)
 
         print(json.dumps(result))
 

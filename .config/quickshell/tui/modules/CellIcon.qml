@@ -21,10 +21,6 @@ Item {
     implicitWidth: Cell.w(the_icon.w)
     implicitHeight: Cell.h(h)
 
-    onVisibleChanged: {
-        LauncherInfo.scan_icons(false)
-    }
-
     Cells {
 
         id: the_icon

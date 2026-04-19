@@ -54,12 +54,30 @@ CellPopup {
 
                 Image {
 
+                    id: wallpaper
+
                     width: Cell.w(box.contentW)
                     height: Cell.h(preview.h)
 
                     source: (selection.items[2] ? SystemInfo.homedir + WallpaperInfo.path : "") + selection.items[2]
 
                     fillMode: Image.PreserveAspectCrop
+
+                    onStatusChanged: {
+                        image.start()
+                    }
+
+                    NumberAnimation {
+                        id: image
+                        target: wallpaper
+                        property: "opacity"
+                        duration: 200
+                        from: 0
+                        to: 1
+                        easing.type: Easing.OutCubic
+                    }
+
+                    asynchronous: true
 
                 }
 
