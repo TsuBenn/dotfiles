@@ -34,6 +34,8 @@ Item {
 
         color: root.color
 
+        clip: true
+
         text: {
             let char = " "
             switch (root.type) {

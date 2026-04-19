@@ -65,16 +65,21 @@ CellPopup {
 
             Cells {
 
+                id: text_wrapper
+
                 w: box.contentW
-                h: 3
+                h: SettingsInfo.minimal ? 2 : 3
 
                 color: "transparent"
 
                 CellBox {
 
+                    visible: !SettingsInfo.minimal
+
                     id: textbox
 
                     x: Cell.centerWCell(implicitWidth+Cell.w(2),parent.implicitWidth)
+                    y: Cell.centerHCell(implicitHeight+Cell.w(2),parent.implicitHeight)
 
                     w: parent.w
                     h: parent.h
@@ -112,6 +117,8 @@ CellPopup {
                         }
 
                         CellTextField {
+
+                            parent: SettingsInfo.minimal ? text_wrapper : parent
 
                             id: textfield
 
@@ -298,6 +305,12 @@ CellPopup {
                     }
 
 
+                }
+
+                CellSeparator {
+                    y: Cell.h(1)
+                    w: parent.w
+                    visible: SettingsInfo.minimal
                 }
 
             }
