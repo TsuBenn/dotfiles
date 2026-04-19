@@ -20,7 +20,7 @@ Singleton {
         function set_color_theme(color: string): void {Colors.current = color}
         function audio_check(): void {
             const rng = Math.random()
-            const sound = Math.round(rng*4)
+            const sound = Math.round(rng*3)
             const sounds = ["hallo","mambo","mambo_tongye","mambo_wow"]
             AudioInfo.playSound(sounds[sound], 1)
         }

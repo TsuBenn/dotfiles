@@ -171,6 +171,7 @@ SETTINGS = [
         "id": "wallpapers",
         "label": "Wallpapers",
         "description": "Changes how your wallpaper looks and behaves.",
+        "category": "setting",
         "type": "exec",
         "value": ["qs", "-c", "tui", "ipc", "call", "config", "open_popup", "wallpaper"]
     },
@@ -178,6 +179,7 @@ SETTINGS = [
         "id": "color_themes",
         "label": "Color themes",
         "description": "Changes your shell's color palette that fit your vibe.",
+        "category": "setting",
         "type": "menu",
         "value": [{
             "label": COLORS[color]["name"],
@@ -190,6 +192,7 @@ SETTINGS = [
         "id": "system_checks",
         "label": "System checks",
         "description": "Making sure that your shell is working normally.",
+        "category": "setting",
         "type": "menu",
         "value": [
             {
@@ -215,6 +218,7 @@ SETTINGS = [
     {
         "label": "Toggle hints",
         "description": "Show key binds for navigating menus.",
+        "category": "setting",
         "type": "exec",
         "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_hints"],
     },
@@ -224,54 +228,63 @@ CALC = [
     {
         "label": "abs()",
         "description": "Absolute",
+        "category": "calculate",
         "type": "exec",
         "value": ["wtype", "abs()", "-k", "Left"],
     },
     {
         "label": "sqrt()",
         "description": "Square root",
+        "category": "calculate",
         "type": "exec",
         "value": ["wtype", "sqrt()", "-k", "Left"],
     },
     {
         "label": "pow()",
         "description": "Power",
+        "category": "calculate",
         "type": "exec",
         "value": ["wtype", "pow()", "-k", "Left"],
     },
     {
         "label": "sin()",
         "description": "Sine",
+        "category": "calculate",
         "type": "exec",
         "value": ["wtype", "sin()", "-k", "Left"],
     },
     {
         "label": "cos()",
         "description": "Cosine",
+        "category": "calculate",
         "type": "exec",
         "value": ["wtype", "cos()", "-k", "Left"],
     },
     {
         "label": "tan()",
         "description": "Tangent",
+        "category": "calculate",
         "type": "exec",
         "value": ["wtype", "tan()", "-k", "Left"],
     },
     {
         "label": "log()",
         "description": "Logarith",
+        "category": "calculate",
         "type": "exec",
         "value": ["wtype", "log()", "-k", "Left"],
     },
     {
         "label": "pi",
         "description": "Pi",
+        "category": "calculate",
         "type": "exec",
         "value": ["wtype", "pi"],
     },
     {
         "label": "e",
         "description": "E",
+        "category": "calculate",
         "type": "exec",
         "value": ["wtype", "e"],
     },

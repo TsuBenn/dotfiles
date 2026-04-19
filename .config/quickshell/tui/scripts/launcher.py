@@ -2,6 +2,7 @@
 
 from config import SETTINGS, CALC, COLORS
 import os
+import time
 import sys
 import json
 import configparser
@@ -158,8 +159,10 @@ def search_apps(apps, query):
         scored.append((final_score, app))
     scored.sort(key=lambda x: x[0], reverse=True)
     return [{
+        "id": app["id"],
         "label": app["name"],
         "description": app["genericName"] or app["description"],
+        "category": "app",
         "icon": app["icon"],
         "value": app["exec"],
         "type": "exec"
@@ -314,16 +317,15 @@ def search_settings(data, query):
             # Take the best score of the two
             final_score = max(label_score, desc_score)
 
-            # If it's a menu, keep digging regardless of whether the menu itself matched
-            if item.get("type") == "menu" and isinstance(item.get("value"), list):
-                recurse(item["value"])
-                continue
-
             if final_score > 0:
                 # Store a copy of the item with its score for sorting later
                 match = item.copy()
                 match["search_score"] = final_score
                 results.append(match)
+
+            # If it's a menu, keep digging regardless of whether the menu itself matched
+            if item.get("type") == "menu" and isinstance(item.get("value"), list):
+                recurse(item["value"])
 
     recurse(data)
 
@@ -359,21 +361,6 @@ def main():
             "icon": resolve_icon(app["icon"]),
         })
 
-    init = []
-
-    init.extend([{
-        "id": app["id"],
-        "label": app["name"],
-        "description": app["genericName"] or app["description"],
-        "icon": app["icon"],
-        "value": ["bash", "-c", app["exec"]],
-        "type": "exec"
-    } for app in apps])
-
-    init.extend(SETTINGS)
-
-    print(json.dumps(init))
-
     while True:
         result = []
 
@@ -387,6 +374,7 @@ def main():
                     if "id" in setting:
                         if setting["id"] == path and setting["type"] == "menu":
                             settings = setting["value"]
+                            tags = ["s", "f" if "f" in tags else ""]
                             break
 
         if not tags:
@@ -406,6 +394,7 @@ def main():
                     "id": app["id"],
                     "label": app["name"],
                     "description": app["genericName"] or app["description"],
+                    "category": "app",
                     "icon": app["icon"],
                     "value": ["bash", "-c", app["exec"]],
                     "type": "exec"
@@ -417,6 +406,10 @@ def main():
             else:
                 result.extend(settings)
 
+        if query:
+            result = search_settings(result, query)
+
+
         if "c" in tags:
             if query:
                 result = [*calculate(query), *CALC]
@@ -426,7 +419,9 @@ def main():
         if "t" in tags:
             result = COLORS
 
-        result = search_settings(result, query)
+        if "F" in tags:
+            increment_frequency(query)
+            continue
 
         print(json.dumps(result))
 

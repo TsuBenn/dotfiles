@@ -17,8 +17,10 @@ CellPopup {
 
     onVisibleChanged: {
         tab.selected = 0
+        results.reset()
         textfield.set("")
         textfield.search("")
+        debounce.data = []
     }
 
     escapeToClose: false
@@ -118,15 +120,25 @@ CellPopup {
                                     {
                                         binds: "Up",
                                         action: () => {
+                                            safe_mouse.safe = 1
+                                            safe_mouse.visible = true
                                             if (textfield.selected == 0) return
                                             textfield.selected -= 1
+                                            if (textfield.selected - Math.floor(results.offset/3) < 0) {
+                                                results.offset = Math.max((textfield.selected-5)*3,0)
+                                            }
                                         }
                                     },
                                     {
                                         binds: "Down",
                                         action: () => {
+                                            safe_mouse.safe = 1
+                                            safe_mouse.visible = true
                                             if (textfield.selected >= LauncherInfo.result.length) return
                                             textfield.selected += 1
+                                            if (textfield.selected - Math.floor(results.offset/3) > 4) {
+                                                results.offset = textfield.selected*3
+                                            }
                                         }
                                     },
                                     {
@@ -166,6 +178,7 @@ CellPopup {
                                 LauncherInfo.pathFound.connect((id, label) => {
                                     path = [...path, {"id": id, "label": label}]
                                     textfield.search("")
+                                    textfield.set("")
                                     breadcrumbs.updatePath()
                                 })
                             }
@@ -187,12 +200,24 @@ CellPopup {
                                     case 2: tags = "sf"; break;
                                     case 3: tags = "c"; break;
                                 }
-                                safe_mouse.safe = 2
+                                safe_mouse.visible = true
+                                safe_mouse.safe = 1
                                 LauncherInfo.search(tags, textfield.path, input)
                             }
 
                             onTextInput: (input) => {
-                                if ((tab.selected == 0 || tab.selected == 1) && input.trim().length == 1) return
+                                if (input == ">") {
+                                    tab.selected = 2
+                                    set("")
+                                    search("")
+                                    return
+                                } else if (input == "=") {
+                                    tab.selected = 3
+                                    set("")
+                                    search("")
+                                    return
+                                }
+                                if ((tab.selected == 0 || tab.selected == 1) && input.trim().length < 2) return
                                 search(input)
                             }
 
@@ -230,6 +255,9 @@ CellPopup {
                 w: box.contentW
 
                 onSelectedChanged: {
+                    textfield.path = []
+                    textfield.search("")
+                    breadcrumbs.updatePath()
                     textfield.search("")
                 }
 
@@ -505,7 +533,7 @@ CellPopup {
                 CellKeyHint {
                     visible: tab.selected == 3
                     key: "Enter"
-                    hint: textfield.text.trim().length > 0 ? "Copy" : "Add"
+                    hint: textfield.text.trim().length > 0 && textfield.selected == 0 ? "Copy" : "Add"
                 }
 
                 CellKeyHint {
@@ -532,6 +560,9 @@ CellPopup {
 
             property int safe: 0
 
+            onPressed: {
+                visible = false
+            }
             onMoved: {
                 if (safe > 0) {
                     safe -= 1

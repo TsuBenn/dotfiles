@@ -46,6 +46,8 @@ Item {
 
             fillMode: Image.PreserveAspectCrop
 
+            asynchronous: true
+
         }
 
         Image {
@@ -62,6 +64,8 @@ Item {
             mipmap: true
 
             fillMode: Image.PreserveAspectCrop
+
+            asynchronous: true
 
         }
 

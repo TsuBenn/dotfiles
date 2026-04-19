@@ -16,6 +16,8 @@ CellPopup {
 
     safeMargin: 2
 
+    escapeToClose: false
+
     MouseControl {
         anchors.fill: parent
 
@@ -62,20 +64,6 @@ CellPopup {
                     source: (selection.items[2] ? SystemInfo.homedir + WallpaperInfo.path : "") + selection.items[2]
 
                     fillMode: Image.PreserveAspectCrop
-
-                    onStatusChanged: {
-                        image.start()
-                    }
-
-                    NumberAnimation {
-                        id: image
-                        target: wallpaper
-                        property: "opacity"
-                        duration: 200
-                        from: 0
-                        to: 1
-                        easing.type: Easing.OutCubic
-                    }
 
                     asynchronous: true
 
@@ -197,6 +185,8 @@ CellPopup {
 
                                     source: (thumbnail.modelData ? SystemInfo.homedir + "/Wallpapers/" : "") + thumbnail.modelData
 
+                                    asynchronous: true
+
                                     fillMode: Image.PreserveAspectCrop
 
                                 }
@@ -295,12 +285,42 @@ CellPopup {
                             selection.wallpapers = WallpaperInfo.search(text)
                         }
 
+                        ShortcutHandler {
+                            shortcuts: [
+                                {
+                                    binds: "Left",
+                                    action: () => {
+                                        selection.advance(-1)
+                                    }
+                                },
+                                {
+                                    binds: "Right",
+                                    action: () => {
+                                        selection.advance(1)
+                                    }
+                                },
+                                {
+                                    binds: "Escape",
+                                    action: () => {
+                                        if (!textfield.focus) {
+                                            textfield.focus = true
+                                            return
+                                        }
+                                        PopupManager.open("launcher")
+                                        PopupManager.close("wallpapers")
+                                    }
+                                },
+                                {
+                                    binds: "Tab",
+                                    action: () => {
+                                        more.yes = !more.yes
+                                    }
+                                },
+                            ]
+                        }
+
                         Keys.onPressed: (event) => {
-                            if (event.key == Qt.Key_Left) {
-                                selection.advance(-1)
-                            } else if (event.key == Qt.Key_Right || event.key == Qt.Key_Tab) {
-                                selection.advance(1)
-                            } else if (event.key == Qt.Key_Return) {
+                            if (event.key == Qt.Key_Return) {
                                 const current = selection.wallpapers.length > 1 ? selection.wallpapers[selection.selected] : selection.wallpapers[0]
                                 if (WallpaperInfo.inSet(current)) {
                                     WallpaperInfo.remove(current)
@@ -308,11 +328,9 @@ CellPopup {
                                     WallpaperInfo.add(current)
                                 }
                                 repeater.refresh()
-                            } else if (event.key == Qt.Key_Escape) {
-                                PopupManager.open("launcher")
-                                PopupManager.close("wallpapers")
                             }
                         }
+
 
                     }
 

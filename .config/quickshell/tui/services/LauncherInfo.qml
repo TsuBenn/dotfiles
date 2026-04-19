@@ -27,7 +27,6 @@ Singleton {
             }
         }
         if (process.running) {
-            console.log(`-${tags} ${le_paths} ${query}\n`)
             process.write(`-${tags} ${le_paths} ${query}\n`)
         } else {
             console.error("LauncherInfo: Process is not running")
@@ -36,6 +35,7 @@ Singleton {
 
     function run(index: int) {
         const item = result[index] 
+        if (item.category == "app") process.write(`-F ${item.id}\n`)
         if (item.type == "exec") SystemInfo.runDetached(item.value)
         if (item.type == "menu") root.pathFound(item.id, item.label)
     }
