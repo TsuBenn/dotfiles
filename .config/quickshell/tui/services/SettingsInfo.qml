@@ -11,8 +11,10 @@ Singleton {
     id: root
 
     property bool hints: true
+    property bool minimal: false
 
     signal showGrid()
+    signal toggleMinimal()
 
     IpcHandler {
         target: "config"
@@ -25,6 +27,7 @@ Singleton {
             AudioInfo.playSound(sounds[sound], 1)
         }
         function toggle_grids(): void {root.showGrid()}
+        function toggle_minimal(): void {root.minimal = !root.minimal; root.toggleMinimal()}
         function toggle_hints(): void {root.hints = !root.hints}
     }
 

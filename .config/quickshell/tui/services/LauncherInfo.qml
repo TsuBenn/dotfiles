@@ -1,6 +1,7 @@
 pragma Singleton
 
 import qs.services
+import qs.config
 
 import Quickshell
 import Quickshell.Io
@@ -35,7 +36,10 @@ Singleton {
 
     function run(index: int) {
         const item = result[index] 
-        if (item.category == "app") process.write(`-F ${item.id}\n`)
+        if (item.category == "app") {
+            process.write(`-F ${item.id}\n`)
+            PopupManager.close("launcher")
+        }
         if (item.type == "exec") SystemInfo.runDetached(item.value)
         if (item.type == "menu") root.pathFound(item.id, item.label)
     }
@@ -59,6 +63,7 @@ Singleton {
 
         id: process
 
+        running: true
         command: ["python", root.backend]
 
         onRunningChanged: {

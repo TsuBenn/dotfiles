@@ -18,6 +18,12 @@ CellPopup {
 
     property bool active: false
 
+    onVisibleChanged: {
+        if (!visible) {
+            active = false
+        }
+    }
+
     onModeChanged: {
         root.w = 36 - (mode.length%2==1)
     }
@@ -51,6 +57,7 @@ CellPopup {
                             case "Shutdown": return "Shutting down" + " in " + root.count
                             case "Reboot": return "Rebooting" + " in " + root.count
                             case "Sleep": return "Sleeping" + " in " + root.count
+                            case "Logout": return "Logging out" + " in " + root.count
                         }
                     }
                 }
@@ -121,6 +128,7 @@ CellPopup {
                     case "Shutdown": SystemInfo.shutdown(); break;
                     case "Sleep": SystemInfo.sleep(); break;
                     case "Reboot": SystemInfo.reboot(); break;
+                    case "Logout": SystemInfo.logout(); break;
                 }
             }
         }

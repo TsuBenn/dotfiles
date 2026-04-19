@@ -164,7 +164,7 @@ def search_apps(apps, query):
         "description": app["genericName"] or app["description"],
         "category": "app",
         "icon": app["icon"],
-        "value": app["exec"],
+        "value": ["bash", "-c", app["exec"]],
         "type": "exec"
     } for _, app in scored]
 
@@ -313,9 +313,10 @@ def search_settings(data, query):
             # Calculate scores for both label and description
             label_score = fuzzy_match(query, item.get("label", ""))
             desc_score = fuzzy_match(query, item.get("description", ""))
+            category_score = fuzzy_match(query, item.get("category", ""))
             
             # Take the best score of the two
-            final_score = max(label_score, desc_score)
+            final_score = max(label_score, desc_score, category_score)
 
             if final_score > 0:
                 # Store a copy of the item with its score for sorting later
@@ -335,6 +336,65 @@ def search_settings(data, query):
     for r in results: r.pop("search_score", None)
     
     return results
+
+# ─── File find ───────────────────────────────────────────────────────────────
+
+def fd_find(query):
+    # Updated command list for fd_find
+    cmd = [
+        'fd', 
+        query, 
+        os.path.expanduser('~'), 
+        '--absolute-path',
+        '--exclude', '.git',    # Ignore git repos
+        '--exclude', '.cache',   # Ignore system cache
+        '--exclude', 'node_modules', # Ignore heavy dev folders
+        '--no-follow',
+    ]
+
+    if not query:
+        return []
+
+    try:
+        # Executes: fd "query" ~ --absolute-path
+        # We target the home directory (~) as implied by your 'h' tag
+        process = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        
+        paths = process.stdout.strip().split('\n')
+        
+        results = []
+        for path in paths:
+            if not path: continue
+            
+            # 1. Handle trailing slashes so basename isn't empty
+            clean_path = path.rstrip(os.sep)
+            name = os.path.basename(clean_path)
+            
+            # 2. Determine if it's a directory for the UI
+            is_dir = os.path.isdir(path)
+            
+            results.append({
+                "id": path,
+                "label": f"{name}/" if is_dir else name,
+                "description": path,
+                "icon": "folder-symbolic" if is_dir else "document-x-generic",
+                "value": path,
+                "type": "directory" if is_dir else "file"
+            })
+            
+        return results
+
+    except subprocess.CalledProcessError:
+        # Returns empty list if fd finds nothing or errors out
+        return []
+    except FileNotFoundError:
+        print("Error: 'fd' command not found. Please install it.", file=sys.stderr)
+        return []
 
 # ─── Input ───────────────────────────────────────────────────────────────────
 
@@ -360,6 +420,23 @@ def main():
             "name": app["id"],
             "icon": resolve_icon(app["icon"]),
         })
+
+    """
+    init = []
+
+    init.extend([{
+        "id": app["id"],
+        "label": app["name"],
+        "description": app["genericName"] or app["description"],
+        "icon": app["icon"],
+        "value": ["bash", "-c", app["exec"]],
+        "type": "exec"
+    } for app in apps])
+
+    init.extend(SETTINGS)
+
+    print(json.dumps(init))
+    """
 
     while True:
         result = []
@@ -422,6 +499,9 @@ def main():
         if "F" in tags:
             increment_frequency(query)
             continue
+
+        if "h" in tags:
+            result = fd_find(query)
 
         print(json.dumps(result))
 

@@ -48,6 +48,8 @@ Item {
 
         color: "transparent"
 
+        clip: true
+
         ColumnLayout {
 
             spacing: 0
@@ -111,6 +113,8 @@ Item {
 
                     w: 1
                     h: root.toScale ? Math.min(Math.round((root.h/root.contentH)*scroll.h),root.h) : root.thumbH
+
+                    Behavior on h {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
 
                     y: Cell.h(Math.round(root.progress*(scroll.h-h)))
 

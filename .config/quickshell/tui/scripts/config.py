@@ -168,7 +168,6 @@ COLORS = {
 
 SETTINGS = [
     {
-        "id": "wallpapers",
         "label": "Wallpapers",
         "description": "Changes how your wallpaper looks and behaves.",
         "category": "setting",
@@ -184,6 +183,7 @@ SETTINGS = [
         "value": [{
             "label": COLORS[color]["name"],
             "description": COLORS[color]["description"],
+                "category": "setting",
             "type": "exec",
             "value": ["qs", "-c", "tui", "ipc", "call", "config", "set_color_theme", color],
         } for color in COLORS]
@@ -198,29 +198,55 @@ SETTINGS = [
             {
                 "label": "Notification check",
                 "description": "Send a dummy notification.",
+                "category": "setting",
                 "type": "exec",
                 "value": ["notify-send", "Notification checker", "Check check check!"],
             },
             {
                 "label": "Audio check",
                 "description": "Play a random cute anime girl sound effect at MAX volume.",
+                "category": "setting",
                 "type": "exec",
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "audio_check"],
             },
             {
                 "label": "Toggle grids",
                 "description": "Show terminal cells grid making sure everything is aligned properly.",
+                "category": "setting",
                 "type": "exec",
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_grids"],
             },
         ]
     },
     {
-        "label": "Toggle hints",
-        "description": "Show key binds for navigating menus.",
+        "id": "toggles",
+        "label": "Toggles",
+        "description": "Shell toggles.",
+        "category": "setting",
+        "type": "menu",
+        "value": [
+            {
+                "label": "Toggle hints",
+                "description": "Show key binds for navigating menus.",
+                "category": "setting",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_hints"],
+            },
+            {
+                "label": "Toggle minimal",
+                "description": "Minimalize interfaces.",
+                "category": "setting",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_minimal"],
+            },
+        ],
+    },
+    {
+        "label": "Power",
+        "description": "Choose what to do to your computer's power.",
         "category": "setting",
         "type": "exec",
-        "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_hints"],
+        "value": ["qs", "-c", "tui", "ipc", "call", "config", "open_popup", "power"],
     },
 ]
 

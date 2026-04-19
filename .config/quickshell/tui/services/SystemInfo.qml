@@ -132,6 +132,7 @@ Singleton {
     function shutdown() {power.exec(["shutdown", "-h", "now"])}
     function sleep() {power.exec(["systemctl", "suspend"])}
     function reboot() {power.exec(["reboot"])}
+    function logout() {power.exec(["hyprctl", "dispatch", "exit"])}
 
     function formatNum(num, i) {
         const str = num.toString();
@@ -514,6 +515,14 @@ Singleton {
 
         Process {
             id: run
+
+            stderr: StdioCollector {
+                onStreamFinished:{
+                    if (text) {
+                        console.log("SystemInfo: " + text)
+                    }
+                }
+            }
         }
 
     }

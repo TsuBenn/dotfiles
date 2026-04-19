@@ -18,10 +18,10 @@ Item {
 
     Component.onCompleted: {
         PowerManager.called.connect((mode, count) => {
-            power.mode = mode
-            power.count = count
-            power.active = true
-            PopupManager.open("power")
+            power_countdown.mode = mode
+            power_countdown.count = count
+            power_countdown.active = true
+            PopupManager.open("power_countdown")
         })
     }
 
@@ -41,6 +41,17 @@ Item {
         id: power
 
         name: "power"
+
+        cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2)
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 4
+
+    }
+
+    PowerCountdownPopup {
+
+        id: power_countdown
+
+        name: "power_countdown"
 
         cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2)
         cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 2

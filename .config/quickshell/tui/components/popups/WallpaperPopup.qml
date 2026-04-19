@@ -47,7 +47,7 @@ CellPopup {
 
                 id: preview
 
-                visible: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0
+                visible: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 && !SettingsInfo.minimal
 
                 w: box.contentW
                 h: Math.floor(root.w/16*9/2.2)
@@ -64,6 +64,8 @@ CellPopup {
                     source: (selection.items[2] ? SystemInfo.homedir + WallpaperInfo.path : "") + selection.items[2]
 
                     fillMode: Image.PreserveAspectCrop
+
+                    mipmap: true
 
                     asynchronous: true
 
@@ -85,7 +87,7 @@ CellPopup {
                 id: thumbnails
 
                 w: box.contentW
-                h: preview.visible ? 8 : 6
+                h: preview.visible && !SettingsInfo.minimal ? 8 : 6
 
                 color: "transparent"
 
@@ -184,6 +186,8 @@ CellPopup {
                                     height: Cell.h(thumbnail.h-1)
 
                                     source: (thumbnail.modelData ? SystemInfo.homedir + "/Wallpapers/" : "") + thumbnail.modelData
+
+                                    mipmap: thumbnails.h == 6
 
                                     asynchronous: true
 
@@ -288,13 +292,13 @@ CellPopup {
                         ShortcutHandler {
                             shortcuts: [
                                 {
-                                    binds: "Left",
+                                    binds: ["Left", "Shift+Tab"],
                                     action: () => {
                                         selection.advance(-1)
                                     }
                                 },
                                 {
-                                    binds: "Right",
+                                    binds: ["Right", "Tab"],
                                     action: () => {
                                         selection.advance(1)
                                     }
@@ -308,12 +312,6 @@ CellPopup {
                                         }
                                         PopupManager.open("launcher")
                                         PopupManager.close("wallpapers")
-                                    }
-                                },
-                                {
-                                    binds: "Tab",
-                                    action: () => {
-                                        more.yes = !more.yes
                                     }
                                 },
                             ]
@@ -1101,12 +1099,12 @@ CellPopup {
                 spacing: Cell.w(2)
 
                 CellKeyHint {
-                    key: "←"
+                    key: "S+Tab"
                     hint: "Prev"
                 }
 
                 CellKeyHint {
-                    key: "→"
+                    key: "Tab"
                     hint: "Next"
                 }
 
@@ -1132,6 +1130,11 @@ CellPopup {
                     visible: WallpaperInfo.slideshow && textfield.text.length > 0
                     key: "Enter"
                     hint: "Toggle"
+                }
+
+                CellKeyHint {
+                    key: "Tab"
+                    hint: "More"
                 }
 
             }

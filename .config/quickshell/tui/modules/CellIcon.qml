@@ -6,6 +6,8 @@ import QtQuick
 
 Item {
 
+    visible: !SettingsInfo.minimal
+
     id: root
 
     property var icon: []
@@ -13,7 +15,7 @@ Item {
 
     property bool hideOnFail: true
 
-    property bool success: base.visible
+    property bool success: base.visible && !SettingsInfo.minimal
 
     property int w: 5
     property int h: 2

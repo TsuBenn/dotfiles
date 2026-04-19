@@ -44,6 +44,15 @@ ColumnLayout {
                 text: "Power"
                 font: Cell.fontB
 
+                color: [Colors.accentStrong, Colors.bgOverlay]
+                fg: [Colors.onAccent, Colors.fgBase]
+
+                onReleased: (button) => {
+                    if (button == "L") {
+                        PopupManager.open("power")
+                    }
+                }
+
             }
 
         }

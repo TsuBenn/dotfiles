@@ -16,11 +16,13 @@ CellPopup {
     h: Cell.hCount(layout.implicitHeight)
 
     onVisibleChanged: {
+        if (!visible) {
+            LauncherInfo.reset()
+        }
         tab.selected = 0
         results.reset()
         textfield.set("")
         textfield.search("")
-        debounce.data = []
     }
 
     escapeToClose: false
@@ -40,6 +42,8 @@ CellPopup {
             spacing: 0
 
             Cells {
+
+                visible: !SettingsInfo.minimal
 
                 w: box.contentW
                 h: 10
@@ -116,6 +120,9 @@ CellPopup {
                             property var path: []
 
                             ShortcutHandler {
+
+                                property int result_h: SettingsInfo.minimal ? 2 : 3
+
                                 shortcuts: [
                                     {
                                         binds: "Up",
@@ -124,8 +131,8 @@ CellPopup {
                                             safe_mouse.visible = true
                                             if (textfield.selected == 0) return
                                             textfield.selected -= 1
-                                            if (textfield.selected - Math.floor(results.offset/3) < 0) {
-                                                results.offset = Math.max((textfield.selected-5)*3,0)
+                                            if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
+                                                results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
                                             }
                                         }
                                     },
@@ -134,15 +141,18 @@ CellPopup {
                                         action: () => {
                                             safe_mouse.safe = 1
                                             safe_mouse.visible = true
-                                            if (textfield.selected >= LauncherInfo.result.length) return
+                                            if (textfield.selected >= LauncherInfo.result.length-1) {
+                                                textfield.selected = 0
+                                                return
+                                            }
                                             textfield.selected += 1
-                                            if (textfield.selected - Math.floor(results.offset/3) > 4) {
-                                                results.offset = textfield.selected*3
+                                            if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
+                                                results.offset = textfield.selected*result_h
                                             }
                                         }
                                     },
                                     {
-                                        binds: ["Right", "Tab"],
+                                        binds: "Right",
                                         action: () => {
                                             if (textfield.text.length == 0) {
                                                 tab.advance(1)
@@ -150,10 +160,37 @@ CellPopup {
                                         }
                                     },
                                     {
-                                        binds: ["Left", "Shift+Tab"],
+                                        binds: "Tab",
+                                        action: () => {
+                                            safe_mouse.safe = 1
+                                            safe_mouse.visible = true
+                                            if (textfield.selected >= LauncherInfo.result.length-1) {
+                                                textfield.selected = 0
+                                                return
+                                            }
+                                            textfield.selected += 1
+                                            if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
+                                                results.offset = textfield.selected*result_h
+                                            }
+                                        }
+                                    },
+                                    {
+                                        binds: "Left",
                                         action: () => {
                                             if (textfield.text.length == 0) {
                                                 tab.advance(-1)
+                                            }
+                                        }
+                                    },
+                                    {
+                                        binds: "Shift+Tab",
+                                        action: () => {
+                                            safe_mouse.safe = 1
+                                            safe_mouse.visible = true
+                                            if (textfield.selected == 0) return
+                                            textfield.selected -= 1
+                                            if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
+                                                results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
                                             }
                                         }
                                     },
@@ -165,6 +202,7 @@ CellPopup {
                                                 new_path.pop()
                                                 textfield.path = new_path
                                                 textfield.search("")
+                                                textfield.set("")
                                                 breadcrumbs.updatePath()
                                             } else {
                                                 PopupManager.close("launcher")
@@ -199,6 +237,7 @@ CellPopup {
                                     case 1: tags = "af"; break;
                                     case 2: tags = "sf"; break;
                                     case 3: tags = "c"; break;
+                                    case 4: tags = "h"; break;
                                 }
                                 safe_mouse.visible = true
                                 safe_mouse.safe = 1
@@ -216,9 +255,25 @@ CellPopup {
                                     set("")
                                     search("")
                                     return
+                                } else if (input == "/") {
+                                    tab.selected = 4
+                                    set("")
+                                    search("")
+                                    return
                                 }
-                                if ((tab.selected == 0 || tab.selected == 1) && input.trim().length < 2) return
+                                if ((tab.selected == 0 || tab.selected == 1 || tab.selected == 4) && input.trim().length == 1) return
                                 search(input)
+                            }
+
+                            Keys.onPressed: (event) => {
+                                if (event.key == Qt.Key_Backspace) {
+                                    if (text.length == 0) {
+                                        tab.selected = 0
+                                        set("")
+                                        search("")
+                                        return
+                                    }
+                                }
                             }
 
                             function reset() {
@@ -231,6 +286,7 @@ CellPopup {
                                     case 1: return "Apps Search"
                                     case 2: return "Settings search"
                                     case 3: return "Calculator"
+                                    case 4: return "File Search"
                                 }
                                 return "Search"
                             }
@@ -255,10 +311,10 @@ CellPopup {
                 w: box.contentW
 
                 onSelectedChanged: {
+                    textfield.set("")
                     textfield.path = []
                     textfield.search("")
                     breadcrumbs.updatePath()
-                    textfield.search("")
                 }
 
                 items: [
@@ -266,6 +322,7 @@ CellPopup {
                     "Apps",
                     "Settings",
                     "Calc",
+                    "File",
                 ]
 
             }
@@ -298,10 +355,6 @@ CellPopup {
 
                     id: results
 
-                    onVisibleChanged: {
-                        LauncherInfo.reset()
-                    }
-
                     w: box.contentW
                     h: 15
 
@@ -312,16 +365,20 @@ CellPopup {
                         Timer {
                             id: debounce
 
-                            property var data: []
+                            property var data: LauncherInfo.result
 
                             Component.onCompleted: {
                                 LauncherInfo.searched.connect(() => {
                                     debounce.restart()
                                 })
+                                SettingsInfo.toggleMinimal.connect(() => {
+                                    debounce.restart()
+                                })
                             }
 
-                            interval: 0
+                            interval: tab.selected == 4 ? 200 : 0
                             onTriggered: {
+                                data = []
                                 data = LauncherInfo.result
                             }
 
@@ -340,7 +397,7 @@ CellPopup {
 
                                 id: result
 
-                                active: index - Math.round(results.offset/3) < 10
+                                active: index - Math.ceil(results.offset/(SettingsInfo.minimal ? 2 : 3)) < Math.ceil(15/(SettingsInfo.minimal ? 2 : 3)) * 2
 
                                 required property int index
 
@@ -355,19 +412,86 @@ CellPopup {
 
                                 property bool selected: textfield.selected == index
 
-                                asynchronous: index < 10 ? false : true
+                                asynchronous: index < Math.ceil(15/(SettingsInfo.minimal ? 2 : 3)) ? false : true
 
                                 sourceComponent: Cells {
 
                                     w: results.contentW
-                                    h: 3
+                                    h: SettingsInfo.minimal ? 2 : 3
 
                                     color: Colors.bgSurface
+
+                                    ColumnLayout {
+
+                                        id: result_layout
+
+                                        spacing: 0
+
+                                        RowLayout {
+
+                                            spacing: 0
+
+                                            CellText {
+                                                text: " "
+                                            }
+
+                                            CellIcon {
+                                                visible: !SettingsInfo.minimal
+                                                id: result_icon
+                                                icon: [result.icon, result.icon ? result.label : ""]
+                                                w: 5
+                                            }
+
+                                            CellText {
+                                                text: " "
+                                            }
+
+                                            ColumnLayout {
+                                                spacing: 0
+
+                                                CellText {
+                                                    text: result.label
+                                                    preferedW: results.contentW - 5 - 5*result_icon.success
+                                                }
+
+                                                CellText {
+                                                    visible: !SettingsInfo.minimal
+                                                    text: result.description
+                                                    preferedW: results.contentW - 5 - 5*result_icon.success
+                                                    color: Colors.fgSubtle
+                                                }
+                                            }
+
+                                            CellText {
+                                                text: " "
+                                            }
+
+                                            Cells {
+
+                                                w: 1
+                                                h: SettingsInfo.minimal ? 1 : 2
+
+                                                color: result.selected ? Colors.accentStrong : Colors.bgOverlay
+
+                                            }
+
+                                        }
+
+                                        CellSeparator {
+
+                                            type: 2
+                                            color: Colors.bgOverlay
+                                            padding: 1
+                                            w: results.contentW
+
+                                        }
+
+                                    }
 
                                     Cells {
 
                                         w: results.contentW
-                                        h: 2
+                                        h: SettingsInfo.minimal ? 1 : 2
                                         color: "transparent"
 
                                         MouseControl {
@@ -387,72 +511,6 @@ CellPopup {
                                         }
 
                                     }
-
-                                    ColumnLayout {
-
-                                        id: result_layout
-
-                                        spacing: 0
-
-                                        RowLayout {
-
-                                            spacing: 0
-
-                                            CellText {
-                                                text: " "
-                                            }
-
-                                            CellIcon {
-                                                id: result_icon
-                                                icon: [result.icon, result.icon ? result.label : ""]
-                                                w: 5
-                                            }
-
-                                            CellText {
-                                                text: " "
-                                            }
-
-                                            ColumnLayout {
-                                                spacing: 0
-
-                                                CellText {
-                                                    text: result.label
-                                                    preferedW: results.contentW - 5 - 5*result_icon.success
-                                                }
-
-                                                CellText {
-                                                    text: result.description
-                                                    preferedW: results.contentW - 5 - 5*result_icon.success
-                                                    color: Colors.fgSubtle
-                                                }
-                                            }
-
-                                            CellText {
-                                                text: " "
-                                            }
-
-                                            Cells {
-
-                                                w: 1
-                                                h: 2
-
-                                                color: result.selected ? Colors.accentStrong : Colors.bgOverlay
-
-                                            }
-
-                                        }
-
-                                        CellSeparator {
-
-                                            type: 2
-                                            color: Colors.bgOverlay
-                                            padding: 1
-                                            w: results.contentW
-
-                                        }
-
-                                    }
-
 
                                 }
                             }
@@ -504,7 +562,8 @@ CellPopup {
                     visible: (
                         tab.selected == 0 || 
                         tab.selected == 1 ||
-                        tab.selected == 2
+                        tab.selected == 2 ||
+                        tab.selected == 4
                     )
                     key: "[Type]"
                     hint: "Search"
@@ -537,15 +596,15 @@ CellPopup {
                 }
 
                 CellKeyHint {
-                    key: "←"
-                    hint: "Prev tab"
-                    disabled: textfield.text.trim().length > 0
+                    key: "> = /"
+                    hint: "Sett/Calc/Find"
+                    visible: textfield.text.trim().length == 0
                 }
 
                 CellKeyHint {
-                    key: "→"
-                    hint: "Next tab"
-                    disabled: textfield.text.trim().length > 0
+                    key: "← →"
+                    hint: "Next/Prev tab"
+                    visible: textfield.text.trim().length == 0
                 }
 
             }

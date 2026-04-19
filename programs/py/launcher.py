@@ -333,6 +333,47 @@ def search_settings(data, query):
     
     return results
 
+# ─── Path find ───────────────────────────────────────────────────────────────
+
+def fd_find(query):
+    if not query:
+        return []
+
+    try:
+        # Executes: fd "query" ~ --absolute-path
+        # We target the home directory (~) as implied by your 'h' tag
+        process = subprocess.run(
+            ['fd', query, os.path.expanduser('~'), '--absolute-path'],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        
+        paths = process.stdout.strip().split('\n')
+        
+        results = []
+        for path in paths:
+            if not path: continue
+            
+            file_name = os.path.basename(path)
+            results.append({
+                "id": path, # Using absolute path as a unique ID
+                "label": file_name,
+                "description": path,
+                "icon": "file-symbolic", # Generic icon; can be refined by file type
+                "value": f"xdg-open {path}", # Command to open the file
+                "type": "file"
+            })
+            
+        return results
+
+    except subprocess.CalledProcessError:
+        # Returns empty list if fd finds nothing or errors out
+        return []
+    except FileNotFoundError:
+        print("Error: 'fd' command not found. Please install it.", file=sys.stderr)
+        return []
+
 # ─── Input ───────────────────────────────────────────────────────────────────
 
 def parse_input(input):
@@ -389,6 +430,9 @@ def main():
 
         if "t" in tags:
             result = COLORS
+
+        if "h" in tags:
+            result = fd_find(query)
 
         print(json.dumps(result,indent=2))
 
