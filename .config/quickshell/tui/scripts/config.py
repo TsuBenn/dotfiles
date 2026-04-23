@@ -234,7 +234,7 @@ SETTINGS = [
             },
             {
                 "label": "Toggle minimal",
-                "description": "Minimalize interfaces.",
+                "description": "Remove icons, condense interface elements.",
                 "category": "setting",
                 "type": "exec",
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_minimal"],

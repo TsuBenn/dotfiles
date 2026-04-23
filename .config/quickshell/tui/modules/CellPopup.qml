@@ -28,14 +28,14 @@ Item {
 
     x: {
         if (!monitor) return Cell.w(cellX)
-        if (cellX + w <= Cell.wCount(monitor.width)) {
+        if (cellX + w <= Cell.wCount(monitor.width,"floor")) {
             return Cell.w(cellX)
         }
         return Cell.w(cellX - w)
     }
     y: {
         if (!monitor) return Cell.h(cellY)
-        if (cellY + h <= Cell.hCount(monitor.height)) {
+        if (cellY + h <= Cell.hCount(monitor.height,"floor")) {
             return Cell.h(cellY)
         }
         return Cell.h(cellY - h)

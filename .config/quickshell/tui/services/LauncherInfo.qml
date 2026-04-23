@@ -76,6 +76,8 @@ Singleton {
                     root.result = data
                     root.searched(data)
                     //console.log(JSON.stringify(data,null,2))
+                } else {
+                    console.log("LauncherInfo: " + text)
                 }
             }
         }

@@ -116,7 +116,11 @@ Item {
 
                     Behavior on h {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
 
-                    y: Cell.h(Math.round(root.progress*(scroll.h-h)))
+                    property real progress: root.progress*(scroll.h-h)
+
+                    Behavior on progress {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
+
+                    y: Cell.h(Math.round(progress))
 
                     color: root.type.fg > 0 ? "transparent" : root.color
 

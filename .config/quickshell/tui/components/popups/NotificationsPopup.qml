@@ -148,8 +148,8 @@ CellPopup {
 
                         interval: {
                             const base = 2000
-                            const extra = popup.body.length*100
-                            return Math.min(base + extra, 15000)
+                            const extra = popup.body.length*10*popup.urgency
+                            return Math.min(base + extra, 10000)
                         }
                         running: popup.index == 0
                         onTriggered: {

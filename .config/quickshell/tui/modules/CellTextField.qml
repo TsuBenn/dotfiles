@@ -287,7 +287,10 @@ Item {
                 root.visualPos = 0
                 return
             }
-            if (root.cursorPos == 0) return
+            if (root.cursorPos == 0) {
+                root.textRemoved("")
+                return
+            }
             const removed = root.text[root.cursorPos-1]
             root.text = root.text.slice(0, root.cursorPos - 1) + root.text.slice(root.cursorPos)
             root.cursorPos -= 1

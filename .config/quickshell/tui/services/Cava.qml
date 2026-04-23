@@ -10,19 +10,19 @@ Singleton {
 
     property list<int> points: []
     property list<int> pointsFlipped: []
-    property int framerate: 60
-    property int bars: 46
+    property int framerate: 24
+    property int bars: 26
 
     property int activeUser: 0
 
     function requestStart() {
         activeUser += 1
-        if (activeUser === 1) process.running = true 
+        //if (activeUser === 1) process.running = true 
     }
 
     function release() {
         if (activeUser > 0) activeUser -= 1
-        if (activeUser === 0) process.running = false 
+        //if (activeUser === 0) process.running = false
     }
 
     Process {
@@ -49,6 +49,7 @@ bit_format = 16bit")`]
 
         stdout: SplitParser {
             onRead: (data) => {
+                if (root.activeUser == 0) return
                 root.points = data.split(";").slice(0,root.bars)
                 root.pointsFlipped = [...data.split(";").slice(root.bars/2,root.bars),...data.split(";").slice(0, (root.bars/2))].reverse()
                 

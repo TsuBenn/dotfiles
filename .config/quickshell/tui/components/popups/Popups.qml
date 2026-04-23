@@ -25,6 +25,17 @@ Item {
         })
     }
 
+    MediaPlayerPopup {
+
+        id: media_player
+
+        name: "media_player"
+
+        cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2) - 1
+        cellY: -1
+
+    }
+
     WallpaperPopup {
 
         id: wallpaper

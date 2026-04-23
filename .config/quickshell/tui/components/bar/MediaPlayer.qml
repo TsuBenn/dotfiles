@@ -101,6 +101,17 @@ RowLayout {
 
         }
 
+        MouseControl {
+
+            anchors.fill: parent
+
+            onReleased: (button) => {
+                if (button == "L") {
+                    PopupManager.toggle("media_player")
+                }
+            }
+
+        }
 
     }
 

@@ -12,10 +12,20 @@ Singleton {
     signal opened(name: string)
     signal closed(name: string)
 
-    function open(name: string, isolate = true) {
-        if (isolate) close()
-        active_popups = [...active_popups, name]
-        root.opened(name)
+    function open(name, isolate) {
+        // Handle optional argument explicitly if engine is older
+        if (isolate === undefined) isolate = true;
+
+        if (isolate) {
+            // If isolating, we need to notify that everything else closed
+            let old_popups = active_popups;
+            active_popups = [name];
+            old_popups.forEach(p => { if(p !== name) root.closed(p) });
+        } else if (!isOpen(name)) {
+            active_popups = [...active_popups, name];
+        }
+
+        root.opened(name);
     }
 
     function toggle(name: string, isolate = true) {
@@ -25,7 +35,7 @@ Singleton {
     function close(name = "") {
         if (name == "") active_popups = [] 
         else active_popups = active_popups.filter(p => p != name)
-        closed(name)
+        root.closed(name)
     }
 
     function isOpen(name: string): bool {

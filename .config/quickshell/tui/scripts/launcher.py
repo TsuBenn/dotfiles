@@ -228,7 +228,7 @@ def calculate(expr):
                 "label": "= " + str(result),
                 "description": str(result),
                 "type": "exec",
-                "value": ["bash", "-c", f"echo \"{str(result)}\" | wl-copy"],
+                "value": ["bash", "-c", f"echo \"{str(result).strip()}\" | wl-copy"],
             }
         ]
     except Exception as e:
@@ -346,6 +346,7 @@ def fd_find(query):
         query, 
         os.path.expanduser('~'), 
         '--absolute-path',
+        '--type', 'f',
         '--exclude', '.git',    # Ignore git repos
         '--exclude', '.cache',   # Ignore system cache
         '--exclude', 'node_modules', # Ignore heavy dev folders
@@ -382,9 +383,9 @@ def fd_find(query):
                 "id": path,
                 "label": f"{name}/" if is_dir else name,
                 "description": path,
-                "icon": "folder-symbolic" if is_dir else "document-x-generic",
+                "icon": "",
                 "value": path,
-                "type": "directory" if is_dir else "file"
+                "type": "dir" if is_dir else "file"
             })
             
         return results
@@ -493,6 +494,10 @@ def main():
         if query:
             result = search_settings(result, query)
 
+        if "h" in tags:
+            if query:
+                result.extend(fd_find(query))
+
         if "c" in tags:
             if query:
                 result = [*calculate(query), *CALC]
@@ -505,9 +510,6 @@ def main():
         if "F" in tags:
             increment_frequency(query)
             continue
-
-        if "h" in tags:
-            result = fd_find(query)
 
         print(json.dumps(result))
 

@@ -58,13 +58,14 @@ Scope {
                 })
                 HyprInfo.hyprEvent.connect((event)=> {
                     switch (event) {
-                        case "openwindow":
-                        case "closewindow":
+                        case "activewindow":
+                        case "activespecial":
                         case "closewindow":
                         case "focusedmon": 
                         case "workspace": 
                         case "movewindow": {
                             PopupManager.close()
+                            DropdownManager.hide()
                             ContextMenuManager.hide()
                         }
                     }

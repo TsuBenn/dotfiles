@@ -22,6 +22,8 @@ Item {
     property color fg: Colors.fgBase 
     property int percent: SystemInfo.cpuusage
 
+    property int percentSmoother: 200
+
     property int type: 1
 
     property int raw_percent: percent
@@ -45,7 +47,7 @@ Item {
     property int adjustInterval: 100
     property int syncDelay: 100
 
-    Behavior on percent {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on percent {NumberAnimation {duration: root.percentSmoother; easing.type: Easing.OutCubic}}
 
     signal entered()
     signal exited()
@@ -119,6 +121,55 @@ Item {
                 required property real modelData
 
                 text: "■"
+
+                color: Colors.transparent(root.fg, Math.round(modelData*root.cellInterval)/root.cellInterval)
+
+            }
+
+        }
+
+    }
+
+
+    RowLayout {
+
+        visible: root.type == 2
+
+        spacing: 0
+
+        Repeater {
+
+            model: root.w
+
+            delegate: CellText {
+
+                required property real modelData
+
+                text: "━"
+
+                color: root.color
+
+            }
+
+        }
+
+    }
+
+    RowLayout {
+
+        visible: root.type == 2
+
+        spacing: 0
+
+        Repeater {
+
+            model: root.sections(root.w, root.raw_percent)
+
+            delegate: CellText {
+
+                required property real modelData
+
+                text: "━"
 
                 color: Colors.transparent(root.fg, Math.round(modelData*root.cellInterval)/root.cellInterval)
 

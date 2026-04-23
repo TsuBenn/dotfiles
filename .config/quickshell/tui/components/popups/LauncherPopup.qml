@@ -4,7 +4,6 @@ import qs.config
 import qs.modules
 import qs.services
 
-import Quickshell.Io
 import QtQuick.Layouts
 import QtQuick
 
@@ -16,13 +15,27 @@ CellPopup {
     h: Cell.hCount(layout.implicitHeight)
 
     onVisibleChanged: {
-        if (visible) {
-            LauncherInfo.reset()
+        if (visible && !LauncherInfo.running) {
+            LauncherInfo.start()
+        }
+        if (visible && LauncherInfo.running) {
+            auto_close.running = true
         }
         tab.selected = 0
         results.reset()
         textfield.set("")
         textfield.search("")
+    }
+
+    Timer {
+
+        id: auto_close
+
+        interval: 60000
+        onTriggered: {
+            LauncherInfo.stop()
+        }
+
     }
 
     escapeToClose: false
@@ -87,221 +100,228 @@ CellPopup {
                     border.type: 4
                     border.color: textfield.text.trim().length > 0 ? Colors.secondary : Colors.fgBase
 
-                    RowLayout {
+                    Item {
 
-                        spacing: 0
+                        id: text_layout
 
-                        CellText {
+                        RowLayout {
 
-                            id: breadcrumbs
+                            parent: SettingsInfo.minimal ? text_wrapper : text_layout
 
-                            function updatePath() {
-                                if (textfield.path.length == 0) {
+                            spacing: 0
+
+                            CellText {
+
+                                id: breadcrumbs
+
+                                function updatePath() {
+                                    if (textfield.path.length == 0) {
+                                        text = ""
+                                        return
+                                    }
+                                    let result = ""
+                                    let paths = []
+                                    for (const path of textfield.path) {
+                                        paths.push(path.label)
+                                    }
+                                    result = paths.join(" > ")
+                                    if (result) {
+                                        text = " " + result + ":"
+                                        return
+                                    }
                                     text = ""
-                                    return
-                                }
-                                let result = ""
-                                let paths = []
-                                for (const path of textfield.path) {
-                                    paths.push(path.label)
-                                }
-                                result = paths.join(" > ")
-                                if (result) {
-                                    text = " " + result + ":"
-                                    return
-                                }
-                                text = ""
-                            } 
+                                } 
 
-                            text: ""
-                        }
-
-                        CellTextField {
-
-                            parent: SettingsInfo.minimal ? text_wrapper : parent
-
-                            id: textfield
-
-                            property int selected: 0
-
-                            property var path: []
-
-                            ShortcutHandler {
-
-                                property int result_h: SettingsInfo.minimal ? 2 : 3
-
-                                shortcuts: [
-                                    {
-                                        binds: "Up",
-                                        action: () => {
-                                            safe_mouse.safe = 1
-                                            safe_mouse.visible = true
-                                            if (textfield.selected == 0) return
-                                            textfield.selected -= 1
-                                            if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
-                                                results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
-                                            }
-                                        }
-                                    },
-                                    {
-                                        binds: "Down",
-                                        action: () => {
-                                            safe_mouse.safe = 1
-                                            safe_mouse.visible = true
-                                            if (textfield.selected >= LauncherInfo.result.length-1) {
-                                                textfield.selected = 0
-                                                return
-                                            }
-                                            textfield.selected += 1
-                                            if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
-                                                results.offset = textfield.selected*result_h
-                                            }
-                                        }
-                                    },
-                                    {
-                                        binds: "Right",
-                                        action: () => {
-                                            if (textfield.text.length == 0) {
-                                                tab.advance(1)
-                                            }
-                                        }
-                                    },
-                                    {
-                                        binds: "Tab",
-                                        action: () => {
-                                            safe_mouse.safe = 1
-                                            safe_mouse.visible = true
-                                            if (textfield.selected >= LauncherInfo.result.length-1) {
-                                                textfield.selected = 0
-                                                return
-                                            }
-                                            textfield.selected += 1
-                                            if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
-                                                results.offset = textfield.selected*result_h
-                                            }
-                                        }
-                                    },
-                                    {
-                                        binds: "Left",
-                                        action: () => {
-                                            if (textfield.text.length == 0) {
-                                                tab.advance(-1)
-                                            }
-                                        }
-                                    },
-                                    {
-                                        binds: "Shift+Tab",
-                                        action: () => {
-                                            safe_mouse.safe = 1
-                                            safe_mouse.visible = true
-                                            if (textfield.selected == 0) return
-                                            textfield.selected -= 1
-                                            if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
-                                                results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
-                                            }
-                                        }
-                                    },
-                                    {
-                                        binds: "Escape",
-                                        action: () => {
-                                            if (textfield.path.length > 0) {
-                                                const new_path = textfield.path
-                                                new_path.pop()
-                                                textfield.path = new_path
-                                                textfield.search("")
-                                                textfield.set("")
-                                                breadcrumbs.updatePath()
-                                            } else {
-                                                PopupManager.close("launcher")
-                                            }
-                                        }
-                                    },
-                                ]
+                                text: ""
                             }
 
-                            Component.onCompleted: {
-                                LauncherInfo.pathFound.connect((id, label) => {
-                                    path = [...path, {"id": id, "label": label}]
-                                    textfield.search("")
-                                    textfield.set("")
-                                    breadcrumbs.updatePath()
-                                })
-                            }
+                            CellTextField {
 
-                            Layout.leftMargin: Cell.w(1)
+                                id: textfield
 
-                            w: textbox.contentW - 2 - breadcrumbs.text.length
-                            h: 1
+                                property int selected: 0
 
-                            onEntered: (query) => {
-                                LauncherInfo.run(textfield.selected)
-                            }
+                                property var path: []
 
-                            function search(input) {
-                                let tags = ""
-                                switch (tab.selected) {
-                                    case 0: tags = "asf"; break;
-                                    case 1: tags = "af"; break;
-                                    case 2: tags = "sf"; break;
-                                    case 3: tags = "c"; break;
-                                    case 4: tags = "h"; break;
+                                ShortcutHandler {
+
+                                    property int result_h: SettingsInfo.minimal ? 2 : 3
+
+                                    shortcuts: [
+                                        {
+                                            binds: "Up",
+                                            action: () => {
+                                                safe_mouse.safe = 1
+                                                safe_mouse.visible = true
+                                                if (textfield.selected == 0) return
+                                                textfield.selected -= 1
+                                                if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
+                                                    results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
+                                                }
+                                            }
+                                        },
+                                        {
+                                            binds: "Down",
+                                            action: () => {
+                                                safe_mouse.safe = 1
+                                                safe_mouse.visible = true
+                                                if (textfield.selected >= LauncherInfo.result.length-1) {
+                                                    textfield.selected = 0
+                                                    return
+                                                }
+                                                textfield.selected += 1
+                                                if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
+                                                    results.offset = textfield.selected*result_h
+                                                }
+                                            }
+                                        },
+                                        {
+                                            binds: "Right",
+                                            action: () => {
+                                                if (textfield.text.length == 0) {
+                                                    tab.advance(1)
+                                                }
+                                            }
+                                        },
+                                        {
+                                            binds: "Tab",
+                                            action: () => {
+                                                safe_mouse.safe = 1
+                                                safe_mouse.visible = true
+                                                if (textfield.selected >= LauncherInfo.result.length-1) {
+                                                    textfield.selected = 0
+                                                    return
+                                                }
+                                                textfield.selected += 1
+                                                if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
+                                                    results.offset = textfield.selected*result_h
+                                                }
+                                            }
+                                        },
+                                        {
+                                            binds: "Left",
+                                            action: () => {
+                                                if (textfield.text.length == 0) {
+                                                    tab.advance(-1)
+                                                }
+                                            }
+                                        },
+                                        {
+                                            binds: "Shift+Tab",
+                                            action: () => {
+                                                safe_mouse.safe = 1
+                                                safe_mouse.visible = true
+                                                if (textfield.selected == 0) return
+                                                textfield.selected -= 1
+                                                if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
+                                                    results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
+                                                }
+                                            }
+                                        },
+                                        {
+                                            binds: "Escape",
+                                            action: () => {
+                                                if (textfield.path.length > 0) {
+                                                    const new_path = textfield.path
+                                                    new_path.pop()
+                                                    textfield.path = new_path
+                                                    textfield.search("")
+                                                    textfield.set("")
+                                                    breadcrumbs.updatePath()
+                                                } else {
+                                                    PopupManager.close("launcher")
+                                                }
+                                            }
+                                        },
+                                    ]
                                 }
-                                safe_mouse.visible = true
-                                safe_mouse.safe = 1
-                                LauncherInfo.search(tags, textfield.path, input)
-                            }
 
-                            onTextInput: (input) => {
-                                if (input == ">") {
-                                    tab.selected = 2
-                                    set("")
-                                    search("")
-                                    return
-                                } else if (input == "=") {
-                                    tab.selected = 3
-                                    set("")
-                                    search("")
-                                    return
-                                } else if (input == "/") {
-                                    tab.selected = 4
-                                    set("")
-                                    search("")
-                                    return
+                                Component.onCompleted: {
+                                    LauncherInfo.pathFound.connect((id, label) => {
+                                        path = [...path, {"id": id, "label": label}]
+                                        textfield.search("")
+                                        textfield.set("")
+                                        breadcrumbs.updatePath()
+                                    })
                                 }
-                                if ((tab.selected == 0 || tab.selected == 1 || tab.selected == 4) && input.trim().length == 1) return
-                                search(input)
-                            }
 
-                            Keys.onPressed: (event) => {
-                                if (event.key == Qt.Key_Backspace) {
-                                    if (text.length == 0) {
+                                Layout.leftMargin: Cell.w(1)
+
+                                w: textbox.contentW - 2 - breadcrumbs.text.length
+                                h: 1
+
+                                onEntered: (query) => {
+                                    LauncherInfo.run(textfield.selected)
+                                }
+
+                                function search(input) {
+                                    let tags = ""
+                                    switch (tab.selected) {
+                                        case 0: tags = "ashf"; break;
+                                        case 1: tags = "af"; break;
+                                        case 2: tags = "sf"; break;
+                                        case 3: tags = "c"; break;
+                                        case 4: tags = "h"; break;
+                                    }
+                                    safe_mouse.visible = true
+                                    safe_mouse.safe = 1
+                                    LauncherInfo.search(tags, textfield.path, input)
+                                }
+
+                                onTextRemoved: (removed) => {
+                                    if (removed == "" && tab.selected != 0) {
                                         tab.selected = 0
+                                        set("")
+                                        search("")
+                                    }
+                                }
+
+                                onTextInput: (input) => {
+                                    if (input == ">") {
+                                        tab.selected = 2
+                                        set("")
+                                        search("")
+                                        return
+                                    } else if (input == "=") {
+                                        tab.selected = 3
+                                        set("")
+                                        search("")
+                                        return
+                                    } else if (input == "/") {
+                                        tab.selected = 4
+                                        set("")
+                                        search("")
+                                        return
+                                    } else if (input == "@") {
+                                        tab.selected = 1
                                         set("")
                                         search("")
                                         return
                                     }
+                                    if ((tab.selected == 0 || tab.selected == 1 || tab.selected == 4) && input.trim().length == 1) return
+                                    search(input)
                                 }
-                            }
 
-                            function reset() {
-                                selected = 0
-                            }
-
-                            placeholder: {
-                                switch (tab.selected) {
-                                    case 0: return "Search"
-                                    case 1: return "Apps Search"
-                                    case 2: return "Settings search"
-                                    case 3: return "Calculator"
-                                    case 4: return "File Search"
+                                function reset() {
+                                    selected = 0
                                 }
-                                return "Search"
-                            }
 
-                            editable: text.trim().length > 0
+                                placeholder: {
+                                    switch (tab.selected) {
+                                        case 0: return "Search"
+                                        case 1: return "Apps Search"
+                                        case 2: return "Settings search"
+                                        case 3: return "Calculator"
+                                        case 4: return "File Search"
+                                    }
+                                    return "Search"
+                                }
+
+                                editable: text.trim().length > 0
+
+                            }
 
                         }
-
                     }
 
 
@@ -332,10 +352,10 @@ CellPopup {
 
                 items: [
                     "All",
-                    "Apps",
-                    "Settings",
-                    "Calc",
-                    "File",
+                    "@ Apps",
+                    "> Settings",
+                    "= Calc",
+                    "/ File",
                 ]
 
             }
@@ -591,7 +611,7 @@ CellPopup {
                 }
 
                 CellKeyHint {
-                    visible: ( tab.selected == 0 || tab.selected == 1 || tab.selected == 2) && LauncherInfo.result.length > 0 && textfield.text.trim().length > 0
+                    visible: ( tab.selected == 0 || tab.selected == 1 || tab.selected == 2)
                     key: "Enter"
                     hint: "Select"
                 }
@@ -599,19 +619,19 @@ CellPopup {
                 CellKeyHint {
                     visible: ( tab.selected == 0 || tab.selected == 1 || tab.selected == 2) && LauncherInfo.result.length == 0 && textfield.text.trim().length > 0
                     key: "Enter"
-                    hint: "Google Search"
+                    hint: "Google"
+                }
+
+                CellKeyHint {
+                    visible: tab.selected != 0 && textfield.text.trim().length == 0
+                    key: "BS"
+                    hint: "All"
                 }
 
                 CellKeyHint {
                     visible: tab.selected == 3
                     key: "Enter"
                     hint: textfield.text.trim().length > 0 && textfield.selected == 0 ? "Copy" : "Add"
-                }
-
-                CellKeyHint {
-                    key: "> = /"
-                    hint: "Sett/Calc/Find"
-                    visible: textfield.text.trim().length == 0
                 }
 
                 CellKeyHint {
