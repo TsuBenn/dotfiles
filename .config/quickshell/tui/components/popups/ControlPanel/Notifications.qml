@@ -139,6 +139,9 @@ ColumnLayout {
                             }
 
                             CellIcon {
+
+                                Layout.alignment: Qt.AlignTop
+
                                 id: icon
                                 w: 5
                                 icon: [notif.modelData.icon,notif.modelData.app]

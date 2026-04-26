@@ -52,6 +52,10 @@
     "icon": "/usr/share/icons/hicolor/scalable/apps/blender.svg"
   },
   {
+    "name": "Helvum",
+    "icon": "/usr/share/icons/hicolor/scalable/apps/org.pipewire.Helvum.svg"
+  },
+  {
     "name": "UxPlay",
     "icon": ""
   },
@@ -126,6 +130,10 @@
   {
     "name": "KRuler",
     "icon": "/usr/share/icons/hicolor/128x128/apps/kruler.png"
+  },
+  {
+    "name": "Vesktop",
+    "icon": "/usr/share/icons/hicolor/scalable/apps/vesktop.svg"
   },
   {
     "name": "Timeshift",

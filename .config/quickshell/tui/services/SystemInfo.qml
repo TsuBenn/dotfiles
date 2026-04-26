@@ -213,7 +213,9 @@ Singleton {
     }
 
     function copy_clipboard(text: string) {
-        power.exec(["bash", "-c", `echo ${text} | wl-copy`])
+        power.command = ["bash", "-c", `echo "${text}" | wl-copy`]
+        power.startDetached()
+        power.command = []
     }
 
     Process {

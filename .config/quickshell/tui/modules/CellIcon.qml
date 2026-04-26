@@ -15,7 +15,7 @@ Item {
 
     property bool hideOnFail: true
 
-    property bool success: base.visible && !SettingsInfo.minimal
+    property bool success: (base.visible && !SettingsInfo.minimal) || !hideOnFail
 
     property int w: 5
     property int h: 2

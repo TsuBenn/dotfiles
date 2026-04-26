@@ -13,7 +13,7 @@ CellButton {
 
     onPressed: (button) => {
         if (button == "L") {
-            PopupManager.toggle("launcher",false)
+            PopupManager.toggle("launcher")
         }
     }
 

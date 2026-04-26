@@ -10,7 +10,7 @@ Singleton {
 
     property list<int> points: []
     property list<int> pointsFlipped: []
-    property int framerate: 24
+    property int framerate: 60
     property int bars: 26
 
     property int activeUser: 0

@@ -84,7 +84,7 @@ Scope {
             }
 
             margins {
-                top: -implicitHeight*Hyprland.focusedWorkspace.hasFullscreen
+                top: -Cell.h(1)*(Hyprland.focusedWorkspace.hasFullscreen && Hyprland.focusedMonitor.name == root.monitor.name)
             }
 
             implicitHeight: Cell.h(1)
@@ -342,7 +342,7 @@ Scope {
             IpcHandler {
                 target: "launcher"
                 function toggle(): void {
-                    PopupManager.toggle("launcher", false)
+                    PopupManager.toggle("launcher")
                 }
             }
 

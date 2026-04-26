@@ -248,6 +248,29 @@ SETTINGS = [
         "type": "exec",
         "value": ["qs", "-c", "tui", "ipc", "call", "config", "open_popup", "power"],
     },
+    {
+        "id": "utilities",
+        "label": "Utilities",
+        "description": "System essential utilities.",
+        "category": "setting",
+        "type": "menu",
+        "value": [
+            {
+                "label": "Control Panel",
+                "description": "Essential system settings and notifications.",
+                "category": "setting",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "open_popup", "control_panel"],
+            },
+            {
+                "label": "Media player",
+                "description": "Finer control over media players.",
+                "category": "setting",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "open_popup", "media_player"],
+            },
+        ],
+    },
 ]
 
 CALC = [

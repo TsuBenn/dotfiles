@@ -112,7 +112,7 @@ GAMING_PKGS=(
 
 
 ESSENTIAL_APPS=(
-    discord obs-studio 7zip zoxide filelight ark mpv yazi dolphin libreoffice
+    vencord discord obs-studio 7zip zoxide filelight ark mpv yazi dolphin libreoffice
     vlc vlc-plugin-x264 vlc-plugin-ffmpeg lame libmad pinta openrgb github-cli libva-utils ffmpegthumbs
     glow
     flatpak avahi

@@ -36,9 +36,9 @@ Singleton {
     property color accentStrong
     property color accentDim
     property color secondary
-    property color info
 
     // Semantic
+    property color info
     property color success
     property color warning
     property color danger

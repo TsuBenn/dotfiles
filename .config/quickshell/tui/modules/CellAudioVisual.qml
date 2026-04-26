@@ -51,29 +51,53 @@ Item {
 
         color: "transparent"
 
+        function getMultiBlend(colors, percentage) {
+            // 1. Handle boundaries
+            if (percentage <= 0) return colors[0];
+            if (percentage >= 1) return colors[colors.length - 1];
+
+            // 2. Determine which segment we are in
+            // With 3 colors, there are 2 segments (0-0.5 and 0.5-1.0)
+            let segment = percentage * (colors.length - 1);
+            let index = Math.floor(segment);
+
+            // 3. Calculate the percentage within THAT specific segment
+            let innerPercent = segment - index;
+
+            // 4. Use your existing blend function
+            return Colors.blend(colors[index], colors[index + 1], innerPercent);
+        }
+
         RowLayout {
 
             spacing: Cell.w(root.spacing)
 
-                Repeater {
+            Repeater {
 
-                    model: root.w
+                model: root.w
 
-                    delegate: CellProgressSquare {
+                delegate: CellProgressSquare {
 
-                        required property int index
+                    required property int index
 
-                        w: 1
-                        h: container.h
+                    w: 1
+                    h: container.h
 
-                        percent: root.flipped ? root.pointsFlipped[index] ?? 0 : root.points[index] ?? 0
-                        percentSmoother: 0
+                    percent: root.flipped ? root.pointsFlipped[index] ?? 0 : root.points[index] ?? 0
+                    percentSmoother: 0
 
-                        vertical: true
-                        type: 0
+                    fg: {
+                        if (Array.isArray(root.color)) {
+                            return container.getMultiBlend(root.color,percent/100)
+                        }
+                        return root.color
                     }
 
+                    vertical: true
+                    type: 0
                 }
+
+            }
 
         }
 

@@ -110,7 +110,7 @@ ColumnLayout {
                                         percent: stream.volume
                                         interactive: true
                                         adjustOnHold: true
-                                        syncDelay: 1500
+                                        syncDelay: 20000
                                         adjustOnPress: true
                                         cellInterval: 2
 

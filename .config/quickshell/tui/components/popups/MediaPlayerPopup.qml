@@ -9,8 +9,31 @@ CellPopup {
 
     id: root
 
-    w: 51
-    h: SettingsInfo.minimal ? 6 : 10
+    w: 51 - Cell.wCount(Cell.h(6),"ceil")*SettingsInfo.minimal
+    h: Cell.hCount(layout.implicitHeight)
+
+    ShortcutHandler {
+        shortcuts: [
+            {
+                binds: "Space",
+                action: () => {
+                    MediaPlayerInfo.playPauseMedia()
+                }
+            },
+            {
+                binds: ["D", "L","Right"],
+                action: () => {
+                    MediaPlayerInfo.nextMedia()
+                }
+            },
+            {
+                binds: ["A", "J","Left"],
+                action: () => {
+                    MediaPlayerInfo.prevMedia()
+                }
+            },
+        ]
+    }
 
     CellBox {
 
@@ -20,6 +43,8 @@ CellPopup {
         h: root.h+2
 
         ColumnLayout {
+
+            id: layout
 
             spacing: 0
 
@@ -35,7 +60,7 @@ CellPopup {
 
                     id: art
 
-                    visible: thumbnail.source != ""
+                    visible: thumbnail.source != "" && !SettingsInfo.minimal
 
                     w: Cell.wCount(Cell.h(6),"ceil")
                     h: 6
@@ -44,10 +69,12 @@ CellPopup {
 
                     Image {
 
+                        y: sourceSize.width != sourceSize.height ? Cell.h(1) : 0
+
                         id: thumbnail
 
                         width: Cell.h(parent.h)
-                        height: Cell.h(parent.h)
+                        height: sourceSize.width == sourceSize.height ? Cell.h(parent.h) : Cell.h(3)
 
                         source: MediaPlayerInfo.artUrl ?? ""
 
@@ -59,7 +86,7 @@ CellPopup {
 
                 CellText {
 
-                    visible: thumbnail.source != ""
+                    visible: thumbnail.source != "" && !SettingsInfo.minimal
 
                     text: " "
                 }
@@ -177,7 +204,7 @@ CellPopup {
 
                         CellButton {
 
-                            text: "RAND"
+                            text: "R"
 
                             font: Cell.fontB
                             fg: MediaPlayerInfo.canShuffle ? (MediaPlayerInfo.shuffleStatus ? Colors.onAccent : Colors.fgBase) : Colors.fgSubtle
@@ -254,7 +281,7 @@ CellPopup {
 
                         CellButton {
 
-                            text: MediaPlayerInfo.loopStatus == "track" ? "LOOP1" : "LOOP"
+                            text: MediaPlayerInfo.loopStatus == "track" ? "L1" : "L"
 
                             font: Cell.fontB
                             fg: MediaPlayerInfo.canLoop ? (MediaPlayerInfo.loopStatus != "none" ? Colors.onAccent : Colors.fgBase) : Colors.fgSubtle
@@ -278,6 +305,9 @@ CellPopup {
             }
 
             CellSeparator {
+
+                visible: !SettingsInfo.minimal
+
                 w: box.contentW
                 type: 2
                 color: Colors.fgSubtle
@@ -285,12 +315,53 @@ CellPopup {
 
             CellAudioVisual {
 
+                visible: !SettingsInfo.minimal
+
                 Layout.leftMargin: Cell.w(1)
 
                 w: box.contentW
                 h: 3
-
                 spacing: 1
+
+                color: [Colors.secondary, Colors.warning, Colors.danger]
+            }
+
+            CellSeparator {
+
+                visible: SettingsInfo.hints
+
+                w: box.contentW
+                type: 2
+                color: Colors.bgOverlay
+
+            }
+
+            RowLayout {
+
+                visible: SettingsInfo.hints
+
+                Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW))
+
+                spacing: Cell.w(2)
+
+                CellKeyHint {
+                    visible: MediaPlayerInfo.canPrev
+                    key: "←"
+                    hint: "Prev"
+                }
+
+                CellKeyHint {
+                    visible: MediaPlayerInfo.canPlay
+                    key: "Space"
+                    hint: MediaPlayerInfo.status == "playing" ? "Pause" : "Play"
+                }
+
+                CellKeyHint {
+                    visible: MediaPlayerInfo.canNext
+                    key: "→"
+                    hint: "Next"
+                }
+
             }
 
         }

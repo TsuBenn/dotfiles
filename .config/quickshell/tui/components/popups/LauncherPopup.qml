@@ -18,11 +18,12 @@ CellPopup {
         if (visible && !LauncherInfo.running) {
             LauncherInfo.start()
         }
-        if (visible && LauncherInfo.running) {
-            auto_close.running = true
+        if (!visible && LauncherInfo.running) {
+            auto_close.restart()
         }
         tab.selected = 0
         results.reset()
+        textfield.path = []
         textfield.set("")
         textfield.search("")
     }
@@ -409,7 +410,7 @@ CellPopup {
                                 })
                             }
 
-                            interval: tab.selected == 4 ? 200 : 0
+                            interval: 50
                             onTriggered: {
                                 data = []
                                 data = LauncherInfo.result
@@ -445,7 +446,7 @@ CellPopup {
 
                                 property bool selected: textfield.selected == index
 
-                                asynchronous: index < Math.ceil(15/(SettingsInfo.minimal ? 2 : 3)) ? false : true
+                                asynchronous: (index < Math.ceil(15/(SettingsInfo.minimal ? 2 : 3)) ? false : true) || type == "file" || type == "dir"
 
                                 sourceComponent: Cells {
 

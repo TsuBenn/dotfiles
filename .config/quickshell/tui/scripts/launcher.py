@@ -339,63 +339,40 @@ def search_settings(data, query):
 
 # ─── File find ───────────────────────────────────────────────────────────────
 
-def fd_find(query):
-    # Updated command list for fd_find
+def preload_files():
     cmd = [
-        'fd', 
-        query, 
-        os.path.expanduser('~'), 
-        '--absolute-path',
+        'fd', '.', 
+        os.path.expanduser('~'),
         '--type', 'f',
-        '--exclude', '.git',    # Ignore git repos
-        '--exclude', '.cache',   # Ignore system cache
-        '--exclude', 'node_modules', # Ignore heavy dev folders
+        '--absolute-path',
+        '--exclude', '.git',
+        '--exclude', '.cache',
+        '--exclude', 'node_modules',
         '--no-follow',
     ]
-
-    if not query:
+    try:
+        process = subprocess.run(cmd, capture_output=True, text=True)
+        return process.stdout.strip().split('\n')
+    except FileNotFoundError:
         return []
 
-    try:
-        # Executes: fd "query" ~ --absolute-path
-        # We target the home directory (~) as implied by your 'h' tag
-        process = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            check=True
-        )
-        
-        paths = process.stdout.strip().split('\n')
-        
-        results = []
-        for path in paths:
-            if not path: continue
-            
-            # 1. Handle trailing slashes so basename isn't empty
-            clean_path = path.rstrip(os.sep)
-            name = os.path.basename(clean_path)
-            
-            # 2. Determine if it's a directory for the UI
-            is_dir = os.path.isdir(path)
-            
+def filter_files(paths, query):
+    if not query:
+        return []
+    query = query.lower()
+    results = []
+    for path in paths:
+        name = os.path.basename(path)
+        if query in name.lower():
             results.append({
                 "id": path,
-                "label": f"{name}/" if is_dir else name,
+                "label": name,
                 "description": path,
                 "icon": "",
                 "value": path,
-                "type": "dir" if is_dir else "file"
+                "type": "dir" if os.path.isdir(path) else "file"
             })
-            
-        return results
-
-    except subprocess.CalledProcessError:
-        # Returns empty list if fd finds nothing or errors out
-        return []
-    except FileNotFoundError:
-        print("Error: 'fd' command not found. Please install it.", file=sys.stderr)
-        return []
+    return results
 
 # ─── Input ───────────────────────────────────────────────────────────────────
 
@@ -415,6 +392,10 @@ def main():
 
     apps = scan_apps() 
     icons = []
+
+    timer = False
+
+    file_paths = preload_files()
 
     for app in apps:
         icons.append({
@@ -467,6 +448,7 @@ def main():
             FUZZY = False
 
         if "a" in tags:
+            start = time.perf_counter()
             app_results = []
             if query:
                 result.extend(search_apps(apps, query))
@@ -483,26 +465,37 @@ def main():
 
             app_results.sort(key=lambda x: freq.get(x["id"], 0), reverse=True)
             result.extend(app_results)
+            if (timer):
+                print(f"[timer] apps: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
 
         if "s" in tags:
+            start = time.perf_counter()
             if query:
                 result.extend(search_settings(settings, query))
             else:
                 result.extend(settings)
+            if (timer):
+                print(f"[timer] settings: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
         if query:
             result = search_settings(result, query)
 
         if "h" in tags:
+            start = time.perf_counter()
             if query:
-                result.extend(fd_find(query))
+                result.extend(filter_files(file_paths, query))
+            if (timer):
+                print(f"[timer] files: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
         if "c" in tags:
+            start = time.perf_counter()
             if query:
                 result = [*calculate(query), *CALC]
             else:
                 result = CALC
+            if (timer):
+                print(f"[timer] calculate: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
         if "t" in tags:
             result = COLORS

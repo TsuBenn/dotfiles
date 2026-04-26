@@ -96,6 +96,7 @@ Singleton {
                     const monitor = data.monitor ?? ""
                     const windowclass = data.class
                     const windowtitle = data.title
+                    const fullscreen = parseInt(data.fullscreen)
                     const address = data.address
                     const focused = (data.focusHistoryID == 0)
                     if (workspaces[workspace] == undefined) workspaces[workspace] = [] 
@@ -105,7 +106,8 @@ Singleton {
                         "windowclass": windowclass,
                         "address": address,
                         "windowtitle": windowtitle,
-                        "focused": focused
+                        "focused": focused,
+                        "fullscreen": fullscreen
                     })
                     if (focused) {
                         root.focusedspecial = workspace < 0 ? workspace : 0
@@ -114,6 +116,7 @@ Singleton {
                             "class": windowclass,
                             "address": address,
                             "monitor": monitor,
+                            "fullscreen": fullscreen
                         }
                     }
                 }

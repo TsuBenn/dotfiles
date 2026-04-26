@@ -12,10 +12,16 @@ Singleton {
 
     function fetch(queries) {
         cache.reload()
-        for (const query of queries) {
+        for (let query of queries) {
             if (!query) continue
+            const parts = query.split('.')
+            if (parts.length > 1) {
+                parts.pop()
+            }
+            query = parts.join('.')
             const result = root.icons.find((item) => {
-                const match = item.name.toLowerCase().includes(query.toLowerCase()) || item.icon.toLowerCase().includes(query.toLowerCase())
+                const match = item.name.toLowerCase().includes(query.toLowerCase()) ||
+                              item.icon.toLowerCase().includes(query.toLowerCase())
                 return match
             })
             if (result) {
