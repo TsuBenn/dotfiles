@@ -213,7 +213,7 @@ Singleton {
     }
 
     function copy_clipboard(text: string) {
-        power.command = ["bash", "-c", `echo "${text}" | wl-copy`]
+        power.command = ["wl-copy", `"${text}"`]
         power.startDetached()
         power.command = []
     }

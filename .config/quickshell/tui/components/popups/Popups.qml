@@ -25,6 +25,17 @@ Item {
         })
     }
 
+    CalendarPopup {
+
+        id: calendar
+
+        name: "calendar"
+
+        cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2) - 1
+        cellY: -1
+
+    }
+
     MediaPlayerPopup {
 
         id: media_player

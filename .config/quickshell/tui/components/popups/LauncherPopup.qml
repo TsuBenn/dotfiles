@@ -15,8 +15,12 @@ CellPopup {
     h: Cell.hCount(layout.implicitHeight)
 
     onVisibleChanged: {
-        if (visible && !LauncherInfo.running) {
-            LauncherInfo.start()
+        if (visible) {
+            if (!LauncherInfo.running) {
+                LauncherInfo.start()
+            } else {
+                auto_close.stop()
+            }
         }
         if (!visible && LauncherInfo.running) {
             auto_close.restart()
@@ -32,7 +36,7 @@ CellPopup {
 
         id: auto_close
 
-        interval: 60000
+        interval: 1000
         onTriggered: {
             LauncherInfo.stop()
         }
@@ -410,7 +414,7 @@ CellPopup {
                                 })
                             }
 
-                            interval: 50
+                            interval: 0
                             onTriggered: {
                                 data = []
                                 data = LauncherInfo.result

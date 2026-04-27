@@ -8,12 +8,14 @@ import json
 import configparser
 import re
 import subprocess
+import threading
 
 # ─── ENV ──────────────────────────────────────────────────────────────────────
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 FREQ_FILE = os.path.join(SCRIPT_DIR, "frequency.json")
 SETTINGS_FILE = os.path.join(SCRIPT_DIR, "settings.toml")
+FILE_CACHE_FILE = os.path.join(SCRIPT_DIR, "file_cache.json")
 
 DESKTOP_DIRS = [
     "/usr/share/applications",
@@ -149,9 +151,10 @@ def search_apps(apps, query):
     scored = []
     for app in apps:
         score = max(
-            fuzzy_match(query, app["name"]) * 3,
-            fuzzy_match(query, app["genericName"]) * 2,
+            fuzzy_match(query, app["name"]),
+            fuzzy_match(query, app["genericName"]),
             max((fuzzy_match(query, k) for k in app["keywords"]), default=0),
+            fuzzy_match(query, app["id"]),
         )
         if score <= 0:
             continue
@@ -162,10 +165,11 @@ def search_apps(apps, query):
         "id": app["id"],
         "label": app["name"],
         "description": app["genericName"] or app["description"],
+        "keywords": app["keywords"],
         "category": "app",
         "icon": app["icon"],
         "value": ["bash", "-c", app["exec"]],
-        "type": "exec"
+        "type": "exec",
     } for _, app in scored]
 
 def select_app(app_id):
@@ -228,7 +232,7 @@ def calculate(expr):
                 "label": "= " + str(result),
                 "description": str(result),
                 "type": "exec",
-                "value": ["bash", "-c", f"echo \"{str(result).strip()}\" | wl-copy"],
+                "value": ["wl-copy", f"\"{str(result).strip()}\""],
             }
         ]
     except Exception as e:
@@ -314,9 +318,12 @@ def search_settings(data, query):
             label_score = fuzzy_match(query, item.get("label", ""))
             desc_score = fuzzy_match(query, item.get("description", ""))
             category_score = fuzzy_match(query, item.get("category", ""))
+            keywords_score = 0
+            if item.get("keywords"):
+                keywords_score = max(fuzzy_match(query, k) for k in item.get("keywords"))
             
             # Take the best score of the two
-            final_score = max(label_score, desc_score, category_score)
+            final_score = max(label_score, desc_score, category_score, keywords_score)
 
             if final_score > 0:
                 # Store a copy of the item with its score for sorting later
@@ -340,21 +347,42 @@ def search_settings(data, query):
 # ─── File find ───────────────────────────────────────────────────────────────
 
 def preload_files():
-    cmd = [
-        'fd', '.', 
-        os.path.expanduser('~'),
-        '--type', 'f',
-        '--absolute-path',
-        '--exclude', '.git',
-        '--exclude', '.cache',
-        '--exclude', 'node_modules',
-        '--no-follow',
-    ]
-    try:
-        process = subprocess.run(cmd, capture_output=True, text=True)
-        return process.stdout.strip().split('\n')
-    except FileNotFoundError:
-        return []
+    cached = []
+    
+    if os.path.exists(FILE_CACHE_FILE):
+        try:
+            with open(FILE_CACHE_FILE) as f:
+                cached = json.load(f)
+        except:
+            pass
+
+    def rescan(paths):
+        cmd = [
+            'fd', '.',
+            os.path.expanduser("~"),
+            '--type', 'f',
+            '--absolute-path',
+            '--exclude', '.git',
+            '--exclude', '.cache',
+            '--exclude', 'node_modules',
+            '--hidden',
+            '--no-follow',
+        ]
+        try:
+            start = time.perf_counter()
+            process = subprocess.run(cmd, capture_output=True, text=True)
+            new_paths = process.stdout.strip().split('\n')
+            with open(FILE_CACHE_FILE, 'w') as f:
+                json.dump(new_paths, f)
+            paths.clear()
+            paths.extend(new_paths)
+            print(f"[timer] Files cached: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+        except FileNotFoundError:
+            pass
+
+    threading.Thread(target=rescan, args=(cached,), daemon=True).start()
+    
+    return cached
 
 def filter_files(paths, query):
     if not query:
@@ -374,6 +402,43 @@ def filter_files(paths, query):
             })
     return results
 
+
+file_results = []
+file_search_thread = None
+stop_event = threading.Event()
+
+def async_file_search(paths, query, stop, base_result):
+    local_results = []
+    for path in paths:
+        if stop.is_set():
+            return
+        name = os.path.basename(path)
+        if query in name.lower():
+            local_results.append({
+                "id": path,
+                "label": name,
+                "description": path,
+                "icon": "",
+                "value": path,
+                "type": "dir" if os.path.isdir(path) else "file"
+            })
+    # only print if not cancelled
+    if not stop.is_set():
+        print(json.dumps([*base_result, *local_results]))
+        sys.stdout.flush()
+
+def search_files_async(paths, query, base_result):
+    global stop_event, file_search_thread
+    stop_event.set()
+    stop_event = threading.Event()
+    file_search_thread = threading.Thread(
+        target=async_file_search,
+        args=(paths, query, stop_event, base_result),
+        daemon=True
+    )
+    file_search_thread.start()
+
+
 # ─── Input ───────────────────────────────────────────────────────────────────
 
 def parse_input(input):
@@ -390,18 +455,19 @@ def main():
 
     global FUZZY
 
+    initialized = False
+    begin = time.perf_counter()
+
+    start = time.perf_counter()
     apps = scan_apps() 
+    print(f"[timer] Apps loaded: {time.perf_counter() - start:.4f}s", file=sys.stderr)
     icons = []
 
     timer = False
 
+    start = time.perf_counter()
     file_paths = preload_files()
-
-    for app in apps:
-        icons.append({
-            "name": app["id"],
-            "icon": resolve_icon(app["icon"]),
-        })
+    print(f"[timer] Files loaded: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
     """
     init = []
@@ -421,7 +487,9 @@ def main():
     """
 
     while True:
-
+        if not initialized:
+            print(f"[timer] Search started: {time.perf_counter() - begin:.4f}s", file=sys.stderr)
+            initialized = True
         tags, query, paths = parse_input(input())
 
         result = []
@@ -468,7 +536,6 @@ def main():
             if (timer):
                 print(f"[timer] apps: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
-
         if "s" in tags:
             start = time.perf_counter()
             if query:
@@ -484,7 +551,7 @@ def main():
         if "h" in tags:
             start = time.perf_counter()
             if query:
-                result.extend(filter_files(file_paths, query))
+                search_files_async(file_paths, query, result)
             if (timer):
                 print(f"[timer] files: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
@@ -505,6 +572,6 @@ def main():
             continue
 
         print(json.dumps(result))
-
+        sys.stdout.flush()
 
 main()

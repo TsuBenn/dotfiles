@@ -22,5 +22,17 @@ RowLayout {
             color: Colors.fgBase
         }
 
+        MouseControl {
+
+            anchors.fill: parent
+
+            onPressed: (button) => {
+                if (button == "L") {
+                    PopupManager.toggle("calendar")
+                }
+            }
+
+        }
+
     }
 }

@@ -208,9 +208,10 @@ body {
     }
     .content_a2f514::before {
         display: block;
-        content: '                    __                ___  __ __\A    _______  _______/ /____  ____ ___ |__ \\/ // /\A   / ___/ / / / ___/ __/ _ \\/ __ `__ \\__/ / // /_\A  (__  ) /_/ (__  ) /_/  __/ / / / / / __/__  __/\A/____/\\__, /____/\\__/\\___/_/ /_/ /_/____/ /_/   \A      /____/                                     ';
+        content: "  ______           ____                 \A /_  __/______  __/ __ )___  ____  ____ \A  / / / ___/ / / / __  / _ \\/ __ \\/ __ \\\A / / (__  ) /_/ / /_/ /  __/ / / / / / /\A/_/ /____/\\____/_____/\\___/_/ /_/_/ /_/ ";
         font-size: 18px;
         font-family: monospace;
+        font-weight: 700;
         white-space: pre;
         line-height: 1.2;
         background: linear-gradient(to right, var(--brand-360) 0%, var(--background-accent) 25%, var(--background-accent) 75%, var(--brand-360) 100%);

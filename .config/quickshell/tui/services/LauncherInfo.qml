@@ -36,6 +36,7 @@ Singleton {
 
     function run(index: int) {
         const item = result[index] 
+        if (!item.category) return
         if (item.category == "app") {
             process.write(`-F ${item.id}\n`)
             PopupManager.close("launcher")
