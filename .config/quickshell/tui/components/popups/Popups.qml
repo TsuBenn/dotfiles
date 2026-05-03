@@ -1,9 +1,12 @@
+pragma ComponentBehavior: Bound
+
 import qs.components.popups.ControlPanel
 import qs.components.popups
 import qs.config
 import qs.modules
 import qs.services
 
+import Quickshell
 import QtQuick
 import QtQuick.Layouts
 
@@ -99,4 +102,5 @@ Item {
         cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 3
 
     }
+
 }

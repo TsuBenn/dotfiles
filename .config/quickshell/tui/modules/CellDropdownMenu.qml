@@ -73,6 +73,7 @@ CellPopup {
                         color: active ? root.active : root.color
 
                         CellText {
+                            id: button_text 
                             text: " ".repeat(root.padding) + button.modelData.label
                             preferedW: root.w - root.padding
                             color: button.active ? root.active_invert : root.fg
@@ -82,8 +83,8 @@ CellPopup {
                         MouseControl {
                             anchors.fill: parent
 
-                            onPressed: (button) => {
-                                if (button == "L") {
+                            onReleased: (button) => {
+                                if (button == "L" && hovered) {
                                     DropdownManager.hide()
                                     if (root.selected != parent.index) {
                                         parent.modelData.action()

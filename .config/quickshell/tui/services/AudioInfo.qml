@@ -56,7 +56,7 @@ Singleton {
     }
 
     function playSound(file: string, vol = 1.0) {
-        playsound.command = (["bash","-c","paplay --volume="+ 65536*vol + " -d @DEFAULT_SINK@ " + SystemInfo.homedir + "/dotfiles/.config/quickshell/tui/assets/sfx/" + file + ".mp3"])
+        playsound.command = (["bash","-c","paplay --volume="+ 65536*vol + " -d @DEFAULT_SINK@ " + SystemInfo.configdir + "/assets/sfx/" + file + ".mp3"])
         playsound.startDetached()
     }
 
@@ -244,9 +244,9 @@ Singleton {
                     switch (app.trim()) {
                     }
                     switch (name.trim()) {
-                        case SystemInfo.homedir + "/dotfiles/.config/quickshell/assets/sfx/mambo.mp3": continue
-                        case SystemInfo.homedir + "/dotfiles/.config/quickshell/assets/sfx/mambo_tongye.mp3": continue
-                        case SystemInfo.homedir + "/dotfiles/.config/quickshell/assets/sfx/mambo_wow.mp3": continue
+                        case SystemInfo.configdir + "/assets/sfx/mambo.mp3": continue
+                        case SystemInfo.configdir + "/assets/sfx/mambo_tongye.mp3": continue
+                        case SystemInfo.configdir + "/assets/sfx/mambo_wow.mp3": continue
                     }
 
                     streams.push({

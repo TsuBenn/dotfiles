@@ -16,10 +16,23 @@ Singleton {
     signal showGrid()
     signal toggleMinimal()
 
+    function notification_check() {
+            NotificationsInfo.send("", "", "Notification Check", "Check check check!\nClick here to show another similar notification!", 0, false, () => notification_check())
+    }
+
     IpcHandler {
         target: "config"
         function open_popup(popup: string): void {PopupManager.open(popup)}
+        function send_popup_sig(id: string, sig: string, open: bool): void {
+            PopupManager.sendSignal(id, sig)
+            if (open) {
+                PopupManager.open(id)
+            }
+        }
         function set_color_theme(color: string): void {Colors.current = color}
+        function notification_check(): void {
+            root.notification_check()
+        }
         function audio_check(): void {
             const rng = Math.random()
             const sound = Math.round(rng*3)

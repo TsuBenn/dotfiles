@@ -8,6 +8,18 @@ Item {
 
     property var shortcuts: []
 
+    /*
+
+     shortcuts = [
+         {
+             binds = "Key",
+             action = () => {function},
+         },
+         ...
+     ]
+
+     */
+
     Repeater {
         model: root.shortcuts
 

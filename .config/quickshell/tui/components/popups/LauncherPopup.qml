@@ -15,15 +15,22 @@ CellPopup {
     h: Cell.hCount(layout.implicitHeight)
 
     onVisibleChanged: {
-        if (visible) {
-            if (!LauncherInfo.running) {
-                LauncherInfo.start()
-            } else {
-                auto_close.stop()
-            }
-        }
-        if (!visible && LauncherInfo.running) {
+        /*
+         if (visible) {
+             if (!LauncherInfo.running) {
+                 LauncherInfo.start()
+             } else {
+                 auto_close.stop()
+             }
+         }
+         if (!visible && LauncherInfo.running) {
+             auto_close.restart()
+         }
+         */
+        if (!visible) {
             auto_close.restart()
+        } else {
+            auto_close.stop()
         }
         tab.selected = 0
         results.reset()
@@ -38,7 +45,22 @@ CellPopup {
 
         interval: 1000
         onTriggered: {
-            LauncherInfo.stop()
+            LauncherInfo.write("-r")
+        }
+
+    }
+
+    Timer {
+
+        id: auto_refresh
+
+        interval: 1800000
+
+        running: true
+        repeat: true
+        onTriggered: {
+            console.log("LauncherInfo: Occasional refresh...")
+            LauncherInfo.reset()
         }
 
     }
@@ -185,6 +207,18 @@ CellPopup {
                                             action: () => {
                                                 if (textfield.text.length == 0) {
                                                     tab.advance(1)
+                                                } else {
+                                                    textfield.move_cursor_forward()
+                                                }
+                                            }
+                                        },
+                                        {
+                                            binds: "Left",
+                                            action: () => {
+                                                if (textfield.text.length == 0) {
+                                                    tab.advance(-1)
+                                                } else {
+                                                    textfield.move_cursor_back()
                                                 }
                                             }
                                         },
@@ -200,14 +234,6 @@ CellPopup {
                                                 textfield.selected += 1
                                                 if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
                                                     results.offset = textfield.selected*result_h
-                                                }
-                                            }
-                                        },
-                                        {
-                                            binds: "Left",
-                                            action: () => {
-                                                if (textfield.text.length == 0) {
-                                                    tab.advance(-1)
                                                 }
                                             }
                                         },
@@ -256,7 +282,13 @@ CellPopup {
                                 h: 1
 
                                 onEntered: (query) => {
-                                    LauncherInfo.run(textfield.selected)
+                                    if (LauncherInfo.result.length > 0) {
+                                        LauncherInfo.run(textfield.selected)
+                                    } else {
+                                        if (tab.selected != 3) {
+                                            LauncherInfo.write(`-w ${query}`)
+                                        }
+                                    }
                                 }
 
                                 function search(input) {
@@ -616,7 +648,7 @@ CellPopup {
                 }
 
                 CellKeyHint {
-                    visible: ( tab.selected == 0 || tab.selected == 1 || tab.selected == 2)
+                    visible: ( tab.selected == 0 || tab.selected == 1 || tab.selected == 2) && LauncherInfo.result.length > 0 
                     key: "Enter"
                     hint: "Select"
                 }

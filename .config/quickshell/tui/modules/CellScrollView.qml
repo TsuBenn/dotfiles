@@ -68,6 +68,11 @@ Cells {
 
             y: -Cell.h(1)*root.offset
 
+
+            onImplicitHeightChanged: {
+                root.offset = Math.max(Math.min(root.offset,Cell.hCount(content.implicitHeight)-root.h),0)
+            }
+
         }
 
 

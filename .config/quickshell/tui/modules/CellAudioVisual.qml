@@ -76,25 +76,34 @@ Item {
 
                 model: root.w
 
-                delegate: CellProgressSquare {
+                delegate: Cells {
 
                     required property int index
 
                     w: 1
                     h: container.h
+                    color: "transparent"
 
-                    percent: root.flipped ? root.pointsFlipped[index] ?? 0 : root.points[index] ?? 0
-                    percentSmoother: 0
+                    Cells {
 
-                    fg: {
-                        if (Array.isArray(root.color)) {
-                            return container.getMultiBlend(root.color,percent/100)
+                        anchors.bottom: parent.bottom
+
+                        property real percent: (root.flipped ? root.pointsFlipped[index] ?? 0 : root.points[index] ?? 0)/100
+
+                        w: 1
+                        h: container.h*(Math.round(percent*(8*container.h))/(8*container.h))
+                        whole: false
+
+                        color: {
+                            if (Array.isArray(root.color)) {
+                                return container.getMultiBlend(root.color,Math.round(percent*(8*container.h))/(8*container.h))
+                            }
+                            return root.color
                         }
-                        return root.color
+
                     }
 
-                    vertical: true
-                    type: 0
+
                 }
 
             }

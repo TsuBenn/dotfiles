@@ -9,9 +9,12 @@ Item {
     id: root
 
     property int w: 1
+    property int h: 1
 
     property int type: 0
     property int padding: 0
+
+    property bool vertical: false
 
     component Type: Item {
         property string text: ""
@@ -27,10 +30,12 @@ Item {
     property color color: Colors.fgSubtle
     property color bg: Colors.bgSurface
 
-    implicitWidth: Cell.w(w)
-    implicitHeight: Cell.h(1)
+    implicitWidth: Cell.w(vertical ? 1 : w)
+    implicitHeight: Cell.h(vertical ? h : 1)
 
     CellText {
+
+        visible: !root.vertical
 
         color: root.color
 
@@ -58,6 +63,43 @@ Item {
             font: root.title.font
             bg: root.bg
             color: root.title.color
+
+        }
+
+    }
+
+    ColumnLayout {
+
+        visible: root.vertical
+
+        spacing: 0
+
+        Repeater {
+
+            model: root.h
+
+            delegate: CellText {
+
+                required property int index
+
+                clip: true
+
+                text: {
+
+                    if (index <= root.padding-1 || index >= root.h-root.padding) {
+                        return " "
+                    }
+                    switch (root.type) {
+                        case 0: return "│"
+                        case 1: return "┃"
+                        case 2: return "║"
+                        case 3: return "|"
+                    }
+                    return "│"
+
+                }
+
+            }
 
         }
 

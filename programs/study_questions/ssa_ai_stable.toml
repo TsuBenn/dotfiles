@@ -5,1341 +5,1117 @@ question = "According to the 'Five Whys' technique, what is the primary purpose 
 choices = ["To annoy the person being questioned", "To uncover a deeper, meaningful purpose behind a goal", "To memorize a series of facts", "To practice public speaking skills"]
 answer = "To uncover a deeper, meaningful purpose behind a goal"
 
-
 [[questions]]
 question = "Which of the following is a non-financial benefit of earning a college degree mentioned in the text?"
 choices = ["Higher lifetime earnings", "A 1,500% ROI", "Better job stability", "Free tuition"]
 answer = "Better job stability"
-
 
 [[questions]]
 question = "Based on the document, how much outside study time is recommended for every 1 hour spent in a college class?"
 choices = ["30 minutes", "1 hour", "2 hours", "4 hours"]
 answer = "2 hours"
 
-
 [[questions]]
 question = "Which of the following is NOT one of the six types of adjustment to college mentioned in the reading?"
 choices = ["Academic Adjustment", "Social Adjustment", "Financial Adjustment", "Professional Adjustment"]
 answer = "Professional Adjustment"
-
 
 [[questions]]
 question = "What does the 'hidden curriculum' in college refer to?"
 choices = ["The official list of required classes", "Unwritten or unspoken expectations for student success", "A secret society on campus", "The syllabus for a course"]
 answer = "Unwritten or unspoken expectations for student success"
 
-
 [[questions]]
 question = "According to the first-year student milestones chart, what is a common experience for students in September?"
 choices = ["Focusing on finishing strong", "Planning for next semester", "Expanding social circles and experiencing homesickness", "Handling additional end-of-semester stress"]
 answer = "Expanding social circles and experiencing homesickness"
-
 
 [[questions]]
 question = "What are the three main processes of memory according to the document?"
 choices = ["Encoding, Storage, Retrieval", "Input, Output, Processing", "Sensing, Thinking, Acting", "Short-term, Long-term, Working"]
 answer = "Encoding, Storage, Retrieval"
 
-
 [[questions]]
 question = "In the short-term memory experiment with a list of 20 items, what is the typical number of items a person can recall?"
 choices = ["1-3 items", "5-9 items", "10-15 items", "All 20 items"]
 answer = "5-9 items"
-
 
 [[questions]]
 question = "Why does cramming for an exam typically lead to poor performance?"
 choices = ["It increases stress, causes shallow understanding, and leads to sleep deprivation", "It takes too much time", "It is not allowed by professors", "It requires too many study partners"]
 answer = "It increases stress, causes shallow understanding, and leads to sleep deprivation"
 
-
 [[questions]]
 question = "According to John Medina mentioned in the text, how long can the brain focus before it begins to wander?"
 choices = ["5 minutes", "10 minutes", "30 minutes", "45 minutes"]
 answer = "10 minutes"
-
 
 [[questions]]
 question = "Which of the following is a myth about studying that the text debunks?"
 choices = ["Using mnemonics", "Creating a dedicated study space", "Multitasking", "Taking breaks"]
 answer = "Multitasking"
 
-
 [[questions]]
 question = "What is a mnemonic?"
 choices = ["A type of exam question", "A memory aid that uses simple reminders to recall information", "A study group strategy", "A time management technique"]
 answer = "A memory aid that uses simple reminders to recall information"
-
 
 [[questions]]
 question = "Which of the three effective study strategies involves mixing different topics and problem types during a study session?"
 choices = ["Spacing", "Interleaving", "Practice Testing", "Highlighting"]
 answer = "Interleaving"
 
-
 [[questions]]
 question = "According to the document, what is the first step a student should take when starting a test?"
 choices = ["Answer the hardest questions first", "Scan the test and plan your time", "Immediately start writing the essay", "Ask the professor for hints"]
 answer = "Scan the test and plan your time"
-
 
 [[questions]]
 question = "What is a symptom of test anxiety mentioned in the text?"
 choices = ["Increased focus", "Rapid heartbeat", "Improved memory", "Feeling of excitement"]
 answer = "Rapid heartbeat"
 
-
 [[questions]]
 question = "According to the Washington Post data cited in the text, what is one component of the average cost of an additional year of college?"
 choices = ["Lost wages of $46,335", "Textbooks: $500", "Tuition: $5,000", "Housing: $20,000"]
 answer = "Lost wages of $46,335"
-
 
 [[questions]]
 question = "Which of the following is a strategy to overcome procrastination mentioned in the text?"
 choices = ["Waiting for deadline pressure", "Rewarding yourself after completing tasks", "Hiding from the task", "Blaming others for your delays"]
 answer = "Rewarding yourself after completing tasks"
 
-
 [[questions]]
 question = "In the Eisenhower Decision Matrix, a task that is 'Urgent and Important' should be:"
 choices = ["Deleted or ignored", "Done immediately", "Scheduled for later", "Delegated to someone else"]
 answer = "Done immediately"
-
 
 [[questions]]
 question = "What is the first step in the Pomodoro Technique?"
 choices = ["Take a 15-minute break", "Mark a check on paper", "Decide on the task", "Set a timer for 50 minutes"]
 answer = "Decide on the task"
 
-
 [[questions]]
 question = "Based on Mark Twain's quote, what does the 'Eat the Frog' time management strategy suggest?"
 choices = ["Eat a live frog for breakfast", "Do the biggest or most unpleasant task first thing in the morning", "Avoid difficult tasks until the evening", "Work only on easy tasks"]
 answer = "Do the biggest or most unpleasant task first thing in the morning"
-
 
 [[questions]]
 question = "What is the '8-8-8 rule' mentioned in the student profile of Preston Allen?"
 choices = ["8 hours work, 8 hours play, 8 hours rest", "8 classes, 8 credits, 8 clubs", "8 hours school, 8 hours free time, 8 hours sleep", "8 pages per essay, 8 chapters per week, 8 exams per year"]
 answer = "8 hours school, 8 hours free time, 8 hours sleep"
 
-
 [[questions]]
 question = "According to a 2018 American College Health Association report cited in the text, what percentage of college students reported experiencing overwhelming anxiety within a 12-month period?"
 choices = ["42%", "50%", "63%", "75%"]
 answer = "63%"
-
 
 [[questions]]
 question = "What is the '2-4-6-8 Breathing Technique' designed to do?"
 choices = ["Increase heart rate", "Calm the body and mind", "Improve physical strength", "Enhance memory storage"]
 answer = "Calm the body and mind"
 
-
 [[questions]]
 question = "Which of the following is a key component of Emotional Intelligence (EQ) that improves communication?"
 choices = ["Ignoring others' feelings", "Self-awareness", "Speaking louder", "Using complex jargon"]
 answer = "Self-awareness"
-
 
 [[questions]]
 question = "What does the acronym 'FWIW' stand for in digital communication as listed in the text?"
 choices = ["Forget What I Wrote", "For What It's Worth", "Fighting With Inner Wisdom", "Forwarding Web Information"]
 answer = "For What It's Worth"
 
-
 [[questions]]
 question = "In the context of online communication (netiquette), what does USING ALL CAPS typically signify?"
 choices = ["Politeness", "Excitement", "Shouting or aggression", "Whispering"]
 answer = "Shouting or aggression"
-
 
 [[questions]]
 question = "Which barrier to effective communication involves 'jargon or technical terms' that others may not understand?"
 choices = ["Emotional barrier", "Cultural barrier", "Language & expression barrier", "Personal barrier"]
 answer = "Language & expression barrier"
 
-
 [[questions]]
 question = "What is the difference between 'hearing' and 'listening' as defined in the communication section?"
 choices = ["Hearing is passive, listening requires understanding", "Hearing requires effort, listening is automatic", "They are the same thing", "Hearing is for music, listening is for speech"]
 answer = "Hearing is passive, listening requires understanding"
-
 
 [[questions]]
 question = "What is the definition of Information Literacy according to the text?"
 choices = ["The ability to use a computer", "The skill of writing essays quickly", "A set of skills to recognize when information is needed and locate, evaluate, and use it effectively", "The ability to memorize facts from a textbook"]
 answer = "A set of skills to recognize when information is needed and locate, evaluate, and use it effectively"
 
-
 [[questions]]
 question = "When evaluating a website for reliability, which of the following is a key question to ask according to the text?"
 choices = ["Does the site have many pictures?", "Who owns or publishes the site?", "Is the site popular on social media?", "Does the site have a .com domain?"]
 answer = "Who owns or publishes the site?"
-
 
 [[questions]]
 question = "What is a 'hallucination' in the context of generative AI?"
 choices = ["A dream experienced by an AI", "When an AI produces false, invented, or inaccurate information", "A visual effect created by AI art", "The process of AI learning from data"]
 answer = "When an AI produces false, invented, or inaccurate information"
 
-
 [[questions]]
-question = "According to the case study of Jessica (the Computer Science student), what was a consequence of her using AI to generate code?"
-choices = ["She received an A+", "She was promoted to a teaching assistant", "She faced academic probation and suspension from the honor society", "She was asked to teach the AI course"]
+question = "According to the case study of Jessica (the Computer Science student), what was a consequence of her using AI to generate code? bruh"
+choices = ["She was promoted to a teaching assistant", "She received an A+", "She was asked to teach the AI course", "She faced academic probation and suspension from the honor society"]
 answer = "She faced academic probation and suspension from the honor society"
-
 
 [[questions]]
 question = "In the context of AI ethics, what does 'transparency' refer to?"
 choices = ["Making the AI code publicly available", "Using clear glass computers", "Clearly disclosing when and how AI tools are used in academic work", "Making AI tools invisible to the user"]
 answer = "Clearly disclosing when and how AI tools are used in academic work"
 
-
 [[questions]]
-question = "What is 'Bloom’s Taxonomy' used for in the context of thinking skills?"
+question = "What is 'Bloom\u2019s Taxonomy' used for in the context of thinking skills?"
 choices = ["A method for memorizing lists", "A hierarchy of thinking skills where 'Create' is the highest level", "A type of multiple-choice test", "A grading system for essays"]
 answer = "A hierarchy of thinking skills where 'Create' is the highest level"
-
 
 [[questions]]
 question = "Which type of thinking is defined as 'systematic problem-solving by separating a whole into component parts'?"
 choices = ["Creative Thinking", "Critical Thinking", "Analytical Thinking", "Metacognition"]
 answer = "Analytical Thinking"
 
-
 [[questions]]
 question = "What is Metacognition?"
 choices = ["Memorizing large amounts of data", "Thinking about your own thinking", "Thinking quickly under pressure", "Collaborative group thinking"]
 answer = "Thinking about your own thinking"
-
 
 [[questions]]
 question = "Which of the following is a 'planning' question used in metacognition?"
 choices = ["How well do I understand this material?", "What am I supposed to learn in this situation?", "What information is important in each section?", "What else can I do to understand better?"]
 answer = "What am I supposed to learn in this situation?"
 
-
 [[questions]]
 question = "According to the text, what is a common mistake students make regarding time management in college?"
 choices = ["Studying too much", "Attending too many study groups", "Underestimating the amount of study time needed", "Overestimating the difficulty of exams"]
 answer = "Underestimating the amount of study time needed"
-
 
 [[questions]]
 question = "Which of the following is an example of a SMART goal as described in the text?"
 choices = ["I am going to be rich someday", "I will be more organized", "I will earn at least a 3.0 GPA next semester", "I will try to study more"]
 answer = "I will earn at least a 3.0 GPA next semester"
 
-
 [[questions]]
 question = "What is the recommended length for a study session according to the text to maintain focus?"
-choices = ["2 hours with no break", "30–45 minutes with short breaks", "10 minutes max", "As long as possible"]
-answer = "30–45 minutes with short breaks"
-
+choices = ["2 hours with no break", "30\u201345 minutes with short breaks", "10 minutes max", "As long as possible"]
+answer = "30\u201345 minutes with short breaks"
 
 [[questions]]
 question = "What is the primary danger of multitasking while studying?"
 choices = ["It saves time", "It increases brain power", "It reduces focus and retention", "It is recommended by all professors"]
 answer = "It reduces focus and retention"
 
-
 [[questions]]
 question = "According to the section on 'Information Literacy', why is verification of sources important?"
 choices = ["Because Google is always correct", "Because information appears everywhere and requires critical thinking to filter accurate vs. biased content", "Because print sources are always better", "Because Wikipedia is not reliable"]
 answer = "Because information appears everywhere and requires critical thinking to filter accurate vs. biased content"
-
 
 [[questions]]
 question = "What is the role of the hippocampus in long-term memory formation?"
 choices = ["It stores long-term memories permanently", "It builds the initial memory", "It deletes old memories", "It manages emotional responses"]
 answer = "It builds the initial memory"
 
-
 [[questions]]
 question = "In the problem-solving steps listed, what should you do after 'Determine the issue(s)'?"
 choices = ["Immediately choose a solution", "Recognize other perspectives", "Write a final report", "Ignore the problem"]
 answer = "Recognize other perspectives"
-
 
 [[questions]]
 question = "Why do effective thinkers create multiple solutions to a problem?"
 choices = ["To confuse others", "Because the first solution is always wrong", "To have backup plans when unexpected issues arise", "Because professors require it"]
 answer = "To have backup plans when unexpected issues arise"
 
-
 [[questions]]
 question = "What is the difference between 'commercial' and 'open technologies' as discussed in the AI ethics section?"
 choices = ["Commercial is free, open is paid", "Commercial is for business, open is for school", "Commercial is owned by companies (often closed source), open technologies are publicly accessible and transparent", "There is no difference"]
 answer = "Commercial is owned by companies (often closed source), open technologies are publicly accessible and transparent"
-
 
 [[questions]]
 question = "According to the case of Louisa, how could a generative AI tool help a non-traditional student with time constraints?"
 choices = ["By writing the entire essay from scratch", "By using speech-to-text to dictate thoughts and helping edit a draft", "By taking the exam for her", "By applying for deadline extensions"]
 answer = "By using speech-to-text to dictate thoughts and helping edit a draft"
 
-
 [[questions]]
 question = "Which of the following is an example of a factual argument rather than an opinion?"
 choices = ["Blue is the best color", "Research shows blue environments reduce heart rate", "Mice make the best pets", "Everyone is entitled to their own opinion"]
 answer = "Research shows blue environments reduce heart rate"
-
 
 [[questions]]
 question = "What is a potential negative impact of AI detection tools mentioned in the text?"
 choices = ["They are too expensive", "They can misclassify student-written work, especially for non-native English speakers", "They are too easy to cheat", "They only work on images"]
 answer = "They can misclassify student-written work, especially for non-native English speakers"
 
-
 [[questions]]
 question = "What is the main goal of the 'Academic Development Group Project' described in the text?"
 choices = ["To write a research paper on AI", "To design an academic initiative promoting effective learning, digital literacy, responsible AI use, and academic integrity", "To take a final exam", "To create a business plan"]
 answer = "To design an academic initiative promoting effective learning, digital literacy, responsible AI use, and academic integrity"
-
 
 [[questions]]
 question = "According to the 'Rules for Communication Technology' (Netiquette), how should you behave in college discussion boards?"
 choices = ["Use informal slang", "Avoid personal attacks and be professional", "Write in all caps for emphasis", "Ignore the instructor's comments"]
 answer = "Avoid personal attacks and be professional"
 
-
 [[questions]]
 question = "What is 'informed flexibility' in critical thinking?"
 choices = ["Changing your opinion randomly", "Adjusting plans when conditions change while keeping the overall goal in mind", "Refusing to change your mind", "Ignoring new evidence"]
 answer = "Adjusting plans when conditions change while keeping the overall goal in mind"
-
 
 [[questions]]
 question = "What is the primary purpose of college according to the 'Why College?' section?"
 choices = ["To earn a high salary", "To avoid entering the workforce", "To develop grit and purpose while opening career pathways", "To make friends"]
 answer = "To develop grit and purpose while opening career pathways"
 
-
 [[questions]]
 question = "Which of the following is an example of 'Cultural Adjustment' to college?"
 choices = ["Managing a budget", "Navigating campus norms and unwritten rules", "Building relationships with roommates", "Increased workload from classes"]
 answer = "Navigating campus norms and unwritten rules"
-
 
 [[questions]]
 question = "What is 'grit' as defined in the context of college success?"
 choices = ["Dirt or sand on the floor", "A type of personality test", "Perseverance during adversity", "The ability to memorize facts quickly"]
 answer = "Perseverance during adversity"
 
-
 [[questions]]
 question = "According to the research on purpose and well-being, people with a strong purpose experience:"
 choices = ["More stress and anxiety", "Less stress and anxiety and more job satisfaction", "Lower lifetime earnings", "Fewer friendships"]
 answer = "Less stress and anxiety and more job satisfaction"
-
 
 [[questions]]
 question = "What is the estimated lifetime ROI (Return on Investment) for a $100,000 four-year degree mentioned in the text?"
 choices = ["100%", "500%", "1,500%", "10,000%"]
 answer = "1,500%"
 
-
 [[questions]]
 question = "Which of the following soft skills are developed in college according to the text?"
 choices = ["Memorization and repetition", "Critical thinking, communication, and teamwork", "Typing speed and filing", "Sales and marketing only"]
 answer = "Critical thinking, communication, and teamwork"
-
 
 [[questions]]
 question = "How does college testing differ from high school testing according to the comparison table?"
 choices = ["Tests are more frequent in college", "Tests cover more material and are fewer in number", "Tests are always open-book in college", "Tests are graded by peers in college"]
 answer = "Tests cover more material and are fewer in number"
 
-
 [[questions]]
 question = "In the high school vs. college comparison, who is primarily responsible for identifying a student's need for help in college?"
 choices = ["The teacher", "The parent", "The counselor", "The student"]
 answer = "The student"
-
 
 [[questions]]
 question = "What is the definition of 'Working Memory' as provided in the text?"
 choices = ["Memory stored for years", "Memory for sensory experiences like smells", "Active processing space used during active tasks", "Memory for childhood events"]
 answer = "Active processing space used during active tasks"
 
-
 [[questions]]
 question = "What must the brain do to move information from short-term to long-term memory?"
 choices = ["Nothing, it happens automatically", "Forget the information first", "Repetition and meaningful interaction", "Sleep for 12 hours"]
 answer = "Repetition and meaningful interaction"
-
 
 [[questions]]
 question = "How does emotional connection affect long-term memory?"
 choices = ["It weakens memory", "It has no effect", "It boosts long-term memory retention", "It only affects short-term memory"]
 answer = "It boosts long-term memory retention"
 
-
 [[questions]]
 question = "According to the text, how can sleep deprivation be compared to being drunk?"
 choices = ["It improves judgment", "It is less harmful", "It can be just as harmful", "It has no effect on performance"]
 answer = "It can be just as harmful"
-
 
 [[questions]]
 question = "What is the recommended action regarding phones while studying?"
 choices = ["Keep it on silent in your pocket", "Check it every 10 minutes", "Place your phone outside the room", "Use it for music only"]
 answer = "Place your phone outside the room"
 
-
 [[questions]]
 question = "What is the purpose of 'Generating Idea Clusters' (mind-mapping) as a study strategy?"
 choices = ["To write a longer essay", "To visually link a main idea to related concepts to improve recall", "To hide information from the reader", "To create a strict outline"]
 answer = "To visually link a main idea to related concepts to improve recall"
-
 
 [[questions]]
 question = "What is the 'Spacing' study strategy?"
 choices = ["Studying all night before a test", "Studying the same topic repeatedly without breaks", "Studying over several days, not all at once", "Studying with a group of friends"]
 answer = "Studying over several days, not all at once"
 
-
 [[questions]]
 question = "What is 'Practice Testing' as a study strategy?"
 choices = ["Only taking the final exam", "Asking the teacher for answers", "Quizzing yourself, using flashcards, or teaching others", "Re-reading the textbook chapter"]
 answer = "Quizzing yourself, using flashcards, or teaching others"
-
 
 [[questions]]
 question = "What should you do if you encounter a difficult question during a test?"
 choices = ["Leave it blank and never return", "Skip it and return later", "Spend 30 minutes on it immediately", "Guess randomly without reading"]
 answer = "Skip it and return later"
 
-
 [[questions]]
 question = "What is one strategy to manage test anxiety mentioned in the text?"
 choices = ["Avoid studying at all", "Use deep breathing and positive visualization", "Drink lots of caffeine", "Leave the exam room"]
 answer = "Use deep breathing and positive visualization"
-
 
 [[questions]]
 question = "According to the text, what is one academic impact of procrastination?"
 choices = ["Higher grades", "Lower grades and harder to catch up", "More free time", "Increased popularity"]
 answer = "Lower grades and harder to catch up"
 
-
 [[questions]]
 question = "What is the first step in prioritization according to the text?"
-choices = ["Panic and react emotionally", "Do the easiest task first", "Understand the requirements of each task", "Ask a friend what to do"]
+choices = ["Do the easiest task first", "Understand the requirements of each task", "Ask a friend what to do", "Panic and react emotionally"]
 answer = "Understand the requirements of each task"
-
 
 [[questions]]
 question = "In the Eisenhower Matrix, tasks that are 'Not Urgent but Important' should be:"
 choices = ["Done immediately", "Deleted", "Scheduled for later", "Given to someone else"]
 answer = "Scheduled for later"
 
-
 [[questions]]
 question = "What is the 'Daily Top Three' time management strategy?"
 choices = ["Do three hours of work", "Identify the three most important tasks to finish today", "Take three breaks per day", "Study three subjects only"]
 answer = "Identify the three most important tasks to finish today"
-
 
 [[questions]]
 question = "According to the text, what is the traditional work interval length in the Pomodoro Technique?"
 choices = ["15 minutes", "25 minutes", "45 minutes", "60 minutes"]
 answer = "25 minutes"
 
-
 [[questions]]
 question = "After completing 4 Pomodoro cycles, what break is recommended?"
 choices = ["No break", "3-5 minute break", "15-30 minute break", "1 hour break"]
 answer = "15-30 minute break"
-
 
 [[questions]]
 question = "What is the definition of 'Chronic Stress' as opposed to positive stress?"
 choices = ["Stress that lasts a short time and improves focus", "Stress that is constant and reduces concentration", "Stress that only happens during exams", "Stress that makes you happy"]
 answer = "Stress that is constant and reduces concentration"
 
-
 [[questions]]
 question = "What is the purpose of 'Gratitude' practice according to the text?"
 choices = ["To ignore problems", "To change brain activity, promoting calm, health, and emotional balance", "To get more material possessions", "To compete with others"]
 answer = "To change brain activity, promoting calm, health, and emotional balance"
-
 
 [[questions]]
 question = "What is a key rule for brainstorming project ideas?"
 choices = ["Criticize every idea immediately", "Share freely without judging or filtering", "Only the leader can share ideas", "Focus on quality over quantity from the start"]
 answer = "Share freely without judging or filtering"
 
-
 [[questions]]
 question = "What is the purpose of the 'Executive Summary' in the Final Report structure?"
 choices = ["To list all references", "To provide a brief overview of the entire project (150-250 words)", "To thank the team members", "To describe the methodology in detail"]
 answer = "To provide a brief overview of the entire project (150-250 words)"
-
 
 [[questions]]
 question = "According to the communication model, what are the three required elements for communication?"
 choices = ["Phone, email, text", "At least one sender, a message, at least one receiver", "Tone, volume, pitch", "English, grammar, spelling"]
 answer = "At least one sender, a message, at least one receiver"
 
-
 [[questions]]
 question = "Why is it inappropriate to text a professor about a grade according to the 'Context of Communication' section?"
 choices = ["Professors don't have phones", "Texting is too slow", "Visiting office hours is the best option for clarity and professionalism", "Professors only read emails"]
 answer = "Visiting office hours is the best option for clarity and professionalism"
-
 
 [[questions]]
 question = "What is a key component of active listening?"
 choices = ["Thinking about your response while the other person speaks", "Removing distractions and showing empathy", "Interrupting to correct errors", "Changing the subject frequently"]
 answer = "Removing distractions and showing empathy"
 
-
 [[questions]]
 question = "What is a potential drawback of online communication mentioned in the text?"
 choices = ["It is too slow", "It reduces non-verbal cues (tone, gestures) leading to misinterpretation", "It requires too much paper", "It is only for business use"]
 answer = "It reduces non-verbal cues (tone, gestures) leading to misinterpretation"
-
 
 [[questions]]
 question = "According to the 'Learning to Learn Online' section, what is a key skill for online learners?"
 choices = ["Memorizing the textbook", "Self-directed learning and taking ownership of your learning", "Watching videos passively", "Avoiding all communication with instructors"]
 answer = "Self-directed learning and taking ownership of your learning"
 
-
 [[questions]]
 question = "What is the SQ3R method used for?"
 choices = ["Time management", "Strategic reading", "Math problem solving", "Group communication"]
 answer = "Strategic reading"
-
 
 [[questions]]
 question = "Why is it important to check the copyright date of a book when evaluating sources?"
 choices = ["Old books are always wrong", "To ensure the information is current and not outdated", "To see if it is expensive", "To find the publisher's address"]
 answer = "To ensure the information is current and not outdated"
 
-
 [[questions]]
 question = "What is a 'peer-reviewed' journal article?"
 choices = ["An article written by students", "An article reviewed by the author's friends", "An article evaluated by other experts in the same field before publication", "An article published on a blog"]
 answer = "An article evaluated by other experts in the same field before publication"
-
 
 [[questions]]
 question = "What is a potential environmental concern related to AI mentioned in the text?"
 choices = ["AI creates too much plastic waste", "The energy consumption for training large AI models contributes to carbon emissions", "AI destroys paper forests", "AI uses too much water"]
 answer = "The energy consumption for training large AI models contributes to carbon emissions"
 
-
 [[questions]]
 question = "How can AI 'hinder' memory formation according to the text?"
 choices = ["By making you too smart", "By generating helpful flashcards", "Cutting corners with AI saves time but reduces the learning experience and prevents skill practice", "By causing headaches"]
 answer = "Cutting corners with AI saves time but reduces the learning experience and prevents skill practice"
 
-
 [[questions]]
 question = "What is the definition of 'Plagiarism' as provided in the AI ethics section?"
-choices = ["Using AI to check grammar", "Not giving credit to the source or copying someone else’s work and citing it as your own", "Studying with a friend", "Paraphrasing a sentence"]
-answer = "Not giving credit to the source or copying someone else’s work and citing it as your own"
-
+choices = ["Using AI to check grammar", "Not giving credit to the source or copying someone else\u2019s work and citing it as your own", "Studying with a friend", "Paraphrasing a sentence"]
+answer = "Not giving credit to the source or copying someone else\u2019s work and citing it as your own"
 
 [[questions]]
 question = "What is the 'Situated Expectancy Value Theory' used for in the context of AI and learning?"
 choices = ["To calculate grades", "To describe motivation for an assignment and how AI could help increase it", "To program AI robots", "To design exam questions"]
 answer = "To describe motivation for an assignment and how AI could help increase it"
 
-
 [[questions]]
 question = "According to the text, what is a key step in 'Analyzing Your Schedule and Creating Time'?"
 choices = ["Adding more activities", "Identifying wasted time and repurposing it", "Sleeping less", "Hiring a personal assistant"]
 answer = "Identifying wasted time and repurposing it"
-
 
 [[questions]]
 question = "What is 'Creative Thinking' primarily associated with in the workplace?"
 choices = ["Following rules strictly", "Generating new, imaginative, and unconventional ideas to solve problems", "Avoiding risks", "Doing repetitive tasks"]
 answer = "Generating new, imaginative, and unconventional ideas to solve problems"
 
-
 [[questions]]
 question = "What is the role of the 'neocortex' in long-term memory?"
 choices = ["It builds initial memories", "It stores long-term connections", "It manages short-term recall", "It processes emotional memories only"]
 answer = "It stores long-term connections"
-
 
 [[questions]]
 question = "According to the text, what is a common challenge related to 'Imposter Syndrome' in the first year?"
 choices = ["Feeling like a fraud or that you don't belong", "Having too much confidence", "Knowing everything already", "Being over-prepared"]
 answer = "Feeling like a fraud or that you don't belong"
 
-
 [[questions]]
 question = "What is the purpose of a 'Rubric' in online assignments?"
 choices = ["To decorate the assignment", "To evaluate your work against specific criteria", "To make the assignment longer", "To hide instructions"]
 answer = "To evaluate your work against specific criteria"
-
 
 [[questions]]
 question = "What does 'Netiquette' refer to?"
 choices = ["The rules of tennis", "The etiquette or rules for respectful communication online", "A type of internet virus", "A software for blocking websites"]
 answer = "The etiquette or rules for respectful communication online"
 
-
 [[questions]]
 question = "Why is it important to 'Identify the learning goals for assignments'?"
 choices = ["To ignore the instructions", "To understand what the instructor expects you to learn and achieve", "To make the assignment harder", "To avoid doing the work"]
 answer = "To understand what the instructor expects you to learn and achieve"
-
 
 [[questions]]
 question = "What is one way to 'Make use of small blocks of time' for online learning?"
 choices = ["Ignore them", "Only study in 3-hour blocks", "Use 10-15 minutes to review flashcards or notes", "Watch a full movie"]
 answer = "Use 10-15 minutes to review flashcards or notes"
 
-
 [[questions]]
 question = "According to the text, what is a 'VUCA' world?"
 choices = ["A type of computer virus", "Volatile, Uncertain, Complex, Ambiguous", "A specific brand of stress ball", "A study technique"]
 answer = "Volatile, Uncertain, Complex, Ambiguous"
-
 
 [[questions]]
 question = "What is the benefit of 'Meditation' according to the text?"
 choices = ["It makes you forget everything", "It builds calm, focus, and emotional resilience", "It is a waste of time", "It only works for monks"]
 answer = "It builds calm, focus, and emotional resilience"
 
-
 [[questions]]
 question = "What is the difference between 'Long-term memory' and 'Short-term memory'?"
 choices = ["Long-term is for smells, short-term is for sounds", "Long-term stores information for future use, Short-term temporarily holds information", "There is no difference", "Short-term memory lasts forever"]
 answer = "Long-term stores information for future use, Short-term temporarily holds information"
-
 
 [[questions]]
 question = "Why should you 'Review lecture notes within a few hours of taking them'?"
 choices = ["To throw them away", "To keep the material fresh and identify gaps", "To give them to a friend", "To decorate your notebook"]
 answer = "To keep the material fresh and identify gaps"
 
-
 [[questions]]
 question = "What is a 'Concept Association' study technique?"
 choices = ["Memorizing definitions word-for-word", "Practicing connecting new concepts to familiar patterns or memories", "Ignoring difficult terms", "Only reading the first sentence"]
 answer = "Practicing connecting new concepts to familiar patterns or memories"
-
 
 [[questions]]
 question = "What is the primary risk of 'AI surveillance' in education?"
 choices = ["It saves money", "It threatens student privacy and autonomy", "It makes grading easier", "It is fun for teachers"]
 answer = "It threatens student privacy and autonomy"
 
-
 [[questions]]
 question = "What should you do if an AI detection tool flags your original work as AI-generated?"
 choices = ["Ignore it", "Accuse the professor of bias", "Provide evidence of your writing process (drafts, notes) and request a human review", "Delete the work"]
 answer = "Provide evidence of your writing process (drafts, notes) and request a human review"
-
 
 [[questions]]
 question = "According to the text, what is the role of the instructor in online learning?"
 choices = ["To do the work for you", "To support your learning, but you must take the initiative to connect", "To ignore student emails", "To grade only the final exam"]
 answer = "To support your learning, but you must take the initiative to connect"
 
-
 [[questions]]
 question = "What is 'Mindfulness' defined as in the text?"
 choices = ["Thinking about the future", "Worrying about the past", "Being present with thoughts, feelings, and surroundings without judgment", "Ignoring your emotions"]
 answer = "Being present with thoughts, feelings, and surroundings without judgment"
-
 
 [[questions]]
 question = "What is the purpose of an 'ePortfolio' in online learning?"
 choices = ["To store vacation photos", "To showcase learning, projects, and reflections", "To replace the final exam", "To chat with friends"]
 answer = "To showcase learning, projects, and reflections"
 
-
 [[questions]]
 question = "What is the main difference between 'Working Memory' and 'Short-term Memory' according to the text?"
 choices = ["There is no difference", "Working memory is used during active tasks, while short-term memory helps track immediate information", "Working memory lasts for years, short-term lasts for minutes", "Short-term memory is for smells, working memory is for sounds"]
 answer = "Working memory is used during active tasks, while short-term memory helps track immediate information"
-
 
 [[questions]]
 question = "Which of the following is an example of using short-term memory strategies in daily life?"
 choices = ["Remembering your childhood birthday", "Hanging keys in the same place to remember where they are", "Knowing how to ride a bike", "Speaking your native language fluently"]
 answer = "Hanging keys in the same place to remember where they are"
 
-
 [[questions]]
 question = "What happens to neurons and synapses when long-term memories are formed?"
 choices = ["They weaken or disappear", "They strengthen or form new links", "They remain unchanged", "They turn into liquid"]
 answer = "They strengthen or form new links"
-
 
 [[questions]]
 question = "According to the text, why do students often sacrifice sleep in college?"
 choices = ["Because they don't need sleep", "Because college demands lead them to sacrifice sleep", "Because sleeping is boring", "Because professors forbid sleeping"]
 answer = "Because college demands lead them to sacrifice sleep"
 
-
 [[questions]]
 question = "What is the impact of sleep loss on judgment, focus, and mood?"
 choices = ["It improves all three", "It has no impact", "It negatively impacts all three", "It only affects mood"]
 answer = "It negatively impacts all three"
-
 
 [[questions]]
 question = "What is the recommended length of a study session to maintain attention according to the text?"
 choices = ["10-15 minutes", "30-45 minutes with short breaks", "2 hours without breaks", "As long as possible until you finish"]
 answer = "30-45 minutes with short breaks"
 
-
 [[questions]]
 question = "What are the three myths about studying that the text debunks?"
 choices = ["Spacing, Interleaving, Practice Testing", "Multitasking, Highlighting, Studying Is Effortless", "Mnemonics, Idea Clusters, Pomodoro", "Reading, Writing, Arithmetic"]
 answer = "Multitasking, Highlighting, Studying Is Effortless"
-
 
 [[questions]]
 question = "Why is highlighting alone considered an ineffective study strategy according to the text?"
 choices = ["It takes too much time", "It is too expensive", "It is passive and doesn't deeply process information; it needs to be combined with other practices", "It damages the textbook"]
 answer = "It is passive and doesn't deeply process information; it needs to be combined with other practices"
 
-
 [[questions]]
 question = "What is an example of a mnemonic for remembering the lines on a treble clef (EGBDF)?"
 choices = ["Every Good Boy Does Fine", "Elephants Got Big Dirty Feet", "Eat Good Bread Daily Fresh", "Every Girl Buys Donuts Friday"]
 answer = "Every Good Boy Does Fine"
-
 
 [[questions]]
 question = "What is the key to making mnemonics effective?"
 choices = ["They should be very long and complex", "They should be simple and easy to remember", "They should rhyme perfectly", "They should include numbers"]
 answer = "They should be simple and easy to remember"
 
-
 [[questions]]
 question = "What is the primary benefit of 'Interleaving' as a study strategy?"
 choices = ["It makes studying faster", "It builds deeper understanding and flexible thinking by mixing topics", "It reduces the need to study", "It eliminates the need for tests"]
 answer = "It builds deeper understanding and flexible thinking by mixing topics"
-
 
 [[questions]]
 question = "What is the 'Whole-Person Approach' to test preparation?"
 choices = ["Only focus on studying, ignore everything else", "Don't ignore health, sleep, or family during exam time; balance responsibilities", "Study with your whole body", "Only take tests when you feel perfect"]
 answer = "Don't ignore health, sleep, or family during exam time; balance responsibilities"
 
-
 [[questions]]
 question = "What should you do if you need academic accommodations (extra time, separate room) for tests?"
 choices = ["Ignore your needs", "Drop the class", "Communicate early with instructors or student services", "Wait until the day of the test to ask"]
 answer = "Communicate early with instructors or student services"
-
 
 [[questions]]
 question = "What is one strategy to stay focused on test day?"
 choices = ["Talk to friends about stressful topics", "Focus only on the exam and trust your preparation", "Review new material right before the test", "Arrive late to avoid waiting"]
 answer = "Focus only on the exam and trust your preparation"
 
-
 [[questions]]
 question = "What should you do before submitting a test?"
 choices = ["Submit immediately without checking", "Review calculations, essays, skipped items, and check all pages", "Erase all your answers", "Leave the room without submitting"]
 answer = "Review calculations, essays, skipped items, and check all pages"
-
 
 [[questions]]
 question = "What is the estimated total cost of an additional year of college according to the Washington Post data?"
 choices = ["$15,774", "$46,335", "$82,074", "$151,115"]
 answer = "$151,115"
 
-
 [[questions]]
 question = "What is the impact of procrastination on self-esteem according to the text?"
 choices = ["It improves self-esteem", "It has no effect", "Repeated procrastination leads to frustration, self-doubt, and declining confidence", "It makes you more confident"]
 answer = "Repeated procrastination leads to frustration, self-doubt, and declining confidence"
-
 
 [[questions]]
 question = "How can accountability help reduce procrastination?"
 choices = ["By blaming others", "By sharing your goals with another person, which increases motivation and adds social responsibility", "By keeping your goals secret", "By competing aggressively"]
 answer = "By sharing your goals with another person, which increases motivation and adds social responsibility"
 
-
 [[questions]]
 question = "Why is it important to estimate how long each task will take when managing time?"
 choices = ["To impress your friends", "To set aside the correct amount of time and avoid last-minute cramming", "To prove you are fast", "To fill out a form"]
 answer = "To set aside the correct amount of time and avoid last-minute cramming"
-
 
 [[questions]]
 question = "What is the purpose of the 'Time Estimation Activity' described in the text?"
 choices = ["To see who is fastest", "To compare estimated time vs. actual time to improve future planning accuracy", "To compete with classmates", "To waste time"]
 answer = "To compare estimated time vs. actual time to improve future planning accuracy"
 
-
 [[questions]]
 question = "What is the 'enemy of prioritization' according to the text?"
 choices = ["Hard work", "Panic or emotional reactions", "Laziness", "Too much free time"]
 answer = "Panic or emotional reactions"
-
 
 [[questions]]
 question = "Why is it important to understand task dependencies when prioritizing?"
 choices = ["Because all tasks are independent", "Because some tasks depend on others; completing them out of order may cause rework", "Because dependencies don't matter", "Because you should always do the easiest first"]
 answer = "Because some tasks depend on others; completing them out of order may cause rework"
 
-
 [[questions]]
 question = "In the Eisenhower Matrix, tasks that are 'Urgent but Not Important' should be:"
 choices = ["Done immediately", "Scheduled for later", "Deleted or ignored", "Delegated to someone else if possible"]
 answer = "Delegated to someone else if possible"
-
 
 [[questions]]
 question = "Why is it important to consider 'Who is driving your tasks?'"
 choices = ["Because you should always obey everyone", "Because others' goals may conflict with yours, and communicating your priorities can prevent conflicts", "Because you should ignore everyone else", "Because tasks have drivers"]
 answer = "Because others' goals may conflict with yours, and communicating your priorities can prevent conflicts"
 
-
 [[questions]]
 question = "What should you do when it is impossible to finish everything on your to-do list?"
 choices = ["Panic and give up", "Stay calm, consider task value and long-term impact, and communicate early", "Work 24 hours straight", "Blame your instructor"]
 answer = "Stay calm, consider task value and long-term impact, and communicate early"
-
 
 [[questions]]
 question = "What is the purpose of breaking large tasks into smaller steps?"
 choices = ["To make the task look bigger", "To make long projects manageable even with a busy schedule", "To confuse yourself", "To avoid doing the work"]
 answer = "To make long projects manageable even with a busy schedule"
 
-
 [[questions]]
 question = "What is the recommended action if you encounter unexpected issues in your plan?"
 choices = ["Give up completely", "Be flexible, monitor, and adapt to ensure task completion", "Ignore the issues", "Change the goal"]
 answer = "Be flexible, monitor, and adapt to ensure task completion"
-
 
 [[questions]]
 question = "According to the text, where is the best place to do your work?"
 choices = ["A coffee shop with loud music", "A well-organized, comfortable, distraction-free environment tailored to your needs", "Your bed", "The library only"]
 answer = "A well-organized, comfortable, distraction-free environment tailored to your needs"
 
-
 [[questions]]
 question = "Why is working at the 'right time' important for productivity?"
 choices = ["Because time is an illusion", "To align your work with your personal energy cycles and well-being", "Because your boss said so", "To avoid working at night"]
 answer = "To align your work with your personal energy cycles and well-being"
-
 
 [[questions]]
 question = "What is the relationship between goal setting and motivation according to the text?"
 choices = ["Goals reduce motivation", "Setting goals helps maintain motivation", "Motivation prevents goal setting", "There is no relationship"]
 answer = "Setting goals helps maintain motivation"
 
-
 [[questions]]
 question = "Where does true motivation come from according to the text?"
 choices = ["External pressure from parents", "Internal desire, not external pressure", "Rewards and punishments", "Fear of failure"]
 answer = "Internal desire, not external pressure"
-
 
 [[questions]]
 question = "Which of the following is a SMART goal according to the text?"
 choices = ["I will be more organized", "I am going to be rich someday", "I will save money to buy a newer car by June", "I will try to do better"]
 answer = "I will save money to buy a newer car by June"
 
-
 [[questions]]
 question = "What is the purpose of an 'Action Plan' in goal setting?"
 choices = ["To ignore your goals", "To provide a step-by-step plan to ensure you achieve your goals", "To make your goals harder", "To replace your goals"]
 answer = "To provide a step-by-step plan to ensure you achieve your goals"
-
 
 [[questions]]
 question = "What is one way to 'Visualize the Results' to stay motivated?"
 choices = ["Imagine failing", "Picture yourself achieving the goal and the positive feelings associated with it", "Ignore the outcome", "Only focus on the process"]
 answer = "Picture yourself achieving the goal and the positive feelings associated with it"
 
-
 [[questions]]
 question = "Why is it important to 'Make Certain They Are Your Goals'?"
 choices = ["Because others' goals for you are always better", "Because you are more motivated to achieve goals you truly want", "Because you should never set goals", "Because goals don't matter"]
 answer = "Because you are more motivated to achieve goals you truly want"
-
 
 [[questions]]
 question = "What is the 'Daily Top Three' strategy designed to do?"
 choices = ["Overwhelm you with tasks", "Keep momentum strong by identifying the three most important tasks to finish today", "Replace all other planning", "Eliminate breaks"]
 answer = "Keep momentum strong by identifying the three most important tasks to finish today"
 
-
 [[questions]]
 question = "How many tasks can you complete in a week using the 'Daily Top Three' strategy with one day off?"
 choices = ["3 tasks", "12 tasks", "18 tasks", "21 tasks"]
 answer = "18 tasks"
-
 
 [[questions]]
 question = "Who developed the Pomodoro Technique?"
 choices = ["Mark Twain", "Francesco Cirillo", "Henry Ford", "John Medina"]
 answer = "Francesco Cirillo"
 
-
 [[questions]]
 question = "What is the recommended break length after one Pomodoro cycle (before completing 4 cycles)?"
 choices = ["No break", "3-5 minutes", "15 minutes", "30 minutes"]
 answer = "3-5 minutes"
-
 
 [[questions]]
 question = "Why does the Pomodoro Technique work according to the text?"
 choices = ["Because it eliminates breaks", "Short work cycles reduce fatigue and encourage breaking tasks into 25-minute pieces", "Because it is very old", "Because it uses a special timer"]
 answer = "Short work cycles reduce fatigue and encourage breaking tasks into 25-minute pieces"
 
-
 [[questions]]
 question = "What is the 'Eat the Frog' technique based on?"
 choices = ["A scientific study", "A Mark Twain quote", "A French cooking recipe", "A video game"]
 answer = "A Mark Twain quote"
-
 
 [[questions]]
 question = "What is the main benefit of doing the biggest or most unpleasant task first?"
 choices = ["It makes the rest of the day easier", "It reduces anxiety, increases accomplishment, and builds momentum", "It saves the best for last", "It eliminates the need to do other tasks"]
 answer = "It reduces anxiety, increases accomplishment, and builds momentum"
 
-
 [[questions]]
 question = "What is the '8-8-8 rule' intended to help with?"
 choices = ["Budgeting money", "Balancing school, free time, and sleep for productivity", "Writing essays", "Taking tests"]
 answer = "Balancing school, free time, and sleep for productivity"
-
 
 [[questions]]
 question = "According to the text, what percentage of teens reported that their high school writing assignments were only a single paragraph to one page in length?"
 choices = ["50%", "62%", "75%", "82%"]
 answer = "82%"
 
-
 [[questions]]
 question = "What is the typical page length for writing assignments in introductory college courses according to the table?"
 choices = ["1-2 pages", "3-4 pages", "5-7 pages", "10-15 pages"]
 answer = "5-7 pages"
-
 
 [[questions]]
 question = "According to the text, what is one reason college learning is more demanding than high school?"
 choices = ["High school work is simple and uniform, while college requires deeper, more complex assignments", "College has more holidays", "High school teachers are stricter", "College classes are shorter"]
 answer = "High school work is simple and uniform, while college requires deeper, more complex assignments"
 
-
 [[questions]]
 question = "What is a common source of stress in college according to the text?"
 choices = ["Too much free time", "Constant pressure in a VUCA (volatile, uncertain, complex, ambiguous) world", "Not enough homework", "Too many holidays"]
 answer = "Constant pressure in a VUCA (volatile, uncertain, complex, ambiguous) world"
-
 
 [[questions]]
 question = "What is one sign of chronic stress mentioned in the text?"
 choices = ["Improved focus", "Excessive energy", "Poor focus and frequent illness", "Increased happiness"]
 answer = "Poor focus and frequent illness"
 
-
 [[questions]]
 question = "What is the '2-4-6-8 Breathing Technique' designed to do?"
 choices = ["Increase heart rate", "Calm the body and mind", "Build lung capacity for sports", "Improve singing voice"]
 answer = "Calm the body and mind"
-
 
 [[questions]]
 question = "How long should you sit with a positive feeling when practicing gratitude?"
 choices = ["1 second", "5 seconds", "30 seconds", "5 minutes"]
 answer = "30 seconds"
 
-
 [[questions]]
 question = "What is the recommended starting length for meditation practice according to the text?"
 choices = ["30 seconds", "3 minutes", "30 minutes", "1 hour"]
 answer = "3 minutes"
-
 
 [[questions]]
 question = "Who is Dan Harris and what is his connection to meditation?"
 choices = ["A baseball player who meditates", "An ABC News journalist who overcame panic and stress through meditation and became an advocate", "A scientist who invented meditation", "A professor who teaches meditation"]
 answer = "An ABC News journalist who overcame panic and stress through meditation and became an advocate"
 
-
 [[questions]]
 question = "What is the purpose of the 'Academic Development Group Project'?"
 choices = ["To replace the final exam", "To help students apply academic skills to real university challenges by designing an academic initiative", "To write a personal diary", "To create a business"]
 answer = "To help students apply academic skills to real university challenges by designing an academic initiative"
-
 
 [[questions]]
 question = "What are the five themes that the Academic Development Project promotes?"
 choices = ["Math, Science, English, History, Art", "Effective learning, Digital literacy, Responsible AI use, Academic integrity, University engagement", "Sports, Music, Dance, Drama, Film", "Cooking, Cleaning, Driving, Shopping, Travel"]
 answer = "Effective learning, Digital literacy, Responsible AI use, Academic integrity, University engagement"
 
-
 [[questions]]
 question = "What is the weight of the Academic Development Group Project?"
 choices = ["25%", "50%", "75%", "100%"]
 answer = "50%"
-
 
 [[questions]]
 question = "How many students are required per group for the Academic Development Project?"
 choices = ["1-2", "3-5", "6-8", "9-10"]
 answer = "3-5"
 
-
 [[questions]]
 question = "What are the three components of the Academic Development Project?"
 choices = ["Quiz, Midterm, Final", "Proposal, Presentation, Final Report", "Homework, Classwork, Attendance", "Essay, Poster, Video"]
 answer = "Proposal, Presentation, Final Report"
-
 
 [[questions]]
 question = "What is the first step in brainstorming project ideas according to the text?"
 choices = ["Share freely", "Build on each other's ideas", "Define the goal", "Select the best idea"]
 answer = "Define the goal"
 
-
 [[questions]]
 question = "What should you do during the 'Share freely' step of brainstorming?"
 choices = ["Criticize every idea", "Only share good ideas", "List all ideas without judging or filtering", "Keep ideas to yourself"]
 answer = "List all ideas without judging or filtering"
-
 
 [[questions]]
 question = "What is the purpose of the 'Group & Organize' step in brainstorming?"
 choices = ["To throw away bad ideas", "To cluster similar ideas into themes to make a large number of ideas manageable", "To vote on the best idea immediately", "To write a report"]
 answer = "To cluster similar ideas into themes to make a large number of ideas manageable"
 
-
 [[questions]]
 question = "What criteria should be used to select the best project idea?"
 choices = ["Popularity only", "Cost only", "Feasibility, Impact, and Resources (time, budget, skills)", "Difficulty only"]
 answer = "Feasibility, Impact, and Resources (time, budget, skills)"
-
 
 [[questions]]
 question = "What is the suggested word count for the 'Introduction' section of the Final Report?"
 choices = ["50-100 words", "100-150 words", "200-300 words", "500-700 words"]
 answer = "200-300 words"
 
-
 [[questions]]
 question = "What citation style is required for the Final Report?"
 choices = ["MLA 8th", "Chicago 17th", "APA 7th", "Harvard"]
 answer = "APA 7th"
-
 
 [[questions]]
 question = "What is the suggested word count range for the entire Final Report?"
 choices = ["500-1000 words", "1,000-1,500 words", "2,200-3,000 words", "5,000-6,000 words"]
 answer = "2,200-3,000 words"
 
-
 [[questions]]
 question = "According to Joseph Sommerville, why do we take communication for granted?"
 choices = ["Because it is easy", "Because we do it so frequently", "Because it is unimportant", "Because only experts understand it"]
 answer = "Because we do it so frequently"
-
 
 [[questions]]
 question = "What is the purpose of the 'Activity: Rules for Communication Forms'?"
 choices = ["To memorize rules", "To list rules or guidelines related to each communication form", "To ignore communication rules", "To create new languages"]
 answer = "To list rules or guidelines related to each communication form"
 
-
 [[questions]]
 question = "What does the acronym 'AAMOF' stand for?"
 choices = ["As A Matter Of Fact", "All Americans Must Obey Flags", "Always Ask More Often First", "Aunt Alice Made Orange Fudge"]
 answer = "As A Matter Of Fact"
-
 
 [[questions]]
 question = "What does the acronym 'BTAIM' stand for?"
 choices = ["Better Try Again In May", "Be That As It May", "Bring The Apples Inside Monday", "Before The Accident I Moved"]
 answer = "Be That As It May"
 
-
 [[questions]]
 question = "What does the acronym 'CWOT' stand for?"
 choices = ["Complete Waste Of Time", "Can't Wait On Tuesday", "Call When You're There", "Come With Our Team"]
 answer = "Complete Waste Of Time"
-
 
 [[questions]]
 question = "What does the acronym 'SLAP' stand for?"
 choices = ["Sounds Like A Plan", "Stop Looking At Phones", "Silly Little Animal Party", "Slowly Lower All Pedals"]
 answer = "Sounds Like A Plan"
 
-
 [[questions]]
 question = "What is a potential downside of using acronyms in digital communication?"
 choices = ["They take too long to type", "They may reduce clarity", "They are illegal", "They require special software"]
 answer = "They may reduce clarity"
-
 
 [[questions]]
 question = "What are the four different modes of information transfer mentioned in the text?"
 choices = ["Fast, slow, medium, instant", "Vocal, Written, Visual, Nonverbal", "English, Spanish, French, Chinese", "Phone, email, text, letter"]
 answer = "Vocal, Written, Visual, Nonverbal"
 
-
 [[questions]]
 question = "What is an example of 'Visual' information transfer?"
 choices = ["Phone call", "Letter", "Logos, pictures, maps, menus, signs", "Tone of voice"]
 answer = "Logos, pictures, maps, menus, signs"
-
 
 [[questions]]
 question = "What is an example of 'Nonverbal' information transfer?"
 choices = ["Radio", "Text message", "Gestures, tone, body language", "Email"]
 answer = "Gestures, tone, body language"
 
-
 [[questions]]
 question = "What role does emotion play in communication according to the text?"
 choices = ["Emotions have no effect", "Feelings influence how messages are sent and received; Emotional Intelligence (EQ) helps in choosing the right method and timing", "Only positive emotions matter", "Emotions should be ignored"]
 answer = "Feelings influence how messages are sent and received; Emotional Intelligence (EQ) helps in choosing the right method and timing"
-
 
 [[questions]]
 question = "What are the five components of Emotional Intelligence (EQ) that improve communication?"
 choices = ["Reading, Writing, Arithmetic, Science, History", "Self-awareness, Self-regulation, Motivation, Empathy, Social skills", "Speed, Accuracy, Volume, Tone, Pitch", "Memory, Focus, Attention, Perception, Logic"]
 answer = "Self-awareness, Self-regulation, Motivation, Empathy, Social skills"
 
-
 [[questions]]
 question = "According to the text, what is the best way to ask a professor about a grade?"
 choices = ["Send a text message", "Make a phone call", "Visit office hours", "Send a message through social media"]
 answer = "Visit office hours"
-
 
 [[questions]]
 question = "Why is listening considered the 'other half' of communication?"
 choices = ["Because talking is more important", "Because sending a message is only half the task; listening is essential for correct understanding", "Because listening is easier", "Because only listeners communicate"]
 answer = "Because sending a message is only half the task; listening is essential for correct understanding"
 
-
 [[questions]]
 question = "What factors influence how people interpret topics according to the text?"
 choices = ["Only age", "Only culture", "Gender, Culture, Age, Background", "Only gender"]
 answer = "Gender, Culture, Age, Background"
-
 
 [[questions]]
 question = "According to Mark Twain, what is the difference between the right word and almost the right word?"
 choices = ["There is no difference", "The difference between lightning and the lightning bug", "The difference between day and night", "The difference between a cat and a dog"]
 answer = "The difference between lightning and the lightning bug"
 
-
 [[questions]]
 question = "What is an example of 'being friendly' communication?"
 choices = ["Asking for directions", "Sending a text message", "Greeting a friend or smiling at a baby", "Writing an essay"]
 answer = "Greeting a friend or smiling at a baby"
-
 
 [[questions]]
 question = "What is an example of 'practical needs' communication?"
 choices = ["Posting a photo", "Greeting a friend", "Asking for information or requesting directions", "Smiling at a baby"]
 answer = "Asking for information or requesting directions"
 
-
 [[questions]]
 question = "What is the key point about nonverbal communication?"
 choices = ["It doesn't matter", "Whether shy, reserved, or silent, you still communicate messages through your appearance, behavior, and presence", "Only extroverts communicate nonverbally", "Nonverbal communication is always intentional"]
 answer = "Whether shy, reserved, or silent, you still communicate messages through your appearance, behavior, and presence"
-
 
 [[questions]]
 question = "Who is Sherry Turkle and what is her perspective on technology?"
 choices = ["She invented the internet", "She argues that once we became tethered to the network, we didn't need to keep computers busy; they keep us busy", "She created Facebook", "She is a computer programmer"]
 answer = "She argues that once we became tethered to the network, we didn't need to keep computers busy; they keep us busy"
 
-
 [[questions]]
 question = "What is the evolution of communication tools according to the text?"
-choices = ["Typewriter → Computer → Smartphone", "Telegraph → Landline → Cordless phone → Cell phone → Smartphone → Social media → AR/VR", "Radio → TV → Internet", "Letter → Email → Text"]
-answer = "Telegraph → Landline → Cordless phone → Cell phone → Smartphone → Social media → AR/VR"
-
+choices = ["Typewriter \u2192 Computer \u2192 Smartphone", "Telegraph \u2192 Landline \u2192 Cordless phone \u2192 Cell phone \u2192 Smartphone \u2192 Social media \u2192 AR/VR", "Radio \u2192 TV \u2192 Internet", "Letter \u2192 Email \u2192 Text"]
+answer = "Telegraph \u2192 Landline \u2192 Cordless phone \u2192 Cell phone \u2192 Smartphone \u2192 Social media \u2192 AR/VR"
 
 [[questions]]
 question = "Who coined the term 'virtual community' in 1993?"
 choices = ["Mark Zuckerberg", "Bill Gates", "Howard Rheingold", "Steve Jobs"]
 answer = "Howard Rheingold"
 
-
 [[questions]]
 question = "What does Howard Rheingold encourage regarding online communication?"
 choices = ["Avoiding the internet completely", "Mindful participation and social media literacy to make online life more productive, less stressful, and more enjoyable", "Using all caps for emphasis", "Posting as much as possible"]
 answer = "Mindful participation and social media literacy to make online life more productive, less stressful, and more enjoyable"
-
 
 [[questions]]
 question = "What is the key skill required as technology changes according to the text?"
 choices = ["Speed reading", "Adaptability", "Memorization", "Typing speed"]
 answer = "Adaptability"
 
-
 [[questions]]
 question = "What is 'context' in communication defined as?"
 choices = ["Only the location", "Only the audience", "Setting, culture, timing, purpose, audience, appropriateness, location, and method", "Only the message content"]
 answer = "Setting, culture, timing, purpose, audience, appropriateness, location, and method"
-
 
 [[questions]]
 question = "Why is emotional intelligence important in communication?"
 choices = ["It helps prevent miscommunication by recognizing your own emotions and others' emotions", "It makes you speak faster", "It helps you win arguments", "It allows you to ignore others"]
 answer = "It helps prevent miscommunication by recognizing your own emotions and others' emotions"
 
-
 [[questions]]
 question = "What is the difference between listening and hearing?"
 choices = ["They are the same", "Hearing = receiving sound; Listening = understanding meaning", "Listening = receiving sound; Hearing = understanding meaning", "Hearing is voluntary, listening is involuntary"]
 answer = "Hearing = receiving sound; Listening = understanding meaning"
-
 
 [[questions]]
 question = "What is one active listening strategy mentioned in the text?"
 choices = ["Think about your response while the other person speaks", "Interrupt to correct errors", "Repeat back what you heard to confirm understanding", "Change the subject frequently"]
 answer = "Repeat back what you heard to confirm understanding"
 
-
 [[questions]]
 question = "What is one language and expression barrier to communication?"
 choices = ["Stress", "Values and norms", "Jargon or technical terms", "Past experiences"]
 answer = "Jargon or technical terms"
-
 
 [[questions]]
 question = "What is one emotional barrier to communication?"
 choices = ["Speaking different languages", "Slang", "Stress, anger, embarrassment", "Stereotypes"]
 answer = "Stress, anger, embarrassment"
 
-
 [[questions]]
 question = "What is one personal factor barrier to communication?"
 choices = ["Sensitive topics", "Values and norms", "Past experiences or assumptions", "Differences in perception"]
 answer = "Past experiences or assumptions"
-
 
 [[questions]]
 question = "What is the purpose of the 'Activity: Preconceptions and Assumptions' with the street scenario?"
 choices = ["To judge people", "To help students recognize their own stereotypes and preconceptions about different types of people", "To prove everyone is equal", "To learn how to ask for change"]
 answer = "To help students recognize their own stereotypes and preconceptions about different types of people"
 
-
 [[questions]]
 question = "What identity factors influence communication according to the text?"
 choices = ["Height and weight", "Cultural identity, Gender identity, Age differences", "Favorite color", "Hair color"]
 answer = "Cultural identity, Gender identity, Age differences"
-
 
 [[questions]]
 question = "What is the main purpose of the 'Learning to Learn Online' section?"
 choices = ["To teach computer programming", "To help students understand how to succeed in a digital learning environment and recognize their role as an active, self-directed learner", "To replace traditional classes", "To learn how to use Zoom"]
 answer = "To help students understand how to succeed in a digital learning environment and recognize their role as an active, self-directed learner"
 
-
 [[questions]]
 question = "What is the 'Plan-Monitor-Evaluate Model' used for?"
 choices = ["Taking tests", "Writing essays", "Assessing your learning progress", "Communicating with professors"]
 answer = "Assessing your learning progress"
-
 
 [[questions]]
 question = "What are the stages of team development mentioned in Part II?"
 choices = ["Plan, Do, Check, Act", "Forming, Storming, Norming, Performing, Adjourning", "Start, Middle, End", "Introduction, Body, Conclusion"]
 answer = "Forming, Storming, Norming, Performing, Adjourning"
 
-
 [[questions]]
 question = "What is the SQ3R method used for?"
 choices = ["Time management", "Strategic reading", "Math problem solving", "Group communication"]
 answer = "Strategic reading"
-
 
 [[questions]]
 question = "What does SQ3R stand for?"
 choices = ["Study, Query, Read, Recite, Review", "Survey, Question, Read, Recite, Review", "Scan, Question, Recognize, Recite, Remember", "See, Quit, Run, Relax, Repeat"]
 answer = "Survey, Question, Read, Recite, Review"
 
-
 [[questions]]
 question = "What is the definition of Information Literacy according to the text?"
 choices = ["Knowing how to use a computer", "A set of skills that allow you to recognize when information is needed and have the ability to locate, evaluate, and use effectively the needed information", "The ability to read quickly", "Knowing how to cite sources"]
 answer = "A set of skills that allow you to recognize when information is needed and have the ability to locate, evaluate, and use effectively the needed information"
-
 
 [[questions]]
 question = "What thinking skill involves 'combining sources into a meaningful whole'?"
 choices = ["Creative thinking", "Analytical thinking", "Critical thinking", "Synthesis"]
 answer = "Synthesis"
 
-
 [[questions]]
 question = "Which source is most reliable for finding information on climate change according to the text?"
 choices = ["Wikipedia", "1985 encyclopedia", "Political campaign report", "NASA.gov"]
 answer = "NASA.gov"
-
 
 [[questions]]
 question = "What is one way to verify everyday information according to the text?"
 choices = ["Only trust social media", "Check reviews, negative press, personal testimonies, and multiple independent sources", "Believe the first result on Google", "Ask a friend"]
 answer = "Check reviews, negative press, personal testimonies, and multiple independent sources"
 
-
 [[questions]]
 question = "How can emotional reactions (anger, fear, loneliness) affect information processing?"
 choices = ["They improve critical thinking", "They can make false claims feel true", "They have no effect", "They only affect memory"]
 answer = "They can make false claims feel true"
-
 
 [[questions]]
 question = "What is one question to ask when evaluating a source?"
 choices = ["Is the website colorful?", "Does it have many ads?", "Author credentials (education, expertise, reputation)", "Is it popular on social media?"]
 answer = "Author credentials (education, expertise, reputation)"
 
-
 [[questions]]
 question = "What is a '.edu' domain typically associated with?"
 choices = ["Commercial businesses", "Educational institutions", "Government agencies", "Non-profit organizations"]
 answer = "Educational institutions"
-
 
 [[questions]]
 question = "What is a '.gov' domain typically associated with?"
 choices = ["Commercial businesses", "Educational institutions", "Government agencies", "Non-profit organizations"]
 answer = "Government agencies"
 
-
 [[questions]]
 question = "What is a '.org' domain typically associated with?"
 choices = ["Commercial businesses", "Educational institutions", "Government agencies", "Non-profit organizations (but requires verification of bias)"]
 answer = "Non-profit organizations (but requires verification of bias)"
-
 
 [[questions]]
 question = "What is one useful learning platform mentioned in the text for finding resources?"
 choices = ["MySpace", "TED Talks", "Snapchat", "TikTok"]
 answer = "TED Talks"
 
-
 [[questions]]
 question = "What is one tool recommended for managing resources effectively?"
 choices = ["A notebook only", "Evernote, Google Docs/Sheets, cloud folders", "Microsoft Paint", "Calculator"]
 answer = "Evernote, Google Docs/Sheets, cloud folders"
 
-
 [[questions]]
 question = "What is a recommended naming convention for files?"
 choices = ["Use vague titles like Notes1, Notes2", "Use clear, future-friendly file names", "Use random numbers", "Use special characters only"]
 answer = "Use clear, future-friendly file names"
-

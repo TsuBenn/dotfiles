@@ -128,7 +128,7 @@ INPUT_METHOD=(
 )
 
 RICING=(
-    quickshell awww ttf-jetbrains-mono-nerd cava
+    quickshell awww ttf-jetbrains-mono-nerd ttf-jetbrains-mono cava
     qt6-base qt6-declarative qt6-svg qt6-wayland
 )
 

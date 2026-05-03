@@ -111,7 +111,7 @@ Singleton {
 
     Process {
         id: get
-        command: ["python", SystemInfo.homedir + "dotfiles/.config/quickshell/tui/scripts/config.py", "--colors"]
+        command: ["python", SystemInfo.configdir + "/scripts/config.py", "--colors"]
         stdout: StdioCollector {
             onStreamFinished: {
                 if (text) {

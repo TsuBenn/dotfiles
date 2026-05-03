@@ -383,6 +383,18 @@ ColumnLayout {
 
         id: tab
 
+        Component.onCompleted: {
+            PopupManager.signalSent.connect((id, sig) => {
+                if (id == "control_panel") {
+                    if (sig == "mixer") {
+                        selected = 0
+                    } else if (sig == "notif") {
+                        selected = 1
+                    }
+                }
+            })
+        }
+
         padding: 1
         type: 0
         w: root.box.contentW

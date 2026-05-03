@@ -43,9 +43,11 @@ ColumnLayout {
 
                 model: NotificationsInfo.notifications_groups
 
-                delegate: Cells {
+                delegate: Loader {
 
                     id: notif
+
+                    active: root.visible
 
                     required property var modelData
 
@@ -54,358 +56,401 @@ ColumnLayout {
                     property bool group: modelData.notifications.length > 1 || modelData.notifications[0].body.length > 1
                     property bool expanded: false
 
-                    w: list.contentW
-                    h: Cell.hCount(notif_layout.implicitHeight)
+                    sourceComponent: Cells {
 
-                    color: "transparent"
-
-                    Component.onCompleted: {
-                        list.collapse.connect(()=> {
-                            notif.expanded = false
-                        })
-                    }
-
-                    Cells {
-
-                        x: Cell.w(1)
-
-                        property bool hovered: false
-
-                        w: list.contentW - 2
-                        h: notif.expanded ? 2 : Cell.hCount(notif_layout.implicitHeight)
+                        w: list.contentW
+                        h: Cell.hCount(notif_layout.implicitHeight)
 
                         color: "transparent"
 
-                        MouseControl {
+                        Component.onCompleted: {
+                            list.collapse.connect(()=> {
+                                notif.expanded = false
+                            })
+                        }
 
-                            id: expander
+                        Cells {
 
-                            anchors.fill: parent
+                            x: Cell.w(1)
 
-                            onEntered: {
-                                arrow.bg = Colors.bgOverlay
-                            }
-                            onExited: {
-                                arrow.bg = "transparent"
-                            }
+                            property bool hovered: false
 
-                            onReleased: (button) => {
-                                if (button == "L") {
-                                    if (notif.group) {
-                                        notif.expanded = !notif.expanded
-                                        if (notif.expanded) {
-                                            list.expanded += 1
-                                        } else {
-                                            list.expanded -= 1
-                                        }
-                                    }
+                            w: list.contentW - 2
+                            h: notif.expanded ? 2 : Cell.hCount(notif_layout.implicitHeight)
+
+                            color: "transparent"
+
+                            MouseControl {
+
+                                id: expander
+
+                                anchors.fill: parent
+
+                                onEntered: {
+                                    arrow.bg = Colors.bgOverlay
                                 }
-                                if (button == "R") {
-                                    const global = mapToGlobal(mouseX, mouseY)
-                                    ContextMenuManager.show(
-                                        [
-                                            {label: "Dismiss", action: () => {
+                                onExited: {
+                                    arrow.bg = "transparent"
+                                }
+
+                                onReleased: (button) => {
+                                    if (button == "L") {
+                                        if (notif.group) {
+                                            notif.expanded = !notif.expanded
+                                            if (notif.expanded) {
+                                                list.expanded += 1
+                                            } else {
+                                                list.expanded -= 1
+                                            }
+                                        }
+                                        else {
+                                            if (notif.modelData.notifications[0].action) {
+                                                notif.modelData.notifications[0].action()
                                                 NotificationsInfo.dismiss(notif.modelData.app, -1)
                                                 NotificationsInfo.refresh()
-                                            }},
-                                            {label: notif.expanded ? "Collapse" : "Expand", disabled: !notif.group, action: () => {
-                                                notif.expanded = !notif.expanded
-                                            }}
-                                        ],
-                                        global.x,
-                                        global.y,
-                                        undefined,
-                                        notif.modelData.app
-                                    )
+                                            }
+                                            if (notif.modelData.notifications[0].object) {
+                                                for (const action of notif.modelData.notifications[0].object.actions) {
+                                                    if (action.identifier == "default") {
+                                                        action.invoke()
+                                                        NotificationsInfo.dismiss(notif.modelData.app, -1)
+                                                        NotificationsInfo.refresh()
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (button == "R") {
+                                        const global = mapToGlobal(mouseX, mouseY)
+                                        ContextMenuManager.show(
+                                            [
+                                                {label: "Dismiss", action: () => {
+                                                    NotificationsInfo.dismiss(notif.modelData.app, -1)
+                                                    NotificationsInfo.refresh()
+                                                }},
+                                                {label: notif.expanded ? "Collapse" : "Expand", disabled: !notif.group, action: () => {
+                                                    notif.expanded = !notif.expanded
+                                                }}
+                                            ],
+                                            global.x,
+                                            global.y,
+                                            undefined,
+                                            notif.modelData.app
+                                        )
+                                    }
                                 }
+
                             }
 
                         }
 
-                    }
+                        ColumnLayout {
 
-                    ColumnLayout {
-
-                        id: notif_layout
-
-                        spacing: 0
-
-                        RowLayout {
+                            id: notif_layout
 
                             spacing: 0
 
-                            CellText {
-                                text: " "
-                            }
-
-                            CellIcon {
-
-                                Layout.alignment: Qt.AlignTop
-
-                                id: icon
-                                w: 5
-                                icon: [notif.modelData.icon,notif.modelData.app]
-                            }
-
-                            CellText {
-                                text: " "
-                            }
-
-                            ColumnLayout {
-
-                                Layout.alignment: Qt.AlignTop
+                            RowLayout {
 
                                 spacing: 0
 
-                                RowLayout {
-
-                                    spacing: 0
-
-                                    CellText {
-                                        text: notif.group ? notif.modelData.app : notif.modelData.notifications[0].summary
-                                        font: Cell.fontB
-                                        preferedW: list.contentW - 6 - 5*icon.success
-                                        color: {
-                                            if (notif.group) return Colors.fgBase
-                                            if (notif.modelData.notifications[0].urgency == 2) {
-                                                return Colors.blend(Colors.fgBase, Colors.danger, 0.8)
-                                            } else if (notif.modelData.notifications[0].urgency == 1) {
-                                                return Colors.blend(Colors.fgBase, Colors.warning, 0.5)
-                                            }
-                                            return Colors.fgBase
-                                        }
-                                    }
-
-                                    CellButton {
-                                        visible: !notif.group
-                                        padding: 1
-                                        text: "\uea76"
-                                        color: [Colors.bgOverlay, Colors.fgBase]
-                                        fg: [Colors.fgBase, Colors.bgSurface]
-
-                                        onReleased: (button) => {
-                                            NotificationsInfo.dismiss(notif.modelData.app, 0)
-                                            NotificationsInfo.refresh()
-                                        }
-                                    }
-
-                                    CellText {
-
-                                        id: arrow
-
-                                        visible: notif.group
-
-                                        Layout.alignment: Qt.AlignTop
-
-                                        text: !notif.expanded ? " ⯆ " : " ⯅ "
-
-                                    }
+                                CellText {
+                                    text: " "
                                 }
 
-                                RowLayout {
+                                CellIcon {
 
-                                    visible: !notif.expanded
+                                    Layout.alignment: Qt.AlignTop
 
-                                    spacing: 0
+                                    id: icon
+                                    w: 5
+                                    icon: [notif.modelData.icon,notif.modelData.app]
+                                }
 
-                                    CellText {
-                                        text: notif.expanded ? "" : (notif.group ? notif.modelData.notifications[0].summary : notif.modelData.notifications[0].body[0])
-                                        preferedW: list.contentW - 3 - 5*icon.success - timer.text.length
-                                        color: notif.group ? Colors.fgSubtle : Colors.fgBase
-                                        wrap: true
-                                    }
-
-                                    CellText {
-                                        id: timer
-                                        text: "  " + NotificationsInfo.formatTime(notif.modelData.notifications[0].time)
-                                        color: Colors.fgSubtle
-                                    }
-
+                                CellText {
+                                    text: " "
                                 }
 
                                 ColumnLayout {
 
-                                    visible: notif.expanded
+                                    Layout.alignment: Qt.AlignTop
+
                                     spacing: 0
 
-                                    Repeater {
+                                    RowLayout {
 
-                                        model: notif.notif_group
+                                        spacing: 0
 
-                                        delegate: ColumnLayout {
-
-                                            id: sub_notif
-
-                                            required property int index
-                                            required property string summary
-                                            required property int urgency
-                                            required property var body
-
-                                            spacing: 0
-
-                                            CellSeparator {
-                                                padding: 0
-                                                color: Colors.bgOverlay
-                                                w: list.contentW - 3 - 5*icon.success
-                                            }
-
-                                            Cells {
-
-                                                w: list.contentW - 3 - 5*icon.success
-                                                h: Cell.hCount(sub_notif_layout.implicitHeight)
-
-                                                color: "transparent"
-
-                                                MouseControl {
-
-                                                    anchors.fill: parent
-
-                                                    onReleased: (button) => {
-                                                        if (button == "R") {
-                                                            const global = mapToGlobal(mouseX, mouseY)
-                                                            ContextMenuManager.show(
-                                                                [
-                                                                    {label: "Dismiss", action: () => {
-                                                                        NotificationsInfo.dismiss(notif.modelData.app, sub_notif.index)
-                                                                        if (notif.notif_group.length == 1 || notif.notif_group.length == 2 && notif.notif_group[0].body.length < 2) {
-                                                                            NotificationsInfo.refresh()
-                                                                        }
-                                                                        notif.notif_group = notif.notif_group.filter((_, i) => i !== sub_notif.index);
-                                                                    }},
-                                                                ],
-                                                                global.x,
-                                                                global.y,
-                                                                undefined,
-                                                                notif.modelData.app
-                                                            )
-                                                        }
-                                                    }
-
+                                        CellText {
+                                            text: notif.group ? notif.modelData.app : notif.modelData.notifications[0].summary
+                                            font: Cell.fontB
+                                            preferedW: list.contentW - 6 - 5*icon.success
+                                            color: {
+                                                if (notif.group) return Colors.fgBase
+                                                if (notif.modelData.notifications[0].urgency == 2) {
+                                                    return Colors.blend(Colors.fgBase, Colors.danger, 0.8)
+                                                } else if (notif.modelData.notifications[0].urgency == 1) {
+                                                    return Colors.blend(Colors.fgBase, Colors.warning, 0.5)
                                                 }
-
-                                                ColumnLayout {
-
-                                                    id: sub_notif_layout
-
-                                                    spacing: 0
-
-                                                    RowLayout {
-
-                                                        spacing: 0
-
-                                                        CellText {
-                                                            text: sub_notif.summary
-                                                            preferedW: list.contentW - 6 - 5*icon.success
-                                                            color: {
-                                                                if (sub_notif.urgency == 2) {
-                                                                    return Colors.blend(Colors.fgBase, Colors.danger, 0.8)
-                                                                } else if (sub_notif.urgency == 1) {
-                                                                    return Colors.blend(Colors.fgBase, Colors.warning, 0.5)
-                                                                }
-                                                                return Colors.fgBase
-                                                            }
-                                                        }
-
-                                                        CellButton {
-                                                            padding: 1
-                                                            text: "\uea76"
-                                                            color: [Colors.bgOverlay, Colors.fgBase]
-                                                            fg: [Colors.fgBase, Colors.bgSurface]
-
-                                                            onReleased: (button) => {
-                                                                NotificationsInfo.dismiss(notif.modelData.app, sub_notif.index)
-                                                                if (notif.notif_group.length == 1 || notif.notif_group.length == 2 && notif.notif_group[0].body.length < 2) {
-                                                                    NotificationsInfo.refresh()
-                                                                }
-                                                                notif.notif_group = notif.notif_group.filter((_, i) => i !== sub_notif.index);
-                                                            }
-                                                        }
-
-                                                    }
-
-                                                    RowLayout {
-
-                                                        spacing: 0
-
-                                                        ColumnLayout {
-
-                                                            spacing: 0
-
-                                                            Repeater {
-
-                                                                model: sub_notif.body
-
-                                                                delegate: RowLayout {
-
-                                                                    required property string modelData
-
-                                                                    spacing: 0
-
-                                                                    CellText {
-                                                                        Layout.alignment: Qt.AlignTop
-
-                                                                        text: "· "
-                                                                        color: Colors.fgSubtle
-
-                                                                    }
-
-                                                                    CellText {
-                                                                        Layout.alignment: Qt.AlignTop
-
-                                                                        text: parent.modelData
-                                                                        preferedW: list.contentW - 5 - 5*icon.success - sub_timer.text.length
-                                                                        color: Colors.fgDim
-                                                                        wrap: true
-                                                                    }
-
-                                                                }
-                                                            }
-
-
-                                                        }
-
-                                                        CellText {
-                                                            id: sub_timer
-                                                            Layout.alignment: Qt.AlignBottom
-                                                            text: "  " + NotificationsInfo.formatTime(notif.modelData.notifications[sub_notif.index].time)
-                                                            color: Colors.fgSubtle
-                                                        }
-
-                                                    }
-
-                                                }
-
+                                                return Colors.fgBase
                                             }
+                                        }
 
+                                        CellButton {
+                                            visible: !notif.group
+                                            padding: 1
+                                            text: "\uea76"
+                                            color: [Colors.bgOverlay, Colors.fgBase]
+                                            fg: [Colors.fgBase, Colors.bgSurface]
 
+                                            onReleased: (button) => {
+                                                NotificationsInfo.dismiss(notif.modelData.app, 0)
+                                                NotificationsInfo.refresh()
+                                            }
+                                        }
+
+                                        CellText {
+
+                                            id: arrow
+
+                                            visible: notif.group
+
+                                            Layout.alignment: Qt.AlignTop
+
+                                            text: !notif.expanded ? " ⯆ " : " ⯅ "
+
+                                        }
+                                    }
+
+                                    RowLayout {
+
+                                        visible: !notif.expanded
+
+                                        spacing: 0
+
+                                        CellText {
+                                            text: notif.expanded ? "" : (notif.group ? notif.modelData.notifications[0].summary : notif.modelData.notifications[0].body[0])
+                                            preferedW: list.contentW - 3 - 5*icon.success - timer.text.length
+                                            color: notif.group ? Colors.fgSubtle : Colors.fgBase
+                                            wrap: true
+                                        }
+
+                                        CellText {
+                                            Layout.alignment: Qt.AlignTop
+                                            id: timer
+                                            text: "  " + NotificationsInfo.formatTime(notif.modelData.notifications[0].time)
+                                            color: Colors.fgSubtle
                                         }
 
                                     }
 
-                                    CellSeparator {
-                                        padding: 0
-                                        color: Colors.bgOverlay
-                                        w: list.contentW - 3 - 5*icon.success
+                                    ColumnLayout {
+
+                                        visible: notif.expanded
+                                        spacing: 0
+
+                                        Repeater {
+
+                                            model: notif.notif_group
+
+                                            delegate: ColumnLayout {
+
+                                                id: sub_notif
+
+                                                required property int index
+                                                required property string summary
+                                                required property int urgency
+                                                required property var body
+
+                                                required property var modelData
+                                                property var object: modelData.object
+                                                property var action: modelData.action
+
+                                                spacing: 0
+
+                                                CellSeparator {
+                                                    padding: 0
+                                                    color: Colors.bgOverlay
+                                                    w: list.contentW - 3 - 5*icon.success
+                                                }
+
+                                                function dismiss() {
+                                                    NotificationsInfo.dismiss(notif.modelData.app, sub_notif.index)
+                                                    if (notif.notif_group.length == 1 || notif.notif_group.length == 2 && notif.notif_group[0].body.length < 2) {
+                                                        NotificationsInfo.refresh()
+                                                    }
+                                                    notif.notif_group = notif.notif_group.filter((_, i) => i !== sub_notif.index);
+                                                }
+
+                                                Cells {
+
+                                                    w: list.contentW - 3 - 5*icon.success
+                                                    h: Cell.hCount(sub_notif_layout.implicitHeight)
+
+                                                    color: "transparent"
+
+                                                    MouseControl {
+
+                                                        anchors.fill: parent
+
+                                                        onReleased: (button) => {
+                                                            if (button == "L") {
+                                                                if (sub_notif.action) {
+                                                                    sub_notif.action()
+                                                                    sub_notif.dismiss()
+                                                                }
+                                                                if (sub_notif.object) {
+                                                                    for (const action of sub_notif.object.actions) {
+                                                                        if (action.identifier == "default") {
+                                                                            action.invoke()
+                                                                            sub_notif.dismiss()
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                            if (button == "R") {
+                                                                const global = mapToGlobal(mouseX, mouseY)
+                                                                ContextMenuManager.show(
+                                                                    [
+                                                                        {label: "Dismiss", action: () => {
+                                                                            sub_notif.dismiss()
+                                                                        }},
+                                                                    ],
+                                                                    global.x,
+                                                                    global.y,
+                                                                    undefined,
+                                                                    notif.modelData.app
+                                                                )
+                                                            }
+                                                        }
+
+                                                    }
+
+                                                    ColumnLayout {
+
+                                                        id: sub_notif_layout
+
+                                                        spacing: 0
+
+                                                        RowLayout {
+
+                                                            spacing: 0
+
+                                                            CellText {
+                                                                text: sub_notif.summary
+                                                                preferedW: list.contentW - 6 - 5*icon.success
+                                                                color: {
+                                                                    if (sub_notif.urgency == 2) {
+                                                                        return Colors.blend(Colors.fgBase, Colors.danger, 0.8)
+                                                                    } else if (sub_notif.urgency == 1) {
+                                                                        return Colors.blend(Colors.fgBase, Colors.warning, 0.5)
+                                                                    }
+                                                                    return Colors.fgBase
+                                                                }
+                                                            }
+
+                                                            CellButton {
+                                                                padding: 1
+                                                                text: "\uea76"
+                                                                color: [Colors.bgOverlay, Colors.fgBase]
+                                                                fg: [Colors.fgBase, Colors.bgSurface]
+
+                                                                onReleased: (button) => {
+                                                                    NotificationsInfo.dismiss(notif.modelData.app, sub_notif.index)
+                                                                    if (notif.notif_group.length == 1 || notif.notif_group.length == 2 && notif.notif_group[0].body.length < 2) {
+                                                                        NotificationsInfo.refresh()
+                                                                    }
+                                                                    notif.notif_group = notif.notif_group.filter((_, i) => i !== sub_notif.index);
+                                                                }
+                                                            }
+
+                                                        }
+
+                                                        RowLayout {
+
+                                                            spacing: 0
+
+                                                            ColumnLayout {
+
+                                                                spacing: 0
+
+                                                                Repeater {
+
+                                                                    model: sub_notif.body
+
+                                                                    delegate: RowLayout {
+
+                                                                        required property string modelData
+
+                                                                        spacing: 0
+
+                                                                        CellText {
+                                                                            Layout.alignment: Qt.AlignTop
+
+                                                                            text: "▪ "
+                                                                            color: Colors.fgSubtle
+
+                                                                        }
+
+                                                                        CellText {
+                                                                            Layout.alignment: Qt.AlignTop
+
+                                                                            text: parent.modelData
+                                                                            preferedW: list.contentW - 5 - 5*icon.success - sub_timer.text.length
+                                                                            color: Colors.fgDim
+                                                                            wrap: true
+                                                                        }
+
+                                                                    }
+                                                                }
+
+
+                                                            }
+
+                                                            CellText {
+                                                                id: sub_timer
+                                                                Layout.alignment: Qt.AlignBottom
+                                                                text: "  " + NotificationsInfo.formatTime(notif.modelData.notifications[sub_notif.index].time)
+                                                                color: Colors.fgSubtle
+                                                            }
+
+                                                        }
+
+                                                    }
+
+                                                }
+
+
+                                            }
+
+                                        }
+
+                                        CellSeparator {
+                                            padding: 0
+                                            color: Colors.bgOverlay
+                                            w: list.contentW - 3 - 5*icon.success
+                                        }
                                     }
+
                                 }
+
+                            }
+
+                            CellSeparator {
+
+                                type: 2
+                                padding: 1
+                                color: Colors.bgOverlay
+                                w: list.contentW
 
                             }
 
                         }
 
-                        CellSeparator {
-
-                            type: 2
-                            padding: 1
-                            color: Colors.bgOverlay
-                            w: list.contentW
-
-                        }
 
                     }
-
-
                 }
+
 
             }
 

@@ -22,8 +22,16 @@ Singleton {
         for (const i in buffer) {
             if (buffer[i].app == app) {
                 if (index == -1) {
+                    for (const noti of buffer[i].notifications) {
+                        if (noti.object) {
+                            noti.object.tracked = false
+                        }
+                    }
                     buffer.splice(i,1)
                     break
+                }
+                if (buffer[i].notifications[index].object) {
+                    buffer[i].notifications[index].object.tracked = false
                 }
                 buffer[i].notifications.splice(index, 1)
             }
@@ -54,13 +62,15 @@ Singleton {
         }
     }
 
-    function send(app, icon, summary, body, urgency = 0) {
+    function send(app, icon, summary, body, urgency = 0, track = false, action = undefined) {
         root.notificationSent({
             "app": app.trim(),
             "icon": icon.trim(),
             "summary": summary.trim(),
             "body": body.trim(),
             "urgency": urgency,
+            "action": action,
+            "track": track,
             "time": 0,
         })
     }
@@ -80,10 +90,12 @@ Singleton {
     }
 
     onNotificationSent: (noti) => {
-        add(noti.app, noti.icon, noti.summary, noti.body, noti.urgency)
+        if (noti.track) {
+            add(noti.app, noti.icon, noti.summary, noti.body, noti.urgency, noti.object)
+        }
     }
 
-    function add(appName, appIcon, summary, body, urgency) {
+    function add(appName, appIcon, summary, body, urgency, object) {
         // 1. Prepare data
         let groups = root.notifications_groups || [];
         const cleanSummary = summary.trim();
@@ -94,6 +106,7 @@ Singleton {
             "summary": cleanSummary,
             "body": [cleanBody],
             "urgency": urgency,
+            "object": object,
             "time": 0,
         });
 
@@ -133,13 +146,18 @@ Singleton {
     NotificationServer {
         id: notificationsServer
 
+        actionsSupported: true
+
         onNotification: (noti) => {
             console.log("Received Notification: " + noti.summary + " " + noti.body)
+
+            //console.log(JSON.stringify(noti,null,2))
 
             let summary = noti.summary
             let body = noti.body
 
             noti.keepOnReload = false
+            noti.tracked = noti.actions.length > 0
 
             let urgency = 0
             if (NotificationUrgency.toString(noti.urgency) == "Critical") {
@@ -157,6 +175,8 @@ Singleton {
                 "summary": summary.trim(),
                 "body": body.trim(),
                 "urgency": urgency,
+                "object": noti,
+                "track": true,
                 "time": 0,
             })
 

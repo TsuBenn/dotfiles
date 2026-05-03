@@ -50,10 +50,14 @@ Item {
             shortcuts: [
                 {
                     binds: "Escape",
-                    action: () => PopupManager.close(root.name)
+                    action: () => root.close()
                 }
             ]
         }
+    }
+
+    function close() {
+        PopupManager.close(root.name)
     }
 
     implicitWidth: Cell.w(w)

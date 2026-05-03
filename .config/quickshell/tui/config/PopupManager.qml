@@ -12,6 +12,12 @@ Singleton {
     signal opened(name: string)
     signal closed(name: string)
 
+    signal signalSent(id: string, sig: string)
+
+    function sendSignal(id = "", sig = "") {
+        root.signalSent(id, sig)
+    }
+
     function open(name, isolate) {
         // Handle optional argument explicitly if engine is older
         if (isolate === undefined) isolate = true;

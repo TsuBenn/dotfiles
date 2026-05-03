@@ -184,10 +184,20 @@ def select_app(app_id):
 # ─── Web ─────────────────────────────────────────────────────────────────────
 
 def is_url(query):
-    return bool(re.match(r'^(https?://|www\.)|(\.[a-z]{2,}(/|$))', query))
+    query = query.strip().lower()
+    
+    if re.match(r'^(https?://|www\.)', query):
+        return True
+        
+    if re.match(r'^[a-z0-9.-]+\.[a-z]{2,6}(/.*)?$', query):
+        return True
+        
+    return False
 
 def select_web(query):
+    query = query.strip()
     if is_url(query):
+        # Ensure 'www.google.com' becomes 'https://www.google.com'
         url = query if query.startswith("http") else "https://" + query
     else:
         url = "https://www.google.com/search?q=" + query.replace(" ", "+")
@@ -231,8 +241,9 @@ def calculate(expr):
             {
                 "label": "= " + str(result),
                 "description": str(result),
+                "category": "calc_result",
                 "type": "exec",
-                "value": ["wl-copy", f"\"{str(result).strip()}\""],
+                "value": ["wl-copy", str(result).strip()],
             }
         ]
     except Exception as e:
@@ -346,21 +357,27 @@ def search_settings(data, query):
 
 # ─── File find ───────────────────────────────────────────────────────────────
 
-def preload_files():
+def preload_files(rescan_only = False):
     cached = []
     
-    if os.path.exists(FILE_CACHE_FILE):
-        try:
-            with open(FILE_CACHE_FILE) as f:
-                cached = json.load(f)
-        except:
-            pass
+    def load_files():
+        nonlocal cached
+        start = time.perf_counter()
+        if os.path.exists(FILE_CACHE_FILE):
+            try:
+                with open(FILE_CACHE_FILE) as f:
+                    cached = json.load(f)
+            except:
+                pass
+        print(f"[timer] Files loaded: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+
 
     def rescan(paths):
         cmd = [
             'fd', '.',
-            os.path.expanduser("~"),
-            '--type', 'f',
+            # os.path.expanduser("~"),
+            "/",
+            "-I",
             '--absolute-path',
             '--exclude', '.git',
             '--exclude', '.cache',
@@ -380,6 +397,8 @@ def preload_files():
         except FileNotFoundError:
             pass
 
+    if not rescan_only:
+        threading.Thread(target=load_files, daemon=True).start()
     threading.Thread(target=rescan, args=(cached,), daemon=True).start()
     
     return cached
@@ -397,6 +416,7 @@ def filter_files(paths, query):
                 "label": name,
                 "description": path,
                 "icon": "",
+                "category": "files",
                 "value": path,
                 "type": "dir" if os.path.isdir(path) else "file"
             })
@@ -458,39 +478,29 @@ def main():
     initialized = False
     begin = time.perf_counter()
 
-    start = time.perf_counter()
-    apps = scan_apps() 
-    print(f"[timer] Apps loaded: {time.perf_counter() - start:.4f}s", file=sys.stderr)
-    icons = []
+    apps = []
+    file_paths = []
 
     timer = False
 
-    start = time.perf_counter()
-    file_paths = preload_files()
-    print(f"[timer] Files loaded: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+    def load():
+        nonlocal apps, file_paths
 
-    """
-    init = []
+        start = time.perf_counter()
+        apps = scan_apps() 
+        print(f"[timer] Apps loaded: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
-    init.extend([{
-        "id": app["id"],
-        "label": app["name"],
-        "description": app["genericName"] or app["description"],
-        "icon": app["icon"],
-        "value": ["bash", "-c", app["exec"]],
-        "type": "exec"
-    } for app in apps])
+        file_paths = preload_files(initialized)
 
-    init.extend(SETTINGS)
-
-    print(json.dumps(init))
-    """
+    load()
 
     while True:
         if not initialized:
             print(f"[timer] Search started: {time.perf_counter() - begin:.4f}s", file=sys.stderr)
             initialized = True
         tags, query, paths = parse_input(input())
+
+        init = time.perf_counter()
 
         result = []
         settings = SETTINGS
@@ -534,7 +544,7 @@ def main():
             app_results.sort(key=lambda x: freq.get(x["id"], 0), reverse=True)
             result.extend(app_results)
             if (timer):
-                print(f"[timer] apps: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+                print(f"[timer] Apps searched: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
         if "s" in tags:
             start = time.perf_counter()
@@ -543,17 +553,20 @@ def main():
             else:
                 result.extend(settings)
             if (timer):
-                print(f"[timer] settings: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+                print(f"[timer] Settings searched: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
         if query:
+            start = time.perf_counter()
             result = search_settings(result, query)
+            if (timer):
+                print(f"[timer] Sorting Apps and Settings: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
         if "h" in tags:
             start = time.perf_counter()
             if query:
                 search_files_async(file_paths, query, result)
             if (timer):
-                print(f"[timer] files: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+                print(f"[timer] Files searched: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
         if "c" in tags:
             start = time.perf_counter()
@@ -562,7 +575,7 @@ def main():
             else:
                 result = CALC
             if (timer):
-                print(f"[timer] calculate: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+                print(f"[timer] Calculated: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
         if "t" in tags:
             result = COLORS
@@ -571,7 +584,18 @@ def main():
             increment_frequency(query)
             continue
 
+        if "w" in tags:
+            select_web(query)
+            continue
+
+        if "r" in tags:
+            print(f"Rescanning...", file=sys.stderr)
+            threading.Thread(target=load, daemon=True).start()
+            continue
+
         print(json.dumps(result))
         sys.stdout.flush()
+        if (timer):
+            print(f"[timer] Search finished: {time.perf_counter() - init:.4f}s", file=sys.stderr)
 
 main()

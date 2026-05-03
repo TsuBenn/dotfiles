@@ -1,0 +1,28 @@
+pragma Singleton
+
+import Quickshell
+
+Singleton {
+
+    id: root
+
+    readonly property bool active: active_fields > 0
+
+    property int active_fields: 0
+
+    onActive_fieldsChanged: {
+        //console.log(`active fields: ${active_fields}`)
+    }
+
+    function activated() {
+        active_fields += 1
+    }
+
+    function deactivated() {
+        active_fields -= 1
+        if (active_fields < 0) {
+            active_fields = 0
+        }
+    }
+
+}

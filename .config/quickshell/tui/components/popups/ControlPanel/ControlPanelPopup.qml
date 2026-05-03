@@ -15,6 +15,8 @@ CellPopup {
     w: 50
     h: Cell.hCount(content.implicitHeight) + 2
 
+    escapeToClose: !TextFieldManager.active
+
     CellBox {
 
         id: box

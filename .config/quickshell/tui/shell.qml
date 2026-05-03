@@ -21,7 +21,7 @@ ShellRoot {
         function init() {
             const active_border = "0xff" + Colors.borderActive.toString().slice(1)
             const inactive_border = "0xff" + Colors.borderInactive.toString().slice(1)
-            process.exec(["bash", SystemInfo.homedir + "/dotfiles/.config/quickshell/tui/scripts/init.sh", active_border, inactive_border])
+            process.exec(["bash", SystemInfo.configdir + "/scripts/init.sh", active_border, inactive_border])
         }
     }
 

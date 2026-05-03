@@ -9,8 +9,8 @@ Item {
 
     id: root
 
-    property int w
-    property int h
+    property real w
+    property real h
 
     property bool grid: false
     property bool whole: true
@@ -18,8 +18,8 @@ Item {
     property color color: "white"
     property color color2: "lightgray"
 
-    implicitWidth: Cell.w(w)
-    implicitHeight: Cell.h(h)
+    implicitWidth: Cell.w(whole ? Math.round(w) : w)
+    implicitHeight: Cell.h(whole ? Math.round(h) : h)
 
     onWChanged: {
         if (w < 0) {

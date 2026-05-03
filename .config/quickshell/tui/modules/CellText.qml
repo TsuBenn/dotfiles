@@ -21,43 +21,77 @@ Item {
     property int w: 0
     property int h: 0
 
-    function wrapText(text, maxLength) {
+    function getCharWidth(char) {
+        // Basic wide-char detection (CJK, fullwidth, etc.)
+        return /[\u1100-\u115F\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE10-\uFE19\uFE30-\uFE6F\uFF00-\uFF60\uFFE0-\uFFE6]/.test(char)
+        ? 2
+        : 1;
+    }
+
+    function getStringWidth(str) {
+        let width = 0;
+        for (const ch of str) {
+            width += getCharWidth(ch);
+        }
+        return width;
+    }
+
+    function wrapText(text, maxWidth) {
+
         const lines = text.split('\n');
-        const wrappedLines = [];
+        const wrapped = [];
+
 
         for (const line of lines) {
-            // Use filter(Boolean) to remove empty strings from multiple spaces
-            const words = line.trim().split(/\s+/);
-            let current = '';
+            // preserve empty lines
+            if (line.length === 0) {
+                wrapped.push('');
+                continue;
+            }
 
-            for (let word of words) {
-                // Handle words longer than the terminal width
-                if (word.length > maxLength) {
-                    if (current) wrappedLines.push(current);
-                    while (word.length > maxLength) {
-                        wrappedLines.push(word.substring(0, maxLength));
-                        word = word.substring(maxLength);
+            let current = '';
+            let currentWidth = 0;
+
+            // split but KEEP spaces as tokens
+            const tokens = line.match(/\S+|\s+/g) || [];
+
+            for (let token of tokens) {
+                let tokenWidth = getStringWidth(token);
+
+                // If token itself is longer than maxWidth → hard split
+                if (tokenWidth > maxWidth) {
+                    for (const ch of token) {
+                        const chWidth = getCharWidth(ch);
+
+                        if (currentWidth + chWidth > maxWidth) {
+                            wrapped.push(current);
+                            current = '';
+                            currentWidth = 0;
+                        }
+
+                        current += ch;
+                        currentWidth += chWidth;
                     }
-                    current = word;
                     continue;
                 }
 
-                // check: current length + space (1) + next word length
-                const space = current.length > 0 ? 1 : 0;
-                if (current.length + space + word.length > maxLength) {
-                    wrappedLines.push(current);
-                    current = word;
+                // Normal case
+                if (currentWidth + tokenWidth > maxWidth) {
+                    wrapped.push(current.trim());
+                    current = token;
+                    currentWidth = tokenWidth;
                 } else {
-                    current = (current.length === 0) ? word : `${current} ${word}`;
+                    current += token;
+                    currentWidth += tokenWidth;
                 }
             }
 
-            if (current) {
-                wrappedLines.push(current);
+            if (current.length > 0) {
+                wrapped.push(current.trim());
             }
         }
 
-        return wrappedLines.join('\n');
+        return wrapped.join('\n');
     }
 
     onTextChanged: {
@@ -103,7 +137,7 @@ Item {
     function truncate(str, maxCells) {
         if (maxCells <= 0) return str
 
-        str = decodeRichText(str.replace(/<[^>]*>/g, ""))
+        let placeholder = decodeRichText(str.replace(/<[^>]*>/g, (match) => "\uffff".repeat(match.length)))
 
         let overflowed = str.length > maxCells
         let result = ""
@@ -112,9 +146,10 @@ Item {
         let excess = 0
         let ellipses = ""
 
-        for (const c of str) {
+        for (const c of placeholder) {
             const isCJK = /[\u4e00-\u9fff\u3040-\u30ff\u31f0-\u31ff\uff00-\uffef]/.test(c)
-            const costs = isCJK ? 2 : 1
+            const isNone = /[\uffff]/.test(c)
+            const costs = isCJK ? 2 : (isNone ? 0 : 1)
             cells.push(costs)
         }
         for (const i in cells) {
@@ -229,7 +264,9 @@ Item {
 
                 Repeater {
 
-                    model: root.preferedW > 0 ? root.splitCJK(root.truncate(parent.modelData, root.preferedW)) : root.splitCJK(parent.modelData)
+                    model: root.preferedW > 0 
+                    ? root.splitCJK(root.truncate(parent.modelData, root.preferedW)) 
+                    : root.splitCJK(parent.modelData)
 
 
                     delegate: Cells {

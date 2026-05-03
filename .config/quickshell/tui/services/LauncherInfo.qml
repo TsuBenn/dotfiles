@@ -11,7 +11,7 @@ Singleton {
 
     id: root
 
-    property string backend: SystemInfo.homedir + "/dotfiles/.config/quickshell/tui/scripts/launcher.py"
+    property string backend: SystemInfo.configdir + "/scripts/launcher.py"
 
     property var result: []
 
@@ -36,10 +36,14 @@ Singleton {
 
     function run(index: int) {
         const item = result[index] 
-        if (!item.category) return
-        if (item.category == "app") {
-            process.write(`-F ${item.id}\n`)
-            PopupManager.close("launcher")
+        if (item.category) {
+            if (item.category == "app") {
+                process.write(`-F ${item.id}\n`)
+                PopupManager.close("launcher")
+            }
+            if (item.category == "calc_result") {
+                NotificationsInfo.send("","","Launcher", "Copied calculation result: " + item.description)
+            }
         }
         if (item.type == "exec") SystemInfo.runDetached(item.value)
         if (item.type == "menu") root.pathFound(item.id, item.label)
@@ -71,6 +75,14 @@ Singleton {
         process.running = false
     }
 
+    function write(text: string) {
+        process.write(`${text}\n`)
+    } 
+
+    Component.onCompleted: {
+        start()
+    }
+
     Process {
 
         id: process
@@ -91,13 +103,23 @@ Singleton {
 
         stdout: SplitParser {
             onRead: (text) => {
-                const data = JSON.parse(text)
-                if (data) {
-                    root.result = data
-                    root.searched(data)
-                    //console.log(JSON.stringify(data,null,2))
+                if (text) {
+                    let data = []
+                    try {
+                        data = JSON.parse(text)
+                    } catch (error) {
+                        //console.log("LauncherInfo: Parse Error")
+                        return
+                    }
+                    if (data) {
+                        root.result = data
+                        root.searched(data)
+                        //console.log(JSON.stringify(data,null,2))
+                    } else {
+                        console.log("LauncherInfo: No data: " + text)
+                    }
                 } else {
-                    console.log("LauncherInfo: " + text)
+                    //console.log("LauncherInfo: No output: " + text)
                 }
             }
         }

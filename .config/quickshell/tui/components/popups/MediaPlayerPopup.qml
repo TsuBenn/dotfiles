@@ -320,7 +320,7 @@ CellPopup {
                 Layout.leftMargin: Cell.w(1)
 
                 w: box.contentW
-                h: 3
+                h: 5
                 spacing: 1
 
                 color: [Colors.secondary, Colors.warning, Colors.danger]

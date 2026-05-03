@@ -49,11 +49,18 @@ CellPopup {
                 property string body: modelData.body
                 property string app: modelData.app
                 property string icon: modelData.icon
+                property var object: modelData.object
+                property var action: modelData.action
 
                 property bool focused: false
 
+                function close() {
+                    let notif = root.notif 
+                    root.notif = notif.slice(1)
+                }
+
                 w: root.w
-                h: 4 + (body.text.split("\n").length-1)
+                h: 4 + (body.text.split("\n").length+(body.text.split("\n").length > 10)-1)
 
                 border.color: {
                     if (popup.urgency == 2) {
@@ -72,6 +79,23 @@ CellPopup {
                     }
                     onExited: {
                         timer.restart()
+                    }
+
+                    onReleased: (button) => {
+                        if (button == "L") {
+                            if (popup.action) {
+                                popup.action()
+                            }
+                            if (popup.object) {
+                                for (const action of popup.object.actions) {
+                                    if (action.identifier == "default") {
+                                        action.invoke()
+                                        popup.close()
+                                        break
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -121,9 +145,32 @@ CellPopup {
 
                             CellText {
                                 id: body
-                                text: popup.body?.length > 0 ? popup.body.trim() : ""
+                                text: {
+                                    if (popup.body?.length > 0) {
+                                        const body = popup.body.trim()
+                                        const lines = body.split("\n")
+                                        if (lines.length > 10) {
+                                            return lines.slice(0,10).join("\n")
+                                        }
+                                        return body
+                                    } else {
+                                        return ""
+                                    }
+                                }
                                 preferedW: root.w - 14
                                 wrap: true
+                            }
+
+                            CellText {
+
+                                visible: {
+                                    return popup.body.split("\n").length > 10
+                                }
+
+                                id: body_more
+                                text: "..."
+                                preferedW: root.w - 14
+                                color: Colors.fgDim
                             }
 
                         }
@@ -147,14 +194,13 @@ CellPopup {
                         id: timer
 
                         interval: {
-                            const base = 2000
+                            const base = 3000
                             const extra = popup.body.length*10*popup.urgency
                             return Math.min(base + extra, 10000)
                         }
                         running: popup.index == 0
                         onTriggered: {
-                            let notif = root.notif 
-                            root.notif = notif.slice(1)
+                            popup.close()
                         }
                     }
 

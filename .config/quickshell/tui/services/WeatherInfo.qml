@@ -26,7 +26,7 @@ Singleton {
 
     Process {
         id: weather
-        command: ["curl", "www.wttr.in/?format='%t>%C>%c>%l'"]
+        command: ["curl", "www.wttr.in"]
 
         stdout: StdioCollector {
             onStreamFinished: {
@@ -38,6 +38,12 @@ Singleton {
                     root.location = raw_data[3].split(",")[0]
                     if (raw_data && timer.interval!=60000) {timer.interval=60000; console.log("Loaded Weather Info from " + raw_data[3].split(",")[0].trim() + "!" + root.condition_icon)}
                 }
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                console.log(text)
             }
         }
     }

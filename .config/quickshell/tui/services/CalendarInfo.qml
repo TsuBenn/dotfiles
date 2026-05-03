@@ -1,120 +1,498 @@
 pragma Singleton
 
+import qs.config
 import qs.services
 
 import Quickshell
+import Quickshell.Io
 import QtQuick
 
 Singleton {
 
     id: root
 
-    property var dates: []
+    /*
+     * REMINDERS AND EVENTS FORMAT
+     *
+     * DD-MM-YYYY: One-time
+     *
+     * DD/MM/YYYY: Daily, for that week
+     *
+     * DDD (e.g. MO, TU): Weekly
+     *
+     * DD: Monthly (doesn't always work with 29 -> 31 since not every month has these days)
+     *
+     * DD-MM: Yearly
+     *
+     * DATES AND MONTHS SHOULD BE PADDING WITH 0
+     */
 
-    readonly property var date: DateTime.date
+    readonly property var weekdays: [
+        "MO",
+        "TU",
+        "WE",
+        "TH",
+        "FR",
+        "SA",
+        "SU",
+    ]
 
-    readonly property var monthsof30: [4,6,9,11]
-    readonly property var dayofweek: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
+    readonly property string backend: SystemInfo.configdir + "/scripts/calendar_manager.py"
 
-    function calculateCalendar() {
+    property var reminders: ({})
+    property var events: ({})
 
-        root.dates = []
+    signal reloaded()
 
-        const dayIndex = dayofweek.indexOf(DateTime.dayofweek_short)
-        const isMonthof30 = monthsof30.includes(parseInt(DateTime.month_numeral))
-        const today = parseInt(DateTime.date)
+    FileView {
 
-        root.dates.push({"day": today, "inMonth": true, "isToday": true})
+        id: load_reminders
 
-        function dayItt(day, inc) : int {
-            day += inc
-            if (day > 6) {
-                return 0
-            } else if (day < 0) {
-                return 6
-            } else {
-                return day
-            }
-        }
-        function monthItt(month, inc) : int {
-            month += inc
-            if (month > 12) {
-                return 1
-            } else if (month < 1) {
-                return 12
-            } else {
-                return month
-            }
-        }
-        function febMaxDate() : int {
-            let year = parseInt(DateTime.year)
-            if ((year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)) {
-                return 29
-            } else {
-                return 28
-            }
-        }
-        function monthMaxDate(month) {
-                if (root.monthsof30.includes(month)) {
-                    return 30
-                } else if (month!=2) {
-                    return 31
-                } else {
-                    return febMaxDate()
+        path: SystemInfo.configdir + "/scripts/reminders.json"
+
+        onLoaded: {
+            let datas = JSON.parse(text())
+            let spans = {}
+            for (const data in datas) {
+                for (const i in datas[data]) {
+                    datas[data][i].date = data
+                    datas[data][i].idx = i
+                    if (datas[data][i].span > 1 && (/^\d{2}-\d{2}-\d{4}$/.test(data))) {
+
+                        datas[data][i].span_idx = 1
+
+                        const split_date = data.split("-")
+
+                        const rawDate = new Date(parseInt(split_date[2]),parseInt(split_date[1]-1),parseInt(split_date[0]))
+
+                        const span = datas[data][i].span
+
+                        for (let j = 1; j < span; j++) {
+                            rawDate.setDate(rawDate.getDate() + 1)
+                            const new_date = `${rawDate.getDate().toString().padStart(2, "0")}-${(rawDate.getMonth()+1).toString().padStart(2, "0")}-${rawDate.getFullYear().toString().padStart(4, "0")}`
+                            if (!spans[new_date]) {
+                                spans[new_date] = []
+                            }
+                            spans[new_date].push({
+                                "title": datas[data][i].title,
+                                "body": datas[data][i].body,
+                                "urgency": datas[data][i].urgency,
+                                "time": datas[data][i].time,
+                                "idx": datas[data][i].idx,
+                                "span": datas[data][i].span,
+                                "span_idx": j+1,
+                                "date": datas[data][i].date,
+                            })
+                        }
+
+                    }
                 }
-        }
+            }
 
-        let currdate = today - 1
-        let thisMonth = parseInt(DateTime.month_numeral)
-        let currday = dayIndex
+            for (const data in spans) {
+                for (const i in spans[data]) {
+                    if (!datas[data]) {
+                        datas[data] = []
+                    }
+                    datas[data].push(spans[data][i])
+                }
+            }
 
-        while (currdate > 0) {
-            currday = dayItt(currday, -1)
-            root.dates.unshift({"day": currdate, "inMonth": true, "isToday": false})
-            currdate -= 1
+            root.reminders = datas
+            root.reloaded()
         }
-        if (currday != 0) {
-            currdate = monthMaxDate(monthItt(thisMonth,-1))
-        }
-        while (currday != 0) {
-            currday = dayItt(currday, -1)
-            root.dates.unshift({"day": currdate, "inMonth": false, "isToday": false})
-            currdate -= 1
-        }
-
-        currdate = today + 1
-        currday = dayIndex
-
-        while (currdate <= monthMaxDate(thisMonth)) {
-            currday = dayItt(currday, 1)
-            root.dates.push({"day": currdate, "inMonth": true, "isToday": false})
-            currdate += 1
-        }
-        if (currday != 6) {
-            currdate = 1
-        }
-        while (currday != 6) {
-            currday = dayItt(currday, 1)
-            root.dates.push({"day": currdate, "inMonth": false, "isToday": false})
-            currdate += 1
-        }
-
-        console.log("It's the Next Day! Re-calculation Calendar")
-
-        /**
-         for (const day of dates) {
-             console.log(`${day.day} ${day.inMonth} ${day.isToday}`)
-         }
-        **/
 
     }
 
-    onDateChanged: {
-        calculateCalendar()
+    FileView {
+
+        id: load_events
+
+        path: SystemInfo.configdir + "/scripts/events.json"
+
+        onLoaded: {
+            let datas = JSON.parse(text())
+            let spans = {}
+            for (const data in datas) {
+                for (const i in datas[data]) {
+                    datas[data][i].date = data
+                    datas[data][i].idx = i
+                    if (datas[data][i].span > 1 && (/^\d{2}-\d{2}-\d{4}$/.test(data))) {
+
+                        datas[data][i].span_idx = 1
+
+                        const split_date = data.split("-")
+
+                        const rawDate = new Date(parseInt(split_date[2]),parseInt(split_date[1]-1),parseInt(split_date[0]))
+
+                        const span = datas[data][i].span
+
+                        for (let j = 1; j < span; j++) {
+                            rawDate.setDate(rawDate.getDate() + 1)
+                            const new_date = `${rawDate.getDate().toString().padStart(2, "0")}-${(rawDate.getMonth()+1).toString().padStart(2, "0")}-${rawDate.getFullYear().toString().padStart(4, "0")}`
+                            if (!spans[new_date]) {
+                                spans[new_date] = []
+                            }
+                            spans[new_date].push({
+                                "title": datas[data][i].title,
+                                "body": datas[data][i].body,
+                                "urgency": datas[data][i].urgency,
+                                "time": datas[data][i].time,
+                                "idx": datas[data][i].idx,
+                                "span": datas[data][i].span,
+                                "span_idx": j+1,
+                                "date": datas[data][i].date,
+                            })
+                        }
+
+                    }
+                }
+            }
+
+            for (const data in spans) {
+                for (const i in spans[data]) {
+                    if (!datas[data]) {
+                        datas[data] = []
+                    }
+                    datas[data].push(spans[data][i])
+                }
+            }
+
+            root.events = datas
+            root.reloaded()
+        }
+
     }
 
-    Component.onCompleted: {
-        calculateCalendar()
+    function timeReminder(day, month, year) {
+        const r = getReminders(day, month, year)
+        const e = getEvents(day, month, year)
+
+        const datas = [...e,...r]
+
+        for (const reminder of datas) {
+            const time = reminder.time.split(":")
+
+            const rmin = parseInt(time[0])*60 + parseInt(time[1])
+            const nmin = parseInt(DateTime.hour24)*60 + parseInt(DateTime.minute)
+
+            if (!reminder.time && reminder.urgency > 0) {
+                NotificationsInfo.send(
+                    "", "",
+                    "REMINDERS & EVENTS",
+                    "<b>" + reminder.title + "</b>" + (reminder.body ? "\n" + reminder.body : ""),
+                    reminder.urgency, true,
+                    () => PopupManager.open("calendar")
+                )
+                return
+            }
+
+            function sendNotif(text) {
+                NotificationsInfo.send(
+                    "", "",
+                    "REMINDERS & EVENTS",
+                    text + " before <b>" + reminder.title + "</b>",
+                    reminder.urgency, false,
+                    () => PopupManager.open("calendar")
+                )
+            }
+
+            if (rmin - nmin == 60) {
+                sendNotif("1 hour")
+            } else if (rmin - nmin == 30) {
+                sendNotif("30 minutes")
+            } else if (rmin - nmin == 10) {
+                sendNotif("10 minutes")
+            } else if (rmin - nmin == 5) {
+                sendNotif("5 minutes")
+            } else if (rmin - nmin == 2) {
+                sendNotif("2 minutes")
+            } else if (rmin - nmin == 0) {
+                NotificationsInfo.send(
+                    "", "",
+                    "REMINDERS & EVENTS",
+                    "<b>" + reminder.title + "</b>" + (reminder.body ? "\n" + reminder.body : ""),
+                    reminder.urgency, true,
+                    () => PopupManager.open("calendar")
+                )
+            }
+
+        }
     }
+
+    function forseeDeadlines(day, month, year, range) {
+
+        let deadlines = []
+
+        let rawDate = new Date(year, month-1, day)
+
+        for (let i = 0; i < range; i++) {
+            rawDate.setDate(rawDate.getDate() + 1)
+            const d = rawDate.getDate()
+            const m = rawDate.getMonth() + 1
+            const y = rawDate.getFullYear()
+
+            const r = getReminders(d, m, y)
+            const e = getEvents(d, m, y)
+
+            for (const reminder of r) {
+                if (reminder.urgency > 0) {
+                    deadlines.push({
+                        "title": reminder.title,
+                        "body": reminder.body,
+                        "urgency": reminder.urgency,
+                        "time": reminder.time,
+                        "date": reminder.date,
+                        "idx": reminder.idx,
+                        "range": i+1
+                    })
+                }
+            }
+
+            for (const reminder of e) {
+                deadlines.push({
+                    "title": reminder.title,
+                    "body": reminder.body,
+                    "urgency": reminder.urgency,
+                    "time": reminder.time,
+                    "date": reminder.date,
+                    "isEvent": true,
+                    "idx": reminder.idx,
+                    "range": i+1
+                })
+            }
+
+        }
+
+        deadlines = deadlines.filter((item, index, self) =>
+        index === self.findIndex(t => {return t.title === item.title})
+
+    )
+
+    return deadlines
+
+}
+
+function getDay(day, month, year) {
+    const rawDay = new Date(year, month-1, day).getDay();
+    const firstDay = (rawDay === 0 ? 6 : rawDay - 1);
+
+    return root.weekdays[firstDay]
+}
+
+function reload() {
+    load_events.reload()
+    load_reminders.reload()
+}
+
+function edit(mode = "", title, body, date, index, urgency = 0, time = "", span = 1) {
+    if (mode == "r") {
+        exec(`-es --index=${index} --span=${span} --time=${time} --date=${date} --body=${body.trim().split(" ").join("-")} --urgency=${urgency} ${title}`)
+    } else if (mode == "e") {
+        exec(`-ems --index=${index} --span=${span} --time=${time} --date=${date} --body=${body.trim().split(" ").join("-")} --urgency=${urgency} ${title}`)
+    }
+}
+
+function add(mode = "", title, body, date, urgency = 0, time = "", span = 1) {
+    if (mode == "r") {
+        exec(`-as --time=${time} --span=${span} --date=${date} --body=${body.trim().split(" ").join("-")} --urgency=${urgency} ${title}`)
+    } else if (mode == "e") {
+        exec(`-ams --time=${time} --span=${span} --date=${date} --body=${body.trim().split(" ").join("-")} --urgency=${urgency} ${title}`)
+    }
+}
+
+function remove(mode, date, index = -1) {
+    if (index == -1) {
+        exec(`-rs --index=${index} --date=${date}`)
+    }
+    if (!mode) return
+    if (mode == "r") {
+        exec(`-rs --index=${index} --date=${date}`)
+    } else if (mode == "e") {
+        exec(`-rms --index=${index} --date=${date}`)
+    }
+}
+
+function exec(text) {
+    process.command = ["python", root.backend, text]
+    process.running = true
+}
+
+function getReminders(day, month, year) {
+
+    let reminders = []
+
+    const rawDate = new Date(year, month-1, day);
+    const rawDay = new Date(year, month-1, day).getDay();
+    const firstDay = (rawDay === 0 ? 6 : rawDay - 1);
+
+    const weekday = root.weekdays[firstDay]
+
+    const paddedDay = day.toString().padStart(2, "0")
+    const paddedMonth = month.toString().padStart(2, "0")
+    const paddedYear = year.toString().padStart(4, "0")
+
+    reminders = root.reminders[`${paddedDay}-${paddedMonth}-${paddedYear}`] ?? []
+    reminders = [...reminders, ...root.reminders[`${paddedDay}`] ?? []]
+    reminders = [...reminders, ...root.reminders[`${paddedDay}-${paddedMonth}`] ?? []]
+    reminders = [...reminders, ...root.reminders[`${weekday}`] ?? []]
+
+    rawDate.setDate(rawDate.getDate() - firstDay)
+
+    for (let i = 0; i < 7; i++) {
+        reminders = [...reminders, ...root.reminders[`${rawDate.getDate().toString().padStart(2,"0")}/${(rawDate.getMonth()+1).toString().padStart(2,"0")}/${rawDate.getFullYear()}`] ?? []]
+        rawDate.setDate(rawDate.getDate() + 1)
+    }
+
+    return reminders
+
+}
+
+function getEvents(day, month, year) {
+
+    let events = []
+
+    const rawDate = new Date(year, month-1, day);
+    const rawDay = new Date(year, month, 1).getDay();
+    const firstDay = (rawDay === 0 ? 6 : rawDay - 1);
+
+    const weekday = root.weekdays[firstDay]
+
+    const paddedDay = day.toString().padStart(2, "0")
+    const paddedMonth = month.toString().padStart(2, "0")
+    const paddedYear = year.toString().padStart(4, "0")
+
+    events = root.events[`${paddedDay}-${paddedMonth}-${paddedYear}`] ?? []
+    events = [...events, ...root.events[`${paddedDay}`] ?? []]
+    events = [...events, ...root.events[`${paddedDay}-${paddedMonth}`] ?? []]
+    events = [...events, ...root.events[`${weekday}`] ?? []]
+
+    rawDate.setDate(rawDate.getDate() - firstDay)
+
+    for (let i = 0; i < 7; i++) {
+        events = [...events, ...root.events[`${rawDate.getDate().toString().padStart(2,"0")}/${(rawDate.getMonth()+1).toString().padStart(2,"0")}/${rawDate.getFullYear()}`] ?? []]
+        rawDate.setDate(rawDate.getDate() + 1)
+    }
+
+    return events
+
+}
+
+function generateCalendar(year, month, todayObj) {
+    // month: 0-11 (JS style)
+
+    month -= 1
+
+    const result = [];
+
+    const today = todayObj.day;
+    const currentMonth = todayObj.month-1;
+    const currentYear = todayObj.year;
+
+    const isCurrentMonth = (month === currentMonth && year === currentYear);
+
+    // 1. First day of this month
+    const rawDay = new Date(year, month, 1).getDay();
+    const firstDay = (rawDay === 0 ? 6 : rawDay - 1);
+
+    // 2. Days in this month
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // 3. Days in previous month
+    const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+    // ---- PREVIOUS MONTH FILL ----
+    for (let i = firstDay - 1; i >= 0; i--) {
+
+        let reminders = getReminders(daysInPrevMonth - i, month == 0 ? 12 : month, year)
+        let events = getEvents(daysInPrevMonth - i, month == 0 ? 12 : month, year)
+
+        result.push({
+            day: daysInPrevMonth - i,
+            inMonth: false,
+            reminders: reminders,
+            events: events,
+            isToday: false,
+            isCurrentMonth: isCurrentMonth,
+            nextMonth: false
+        });
+    }
+
+    // ---- CURRENT MONTH ----
+    for (let day = 1; day <= daysInMonth; day++) {
+
+        let reminders = getReminders(day, month+1, year)
+        let events = getEvents(day, month+1, year)
+
+        result.push({
+            day: day,
+            inMonth: true,
+            reminders: reminders,
+            events: events,
+            isToday: (
+                day === today &&
+                month === currentMonth &&
+                year === currentYear
+            ),
+            isCurrentMonth: isCurrentMonth
+        });
+    }
+
+    // ---- NEXT MONTH FILL (to complete 6 rows x 7 days = 42 cells) ----
+    const totalCells = 42;
+    let nextDay = 1;
+
+    while (result.length < totalCells) {
+
+        let reminders = getReminders(nextDay, month+2 > 12 ? month+2-12 : month+2, year)
+        let events = getEvents(nextDay, month+2 > 12 ? month+2-12 : month+2, year)
+
+        result.push({
+            day: nextDay++,
+            inMonth: false,
+            reminders: reminders,
+            events: events,
+            isToday: false,
+            isCurrentMonth: isCurrentMonth,
+            nextMonth: true
+        });
+    }
+
+    return result;
+}
+
+Process {
+
+    id: process
+
+    onRunningChanged: {
+        root.reload()
+    }
+
+    stdout: StdioCollector {
+        onStreamFinished: {
+            if (text) {
+                console.log("CalendarInfo: " + text)
+            }
+        }
+    }
+    stderr: StdioCollector {
+        onStreamFinished: {
+            if (text) {
+                console.log("CalendarInfo: Error:" + text)
+            }
+        }
+    }
+
+}
+
+Component.onCompleted: {
+    DateTime.minuteChanged.connect(()=>{
+        timeReminder(parseInt(DateTime.date),parseInt(DateTime.month_numeral),parseInt(DateTime.year))
+    })
+    DateTime.dateChanged.connect(() => {
+        reload()
+    })
+}
 
 }

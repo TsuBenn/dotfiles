@@ -20,8 +20,12 @@ Item {
     property string unit: "" 
     property string bindText: ""
 
+    property bool autoClear: false
+
     property bool showCursor : true
     property bool blinkCursor : true
+
+    property bool escapeToUnFocus : true
 
     property int cursorPos: 0
     property int visualPos: 0
@@ -54,10 +58,24 @@ Item {
     clip: true
 
     onFocusChanged: {
+        if (focus) {
+            TextFieldManager.activated()
+            resetCursor()
+        } else if (!focus) {
+            TextFieldManager.deactivated()
+            showCursor = false
+        }
+
         if (autoApply && !focus) {
             entered(text)
+            return
         }
-        set(bindText)
+        if (autoClear && focus) {
+            set("")
+        }
+        if (bindText) {
+            set(bindText)
+        } 
     }
 
     onTextAdded: (text) => {
@@ -67,11 +85,20 @@ Item {
         textInput(root.text, text, "r")
     }
 
+    function grabFocus() {
+        focus = true
+    }
+
+    function unFocus() {
+        focus = false
+    }
+
     function clear() {
         cursorPos = 0
         visualPos = 0
         resetCursor()
         text = root.bindText
+        textfield.offset = 0
     }
 
     function set(new_text: string) {
@@ -95,6 +122,13 @@ Item {
 
     onCursorPosChanged: {
         resetCursor()
+        if (cursorPos + textfield.offset > (root.w - (root.unit.length > 0 ? root.unit.length - 1 : 0)) - 1) {
+            textfield.offset -= 1
+        }
+        if (cursorPos + textfield.offset < 0) {
+            textfield.offset += 1
+            textfield.offset = Math.max(textfield.offset,0)
+        }
     }
 
     onTextChanged: {
@@ -122,66 +156,77 @@ Item {
 
     }
 
-    CellText {
+    Item {
 
-        preferedW: root.w
+        id: textfield
 
-        text: " ".repeat(root.w - root.unit.length) +  root.unit
-        font: root.font
-        color: root.disabled ? root.disabled_color : root.color
+        property int offset: 0
 
-    }
+        x: Math.min(Cell.w(offset),0)
 
-    CellText {
-
-        visible: root.text.trim() == ""
-
-        id: placeholder
-
-        preferedW: root.w - (root.unit.length > 0 ? root.unit.length - 1 : 0)
-
-        text: root.placeholder
-        font: root.font
-        color: root.disabled_color
-
-    }
-
-    CellText {
-
-        visible: !root.hidden
-
-        id: input
-
-        preferedW: root.w - (root.unit.length > 0 ? root.unit.length + 1 : 0)
-
-        text: root.text
-        font: root.font
-        color: root.disabled ? root.disabled_color : root.color
-
-    }
-
-    CellText {
-
-        text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + "█".repeat(Math.abs(root.visualPos))
-        font: root.font
-        color: root.visual_color
-
-    }
-
-    CellText {
-
-        id: cursor
-
-        text: " ".repeat(root.cursorPos) + (root.showCursor && !(root.visual && root.cursorPos == root.text.length) ? "█" : "")
-        font: root.font
-        color: root.disabled ? root.disabled_color : root.color
+        implicitHeight: Cell.h(root.h)
+        implicitWidth: Cell.w(root.w - (root.unit.length > 0 ? root.unit.length - 1 : 0))
 
         CellText {
 
-            visible: root.showCursor && !root.hidden
+            visible: root.text.trim() == ""
 
-            text: " ".repeat(root.cursorPos) + (root.text[root.cursorPos] ?? "")
-            color: root.invert
+            id: placeholder
+
+            text: root.placeholder
+            font: root.font
+            color: root.disabled_color
+
+        }
+
+        CellText {
+
+            visible: !root.hidden
+
+            id: input
+
+            text: root.text
+            font: root.font
+            color: root.disabled ? root.disabled_color : root.color
+
+        }
+
+        CellText {
+
+            text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + "█".repeat(Math.abs(root.visualPos))
+            font: root.font
+            color: root.visual_color
+
+        }
+
+        CellText {
+
+            id: cursor
+
+            text: " ".repeat(root.cursorPos) + (root.showCursor && !(root.visual && root.cursorPos == root.text.length) ? "█" : "")
+            font: root.font
+            color: root.disabled ? root.disabled_color : root.color
+
+            CellText {
+
+                visible: root.showCursor && !root.hidden
+
+                text: " ".repeat(root.cursorPos) + (root.text[root.cursorPos] ?? "")
+                color: root.invert
+
+            }
+
+        }
+
+        CellText {
+
+            id: visual
+
+            visible: !root.hidden
+
+            text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + root.text.slice(root.visualPos > 0 ? root.cursorPos : root.cursorPos+root.visualPos, root.visualPos > 0 ? root.cursorPos+root.visualPos : root.cursorPos)
+            font: root.fontB
+            color: root.disabled ? root.disabled_color : root.invert
 
         }
 
@@ -189,13 +234,11 @@ Item {
 
     CellText {
 
-        id: visual
+        preferedW: root.w
 
-        visible: !root.hidden
-
-        text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + root.text.slice(root.visualPos > 0 ? root.cursorPos : root.cursorPos+root.visualPos, root.visualPos > 0 ? root.cursorPos+root.visualPos : root.cursorPos)
-        font: root.fontB
-        color: root.disabled ? root.disabled_color : root.invert
+        text: " ".repeat(root.w - root.unit.length) +  root.unit
+        font: root.font
+        color: root.disabled ? root.disabled_color : root.color
 
     }
 
@@ -243,119 +286,204 @@ Item {
 
     }
 
+    function delete_char_back() {
+        if (root.visual) {
+            if (root.visualPos > 0) {
+                const removed = root.text.slice(root.cursorPos,root.cursorPos+root.visualPos)
+                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
+                root.textRemoved(removed)
+            }
+            if (root.visualPos < 0) {
+                const removed = root.text.slice(root.cursorPos+root.visualPos,root.cursorPos)
+                root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
+                root.cursorPos = root.cursorPos+root.visualPos
+                root.textRemoved(removed)
+            }
+            root.visualPos = 0
+            return
+        }
+        if (root.cursorPos == 0) {
+            root.textRemoved("")
+            return
+        }
+        const removed = root.text[root.cursorPos-1]
+        root.text = root.text.slice(0, root.cursorPos - 1) + root.text.slice(root.cursorPos)
+        root.cursorPos -= 1
+        root.textRemoved(removed)
+    }
+
+    function delete_word_back() {
+        if (root.visual) {
+            if (root.visualPos > 0) {
+                const removed = root.text.slice(root.cursorPos,root.cursorPos+root.visualPos)
+                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
+                root.textRemoved(removed)
+            }
+            if (root.visualPos < 0) {
+                const removed = root.text.slice(root.cursorPos+root.visualPos,root.cursorPos)
+                root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
+                root.cursorPos = root.cursorPos+root.visualPos
+                root.textRemoved(removed)
+            }
+            root.visualPos = 0
+            return
+        }
+        const removed = root.text.match(/\S+\s*$/)[0]
+        root.text = root.text.replace(/\S+\s*$/, "")
+        if (removed) {
+            root.cursorPos -= removed.length
+            root.textRemoved(removed)
+        } 
+        else root.textRemoved("")
+    }
+
+    function enter() {
+        root.visualPos = 0
+        root.entered(root.text)
+    }
+
+    function delete_char_forward() {
+        if (root.visual) {
+            if (root.visualPos > 0) {
+                const removed = root.text.slice(root.cursorPos,root.cursorPos+root.visualPos)
+                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
+                root.textRemoved(removed)
+            }
+            if (root.visualPos < 0) {
+                const removed = root.text.slice(root.cursorPos+root.visualPos,root.cursorPos)
+                root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
+                root.cursorPos = root.cursorPos+root.visualPos
+                root.textRemoved(removed)
+            }
+            root.visualPos = 0
+            return
+        }
+        const removed = root.text[root.cursorPos]
+        if (root.cursorPos == root.text.length) return
+        root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + 1)
+        root.textRemoved(removed)
+    }
+
+    function select_char_back() {
+        if (!root.editable) return
+        if (root.cursorPos == 0) return
+        root.cursorPos -= 1
+        root.visualPos += 1
+    }
+
+    function select_char_forward() {
+        if (!root.editable) return
+        if (root.cursorPos == root.text.length) return
+        root.cursorPos += 1
+        root.visualPos -= 1
+    }
+
+    function select_char_forward_word() {
+        if (!root.editable) return
+        if (root.cursorPos == root.text.length) return
+        if (root.text[Math.min(root.cursorPos+1,text.length)] != " " && root.cursorPos < root.text.length ) {
+            root.cursorPos += 1
+            root.visualPos -= 1
+        }
+        while (root.cursorPos < root.text.length && root.text[root.cursorPos] != " ") {
+            root.cursorPos += 1
+            root.visualPos -= 1
+        }
+    }
+
+    function move_cursor_back() {
+        if (!root.editable) return
+        root.visualPos = 0
+        root.cursorPos -= 1
+        if (root.cursorPos < 0) {
+            root.cursorPos = 0
+        }
+    }
+
+    function move_cursor_back_word() {
+        if (!root.editable) return
+        root.visualPos = 0
+        if (root.text[Math.max(root.cursorPos-1,0)] != " " && root.cursorPos > 0 ) root.cursorPos -= 1
+        while (root.cursorPos > 0 && root.text[root.cursorPos] != " ") {
+            root.cursorPos -= 1
+        }
+        if (root.cursorPos < 0) {
+            root.cursorPos = 0
+        }
+    }
+
+    function move_cursor_forward() {
+        if (!root.editable) return
+        root.visualPos = 0
+        root.cursorPos += 1
+        if (root.cursorPos > root.text.length) {
+            root.cursorPos = root.text.length
+        }
+    }
+
+    function move_cursor_forward_word() {
+        if (!root.editable) return
+        root.visualPos = 0
+        if (root.text[Math.min(root.cursorPos+1,text.length)] != " " && root.cursorPos < root.text.length ) root.cursorPos += 1
+        while (root.cursorPos < root.text.length && root.text[root.cursorPos] != " ") {
+            root.cursorPos += 1
+        }
+        if (root.cursorPos < 0) {
+            root.cursorPos = 0
+        }
+    }
+
+    function select_all() {
+        root.visualPos = -root.text.length
+        root.cursorPos = root.text.length
+    }
+
+    function type(char: string) {
+        if (root.visual) {
+            if (root.visualPos > 0) {
+                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
+            }
+            if (root.visualPos < 0) {
+                root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
+                root.cursorPos = root.cursorPos+root.visualPos
+            }
+            root.visualPos = 0
+        }
+        root.text = root.text.slice(0, root.cursorPos) + char + root.text.slice(root.cursorPos)
+        root.cursorPos += 1
+        root.textAdded(char)
+    }
+
     Keys.onPressed: (event) => {
         if (root.disabled) return
         if (event.key == Qt.Key_Return) {
-            root.visualPos = 0
-            root.entered(root.text)
+            root.enter()
+        } else if (event.key == Qt.Key_Escape) {
+            if (root.escapeToUnFocus) {
+                root.unFocus()
+            }
         } else if (event.key == Qt.Key_Backspace && event.modifiers == Qt.ControlModifier) {
-            if (root.visual) {
-                if (root.visualPos > 0) {
-                    const removed = root.text.slice(root.cursorPos,root.cursorPos+root.visualPos)
-                    root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
-                    root.textRemoved(removed)
-                }
-                if (root.visualPos < 0) {
-                    const removed = root.text.slice(root.cursorPos+root.visualPos,root.cursorPos)
-                    root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
-                    root.cursorPos = root.cursorPos+root.visualPos
-                    root.textRemoved(removed)
-                }
-                root.visualPos = 0
-                return
-            }
-            const removed = root.text.match(/\S+\s*$/)[0]
-            root.text = root.text.replace(/\S+\s*$/, "")
-            if (removed) {
-                root.cursorPos -= removed.length
-                root.textRemoved(removed)
-            } 
-            else root.textRemoved("")
+            root.delete_word_back()
         } else if (event.key == Qt.Key_Backspace) {
-            if (root.visual) {
-                if (root.visualPos > 0) {
-                    const removed = root.text.slice(root.cursorPos,root.cursorPos+root.visualPos)
-                    root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
-                    root.textRemoved(removed)
-                }
-                if (root.visualPos < 0) {
-                    const removed = root.text.slice(root.cursorPos+root.visualPos,root.cursorPos)
-                    root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
-                    root.cursorPos = root.cursorPos+root.visualPos
-                    root.textRemoved(removed)
-                }
-                root.visualPos = 0
-                return
-            }
-            if (root.cursorPos == 0) {
-                root.textRemoved("")
-                return
-            }
-            const removed = root.text[root.cursorPos-1]
-            root.text = root.text.slice(0, root.cursorPos - 1) + root.text.slice(root.cursorPos)
-            root.cursorPos -= 1
-            root.textRemoved(removed)
+            root.delete_char_back()
         } else if (event.key == Qt.Key_Delete) {
-            if (root.visual) {
-                if (root.visualPos > 0) {
-                    const removed = root.text.slice(root.cursorPos,root.cursorPos+root.visualPos)
-                    root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
-                    root.textRemoved(removed)
-                }
-                if (root.visualPos < 0) {
-                    const removed = root.text.slice(root.cursorPos+root.visualPos,root.cursorPos)
-                    root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
-                    root.cursorPos = root.cursorPos+root.visualPos
-                    root.textRemoved(removed)
-                }
-                root.visualPos = 0
-                return
-            }
-            const removed = root.text[root.cursorPos]
-            if (root.cursorPos == root.text.length) return
-            root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + 1)
-            root.textRemoved(removed)
+            root.delete_char_forward()
         } else if (event.text.length > 0 && event.text >= " ") {
-            if (root.visual) {
-                if (root.visualPos > 0) {
-                    root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
-                }
-                if (root.visualPos < 0) {
-                    root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
-                    root.cursorPos = root.cursorPos+root.visualPos
-                }
-                root.visualPos = 0
-            }
-            root.text = root.text.slice(0, root.cursorPos) + event.text + root.text.slice(root.cursorPos)
-            root.cursorPos += 1
-            root.textAdded(event.text)
+            root.type(event.text)
+        } else if (event.key == Qt.Key_Left && event.modifiers == Qt.ControlModifier) {
+            root.move_cursor_back_word()
+        } else if (event.key == Qt.Key_Right && event.modifiers == Qt.ControlModifier) {
+            root.move_cursor_forward_word()
         } else if (event.key == Qt.Key_Left && event.modifiers == Qt.ShiftModifier) {
-            if (!root.editable) return
-            if (root.cursorPos == 0) return
-            root.cursorPos -= 1
-            root.visualPos += 1
+            root.select_char_back()
         } else if (event.key == Qt.Key_Right && event.modifiers == Qt.ShiftModifier) {
-            if (!root.editable) return
-            if (root.cursorPos == root.text.length) return
-            root.cursorPos += 1
-            root.visualPos -= 1
+            root.select_char_forward()
         } else if (event.key == Qt.Key_Left) {
-            if (!root.editable) return
-            root.visualPos = 0
-            root.cursorPos -= 1
-            if (root.cursorPos < 0) {
-                root.cursorPos = 0
-            }
+            root.move_cursor_back()
         } else if (event.key == Qt.Key_Right) {
-            if (!root.editable) return
-            root.visualPos = 0
-            root.cursorPos += 1
-            if (root.cursorPos > root.text.length) {
-                root.cursorPos = root.text.length
-            }
+            root.move_cursor_forward()
         } else if (event.key == Qt.Key_A && event.modifiers == Qt.ControlModifier) {
-            root.visualPos = -root.text.length
-            root.cursorPos = root.text.length
+            root.select_all()
         }
     }
 
