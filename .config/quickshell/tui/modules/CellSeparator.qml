@@ -1,5 +1,8 @@
+pragma ComponentBehavior: Bound
+
 import qs.config
 import qs.modules
+import qs.services
 
 import QtQuick.Layouts
 import QtQuick
@@ -33,76 +36,84 @@ Item {
     implicitWidth: Cell.w(vertical ? 1 : w)
     implicitHeight: Cell.h(vertical ? h : 1)
 
-    CellText {
+    Loader {
+        active: root.visible || !SettingsInfo.optimizeMemory
 
-        visible: !root.vertical
+        sourceComponent: CellText {
 
-        color: root.color
+            visible: !root.vertical
 
-        clip: true
+            color: root.color
 
-        text: {
-            let char = " "
-            switch (root.type) {
-                case 0: char = "─"; break;
-                case 1: char = "━"; break;
-                case 2: char = "═"; break;
-                case 3: char = "-"; break;
-                case 4: char = "="; break;
+            clip: true
+
+            text: {
+                let char = " "
+                switch (root.type) {
+                    case 0: char = "─"; break;
+                    case 1: char = "━"; break;
+                    case 2: char = "═"; break;
+                    case 3: char = "-"; break;
+                    case 4: char = "="; break;
+                }
+                return " ".repeat(root.padding) + char.repeat(root.w - root.padding*2) + " ".repeat(root.padding)
             }
-            return " ".repeat(root.padding) + char.repeat(root.w - root.padding*2) + " ".repeat(root.padding)
-        }
 
-        bg: root.bg
-
-        CellText {
-
-            x: root.title.centered ? Cell.centerWCell(implicitWidth, parent.implicitWidth) : Cell.w(root.title.offset)
-
-            text: root.title.text == "" ? "" : " ".repeat(root.title.padding) + root.title.text + " ".repeat(root.title.padding)
-            font: root.title.font
             bg: root.bg
-            color: root.title.color
+
+            CellText {
+
+                x: root.title.centered ? Cell.centerWCell(implicitWidth, parent.implicitWidth) : Cell.w(root.title.offset)
+
+                text: root.title.text == "" ? "" : " ".repeat(root.title.padding) + root.title.text + " ".repeat(root.title.padding)
+                font: root.title.font
+                bg: root.bg
+                color: root.title.color
+
+            }
 
         }
-
     }
 
-    ColumnLayout {
+    Loader {
+        active: root.visible || !SettingsInfo.optimizeMemory
 
-        visible: root.vertical
+        sourceComponent: ColumnLayout {
 
-        spacing: 0
+            visible: root.vertical
 
-        Repeater {
+            spacing: 0
 
-            model: root.h
+            Repeater {
 
-            delegate: CellText {
+                model: root.h
 
-                required property int index
+                delegate: CellText {
 
-                clip: true
+                    required property int index
 
-                text: {
+                    clip: true
 
-                    if (index <= root.padding-1 || index >= root.h-root.padding) {
-                        return " "
+                    text: {
+
+                        if (index <= root.padding-1 || index >= root.h-root.padding) {
+                            return " "
+                        }
+                        switch (root.type) {
+                            case 0: return "│"
+                            case 1: return "┃"
+                            case 2: return "║"
+                            case 3: return "|"
+                        }
+                        return "│"
+
                     }
-                    switch (root.type) {
-                        case 0: return "│"
-                        case 1: return "┃"
-                        case 2: return "║"
-                        case 3: return "|"
-                    }
-                    return "│"
 
                 }
 
             }
 
         }
-
     }
 
 }

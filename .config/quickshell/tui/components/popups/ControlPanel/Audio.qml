@@ -23,152 +23,156 @@ ColumnLayout {
         h: 20
 
         ColumnLayout {
-
             spacing: 0
+            ColumnLayout {
 
-            Timer {
-                id: thetimer
-                interval: 200
-            }
+                spacing: 0
 
-            Repeater {
-
-                id: repeater
-
-                Component.onCompleted: {
-                    AudioInfo.statusUpdated.connect(()=>{
-                        if (thetimer.running) return
-                        repeater.model = AudioInfo.streams
-                    })
+                Timer {
+                    id: thetimer
+                    interval: 200
                 }
 
-                model: AudioInfo.streams
+                Repeater {
+
+                    id: repeater
+
+                    Component.onCompleted: {
+                        AudioInfo.statusUpdated.connect(()=>{
+                            if (thetimer.running) return
+                            repeater.model = AudioInfo.streams
+                        })
+                    }
+
+                    model: AudioInfo.streams
 
 
-                delegate: Cells {
+                    delegate: Cells {
 
-                    id: stream
+                        id: stream
 
-                    required property int id
-                    required property real volume
-                    required property string app
-                    required property string name
-                    required property string binary
+                        required property int id
+                        required property real volume
+                        required property string app
+                        required property string name
+                        required property string binary
 
-                    w: list.contentW
-                    h: 3
+                        w: list.contentW
+                        h: 3
 
-                    color: "transparent"
+                        color: "transparent"
 
-                    ColumnLayout {
-
-                        spacing: 0
-
-                        RowLayout {
+                        ColumnLayout {
 
                             spacing: 0
 
-                            CellText {
-                                text: " "
-                            }
-
-                            CellIcon {
-                                id: icon
-                                w: 5
-                                icon: [stream.app,stream.name,stream.binary]
-                                hideOnFail: false
-                            }
-
-                            CellText {
-                                text: " "
-                            }
-
-                            ColumnLayout {
+                            RowLayout {
 
                                 spacing: 0
 
                                 CellText {
-
-                                    text: stream.app.toLowerCase() == stream.name.toLowerCase() ? `${stream.app}` : `${stream.app} | ${stream.name}`
-
-                                    preferedW: stream.w - 3 - 5*icon.success
-
+                                    text: " "
                                 }
 
-                                RowLayout {
+                                CellIcon {
+                                    id: icon
+                                    w: 5
+                                    icon: [stream.app,stream.name,stream.binary]
+                                    hideOnFail: false
+                                }
+
+                                CellText {
+                                    text: " "
+                                }
+
+                                ColumnLayout {
 
                                     spacing: 0
 
                                     CellText {
-                                        text: "["
-                                        color: Colors.fgSubtle
+
+                                        text: stream.app.toLowerCase() == stream.name.toLowerCase() ? `${stream.app}` : `${stream.app} | ${stream.name}`
+
+                                        preferedW: stream.w - 3 - 5*icon.success
+
                                     }
 
-                                    CellProgressSquare {
+                                    RowLayout {
 
-                                        w: stream.w - 5 - 5*icon.success
-                                        percent: stream.volume
-                                        interactive: true
-                                        adjustOnHold: true
-                                        syncDelay: 20000
-                                        adjustOnPress: true
-                                        cellInterval: 2
+                                        spacing: 0
 
-                                        fg: Colors.accentStrong
+                                        CellText {
+                                            text: "["
+                                            color: Colors.fgSubtle
+                                        }
 
-                                        onAdjusted: (percent) => {
-                                            AudioInfo.setVolume(stream.id, percent)
-                                            thetimer.restart()
+                                        CellProgressSquare {
+
+                                            w: stream.w - 5 - 5*icon.success
+                                            percent: stream.volume
+                                            interactive: true
+                                            adjustOnHold: false
+                                            syncDelay: 20000
+                                            adjustOnPress: true
+                                            cellInterval: 2
+
+                                            fg: Colors.accentStrong
+
+                                            onAdjusted: (percent) => {
+                                                AudioInfo.setVolume(stream.id, percent)
+                                                thetimer.restart()
+                                            }
+
+                                        }
+
+                                        CellText {
+                                            text: "]"
+                                            color: Colors.fgSubtle
                                         }
 
                                     }
 
-                                    CellText {
-                                        text: "]"
-                                        color: Colors.fgSubtle
-                                    }
 
                                 }
+                            }
 
+                            CellSeparator {
+
+                                padding: 1
+                                w: stream.w
+                                type: 2
+                                color: Colors.bgOverlay
 
                             }
                         }
 
-                        CellSeparator {
 
-                            padding: 1
-                            w: stream.w
-                            type: 2
-                            color: Colors.bgOverlay
-
-                        }
                     }
-
 
                 }
 
             }
 
+            ColumnLayout {
+
+                spacing: 0
+
+                CellText {
+                    visible: AudioInfo.streams.length == 0
+                    text: " "
+                }
+
+                CellText {
+                    visible: AudioInfo.streams.length == 0
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(list.contentW))
+
+                    text: "No media"
+                    color: Colors.fgSubtle
+                }
+
+            }
         }
 
-        ColumnLayout {
-
-            spacing: 0
-
-            CellText {
-                visible: AudioInfo.streams.length == 0
-                text: " "
-            }
-
-            CellText {
-                visible: AudioInfo.streams.length == 0
-                Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(list.contentW))
-
-                text: "No media"
-                color: Colors.fgSubtle
-            }
-
-        }
 
     }
 
@@ -208,7 +212,7 @@ ColumnLayout {
             percent: AudioInfo.volume
             interactive: true
             syncDelay: 200
-            adjustOnHold: true
+            adjustOnHold: false
             cellInterval: 2
 
             onAdjusted: (percent) => {

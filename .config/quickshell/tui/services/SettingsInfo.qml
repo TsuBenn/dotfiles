@@ -12,6 +12,7 @@ Singleton {
 
     property bool hints: true
     property bool minimal: false
+    property bool optimizeMemory: true
 
     signal showGrid()
     signal toggleMinimal()
@@ -42,7 +43,15 @@ Singleton {
         }
         function toggle_grids(): void {root.showGrid()}
         function toggle_minimal(): void {root.minimal = !root.minimal; root.toggleMinimal()}
+        function toggle_memory_optimize(): void {root.optimizeMemory = !root.optimizeMemory}
         function toggle_hints(): void {root.hints = !root.hints}
+
+
+        function dummy(): void {
+            // Contains debugging features that can be accessed by SUPER + P
+
+            //HyprInfo.getCursorPos()
+        }
     }
 
     Process {

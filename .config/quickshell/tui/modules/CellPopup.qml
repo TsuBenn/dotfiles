@@ -28,17 +28,23 @@ Item {
 
     x: {
         if (!monitor) return Cell.w(cellX)
+        if (cellX <= 0) {
+            return 0
+        }
         if (cellX + w <= Cell.wCount(monitor.width,"floor")) {
             return Cell.w(cellX)
         }
-        return Cell.w(cellX - w)
+        return Cell.w(Cell.wCount(monitor.width,"floor") - w)
     }
     y: {
         if (!monitor) return Cell.h(cellY)
+        if (cellY <= 0) {
+            return 0
+        }
         if (cellY + h <= Cell.hCount(monitor.height,"floor")) {
             return Cell.h(cellY)
         }
-        return Cell.h(cellY - h)
+        return Cell.h(Cell.hCount(monitor.height,"floor") - h)
     }
 
     focus: true

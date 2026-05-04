@@ -58,7 +58,7 @@ Cells {
                 percent: AudioInfo.volume
 
                 syncDelay: 200
-                adjustOnHold: true
+                adjustOnHold: false
                 drag: false
                 wheel: !AudioInfo.mute
                 interactive: true
@@ -127,7 +127,7 @@ Cells {
                 fg: AudioInfo.mute ? Colors.fgDim : Colors.fgBase
 
                 syncDelay: 200
-                adjustOnHold: true
+                adjustOnHold: false
                 wheel: !AudioInfo.mute
                 drag: !AudioInfo.mute
                 interactive: true

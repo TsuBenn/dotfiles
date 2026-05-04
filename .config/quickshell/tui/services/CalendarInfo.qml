@@ -53,6 +53,7 @@ Singleton {
         onLoaded: {
             let datas = JSON.parse(text())
             let spans = {}
+
             for (const data in datas) {
                 for (const i in datas[data]) {
                     datas[data][i].date = data
@@ -176,7 +177,7 @@ Singleton {
             const rmin = parseInt(time[0])*60 + parseInt(time[1])
             const nmin = parseInt(DateTime.hour24)*60 + parseInt(DateTime.minute)
 
-            if (!reminder.time && reminder.urgency > 0) {
+            if (!reminder.time && nmin%30==0 && reminder.urgency > 0) {
                 NotificationsInfo.send(
                     "", "",
                     "REMINDERS & EVENTS",

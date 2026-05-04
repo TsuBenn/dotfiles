@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import qs.config
+import qs.services
 
 import QtQuick.Layouts
 import QtQuick
@@ -27,6 +28,23 @@ Item {
         ? 2
         : 1;
     }
+
+    function calculateRequiredWidth() {
+        if (preferedW > 0) return preferedW;
+
+        let maxW = 0;
+        const lines = text.split("\n");
+        for (const line of lines) {
+            let lineWidth = 0;
+            const segments = splitCJK(line);
+            for (const segment of segments) {
+                lineWidth += segment.cells;
+            }
+            if (lineWidth > maxW) maxW = lineWidth;
+        }
+        return maxW;
+    }
+
 
     function getStringWidth(str) {
         let width = 0;
@@ -94,12 +112,17 @@ Item {
         return wrapped.join('\n');
     }
 
+    // Trigger this whenever the text changes
     onTextChanged: {
-        w = 0
-        h = 0
         if (wrap && preferedW > 0) {
-            text = wrapText(text,preferedW)
+            // We use a temporary variable to prevent infinite loops
+            let wrapped = wrapText(text, preferedW);
+            if (text !== wrapped) text = wrapped; 
         }
+
+        // Now update the actual dimensions
+        w = calculateRequiredWidth();
+        h = text.split("\n").length;
     }
 
     implicitHeight: Cell.h(h)
@@ -225,7 +248,11 @@ Item {
         return result
     }
 
-    ColumnLayout {
+    Loader {
+
+        active: root.visible || !SettingsInfo.optimizeMemory
+
+        sourceComponent: ColumnLayout {
 
         id: cell_text
 
@@ -244,22 +271,6 @@ Item {
                 required property int index
                 required property string modelData
 
-                Component.onCompleted: {
-                    var count = 0
-                    var excess = 0
-                    root.h += 1
-                    if (root.preferedW > 0) {
-                        root.w = root.preferedW
-                        return
-                    }
-                    for (const c of root.splitCJK(modelData)) {
-                        count += c.cells
-                    }
-                    if (count > root.w) {
-                        root.w = count
-                    }
-                }
-
                 spacing: 0
 
                 Repeater {
@@ -267,7 +278,6 @@ Item {
                     model: root.preferedW > 0 
                     ? root.splitCJK(root.truncate(parent.modelData, root.preferedW)) 
                     : root.splitCJK(parent.modelData)
-
 
                     delegate: Cells {
 
@@ -299,4 +309,6 @@ Item {
             }
         }
     }
+    }
+
 }

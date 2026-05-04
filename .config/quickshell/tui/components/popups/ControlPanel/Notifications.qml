@@ -47,7 +47,7 @@ ColumnLayout {
 
                     id: notif
 
-                    active: root.visible
+                    active: root.visible || !SettingsInfo.optimizeMemory
 
                     required property var modelData
 

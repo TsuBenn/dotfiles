@@ -1,5 +1,8 @@
+pragma ComponentBehavior: Bound
+
 import qs.config
 import qs.modules
+import qs.services
 
 import QtQuick.Layouts
 import QtQuick
@@ -78,7 +81,11 @@ Cells {
 
     }
 
-    CellScrollBar {
+    Loader {
+
+        active: root.visible || !SettingsInfo.optimizeMemory
+        
+        sourceComponent: CellScrollBar {
 
         z: 2
 
@@ -106,6 +113,7 @@ Cells {
         bg: root.scrollbar.bg_color
         color: root.scrollbar.color
 
+    }
     }
 
     MouseControl {

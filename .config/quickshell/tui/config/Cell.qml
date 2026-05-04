@@ -26,6 +26,7 @@ Singleton {
 
     readonly property real cellWidth: metrics.averageCharacterWidth
     readonly property real cellHeight: metrics.height*0.9
+    readonly property real cellRatio: cellWidth/cellHeight
 
     function centerWCell(item: double, container: double) : double {
         return Cell.toW(container/2 - item/2)

@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import qs.config
 import qs.modules
+import qs.services
 
 import QtQuick.Layouts
 import QtQuick
@@ -63,124 +64,185 @@ Item {
         }
     }
 
-    Cells {
+    Loader {
 
-        id: border_cells
+        active: root.visible || !SettingsInfo.optimizeMemory
 
-        w: root.w
-        h: root.h
+        sourceComponent: Cells {
 
-        x: -Cell.w(1)
-        y: -Cell.h(1)
+            id: border_cells
 
-        grid: root.grid
+            w: root.w
+            h: root.h
 
-        color: root.color
+            x: -Cell.w(1)
+            y: -Cell.h(1)
 
-        ColumnLayout {
+            grid: root.grid
 
-            spacing: 0
-
-            Cells {
-
-                w: root.w
-                h: 1
-                color: "transparent"
-
-                RowLayout {
-
-                    spacing: 0
-
-                    CellText {
-
-                        clip: true
-
-                        bg: root.border.type == 0 ? root.border.color : "transparent"
-
-                        text: {
-                            switch (root.border.type) {
-                                case 0: return " ";
-                                case 1: return "┌";
-                                case 2: return "┏";
-                                case 3: return "╔";
-                                case 4: return "╭";
-                            }
-                        }
-                        color: root.border.color
-
-                    }
-
-                    Repeater {
-
-                        model: root.w - 2
-
-                        delegate: CellText {
-
-                            required property int index
-
-                            bg: root.border.type == 0 ? root.border.color : "transparent"
-                            clip: true
-
-                            text: {
-                                if (index >= root.header.offset && index < root.header.offset + root.header.text.length) return " "
-                                switch (root.border.type) {
-                                    case 0: return " ";
-                                    case 1: return "─";
-                                    case 2: return "━";
-                                    case 3: return "═";
-                                    case 4: return "─";
-                                }
-                            }
-                        color: root.border.color
-
-                        }
-
-                    }
-
-                    CellText {
-
-                        bg: root.border.type == 0 ? root.border.color : "transparent"
-                        clip: true
-
-                        text: {
-                            switch (root.border.type) {
-                                case 0: return " ";
-                                case 1: return "┐";
-                                case 2: return "┓";
-                                case 3: return "╗";
-                                case 4: return "╮";
-                            }
-                        }
-                        color: root.border.color
-
-                    }
-
-                }
-
-                CellText {
-
-                    x: Cell.w(1) + Cell.w(root.header.offset)
-
-                    text: root.header.text
-                    font: root.header.font
-                    color: root.header.color
-
-                    preferedW: root.w - 2
-
-                    bg: root.color
-
-                }
-            }
+            color: root.color
 
             ColumnLayout {
 
                 spacing: 0
 
-                Repeater {
+                Cells {
 
-                    model: root.h - 2
+                    w: root.w
+                    h: 1
+                    color: "transparent"
 
-                    delegate: RowLayout {
+                    RowLayout {
+
+                        spacing: 0
+
+                        CellText {
+
+                            clip: true
+
+                            bg: root.border.type == 0 ? root.border.color : "transparent"
+
+                            text: {
+                                switch (root.border.type) {
+                                    case 0: return " ";
+                                    case 1: return "┌";
+                                    case 2: return "┏";
+                                    case 3: return "╔";
+                                    case 4: return "╭";
+                                }
+                            }
+                            color: root.border.color
+
+                        }
+
+                        Repeater {
+
+                            model: root.w - 2
+
+                            delegate: CellText {
+
+                                required property int index
+
+                                bg: root.border.type == 0 ? root.border.color : "transparent"
+                                clip: true
+
+                                text: {
+                                    if (index >= root.header.offset && index < root.header.offset + root.header.text.length) return " "
+                                    switch (root.border.type) {
+                                        case 0: return " ";
+                                        case 1: return "─";
+                                        case 2: return "━";
+                                        case 3: return "═";
+                                        case 4: return "─";
+                                    }
+                                }
+                                color: root.border.color
+
+                            }
+
+                        }
+
+                        CellText {
+
+                            bg: root.border.type == 0 ? root.border.color : "transparent"
+                            clip: true
+
+                            text: {
+                                switch (root.border.type) {
+                                    case 0: return " ";
+                                    case 1: return "┐";
+                                    case 2: return "┓";
+                                    case 3: return "╗";
+                                    case 4: return "╮";
+                                }
+                            }
+                            color: root.border.color
+
+                        }
+
+                    }
+
+                    CellText {
+
+                        x: Cell.w(1) + Cell.w(root.header.offset)
+
+                        text: root.header.text
+                        font: root.header.font
+                        color: root.header.color
+
+                        preferedW: root.w - 2
+
+                        bg: root.color
+
+                    }
+                }
+
+                ColumnLayout {
+
+                    spacing: 0
+
+                    Repeater {
+
+                        model: root.h - 2
+
+                        delegate: RowLayout {
+
+                            spacing: 0
+
+                            CellText {
+
+                                bg: root.border.type == 0 ? root.border.color : "transparent"
+                                clip: true
+
+                                text: {
+                                    switch (root.border.type) {
+                                        case 0: return " ";
+                                        case 1: return "│";
+                                        case 2: return "┃";
+                                        case 3: return "║";
+                                        case 4: return "│";
+                                    }
+                                }
+                                color: root.border.color
+
+                            }
+
+                            Cells {
+                                w: root.w - 2
+                                color: "transparent"
+                            }
+
+                            CellText {
+
+                                bg: root.border.type == 0 ? root.border.color : "transparent"
+                                clip: true
+
+                                text: {
+                                    switch (root.border.type) {
+                                        case 0: return " "; 
+                                        case 1: return "│"; 
+                                        case 2: return "┃"; 
+                                        case 3: return "║"; 
+                                        case 4: return "│"; 
+                                    }
+                                }
+                                color: root.border.color
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                Cells {
+
+                    w: root.w
+                    h: 1
+                    color: "transparent"
+
+                    RowLayout {
 
                         spacing: 0
 
@@ -191,20 +253,42 @@ Item {
 
                             text: {
                                 switch (root.border.type) {
-                                    case 0: return " ";
-                                    case 1: return "│";
-                                    case 2: return "┃";
-                                    case 3: return "║";
-                                    case 4: return "│";
+                                    case 0: return " "; 
+                                    case 1: return "└"; 
+                                    case 2: return "┗"; 
+                                    case 3: return "╚"; 
+                                    case 4: return "╰"; 
                                 }
                             }
-                        color: root.border.color
+                            color: root.border.color
 
                         }
 
-                        Cells {
-                            w: root.w - 2
-                            color: "transparent"
+                        Repeater {
+
+                            model: root.w - 2
+
+                            delegate: CellText {
+
+                                required property int index
+
+                                bg: root.border.type == 0 ? root.border.color : "transparent"
+                                clip: true
+
+                                text: {
+                                    if (index >= root.footer.offset && index < root.footer.offset + root.footer.text.length) return " "
+                                    switch (root.border.type) {
+                                        case 0: return " "; 
+                                        case 1: return "─"; 
+                                        case 2: return "━"; 
+                                        case 3: return "═"; 
+                                        case 4: return "─"; 
+                                    }
+                                }
+                                color: root.border.color
+
+                            }
+
                         }
 
                         CellText {
@@ -215,72 +299,13 @@ Item {
                             text: {
                                 switch (root.border.type) {
                                     case 0: return " "; 
-                                    case 1: return "│"; 
-                                    case 2: return "┃"; 
-                                    case 3: return "║"; 
-                                    case 4: return "│"; 
+                                    case 1: return "┘"; 
+                                    case 2: return "┛"; 
+                                    case 3: return "╝"; 
+                                    case 4: return "╯"; 
                                 }
                             }
-                        color: root.border.color
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-            Cells {
-
-                w: root.w
-                h: 1
-                color: "transparent"
-
-                RowLayout {
-
-                    spacing: 0
-
-                    CellText {
-
-                        bg: root.border.type == 0 ? root.border.color : "transparent"
-                        clip: true
-
-                        text: {
-                            switch (root.border.type) {
-                                case 0: return " "; 
-                                case 1: return "└"; 
-                                case 2: return "┗"; 
-                                case 3: return "╚"; 
-                                case 4: return "╰"; 
-                            }
-                        }
-                        color: root.border.color
-
-                    }
-
-                    Repeater {
-
-                        model: root.w - 2
-
-                        delegate: CellText {
-
-                            required property int index
-
-                            bg: root.border.type == 0 ? root.border.color : "transparent"
-                            clip: true
-
-                            text: {
-                                if (index >= root.footer.offset && index < root.footer.offset + root.footer.text.length) return " "
-                                switch (root.border.type) {
-                                    case 0: return " "; 
-                                    case 1: return "─"; 
-                                    case 2: return "━"; 
-                                    case 3: return "═"; 
-                                    case 4: return "─"; 
-                                }
-                            }
-                        color: root.border.color
+                            color: root.border.color
 
                         }
 
@@ -288,37 +313,19 @@ Item {
 
                     CellText {
 
-                        bg: root.border.type == 0 ? root.border.color : "transparent"
-                        clip: true
+                        x: Cell.w(1) + Cell.w(root.footer.offset)
 
-                        text: {
-                            switch (root.border.type) {
-                                case 0: return " "; 
-                                case 1: return "┘"; 
-                                case 2: return "┛"; 
-                                case 3: return "╝"; 
-                                case 4: return "╯"; 
-                            }
-                        }
-                        color: root.border.color
+                        text: root.footer.text
+                        font: root.footer.font
+                        color: root.footer.color
+
+                        preferedW: root.w - 2
+
+                        bg: root.color
 
                     }
-
                 }
 
-                CellText {
-
-                    x: Cell.w(1) + Cell.w(root.footer.offset)
-
-                    text: root.footer.text
-                    font: root.footer.font
-                    color: root.footer.color
-
-                    preferedW: root.w - 2
-
-                    bg: root.color
-
-                }
             }
 
         }

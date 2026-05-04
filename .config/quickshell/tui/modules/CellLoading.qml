@@ -68,7 +68,7 @@ Item {
 
     Timer {
         interval: root.pulseInterval
-        running: true
+        running: root.visible
         repeat: true
         onTriggered: {
             root.frame++

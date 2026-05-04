@@ -419,70 +419,75 @@ ColumnLayout {
         w: root.box.contentW
         h: root.h - 2 - 2*(bt_report.status != "")
 
-        ColumnLayout {
+        Loader {
 
-            spacing: 0
+            active: root.visible || !SettingsInfo.optimizeMemory
 
-            CellSeparator {
-
-                visible: BluetoothInfo.bluetooth_paired.length > 0
-
-                title.text: "Paired"
-                w: list.contentW
-
-                type: 1
-
-                padding: 1
-                title.color: Colors.fgSubtle
-                color: Colors.bgOverlay
-
-            }
-
-            ColumnLayout {
+            sourceComponent: ColumnLayout {
 
                 spacing: 0
 
-                Repeater {
+                CellSeparator {
 
-                    model: BluetoothInfo.bluetooth_paired
+                    visible: BluetoothInfo.bluetooth_paired.length > 0
 
-                    delegate: Device {
-                        w: list.contentW
+                    title.text: "Paired"
+                    w: list.contentW
+
+                    type: 1
+
+                    padding: 1
+                    title.color: Colors.fgSubtle
+                    color: Colors.bgOverlay
+
+                }
+
+                ColumnLayout {
+
+                    spacing: 0
+
+                    Repeater {
+
+                        model: BluetoothInfo.bluetooth_paired
+
+                        delegate: Device {
+                            w: list.contentW
+                        }
+
+                    }
+
+                }
+
+                CellSeparator {
+
+                    title.text: "Scan"
+                    w: list.contentW
+
+                    type: 1
+
+                    padding: 1
+                    title.color: Colors.fgSubtle
+                    color: Colors.bgOverlay
+
+                }
+
+                ColumnLayout {
+
+                    spacing: 0
+
+                    Repeater {
+
+                        model: BluetoothInfo.bluetooth_scan
+
+                        delegate: Device {
+                            w: list.contentW
+                        }
+
                     }
 
                 }
 
             }
-
-            CellSeparator {
-
-                title.text: "Scan"
-                w: list.contentW
-
-                type: 1
-
-                padding: 1
-                title.color: Colors.fgSubtle
-                color: Colors.bgOverlay
-
-            }
-
-            ColumnLayout {
-
-                spacing: 0
-
-                Repeater {
-
-                    model: BluetoothInfo.bluetooth_scan
-
-                    delegate: Device {
-                        w: list.contentW
-                    }
-
-                }
-
-            }
-
         }
 
     }

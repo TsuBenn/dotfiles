@@ -239,6 +239,13 @@ SETTINGS = [
                 "type": "exec",
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_minimal"],
             },
+            {
+                "label": "Toggle memory optimization",
+                "description": "Trading performance over memory usage.",
+                "category": "setting",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_memory_optimize"],
+            },
         ],
     },
     {

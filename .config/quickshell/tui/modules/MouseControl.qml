@@ -92,6 +92,7 @@ Item {
 
             property string button: ""
 
+            running: root.buttonDown != ""
             interval: root.holdInterval
             repeat: true
 

@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import qs.config 
+import qs.services 
 
 import QtQuick.Layouts
 import QtQuick
@@ -32,43 +33,54 @@ Item {
         }
     }
 
-    Rectangle {
+    Loader {
 
-        anchors.fill: parent
+        active: (root.visible && root.color != "transparent" || !SettingsInfo.optimizeMemory)
 
-        color: root.color
+        sourceComponent: Rectangle {
 
-        ColumnLayout {
+            implicitWidth: Cell.w(root.w)
+            implicitHeight: Cell.h(root.h)
 
-            spacing: 0
+            color: root.color
 
-            Repeater {
-                model: root.h
+            Loader {
 
-                delegate: RowLayout {
+                active: root.grid
 
-                    id: yCell
-                    required property int index
+                sourceComponent: Canvas {
 
-                    spacing: 0
+                    implicitWidth: Cell.w(root.w)
+                    implicitHeight: Cell.h(root.h)
 
-                    Repeater {
-                        model: root.w
+                    onPaint: {
+                        var ctx = getContext("2d")
+                        let cw = Cell.w(1)
+                        let ch = Cell.h(1)
 
-                        delegate: Rectangle {
+                        // Cache the lengths to avoid calling functions every iteration
+                        let wLimit = width 
+                        let hLimit = height
 
-                            id: xCell
-                            required property int index
+                        for (let i = 0; i < wLimit; i += cw) {
+                            for (let j = 0; j < hLimit; j += ch) { // Fixed: j < height and j += ch
 
-                            implicitWidth: Cell.w(1)
-                            implicitHeight: Cell.h(1)
-                            color: root.grid && (yCell.index + xCell.index)%2 == 1 ? root.color2 : root.color
+                                // Logic: (col_index + row_index) % 2
+                                let col = Math.floor(i / cw)
+                                let row = Math.floor(j / ch)
+
+                                ctx.fillStyle = (col + row) % 2 === 0 ? "transparent" : root.color2
+                                ctx.fillRect(i, j, cw, ch)
+                            }
                         }
                     }
-                } 
+                }
+
             }
 
         }
 
     }
+
+
 }

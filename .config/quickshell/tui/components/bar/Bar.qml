@@ -19,7 +19,6 @@ Scope {
 
             id: root
 
-
             WlrLayershell.layer: WlrLayer.Top
             WlrLayershell.namespace: "bar"
 
@@ -90,7 +89,6 @@ Scope {
             implicitHeight: Cell.h(1)
 
             color: Colors.bgSurface
-
 
             Item {
 

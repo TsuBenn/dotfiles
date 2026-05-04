@@ -15,6 +15,7 @@ CellPopup {
     h: Cell.hCount(layout.implicitHeight)
 
     onVisibleChanged: {
+
         /*
          if (visible) {
              if (!LauncherInfo.running) {
@@ -32,11 +33,6 @@ CellPopup {
         } else {
             auto_close.stop()
         }
-        tab.selected = 0
-        results.reset()
-        textfield.path = []
-        textfield.set("")
-        textfield.search("")
     }
 
     Timer {
@@ -75,7 +71,6 @@ CellPopup {
         h: root.h + 2
 
         ColumnLayout {
-
 
             id: layout
 
@@ -165,6 +160,12 @@ CellPopup {
                             CellTextField {
 
                                 id: textfield
+
+                                onVisibleChanged: {
+                                    textfield.path = []
+                                    textfield.set("")
+                                    textfield.search("")
+                                }
 
                                 property int selected: 0
 
@@ -291,7 +292,15 @@ CellPopup {
                                     }
                                 }
 
+                                property bool init: false
+
                                 function search(input) {
+                                    if (!init && visible) {
+                                        console.log(init)
+                                        init = true
+                                    } else if (visible){
+                                        return
+                                    }
                                     let tags = ""
                                     switch (tab.selected) {
                                         case 0: tags = "ashf"; break;
@@ -335,6 +344,7 @@ CellPopup {
                                         search("")
                                         return
                                     }
+
                                     if ((tab.selected == 0 || tab.selected == 1 || tab.selected == 4) && input.trim().length == 1) return
                                     search(input)
                                 }
@@ -380,6 +390,10 @@ CellPopup {
 
                 w: box.contentW
 
+                onVisibleChanged: {
+                    tab.selected = 0
+                }
+
                 onSelectedChanged: {
                     textfield.set("")
                     textfield.path = []
@@ -421,174 +435,184 @@ CellPopup {
 
                 }
 
-                CellScrollView {
+                Timer {
+                    id: debounce
 
-                    id: results
+                    property var data: LauncherInfo.result
 
-                    w: box.contentW
-                    h: 15
+                    Component.onCompleted: {
+                        LauncherInfo.searched.connect(() => {
+                            debounce.restart()
+                        })
+                        SettingsInfo.toggleMinimal.connect(() => {
+                            debounce.restart()
+                        })
+                    }
 
-                    ColumnLayout {
+                    interval: 0
+                    onTriggered: {
+                        data = []
+                        data = LauncherInfo.result
+                    }
 
-                        spacing: 0
+                }
 
-                        Timer {
-                            id: debounce
+                Loader {
 
-                            property var data: LauncherInfo.result
+                    active: root.visible || !SettingsInfo.optimizeMemory
 
-                            Component.onCompleted: {
-                                LauncherInfo.searched.connect(() => {
-                                    debounce.restart()
-                                })
-                                SettingsInfo.toggleMinimal.connect(() => {
-                                    debounce.restart()
-                                })
-                            }
+                    sourceComponent: CellScrollView {
 
-                            interval: 0
-                            onTriggered: {
-                                data = []
-                                data = LauncherInfo.result
-                            }
+                        id: results
 
+                        w: box.contentW
+                        h: 15
+
+                        onVisibleChanged: {
+                            results.reset()
                         }
 
-                        Repeater {
+                        ColumnLayout {
 
-                            model: debounce.data
+                            spacing: 0
 
-                            onModelChanged: {
-                                results.reset()
-                                textfield.selected = 0
-                            }
+                            Repeater {
 
-                            delegate: Loader {
+                                model: debounce.data
 
-                                id: result
+                                onModelChanged: {
+                                    results.reset()
+                                    textfield.selected = 0
+                                }
 
-                                active: index - Math.ceil(results.offset/(SettingsInfo.minimal ? 2 : 3)) < Math.ceil(15/(SettingsInfo.minimal ? 2 : 3)) * 2
+                                delegate: Loader {
 
-                                required property int index
+                                    id: result
 
-                                required property var modelData
+                                    active: (index - Math.ceil(results.offset/(SettingsInfo.minimal ? 2 : 3)) < Math.ceil(15/(SettingsInfo.minimal ? 2 : 3)) * 2)
+                                    && (root.visible || !SettingsInfo.optimizeMemory)
 
-                                property string id: modelData.id ?? ""
-                                property string label: modelData.label ?? ""
-                                property string description: modelData.description ?? ""
-                                property string icon: modelData.icon ?? ""
-                                property string type: modelData.type ?? ""
-                                property var value: modelData.value ?? []
+                                    required property int index
 
-                                property bool selected: textfield.selected == index
+                                    required property var modelData
 
-                                asynchronous: (index < Math.ceil(15/(SettingsInfo.minimal ? 2 : 3)) ? false : true) || type == "file" || type == "dir"
+                                    property string id: modelData.id ?? ""
+                                    property string label: modelData.label ?? ""
+                                    property string description: modelData.description ?? ""
+                                    property string icon: modelData.icon ?? ""
+                                    property string type: modelData.type ?? ""
+                                    property var value: modelData.value ?? []
 
-                                sourceComponent: Cells {
+                                    property bool selected: textfield.selected == index
 
-                                    w: results.contentW
-                                    h: SettingsInfo.minimal ? 2 : 3
+                                    asynchronous: (index < Math.ceil(15/(SettingsInfo.minimal ? 2 : 3)) ? false : true) || type == "file" || type == "dir"
 
-                                    color: Colors.bgSurface
+                                    sourceComponent: Cells {
 
-                                    ColumnLayout {
+                                        w: results.contentW
+                                        h: SettingsInfo.minimal ? 2 : 3
 
-                                        id: result_layout
+                                        color: Colors.bgSurface
 
-                                        spacing: 0
+                                        ColumnLayout {
 
-                                        RowLayout {
+                                            id: result_layout
 
                                             spacing: 0
 
-                                            CellText {
-                                                text: " "
-                                            }
+                                            RowLayout {
 
-                                            CellIcon {
-                                                visible: !SettingsInfo.minimal
-                                                id: result_icon
-                                                icon: [result.icon, result.icon ? result.label : ""]
-                                                w: 5
-                                            }
-
-                                            CellText {
-                                                text: " "
-                                            }
-
-                                            ColumnLayout {
                                                 spacing: 0
 
                                                 CellText {
-                                                    text: result.label
-                                                    preferedW: results.contentW - 5 - 5*result_icon.success
+                                                    text: " "
+                                                }
+
+                                                CellIcon {
+                                                    visible: !SettingsInfo.minimal
+                                                    id: result_icon
+                                                    icon: [result.icon, result.icon ? result.label : ""]
+                                                    w: 5
                                                 }
 
                                                 CellText {
-                                                    visible: !SettingsInfo.minimal
-                                                    text: result.description
-                                                    preferedW: results.contentW - 5 - 5*result_icon.success
-                                                    color: Colors.fgSubtle
+                                                    text: " "
                                                 }
+
+                                                ColumnLayout {
+                                                    spacing: 0
+
+                                                    CellText {
+                                                        text: result.label
+                                                        preferedW: results.contentW - 5 - 5*result_icon.success
+                                                    }
+
+                                                    CellText {
+                                                        visible: !SettingsInfo.minimal
+                                                        text: result.description
+                                                        preferedW: results.contentW - 5 - 5*result_icon.success
+                                                        color: Colors.fgSubtle
+                                                    }
+                                                }
+
+                                                CellText {
+                                                    text: " "
+                                                }
+
+                                                Cells {
+
+                                                    w: 1
+                                                    h: SettingsInfo.minimal ? 1 : 2
+
+                                                    color: result.selected ? Colors.accentStrong : Colors.bgOverlay
+
+                                                }
+
                                             }
 
-                                            CellText {
-                                                text: " "
-                                            }
+                                            CellSeparator {
 
-                                            Cells {
-
-                                                w: 1
-                                                h: SettingsInfo.minimal ? 1 : 2
-
-                                                color: result.selected ? Colors.accentStrong : Colors.bgOverlay
+                                                type: 2
+                                                color: Colors.bgOverlay
+                                                padding: 1
+                                                w: results.contentW
 
                                             }
 
                                         }
 
-                                        CellSeparator {
+                                        Cells {
 
-                                            type: 2
-                                            color: Colors.bgOverlay
-                                            padding: 1
                                             w: results.contentW
+                                            h: SettingsInfo.minimal ? 1 : 2
+                                            color: "transparent"
 
-                                        }
+                                            MouseControl {
 
-                                    }
+                                                anchors.fill: parent
 
-                                    Cells {
-
-                                        w: results.contentW
-                                        h: SettingsInfo.minimal ? 1 : 2
-                                        color: "transparent"
-
-                                        MouseControl {
-
-                                            anchors.fill: parent
-
-                                            onEntered: {
-                                                textfield.selected = result.index
-                                            }
-
-                                            onReleased: (button) => {
-                                                if (button == "L") {
-                                                    textfield.entered(textfield.text)
+                                                onEntered: {
+                                                    textfield.selected = result.index
                                                 }
+
+                                                onReleased: (button) => {
+                                                    if (button == "L") {
+                                                        textfield.entered(textfield.text)
+                                                    }
+                                                }
+
                                             }
 
                                         }
 
                                     }
-
                                 }
+
                             }
 
                         }
 
                     }
-
                 }
 
             }

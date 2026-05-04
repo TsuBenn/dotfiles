@@ -54,22 +54,29 @@ CellPopup {
 
                 color: "transparent"
 
-                Image {
+                Loader {
 
-                    id: wallpaper
+                    active: root.visible || !SettingsInfo.optimizeMemory
 
-                    width: Cell.w(box.contentW)
-                    height: Cell.h(preview.h)
+                    sourceComponent: Image {
 
-                    source: (selection.items[2] ? SystemInfo.homedir + WallpaperInfo.path : "") + selection.items[2]
+                        id: wallpaper
 
-                    fillMode: Image.PreserveAspectCrop
+                        width: Cell.w(box.contentW)
+                        height: Cell.h(preview.h)
 
-                    mipmap: true
+                        source: (selection.items[2] ? SystemInfo.homedir + WallpaperInfo.path : "") + selection.items[2]
 
-                    asynchronous: true
+                        fillMode: Image.PreserveAspectCrop
+
+                        mipmap: true
+
+                        asynchronous: true
+
+                    }
 
                 }
+
 
             }
 
@@ -142,79 +149,90 @@ CellPopup {
                             model = Qt.binding(()=>selection.items)
                         }
 
-                        delegate: CellBox {
+                        delegate: Loader {
 
-                            id: thumbnail
+                            id: thumbnail_loader
+
+                            active: root.visible || !SettingsInfo.optimizeMemory
 
                             required property string modelData
                             required property int index
 
-                            property string value: modelData.split(".")[0]
-                            property bool selected: {
-                                if (selection.wallpapers.length > 1) {
-                                    return modelData == selection.wallpapers[selection.selected]
+                            sourceComponent: CellBox {
+
+                                id: thumbnail
+
+                                property string modelData : thumbnail_loader.modelData
+                                property int index        : thumbnail_loader.index
+
+                                property string value: modelData.split(".")[0]
+                                property bool selected: {
+                                    if (selection.wallpapers.length > 1) {
+                                        return modelData == selection.wallpapers[selection.selected]
+                                    }
+                                    return index == 2
+                                } 
+
+                                opacity: selected ? 1 : 0.5
+
+                                Layout.topMargin: Cell.h(1)
+
+                                w: Math.round((h-1)/9*16*2.2)-1
+                                h: thumbnails.h
+
+                                footer.text: " " + value + " "
+                                footer.offset: Math.floor(contentW/2-value.length/2) - 1
+                                footer.color: WallpaperInfo.inSet(modelData) ? Colors.secondary : Colors.fgBase
+                                footer.font: WallpaperInfo.inSet(modelData) ? Cell.fontB : Cell.font
+
+                                border.color: WallpaperInfo.inSet(modelData) ? Colors.secondary : "transparent"
+
+                                Cells {
+
+                                    w: thumbnail.w-2
+                                    h: thumbnail.h-2
+
+                                    color: "transparent"
+
+                                    Image {
+
+                                        anchors.centerIn: parent
+
+                                        width: Cell.w(thumbnail.w)
+                                        height: Cell.h(thumbnail.h-1)
+
+                                        source: (thumbnail.modelData ? SystemInfo.homedir + "/Wallpapers/" : "") + thumbnail.modelData
+
+                                        mipmap: thumbnails.h == 6
+
+                                        asynchronous: true
+
+                                        fillMode: Image.PreserveAspectCrop
+
+                                    }
+
                                 }
-                                return index == 2
-                            } 
 
-                            opacity: selected ? 1 : 0.5
+                                MouseControl {
+                                    anchors.fill: parent
 
-                            Layout.topMargin: Cell.h(1)
-
-                            w: Math.round((h-1)/9*16*2.2)-1
-                            h: thumbnails.h
-
-                            footer.text: " " + value + " "
-                            footer.offset: Math.floor(contentW/2-value.length/2) - 1
-                            footer.color: WallpaperInfo.inSet(modelData) ? Colors.secondary : Colors.fgBase
-                            footer.font: WallpaperInfo.inSet(modelData) ? Cell.fontB : Cell.font
-
-                            border.color: WallpaperInfo.inSet(modelData) ? Colors.secondary : "transparent"
-
-                            Cells {
-
-                                w: thumbnail.w-2
-                                h: thumbnail.h-2
-
-                                color: "transparent"
-
-                                Image {
-
-                                    anchors.centerIn: parent
-
-                                    width: Cell.w(thumbnail.w)
-                                    height: Cell.h(thumbnail.h-1)
-
-                                    source: (thumbnail.modelData ? SystemInfo.homedir + "/Wallpapers/" : "") + thumbnail.modelData
-
-                                    mipmap: thumbnails.h == 6
-
-                                    asynchronous: true
-
-                                    fillMode: Image.PreserveAspectCrop
-
-                                }
-
-                            }
-
-                            MouseControl {
-                                anchors.fill: parent
-
-                                onReleased: (button) => {
-                                    if (button == "L") {
-                                        if (thumbnail.selected) {
-                                            const current = selection.wallpapers.length > 1 ? selection.wallpapers[selection.selected] : selection.wallpapers[0]
-                                            if (WallpaperInfo.inSet(current)) {
-                                                WallpaperInfo.remove(current)
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            if (thumbnail.selected) {
+                                                const current = selection.wallpapers.length > 1 ? selection.wallpapers[selection.selected] : selection.wallpapers[0]
+                                                if (WallpaperInfo.inSet(current)) {
+                                                    WallpaperInfo.remove(current)
+                                                } else {
+                                                    WallpaperInfo.add(current)
+                                                }
+                                                repeater.refresh()
                                             } else {
-                                                WallpaperInfo.add(current)
+                                                selection.advance(thumbnail.index - 2)
                                             }
-                                            repeater.refresh()
-                                        } else {
-                                            selection.advance(thumbnail.index - 2)
                                         }
                                     }
                                 }
+
                             }
 
                         }
@@ -268,12 +286,6 @@ CellPopup {
 
                         placeholder: "Search wallpaper"
 
-                        onFocusChanged: {
-                            if (focus) {
-                                root.preventClosing = true
-                            } 
-                        }
-
                         onTextInput: (query) => {
                             if (text == " ") {
                                 const current = selection.wallpapers.length > 1 ? selection.wallpapers[selection.selected] : selection.wallpapers[0]
@@ -310,8 +322,7 @@ CellPopup {
                                             textfield.focus = true
                                             return
                                         }
-                                        PopupManager.open("launcher")
-                                        PopupManager.close("wallpapers")
+                                        PopupManager.close("wallpaper")
                                     }
                                 },
                             ]
@@ -443,15 +454,8 @@ CellPopup {
                             }
                         }
 
-                        onFocusChanged: {
-                            if (focus) {
-                                root.preventClosing = true
-                            }
-                        }
-
                         Keys.onPressed: (event) => {
                             if (event.key == Qt.Key_Escape) {
-                                root.preventClosing = true
                                 focus = false
                             }
                         }
@@ -696,7 +700,6 @@ CellPopup {
 
                                     onFocusChanged: {
                                         if (focus) {
-                                            root.preventClosing = true
                                             return
                                         }
                                     }
@@ -749,7 +752,6 @@ CellPopup {
 
                                     onFocusChanged: {
                                         if (focus) {
-                                            root.preventClosing = true
                                             return
                                         }
                                     }
@@ -800,7 +802,6 @@ CellPopup {
 
                                     onFocusChanged: {
                                         if (focus) {
-                                            root.preventClosing = true
                                             return
                                         }
                                     }
@@ -857,7 +858,6 @@ CellPopup {
 
                                     onFocusChanged: {
                                         if (focus) {
-                                            root.preventClosing = true
                                             return
                                         }
                                     }
@@ -916,7 +916,6 @@ CellPopup {
 
                                     onFocusChanged: {
                                         if (focus) {
-                                            root.preventClosing = true
                                             return
                                         }
                                     }
@@ -959,7 +958,6 @@ CellPopup {
 
                                     onFocusChanged: {
                                         if (focus) {
-                                            root.preventClosing = true
                                             return
                                         }
                                     }
@@ -1017,7 +1015,6 @@ CellPopup {
 
                                     onFocusChanged: {
                                         if (focus) {
-                                            root.preventClosing = true
                                             return
                                         }
                                     }
@@ -1060,7 +1057,6 @@ CellPopup {
 
                                     onFocusChanged: {
                                         if (focus) {
-                                            root.preventClosing = true
                                             return
                                         }
                                     }

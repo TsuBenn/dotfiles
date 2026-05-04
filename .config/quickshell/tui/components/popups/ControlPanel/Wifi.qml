@@ -88,7 +88,7 @@ ColumnLayout {
 
                 clickable: !WifiInfo.scanning
 
-                onPressed: (button) => {
+                onReleased: (button) => {
                     if (button == "L") {
                         if (WifiInfo.scan(true) == 1) {
                             console.log("Wifi: Still scanning...")
@@ -122,7 +122,9 @@ ColumnLayout {
             spacing: 0
 
             Repeater {
+
                 model: WifiInfo.wifi_scan
+
                 delegate: Cells {
 
                     id: wifi
@@ -387,6 +389,7 @@ ColumnLayout {
             }
 
         }
+
 
     }
 

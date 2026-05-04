@@ -1,6 +1,7 @@
 pragma Singleton
 
 import qs.config
+import qs.services
 
 import Quickshell
 import QtQuick
@@ -106,7 +107,7 @@ Singleton {
     }
 
     function set(image) {
-        set.exec(["bash", "-c", "awww img --transition-step 90 --transition-fps 60 --transition-type wipe --transition-angle 30 Wallpapers/" + image])
+        set.exec(["bash", "-c", `awww img --transition-step ${root.transition.step} --transition-duration ${root.transition.duration} --transition-fps ${root.transition.fps} --transition-type ${root.transition.type} --transition-angle ${root.transition.angle} --transition-pos ${root.transition.pos.join(",")} --transition-wave ${root.transition.wave.join(",")} ${SystemInfo.homedir}/Wallpapers/` + image])
     }
 
     function minute(min: int): int {
@@ -134,7 +135,7 @@ Singleton {
 
         running: true
 
-        command: ["ls", "Wallpapers"]
+        command: ["ls", SystemInfo.homedir + "Wallpapers"]
 
         stdout: StdioCollector {
             onStreamFinished: {
@@ -154,7 +155,7 @@ Singleton {
         id: set
 
         running: true
-        command: ["bash", "-c", `awww img --transition-step ${root.transition.step} --transition-duration ${root.transition.duration} --transition-fps ${root.transition.fps} --transition-type ${root.transition.type} --transition-angle ${root.transition.angle} --transition-pos ${root.transition.pos.join(",")} --transition-wave ${root.transition.wave.join(",")} Wallpapers/` + root.current]
+        command: ["bash", "-c", `awww img --transition-step ${root.transition.step} --transition-duration ${root.transition.duration} --transition-fps ${root.transition.fps} --transition-type ${root.transition.type} --transition-angle ${root.transition.angle} --transition-pos ${root.transition.pos.join(",")} --transition-wave ${root.transition.wave.join(",")} ${SystemInfo.homedir}/Wallpapers/` + root.current]
 
         stderr: StdioCollector {
             onStreamFinished: {

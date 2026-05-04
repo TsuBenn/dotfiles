@@ -100,7 +100,7 @@ CellPopup {
                     CellText {
                         text: MediaPlayerInfo.title
                         font: Cell.fontBB
-                        preferedW: box.contentW - 2 - 15*art.visible
+                        preferedW: box.contentW - 2 - 13*art.visible
                     }
 
                     CellText {
@@ -108,18 +108,18 @@ CellPopup {
                         text: MediaPlayerInfo.artist
                         font: Cell.fontB
                         color: Colors.fgDim
-                        preferedW: box.contentW - 2 - 15*art.visible
+                        preferedW: box.contentW - 2 - 13*art.visible
                     }
 
                     CellSeparator {
-                        w: box.contentW - 2 - 15*art.visible
+                        w: box.contentW - 2 - 13*art.visible
                         type: 2
                         color: Colors.bgOverlay
                     }
 
                     Cells {
 
-                        w: box.contentW - 2 - 15*art.visible
+                        w: box.contentW - 2 - 13*art.visible
                         h: 1
 
                         color: "transparent"
@@ -169,7 +169,7 @@ CellPopup {
                     }
 
                     CellProgressSquare {
-                        w: box.contentW - 2 - 15*art.visible
+                        w: box.contentW - 2 - 13*art.visible
                         type: 2
                         percent: (MediaPlayerInfo.pos/MediaPlayerInfo.length)*100
                         cellInterval: 10

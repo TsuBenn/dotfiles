@@ -352,7 +352,7 @@ ColumnLayout {
             percent: BrightnessInfo.brightness
             interactive: true
             syncDelay: 200
-            adjustOnHold: true
+            adjustOnHold: false
             cellInterval: 2
 
             onAdjusted: (percent) => {

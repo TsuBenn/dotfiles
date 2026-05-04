@@ -31,7 +31,7 @@ Cells {
     h: 1
 
     CellText {
-        opacity: 0
+        visible: false
         id: buffer
         text: root.text
         font: parent.font
@@ -52,7 +52,7 @@ Cells {
 
     Timer {
         interval: parent.interval
-        running: buffer.w > root.cellw && !parent.paused
+        running: buffer.w > root.cellw && !parent.paused && root.visible
         repeat: true
         onTriggered: {
             parent.offset = (parent.offset + 1) % (parent.text.length + 4)

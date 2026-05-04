@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import qs.config
 import qs.modules
+import qs.services
 
 import QtQuick.Layouts
 import QtQuick
@@ -34,8 +35,8 @@ Item {
 
     property bool editable: true
 
-    implicitWidth: root.w > 0 ? Cell.w(w) : input.implicitWidth
-    implicitHeight: root.h > 0 ? Cell.h(h) : input.implicitHeight
+    implicitWidth: root.w > 0 ? Cell.w(w) : text.length + 1
+    implicitHeight: root.h > 0 ? Cell.h(h) : 1
 
     property font font: Cell.font
     property font fontB: Cell.fontB
@@ -167,68 +168,108 @@ Item {
         implicitHeight: Cell.h(root.h)
         implicitWidth: Cell.w(root.w - (root.unit.length > 0 ? root.unit.length - 1 : 0))
 
-        CellText {
+        Loader {
 
-            visible: root.text.trim() == ""
+            active: root.visible || !SettingsInfo.optimizeMemory
 
-            id: placeholder
+            sourceComponent: Item {
 
-            text: root.placeholder
-            font: root.font
-            color: root.disabled_color
+                CellText {
 
-        }
+                    visible: root.text.length == 0
 
-        CellText {
+                    id: placeholder
 
-            visible: !root.hidden
+                    text: root.placeholder
+                    color: root.disabled_color
 
-            id: input
+                }
 
-            text: root.text
-            font: root.font
-            color: root.disabled ? root.disabled_color : root.color
+                CellText {
 
-        }
+                    visible: !root.hidden
 
-        CellText {
+                    id: input
 
-            text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + "█".repeat(Math.abs(root.visualPos))
-            font: root.font
-            color: root.visual_color
+                    text: root.text
+                    font: root.font
+                    color: root.disabled ? root.disabled_color : root.color
 
-        }
+                }
 
-        CellText {
+                CellText {
 
-            id: cursor
+                    text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + "█".repeat(Math.abs(root.visualPos))
+                    font: root.font
+                    color: root.visual_color
 
-            text: " ".repeat(root.cursorPos) + (root.showCursor && !(root.visual && root.cursorPos == root.text.length) ? "█" : "")
-            font: root.font
-            color: root.disabled ? root.disabled_color : root.color
+                }
 
-            CellText {
+                CellText {
 
-                visible: root.showCursor && !root.hidden
+                    id: cursor
 
-                text: " ".repeat(root.cursorPos) + (root.text[root.cursorPos] ?? "")
-                color: root.invert
+                    text: " ".repeat(root.cursorPos) + (root.showCursor && !(root.visual && root.cursorPos == root.text.length) ? "█" : "")
+                    font: root.font
+                    color: root.disabled ? root.disabled_color : root.color
+
+                    CellText {
+
+                        visible: root.showCursor && !root.hidden
+
+                        text: " ".repeat(root.cursorPos) + (root.text[root.cursorPos] ?? "")
+                        color: root.invert
+
+                    }
+
+                }
+
+                CellText {
+
+                    id: visual
+
+                    visible: !root.hidden
+
+                    text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + root.text.slice(root.visualPos > 0 ? root.cursorPos : root.cursorPos+root.visualPos, root.visualPos > 0 ? root.cursorPos+root.visualPos : root.cursorPos)
+                    font: root.fontB
+                    color: root.disabled ? root.disabled_color : root.invert
+
+                }
+
+                RowLayout {
+
+                    visible: root.hidden
+
+                    spacing: 0
+
+                    Repeater {
+
+                        model: root.text.length
+
+                        delegate: CellText {
+
+                            required property int index
+
+                            property bool invert: {
+                                if (root.visualPos > 0 && index >= root.cursorPos && index < root.cursorPos+root.visualPos) {
+                                    return true
+                                } else if (root.visualPos < 0 && index <= root.cursorPos && index > root.cursorPos+root.visualPos) {
+                                    return true
+                                }
+                                return false
+                            }
+
+                            text: "*"
+                            font: invert ? root.fontB : root.font
+                            color: root.disabled ? root.disabled_color : (invert ? root.invert : root.color)
+                        }
+                    }
+
+                }
 
             }
-
         }
 
-        CellText {
-
-            id: visual
-
-            visible: !root.hidden
-
-            text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + root.text.slice(root.visualPos > 0 ? root.cursorPos : root.cursorPos+root.visualPos, root.visualPos > 0 ? root.cursorPos+root.visualPos : root.cursorPos)
-            font: root.fontB
-            color: root.disabled ? root.disabled_color : root.invert
-
-        }
 
     }
 
@@ -256,35 +297,6 @@ Item {
     }
 
 
-    RowLayout {
-
-        visible: root.hidden
-
-        spacing: 0
-
-        Repeater {
-            model: Math.max(Math.min(root.text.length,input.preferedW-1),0)
-
-            delegate: CellText {
-
-                required property int index
-
-                property bool invert: {
-                    if (root.visualPos > 0 && index >= root.cursorPos && index < root.cursorPos+root.visualPos) {
-                        return true
-                    } else if (root.visualPos < 0 && index <= root.cursorPos && index > root.cursorPos+root.visualPos) {
-                        return true
-                    }
-                    return false
-                }
-
-                text: "*"
-                font: invert ? root.fontB : root.font
-                color: root.disabled ? root.disabled_color : (invert ? root.invert : root.color)
-            }
-        }
-
-    }
 
     function delete_char_back() {
         if (root.visual) {

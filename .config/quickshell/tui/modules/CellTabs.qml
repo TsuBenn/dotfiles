@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import qs.config
 import qs.modules
+import qs.services
 
 import QtQuick.Layouts
 import QtQuick
@@ -77,84 +78,15 @@ Item {
 
     }
 
-    RowLayout {
+    Loader {
 
-        visible: root.type == 0
+        active: root.type == 0 && (root.visible || !SettingsInfo.optimizeMemory)
 
-        x: Cell.centerWCell(implicitWidth, Cell.w(root.w))
+        sourceComponent: RowLayout {
 
-        spacing: root.distributed && root.centered ? root.itemLength() : Cell.w(root.spacing)
+            visible: root.type == 0
 
-        Repeater {
-
-            model: root.items
-
-            delegate: Cells {
-
-                id: tab
-
-                required property int index
-                required property string modelData
-
-                property string label: modelData
-                property bool active: root.selected == index
-
-                w: label.length + 2
-                h: 2
-
-                color: "transparent"
-
-                ColumnLayout {
-
-                    spacing: 0
-
-                    CellText {
-                        text: ` ${tab.label} `
-                        font: tab.active ? Cell.fontB : Cell.font
-                        color: tab.active ? root.color.base : root.color.inactive
-                    }
-
-                    CellText {
-                        text: ` ${tab.active ? "━".repeat(tab.label.length) : " ".repeat(tab.label.length)} `
-                        color: root.color.active
-                        bg: tab.active ? root.color.bg : "transparent"
-                    }
-
-                }
-
-                MouseControl {
-
-                    anchors.fill: parent
-
-                    onPressed: (button) => {
-                        if (button == "L") {
-                            root.selected = tab.index
-                        }
-                    }
-
-                }
-
-            }
-
-        }
-
-    }
-
-    CellBox {
-
-        id: box
-
-        visible: root.type == 1
-
-        w: root.w
-        h: 3
-
-        color: root.color.bg
-        border.color: root.color.fg
-
-        RowLayout {
-
-            x: Cell.centerWCell(implicitWidth, Cell.w(box.contentW))
+            x: Cell.centerWCell(implicitWidth, Cell.w(root.w))
 
             spacing: root.distributed && root.centered ? root.itemLength() : Cell.w(root.spacing)
 
@@ -162,7 +94,9 @@ Item {
 
                 model: root.items
 
-                delegate: CellButton {
+                delegate: Cells {
+
+                    id: tab
 
                     required property int index
                     required property string modelData
@@ -170,17 +104,95 @@ Item {
                     property string label: modelData
                     property bool active: root.selected == index
 
-                    padding: 1
+                    w: label.length + 2
+                    h: 2
 
-                    text: label
-                    font: active ? Cell.fontB : Cell.font
-                    color: active ? root.color.active : "transparent"
-                    fg: active ? root.color.base : root.color.inactive
+                    color: "transparent"
 
-                    onPressed: (button) => {
-                        if (button == "L") {
-                            root.selected = index
+                    ColumnLayout {
+
+                        spacing: 0
+
+                        CellText {
+                            text: ` ${tab.label} `
+                            font: tab.active ? Cell.fontB : Cell.font
+                            color: tab.active ? root.color.base : root.color.inactive
                         }
+
+                        CellText {
+                            text: ` ${tab.active ? "━".repeat(tab.label.length) : " ".repeat(tab.label.length)} `
+                            color: root.color.active
+                            bg: tab.active ? root.color.bg : "transparent"
+                        }
+
+                    }
+
+                    MouseControl {
+
+                        anchors.fill: parent
+
+                        onPressed: (button) => {
+                            if (button == "L") {
+                                root.selected = tab.index
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    }
+
+    Loader {
+
+        active: root.type == 1 && (root.visible || !SettingsInfo.optimizeMemory)
+
+        sourceComponent: CellBox {
+
+            id: box
+
+            visible: root.type == 1
+
+            w: root.w
+            h: 3
+
+            color: root.color.bg
+            border.color: root.color.fg
+
+            RowLayout {
+
+                x: Cell.centerWCell(implicitWidth, Cell.w(box.contentW))
+
+                spacing: root.distributed && root.centered ? root.itemLength() : Cell.w(root.spacing)
+
+                Repeater {
+
+                    model: root.items
+
+                    delegate: CellButton {
+
+                        required property int index
+                        required property string modelData
+
+                        property string label: modelData
+                        property bool active: root.selected == index
+
+                        padding: 1
+
+                        text: label
+                        font: active ? Cell.fontB : Cell.font
+                        color: active ? root.color.active : "transparent"
+                        fg: active ? root.color.base : root.color.inactive
+
+                        onPressed: (button) => {
+                            if (button == "L") {
+                                root.selected = index
+                            }
+                        }
+
                     }
 
                 }

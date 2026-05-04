@@ -76,36 +76,45 @@ Item {
 
                 model: root.w
 
-                delegate: Cells {
+                delegate: Loader {
+
+                    active: root.visible || !SettingsInfo.optimizeMemory
+
+                    id: loader
 
                     required property int index
 
-                    w: 1
-                    h: container.h
-                    color: "transparent"
+                    sourceComponent: Cells {
 
-                    Cells {
-
-                        anchors.bottom: parent.bottom
-
-                        property real percent: (root.flipped ? root.pointsFlipped[index] ?? 0 : root.points[index] ?? 0)/100
+                        property int index: loader.index
 
                         w: 1
-                        h: container.h*(Math.round(percent*(8*container.h))/(8*container.h))
-                        whole: false
+                        h: container.h
+                        color: "transparent"
 
-                        color: {
-                            if (Array.isArray(root.color)) {
-                                return container.getMultiBlend(root.color,Math.round(percent*(8*container.h))/(8*container.h))
+                        Cells {
+
+                            anchors.bottom: parent.bottom
+
+                            property real percent: (root.flipped ? root.pointsFlipped[index] ?? 0 : root.points[index] ?? 0)/100
+
+                            w: 1
+                            h: container.h*(Math.round(percent*(8*container.h))/(8*container.h))
+                            whole: false
+
+                            color: {
+                                if (Array.isArray(root.color)) {
+                                    return container.getMultiBlend(root.color,Math.round(percent*(8*container.h))/(8*container.h))
+                                }
+                                return root.color
                             }
-                            return root.color
+
                         }
+
 
                     }
 
-
                 }
-
             }
 
         }

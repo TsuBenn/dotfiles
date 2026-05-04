@@ -21,6 +21,8 @@ Singleton {
 
     signal hyprEvent(event : string)
 
+    signal cursorPos(ex: int, why: int)
+
     function switchWorkspace(n) {
         if (Number.isInteger(n)) {
             Hyprland.dispatch("workspace " + n)
@@ -32,6 +34,14 @@ Singleton {
     function windowCount(n) {
         if (!workspaces) return 0
         return workspaces[n]?.length ?? 0
+    }
+
+    onCursorPos: (x, y) => {
+        console.log(`${x} ${y}`)
+    }
+
+    function getCursorPos() {
+        get_cursorpos.running = true
     }
 
     Component.onCompleted: {
@@ -175,6 +185,22 @@ Singleton {
                 root.monitors = monitors
             }
         }
+    }
+
+    Process {
+        id: get_cursorpos
+
+        command: ["hyprctl", "cursorpos"]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    const data = text.split(",")
+                    root.cursorPos(parseInt(data[0]),parseInt(data[1]))
+                }
+            }
+        }
+
     }
 
 }

@@ -103,4 +103,24 @@ Item {
 
     }
 
+    QuickMenuPopup {
+
+        id: quick_menu
+
+        monitor: root.monitor
+
+        Component.onCompleted: {
+            HyprInfo.cursorPos.connect((x, y) => {
+                quick_menu.cellX = Cell.wCount(x) - w/2
+                quick_menu.cellY = Cell.hCount(y) - h/2 - 2
+            })
+        }
+
+        name: "quick_menu"
+
+        cellX: 0
+        cellY: 0
+
+    }
+
 }

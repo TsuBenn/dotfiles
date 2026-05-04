@@ -11,7 +11,7 @@ CellPopup {
 
     id: root
 
-    w: 80
+    w: 80 - SettingsInfo.minimal*15
     h: Cell.hCount(layout.implicitHeight)
 
     property bool edit: false
@@ -41,6 +41,9 @@ CellPopup {
             {
                 binds: "Return",
                 action: () => {
+                    if (!root.edit) {
+                        root.edit = true
+                    }
                     if (title_textfield.text.length > 0) {
                         edit.apply()
                     }
@@ -56,6 +59,116 @@ CellPopup {
                     }
                 }
             },
+            {
+                binds: "Left",
+                action: () => {
+                    const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
+                    today.setDate(today.getDate() - 1)
+
+                    if (today.getFullYear() < calendar.year) {
+                        calendar.year -= 1
+                        calendar.month = 12
+                    } else if (today.getFullYear() > calendar.year) {
+                        calendar.year += 1
+                        calendar.month = 1
+                    }
+
+                    if (today.getMonth()+1 < calendar.month) {
+                        calendar.month -= 1
+                    } else if (today.getMonth()+1 > calendar.month) {
+                        calendar.month += 1
+                    }
+
+                    calendar.selected = {
+                        day: today.getDate(),
+                        month: today.getMonth()+1,
+                        year: today.getFullYear(),
+                    }
+
+                }
+            },
+            {
+                binds: "Right",
+                action: () => {
+                    const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
+                    today.setDate(today.getDate() + 1)
+
+                    if (today.getFullYear() < calendar.year) {
+                        calendar.year -= 1
+                        calendar.month = 12
+                    } else if (today.getFullYear() > calendar.year) {
+                        calendar.year += 1
+                        calendar.month = 1
+                    }
+
+                    if (today.getMonth()+1 < calendar.month) {
+                        calendar.month -= 1
+                    } else if (today.getMonth()+1 > calendar.month) {
+                        calendar.month += 1
+                    }
+
+                    calendar.selected = {
+                        day: today.getDate(),
+                        month: today.getMonth()+1,
+                        year: today.getFullYear(),
+                    }
+                }
+            },
+            {
+                binds: "Up",
+                action: () => {
+                    const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
+                    today.setDate(today.getDate() - 7)
+
+                    if (today.getFullYear() < calendar.year) {
+                        calendar.year -= 1
+                        calendar.month = 12
+                    } else if (today.getFullYear() > calendar.year) {
+                        calendar.year += 1
+                        calendar.month = 1
+                    }
+
+                    if (today.getMonth()+1 < calendar.month) {
+                        calendar.month -= 1
+                    } else if (today.getMonth()+1 > calendar.month) {
+                        calendar.month += 1
+                    }
+
+                    calendar.selected = {
+                        day: today.getDate(),
+                        month: today.getMonth()+1,
+                        year: today.getFullYear(),
+                    }
+                }
+            },
+            {
+                binds: "Down",
+                action: () => {
+                    const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
+                    today.setDate(today.getDate() + 7)
+
+                    if (today.getFullYear() < calendar.year) {
+                        calendar.year -= 1
+                        calendar.month = 12
+                    } else if (today.getFullYear() > calendar.year) {
+                        calendar.year += 1
+                        calendar.month = 1
+                    }
+
+                    if (today.getMonth()+1 < calendar.month) {
+                        calendar.month -= 1
+                    } else if (today.getMonth()+1 > calendar.month) {
+                        calendar.month += 1
+                    }
+
+                    calendar.selected = {
+                        day: today.getDate(),
+                        month: today.getMonth()+1,
+                        year: today.getFullYear(),
+                    }
+                }
+            },
+
         ]
     }
 
@@ -79,6 +192,8 @@ CellPopup {
                 spacing: 0
 
                 Cells {
+
+                    visible: !SettingsInfo.minimal
 
                     id: col1
 
@@ -141,6 +256,8 @@ CellPopup {
                 }
 
                 CellSeparator {
+
+                    visible: !SettingsInfo.minimal
 
                     Layout.alignment: Qt.AlignTop
                     Layout.topMargin: Cell.centerHCell(implicitHeight, row1.implicitHeight)
@@ -1212,7 +1329,7 @@ CellPopup {
                     spacing: 0
 
                     CellText {
-                        text: edit.add ? `ADD REMINDER on ` : `EDIT REMINDER on `
+                        text: SettingsInfo.minimal ? (edit.add ? `ADD on ` : `EDIT on `) : (edit.add ? `ADD REMINDER on ` : `EDIT REMINDER on `)
                         font: Cell.fontB
                     }
 
@@ -1413,6 +1530,7 @@ CellPopup {
                         spacing: 0
 
                         CellText {
+                            visible: !SettingsInfo.minimal
                             text: " Mode "
                         }
 
@@ -1455,7 +1573,7 @@ CellPopup {
 
                         CellText {
 
-                            visible: frequency.selected == 0
+                            visible: frequency.selected == 0 && !SettingsInfo.minimal
                             text: "Span "
                         }
 
@@ -1504,6 +1622,7 @@ CellPopup {
                         }
 
                         CellText {
+                            visible: !SettingsInfo.minimal
                             text: "Time "
                         }
 
@@ -1645,6 +1764,7 @@ CellPopup {
                         }
 
                         CellText {
+                            visible: !SettingsInfo.minimal
                             text: "Urgency "
                         }
 
@@ -1709,6 +1829,57 @@ CellPopup {
                         }
 
                     }
+
+                }
+
+            }
+
+            CellSeparator {
+
+                visible: SettingsInfo.hints
+
+                w: box.contentW
+                type: 2
+                color: Colors.bgOverlay
+            }
+
+            RowLayout {
+
+                visible: SettingsInfo.hints
+
+                Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                spacing: Cell.w(2)
+
+                CellKeyHint {
+
+                    key: "← ↑ ↓ →"
+                    hint: SettingsInfo.minimal ? "Nav" : "Navigate"
+
+                }
+
+                CellKeyHint {
+
+                    key: "Enter"
+                    hint: SettingsInfo.minimal ? "Add" : "Add reminder"
+
+                }
+
+                CellKeyHint {
+
+                    visible: root.edit
+
+                    key: "Tab"
+                    hint: "Switch field"
+
+                }
+
+                CellKeyHint {
+
+                    visible: root.edit
+
+                    key: "Esc"
+                    hint: "Cancel"
 
                 }
 

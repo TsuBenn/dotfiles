@@ -50,6 +50,7 @@ Item {
 
     Component.onCompleted: {
         DropdownManager.closed.connect(()=> {
+            if (!root) return
             if (root.active) {
                 root.active = false
             }

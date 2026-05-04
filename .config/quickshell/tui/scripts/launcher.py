@@ -429,6 +429,8 @@ stop_event = threading.Event()
 
 def async_file_search(paths, query, stop, base_result):
     local_results = []
+    if not query:
+        return
     for path in paths:
         if stop.is_set():
             return
@@ -563,8 +565,7 @@ def main():
 
         if "h" in tags:
             start = time.perf_counter()
-            if query:
-                search_files_async(file_paths, query, result)
+            search_files_async(file_paths, query, result)
             if (timer):
                 print(f"[timer] Files searched: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
