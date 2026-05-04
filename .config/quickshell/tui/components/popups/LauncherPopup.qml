@@ -161,10 +161,18 @@ CellPopup {
 
                                 id: textfield
 
+                                property bool init: false
+
                                 onVisibleChanged: {
-                                    textfield.path = []
-                                    textfield.set("")
-                                    textfield.search("")
+                                    if (!visible) {
+                                        textfield.path = []
+                                        textfield.set("")
+                                        textfield.search("")
+                                    }
+                                    if (!init && visible) {
+                                        textfield.search("")
+                                        init = true
+                                    }
                                 }
 
                                 property int selected: 0
@@ -292,15 +300,8 @@ CellPopup {
                                     }
                                 }
 
-                                property bool init: false
 
                                 function search(input) {
-                                    if (!init && visible) {
-                                        console.log(init)
-                                        init = true
-                                    } else if (visible){
-                                        return
-                                    }
                                     let tags = ""
                                     switch (tab.selected) {
                                         case 0: tags = "ashf"; break;
