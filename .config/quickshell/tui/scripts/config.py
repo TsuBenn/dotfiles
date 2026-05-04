@@ -241,7 +241,7 @@ SETTINGS = [
             },
             {
                 "label": "Toggle memory optimization",
-                "description": "Trading performance over memory usage.",
+                "description": "Trading <i>performace</i> for memory optimization.",
                 "category": "setting",
                 "type": "exec",
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_memory_optimize"],

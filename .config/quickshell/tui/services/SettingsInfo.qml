@@ -12,7 +12,7 @@ Singleton {
 
     property bool hints: true
     property bool minimal: false
-    property bool optimizeMemory: true
+    property bool optimizeMemory: true // Reduce memory usage significantly, but takes more time to load UI elements
 
     signal showGrid()
     signal toggleMinimal()

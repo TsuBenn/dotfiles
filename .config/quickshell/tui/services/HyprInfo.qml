@@ -36,10 +36,6 @@ Singleton {
         return workspaces[n]?.length ?? 0
     }
 
-    onCursorPos: (x, y) => {
-        console.log(`${x} ${y}`)
-    }
-
     function getCursorPos() {
         get_cursorpos.running = true
     }
