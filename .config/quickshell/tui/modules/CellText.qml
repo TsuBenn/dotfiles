@@ -22,6 +22,18 @@ Item {
     property int w: 0
     property int h: 0
 
+    Component.onCompleted: {
+        if (wrap && preferedW > 0) {
+            // We use a temporary variable to prevent infinite loops
+            let wrapped = wrapText(text, preferedW);
+            if (text !== wrapped) text = wrapped; 
+        }
+
+        // Now update the actual dimensions
+        w = calculateRequiredWidth();
+        h = text.split("\n").length;
+    }
+
     function getCharWidth(char) {
         // Basic wide-char detection (CJK, fullwidth, etc.)
         return /[\u1100-\u115F\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE10-\uFE19\uFE30-\uFE6F\uFF00-\uFF60\uFFE0-\uFFE6]/.test(char)
@@ -254,61 +266,61 @@ Item {
 
         sourceComponent: ColumnLayout {
 
-        id: cell_text
+            id: cell_text
 
-        spacing: 0
+            spacing: 0
 
-        Repeater {
+            Repeater {
 
-            model: root.text.split("\n")
+                model: root.text.split("\n")
 
-            delegate: RowLayout {
+                delegate: RowLayout {
 
-                Layout.leftMargin: root.centered ? Cell.centerWCell(implicitWidth, Cell.w(root.w)) : 0
+                    Layout.leftMargin: root.centered ? Cell.centerWCell(implicitWidth, Cell.w(root.w)) : 0
 
-                id: cell_row
+                    id: cell_row
 
-                required property int index
-                required property string modelData
+                    required property int index
+                    required property string modelData
 
-                spacing: 0
+                    spacing: 0
 
-                Repeater {
+                    Repeater {
 
-                    model: root.preferedW > 0 
-                    ? root.splitCJK(root.truncate(parent.modelData, root.preferedW)) 
-                    : root.splitCJK(parent.modelData)
+                        model: root.preferedW > 0 
+                        ? root.splitCJK(root.truncate(parent.modelData, root.preferedW)) 
+                        : root.splitCJK(parent.modelData)
 
-                    delegate: Cells {
+                        delegate: Cells {
 
-                        id: text_cell
+                            id: text_cell
 
-                        required property string text
-                        required property int cells
+                            required property string text
+                            required property int cells
 
-                        h: 1
-                        w: cells
+                            h: 1
+                            w: cells
 
-                        color: root.bg
+                            color: root.bg
 
-                        Text {
+                            Text {
 
-                            anchors.centerIn: parent
+                                anchors.centerIn: parent
 
-                            id: texts
-                            textFormat: Text.RichText
-                            text: text_cell.text
-                            font: root.font
-                            color: root.color
+                                id: texts
+                                textFormat: Text.RichText
+                                text: text_cell.text
+                                font: root.font
+                                color: root.color
 
+                            }
                         }
+
                     }
 
                 }
-
             }
         }
-    }
     }
 
 }

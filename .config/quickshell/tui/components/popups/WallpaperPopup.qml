@@ -62,6 +62,9 @@ CellPopup {
 
                         id: wallpaper
 
+                        sourceSize.width: Cell.w(box.contentW)
+                        sourceSize.height: Cell.h(preview.h)
+
                         width: Cell.w(box.contentW)
                         height: Cell.h(preview.h)
 
@@ -198,10 +201,13 @@ CellPopup {
 
                                         anchors.centerIn: parent
 
+                                        sourceSize.width: Cell.w(thumbnail.w)
+                                        sourceSize.height: Cell.h(thumbnail.h-1)
+
                                         width: Cell.w(thumbnail.w)
                                         height: Cell.h(thumbnail.h-1)
 
-                                        source: (thumbnail.modelData ? SystemInfo.homedir + "/Wallpapers/" : "") + thumbnail.modelData
+                                        source: (thumbnail.modelData ? SystemInfo.homedir + WallpaperInfo.path : "") + thumbnail.modelData
 
                                         mipmap: thumbnails.h == 6
 
@@ -281,6 +287,7 @@ CellPopup {
                         id: textfield
 
                         w: textbox.contentW - 2
+                        h: 1
 
                         editable: false
 

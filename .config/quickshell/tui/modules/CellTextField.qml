@@ -12,7 +12,7 @@ Item {
     id: root
 
     property int w: 0
-    property int h: 0
+    property int h: 1
 
     property string text: ""
 

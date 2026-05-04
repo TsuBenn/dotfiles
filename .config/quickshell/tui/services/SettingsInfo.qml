@@ -12,13 +12,20 @@ Singleton {
 
     property bool hints: true
     property bool minimal: false
-    property bool optimizeMemory: true // Reduce memory usage significantly, but takes more time to load UI elements
+    property bool optimizeMemory: false // Reduce memory usage significantly, but takes more time to load UI elements
 
     signal showGrid()
     signal toggleMinimal()
 
     function notification_check() {
-            NotificationsInfo.send("", "", "Notification Check", "Check check check!\nClick here to show another similar notification!", 0, false, () => notification_check())
+        NotificationsInfo.send("", "", "Notification Check", "Check check check!\nClick here to show another similar notification!", 0, false, () => notification_check())
+    }
+
+    function audio_check() {
+        const rng = Math.random()
+        const sound = Math.round(rng*3)
+        const sounds = ["hallo","mambo","mambo_tongye","mambo_wow"]
+        AudioInfo.playSound(sounds[sound], 1)
     }
 
     IpcHandler {
@@ -36,10 +43,7 @@ Singleton {
             root.notification_check()
         }
         function audio_check(): void {
-            const rng = Math.random()
-            const sound = Math.round(rng*3)
-            const sounds = ["hallo","mambo","mambo_tongye","mambo_wow"]
-            AudioInfo.playSound(sounds[sound], 1)
+            root.audio_check()
         }
         function toggle_grids(): void {root.showGrid()}
         function toggle_minimal(): void {root.minimal = !root.minimal; root.toggleMinimal()}

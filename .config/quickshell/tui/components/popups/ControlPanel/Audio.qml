@@ -219,6 +219,8 @@ ColumnLayout {
                 AudioInfo.setVolume(AudioInfo.sinkDefault, percent)
             }
 
+            onSynced: SettingsInfo.audio_check()
+
         }
 
         CellText{

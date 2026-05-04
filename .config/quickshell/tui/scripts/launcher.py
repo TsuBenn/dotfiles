@@ -431,6 +431,7 @@ def async_file_search(paths, query, stop, base_result):
     local_results = []
     if not query:
         return
+    query = query.lower()
     for path in paths:
         if stop.is_set():
             return

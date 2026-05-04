@@ -177,9 +177,9 @@ CellPopup {
             },
             {
                 label: "1",
-                description: "Control panel",
+                description: "Power",
                 action: () => {
-                    PopupManager.open("control_panel")
+                    PopupManager.open("power")
                 },
             },
             {

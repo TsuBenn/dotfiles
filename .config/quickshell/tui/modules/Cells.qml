@@ -35,7 +35,7 @@ Item {
 
     Loader {
 
-        active: (root.visible || !SettingsInfo.optimizeMemory)
+        active: (root.visible && (root.color != "transparent" && !root.grid)) || !SettingsInfo.optimizeMemory
 
         sourceComponent: Rectangle {
 

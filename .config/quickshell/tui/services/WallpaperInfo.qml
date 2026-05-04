@@ -13,11 +13,11 @@ Singleton {
 
     property var all: []
 
-    property var wallpapers: ["detective_hutao.jpeg"]
+    property var wallpapers: ["detective_hutao.jpg"]
 
     property string current: wallpapers[selected]
 
-    property string path: "/dotfiles/Wallpapers/"
+    property string path: "/dotfiles/Wallpapers/.qscache/"
 
     property bool slideshow: false
 
@@ -107,7 +107,7 @@ Singleton {
     }
 
     function set(image) {
-        set.exec(["bash", "-c", `awww img --transition-step ${root.transition.step} --transition-duration ${root.transition.duration} --transition-fps ${root.transition.fps} --transition-type ${root.transition.type} --transition-angle ${root.transition.angle} --transition-pos ${root.transition.pos.join(",")} --transition-wave ${root.transition.wave.join(",")} ${SystemInfo.homedir}/Wallpapers/` + image])
+        set.exec(["bash", "-c", `awww img --transition-step ${root.transition.step} --transition-duration ${root.transition.duration} --transition-fps ${root.transition.fps} --transition-type ${root.transition.type} --transition-angle ${root.transition.angle} --transition-pos ${root.transition.pos.join(",")} --transition-wave ${root.transition.wave.join(",")} ${SystemInfo.homedir}Wallpapers/.qscache/` + image])
     }
 
     function minute(min: int): int {
@@ -131,11 +131,25 @@ Singleton {
 
     Process {
 
-        id: scan
+        id: cache
 
         running: true
 
-        command: ["ls", SystemInfo.homedir + "Wallpapers"]
+        command: ["bash", "-c", `mkdir -p ${SystemInfo.homedir}Wallpapers/.qscache && echo ".qscache" > ${SystemInfo.homedir}Wallpapers/.gitignore && fd . ${SystemInfo.homedir}Wallpapers/ -e png -e jpg -e jpeg -x magick {} -thumbnail 1920x1080^ -gravity center -extent 1920x1080 -quality 60 ${SystemInfo.homedir}Wallpapers/.qscache/{/.}.jpg`]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                    scan.running = true
+            }
+        }
+
+    }
+
+    Process {
+
+        id: scan
+
+        command: ["ls", SystemInfo.homedir + "/Wallpapers/.qscache/"]
 
         stdout: StdioCollector {
             onStreamFinished: {
@@ -155,7 +169,7 @@ Singleton {
         id: set
 
         running: true
-        command: ["bash", "-c", `awww img --transition-step ${root.transition.step} --transition-duration ${root.transition.duration} --transition-fps ${root.transition.fps} --transition-type ${root.transition.type} --transition-angle ${root.transition.angle} --transition-pos ${root.transition.pos.join(",")} --transition-wave ${root.transition.wave.join(",")} ${SystemInfo.homedir}/Wallpapers/` + root.current]
+        command: ["bash", "-c", `awww img --transition-step ${root.transition.step} --transition-duration ${root.transition.duration} --transition-fps ${root.transition.fps} --transition-type ${root.transition.type} --transition-angle ${root.transition.angle} --transition-pos ${root.transition.pos.join(",")} --transition-wave ${root.transition.wave.join(",")} ${SystemInfo.homedir}/Wallpapers/.qscache/` + root.current]
 
         stderr: StdioCollector {
             onStreamFinished: {

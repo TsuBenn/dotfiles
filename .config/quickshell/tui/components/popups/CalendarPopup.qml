@@ -62,6 +62,15 @@ CellPopup {
             {
                 binds: "Left",
                 action: () => {
+
+                    if (calendar.selected.year != calendar.year) {
+                        calendar.year = calendar.selected.year
+                    }
+
+                    if (calendar.selected.month != calendar.month) {
+                        calendar.month = calendar.selected.month
+                    }
+
                     const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
                     today.setDate(today.getDate() - 1)
 
@@ -90,6 +99,15 @@ CellPopup {
             {
                 binds: "Right",
                 action: () => {
+
+                    if (calendar.selected.year != calendar.year) {
+                        calendar.year = calendar.selected.year
+                    }
+
+                    if (calendar.selected.month != calendar.month) {
+                        calendar.month = calendar.selected.month
+                    }
+
                     const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
                     today.setDate(today.getDate() + 1)
 
@@ -117,6 +135,15 @@ CellPopup {
             {
                 binds: "Up",
                 action: () => {
+
+                    if (calendar.selected.year != calendar.year) {
+                        calendar.year = calendar.selected.year
+                    }
+
+                    if (calendar.selected.month != calendar.month) {
+                        calendar.month = calendar.selected.month
+                    }
+
                     const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
                     today.setDate(today.getDate() - 7)
 
@@ -144,6 +171,15 @@ CellPopup {
             {
                 binds: "Down",
                 action: () => {
+
+                    if (calendar.selected.year != calendar.year) {
+                        calendar.year = calendar.selected.year
+                    }
+
+                    if (calendar.selected.month != calendar.month) {
+                        calendar.month = calendar.selected.month
+                    }
+
                     const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
                     today.setDate(today.getDate() + 7)
 

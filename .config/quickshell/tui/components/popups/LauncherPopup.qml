@@ -179,102 +179,6 @@ CellPopup {
 
                                 property var path: []
 
-                                ShortcutHandler {
-
-                                    property int result_h: SettingsInfo.minimal ? 2 : 3
-
-                                    shortcuts: [
-                                        {
-                                            binds: "Up",
-                                            action: () => {
-                                                safe_mouse.safe = 1
-                                                safe_mouse.visible = true
-                                                if (textfield.selected == 0) return
-                                                textfield.selected -= 1
-                                                if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
-                                                    results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
-                                                }
-                                            }
-                                        },
-                                        {
-                                            binds: "Down",
-                                            action: () => {
-                                                safe_mouse.safe = 1
-                                                safe_mouse.visible = true
-                                                if (textfield.selected >= LauncherInfo.result.length-1) {
-                                                    textfield.selected = 0
-                                                    return
-                                                }
-                                                textfield.selected += 1
-                                                if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
-                                                    results.offset = textfield.selected*result_h
-                                                }
-                                            }
-                                        },
-                                        {
-                                            binds: "Right",
-                                            action: () => {
-                                                if (textfield.text.length == 0) {
-                                                    tab.advance(1)
-                                                } else {
-                                                    textfield.move_cursor_forward()
-                                                }
-                                            }
-                                        },
-                                        {
-                                            binds: "Left",
-                                            action: () => {
-                                                if (textfield.text.length == 0) {
-                                                    tab.advance(-1)
-                                                } else {
-                                                    textfield.move_cursor_back()
-                                                }
-                                            }
-                                        },
-                                        {
-                                            binds: "Tab",
-                                            action: () => {
-                                                safe_mouse.safe = 1
-                                                safe_mouse.visible = true
-                                                if (textfield.selected >= LauncherInfo.result.length-1) {
-                                                    textfield.selected = 0
-                                                    return
-                                                }
-                                                textfield.selected += 1
-                                                if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
-                                                    results.offset = textfield.selected*result_h
-                                                }
-                                            }
-                                        },
-                                        {
-                                            binds: "Shift+Tab",
-                                            action: () => {
-                                                safe_mouse.safe = 1
-                                                safe_mouse.visible = true
-                                                if (textfield.selected == 0) return
-                                                textfield.selected -= 1
-                                                if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
-                                                    results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
-                                                }
-                                            }
-                                        },
-                                        {
-                                            binds: "Escape",
-                                            action: () => {
-                                                if (textfield.path.length > 0) {
-                                                    const new_path = textfield.path
-                                                    new_path.pop()
-                                                    textfield.path = new_path
-                                                    textfield.search("")
-                                                    textfield.set("")
-                                                    breadcrumbs.updatePath()
-                                                } else {
-                                                    PopupManager.close("launcher")
-                                                }
-                                            }
-                                        },
-                                    ]
-                                }
 
                                 Component.onCompleted: {
                                     LauncherInfo.pathFound.connect((id, label) => {
@@ -476,6 +380,103 @@ CellPopup {
                         ColumnLayout {
 
                             spacing: 0
+
+                            ShortcutHandler {
+
+                                property int result_h: SettingsInfo.minimal ? 2 : 3
+
+                                shortcuts: [
+                                    {
+                                        binds: "Up",
+                                        action: () => {
+                                            safe_mouse.safe = 1
+                                            safe_mouse.visible = true
+                                            if (textfield.selected == 0) return
+                                            textfield.selected -= 1
+                                            if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
+                                                results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
+                                            }
+                                        }
+                                    },
+                                    {
+                                        binds: "Down",
+                                        action: () => {
+                                            safe_mouse.safe = 1
+                                            safe_mouse.visible = true
+                                            if (textfield.selected >= LauncherInfo.result.length-1) {
+                                                textfield.selected = 0
+                                                return
+                                            }
+                                            textfield.selected += 1
+                                            if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
+                                                results.offset = textfield.selected*result_h
+                                            }
+                                        }
+                                    },
+                                    {
+                                        binds: "Right",
+                                        action: () => {
+                                            if (textfield.text.length == 0) {
+                                                tab.advance(1)
+                                            } else {
+                                                textfield.move_cursor_forward()
+                                            }
+                                        }
+                                    },
+                                    {
+                                        binds: "Left",
+                                        action: () => {
+                                            if (textfield.text.length == 0) {
+                                                tab.advance(-1)
+                                            } else {
+                                                textfield.move_cursor_back()
+                                            }
+                                        }
+                                    },
+                                    {
+                                        binds: "Tab",
+                                        action: () => {
+                                            safe_mouse.safe = 1
+                                            safe_mouse.visible = true
+                                            if (textfield.selected >= LauncherInfo.result.length-1) {
+                                                textfield.selected = 0
+                                                return
+                                            }
+                                            textfield.selected += 1
+                                            if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
+                                                results.offset = textfield.selected*result_h
+                                            }
+                                        }
+                                    },
+                                    {
+                                        binds: "Shift+Tab",
+                                        action: () => {
+                                            safe_mouse.safe = 1
+                                            safe_mouse.visible = true
+                                            if (textfield.selected == 0) return
+                                            textfield.selected -= 1
+                                            if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
+                                                results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
+                                            }
+                                        }
+                                    },
+                                    {
+                                        binds: "Escape",
+                                        action: () => {
+                                            if (textfield.path.length > 0) {
+                                                const new_path = textfield.path
+                                                new_path.pop()
+                                                textfield.path = new_path
+                                                textfield.search("")
+                                                textfield.set("")
+                                                breadcrumbs.updatePath()
+                                            } else {
+                                                PopupManager.close("launcher")
+                                            }
+                                        }
+                                    },
+                                ]
+                            }
 
                             Repeater {
 
