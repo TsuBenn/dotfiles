@@ -42,11 +42,11 @@ ayano() {
     print() {
         tree -I "venv|logs|audio|__pycache__|__init__.py|.pyc|.git|*.png"
     }
-    run() {
-        pkill -f main.py
-        python main.py &
-        clear
-    }
+run() {
+    pkill -f main.py
+    python main.py &
+    clear
+}
 }
 
 ayanoSetup() {
@@ -99,7 +99,11 @@ qsR() {
     qs -c ~/.config/quickshell/$1 -d
 }
 
-alias programs='cd ~/dotfiles/programs/ && nvim .'
+programs() {
+    cd ~/dotfiles/programs/$1
+    nvim .
+}
+
 alias easyeffectsRestart='easyeffects -q && easyeffects --gapplication-service &'
 
 # QUICK INSTALL

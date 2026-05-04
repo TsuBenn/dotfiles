@@ -23,6 +23,7 @@ Singleton {
     IpcHandler {
         target: "config"
         function open_popup(popup: string): void {PopupManager.open(popup)}
+        function toggle_popup(popup: string): void {PopupManager.toggle(popup)}
         function send_popup_sig(id: string, sig: string, open: bool): void {
             PopupManager.sendSignal(id, sig)
             if (open) {
