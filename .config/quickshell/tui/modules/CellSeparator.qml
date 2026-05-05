@@ -37,6 +37,7 @@ Item {
     implicitHeight: Cell.h(vertical ? h : 1)
 
     Loader {
+
         active: root.visible || !SettingsInfo.optimizeMemory
 
         sourceComponent: CellText {

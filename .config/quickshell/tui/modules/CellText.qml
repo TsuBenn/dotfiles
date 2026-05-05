@@ -298,6 +298,8 @@ Item {
                             required property string text
                             required property int cells
 
+                            clip: root.clip
+
                             h: 1
                             w: cells
 
