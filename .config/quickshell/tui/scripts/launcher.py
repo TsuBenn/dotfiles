@@ -409,8 +409,14 @@ def filter_files(paths, query):
     query = query.lower()
     results = []
     for path in paths:
-        name = os.path.basename(path)
-        if query in name.lower():
+        name = os.path.basename(path).lower()
+
+        score = max(
+            fuzzy_match(query, name),
+            fuzzy_match(query, path.lower()),
+        )
+
+        if score:
             results.append({
                 "id": path,
                 "label": name,
@@ -420,6 +426,9 @@ def filter_files(paths, query):
                 "value": path,
                 "type": "dir" if os.path.isdir(path) else "file"
             })
+        if len(results) > 50:
+            break
+
     return results
 
 

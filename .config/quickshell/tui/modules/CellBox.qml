@@ -91,10 +91,45 @@ Item {
                 text: {
                     switch (root.border.type) {
                         case 0: return " ";
-                        case 1: return "┌"+"─".repeat(root.w-2)+"┐\n"+("│"+" ".repeat(root.w-2)+"│\n").repeat(root.h-2)+"└"+"─".repeat(root.w-2)+"┘";
-                        case 2: return "┏"+"━".repeat(root.w-2)+"┐\n"+("┃"+" ".repeat(root.w-2)+"┃\n").repeat(root.h-2)+"┗"+"━".repeat(root.w-2)+"┛";
-                        case 3: return "╔"+"═".repeat(root.w-2)+"╗\n"+("║"+" ".repeat(root.w-2)+"║\n").repeat(root.h-2)+"╚"+"═".repeat(root.w-2)+"╝";
-                        case 4: return "╭"+"─".repeat(root.w-2)+"╮\n"+("│"+" ".repeat(root.w-2)+"│\n").repeat(root.h-2)+"╰"+"─".repeat(root.w-2)+"╯";
+                        case 1: {
+                            return "┌"
+                            +(root.header.text.length > 0 ? "─".repeat(root.header.offset)+(root.header.text)+"─".repeat(root.w - 2 - root.header.offset - root.header.text.length) : "─".repeat(root.w-2))
+                            +"┐\n"
+                            +("│"+" ".repeat(root.w-2)+"│\n").repeat(root.h-2)
+                            +"└"
+                            +(root.footer.text.length > 0 ? "─".repeat(root.footer.offset)+(root.footer.text)+"─".repeat(root.w - 2 - root.footer.offset - root.footer.text.length) : "─".repeat(root.w-2))
+                            +"┘";
+                        }
+
+                        case 2: {
+                            return "┏"
+                            +(root.header.text.length > 0 ? "━".repeat(root.header.offset)+(root.header.text)+"━".repeat(root.w - 2 - root.header.offset - root.header.text.length) : "━".repeat(root.w-2))
+                            +"┓\n"
+                            +("┃"+" ".repeat(root.w-2)+"┃\n").repeat(root.h-2)
+                            +"┗"
+                            +(root.footer.text.length > 0 ? "━".repeat(root.footer.offset)+(root.footer.text)+"━".repeat(root.w - 2 - root.footer.offset - root.footer.text.length) : "━".repeat(root.w-2))
+                            +"┛";
+                        }
+
+                        case 3: {
+                            return "╔"
+                            +(root.header.text.length > 0 ? "═".repeat(root.header.offset)+(root.header.text)+"═".repeat(root.w - 2 - root.header.offset - root.header.text.length) : "═".repeat(root.w-2))
+                            +"╗\n"
+                            +("║"+" ".repeat(root.w-2)+"║\n").repeat(root.h-2)
+                            +"╚"
+                            +(root.footer.text.length > 0 ? "═".repeat(root.footer.offset)+(root.footer.text)+"═".repeat(root.w - 2 - root.footer.offset - root.footer.text.length) : "═".repeat(root.w-2))
+                            +"╝";
+                        }
+
+                        case 4: {
+                            return "╭"
+                            +(root.header.text.length > 0 ? "─".repeat(root.header.offset)+(root.header.text)+"─".repeat(root.w - 2 - root.header.offset - root.header.text.length) : "─".repeat(root.w-2))
+                            +"╮\n"
+                            +("│"+" ".repeat(root.w-2)+"│\n").repeat(root.h-2)
+                            +"╰"
+                            +(root.footer.text.length > 0 ? "─".repeat(root.footer.offset)+(root.footer.text)+"─".repeat(root.w - 2 - root.footer.offset - root.footer.text.length) : "─".repeat(root.w-2))
+                            +"╯";
+                        }
                     }
                 }
                 color: root.border.color

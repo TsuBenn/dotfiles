@@ -497,11 +497,19 @@ CellPopup {
 
                             model: CalendarInfo.generateCalendar(calendar.year, calendar.month, calendar.today)
 
-                            delegate: Cells {
+                            delegate: Loader {
+
+                                id: days_loader
+
+                                required property var modelData
+
+                                active: root.visible || !SettingsInfo.optimizeMemory
+
+                                sourceComponent: Cells {
 
                                 id: day
 
-                                required property var modelData
+                                property var modelData: days_loader.modelData
 
                                 property string date: modelData.day
                                 property bool isToday: modelData.isToday
@@ -847,6 +855,7 @@ CellPopup {
                                 }
 
                             }
+                            }
 
                         }
 
@@ -958,258 +967,269 @@ CellPopup {
 
                                     model: reminders.selectedReminders
 
-                                    delegate: Cells {
+                                    delegate: Loader {
 
-                                        id: reminder
+                                        id: reminders_loader
 
                                         required property int index
                                         required property var modelData
 
-                                        property string title: modelData.title
-                                        property string body: modelData.body ?? ""
-                                        property int idx: modelData.idx ?? 0
-                                        property int urgency: modelData.urgency ?? 0
-                                        property string time: modelData.time ?? ""
-                                        property string date: modelData.date ?? ""
-                                        property bool event: modelData.isEvent ?? false
-                                        property int range: modelData.range ?? 0
-                                        property int span: modelData.span ?? 1
+                                        active: root.visible || !SettingsInfo.optimizeMemory
 
-                                        property bool expanded: false
+                                        sourceComponent: Cells {
 
-                                        w: reminders_scroll_view.contentW
-                                        h: Cell.hCount(reminder_layout.implicitHeight) + 1
+                                            id: reminder
 
-                                        color: "transparent"
+                                            property int index     : reminders_loader.index
+                                            property var modelData : reminders_loader.modelData
 
-                                        ColumnLayout {
+                                            property string title: modelData.title
+                                            property string body: modelData.body ?? ""
+                                            property int idx: modelData.idx ?? 0
+                                            property int urgency: modelData.urgency ?? 0
+                                            property string time: modelData.time ?? ""
+                                            property string date: modelData.date ?? ""
+                                            property bool event: modelData.isEvent ?? false
+                                            property int range: modelData.range ?? 0
+                                            property int span: modelData.span ?? 1
 
-                                            id: reminder_layout
+                                            property bool expanded: false
 
-                                            spacing: 0
+                                            w: reminders_scroll_view.contentW
+                                            h: Cell.hCount(reminder_layout.implicitHeight) + 1
 
-                                            RowLayout {
+                                            color: "transparent"
 
+                                            ColumnLayout {
+
+                                                id: reminder_layout
 
                                                 spacing: 0
 
-                                                CellText {
+                                                RowLayout {
 
-                                                    Layout.alignment: Qt.AlignTop
-                                                    text: {
-                                                        if (reminder.urgency == 1) {
-                                                            return " ! "
-                                                        } else if (reminder.urgency == 2) {
-                                                            return " !! "
+
+                                                    spacing: 0
+
+                                                    CellText {
+
+                                                        Layout.alignment: Qt.AlignTop
+                                                        text: {
+                                                            if (reminder.urgency == 1) {
+                                                                return " ! "
+                                                            } else if (reminder.urgency == 2) {
+                                                                return " !! "
+                                                            }
+                                                            return " ▪ "
                                                         }
-                                                        return " ▪ "
-                                                    }
-                                                    font: Cell.fontBB
-                                                    color: {
-                                                        if (reminder.urgency == 1) {
-                                                            return Colors.warning
-                                                        } else if (reminder.urgency == 2) {
-                                                            return Colors.danger
-                                                        } else if (reminder.event) {
-                                                            return Colors.success
+                                                        font: Cell.fontBB
+                                                        color: {
+                                                            if (reminder.urgency == 1) {
+                                                                return Colors.warning
+                                                            } else if (reminder.urgency == 2) {
+                                                                return Colors.danger
+                                                            } else if (reminder.event) {
+                                                                return Colors.success
+                                                            }
+                                                            return Colors.fgBase
                                                         }
-                                                        return Colors.fgBase
+
                                                     }
+
+                                                    CellText {
+
+                                                        Layout.alignment: Qt.AlignTop
+
+                                                        id: reminder_title
+
+                                                        text: reminder.title + (reminder.body != "" ? " [+]": "") + (reminder.range > 0 ? (" in " + reminder.range + (reminder.range > 1 ? " days" : " day")) : "")
+                                                        preferedW: 31 - (reminder.urgency == 2)*1 - (reminder_time.text != "")*6
+                                                        wrap: true
+
+                                                        color: {
+                                                            if (reminder.range > 0) {
+                                                                return Colors.fgDim
+                                                            }
+                                                            if (reminder.event) {
+                                                                return Colors.blend(Colors.fgBase,Colors.warning, 0.5)
+                                                            }
+                                                            return Colors.fgBase
+                                                        }
+
+                                                        font: {
+                                                            if (reminder.event) {
+                                                                return Cell.fontB
+                                                            }
+                                                            return Cell.font
+                                                        }
+
+                                                    }
+
+                                                    CellText {
+                                                        text: " "
+                                                    }
+
+                                                    CellText {
+
+                                                        Layout.alignment: Qt.AlignTop
+
+                                                        id: reminder_time
+
+                                                        text: {
+                                                            if (reminder.time) {
+                                                                let time = reminder.time.split(":")
+                                                                for (const i in time) {
+                                                                    time[i] = time[i].toString().padStart(2,"0")
+                                                                }
+                                                                return time.join(":")
+                                                            }
+                                                            return ""
+                                                        } 
+
+                                                        color: {
+                                                            const time = reminder.time.split(":")
+                                                            if (
+                                                                parseInt(DateTime.date) >= parseInt(calendar.selected.day) && 
+                                                                parseInt(DateTime.month_numeral) >= parseInt(calendar.selected.day) &&
+                                                                parseInt(DateTime.year) >= parseInt(calendar.selected.year) &&
+                                                                reminder.range == 0
+                                                            ) {
+                                                                if (
+                                                                    (DateTime.hour24 == parseInt(time[0]) && parseInt(time[1]) - DateTime.minute < 59) || parseInt(time[0]) - DateTime.hour24 == 1
+                                                                ) {
+                                                                    return Colors.warning
+                                                                } else if (
+                                                                    DateTime.hour24 > parseInt(time[0]) && 
+                                                                    DateTime.minute > parseInt(time[1])
+                                                                ) {
+                                                                    return Colors.danger
+                                                                }
+                                                            }
+                                                            return Colors.fgSubtle
+                                                        }
+
+                                                    }
+
 
                                                 }
 
-                                                CellText {
+                                                CellSeparator {
 
-                                                    Layout.alignment: Qt.AlignTop
+                                                    visible: reminder.expanded
 
-                                                    id: reminder_title
+                                                    Layout.leftMargin: Cell.w(3 + (reminder.urgency == 2)*1)
 
-                                                    text: reminder.title + (reminder.body != "" ? " [+]": "") + (reminder.range > 0 ? (" in " + reminder.range + (reminder.range > 1 ? " days" : " day")) : "")
-                                                    preferedW: 31 - (reminder.urgency == 2)*1 - (reminder_time.text != "")*6
-                                                    wrap: true
+                                                    w: 31 - (reminder.urgency == 2)*1 - (reminder_time.text != "")*6
+                                                    color: Colors.bgOverlay
+                                                    bg: "transparent"
 
-                                                    color: {
-                                                        if (reminder.range > 0) {
+                                                }
+
+                                                RowLayout {
+
+                                                    visible: reminder.expanded
+
+                                                    spacing: 0
+
+                                                    CellText {
+                                                        text: "   "
+                                                    }
+
+                                                    CellText {
+                                                        text: reminder.body
+                                                        preferedW: 31 - (reminder.urgency == 2)*1 - (reminder_time.text != "")*6
+                                                        wrap: true
+                                                        color: {
+                                                            if (reminder.range > 0) {
+                                                                return Colors.fgSubtle
+                                                            }
                                                             return Colors.fgDim
                                                         }
-                                                        if (reminder.event) {
-                                                            return Colors.blend(Colors.fgBase,Colors.warning, 0.5)
-                                                        }
-                                                        return Colors.fgBase
-                                                    }
-
-                                                    font: {
-                                                        if (reminder.event) {
-                                                            return Cell.fontB
-                                                        }
-                                                        return Cell.font
                                                     }
 
                                                 }
 
-                                                CellText {
-                                                    text: " "
-                                                }
+                                            }
 
-                                                CellText {
+                                            MouseControl {
+                                                implicitWidth: Cell.w(reminders_scroll_view.contentW)
+                                                implicitHeight: Cell.h(Cell.hCount(reminder_layout.implicitHeight))
 
-                                                    Layout.alignment: Qt.AlignTop
+                                                onPressed: (button) => {
+                                                    const global = mapToGlobal(mouseX, mouseY)
+                                                    if (button == "L") {
+                                                        if (reminder.body != "") reminder.expanded = !reminder.expanded
+                                                    } else if (button == "R" && !reminder.range) {
+                                                        ContextMenuManager.show([
+                                                            {
+                                                                label: "Edit", action: () =>
+                                                                {
+                                                                    root.edit = true
+                                                                    edit.add = false
+                                                                    title_textfield.set(reminder.title)
+                                                                    body_textfield.set(reminder.body)
+                                                                    span_textfield.set(reminder.span)
 
-                                                    id: reminder_time
+                                                                    urgency.selected = reminder.urgency
+                                                                    mode.selected = reminder.event ? 1 : 0
 
-                                                    text: {
-                                                        if (reminder.time) {
-                                                            let time = reminder.time.split(":")
-                                                            for (const i in time) {
-                                                                time[i] = time[i].toString().padStart(2,"0")
-                                                            }
-                                                            return time.join(":")
-                                                        }
-                                                        return ""
-                                                    } 
+                                                                    const index = reminder.idx
+                                                                    const date = reminder.date
+                                                                    const span = reminder.span
+                                                                    let freq = 0
 
-                                                    color: {
-                                                        const time = reminder.time.split(":")
-                                                        if (
-                                                            parseInt(DateTime.date) >= parseInt(calendar.selected.day) && 
-                                                            parseInt(DateTime.month_numeral) >= parseInt(calendar.selected.day) &&
-                                                            parseInt(DateTime.year) >= parseInt(calendar.selected.year) &&
-                                                            reminder.range == 0
-                                                        ) {
-                                                            if (
-                                                                (DateTime.hour24 == parseInt(time[0]) && parseInt(time[1]) - DateTime.minute < 59) || parseInt(time[0]) - DateTime.hour24 == 1
-                                                            ) {
-                                                                return Colors.warning
-                                                            } else if (
-                                                                DateTime.hour24 > parseInt(time[0]) && 
-                                                                DateTime.minute > parseInt(time[1])
-                                                            ) {
-                                                                return Colors.danger
-                                                            }
-                                                        }
-                                                        return Colors.fgSubtle
+                                                                    if (CalendarInfo.weekdays.includes(date)) {
+                                                                        freq = 2
+                                                                    } else if (/^\d{2}-d{2}-d{4}$/.test(date)) {
+                                                                        freq = 0
+                                                                    } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(date)) {
+                                                                        freq = 1
+                                                                    } else if (/^\d{2}$/.test(date)) {
+                                                                        freq = 3
+                                                                    } else if (/^\d{2}-d{2}$/.test(date)) {
+                                                                        freq = 4
+                                                                    }
+
+                                                                    frequency.selected = freq
+
+                                                                    if (reminder.time) {
+                                                                        const time = reminder.time.split(":")
+                                                                        hour.set(time[0])
+                                                                        minute.set(time[1])
+                                                                        hour.set(time[0])
+                                                                        minute.set(time[1])
+                                                                    }
+
+                                                                    edit.origin = {
+                                                                        "index": index,
+                                                                        "date": date,
+                                                                        "span": span,
+                                                                        "event": reminder.event,
+                                                                        "freq": freq,
+                                                                    }
+
+                                                                }
+                                                            },
+                                                            {
+                                                                label: "Remove", action: () =>
+                                                                {
+                                                                    CalendarInfo.remove(reminder.event ? "e" : "r", reminder.date, reminder.idx)
+                                                                }
+                                                            },
+                                                        ],global.x,global.y,undefined,"")
                                                     }
-
                                                 }
-
 
                                             }
 
                                             CellSeparator {
-
-                                                visible: reminder.expanded
-
-                                                Layout.leftMargin: Cell.w(3 + (reminder.urgency == 2)*1)
-
-                                                w: 31 - (reminder.urgency == 2)*1 - (reminder_time.text != "")*6
+                                                padding: 1
+                                                y: reminder_layout.implicitHeight
+                                                w: reminders_scroll_view.contentW
+                                                type: 2
                                                 color: Colors.bgOverlay
-                                                bg: "transparent"
-
                                             }
 
-                                            RowLayout {
-
-                                                visible: reminder.expanded
-
-                                                spacing: 0
-
-                                                CellText {
-                                                    text: "   "
-                                                }
-
-                                                CellText {
-                                                    text: reminder.body
-                                                    preferedW: 31 - (reminder.urgency == 2)*1 - (reminder_time.text != "")*6
-                                                    wrap: true
-                                                    color: {
-                                                        if (reminder.range > 0) {
-                                                            return Colors.fgSubtle
-                                                        }
-                                                        return Colors.fgDim
-                                                    }
-                                                }
-
-                                            }
-
-                                        }
-
-                                        MouseControl {
-                                            implicitWidth: Cell.w(reminders_scroll_view.contentW)
-                                            implicitHeight: Cell.h(Cell.hCount(reminder_layout.implicitHeight))
-
-                                            onPressed: (button) => {
-                                                const global = mapToGlobal(mouseX, mouseY)
-                                                if (button == "L") {
-                                                    if (reminder.body != "") reminder.expanded = !reminder.expanded
-                                                } else if (button == "R" && !reminder.range) {
-                                                    ContextMenuManager.show([
-                                                        {
-                                                            label: "Edit", action: () =>
-                                                            {
-                                                                root.edit = true
-                                                                edit.add = false
-                                                                title_textfield.set(reminder.title)
-                                                                body_textfield.set(reminder.body)
-                                                                span_textfield.set(reminder.span)
-
-                                                                urgency.selected = reminder.urgency
-                                                                mode.selected = reminder.event ? 1 : 0
-
-                                                                const index = reminder.idx
-                                                                const date = reminder.date
-                                                                const span = reminder.span
-                                                                let freq = 0
-
-                                                                if (CalendarInfo.weekdays.includes(date)) {
-                                                                    freq = 2
-                                                                } else if (/^\d{2}-d{2}-d{4}$/.test(date)) {
-                                                                    freq = 0
-                                                                } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(date)) {
-                                                                    freq = 1
-                                                                } else if (/^\d{2}$/.test(date)) {
-                                                                    freq = 3
-                                                                } else if (/^\d{2}-d{2}$/.test(date)) {
-                                                                    freq = 4
-                                                                }
-
-                                                                frequency.selected = freq
-
-                                                                if (reminder.time) {
-                                                                    const time = reminder.time.split(":")
-                                                                    hour.set(time[0])
-                                                                    minute.set(time[1])
-                                                                    hour.set(time[0])
-                                                                    minute.set(time[1])
-                                                                }
-
-                                                                edit.origin = {
-                                                                    "index": index,
-                                                                    "date": date,
-                                                                    "span": span,
-                                                                    "event": reminder.event,
-                                                                    "freq": freq,
-                                                                }
-
-                                                            }
-                                                        },
-                                                        {
-                                                            label: "Remove", action: () =>
-                                                            {
-                                                                CalendarInfo.remove(reminder.event ? "e" : "r", reminder.date, reminder.idx)
-                                                            }
-                                                        },
-                                                    ],global.x,global.y,undefined,"")
-                                                }
-                                            }
-
-                                        }
-
-                                        CellSeparator {
-                                            padding: 1
-                                            y: reminder_layout.implicitHeight
-                                            w: reminders_scroll_view.contentW
-                                            type: 2
-                                            color: Colors.bgOverlay
                                         }
 
                                     }

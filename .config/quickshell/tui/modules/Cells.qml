@@ -35,7 +35,7 @@ Item {
 
     Loader {
 
-        active: (root.visible && (root.color != "transparent" && !root.grid)) || !SettingsInfo.optimizeMemory
+        active: (root.visible || !SettingsInfo.optimizeMemory) && (root.color != "transparent" || root.grid)
 
         sourceComponent: Rectangle {
 
@@ -59,8 +59,8 @@ Item {
                         let ch = Cell.h(1)
 
                         // Cache the lengths to avoid calling functions every iteration
-                        let wLimit = width 
-                        let hLimit = height
+                        let wLimit = implicitWidth 
+                        let hLimit = implicitHeight
 
                         for (let i = 0; i < wLimit; i += cw) {
                             for (let j = 0; j < hLimit; j += ch) { // Fixed: j < height and j += ch
@@ -69,7 +69,7 @@ Item {
                                 let col = Math.floor(i / cw)
                                 let row = Math.floor(j / ch)
 
-                                ctx.fillStyle = (col + row) % 2 === 0 ? "transparent" : root.color2
+                                ctx.fillStyle = (col + row) % 2 === 0 ? root.color : root.color2
                                 ctx.fillRect(i, j, cw, ch)
                             }
                         }

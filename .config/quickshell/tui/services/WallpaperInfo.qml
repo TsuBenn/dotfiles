@@ -12,12 +12,14 @@ Singleton {
     id: root
 
     property var all: []
+    property var caches: []
 
-    property var wallpapers: ["detective_hutao.jpg"]
+    property var wallpapers: ["detective_hutao.jpeg"]
 
     property string current: wallpapers[selected]
 
-    property string path: "/dotfiles/Wallpapers/.qscache/"
+    property string path: "/Wallpapers/"
+    property string cache_path: "/Wallpapers/.qscache/"
 
     property bool slideshow: false
 
@@ -107,7 +109,7 @@ Singleton {
     }
 
     function set(image) {
-        set.exec(["bash", "-c", `awww img --transition-step ${root.transition.step} --transition-duration ${root.transition.duration} --transition-fps ${root.transition.fps} --transition-type ${root.transition.type} --transition-angle ${root.transition.angle} --transition-pos ${root.transition.pos.join(",")} --transition-wave ${root.transition.wave.join(",")} ${SystemInfo.homedir}Wallpapers/.qscache/` + image])
+        set.exec(["bash", "-c", `awww img --transition-step ${root.transition.step} --transition-duration ${root.transition.duration} --transition-fps ${root.transition.fps} --transition-type ${root.transition.type} --transition-angle ${root.transition.angle} --transition-pos ${root.transition.pos.join(",")} --transition-wave ${root.transition.wave.join(",")} ${SystemInfo.homedir}Wallpapers/` + image])
     }
 
     function minute(min: int): int {
@@ -135,11 +137,19 @@ Singleton {
 
         running: true
 
-        command: ["bash", "-c", `mkdir -p ${SystemInfo.homedir}Wallpapers/.qscache && echo ".qscache" > ${SystemInfo.homedir}Wallpapers/.gitignore && fd . ${SystemInfo.homedir}Wallpapers/ -e png -e jpg -e jpeg -x magick {} -thumbnail 1920x1080^ -gravity center -extent 1920x1080 -quality 60 ${SystemInfo.homedir}Wallpapers/.qscache/{/.}.jpg`]
+        command: ["bash", "-c", `mkdir -p ${SystemInfo.homedir}${root.cache_path} && echo ".qscache" > ${SystemInfo.homedir}${root.path}.gitignore && fd . ${SystemInfo.homedir}${root.path} -e png -e jpg -e jpeg -x magick {} -thumbnail 1920x1080^ -gravity center -extent 1920x1080 -quality 40 ${SystemInfo.homedir}${root.cache_path}{/}.jpg`]
 
         stdout: StdioCollector {
             onStreamFinished: {
                     scan.running = true
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    console.log(text)
+                }
             }
         }
 
@@ -149,7 +159,7 @@ Singleton {
 
         id: scan
 
-        command: ["ls", SystemInfo.homedir + "/Wallpapers/.qscache/"]
+        command: ["ls", SystemInfo.homedir + "/Wallpapers/"]
 
         stdout: StdioCollector {
             onStreamFinished: {
@@ -157,6 +167,25 @@ Singleton {
                     const data = text.split("\n").slice(0,-1)
                     root.all = []
                     root.all = data
+                    scan_cache.running = true
+                }
+            }
+        }
+
+    }
+
+    Process {
+
+        id: scan_cache
+
+        command: ["ls", SystemInfo.homedir + "/Wallpapers/.qscache/"]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    const data = text.split("\n").slice(0,-1)
+                    root.caches = []
+                    root.caches = data
                     root.rescanned()
                 }
             }
@@ -169,7 +198,7 @@ Singleton {
         id: set
 
         running: true
-        command: ["bash", "-c", `awww img --transition-step ${root.transition.step} --transition-duration ${root.transition.duration} --transition-fps ${root.transition.fps} --transition-type ${root.transition.type} --transition-angle ${root.transition.angle} --transition-pos ${root.transition.pos.join(",")} --transition-wave ${root.transition.wave.join(",")} ${SystemInfo.homedir}/Wallpapers/.qscache/` + root.current]
+        command: ["bash", "-c", `awww img --transition-step ${root.transition.step} --transition-duration ${root.transition.duration} --transition-fps ${root.transition.fps} --transition-type ${root.transition.type} --transition-angle ${root.transition.angle} --transition-pos ${root.transition.pos.join(",")} --transition-wave ${root.transition.wave.join(",")} ${SystemInfo.homedir}/Wallpapers/` + root.current]
 
         stderr: StdioCollector {
             onStreamFinished: {

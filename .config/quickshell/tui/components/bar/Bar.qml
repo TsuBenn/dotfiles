@@ -57,7 +57,7 @@ Scope {
                 })
                 HyprInfo.hyprEvent.connect((event)=> {
                     switch (event) {
-                        case "activewindow":
+                        //case "activewindow":
                         case "activespecial":
                         case "closewindow":
                         case "focusedmon": 
@@ -326,10 +326,9 @@ Scope {
                         h: 100
                         w: 400
                         grid: true
-                        opacity: 0.05
+                        opacity: 0.02
 
-                        color: "transparent"
-                        color2: Colors.fgBase
+                        color2: "transparent"
 
                     }
 

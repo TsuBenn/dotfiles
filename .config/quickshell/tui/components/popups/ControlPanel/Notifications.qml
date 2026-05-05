@@ -20,6 +20,12 @@ ColumnLayout {
         list.expanded = 0
     }
 
+    Component.onCompleted: {
+        NotificationsInfo.notificationSent.connect(()=> {
+            NotificationsInfo.refresh()
+        })
+    }
+
     CellScrollView {
 
         id: list
@@ -49,6 +55,7 @@ ColumnLayout {
 
                     active: root.visible || !SettingsInfo.optimizeMemory
 
+                    required property int index
                     required property var modelData
 
                     property var notif_group: modelData.notifications
@@ -110,6 +117,7 @@ ColumnLayout {
                                                 NotificationsInfo.refresh()
                                             }
                                             if (notif.modelData.notifications[0].object) {
+                                                console.log(JSON.stringify(notif.modelData.notifications[0].object.actions, null, 2))
                                                 for (const action of notif.modelData.notifications[0].object.actions) {
                                                     if (action.identifier == "default") {
                                                         action.invoke()
@@ -300,6 +308,7 @@ ColumnLayout {
                                                                     sub_notif.dismiss()
                                                                 }
                                                                 if (sub_notif.object) {
+                                                                    console.log(JSON.stringify(sub_notif.object.actions, null, 2))
                                                                     for (const action of sub_notif.object.actions) {
                                                                         if (action.identifier == "default") {
                                                                             action.invoke()

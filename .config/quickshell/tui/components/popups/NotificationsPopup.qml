@@ -85,6 +85,7 @@ CellPopup {
                         if (button == "L") {
                             if (popup.action) {
                                 popup.action()
+                                popup.close()
                             }
                             if (popup.object) {
                                 for (const action of popup.object.actions) {

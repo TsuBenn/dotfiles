@@ -1,13 +1,4 @@
 {
-  "04/05/2026": [
-    {
-      "title": "Graduation Certificate",
-      "body": "Collect High School Graduation Certificate",
-      "span": 1,
-      "urgency": 1,
-      "time": ""
-    }
-  ],
   "06-05-2026": [
     {
       "title": "Vovinam Final Exam!",
@@ -15,6 +6,15 @@
       "span": 1,
       "urgency": 2,
       "time": "13:30"
+    }
+  ],
+  "07/05/2026": [
+    {
+      "title": "Graduation Certificate",
+      "body": "Collect High School Graduation Certificate",
+      "span": 1,
+      "urgency": 1,
+      "time": ""
     }
   ]
 }

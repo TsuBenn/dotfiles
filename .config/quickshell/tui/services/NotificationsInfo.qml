@@ -91,15 +91,26 @@ Singleton {
 
     onNotificationSent: (noti) => {
         if (noti.track) {
-            add(noti.app, noti.icon, noti.summary, noti.body, noti.urgency, noti.object)
+            add(noti.app, noti.icon, noti.summary, noti.body, noti.urgency, noti.object, noti.action)
         }
     }
 
-    function add(appName, appIcon, summary, body, urgency, object) {
+    function add(appName, appIcon, summary, body, urgency, object, action) {
         // 1. Prepare data
         let groups = root.notifications_groups || [];
         const cleanSummary = summary.trim();
         const cleanBody = body.trim();
+
+        for (const notif of root.notifications_groups) {
+            for (const subnotif of notif.notifications) {
+                if (subnotif.object) {
+                    console.log("still here!")
+                } else {
+                    console.log("no more object!")
+                    console.log(JSON.stringify(subnotif,null,2))
+                }
+            }
+        }
 
         // 2. Helper to create a new notification object
         const createNotif = () => ({
@@ -107,6 +118,7 @@ Singleton {
             "body": [cleanBody],
             "urgency": urgency,
             "object": object,
+            "action": action,
             "time": 0,
         });
 
@@ -132,6 +144,10 @@ Singleton {
                     // If it's "new", append the text to the existing body
                     existingNotif.body.unshift(cleanBody);
                     existingNotif.time = 0;
+                    if (existingNotif.object) {
+                        existingNotif.object.tracked = false;
+                    }
+                    existingNotif.object = object;
                 }
             } else {
                 // Summary not found, add new notification to existing group
@@ -176,7 +192,7 @@ Singleton {
                 "body": body.trim(),
                 "urgency": urgency,
                 "object": noti,
-                "track": true,
+                "track": noti.tracked,
                 "time": 0,
             })
 

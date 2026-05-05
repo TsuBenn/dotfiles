@@ -1,10 +1,7 @@
 fn main() {
 
-    let string = "Hello world!";
-
-    let hello = &string[..5];
-    let world = &string[6..];
-
-    println!("{} {}", hello, world);
+    let s1 = String::from("Arch Linux");
+    let s2 = s1;
+    println!("{}", s1);
 
 }

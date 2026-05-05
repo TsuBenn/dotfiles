@@ -38,7 +38,7 @@ Item {
 
     Loader {
 
-        active: root.visible || !SettingsInfo.optimizeMemory
+        active: (root.visible || !SettingsInfo.optimizeMemory) && !root.vertical
 
         sourceComponent: CellText {
 
@@ -77,44 +77,32 @@ Item {
     }
 
     Loader {
-        active: root.visible || !SettingsInfo.optimizeMemory
 
-        sourceComponent: ColumnLayout {
+        active: (root.visible || !SettingsInfo.optimizeMemory) && root.vertical
 
-            visible: root.vertical
+        sourceComponent: CellText {
 
-            spacing: 0
+            clip: true
 
-            Repeater {
+            text: {
 
-                model: root.h
+                let type = "│"
 
-                delegate: CellText {
-
-                    required property int index
-
-                    clip: true
-
-                    text: {
-
-                        if (index <= root.padding-1 || index >= root.h-root.padding) {
-                            return " "
-                        }
-                        switch (root.type) {
-                            case 0: return "│"
-                            case 1: return "┃"
-                            case 2: return "║"
-                            case 3: return "|"
-                        }
-                        return "│"
-
-                    }
-
+                switch (root.type) {
+                    case 0: type = "│"; break;
+                    case 1: type = "┃"; break;
+                    case 2: type = "║"; break;
+                    case 3: type = "|"; break;
                 }
+
+                const lines = [..." ".repeat(root.padding), ...type.repeat(root.h - root.padding*2), ..." ".repeat(root.padding)]
+
+                return lines.join("\n")
 
             }
 
         }
+
     }
 
 }

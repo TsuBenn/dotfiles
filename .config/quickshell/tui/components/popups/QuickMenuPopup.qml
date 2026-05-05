@@ -307,15 +307,15 @@ CellPopup {
         }
 
         onExited: {
-            PopupManager.close("quick_menu")
+            root.close()
         }
 
         onReleased: (button) => {
             if (button == "L") {
                 applied(index)
-                PopupManager.close("quick_menu")
+                root.close()
             } else if (button == "R") {
-                PopupManager.close("quick_menu")
+                root.close()
             }
         }
 
