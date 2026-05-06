@@ -21,8 +21,17 @@ CellPopup {
 
     Component.onCompleted: {
         NotificationsInfo.notificationSent.connect((notif) => {
-            let new_notif = root.notif
-            new_notif = [...new_notif, notif]
+            let buffer = root.notif
+            buffer = [...buffer, notif]
+
+            let new_notif = []
+
+            for (const not of buffer) {
+                if (not.object.summary) {
+                    new_notif.push(not)
+                }
+            }
+
             root.notif = new_notif
         })
     }
@@ -127,7 +136,7 @@ CellPopup {
 
                             CellText {
                                 text: popup.summary
-                                preferedW: root.w - 10 - 6*icon.success
+                                preferedW: root.w - 8 - 6*icon.success
                                 font: Cell.fontB
                                 color: {
                                     if (popup.urgency == 2) {

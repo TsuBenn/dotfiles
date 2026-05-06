@@ -16,6 +16,7 @@ Singleton {
     signal notificationSent(notification: var)
 
     onNotificationsChanged: {
+        console.log(notifications.length)
         refresh()
     }
 
@@ -50,7 +51,7 @@ Singleton {
 
     function refresh() {
         const buffer = notifications_groups
-        console.log(JSON.stringify(buffer,null,2))
+        //console.log(JSON.stringify(buffer,null,2))
         let to_be_dismissed = []
         for (const notif of buffer) {
             for (const i in notif.notifications) {
@@ -157,6 +158,7 @@ Singleton {
 
         // 5. Update the root property once
         root.notifications_groups = groups;
+        root.refresh()
     }
 
     function toRawUnicode(str) {
