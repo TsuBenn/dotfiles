@@ -1,5 +1,7 @@
 pragma Singleton
 
+import qs.services
+
 import Quickshell.Services.Notifications
 import Quickshell
 import QtQuick
@@ -12,6 +14,10 @@ Singleton {
     property var notifications_groups: []
 
     signal notificationSent(notification: var)
+
+    onNotificationsChanged: {
+        refresh()
+    }
 
     function clear() {
         notifications_groups = []
@@ -44,6 +50,23 @@ Singleton {
 
     function refresh() {
         const buffer = notifications_groups
+        console.log(JSON.stringify(buffer,null,2))
+        let to_be_dismissed = []
+        for (const notif of buffer) {
+            for (const i in notif.notifications) {
+                if (notif.notifications[i].object.tracked) {
+
+                } else {
+                    to_be_dismissed.push({
+                        app: notif.app, 
+                        index: i,
+                    })
+                }
+            }
+        }
+        for (const notif of to_be_dismissed) {
+            dismiss(notif.app, notif.index)
+        }
         notifications_groups = []
         notifications_groups = buffer
     }
@@ -62,17 +85,8 @@ Singleton {
         }
     }
 
-    function send(app, icon, summary, body, urgency = 0, track = false, action = undefined) {
-        root.notificationSent({
-            "app": app.trim(),
-            "icon": icon.trim(),
-            "summary": summary.trim(),
-            "body": body.trim(),
-            "urgency": urgency,
-            "action": action,
-            "track": track,
-            "time": 0,
-        })
+    function send(app, icon, summary, body, urgency = 0, track = false, action = "") {
+        SystemInfo.runDetached(["bash", "-c", `[ "$(notify-send "${summary}" "${body}" --app-name="${app}" --app-icon="${icon}" --urgency="${urgency == 2 ? "critical" : ( urgency == 1 ? "normal" : "low")}" --action="default=Action")" = "default" ] && ${action}`])
     }
 
     Timer {
@@ -90,9 +104,7 @@ Singleton {
     }
 
     onNotificationSent: (noti) => {
-        if (noti.track) {
-            add(noti.app, noti.icon, noti.summary, noti.body, noti.urgency, noti.object, noti.action)
-        }
+        add(noti.app, noti.icon, noti.summary, noti.body, noti.urgency, noti.object)
     }
 
     function add(appName, appIcon, summary, body, urgency, object, action) {
@@ -101,24 +113,12 @@ Singleton {
         const cleanSummary = summary.trim();
         const cleanBody = body.trim();
 
-        for (const notif of root.notifications_groups) {
-            for (const subnotif of notif.notifications) {
-                if (subnotif.object) {
-                    console.log("still here!")
-                } else {
-                    console.log("no more object!")
-                    console.log(JSON.stringify(subnotif,null,2))
-                }
-            }
-        }
-
         // 2. Helper to create a new notification object
         const createNotif = () => ({
             "summary": cleanSummary,
             "body": [cleanBody],
             "urgency": urgency,
             "object": object,
-            "action": action,
             "time": 0,
         });
 
@@ -159,6 +159,21 @@ Singleton {
         root.notifications_groups = groups;
     }
 
+    function toRawUnicode(str) {
+        return str.split('').map(char => {
+            const hex = char.charCodeAt(0).toString(16).padStart(4, '0');
+            return `\\u${hex}`;
+        }).join('');
+    }
+
+    function formatForRice(str) {
+        return str
+        .replace(/[\u2068\u2069]/g, '') // Kill the ghosts we found earlier
+        .replace(/\n/g, ' ')            // Turn newlines into spaces
+        .replace(/\s+/g, ' ')           // Collapse multiple spaces into one
+        .trim();
+    }
+
     NotificationServer {
         id: notificationsServer
 
@@ -169,11 +184,14 @@ Singleton {
 
             //console.log(JSON.stringify(noti,null,2))
 
-            let summary = noti.summary
-            let body = noti.body
+            //console.log(noti.body)
+            //console.log(toRawUnicode(noti.body))
 
-            noti.keepOnReload = false
-            noti.tracked = noti.actions.length > 0
+            let summary = formatForRice(noti.summary);
+            let body = formatForRice(noti.body)
+
+            //noti.keepOnReload = false
+            noti.tracked = true
 
             let urgency = 0
             if (NotificationUrgency.toString(noti.urgency) == "Critical") {
@@ -192,7 +210,6 @@ Singleton {
                 "body": body.trim(),
                 "urgency": urgency,
                 "object": noti,
-                "track": noti.tracked,
                 "time": 0,
             })
 

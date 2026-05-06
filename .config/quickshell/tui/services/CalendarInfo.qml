@@ -183,7 +183,7 @@ Singleton {
                     "REMINDERS & EVENTS",
                     "<b>" + reminder.title + "</b>" + (reminder.body ? "\n" + reminder.body : ""),
                     reminder.urgency, true,
-                    () => PopupManager.open("calendar")
+                    "qs -c tui ipc call config open_popup calendar"
                 )
                 return
             }
@@ -194,7 +194,7 @@ Singleton {
                     "REMINDERS & EVENTS",
                     text + " before <b>" + reminder.title + "</b>",
                     reminder.urgency, false,
-                    () => PopupManager.open("calendar")
+                    "qs -c tui ipc call config open_popup calendar"
                 )
             }
 
@@ -214,7 +214,7 @@ Singleton {
                     "REMINDERS & EVENTS",
                     "<b>" + reminder.title + "</b>" + (reminder.body ? "\n" + reminder.body : ""),
                     reminder.urgency, true,
-                    () => PopupManager.open("calendar")
+                    "qs -c tui ipc call config open_popup calendar"
                 )
             }
 

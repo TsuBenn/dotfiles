@@ -57,6 +57,11 @@ CellPopup {
                     } else if (body_textfield.focus) {
                         title_textfield.grabFocus()
                     }
+                    if (hour.focus) {
+                        minute.grabFocus()
+                    } else if (minute.focus) {
+                        hour.grabFocus()
+                    }
                 }
             },
             {
@@ -1917,7 +1922,7 @@ CellPopup {
                 CellKeyHint {
 
                     key: "Enter"
-                    hint: SettingsInfo.minimal ? "Add" : "Add reminder"
+                    hint: SettingsInfo.minimal ? (edit.add ? "Add" : "Edit") : (edit.add ? "Add reminder" : "Edit reminder" )
 
                 }
 

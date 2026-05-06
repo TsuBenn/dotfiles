@@ -107,7 +107,9 @@ RowLayout {
 
                 text: {
 
-                    if (hasReminders && blinking.on) {
+                    if (hasDeadline && blinking.on) {
+                        return " ! "
+                    } else if (hasReminders && blinking.on) {
                         return " ▪ "
                     } else if (hasReminders && !blinking.on) {
                         return "   "
@@ -126,6 +128,8 @@ RowLayout {
                     }
                     return Colors.fgBase
                 }
+
+                font: Cell.fontBB
 
             }
 

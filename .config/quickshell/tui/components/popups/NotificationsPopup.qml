@@ -50,7 +50,6 @@ CellPopup {
                 property string app: modelData.app
                 property string icon: modelData.icon
                 property var object: modelData.object
-                property var action: modelData.action
 
                 property bool focused: false
 
@@ -83,10 +82,6 @@ CellPopup {
 
                     onReleased: (button) => {
                         if (button == "L") {
-                            if (popup.action) {
-                                popup.action()
-                                popup.close()
-                            }
                             if (popup.object) {
                                 for (const action of popup.object.actions) {
                                     if (action.identifier == "default") {

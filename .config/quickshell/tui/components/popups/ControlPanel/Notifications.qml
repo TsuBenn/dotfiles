@@ -111,11 +111,6 @@ ColumnLayout {
                                             }
                                         }
                                         else {
-                                            if (notif.modelData.notifications[0].action) {
-                                                notif.modelData.notifications[0].action()
-                                                NotificationsInfo.dismiss(notif.modelData.app, -1)
-                                                NotificationsInfo.refresh()
-                                            }
                                             if (notif.modelData.notifications[0].object) {
                                                 console.log(JSON.stringify(notif.modelData.notifications[0].object.actions, null, 2))
                                                 for (const action of notif.modelData.notifications[0].object.actions) {
@@ -272,7 +267,6 @@ ColumnLayout {
 
                                                 required property var modelData
                                                 property var object: modelData.object
-                                                property var action: modelData.action
 
                                                 spacing: 0
 
@@ -303,10 +297,6 @@ ColumnLayout {
 
                                                         onReleased: (button) => {
                                                             if (button == "L") {
-                                                                if (sub_notif.action) {
-                                                                    sub_notif.action()
-                                                                    sub_notif.dismiss()
-                                                                }
                                                                 if (sub_notif.object) {
                                                                     console.log(JSON.stringify(sub_notif.object.actions, null, 2))
                                                                     for (const action of sub_notif.object.actions) {
