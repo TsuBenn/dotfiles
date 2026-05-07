@@ -137,7 +137,6 @@ ColumnLayout {
                                     anchors.fill: parent
 
                                     onReleased: (button) => {
-                                        console.log("check")
                                         if (button == "L" && app.expandable) {
                                             app.toggleExpand()
                                         }
@@ -250,10 +249,6 @@ ColumnLayout {
                                                 }
 
                                                 // Show summary if collapse, show body if there's only 1 notification, show a separator if expanded
-
-                                                onHChanged: {
-                                                    console.log(Cell.hCount(implicitHeight))
-                                                }
 
                                                 color: Colors.fgDim
 
