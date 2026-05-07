@@ -1,3 +1,58 @@
+This file is a merged representation of a subset of the codebase, containing specifically included files, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of a subset of the repository's contents that is considered the most important context.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Only files matching these patterns are included: **/Notifications.qml, **/NotificationsInfo.qml
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+components/
+  popups/
+    ControlPanel/
+      Notifications.qml
+services/
+  NotificationsInfo.qml
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="components/popups/ControlPanel/Notifications.qml">
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -18,27 +73,6 @@ ColumnLayout {
     onVisibleChanged: {
         NotificationsInfo.refresh()
         list.expanded = []
-        debounce.restart()
-    }
-
-    Timer {
-
-        id: debounce
-
-        property var raw_data: NotificationsInfo.notifications_groups
-        property var data: []
-
-        onRaw_dataChanged: {
-            if (visible) {
-                restart()
-            }
-        }
-
-        interval: 200
-        onTriggered: {
-            data = raw_data
-        }
-
     }
 
     CellScrollView {
@@ -56,7 +90,7 @@ ColumnLayout {
         signal expand_all()
 
         onExpand_all: {
-            for (const app of debounce.data) {
+            for (const app of NotificationsInfo.notifications_groups) {
                 expanded = [...expanded,app.app]
                 for (const group of app.notifications) {
                     expanded_notif = [...expanded_notif,group.object]
@@ -75,7 +109,7 @@ ColumnLayout {
 
             Repeater {
 
-                model: debounce.data
+                model: NotificationsInfo.notifications_groups
 
                 delegate: Loader {
 
@@ -176,7 +210,7 @@ ColumnLayout {
                                                 if (app.expandable) {
                                                     return ""
                                                 }
-                                                return app.notifications[0].group[0]?.image ?? ""
+                                                return app.notifications[0].group[0].image
                                             }
                                             icon: [app.icon, app.app]
 
@@ -200,7 +234,7 @@ ColumnLayout {
                                                         if (app.expandable) {
                                                             return app.app
                                                         }
-                                                        return app.notifications[0].group[0]?.summary ?? ""
+                                                        return app.notifications[0].group[0].summary
                                                     }
 
                                                     // If there's only one notification of the app, show the newest summary
@@ -244,9 +278,9 @@ ColumnLayout {
 
                                                 text: {
                                                     if (app.expandable) {
-                                                        return app.notifications[0].group[0]?.summary ?? ""
+                                                        return app.notifications[0].group[0].summary
                                                     }
-                                                    return app.notifications[0].group[0]?.body ?? ""
+                                                    return app.notifications[0].group[0].body
                                                 }
 
                                                 // Show summary if collapse, show body if there's only 1 notification, show a separator if expanded
@@ -647,4 +681,321 @@ ColumnLayout {
     }
 
 }
+</file>
 
+<file path="services/NotificationsInfo.qml">
+pragma Singleton
+
+import qs.services
+
+import Quickshell.Services.Notifications
+import Quickshell
+import QtQuick
+
+Singleton {
+
+    id: root
+
+    property list<Notification> notifications: notificationsServer.trackedNotifications.values
+
+    property var notifications_groups: []
+
+    /*
+
+     notifications_groups = [
+         {
+             app: string,
+             icon: string,
+             notifications: [
+                 {
+                     object: {Notification}, // Keeping track of the current notification's lifetime
+                     urgency: int, // 0: low, 1: normal, 2: critical
+                     group: [
+                         {
+                             summary: string,
+                             body: string,
+                             image: string, // Users icon probably
+                             time: int, // Computer uptime at that point, preventing running a timer
+                         }
+                     ]
+                 }
+                 // Only append new subgroup if the object of the previous is still alive
+             ]
+         }
+     ] 
+
+     */
+
+    signal notificationSent(notification: var)
+
+    Timer {
+        id: refresh_delay
+
+        interval: 100
+        onTriggered: {
+            refresh()
+        }
+
+    }
+
+    onNotificationsChanged: {
+
+        refresh_delay.restart()
+
+    }
+
+    function debug() {
+        console.log(JSON.stringify(notifications_groups, null, 2))
+    }
+
+    function action(id: int) {
+        const buffer = notifications.findIndex(item => item.id == id)
+        notifications[buffer].actions.find(item => item.identifier == "default").invoke()
+    }
+
+    function clear() {
+
+        let ids = [] 
+
+        for (const noti of notifications) {
+            ids.push(noti.id)
+        }
+
+        for (const id of ids) {
+            notifications[notifications.findIndex(item => item.id == id)].tracked = false
+        }
+
+        refresh_delay.restart()
+
+    }
+
+    function dismiss(object: var) {
+        // Dimiss App
+        if (typeof object == "string") {
+
+            let buffer = notifications_groups.slice()
+
+            buffer = buffer.filter(item => item.app != object)
+
+            notifications_groups = buffer
+
+            refresh_delay.restart()
+
+            return
+        }
+
+        // Dismiss specific group
+        if (object.tracked) {
+            object.tracked = false
+        } else {
+            console.log("NotificationInfo: Dismissing: No object found!")
+        }
+        refresh_delay.restart()
+    }
+
+    function refresh() {
+        let buffer = notifications_groups.slice() // Create a real copy
+
+        for (const i in buffer) {
+            buffer[i].notifications = buffer[i].notifications.filter(item => {
+                return exists(item.object) 
+            })
+        }
+
+        // Capture the filtered array!
+        //root.notifications_groups = []
+        root.notifications_groups = buffer.filter(app => app.notifications.length > 0)
+
+    }
+
+    function formatTime(seconds) {
+
+        seconds = toSeconds() - seconds
+
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+
+        if (h > 0) {
+            return `${h}h${m > 0 ? m + 'm' : ''}`;
+        } else if (m > 0) {
+            return `${m}m`;
+        } else {
+            return `${s}s`;
+        }
+    }
+
+    function send(app, icon, summary, body, urgency = 0, track = false, action = "") {
+        SystemInfo.runDetached(["bash", "-c", `[ "$(notify-send "${summary}" "${body}" --app-name="${app}" --app-icon="${icon}" --urgency="${urgency == 2 ? "critical" : ( urgency == 1 ? "normal" : "low")}" --action="default=Action")" = "default" ] && ${action}`])
+    }
+
+    onNotificationSent: (noti) => {
+        add(noti.summary, noti.body, noti.app, noti.icon, noti.image, noti.urgency, noti.object)
+    }
+
+    function toSeconds() {
+
+        const now = Date.now()
+
+        return Math.floor(now/1000)
+
+    }
+
+    function exists(id) {
+        return notifications.some(item => item.id == id) || id < 0
+    }
+
+    function add(summary, body, app, icon, image, urgency, object) {
+
+        const buffer = notifications_groups
+
+        /*
+
+         notifications_groups = [
+             *groups* {
+                 app: string,
+                 icon: string,
+                 notifications: [
+                     {
+                         object: {Notification}, // Keeping track of the current notification's lifetime
+                         urgency: int, // 0: low, 1: normal, 2: critical
+                         group: [
+                             {
+                                 summary: string,
+                                 body: string,
+                                 image: string, // Users icon probably
+                                 time: int, // Computer uptime at that point, preventing running a timer
+                             }
+                         ]
+                     }
+                     // Only append new subgroup if the object of the previous is still alive
+                 ]
+             }
+         ] 
+
+         */
+
+        const subgroup = {
+            "summary": summary,
+            "body": body,
+            "image": image,
+            "time": toSeconds(),
+            toJSON() {
+                return formatTime(this.time)
+            }
+        }
+
+        const notif = {
+            "object": object.id,
+            "actions": object.actions ?? [],
+            "urgency": urgency,
+            "group": [
+                subgroup
+            ],
+            toJSON() {
+                return { 
+                    object: this.object,
+                    group: this.group,
+                }
+            }
+        }
+
+        const new_app = {
+            "app": app,
+            "icon": icon,
+            "notifications": [notif],
+        }
+
+        // Check if app already existed. Returns the app if available, else return nothing
+        const index = buffer.findIndex(item => item.app == app)
+
+        if (index != -1) { // App exists -> append new notifications group, or does it?
+
+            const group = buffer.splice(index, 1)[0] // Remove and captures the group to later put it on top of the notification list
+
+            // Check if the newest notification group's object is still alive, if yes then append new notification group
+            if (exists(group.notifications[0].object)) {
+                group.notifications.unshift(notif)
+            } 
+            // If the newest notifications group's object is dead then merge it with the new group
+            else {
+                group.notifications[0].object = object.id // replacing the object with the available one
+                group.notifications[0].urgency = urgency
+                group.notifications[0].group.unshift(subgroup) // append new subgroup into the existing group
+            }
+
+            buffer.unshift(group) // Put the new app group on top of the notification list
+
+        } else {
+            // App doesn't exist yet -> append new app group
+            buffer.unshift(new_app)
+        }
+
+        root.notifications_groups = buffer
+
+        //debug()
+
+        exists(0)
+
+        //root.refresh() // Let this function handles the clean up
+
+    }
+
+    function toRawUnicode(str) {
+        return str.split('').map(char => {
+            const hex = char.charCodeAt(0).toString(16).padStart(4, '0');
+            return `\\u${hex}`;
+        }).join('');
+    }
+
+    function strip(str) {
+        return str
+        .replace(/[\u2068\u2069]/g, '') // Kill the ghosts we found earlier
+        .replace(/\n/g, ' ')            // Turn newlines into spaces
+        .replace(/\s+/g, ' ')           // Collapse multiple spaces into one
+        .trim();
+    }
+
+    NotificationServer {
+
+        id: notificationsServer
+
+        actionsSupported: true
+
+        keepOnReload: true
+
+        onNotification: (noti) => {
+            console.log("Received Notification: " + noti.summary + " " + noti.body + " " + noti.id)
+
+            noti.tracked = true
+
+            // Data clean up
+            const summary = strip(noti.summary)
+            const body = strip(noti.body)
+            const app = noti.appName
+            const icon = noti.appIcon
+            const image = noti.image
+            const urgency = parseInt(noti.urgency.toString())
+            const lastGen = noti.lastGeneration
+
+            const sendObject = {
+                "lastGen": lastGen,
+                "summary": summary,
+                "body": body,
+                "app": app,
+                "icon": icon,
+                "image": image,
+                "urgency": urgency,
+                "object": noti
+            }
+
+            // Notify the system
+            root.notificationSent(sendObject)
+
+        }
+    }
+
+}
+</file>
+
+</files>

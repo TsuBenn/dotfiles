@@ -30,6 +30,9 @@ CellPopup {
          */
         if (!visible) {
             auto_close.restart()
+            textfield.path = []
+            textfield.set("")
+            textfield.search("")
         } else {
             auto_close.stop()
         }
@@ -164,11 +167,6 @@ CellPopup {
                                 property bool init: false
 
                                 onVisibleChanged: {
-                                    if (!visible) {
-                                        textfield.path = []
-                                        textfield.set("")
-                                        textfield.search("")
-                                    }
                                     if (!init && visible) {
                                         textfield.search("")
                                         init = true
@@ -179,10 +177,9 @@ CellPopup {
 
                                 property var path: []
 
-
                                 Component.onCompleted: {
                                     LauncherInfo.pathFound.connect((id, label) => {
-                                        path = [...path, {"id": id, "label": label}]
+                                        textfield.path = [...path, {"id": id, "label": label}]
                                         textfield.search("")
                                         textfield.set("")
                                         breadcrumbs.updatePath()
@@ -220,6 +217,9 @@ CellPopup {
                                 }
 
                                 onTextRemoved: (removed) => {
+                                    if (removed == "" && textfield.path.length > 0) {
+                                        textfield.path.pop()
+                                    }
                                     if (removed == "" && tab.selected != 0) {
                                         tab.selected = 0
                                         set("")
@@ -350,7 +350,7 @@ CellPopup {
                             debounce.restart()
                         })
                         SettingsInfo.toggleMinimal.connect(() => {
-                            debounce.restart()
+                            //debounce.restart()
                         })
                     }
 
@@ -545,7 +545,13 @@ CellPopup {
                                                     spacing: 0
 
                                                     CellText {
-                                                        text: result.label
+                                                        text: {
+                                                            let macro = result.label.match(/\{(.*)\}/)?.[1] ?? ""
+                                                            if (macro) {
+                                                                return result.label.replace(/\{(.*)\}/,SettingsInfo.get_state(macro))
+                                                            }
+                                                            return result.label
+                                                        }
                                                         preferedW: results.contentW - 5 - 5*result_icon.success
                                                     }
 

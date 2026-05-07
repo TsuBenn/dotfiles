@@ -11,68 +11,121 @@ Singleton {
     id: root
 
     property list<Notification> notifications: notificationsServer.trackedNotifications.values
+
     property var notifications_groups: []
+
+    /*
+
+     notifications_groups = [
+         {
+             app: string,
+             icon: string,
+             notifications: [
+                 {
+                     object: {Notification}, // Keeping track of the current notification's lifetime
+                     urgency: int, // 0: low, 1: normal, 2: critical
+                     group: [
+                         {
+                             summary: string,
+                             body: string,
+                             image: string, // Users icon probably
+                             time: int, // Computer uptime at that point, preventing running a timer
+                         }
+                     ]
+                 }
+                 // Only append new subgroup if the object of the previous is still alive
+             ]
+         }
+     ] 
+
+     */
 
     signal notificationSent(notification: var)
 
+    Timer {
+        id: refresh_delay
+
+        interval: 100
+        onTriggered: {
+            refresh()
+        }
+
+    }
+
     onNotificationsChanged: {
-        console.log(notifications.length)
-        refresh()
+
+        refresh_delay.restart()
+
+    }
+
+    function debug() {
+        console.log(JSON.stringify(notifications_groups, null, 2))
+    }
+
+    function action(id: int) {
+        const buffer = notifications.findIndex(item => item.id == id)
+        notifications[buffer].actions.find(item => item.identifier == "default").invoke()
     }
 
     function clear() {
-        notifications_groups = []
+
+        let ids = [] 
+
+        for (const noti of notifications) {
+            ids.push(noti.id)
+        }
+
+        for (const id of ids) {
+            notifications[notifications.findIndex(item => item.id == id)].tracked = false
+        }
+
+        refresh_delay.restart()
+
     }
 
-    function dismiss(app: string, index: int) {
-        const buffer = notifications_groups
-        for (const i in buffer) {
-            if (buffer[i].app == app) {
-                if (index == -1) {
-                    for (const noti of buffer[i].notifications) {
-                        if (noti.object) {
-                            noti.object.tracked = false
-                        }
-                    }
-                    buffer.splice(i,1)
-                    break
-                }
-                if (buffer[i].notifications[index].object) {
-                    buffer[i].notifications[index].object.tracked = false
-                }
-                buffer[i].notifications.splice(index, 1)
-            }
-            if (buffer[i].notifications.length == 0) {
-                buffer.splice(i, 1)
-            }
+    function dismiss(object: var) {
+        // Dimiss App
+        if (typeof object == "string") {
+
+            let buffer = notifications_groups.slice()
+
+            buffer = buffer.filter(item => item.app != object)
+
+            notifications_groups = buffer
+
+            refresh_delay.restart()
+
+            return
         }
-        notifications_groups = buffer
+
+        // Dismiss specific group
+        if (object.tracked) {
+            object.tracked = false
+        } else {
+            console.log("NotificationInfo: Dismissing: No object found!")
+        }
+        refresh_delay.restart()
     }
 
     function refresh() {
-        const buffer = notifications_groups
-        //console.log(JSON.stringify(buffer,null,2))
-        let to_be_dismissed = []
-        for (const notif of buffer) {
-            for (const i in notif.notifications) {
-                if (notif.notifications[i].object.tracked) {
+        let buffer = notifications_groups.slice() // Create a real copy
 
-                } else {
-                    to_be_dismissed.push({
-                        app: notif.app, 
-                        index: i,
-                    })
-                }
-            }
+        for (const i in buffer) {
+            buffer[i].notifications = buffer[i].notifications.filter(item => {
+                return exists(item.object) 
+            })
         }
-        for (const notif of to_be_dismissed) {
-            dismiss(notif.app, notif.index)
-        }
-        notifications_groups = []
-        notifications_groups = buffer
+
+        // Capture the filtered array!
+        //root.notifications_groups = []
+        root.notifications_groups = buffer.filter(app => app.notifications.length > 0)
+
     }
 
     function formatTime(seconds) {
+
+        seconds = toSeconds() - seconds
+
         const h = Math.floor(seconds / 3600);
         const m = Math.floor((seconds % 3600) / 60);
         const s = seconds % 60;
@@ -90,75 +143,116 @@ Singleton {
         SystemInfo.runDetached(["bash", "-c", `[ "$(notify-send "${summary}" "${body}" --app-name="${app}" --app-icon="${icon}" --urgency="${urgency == 2 ? "critical" : ( urgency == 1 ? "normal" : "low")}" --action="default=Action")" = "default" ] && ${action}`])
     }
 
-    Timer {
-        id: counter
-        interval: 1000
-        running: true
-        repeat: true
-        onTriggered: {
-            for (const i in root.notifications_groups) {
-                for (const j in root.notifications_groups[i].notifications) {
-                    root.notifications_groups[i].notifications[j].time += 1
-                }
-            }
-        }
-    }
-
     onNotificationSent: (noti) => {
-        add(noti.app, noti.icon, noti.summary, noti.body, noti.urgency, noti.object)
+        add(noti.summary, noti.body, noti.app, noti.icon, noti.image, noti.urgency, noti.object)
     }
 
-    function add(appName, appIcon, summary, body, urgency, object, action) {
-        // 1. Prepare data
-        let groups = root.notifications_groups || [];
-        const cleanSummary = summary.trim();
-        const cleanBody = body.trim();
+    function toSeconds() {
 
-        // 2. Helper to create a new notification object
-        const createNotif = () => ({
-            "summary": cleanSummary,
-            "body": [cleanBody],
-            "urgency": urgency,
-            "object": object,
-            "time": 0,
-        });
+        const now = Date.now()
 
-        // 3. Find if the app group already exists
-        let group = groups.find(g => g.app === appName);
+        return Math.floor(now/1000)
 
-        if (!group) {
-            // Create new group if it doesn't exist
-            groups.unshift({
-                "app": appName,
-                "icon": appIcon,
-                "notifications": [createNotif()]
-            });
-        } else {
-            // 4. Look for an existing notification with the same summary
-            let existingNotif = group.notifications.find(n => n.summary === cleanSummary);
+    }
 
-            if (existingNotif) {
-                if (existingNotif.time > 7) {
-                    // If it's "old", add a fresh one to the top
-                    group.notifications.unshift(createNotif());
-                } else {
-                    // If it's "new", append the text to the existing body
-                    existingNotif.body.unshift(cleanBody);
-                    existingNotif.time = 0;
-                    if (existingNotif.object) {
-                        existingNotif.object.tracked = false;
-                    }
-                    existingNotif.object = object;
-                }
-            } else {
-                // Summary not found, add new notification to existing group
-                group.notifications.unshift(createNotif());
+    function exists(id) {
+        return notifications.some(item => item.id == id) || id < 0
+    }
+
+    function add(summary, body, app, icon, image, urgency, object) {
+
+        const buffer = [...notifications_groups]
+
+        /*
+
+         notifications_groups = [
+             *groups* {
+                 app: string,
+                 icon: string,
+                 notifications: [
+                     {
+                         object: {Notification}, // Keeping track of the current notification's lifetime
+                         urgency: int, // 0: low, 1: normal, 2: critical
+                         group: [
+                             {
+                                 summary: string,
+                                 body: string,
+                                 image: string, // Users icon probably
+                                 time: int, // Computer uptime at that point, preventing running a timer
+                             }
+                         ]
+                     }
+                     // Only append new subgroup if the object of the previous is still alive
+                 ]
+             }
+         ] 
+
+         */
+
+        const subgroup = {
+            "summary": summary,
+            "body": body,
+            "image": image,
+            "time": toSeconds(),
+            toJSON() {
+                return formatTime(this.time)
             }
         }
 
-        // 5. Update the root property once
-        root.notifications_groups = groups;
-        root.refresh()
+        const notif = {
+            "object": object.id,
+            "actions": object.actions ?? [],
+            "urgency": urgency,
+            "group": [
+                subgroup
+            ],
+            toJSON() {
+                return { 
+                    object: this.object,
+                    group: this.group,
+                }
+            }
+        }
+
+        const new_app = {
+            "app": app,
+            "icon": icon,
+            "notifications": [notif],
+        }
+
+        // Check if app already existed. Returns the app if available, else return nothing
+        const index = buffer.findIndex(item => item.app == app)
+
+        if (index != -1) { // App exists -> append new notifications group, or does it?
+
+            const group = buffer.splice(index, 1)[0] // Remove and captures the group to later put it on top of the notification list
+
+            // Check if the newest notification group's object is still alive, if yes then append new notification group
+            if (exists(group.notifications[0].object)) {
+                group.notifications.unshift(notif)
+            } 
+            // If the newest notifications group's object is dead then merge it with the new group
+            else {
+                group.notifications[0].object = object.id // replacing the object with the available one
+                group.notifications[0].urgency = urgency
+                group.notifications[0].group.unshift(subgroup) // append new subgroup into the existing group
+            }
+
+            buffer.unshift(group) // Put the new app group on top of the notification list
+
+        } else {
+            // App doesn't exist yet -> append new app group
+            buffer.unshift(new_app)
+        }
+
+        root.notifications_groups = buffer
+
+        //debug()
+
+        exists(0)
+
+        //root.refresh() // Let this function handles the clean up
+
     }
 
     function toRawUnicode(str) {
@@ -168,7 +262,7 @@ Singleton {
         }).join('');
     }
 
-    function formatForRice(str) {
+    function strip(str) {
         return str
         .replace(/[\u2068\u2069]/g, '') // Kill the ghosts we found earlier
         .replace(/\n/g, ' ')            // Turn newlines into spaces
@@ -177,43 +271,40 @@ Singleton {
     }
 
     NotificationServer {
+
         id: notificationsServer
 
         actionsSupported: true
 
+        keepOnReload: true
+
         onNotification: (noti) => {
-            console.log("Received Notification: " + noti.summary + " " + noti.body)
+            console.log("Received Notification: " + noti.summary + " " + noti.body + " " + noti.id)
 
-            //console.log(JSON.stringify(noti,null,2))
-
-            //console.log(noti.body)
-            //console.log(toRawUnicode(noti.body))
-
-            let summary = formatForRice(noti.summary);
-            let body = formatForRice(noti.body)
-
-            //noti.keepOnReload = false
             noti.tracked = true
 
-            let urgency = 0
-            if (NotificationUrgency.toString(noti.urgency) == "Critical") {
-                urgency = 2
-            } else if (NotificationUrgency.toString(noti.urgency) == "Normal") {
-                urgency = 1
+            // Data clean up
+            const summary = strip(noti.summary)
+            const body = strip(noti.body)
+            const app = noti.appName
+            const icon = noti.appIcon
+            const image = noti.image
+            const urgency = parseInt(noti.urgency.toString())
+            const lastGen = noti.lastGeneration
+
+            const sendObject = {
+                "lastGen": lastGen,
+                "summary": summary,
+                "body": body,
+                "app": app,
+                "icon": icon,
+                "image": image,
+                "urgency": urgency,
+                "object": noti
             }
 
-            let appName = noti.appName
-            let appIcon = noti.appIcon
-
-            root.notificationSent({
-                "app": appName,
-                "icon": appIcon,
-                "summary": summary.trim(),
-                "body": body.trim(),
-                "urgency": urgency,
-                "object": noti,
-                "time": 0,
-            })
+            // Notify the system
+            root.notificationSent(sendObject)
 
         }
     }

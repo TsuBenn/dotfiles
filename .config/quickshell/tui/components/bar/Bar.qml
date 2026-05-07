@@ -202,7 +202,7 @@ Scope {
                     bottom: true
                 }
 
-                WlrLayershell.layer: WlrLayer.Overlay
+                WlrLayershell.layer: WlrLayer.Top
                 WlrLayershell.namespace: "notifcations"
 
                 implicitWidth: root.monitor.width

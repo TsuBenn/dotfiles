@@ -7,7 +7,7 @@ font-feature = liga
 
 # Window
 background = 000000
-background-opacity = 0.7
+background-opacity = 0.8
 
 foreground = EDE6E8
 
@@ -44,7 +44,7 @@ clipboard-write = allow
 link-url = true
 
 # Shell
-command = bash
+command = zsh
 
 keybind = ctrl+shift+j=unbind
 keybind = ctrl+shift+n=unbind

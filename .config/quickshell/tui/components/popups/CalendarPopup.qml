@@ -1095,19 +1095,18 @@ CellPopup {
                                                             const time = reminder.time.split(":")
                                                             if (
                                                                 parseInt(DateTime.date) >= parseInt(calendar.selected.day) && 
-                                                                parseInt(DateTime.month_numeral) >= parseInt(calendar.selected.day) &&
+                                                                parseInt(DateTime.month_numeral) >= parseInt(calendar.selected.month) &&
                                                                 parseInt(DateTime.year) >= parseInt(calendar.selected.year) &&
                                                                 reminder.range == 0
                                                             ) {
+                                                                console.log("damn")
                                                                 if (
-                                                                    (DateTime.hour24 == parseInt(time[0]) && parseInt(time[1]) - DateTime.minute < 59) || parseInt(time[0]) - DateTime.hour24 == 1
-                                                                ) {
-                                                                    return Colors.warning
-                                                                } else if (
-                                                                    DateTime.hour24 > parseInt(time[0]) && 
-                                                                    DateTime.minute > parseInt(time[1])
+                                                                    DateTime.hour24 >= parseInt(time[0]) && 
+                                                                    DateTime.minute >= parseInt(time[1])
                                                                 ) {
                                                                     return Colors.danger
+                                                                } else if ((parseInt(time[0])*60 + parseInt(time[1])) - (parseInt(DateTime.hour24) * 60 + parseInt(DateTime.minute)) < 10) {
+                                                                    return Colors.warning
                                                                 }
                                                             }
                                                             return Colors.fgSubtle

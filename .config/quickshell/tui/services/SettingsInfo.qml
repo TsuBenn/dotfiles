@@ -12,10 +12,25 @@ Singleton {
 
     property bool hints: true
     property bool minimal: false
+    property bool safeNotifications: true // Hide notifications' messages
     property bool optimizeMemory: false // Reduce memory usage significantly, but takes more time to load UI elements
 
     signal showGrid()
     signal toggleMinimal()
+
+    function get_state(text) {
+        let state = -1
+        switch (text) {
+            case "hints": state = hints; break
+            case "minimal": state = minimal; break
+            case "optimizeMemory": state = optimizeMemory; break
+            case "safeNotifications": state = safeNotifications; break
+        }
+        if (state != -1) {
+            return state ? "[X]" : "[ ]"
+        }
+        return ""
+    }
 
     function notification_check() {
         NotificationsInfo.send("", "", "Notification Check", "Check check check!\nClick here to show another similar notification!", 0, false, "qs -c tui ipc call config notification_check")
@@ -48,6 +63,7 @@ Singleton {
         function toggle_grids(): void {root.showGrid()}
         function toggle_minimal(): void {root.minimal = !root.minimal; root.toggleMinimal()}
         function toggle_memory_optimize(): void {root.optimizeMemory = !root.optimizeMemory}
+        function toggle_safe_notifications(): void {root.safeNotifications = !root.safeNotifications}
         function toggle_hints(): void {root.hints = !root.hints}
 
 

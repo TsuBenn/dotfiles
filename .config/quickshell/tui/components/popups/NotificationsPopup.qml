@@ -20,9 +20,19 @@ CellPopup {
     h: Cell.hCount(layout.implicitHeight)
 
     Component.onCompleted: {
+
+        PopupManager.opened.connect((name) => {
+            if (name == "control_panel") notif = []
+        })
+
         NotificationsInfo.notificationSent.connect((notif) => {
+
+            if (PopupManager.isOpen("control_panel")) return
+
+            if (notif.lastGen) return
+
             let buffer = root.notif
-            buffer = [...buffer, notif]
+            buffer = [notif, ...buffer]
 
             let new_notif = []
 
@@ -33,6 +43,7 @@ CellPopup {
             }
 
             root.notif = new_notif
+
         })
     }
 
@@ -58,6 +69,7 @@ CellPopup {
                 property string body: modelData.body
                 property string app: modelData.app
                 property string icon: modelData.icon
+                property string image: modelData.image
                 property var object: modelData.object
 
                 property bool focused: false
@@ -127,6 +139,7 @@ CellPopup {
 
                             w: 6
                             id: icon
+                            image: popup.image
                             icon: [popup.icon, popup.app]
                         }
 
@@ -136,7 +149,7 @@ CellPopup {
 
                             CellText {
                                 text: popup.summary
-                                preferedW: root.w - 8 - 6*icon.success
+                                preferedW: SettingsInfo.safeNotifications ? 2 : root.w - 8 - 6*icon.success
                                 font: Cell.fontB
                                 color: {
                                     if (popup.urgency == 2) {
@@ -152,24 +165,35 @@ CellPopup {
                                 id: body
                                 text: {
                                     if (popup.body?.length > 0) {
-                                        const body = popup.body.trim()
-                                        const lines = body.split("\n")
-                                        if (lines.length > 10) {
-                                            return lines.slice(0,10).join("\n")
+                                        if (!SettingsInfo.safeNotifications) {
+                                            const body = popup.body.trim()
+                                            const lines = body.split("\n")
+                                            if (lines.length > 5) {
+                                                return lines.slice(0,4).join("\n")
+                                            }
+                                            return body
+                                        } else {
+                                            return "[Safe Notifications is ON]"
                                         }
-                                        return body
                                     } else {
                                         return ""
                                     }
                                 }
                                 preferedW: root.w - 14
                                 wrap: true
+                                color: {
+                                    if (SettingsInfo.safeNotifications) {
+                                        return Colors.success
+                                    } else {
+                                        return Colors.fgBase
+                                    }
+                                }
                             }
 
                             CellText {
 
                                 visible: {
-                                    return popup.body.split("\n").length > 10
+                                    return popup.body.split("\n").length > 5
                                 }
 
                                 id: body_more
