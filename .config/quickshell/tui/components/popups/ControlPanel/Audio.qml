@@ -23,7 +23,9 @@ ColumnLayout {
         h: 20
 
         ColumnLayout {
+
             spacing: 0
+
             ColumnLayout {
 
                 spacing: 0

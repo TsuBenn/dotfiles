@@ -18,7 +18,6 @@ ColumnLayout {
     onVisibleChanged: {
         NotificationsInfo.refresh()
         list.expanded = []
-        debounce.restart()
     }
 
     Timer {
@@ -26,15 +25,13 @@ ColumnLayout {
         id: debounce
 
         property var raw_data: NotificationsInfo.notifications_groups
-        property var data: []
+        property var data: [...raw_data]
 
         onRaw_dataChanged: {
-            if (visible) {
-                restart()
-            }
+            restart()
         }
 
-        interval: 200
+        interval: 100
         onTriggered: {
             data = raw_data
         }
@@ -73,6 +70,18 @@ ColumnLayout {
 
             spacing: 0
 
+            CellText {
+                visible: debounce.data.length == 0
+                text: ""
+            }
+
+            CellText {
+                visible: debounce.data.length == 0
+                Layout.leftMargin: Cell.centerWCell(implicitWidth, list.implicitWidth)
+                text: "No notifications"
+                color: Colors.fgSubtle
+            }
+
             Repeater {
 
                 model: debounce.data
@@ -83,7 +92,7 @@ ColumnLayout {
 
                     required property var modelData
 
-                    active: root.visible
+                    active: true
 
                     sourceComponent: Cells {
 
@@ -323,9 +332,11 @@ ColumnLayout {
                                                 required property int index
                                                 required property var modelData
 
-                                                active: app.expanded
+                                                active: true
 
                                                 sourceComponent: Cells {
+
+                                                    visible: app.expanded
 
                                                     // Notification groups
 
@@ -369,8 +380,6 @@ ColumnLayout {
                                                         anchors.leftMargin: Cell.w(7)
                                                         anchors.rightMargin: Cell.w(4)
                                                         anchors.bottomMargin: Cell.h(2)
-
-                                                        implicitHeight: Cell.h(2)
 
                                                         onReleased: (button) => {
                                                             if (button == "L") {
@@ -424,9 +433,11 @@ ColumnLayout {
                                                                         required property int index
                                                                         required property var modelData
 
-                                                                        active: app.expanded
+                                                                        active: true
 
                                                                         sourceComponent: RowLayout {
+
+                                                                            visible: app.expanded
 
                                                                             id: subgroup
 
@@ -494,7 +505,7 @@ ColumnLayout {
                                                                                     preferedW: list.contentW - 10 - noti_time.text.length
                                                                                     color: Colors.fgDim
 
-                                                                                    wrap: notif.expanded
+                                                                                    wrap: true
 
                                                                                 }
 

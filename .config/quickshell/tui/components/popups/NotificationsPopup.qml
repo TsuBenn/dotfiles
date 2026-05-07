@@ -149,7 +149,7 @@ CellPopup {
 
                             CellText {
                                 text: popup.summary
-                                preferedW: SettingsInfo.safeNotifications ? 2 : root.w - 8 - 6*icon.success
+                                preferedW: SettingsInfo.safeNotifications && popup.app != "" ? 2 : root.w - 8 - 6*icon.success
                                 font: Cell.fontB
                                 color: {
                                     if (popup.urgency == 2) {
@@ -165,7 +165,7 @@ CellPopup {
                                 id: body
                                 text: {
                                     if (popup.body?.length > 0) {
-                                        if (!SettingsInfo.safeNotifications) {
+                                        if (!SettingsInfo.safeNotifications || popup.app == "") {
                                             const body = popup.body.trim()
                                             const lines = body.split("\n")
                                             if (lines.length > 5) {
@@ -182,7 +182,7 @@ CellPopup {
                                 preferedW: root.w - 14
                                 wrap: true
                                 color: {
-                                    if (SettingsInfo.safeNotifications) {
+                                    if (SettingsInfo.safeNotifications && popup.app != "") {
                                         return Colors.success
                                     } else {
                                         return Colors.fgBase
