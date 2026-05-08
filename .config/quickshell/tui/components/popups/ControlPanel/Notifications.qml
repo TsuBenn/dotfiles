@@ -17,25 +17,8 @@ ColumnLayout {
 
     onVisibleChanged: {
         NotificationsInfo.refresh()
-        list.expanded = []
-    }
-
-    Timer {
-
-        id: debounce
-
-        property var raw_data: NotificationsInfo.flat
-        property var data: [...raw_data]
-
-        onRaw_dataChanged: {
-            restart()
-        }
-
-        interval: 100
-        onTriggered: {
-            data = raw_data
-        }
-
+        list.expanded_app = []
+        list.expanded_notif = []
     }
 
     CellScrollView {
@@ -45,7 +28,7 @@ ColumnLayout {
         w: root.box.contentW
         h: 25
 
-        property var expanded: []
+        property var expanded_app: []
 
         property var expanded_notif: []
 
@@ -53,16 +36,26 @@ ColumnLayout {
         signal expand_all()
 
         onExpand_all: {
-            for (const app of debounce.data) {
-                expanded = [...expanded,app.app]
+            for (const app of NotificationsInfo.flat) {
+                expanded_app = [...expanded_app ,app.app]
                 for (const group of app.notifications) {
                     expanded_notif = [...expanded_notif,group.object]
                 }
             }
         }
 
+        function expand_app(app: string) {
+            if (!expanded_app.includes(app)) {
+                expanded_app = [...expanded_app, app]
+            }
+        }
+
+        function collapse_app(app: string) {
+            expanded_app = expanded_app.filter(item => item != app)
+        }
+
         onCollapse_all: {
-            expanded = []
+            expanded_app = []
             expanded_notif = []
         }
 
@@ -85,7 +78,7 @@ ColumnLayout {
 
             Repeater {
 
-                model: debounce.data
+                model: NotificationsInfo.flat
 
                 delegate: Component {
 
@@ -95,29 +88,36 @@ ColumnLayout {
 
                         required property var modelData
 
-                        property string  a_app        : modelData?.app ?? ""
-                        property string  a_icon       : modelData?.icon ?? ""
-                        property int     a_urgency    : modelData?.urgency ?? 0
-                        property bool    a_expandable : modelData?.expandable ?? false
-                        property string  a_summary    : modelData?.summary ?? ""
-                        property string  a_body       : modelData?.body ?? ""
-                        property int     a_time       : modelData?.time ?? 0
-                        property string  a_image      : modelData?.image ?? ""
-
-                        property bool    a_expanded   : list.expandeds.includes(a_app)
-
                         active: modelData.type == "app"
 
                         sourceComponent: Cells {
+
+                            id: a
 
                             w: list.contentW
                             h: 2
                             color: "transparent"
 
+                            property string  app        : apps.modelData?.app ?? ""
+                            property string  icon       : apps.modelData?.icon ?? ""
+                            property int     urgency    : apps.modelData?.urgency ?? 0
+                            property bool    expandable : apps.modelData?.expandable ?? false
+                            property string  summary    : apps.modelData?.summary ?? ""
+                            property string  body       : apps.modelData?.body ?? ""
+                            property int     time       : apps.modelData?.time ?? 0
+                            property string  image      : apps.modelData?.image ?? ""
+
+                            property bool    expanded   : list.expanded_app.includes(a.app)
+
                             MouseControl {
 
                                 anchors.fill: parent
 
+                                onReleased: (button) => {
+                                    if (button == "L" && a.expandable) {
+                                        a.expanded ? list.collapse_app(a.app) : list.expand_app(a.app) 
+                                    }
+                                }
 
                             }
 
@@ -131,10 +131,12 @@ ColumnLayout {
 
                                 CellIcon {
 
+                                    Layout.alignment: Qt.AlignTop
+
                                     id: app_icon
 
-                                    image: a_expandable ? "" : a_image
-                                    icon: [a_icon, a_app]
+                                    image: a.expandable ? "" : a.image
+                                    icon: [a.icon, a.app]
 
                                     w: 6
                                     h: 2
@@ -143,18 +145,33 @@ ColumnLayout {
 
                                 ColumnLayout {
 
+                                    Layout.alignment: Qt.AlignTop
+
                                     spacing: 0
 
                                     CellText {
-                                        text: a_expandable ? a_app : a_summary
+                                        text: a.expandable ? a.app : a.summary
                                         font: Cell.fontB
-                                        preferedW: list.contentW - 1 - app_icon.getW() - app_time.text.length
+                                        preferedW: list.contentW - 4 - app_icon.getW() - app_time.text.length
                                     }
 
                                     CellText {
-                                        text: a_expandable ? a_summary : a_body
+
+                                        visible: !a.expanded
+
+                                        text: a.expandable ? a.summary : a.body
                                         color: Colors.fgSubtle
-                                        preferedW: list.contentW - 1 - app_icon.getW() - app_time.text.length
+                                        preferedW: list.contentW - 4 - app_icon.getW() - app_time.text.length
+                                    }
+
+                                    CellSeparator {
+
+                                        visible: a.expanded
+
+                                        w: list.contentW - 4 - app_icon.getW() - app_time.text.length
+
+                                        type: 1
+                                        color: Colors.fgSubtle
                                     }
 
                                 }
@@ -165,9 +182,37 @@ ColumnLayout {
 
                                     id: app_time
 
-                                    text: a_expanded ? "" : " " + NotificationsInfo.formatTime(a_time).toString().padStart(3, " ") + " "
+                                    text: a.expanded ? "" : " " + NotificationsInfo.formatTime(a.time).toString().padStart(3, " ") + " "
+
+                                    color: Colors.fgDim
 
                                 }
+
+                                ColumnLayout {
+
+                                    spacing: 0
+
+                                    CellButton {
+
+                                        padding: 1
+                                        text: "\uea76"
+                                        color: [Colors.bgOverlay, Colors.fgBase]
+                                        fg: [Colors.fgBase, Colors.bgSurface]
+
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                NotificationsInfo.dismiss(a.app)
+                                            }
+                                        }
+                                    }
+
+                                    CellText {
+                                        text: a.expanded ? " ⏶ " : " ⏷ "
+                                        color: a.expandable ? Colors.fgBase : Colors.fgSubtle
+                                    }
+
+                                }
+
 
                             }
 
@@ -218,7 +263,7 @@ ColumnLayout {
 
         CellButton {
 
-            text: list.expanded.length > 0 ? "Collapse All" : "Expand all"
+            text: list.expanded_app.length > 0 ? "Collapse All" : "Expand all"
 
             clickable: NotificationsInfo.notifications_groups.length > 0
 
@@ -229,8 +274,8 @@ ColumnLayout {
 
             onReleased: (button) => {
                 if (button == "L") {
-                    if (list.expanded.length > 0) list.collapse_all()
-                    else if (list.expanded.length == 0) list.expand_all()
+                    if (list.expanded_app.length > 0) list.collapse_all()
+                    else if (list.expanded_app.length == 0) list.expand_all()
                 }
             }
 
