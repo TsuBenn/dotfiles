@@ -1,92 +1,60 @@
 pragma ComponentBehavior: Bound
-
 import qs.config
 import qs.modules
 import qs.services
-
 import QtQuick
 
 Item {
-
     visible: !SettingsInfo.minimal
-
     id: root
 
     property var icon: []
     property string image: ""
-
     property bool hideOnFail: true
-
-    property bool success: false
-
     property int w: 5
     property int h: 2
+
+    // success is determined at root level
+    property bool imageVisible: image != ""
+    property bool iconVisible: IconInfo.fetch(icon) != ""
+    property bool success: (imageVisible || iconVisible || !hideOnFail) && !SettingsInfo.minimal
 
     implicitWidth: Cell.w(success ? w : 0)
     implicitHeight: Cell.h(h)
 
-    function getW() {
+    function getW(): int {
         return success ? w : 0
     }
 
     Loader {
-
         active: root.visible || !SettingsInfo.optimizeMemory
 
         sourceComponent: Cells {
+            w: root.success ? root.w : 0
+            h: root.h
+            color: "transparent"
 
-        property bool success: (base.visible || image.visible || !root.hideOnFail ) && !SettingsInfo.minimal
+            Image {
+                id: base
+                visible: root.iconVisible && !root.imageVisible
+                width: Cell.h(root.h)
+                height: Cell.h(root.h)
+                source: IconInfo.fetch(root.icon)
+                mipmap: true
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
+            }
 
-        onSuccessChanged: {
-            root.success = success
+            Image {
+                id: img
+                visible: root.imageVisible
+                width: Cell.h(root.h)
+                height: Cell.h(root.h)
+                source: root.image
+                mipmap: true
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
+            }
         }
-
-        w: root.hideOnFail && base.source == "" ? 0 : root.w
-        h: root.h
-
-        color: "transparent"
-
-
-        Image {
-
-            id: base
-
-            visible: source != "" && !image.visible
-
-            width: Cell.h(root.h)
-            height: Cell.h(root.h)
-
-            source: IconInfo.fetch(root.icon)
-
-            mipmap: true
-
-            fillMode: Image.PreserveAspectCrop
-
-            asynchronous: true
-
-        }
-
-        Image {
-
-            id: image
-
-            visible: root.image != ""
-
-            width: Cell.h(root.h)
-            height: Cell.h(root.h)
-
-            source: root.image
-
-            mipmap: true
-
-            fillMode: Image.PreserveAspectCrop
-
-            asynchronous: true
-
-        }
-
     }
-
-    }
-
 }

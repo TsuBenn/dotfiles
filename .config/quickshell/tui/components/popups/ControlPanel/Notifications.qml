@@ -24,7 +24,7 @@ ColumnLayout {
 
         id: debounce
 
-        property var raw_data: NotificationsInfo.notifications_groups
+        property var raw_data: NotificationsInfo.flat
         property var data: [...raw_data]
 
         onRaw_dataChanged: {
@@ -71,524 +71,109 @@ ColumnLayout {
             spacing: 0
 
             CellText {
-                visible: debounce.data.length == 0
+                visible: NotificationsInfo.flat.length == 0
                 text: ""
             }
 
             CellText {
-                visible: debounce.data.length == 0
+                visible: NotificationsInfo.flat.length == 0
                 Layout.leftMargin: Cell.centerWCell(implicitWidth, list.implicitWidth)
                 text: "No notifications"
                 color: Colors.fgSubtle
             }
 
+
             Repeater {
 
                 model: debounce.data
 
-                delegate: Loader {
+                delegate: Component {
 
-                    id: apps
+                    Loader {
 
-                    required property var modelData
+                        id: apps
 
-                    active: true
+                        required property var modelData
 
-                    sourceComponent: Cells {
+                        property string  a_app        : modelData?.app ?? ""
+                        property string  a_icon       : modelData?.icon ?? ""
+                        property int     a_urgency    : modelData?.urgency ?? 0
+                        property bool    a_expandable : modelData?.expandable ?? false
+                        property string  a_summary    : modelData?.summary ?? ""
+                        property string  a_body       : modelData?.body ?? ""
+                        property int     a_time       : modelData?.time ?? 0
+                        property string  a_image      : modelData?.image ?? ""
 
-                        // Grouping Apps
+                        property bool    a_expanded   : list.expandeds.includes(a_app)
 
-                        id: app
+                        active: modelData.type == "app"
 
-                        w: list.contentW
-                        h: Cell.hCount(layout.implicitHeight)  
+                        sourceComponent: Cells {
 
-                        color: "transparent"
+                            w: list.contentW
+                            h: 2
+                            color: "transparent"
 
-                        property var modelData: apps.modelData
+                            MouseControl {
 
-                        property string app: modelData.app ?? ""
-                        property string icon: modelData.icon ?? ""
+                                anchors.fill: parent
 
-                        property bool expanded: list.expanded.includes(app.app)
 
-                        property bool expandable: notifications.length > 1 || notifications[0].group.length > 1
-
-                        property var notifications: modelData.notifications // App's notifications groups
-
-                        function toggleExpand() {
-                            expanded ? collapse() : expand()
-                        }
-                        function expand() {
-                            if (!list.expanded.includes(app)) {
-                                list.expanded = [...list.expanded, app.app]
                             }
-                        }
-                        function collapse() {
-                            list.expanded = list.expanded.filter(item => item != app.app)
-                        }
 
-                        ColumnLayout {
+                            RowLayout {
 
-                            id: layout
+                                spacing: 0
 
-                            spacing: 0
+                                CellText {
+                                    text: " "
+                                }
 
-                            Cells {
+                                CellIcon {
 
-                                w: list.contentW
-                                h: Cell.hCount(content_layout.implicitHeight)
+                                    id: app_icon
 
-                                color: "transparent"
+                                    image: a_expandable ? "" : a_image
+                                    icon: [a_icon, a_app]
 
-                                MouseControl {
-
-                                    anchors.fill: parent
-
-                                    onReleased: (button) => {
-                                        if (button == "L" && app.expandable) {
-                                            app.toggleExpand()
-                                        }
-                                    }
+                                    w: 6
+                                    h: 2
 
                                 }
 
                                 ColumnLayout {
 
-                                    id: content_layout
-
                                     spacing: 0
 
-                                    RowLayout {
-
-                                        // Notification Content
-
-                                        spacing: 0
-
-                                        CellText {
-
-                                            Layout.alignment: Qt.AlignTop
-
-                                            text: " "
-                                        }
-
-                                        CellIcon {
-
-                                            id: app_icon
-
-                                            Layout.alignment: Qt.AlignTop
-
-                                            w: 6
-
-                                            image: {
-                                                if (app.expandable) {
-                                                    return ""
-                                                }
-                                                return app.notifications[0].group[0]?.image ?? ""
-                                            }
-                                            icon: [app.icon, app.app]
-
-                                            // Show the image of the first message if availble. If there are more than 1 message then show the app's icon instead
-
-                                        }
-
-                                        ColumnLayout {
-
-                                            Layout.alignment: Qt.AlignTop
-
-                                            spacing: 0
-
-                                            RowLayout {
-
-                                                spacing: 0
-
-                                                CellText {
-
-                                                    text: {
-                                                        if (app.expandable) {
-                                                            return app.app
-                                                        }
-                                                        return app.notifications[0].group[0]?.summary ?? ""
-                                                    }
-
-                                                    // If there's only one notification of the app, show the newest summary
-
-                                                    font: Cell.fontB
-
-                                                    preferedW: list.contentW - 4 - app_time.text.length - app_icon.getW()
-
-                                                }
-
-                                                CellText {
-
-                                                    // Time
-
-                                                    Layout.alignment: Qt.AlignTop
-
-                                                    id: app_time
-
-                                                    text: {
-                                                        app.expanded ? "     " : " " + NotificationsInfo.formatTime(app.notifications[0].group[0].time).toString().padStart(3," ") + " "
-                                                    }
-                                                    color: Colors.fgSubtle
-
-                                                }
-
-                                            }
-
-                                            CellSeparator {
-
-                                                visible: app.expanded
-
-                                                w: list.contentW - 5 - app_icon.getW()
-                                                type: 1
-                                                color: Colors.bgOverlay
-
-                                            }
-
-                                            CellText {
-
-                                                visible: !app.expanded
-
-                                                text: {
-                                                    if (app.expandable) {
-                                                        return app.notifications[0].group[0]?.summary ?? ""
-                                                    }
-                                                    return app.notifications[0].group[0]?.body ?? ""
-                                                }
-
-                                                // Show summary if collapse, show body if there's only 1 notification, show a separator if expanded
-
-                                                color: Colors.fgDim
-
-                                                wrap: true
-
-                                                preferedW: list.contentW - 4 - app_time.text.length - app_icon.getW()
-
-                                            }
-
-                                        }
-
-
-                                        ColumnLayout {
-
-                                            Layout.alignment: Qt.AlignTop
-
-                                            spacing: 0
-
-                                            CellButton {
-
-                                                // App Dismiss
-
-                                                Layout.alignment: Qt.AlignTop
-
-                                                padding: 1
-                                                text: "\uea76"
-
-                                                color: [Colors.bgOverlay, Colors.fgBase]
-                                                fg: [Colors.fgBase, Colors.bgSurface]
-
-                                                onReleased: (button) => {
-                                                    if (button == "L") {
-                                                        NotificationsInfo.dismiss(app.app)
-                                                    }
-                                                }
-
-                                            }
-
-                                            CellText {
-
-                                                // Expander
-
-                                                Layout.alignment: Qt.AlignTop
-
-                                                text: app.expanded ? " ⏷ " : " ⏴ "
-
-                                                color: app.expandable ? Colors.fgBase : Colors.bgOverlay
-
-                                            }
-
-                                        }
-
-
-
+                                    CellText {
+                                        text: a_expandable ? a_app : a_summary
+                                        font: Cell.fontB
+                                        preferedW: list.contentW - 1 - app_icon.getW() - app_time.text.length
                                     }
 
-                                    // Expanded messages
-                                    ColumnLayout {
-
-                                        visible: app.expanded
-
-                                        spacing: 0
-
-                                        Repeater {
-
-                                            model: app.notifications
-
-                                            delegate: Loader {
-
-                                                id: notif_groups
-
-                                                required property int index
-                                                required property var modelData
-
-                                                active: true
-
-                                                sourceComponent: Cells {
-
-                                                    visible: app.expanded
-
-                                                    // Notification groups
-
-                                                    id: notif
-
-                                                    property int index: notif_groups.index
-                                                    property var modelData: notif_groups.modelData
-
-                                                    property int object: modelData.object
-                                                    property int urgency: modelData.urgency 
-                                                    property var group: modelData.group
-
-                                                    property bool expanded: list.expanded_notif.includes(app.app+notif.index)
-                                                    property bool expandable: group.length > 1
-
-                                                    w: list.contentW
-                                                    h: Cell.hCount(group_layout.implicitHeight)
-
-                                                    color: "transparent"
-
-                                                    function toggleExpand() {
-                                                        expanded ? collapse() : expand()
-                                                    }
-
-                                                    function expand() {
-                                                        if (!list.expanded_notif.includes(app.app+notif.index)) {
-                                                            list.expanded_notif = [...list.expanded_notif, app.app+notif.index]
-                                                        }
-                                                    }
-
-                                                    function collapse() {
-                                                        if (list.expanded_notif.includes(app.app+notif.index)) {
-                                                            list.expanded_notif = list.expanded_notif.filter(item => item != app.app+notif.index)
-                                                        }
-                                                    }
-
-                                                    MouseControl {
-
-                                                        anchors.fill: parent
-
-                                                        anchors.leftMargin: Cell.w(7)
-                                                        anchors.rightMargin: Cell.w(4)
-                                                        anchors.bottomMargin: Cell.h(2)
-
-                                                        onReleased: (button) => {
-                                                            if (button == "L") {
-                                                                NotificationsInfo.action(notif.object)
-                                                            }
-                                                        }
-
-                                                    }
-
-                                                    MouseControl {
-
-                                                        anchors.left: parent.left
-                                                        anchors.right: parent.right
-                                                        anchors.bottom: parent.bottom
-
-                                                        anchors.leftMargin: Cell.w(7)
-                                                        anchors.rightMargin: Cell.w(4)
-
-                                                        implicitHeight: Cell.h(2)
-
-                                                        onReleased: (button) => {
-                                                            if (button == "L" & notif.expandable) {
-                                                                notif.toggleExpand()
-                                                            }
-                                                        }
-
-                                                    }
-
-                                                    RowLayout {
-
-                                                        id: group_layout
-
-                                                        spacing: 0
-
-                                                        ColumnLayout {
-
-                                                            spacing: 0
-
-                                                            ColumnLayout {
-
-                                                                spacing: Cell.h(1)
-
-                                                                Repeater {
-
-                                                                    model: notif.expanded ? notif.group : [notif.group[0]]
-
-                                                                    delegate: Loader {
-
-                                                                        id: subgroups
-
-                                                                        required property int index
-                                                                        required property var modelData
-
-                                                                        active: true
-
-                                                                        sourceComponent: RowLayout {
-
-                                                                            visible: app.expanded
-
-                                                                            id: subgroup
-
-                                                                            property var modelData: subgroups.modelData
-
-                                                                            property string summary: modelData.summary ?? ""
-                                                                            property string body: modelData.body ?? ""
-                                                                            property string image: modelData.image ?? ""
-                                                                            property int time: modelData.time ?? 0
-
-                                                                            spacing: 0
-
-                                                                            CellText {
-                                                                                text: "       "
-                                                                            }
-
-                                                                            ColumnLayout {
-
-                                                                                Layout.alignment: Qt.AlignTop
-
-                                                                                spacing: 0
-
-                                                                                RowLayout {
-
-                                                                                    Layout.alignment: Qt.AlignTop
-
-                                                                                    spacing: 0
-
-                                                                                    CellText {
-
-                                                                                        text: subgroup.summary
-
-                                                                                        font: Cell.fontB
-
-                                                                                        preferedW: list.contentW - 10 - noti_time.text.length
-                                                                                        color: {
-                                                                                            if (notif.urgency == 2) {
-                                                                                                return Colors.danger
-                                                                                            } else if (notif.urgency == 1) {
-                                                                                                return Colors.warning
-                                                                                            }
-                                                                                            return Colors.fgBase
-                                                                                        }
-
-                                                                                    }
-
-                                                                                    CellText {
-
-
-                                                                                        id: noti_time
-
-                                                                                        text: " " + NotificationsInfo.formatTime(subgroup.time).toString().padStart(3," ") + " "
-
-
-                                                                                        color: Colors.fgSubtle
-
-                                                                                    }
-
-                                                                                }
-
-                                                                                CellText {
-
-                                                                                    text: subgroup.body
-
-                                                                                    preferedW: list.contentW - 10 - noti_time.text.length
-                                                                                    color: Colors.fgDim
-
-                                                                                    wrap: true
-
-                                                                                }
-
-                                                                            }
-
-                                                                        }
-
-                                                                    }
-
-
-                                                                }
-
-                                                            }
-
-                                                            CellText {
-
-                                                                visible: notif.expandable
-
-                                                                text: " "
-
-                                                            }
-
-                                                            CellText {
-
-                                                                visible: notif.expandable
-
-                                                                text: notif.expanded ? "       [Less]" : "       [More]"
-
-                                                                font: Cell.fontB
-                                                                color: Qt.lighter(Colors.bgOverlay,2)
-                                                            }
-
-                                                            RowLayout {
-
-                                                                spacing: 0
-
-                                                                CellText {
-                                                                    text: "       "
-                                                                }
-
-                                                                CellSeparator {
-                                                                    type: 0
-                                                                    padding: 0
-                                                                    w: list.contentW - 11
-                                                                    color: Colors.bgOverlay
-                                                                }
-
-                                                            }
-
-
-                                                        }
-
-
-                                                    }
-
-                                                }
-
-                                            }
-
-                                        }
-
-
+                                    CellText {
+                                        text: a_expandable ? a_summary : a_body
+                                        color: Colors.fgSubtle
+                                        preferedW: list.contentW - 1 - app_icon.getW() - app_time.text.length
                                     }
+
+                                }
+
+                                CellText {
+
+                                    Layout.alignment: Qt.AlignTop
+
+                                    id: app_time
+
+                                    text: a_expanded ? "" : " " + NotificationsInfo.formatTime(a_time).toString().padStart(3, " ") + " "
 
                                 }
 
                             }
 
-
-
-                            CellSeparator {
-                                type: 2
-                                w: list.contentW
-                                color: Colors.bgOverlay
-                            }
-
                         }
-
-
-
                     }
-
-                } 
+                }
 
             }
 

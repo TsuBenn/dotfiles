@@ -12,7 +12,15 @@ Singleton {
 
     property list<Notification> notifications: notificationsServer.trackedNotifications.values
 
+    property int startTimer: 0
+    property int timer: 0
+
+    Component.onCompleted: {
+        root.startTimer = Math.floor(Date.now()/1000)
+    }
+
     property var notifications_groups: []
+    property var flat: []
 
     /*
 
@@ -22,7 +30,7 @@ Singleton {
              icon: string,
              notifications: [
                  {
-                     object: {Notification}, // Keeping track of the current notification's lifetime
+                     object: int (Notification's id), // Keeping track of the current notification's lifetime
                      urgency: int, // 0: low, 1: normal, 2: critical
                      group: [
                          {
@@ -38,11 +46,126 @@ Singleton {
          }
      ] 
 
+     flattened = [ // For performance
+         { // For apps headers
+             type: "app",
+             app: string,
+             icon: string,
+             urgency: int,
+             expandable: bool,
+             firstSummary: string,
+             firstBody: string,
+             firstTime: int,
+             firstImage: string,
+         },
+         { // For notifications group
+             type: "group",
+             app: string, // To track expand state
+             object: object, // To dismiss
+             expandable: bool,
+             time: int,
+             urgency: int,
+             summary: string,
+             body: string,
+         },
+         { // For notifications subgroup
+             type: "subgroup",
+             app: string, // To track expand state
+             object: object, // To track expand state
+             time: int,
+             urgency: int,
+             summary: string,
+             body: string,
+         },
+         { // Used to expand groups
+             type: "expander",
+             app: app, // To track expand state
+             object: object, // To track expand state
+         },
+         { // Separator
+             type: "app_sep",
+         },
+         { // Separator
+             type: "group_sep",
+         },
+     ]
+
      */
+
+    function updateTime() {
+        root.timer = Math.floor(Date.now()/1000) - root.startTimer
+    }
+
+    function flatten() {
+
+        const buffer = notifications_groups
+        let results = []
+
+        for (const app of buffer) {
+            results.push({
+                "type"         : "app",
+                "app"          : app.app ?? "",
+                "icon"         : app.icon ?? "",
+                "urgency"      : app.notifications[0]?.urgency ?? 0,
+                "expandable"   : app.notifications[0]?.group.length > 1 || app.notifications.length > 1,
+                "summary" : app.notifications[0]?.group[0]?.summary ?? "",
+                "body"    : app.notifications[0]?.group[0]?.body ?? "",
+                "time"    : app.notifications[0]?.group[0]?.time ?? 0,
+                "image"   : app.notifications[0]?.group[0]?.image ?? "",
+            }) 
+            if (app.notifications[0]?.group.length > 1 || app.notifications.length > 1) {
+                for (const group of app.notifications) {
+                    results.push({
+                        "type"       : "group",
+                        "app"        : app.app,
+                        "object"     : group.object,
+                        "expandable" : group.group.length > 1,
+                        "time"       : group.group[0]?.time ?? 0,
+                        "urgency"    : group.urgency ?? 0,
+                        "summary"    : group.group[0]?.summary ?? 0,
+                        "body"       : group.group[0]?.body ?? 0,
+                    })
+
+                    if (group.group.length > 1) {
+                        for (let i = 1; i < group.group.length; i++){
+                            results.push({
+                                'type'    : "subgroup",
+                                "app"     : app.app,
+                                "object"  : group.object,
+                                "urgency" : group.urgency,
+                                "time"    : group.group[i]?.time ?? 0,
+                                "summary" : group.group[i]?.summary ?? 0,
+                                "body"    : group.group[i]?.body ?? 0,
+                            })
+                        }
+                        results.push({
+                            "type": "expander"
+                        })
+                    }
+
+                }
+                results.push({
+                    "type": "group_sep"
+                })
+            }
+            results.push({
+                "type": "app_sep"
+            })
+        }
+
+        return results
+
+    }
+
+    onNotifications_groupsChanged: {
+        root.flat = flatten()
+        //console.log(JSON.stringify(root.flat,null,2))
+    }
 
     signal notificationSent(notification: var)
 
     Timer {
+
         id: refresh_delay
 
         interval: 100
@@ -65,6 +188,7 @@ Singleton {
     function action(id: int) {
         const buffer = notifications.findIndex(item => item.id == id)
         notifications[buffer].actions.find(item => item.identifier == "default").invoke()
+        refresh()
     }
 
     function clear() {
@@ -79,35 +203,37 @@ Singleton {
             notifications[notifications.findIndex(item => item.id == id)].tracked = false
         }
 
-        refresh_delay.restart()
+        refresh()
 
     }
 
     function dismiss(object: var) {
+
         // Dimiss App
         if (typeof object == "string") {
 
-            let buffer = notifications_groups.slice()
+            let buffer = notifications_groups.find(item => item.app == object)
 
-            buffer = buffer.filter(item => item.app != object)
-
-            notifications_groups = buffer
-
-            refresh_delay.restart()
+            for (const noti of buffer.notifications) {
+                dismiss(noti.object)
+            }
 
             return
         }
 
-        // Dismiss specific group
-        if (object.tracked) {
-            object.tracked = false
+        // Dismiss specific object
+        if (exists(object)) {
+            notifications[notifications.findIndex(item => item.id == object)].tracked = false
         } else {
             console.log("NotificationInfo: Dismissing: No object found!")
         }
-        refresh_delay.restart()
+        refresh()
     }
 
     function refresh() {
+
+        updateTime()
+
         let buffer = notifications_groups.slice() // Create a real copy
 
         for (const i in buffer) {
@@ -124,7 +250,11 @@ Singleton {
 
     function formatTime(seconds) {
 
-        seconds = toSeconds() - seconds
+        seconds = root.timer - seconds
+
+        if (seconds < 30) {
+            return "Now"
+        }
 
         const h = Math.floor(seconds / 3600);
         const m = Math.floor((seconds % 3600) / 60);
@@ -147,14 +277,6 @@ Singleton {
         add(noti.summary, noti.body, noti.app, noti.icon, noti.image, noti.urgency, noti.object)
     }
 
-    function toSeconds() {
-
-        const now = Date.now()
-
-        return Math.floor(now/1000)
-
-    }
-
     function exists(id) {
         return notifications.some(item => item.id == id) || id < 0
     }
@@ -171,7 +293,7 @@ Singleton {
                  icon: string,
                  notifications: [
                      {
-                         object: {Notification}, // Keeping track of the current notification's lifetime
+                         object: int (Notification's id), // Keeping track of the current notification's lifetime
                          urgency: int, // 0: low, 1: normal, 2: critical
                          group: [
                              {
@@ -193,7 +315,7 @@ Singleton {
             "summary": summary,
             "body": body,
             "image": image,
-            "time": toSeconds(),
+            "time": root.timer,
             toJSON() {
                 return formatTime(this.time)
             }
@@ -276,10 +398,12 @@ Singleton {
 
         actionsSupported: true
 
-        keepOnReload: true
+        keepOnReload: false
 
         onNotification: (noti) => {
             console.log("Received Notification: " + noti.summary + " " + noti.body + " " + noti.id)
+
+            console.log(notifications.length)
 
             noti.tracked = true
 
