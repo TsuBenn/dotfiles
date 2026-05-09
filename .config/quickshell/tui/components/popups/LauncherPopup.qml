@@ -33,6 +33,7 @@ CellPopup {
             textfield.path = []
             textfield.set("")
             textfield.search("")
+            breadcrumbs.updatePath()
         } else {
             auto_close.stop()
         }

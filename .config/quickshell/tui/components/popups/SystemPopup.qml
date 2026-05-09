@@ -11,14 +11,21 @@ CellPopup {
 
     id: root
 
-    w: 40
-    h: 18
+    w: 120
+    h: 27
+
+    function fmt(str, ...args) {
+        return str.replace(/{}/g, () => args.shift());
+    }
 
     CellBox {
 
         id: box
 
         property int eW: 40
+        property int p: 1
+        property color stc: Colors.fgDim
+        property color dyn: Colors.fgBase
 
         w: root.w+2
         h: root.h+2
@@ -28,13 +35,15 @@ CellPopup {
             property string text: "CPU"
 
             w: box.eW
-            type: 1
+            type: 2
             padding: 1
             title {
                 text: text
                 centered: false
                 font: Cell.fontBB
+                color: Colors.fgBase
             }
+            color: Qt.lighter(Colors.bgOverlay,1.2)
 
         }
 
@@ -46,7 +55,9 @@ CellPopup {
             property string value: "Ryzen R5 7600"
 
             property color key_color: Colors.fgDim
-            property color value_color: Colors.fgBase
+            property color value_color: stc ? box.stc : box.dyn
+
+            property bool stc: false
 
             w: box.eW
             h: 1
@@ -56,7 +67,7 @@ CellPopup {
             CellText {
 
                 anchors.left: stat.left
-                anchors.leftMargin: Cell.w(1)
+                anchors.leftMargin: Cell.w(box.p)
 
                 text: stat.key
                 color: stat.key_color
@@ -66,7 +77,7 @@ CellPopup {
             CellText {
 
                 anchors.right: stat.right
-                anchors.rightMargin: Cell.w(1)
+                anchors.rightMargin: Cell.w(box.p)
 
                 text: stat.value
                 color: stat.value_color
@@ -95,9 +106,9 @@ CellPopup {
                 id: bar_bar
 
                 anchors.left: bar.left
-                anchors.leftMargin: Cell.w(1)
+                anchors.leftMargin: Cell.w(box.p)
 
-                w: bar.w - 2 - bar_value.w - 1
+                w: bar.w - 2*box.p - bar_value.w - 1
                 percent: bar.value
 
                 fg: bar.value_color
@@ -107,7 +118,7 @@ CellPopup {
             CellText {
 
                 anchors.right: bar.right
-                anchors.rightMargin: Cell.w(1)
+                anchors.rightMargin: Cell.w(box.p)
 
                 id: bar_value
 
@@ -125,13 +136,15 @@ CellPopup {
 
             ColumnLayout {
 
+                Layout.alignment: Qt.AlignTop
+
                 spacing: 0
 
                 Header { text: "CPU" }
 
                 Stat {
                     key: "Name:"
-                    value: "<b>" + SystemInfo.cpumodel + "</b>"
+                    value: root.fmt("<b>{}</b>", SystemInfo.cpumodel)
 
                     value_color: {
                         if (value.toLowerCase().includes("amd")) {
@@ -143,25 +156,46 @@ CellPopup {
                     }
                 }
 
+                CellSeparator {
+                    w: box.eW
+                    padding: 1
+                    color: Colors.bgOverlay
+                }
+
                 Bar {
 
-                    key: "<b>" + parseInt(SystemInfo.cpuusage).toString().padStart(3, " ") + "%</b>"
+                    key: root.fmt("<b>{}%<b>", parseInt(SystemInfo.cpuusage).toString().padStart(3, " "))
                     value: SystemInfo.cpuusage
 
-                    key_color: {
+                    value_color: {
                         if (value > 90) {
-                            return Colors.warning
+                            return Colors.danger
                         } else if (value > 80) {
                             return Colors.warning
                         }
                         return Colors.fgBase
                     }
 
+                    key_color: {
+                        if (value > 90) {
+                            return Colors.danger
+                        } else if (value > 80) {
+                            return Colors.warning
+                        }
+                        return box.dyn
+                    }
+
+                }
+
+                CellSeparator {
+                    w: box.eW
+                    padding: 1
+                    color: Colors.bgOverlay
                 }
 
                 Stat {
                     key: "Temp:"
-                    value: "<b>" + parseInt(SystemInfo.cputemp) + "°C</b>"
+                    value: root.fmt("<b>{}°C</b>",parseInt(SystemInfo.cputemp))
 
                     value_color: {
                         if (SystemInfo.cputemp > 80) {
@@ -169,28 +203,31 @@ CellPopup {
                         } else if (SystemInfo.cputemp > 70) {
                             return Colors.warning
                         }
-                        return Colors.fgBase
+                        return box.dyn
                     }
                 }
 
                 Stat {
                     key: "Freq:"
-                    value: `<b>${parseInt(SystemInfo.cpubase)}MHz</b>`
+                    value: root.fmt("<b>{}MHz</b>",parseInt(SystemInfo.cpubase))
                 }
 
                 Stat {
                     key: "Boost:"
-                    value: `${parseInt(SystemInfo.cpuboost)}MHz`
+                    value: root.fmt("{}MHz",parseInt(SystemInfo.cpuboost))
+                    stc: true
                 }
 
                 Stat {
                     key: "Cores:"
-                    value: `${parseInt(SystemInfo.cpucores)}`
+                    value: parseInt(SystemInfo.cpucores)
+                    stc: true
                 }
 
                 Stat {
                     key: "Threads:"
-                    value: `${parseInt(SystemInfo.cputhreads)}`
+                    value: parseInt(SystemInfo.cputhreads)
+                    stc: true
                 }
 
                 CellText { text: "" }
@@ -207,7 +244,7 @@ CellPopup {
 
                 Stat {
                     key: "Name:"
-                    value: "<b>" + SystemInfo.gpumodels[gpu.index].name + "</b>"
+                    value: root.fmt("<b>{}</b>",SystemInfo.gpumodels[gpu.index].name)
 
                     value_color: {
                         if (value.toLowerCase().includes("amd")) {
@@ -221,21 +258,330 @@ CellPopup {
                     }
                 }
 
+                CellSeparator {
+                    w: box.eW
+                    padding: 1
+                    color: Colors.bgOverlay
+                }
+
                 Bar {
 
-                    key: "<b>" + parseInt(SystemInfo.gpumodels[gpu.index].usage).toString().padStart(3, " ") + "%</b>"
+                    key: root.fmt("<b>{}%</b>",parseInt(SystemInfo.gpumodels[gpu.index].usage).toString().padStart(3, " "))
                     value: SystemInfo.gpumodels[gpu.index].usage
 
-                    key_color: {
+                    value_color: {
                         if (value > 90) {
-                            return Colors.warning
+                            return Colors.danger
                         } else if (value > 80) {
                             return Colors.warning
                         }
                         return Colors.fgBase
                     }
 
+                    key_color: {
+                        if (value > 90) {
+                            return Colors.danger
+                        } else if (value > 80) {
+                            return Colors.warning
+                        }
+                        return box.dyn
+                    }
+
                 }
+
+                CellSeparator {
+                    w: box.eW
+                    padding: 1
+                    color: Colors.bgOverlay
+                }
+
+                Stat {
+                    key: "Temp:"
+                    value: root.fmt("<b>{}°C</b>",SystemInfo.gpumodels[gpu.index].temp)
+
+                    value_color: {
+                        if (SystemInfo.gpumodels[gpu.index].temp > 80) {
+                            return Colors.danger
+                        } else if (SystemInfo.gpumodels[gpu.index].temp > 70) {
+                            return Colors.warning
+                        }
+                        return box.dyn
+                    }
+                }
+
+                Stat {
+                    key: "Type:"
+                    value: SystemInfo.gpumodels[gpu.index].type
+                    stc: true
+                }
+
+                Stat {
+                    key: "Cores:"
+                    value: SystemInfo.gpumodels[gpu.index].cores
+                    stc: true
+                }
+
+                RowLayout {
+
+                    spacing: 0
+
+                    Stat {
+                        key: "VRAM:"
+                        value: root.fmt("<b>{}G</b>",SystemInfo.ktoG(SystemInfo.gpumodels[gpu.index].memoryused).toFixed(1))
+
+                        w: box.eW - vram.w
+                    }
+
+                    CellText {
+
+                        Layout.leftMargin: -Cell.w(2)
+
+                        id: vram
+
+                        text: root.fmt("/{}G",SystemInfo.ktoG(SystemInfo.gpumodels[gpu.index].memorytotal).toFixed(1))
+                        color: box.stc
+
+                    }
+
+                }
+
+                CellSeparator {
+                    w: box.eW
+                    padding: 1
+                    color: Colors.bgOverlay
+                }
+
+                Bar {
+
+                    key: root.fmt("<b>{}%</b>",parseInt(value).toString().padStart(3, " "))
+                    value: (SystemInfo.gpumodels[gpu.index].memoryused/SystemInfo.gpumodels[gpu.index].memorytotal)*100
+
+                    value_color: {
+                        if (value > 90) {
+                            return Colors.danger
+                        } else if (value > 80) {
+                            return Colors.warning
+                        }
+                        return Colors.fgBase
+                    }
+
+                    key_color: {
+                        if (value > 90) {
+                            return Colors.danger
+                        } else if (value > 80) {
+                            return Colors.warning
+                        }
+                        return box.dyn
+                    }
+
+                }
+
+                CellSeparator {
+                    w: box.eW
+                    padding: 1
+                    color: Colors.bgOverlay
+                }
+
+                RowLayout {
+
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                    spacing: 0
+
+                    CellText {
+
+                        property bool available: gpu.index > 0
+
+                        text: "      < "
+                        font: Cell.fontBB
+                        color: available ? Colors.fgBase : Colors.fgSubtle
+
+                        MouseControl {
+
+                            anchors.fill: parent
+
+                            onReleased: (button) => {
+                                if (button == "L" && available) {
+                                    gpu.index -= 1
+                                }
+                            }
+
+                        }
+
+                    }
+
+                    CellText {
+                        text: {
+                            const base = [..."-".repeat(SystemInfo.gpumodels.length)]
+                            base[gpu.index] = "*"
+                            return base.join("")
+                        }
+                        font: Cell.fontBB
+                    }
+
+                    CellText {
+
+                        property bool available: gpu.index < SystemInfo.gpumodels.length - 1
+
+                        text: " >      "
+                        font: Cell.fontBB
+                        color: available ? Colors.fgBase : Colors.fgSubtle
+
+                        MouseControl {
+
+                            anchors.fill: parent
+
+                            onReleased: (button) => {
+                                if (button == "L" && available) {
+                                    gpu.index += 1
+                                }
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                CellText { text: "" }
+
+                Header { 
+
+                    text: "Motherboard" 
+
+                }
+
+                Stat {
+                    key: "Name:"
+                    value: SystemInfo.board
+                    stc: true
+                }
+
+            }
+
+            ColumnLayout {
+
+                Layout.alignment: Qt.AlignTop
+
+                spacing: 0
+
+                Header { text: "MEMORY" }
+
+                RowLayout {
+
+                    spacing: 0
+
+                    Stat {
+                        key: "RAM:"
+                        value: root.fmt("<b>{}G</b>",SystemInfo.ktoG(SystemInfo.memused).toFixed(1))
+
+                        w: box.eW - ram.w
+                    }
+
+                    CellText {
+
+                        Layout.leftMargin: -Cell.w(box.p)
+
+                        id: ram
+
+                        text: root.fmt("/{}G",SystemInfo.ktoG(SystemInfo.memtotal).toFixed(1))
+                        color: box.stc
+
+                    }
+
+                }
+
+                Bar {
+
+                    key: root.fmt("<b>{}%<b>", parseInt(SystemInfo.memusage).toString().padStart(3, " "))
+                    value: SystemInfo.memusage
+
+                    value_color: {
+                        if (value > 90) {
+                            return Colors.danger
+                        } else if (value > 80) {
+                            return Colors.warning
+                        }
+                        return Colors.fgBase
+                    }
+
+                    key_color: {
+                        if (value > 90) {
+                            return Colors.danger
+                        } else if (value > 80) {
+                            return Colors.warning
+                        }
+                        return box.dyn
+                    }
+
+                }
+
+                CellSeparator {
+                    w: box.eW
+                    padding: 1
+                    color: Colors.bgOverlay
+                }
+
+                RowLayout {
+
+                    spacing: 0
+
+                    Stat {
+                        key: "SWAP:"
+                        value: root.fmt("<b>{}G</b>",SystemInfo.ktoG(SystemInfo.swapused).toFixed(1))
+
+                        w: box.eW - swap.w
+                    }
+
+                    CellText {
+
+                        Layout.leftMargin: -Cell.w(box.p)
+
+                        id: swap
+
+                        text: root.fmt("/{}G",SystemInfo.ktoG(SystemInfo.swaptotal).toFixed(1))
+                        color: box.stc
+
+                    }
+
+                }
+
+                Bar {
+
+                    key: root.fmt("<b>{}%<b>", parseInt(SystemInfo.swapusage).toString().padStart(3, " "))
+                    value: SystemInfo.swapusage
+
+                    value_color: {
+                        if (value > 90) {
+                            return Colors.danger
+                        } else if (value > 80) {
+                            return Colors.warning
+                        }
+                        return Colors.fgBase
+                    }
+
+                    key_color: {
+                        if (value > 90) {
+                            return Colors.danger
+                        } else if (value > 80) {
+                            return Colors.warning
+                        }
+                        return box.dyn
+                    }
+
+                }
+
+                CellSeparator {
+                    w: box.eW
+                    padding: 1
+                    color: Colors.bgOverlay
+                }
+
+                CellText {
+                    text: " "
+                }
+
+                Header { text: "DISKS" }
 
             }
 
