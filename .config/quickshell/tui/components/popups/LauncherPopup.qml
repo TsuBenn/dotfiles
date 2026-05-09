@@ -349,9 +349,6 @@ CellPopup {
                         LauncherInfo.searched.connect(() => {
                             debounce.restart()
                         })
-                        SettingsInfo.toggleMinimal.connect(() => {
-                            //debounce.restart()
-                        })
                     }
 
                     interval: 0

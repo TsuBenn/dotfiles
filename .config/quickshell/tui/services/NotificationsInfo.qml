@@ -118,6 +118,7 @@ Singleton {
                     results.push({
                         "type"       : "group",
                         "app"        : app.app,
+                        "id"         : group.id,
                         "object"     : group.object,
                         "expandable" : group.group.length > 1,
                         "time"       : group.group[0]?.time ?? 0,
@@ -131,6 +132,7 @@ Singleton {
                             results.push({
                                 'type'    : "subgroup",
                                 "app"     : app.app,
+                                "id"      : group.id,
                                 "object"  : group.object,
                                 "urgency" : group.urgency,
                                 "time"    : group.group[i]?.time ?? 0,
@@ -139,14 +141,19 @@ Singleton {
                             })
                         }
                         results.push({
-                            "type": "expander"
+                            "type": "expander",
+                            "app"  : app.app,
+                            "id"      : group.id,
                         })
                     }
 
+                    results.push({
+                        "type": "group_sep",
+                        "app"  : app.app,
+                        "id"      : group.id,
+                    })
+
                 }
-                results.push({
-                    "type": "group_sep"
-                })
             }
             results.push({
                 "type": "app_sep"
@@ -252,7 +259,7 @@ Singleton {
 
         seconds = root.timer - seconds
 
-        if (seconds < 30) {
+        if (seconds < 10) {
             return "Now"
         }
 
@@ -279,6 +286,12 @@ Singleton {
 
     function exists(id) {
         return notifications.some(item => item.id == id) || id < 0
+    }
+
+    property int groupID: 0
+
+    function getGroupID() {
+        return groupID++
     }
 
     function add(summary, body, app, icon, image, urgency, object) {
@@ -322,6 +335,7 @@ Singleton {
         }
 
         const notif = {
+            "id": getGroupID(),
             "object": object.id,
             "actions": object.actions ?? [],
             "urgency": urgency,
@@ -401,9 +415,7 @@ Singleton {
         keepOnReload: false
 
         onNotification: (noti) => {
-            console.log("Received Notification: " + noti.summary + " " + noti.body + " " + noti.id)
-
-            console.log(notifications.length)
+            //console.log("Received Notification: " + noti.summary + " " + noti.body + " " + noti.id)
 
             noti.tracked = true
 

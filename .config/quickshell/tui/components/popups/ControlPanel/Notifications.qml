@@ -36,12 +36,24 @@ ColumnLayout {
         signal expand_all()
 
         onExpand_all: {
-            for (const app of NotificationsInfo.flat) {
-                expanded_app = [...expanded_app ,app.app]
-                for (const group of app.notifications) {
-                    expanded_notif = [...expanded_notif,group.object]
+            for (const object of NotificationsInfo.flat) {
+                if (object.app) {
+                    expand_app(object.app)
+                }
+                if (object.id) {
+                    expand_group(object.id)
                 }
             }
+        }
+
+        function expand_group(object: int) {
+            if (!expanded_notif.includes(object)) {
+                expanded_notif = [...expanded_notif, object]
+            }
+        }
+
+        function collapse_group(object: int) {
+            expanded_notif = expanded_notif.filter(item => item != object)
         }
 
         function expand_app(app: string) {
@@ -57,6 +69,21 @@ ColumnLayout {
         onCollapse_all: {
             expanded_app = []
             expanded_notif = []
+        }
+
+        Component.onCompleted: {
+            NotificationsInfo.flatChanged.connect(() => {
+                for (const app of expanded_app) {
+                    if (!NotificationsInfo.flat.some(item => item.app == app)) {
+                        list.collapse_app(app)
+                    }
+                }
+                for (const id of expanded_notif) {
+                    if (!NotificationsInfo.flat.some(item => item.id == id)) {
+                        list.collapse_group(id)
+                    }
+                }
+            })
         }
 
         ColumnLayout {
@@ -84,140 +111,530 @@ ColumnLayout {
 
                     Loader {
 
-                        id: apps
+                        active: root.visible || !SettingsInfo.optimizeMemory
 
                         required property var modelData
 
-                        active: modelData.type == "app"
+                        property Component appRow: Component {
 
-                        sourceComponent: Cells {
+                            Cells {
 
-                            id: a
+                                id: a
 
-                            w: list.contentW
-                            h: 2
-                            color: "transparent"
+                                w: list.contentW
+                                h: 2
+                                color: "transparent"
 
-                            property string  app        : apps.modelData?.app ?? ""
-                            property string  icon       : apps.modelData?.icon ?? ""
-                            property int     urgency    : apps.modelData?.urgency ?? 0
-                            property bool    expandable : apps.modelData?.expandable ?? false
-                            property string  summary    : apps.modelData?.summary ?? ""
-                            property string  body       : apps.modelData?.body ?? ""
-                            property int     time       : apps.modelData?.time ?? 0
-                            property string  image      : apps.modelData?.image ?? ""
+                                property string  app        : modelData?.app ?? ""
+                                property string  icon       : modelData?.icon ?? ""
+                                property int     urgency    : modelData?.urgency ?? 0
+                                property bool    expandable : modelData?.expandable ?? false
+                                property string  summary    : modelData?.summary ?? ""
+                                property string  body       : modelData?.body ?? ""
+                                property int     time       : modelData?.time ?? 0
+                                property string  image      : modelData?.image ?? ""
 
-                            property bool    expanded   : list.expanded_app.includes(a.app)
+                                property bool    expanded   : list.expanded_app.includes(a.app) && expandable
 
-                            MouseControl {
-
-                                anchors.fill: parent
-
-                                onReleased: (button) => {
-                                    if (button == "L" && a.expandable) {
-                                        a.expanded ? list.collapse_app(a.app) : list.expand_app(a.app) 
+                                Component.onCompleted: {
+                                    if (!expandable) {
+                                        list.collapse_app(a.app)
                                     }
                                 }
 
-                            }
+                                MouseControl {
 
-                            RowLayout {
+                                    anchors.fill: parent
 
-                                spacing: 0
-
-                                CellText {
-                                    text: " "
-                                }
-
-                                CellIcon {
-
-                                    Layout.alignment: Qt.AlignTop
-
-                                    id: app_icon
-
-                                    image: a.expandable ? "" : a.image
-                                    icon: [a.icon, a.app]
-
-                                    w: 6
-                                    h: 2
-
-                                }
-
-                                ColumnLayout {
-
-                                    Layout.alignment: Qt.AlignTop
-
-                                    spacing: 0
-
-                                    CellText {
-                                        text: a.expandable ? a.app : a.summary
-                                        font: Cell.fontB
-                                        preferedW: list.contentW - 4 - app_icon.getW() - app_time.text.length
-                                    }
-
-                                    CellText {
-
-                                        visible: !a.expanded
-
-                                        text: a.expandable ? a.summary : a.body
-                                        color: Colors.fgSubtle
-                                        preferedW: list.contentW - 4 - app_icon.getW() - app_time.text.length
-                                    }
-
-                                    CellSeparator {
-
-                                        visible: a.expanded
-
-                                        w: list.contentW - 4 - app_icon.getW() - app_time.text.length
-
-                                        type: 1
-                                        color: Colors.fgSubtle
-                                    }
-
-                                }
-
-                                CellText {
-
-                                    Layout.alignment: Qt.AlignTop
-
-                                    id: app_time
-
-                                    text: a.expanded ? "" : " " + NotificationsInfo.formatTime(a.time).toString().padStart(3, " ") + " "
-
-                                    color: Colors.fgDim
-
-                                }
-
-                                ColumnLayout {
-
-                                    spacing: 0
-
-                                    CellButton {
-
-                                        padding: 1
-                                        text: "\uea76"
-                                        color: [Colors.bgOverlay, Colors.fgBase]
-                                        fg: [Colors.fgBase, Colors.bgSurface]
-
-                                        onReleased: (button) => {
-                                            if (button == "L") {
-                                                NotificationsInfo.dismiss(a.app)
-                                            }
+                                    onReleased: (button) => {
+                                        if (button == "L" && a.expandable) {
+                                            a.expanded ? list.collapse_app(a.app) : list.expand_app(a.app) 
                                         }
                                     }
 
-                                    CellText {
-                                        text: a.expanded ? " ⏶ " : " ⏷ "
-                                        color: a.expandable ? Colors.fgBase : Colors.fgSubtle
-                                    }
-
                                 }
 
+                                RowLayout {
+
+                                    spacing: 0
+
+                                    CellText {
+                                        text: " "
+                                    }
+
+                                    CellIcon {
+
+                                        Layout.alignment: Qt.AlignTop
+
+                                        id: app_icon
+
+                                        image: a.expandable ? "" : a.image
+                                        icon: [a.icon, a.app]
+
+                                        w: 5
+                                        h: 2
+
+                                    }
+
+                                    CellText {
+                                        text: " "
+                                    }
+
+                                    ColumnLayout {
+
+                                        Layout.alignment: Qt.AlignTop
+
+                                        spacing: 0
+
+                                        RowLayout {
+
+                                            spacing: 0
+
+                                            CellText {
+                                                text: a.expandable ? a.app : a.summary
+                                                font: Cell.fontB
+                                                preferedW: list.contentW - 6 - app_icon.getW() - app_time.text.length
+                                                color: {
+                                                    if (!a.expandable) {
+                                                        switch (a.urgency) {
+                                                            case 0: return Colors.fgBase
+                                                            case 1: return Colors.warning
+                                                            case 2: return Colors.danger
+                                                        }
+                                                    }
+                                                    return Colors.fgBase
+                                                }
+                                            }
+
+                                            CellText {
+
+                                                Layout.alignment: Qt.AlignTop
+
+                                                id: app_time
+
+                                                text: a.expanded ? "     " : " " + NotificationsInfo.formatTime(a.time).toString().padStart(3, " ") + " "
+
+                                                color: Colors.fgDim
+
+                                            }
+
+                                        }
+
+                                        CellText {
+
+                                            visible: !a.expanded
+
+                                            text: a.expandable ? a.summary : a.body
+                                            color: Colors.fgSubtle
+                                            preferedW: list.contentW - 6 - app_icon.getW() - app_time.text.length
+                                        }
+
+                                        CellSeparator {
+
+                                            visible: a.expanded
+
+                                            w: list.contentW - 6 - app_icon.getW() - 1
+
+                                            type: 1
+                                            color: Qt.darker(Colors.fgSubtle,2)
+                                        }
+
+                                    }
+
+
+                                    ColumnLayout {
+
+                                        spacing: 0
+
+                                        CellButton {
+
+                                            padding: 1
+                                            text: "\uea76"
+                                            color: [Colors.bgOverlay, Colors.fgBase]
+                                            fg: [Colors.fgBase, Colors.bgSurface]
+
+                                            onReleased: (button) => {
+                                                if (button == "L") {
+                                                    NotificationsInfo.dismiss(a.app)
+                                                }
+                                            }
+                                        }
+
+                                        CellText {
+                                            text: a.expanded ? " ⏶ " : " ⏷ "
+                                            color: a.expandable ? Colors.fgBase : Colors.fgSubtle
+                                        }
+
+                                    }
+
+
+                                }
 
                             }
 
                         }
+
+                        property Component groupRow: Component {
+
+                            Cells {
+
+                                id: g
+
+                                w: list.contentW
+                                h: list.expanded_app.includes(g.app) ? Cell.hCount(group_layout.implicitHeight) : 0
+
+                                color: "transparent"
+
+                                clip: true
+
+                                property string  app        : modelData?.app ?? ""
+                                property int     id         : modelData?.id ?? ""
+                                property int     object     : modelData?.object ?? ""
+                                property int     urgency    : modelData?.urgency ?? 0
+                                property bool    expandable : modelData?.expandable ?? false
+                                property string  summary    : modelData?.summary ?? ""
+                                property string  body       : modelData?.body ?? ""
+                                property int     time       : modelData?.time ?? 0
+
+                                property bool    expanded   : list.expanded_notif.includes(id) && expandable
+
+                                MouseControl {
+
+                                    anchors.fill: parent
+
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            if (mouseX <= Cell.h(7)) {
+                                                if (g.expandable) {
+                                                    g.expanded ? list.collapse_group(g.id) : list.expand_group(g.id)
+                                                } else {
+                                                    list.collapse_app(g.app)
+                                                }
+                                                return
+                                            } else if (mouseX > Cell.w(list.contentW) - Cell.h(9)){
+                                                list.collapse_app(g.app)
+                                                return
+                                            }
+                                            NotificationsInfo.action(g.object)
+                                        }
+                                    }
+
+                                }
+
+                                RowLayout {
+
+                                    id: group_layout
+
+                                    spacing: 0
+
+                                    CellText {
+                                        text: "       "
+                                    }
+
+                                    ColumnLayout {
+
+                                        Layout.alignment: Qt.AlignTop
+
+                                        spacing: 0
+
+                                        RowLayout {
+
+                                            spacing: 0
+
+                                            CellText {
+                                                text: g.summary
+                                                font: Cell.fontB
+                                                preferedW: list.contentW - 11 - group_time.text.length
+                                                wrap: true
+                                                color : {
+                                                    switch (g.urgency) {
+                                                        case 0: return Colors.fgBase
+                                                        case 1: return Colors.warning
+                                                        case 2: return Colors.danger
+                                                    }
+                                                    return Colors.fgBase
+                                                }
+                                            }
+
+                                            CellText {
+
+                                                Layout.alignment: Qt.AlignTop
+
+                                                id: group_time
+
+                                                text: " " + NotificationsInfo.formatTime(g.time).toString().padStart(3, " ") + " "
+
+                                                color: Colors.fgDim
+
+                                            }
+
+                                        }
+
+                                        CellText {
+
+                                            text: g.body
+                                            color: Colors.fgSubtle
+                                            preferedW: list.contentW - 11 - group_time.text.length
+                                            wrap: true
+
+                                        }
+
+                                    }
+
+
+                                    ColumnLayout {
+
+                                        Layout.alignment: Qt.AlignTop
+
+                                        spacing: 0
+
+                                        CellButton {
+
+                                            padding: 1
+                                            text: "\uea76"
+                                            color: ["transparent", Colors.bgOverlay]
+                                            fg: Colors.fgBase
+
+                                            onReleased: (button) => {
+                                                if (button == "L") {
+                                                    NotificationsInfo.dismiss(g.object)
+                                                }
+                                            }
+                                        }
+
+                                    }
+
+
+                                }
+
+                            }
+
+                        }
+
+                        property Component subgroupRow: Component {
+
+                            Cells {
+
+                                id: sg
+
+                                w: list.contentW
+                                h: list.expanded_notif.includes(id) && list.expanded_app.includes(app) ? Cell.hCount(subgroup_layout.implicitHeight) : 0
+
+                                color: "transparent"
+
+                                clip: true
+
+                                property string  app        : modelData?.app ?? ""
+                                property int     id         : modelData?.id ?? ""
+                                property int     object     : modelData?.object ?? ""
+                                property int     urgency    : modelData?.urgency ?? 0
+                                property int     time       : modelData?.time ?? 0
+                                property string  summary    : modelData?.summary ?? ""
+                                property string  body       : modelData?.body ?? ""
+
+                                MouseControl {
+
+                                    anchors.fill: parent
+
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            if (mouseX <= Cell.h(7)) {
+                                                list.collapse_group(sg.id)
+                                                return
+                                            } else if (mouseX > Cell.w(list.contentW) - Cell.h(9)){
+                                                list.collapse_app(sg.app)
+                                                return
+                                            }
+                                            NotificationsInfo.action(sg.object)
+                                        }
+                                    }
+
+                                }
+
+                                RowLayout {
+
+                                    id: subgroup_layout
+
+                                    spacing: 0
+
+                                    CellText {
+                                        text: "       "
+                                    }
+
+                                    ColumnLayout {
+
+                                        Layout.alignment: Qt.AlignTop
+
+                                        spacing: 0
+
+                                        RowLayout {
+
+                                            spacing: 0
+
+                                            CellText {
+                                                text: sg.summary
+                                                font: Cell.fontB
+                                                preferedW: list.contentW - 11 - subgroup_time.text.length
+                                                wrap: true
+                                                color : {
+                                                    switch (sg.urgency) {
+                                                        case 0: return Colors.fgBase
+                                                        case 1: return Colors.warning
+                                                        case 2: return Colors.danger
+                                                    }
+                                                    return Colors.fgBase
+                                                }
+                                            }
+
+                                            CellText {
+
+                                                Layout.alignment: Qt.AlignTop
+
+                                                id: subgroup_time
+
+                                                text: " " + NotificationsInfo.formatTime(sg.time).toString().padStart(3, " ") + " "
+
+                                                color: Colors.fgDim
+
+                                            }
+
+                                        }
+
+                                        CellText {
+
+                                            text: sg.body
+                                            color: Colors.fgSubtle
+                                            preferedW: list.contentW - 11 - subgroup_time.text.length
+                                            wrap: true
+
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+                        }
+
+                        property Component expander: Component {
+
+                            Cells {
+
+                                id: ex
+
+                                w: list.contentW
+                                h: list.expanded_app.includes(ex.app) ? 2 : 0
+
+                                clip: true
+
+                                color: "transparent"
+
+                                property string  app        : modelData?.app ?? ""
+                                property int     id         : modelData?.id ?? ""
+
+                                property bool    expanded   : list.expanded_notif.includes(id)
+
+                                MouseControl {
+
+                                    anchors.fill: parent
+
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            ex.expanded ? list.collapse_group(id) : list.expand_group(id)
+                                        }
+                                    }
+
+                                }
+
+                                RowLayout {
+
+                                    y: Cell.h(1)
+
+                                    spacing: 0
+
+                                    CellText {
+                                        text: "       "
+                                    }
+
+                                    CellText {
+                                        text: ex.expanded ? "[Less]" : "[More]"
+                                        color: Colors.fgSubtle
+                                    }
+
+                                }
+
+                            }
+                        }
+
+                        property Component groupSep: Component {
+
+                            Cells {
+
+                                id: g_sep
+
+                                property string app      : modelData?.app ?? ""
+                                property int    id       : modelData?.id ?? ""
+
+                                property bool   expanded : list.expanded_notif.includes(id)
+
+                                w: list.contentW
+                                h: list.expanded_app.includes(g_sep.app) ? 1 : 0
+
+                                color: "transparent"
+
+                                clip: true
+
+                                MouseControl {
+
+                                    anchors.fill: parent
+
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            g_sep.expanded ? list.collapse_group(g_sep.id) : list.expand_group(g_sep.id)
+                                        }
+                                    }
+
+                                }
+
+                                CellSeparator {
+
+                                    x: Cell.w(7)
+
+                                    w: parent.w - 8
+                                    type: 0
+                                    color: Colors.bgOverlay
+
+                                }
+
+                            }
+
+
+                        }
+
+                        property Component appSep: Component {
+
+                            CellSeparator {
+                                padding: 1
+                                type: 2
+                                w: list.contentW
+                                color: Qt.darker(Colors.fgSubtle,2)
+                            }
+
+                        }
+
+                        sourceComponent: {
+                            switch (modelData.type) {
+                                case "app": return appRow
+                                case "group": return groupRow
+                                case "subgroup": return subgroupRow
+                                case "expander": return expander
+                                case "group_sep": return groupSep
+                                case "app_sep": return appSep
+                            }
+                            return null
+                        }
                     }
+
                 }
 
             }

@@ -16,7 +16,6 @@ Singleton {
     property bool optimizeMemory: true // Reduce memory usage significantly, but takes more time to load UI elements
 
     signal showGrid()
-    signal toggleMinimal()
 
     function get_state(text) {
         let state = -1
@@ -43,6 +42,22 @@ Singleton {
         AudioInfo.playSound(sounds[sound], 1)
     }
 
+    function toggleMinimal() {
+        minimal = !minimal
+    }
+
+    function toggleHints() {
+        hints = !hints
+    }
+
+    function toggleSafeNotifications() {
+        safeNotifications = !safeNotifications
+    }
+
+    function toggleOptimizeMemory() {
+        optimizeMemory = !optimizeMemory
+    }
+
     IpcHandler {
         target: "config"
         function open_popup(popup: string): void {PopupManager.open(popup)}
@@ -61,10 +76,10 @@ Singleton {
             root.audio_check()
         }
         function toggle_grids(): void {root.showGrid()}
-        function toggle_minimal(): void {root.minimal = !root.minimal; root.toggleMinimal()}
-        function toggle_memory_optimize(): void {root.optimizeMemory = !root.optimizeMemory}
-        function toggle_safe_notifications(): void {root.safeNotifications = !root.safeNotifications}
-        function toggle_hints(): void {root.hints = !root.hints}
+        function toggle_minimal(): void {root.toggleMinimal()}
+        function toggle_memory_optimize(): void {root.toggleOptimizeMemory()}
+        function toggle_safe_notifications(): void {root.toggleSafeNotifications()}
+        function toggle_hints(): void {root.toggleHints()}
 
 
         function dummy(): void {

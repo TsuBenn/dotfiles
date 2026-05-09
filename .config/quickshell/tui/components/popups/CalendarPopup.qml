@@ -1099,7 +1099,6 @@ CellPopup {
                                                                 parseInt(DateTime.year) >= parseInt(calendar.selected.year) &&
                                                                 reminder.range == 0
                                                             ) {
-                                                                console.log("damn")
                                                                 if (
                                                                     DateTime.hour24 >= parseInt(time[0]) && 
                                                                     DateTime.minute >= parseInt(time[1])
