@@ -388,7 +388,9 @@ CellPopup {
                                         action: () => {
                                             safe_mouse.safe = 1
                                             safe_mouse.visible = true
-                                            if (textfield.selected == 0) return
+                                            if (textfield.selected == 0) {
+                                                textfield.selected = 5
+                                            }
                                             textfield.selected -= 1
                                             if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
                                                 results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)

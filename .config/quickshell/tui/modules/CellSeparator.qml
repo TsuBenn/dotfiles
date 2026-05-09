@@ -70,6 +70,7 @@ Item {
                 font: root.title.font
                 bg: root.bg
                 color: root.title.color
+                clip: true
 
             }
 
@@ -100,6 +101,8 @@ Item {
                 return lines.join("\n")
 
             }
+            bg: root.bg
+            color: root.color
 
         }
 

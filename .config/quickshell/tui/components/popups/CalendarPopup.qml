@@ -66,6 +66,7 @@ CellPopup {
             },
             {
                 binds: "Left",
+                active: !TextFieldManager.active,
                 action: () => {
 
                     if (calendar.selected.year != calendar.year) {
@@ -103,6 +104,7 @@ CellPopup {
             },
             {
                 binds: "Right",
+                active: !TextFieldManager.active,
                 action: () => {
 
                     if (calendar.selected.year != calendar.year) {

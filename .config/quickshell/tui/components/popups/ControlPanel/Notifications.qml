@@ -72,7 +72,7 @@ ColumnLayout {
         }
 
         Component.onCompleted: {
-            NotificationsInfo.flatChanged.connect(() => {
+            NotificationsInfo.flatUpdated.connect(() => {
                 for (const app of expanded_app) {
                     if (!NotificationsInfo.flat.some(item => item.app == app)) {
                         list.collapse_app(app)
@@ -129,6 +129,7 @@ ColumnLayout {
                                 property string  icon       : modelData?.icon ?? ""
                                 property int     urgency    : modelData?.urgency ?? 0
                                 property bool    expandable : modelData?.expandable ?? false
+                                property int     object     : modelData?.object ?? 0
                                 property string  summary    : modelData?.summary ?? ""
                                 property string  body       : modelData?.body ?? ""
                                 property int     time       : modelData?.time ?? 0
@@ -147,8 +148,12 @@ ColumnLayout {
                                     anchors.fill: parent
 
                                     onReleased: (button) => {
-                                        if (button == "L" && a.expandable) {
-                                            a.expanded ? list.collapse_app(a.app) : list.expand_app(a.app) 
+                                        if (button == "L") {
+                                            if (a.expandable) {
+                                                a.expanded ? list.collapse_app(a.app) : list.expand_app(a.app) 
+                                            } else {
+                                                NotificationsInfo.action(a.object)
+                                            }
                                         }
                                     }
 
@@ -193,7 +198,7 @@ ColumnLayout {
                                             CellText {
                                                 text: a.expandable ? a.app : a.summary
                                                 font: Cell.fontB
-                                                preferedW: list.contentW - 6 - app_icon.getW() - app_time.text.length
+                                                preferedW: list.contentW - 5 - app_icon.getW() - app_time.text.length
                                                 color: {
                                                     if (!a.expandable) {
                                                         switch (a.urgency) {
@@ -214,7 +219,7 @@ ColumnLayout {
 
                                                 text: a.expanded ? "     " : " " + NotificationsInfo.formatTime(a.time).toString().padStart(3, " ") + " "
 
-                                                color: Colors.fgDim
+                                                color: Colors.fgSubtle
 
                                             }
 
@@ -225,15 +230,15 @@ ColumnLayout {
                                             visible: !a.expanded
 
                                             text: a.expandable ? a.summary : a.body
-                                            color: Colors.fgSubtle
-                                            preferedW: list.contentW - 6 - app_icon.getW() - app_time.text.length
+                                            color: Colors.fgDim
+                                            preferedW: list.contentW - 5 - app_icon.getW() - app_time.text.length
                                         }
 
                                         CellSeparator {
 
                                             visible: a.expanded
 
-                                            w: list.contentW - 6 - app_icon.getW() - 1
+                                            w: list.contentW - 5 - app_icon.getW() - 1
 
                                             type: 1
                                             color: Qt.darker(Colors.fgSubtle,2)
@@ -262,7 +267,7 @@ ColumnLayout {
 
                                         CellText {
                                             text: a.expanded ? " ⏶ " : " ⏷ "
-                                            color: a.expandable ? Colors.fgBase : Colors.fgSubtle
+                                            color: a.expandable ? Colors.fgBase : Colors.bgOverlay
                                         }
 
                                     }
@@ -344,8 +349,8 @@ ColumnLayout {
                                             CellText {
                                                 text: g.summary
                                                 font: Cell.fontB
-                                                preferedW: list.contentW - 11 - group_time.text.length
-                                                wrap: true
+                                                preferedW: list.contentW - 10 - group_time.text.length
+                                                wrap: !SettingsInfo.minimal
                                                 color : {
                                                     switch (g.urgency) {
                                                         case 0: return Colors.fgBase
@@ -364,7 +369,7 @@ ColumnLayout {
 
                                                 text: " " + NotificationsInfo.formatTime(g.time).toString().padStart(3, " ") + " "
 
-                                                color: Colors.fgDim
+                                                color: Colors.fgSubtle
 
                                             }
 
@@ -373,8 +378,8 @@ ColumnLayout {
                                         CellText {
 
                                             text: g.body
-                                            color: Colors.fgSubtle
-                                            preferedW: list.contentW - 11 - group_time.text.length
+                                            color: Colors.fgDim
+                                            preferedW: list.contentW - 10 - group_time.text.length
                                             wrap: true
 
                                         }
@@ -418,7 +423,7 @@ ColumnLayout {
                                 id: sg
 
                                 w: list.contentW
-                                h: list.expanded_notif.includes(id) && list.expanded_app.includes(app) ? Cell.hCount(subgroup_layout.implicitHeight) : 0
+                                h: list.expanded_notif.includes(id) && list.expanded_app.includes(app) ? Cell.hCount(subgroup_layout.implicitHeight) + 1*!SettingsInfo.minimal : 0
 
                                 color: "transparent"
 
@@ -453,6 +458,8 @@ ColumnLayout {
 
                                 RowLayout {
 
+                                    y: Cell.h(1)*!SettingsInfo.minimal
+
                                     id: subgroup_layout
 
                                     spacing: 0
@@ -474,8 +481,8 @@ ColumnLayout {
                                             CellText {
                                                 text: sg.summary
                                                 font: Cell.fontB
-                                                preferedW: list.contentW - 11 - subgroup_time.text.length
-                                                wrap: true
+                                                preferedW: list.contentW - 10 - subgroup_time.text.length
+                                                wrap: !SettingsInfo.minimal
                                                 color : {
                                                     switch (sg.urgency) {
                                                         case 0: return Colors.fgBase
@@ -494,7 +501,7 @@ ColumnLayout {
 
                                                 text: " " + NotificationsInfo.formatTime(sg.time).toString().padStart(3, " ") + " "
 
-                                                color: Colors.fgDim
+                                                color: Colors.fgSubtle
 
                                             }
 
@@ -503,8 +510,8 @@ ColumnLayout {
                                         CellText {
 
                                             text: sg.body
-                                            color: Colors.fgSubtle
-                                            preferedW: list.contentW - 11 - subgroup_time.text.length
+                                            color: Colors.fgDim
+                                            preferedW: list.contentW - 10 - subgroup_time.text.length
                                             wrap: true
 
                                         }

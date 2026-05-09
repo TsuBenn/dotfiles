@@ -27,6 +27,8 @@ CellPopup {
 
         NotificationsInfo.notificationSent.connect((notif) => {
 
+            if (SettingsInfo.dnd) return
+
             if (PopupManager.isOpen("control_panel")) return
 
             if (notif.lastGen) return
@@ -40,6 +42,10 @@ CellPopup {
                 if (not.object.summary) {
                     new_notif.push(not)
                 }
+            }
+
+            if (new_notif.length > 3) {
+                new_notif.slice(0, 3)
             }
 
             root.notif = new_notif

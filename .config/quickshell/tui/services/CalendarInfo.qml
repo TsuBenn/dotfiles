@@ -179,9 +179,9 @@ Singleton {
 
             if (!reminder.time && nmin%30==0 && reminder.urgency > 0) {
                 NotificationsInfo.send(
-                    "", "",
-                    "REMINDERS & EVENTS",
-                    "<b>" + reminder.title + "</b>" + (reminder.body ? "\n" + reminder.body : ""),
+                    "REMINDERS & EVENTS", "",
+                    reminder.title ?? "",
+                    reminder.body ?? "",
                     reminder.urgency, true,
                     "qs -c tui ipc call config open_popup calendar"
                 )
@@ -190,9 +190,9 @@ Singleton {
 
             function sendNotif(text) {
                 NotificationsInfo.send(
-                    "", "",
-                    "REMINDERS & EVENTS",
-                    text + " before <b>" + reminder.title + "</b>",
+                    "REMINDERS & EVENTS", "",
+                    reminder.title,
+                    "Happens in <b>" + text + "</b>",
                     reminder.urgency, false,
                     "qs -c tui ipc call config open_popup calendar"
                 )
@@ -202,6 +202,10 @@ Singleton {
                 sendNotif("1 hour")
             } else if (rmin - nmin == 30) {
                 sendNotif("30 minutes")
+            } else if (rmin - nmin == 20) {
+                sendNotif("20 minutes")
+            } else if (rmin - nmin == 15) {
+                sendNotif("15 minutes")
             } else if (rmin - nmin == 10) {
                 sendNotif("10 minutes")
             } else if (rmin - nmin == 5) {
@@ -210,9 +214,9 @@ Singleton {
                 sendNotif("2 minutes")
             } else if (rmin - nmin == 0) {
                 NotificationsInfo.send(
-                    "", "",
-                    "REMINDERS & EVENTS",
-                    "<b>" + reminder.title + "</b>" + (reminder.body ? "\n" + reminder.body : ""),
+                    "REMINDERS & EVENTS", "",
+                    reminder.title ?? "",
+                    reminder.body ?? "",
                     reminder.urgency, true,
                     "qs -c tui ipc call config open_popup calendar"
                 )
@@ -269,6 +273,8 @@ Singleton {
         index === self.findIndex(t => {return t.title === item.title})
 
     )
+
+    deadlines.sort((a, b) => a.time.localeCompare(b.time))
 
     return deadlines
 
@@ -345,6 +351,8 @@ function getReminders(day, month, year) {
         rawDate.setDate(rawDate.getDate() + 1)
     }
 
+    reminders.sort((a, b) => a.time.localeCompare(b.time))
+
     return reminders
 
 }
@@ -374,6 +382,8 @@ function getEvents(day, month, year) {
         events = [...events, ...root.events[`${rawDate.getDate().toString().padStart(2,"0")}/${(rawDate.getMonth()+1).toString().padStart(2,"0")}/${rawDate.getFullYear()}`] ?? []]
         rawDate.setDate(rawDate.getDate() + 1)
     }
+
+    events.sort((a, b) => a.time.localeCompare(b.time))
 
     return events
 

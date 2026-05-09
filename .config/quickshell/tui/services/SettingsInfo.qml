@@ -5,30 +5,67 @@ import qs.services
 
 import Quickshell
 import Quickshell.Io
+import QtQuick
 
 Singleton {
 
     id: root
 
-    property bool hints: true
-    property bool minimal: false
-    property bool safeNotifications: true // Hide notifications' messages
-    property bool optimizeMemory: true // Reduce memory usage significantly, but takes more time to load UI elements
+    property bool hints             : true  // Show keyboard hints
+    property bool minimal           : false // Reduce UI elements
+    property bool safeNotifications : false // Hide notifications' messages
+    property bool dnd               : false // Do not disturb
+    property bool optimizeMemory    : false // Reduce memory usage significantly, but takes more time to load UI elements
 
     signal showGrid()
 
     function get_state(text) {
         let state = -1
         switch (text) {
-            case "hints": state = hints; break
-            case "minimal": state = minimal; break
-            case "optimizeMemory": state = optimizeMemory; break
-            case "safeNotifications": state = safeNotifications; break
+            case "hints"             : state = hints; break
+            case "minimal"           : state = minimal; break
+            case "optimizeMemory"    : state = optimizeMemory; break
+            case "safeNotifications" : state = safeNotifications; break
+            case "dnd"               : state = dnd; break
         }
         if (state != -1) {
             return state ? "[X]" : "[ ]"
         }
         return ""
+    }
+
+    FileView {
+
+        id: load_config
+
+        path: SystemInfo.configdir + "/scripts/config.json"
+
+        onLoaded: {
+
+            const config = JSON.parse(text())
+
+            root.hints             = config.hints             ?? false
+            root.minimal           = config.minimal           ?? false
+            root.safeNotifications = config.safeNotifications ?? false
+            root.dnd               = config.dnd               ?? false
+            root.optimizeMemory    = config.optimizeMemory    ?? false
+
+        }
+
+    }
+
+    function saveConfig() {
+
+        const config = {
+            "hints": hints,
+            "minimal": minimal,
+            "safeNotifications": safeNotifications,
+            "dnd": dnd,
+            "optimizeMemory": optimizeMemory,
+        }
+
+        exec.exec(["bash", "-c", `echo '${JSON.stringify(config)}' > ${SystemInfo.configdir + "/scripts/config.json"}`])
+
     }
 
     function notification_check() {
@@ -42,20 +79,29 @@ Singleton {
         AudioInfo.playSound(sounds[sound], 1)
     }
 
+    function toggleDND() {
+        dnd = !dnd
+        saveConfig()
+    }
+
     function toggleMinimal() {
         minimal = !minimal
+        saveConfig()
     }
 
     function toggleHints() {
         hints = !hints
+        saveConfig()
     }
 
     function toggleSafeNotifications() {
         safeNotifications = !safeNotifications
+        saveConfig()
     }
 
     function toggleOptimizeMemory() {
         optimizeMemory = !optimizeMemory
+        saveConfig()
     }
 
     IpcHandler {
@@ -80,6 +126,7 @@ Singleton {
         function toggle_memory_optimize(): void {root.toggleOptimizeMemory()}
         function toggle_safe_notifications(): void {root.toggleSafeNotifications()}
         function toggle_hints(): void {root.toggleHints()}
+        function toggle_dnd(): void {root.toggleDND()}
 
 
         function dummy(): void {
@@ -91,6 +138,14 @@ Singleton {
 
     Process {
         id: exec
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    load_config.reload()
+                }
+            }
+        }
     }
 
 }

@@ -15,6 +15,8 @@ Singleton {
     property int startTimer: 0
     property int timer: 0
 
+    signal flatUpdated()
+
     Component.onCompleted: {
         root.startTimer = Math.floor(Date.now()/1000)
     }
@@ -108,6 +110,7 @@ Singleton {
                 "icon"         : app.icon ?? "",
                 "urgency"      : app.notifications[0]?.urgency ?? 0,
                 "expandable"   : app.notifications[0]?.group.length > 1 || app.notifications.length > 1,
+                "object"       : app.notifications[0]?.object,
                 "summary" : app.notifications[0]?.group[0]?.summary ?? "",
                 "body"    : app.notifications[0]?.group[0]?.body ?? "",
                 "time"    : app.notifications[0]?.group[0]?.time ?? 0,
@@ -165,8 +168,13 @@ Singleton {
     }
 
     onNotifications_groupsChanged: {
+        root.flat = []
         root.flat = flatten()
+
+        root.flatChanged()
+
         //console.log(JSON.stringify(root.flat,null,2))
+        //debug()
     }
 
     signal notificationSent(notification: var)
@@ -199,6 +207,7 @@ Singleton {
     }
 
     function clear() {
+
 
         let ids = [] 
 
@@ -412,7 +421,7 @@ Singleton {
 
         actionsSupported: true
 
-        keepOnReload: false
+        keepOnReload: true
 
         onNotification: (noti) => {
             //console.log("Received Notification: " + noti.summary + " " + noti.body + " " + noti.id)

@@ -23,10 +23,14 @@ Item {
     Repeater {
         model: root.shortcuts
 
-        delegate: Item {
+        delegate: Loader {
             id: le_shortcut
+
             required property var modelData
-            Shortcut {
+
+            active: modelData.active ?? true
+
+            sourceComponent: Shortcut {
                 property var modelData: le_shortcut.modelData
                 enabled: root.visible
                 sequences: {

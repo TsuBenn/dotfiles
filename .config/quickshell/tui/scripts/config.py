@@ -253,6 +253,13 @@ SETTINGS = [
                 "type": "exec",
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_safe_notifications"],
             },
+            {
+                "label": "{dnd} Do not disturb",
+                "description": "Remove notification popups",
+                "category": "setting",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_dnd"],
+            },
         ],
     },
     {

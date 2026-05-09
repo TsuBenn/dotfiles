@@ -50,6 +50,17 @@ Item {
 
     }
 
+    SystemPopup {
+
+        id: system
+
+        name: "system"
+
+        cellX: 0
+        cellY: -1
+
+    }
+
     WallpaperPopup {
 
         id: wallpaper

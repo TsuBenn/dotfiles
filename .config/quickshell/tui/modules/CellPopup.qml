@@ -38,8 +38,8 @@ Item {
     }
     y: {
         if (!monitor) return Cell.h(cellY)
-        if (cellY <= 0) {
-            return 0
+        if (cellY <= -1) {
+            return Cell.h(-1)
         }
         if (cellY + h <= Cell.hCount(monitor.height,"floor")) {
             return Cell.h(cellY)
@@ -49,17 +49,14 @@ Item {
 
     focus: true
 
-    Repeater {
-        model: root.escapeToClose ? 1 : 0
-
-        delegate: ShortcutHandler {
-            shortcuts: [
-                {
-                    binds: "Escape",
-                    action: () => root.close()
-                }
-            ]
-        }
+    ShortcutHandler {
+        shortcuts: [
+            {
+                binds: "Escape",
+                active: root.escapeToClose,
+                action: () => root.close()
+            }
+        ]
     }
 
     function close() {

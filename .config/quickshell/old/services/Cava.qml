@@ -35,10 +35,14 @@ Singleton {
 framerate = ${root.framerate}                                                       
 bars = ${root.bars}                             
 autosens = 1
+sensitivity= 100
 
 [smoothing]
 monstercat = 1
-gravity = 1
+integral = 70
+gravity = 10
+ignore = 0
+noise_reduction = 10
 
 [output]
 method = raw

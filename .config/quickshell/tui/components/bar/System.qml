@@ -5,7 +5,13 @@ import qs.modules
 import QtQuick.Layouts
 import QtQuick
 
-RowLayout {
+Cells {
+
+    w: Cell.wCount(layout.implicitWidth)
+    h: 1
+
+    color: "transparent"
+
     component Stat: RowLayout {
         id: stat
         property string stat
@@ -38,22 +44,41 @@ RowLayout {
 
     } 
 
-    spacing: Cell.w(2)
+    MouseControl {
 
-    Stat {
-        stat: "CPU"
-        percent: SystemInfo.cpuusage
+        anchors.fill: parent
+
+        onReleased: (button) => {
+            if (button == "L") {
+                PopupManager.toggle("system")
+            }
+        }
+
     }
-    Stat {
-        stat: "RAM"
-        percent: SystemInfo.memusage
+
+    RowLayout {
+
+        id: layout
+
+        spacing: Cell.w(2)
+
+        Stat {
+            stat: "CPU"
+            percent: SystemInfo.cpuusage
+        }
+        Stat {
+            stat: "RAM"
+            percent: SystemInfo.memusage
+        }
+        Stat {
+            stat: "GPU"
+            percent: SystemInfo.gpuusage
+        }
+        Stat {
+            stat: "VRAM"
+            percent: SystemInfo.gpumemusage
+        }
+
     }
-    Stat {
-        stat: "GPU"
-        percent: SystemInfo.gpuusage
-    }
-    Stat {
-        stat: "VRAM"
-        percent: SystemInfo.gpumemusage
-    }
+
 }
