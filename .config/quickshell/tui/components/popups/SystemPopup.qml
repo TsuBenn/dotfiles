@@ -11,8 +11,7 @@ CellPopup {
 
     id: root
 
-    // Somehow I like the minimal one better so i'll leave it on permanently for now
-    property bool minimal: true //SettingsInfo.minimal
+    property bool minimal: SettingsInfo.minimal
 
     w: box.eW*3 + 3
     h: minimal ? 21 : 27
