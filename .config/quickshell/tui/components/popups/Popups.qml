@@ -34,7 +34,7 @@ Item {
 
         name: "calendar"
 
-        cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2) - 1
+        cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2)
         cellY: -1
 
     }
@@ -45,7 +45,7 @@ Item {
 
         name: "media_player"
 
-        cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2) - 1
+        cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2)
         cellY: -1
 
     }
@@ -56,7 +56,7 @@ Item {
 
         name: "system"
 
-        cellX: 0
+        cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2)
         cellY: -1
 
     }
