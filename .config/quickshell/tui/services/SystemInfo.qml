@@ -150,7 +150,7 @@ Singleton {
         return num.toFixed(2)
     }
 
-    function storageRounder(num ,precision: int,i: int): string {
+    function storageRounder(num , precision: int,i: int): string {
         if (num > 1024**3) {
             num /= 1024**3
             return formatNum(num.toFixed(precision),i) + "GB"
@@ -180,11 +180,12 @@ Singleton {
     }
 
     // IO stuff
-    property int  networktransmit // transmit speed
-    property int  networkreceive // receive speed
+    property double  networktransmit // transmit speed
+    property double  networkreceive // receive speed
 
-    property int  receivedbytes
-    property int  transmitedbytes
+    property double  receivedbytes
+    property double  transmitedbytes
+    // Used double for network cause it gets crazy big
 
     property int  diskread
     property real diskreadspeed // read speed

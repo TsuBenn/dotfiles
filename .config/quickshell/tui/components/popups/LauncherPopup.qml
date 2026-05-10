@@ -222,6 +222,9 @@ CellPopup {
                                 onTextRemoved: (removed) => {
                                     if (removed == "" && textfield.path.length > 0) {
                                         textfield.path.pop()
+                                        textfield.search("")
+                                        textfield.set("")
+                                        breadcrumbs.updatePath()
                                     }
                                     if (removed == "" && tab.selected != 0) {
                                         tab.selected = 0
