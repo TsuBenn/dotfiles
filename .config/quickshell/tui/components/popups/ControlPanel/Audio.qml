@@ -11,6 +11,8 @@ ColumnLayout {
 
     id: root
 
+    property bool minimal: SettingsInfo.minimal
+
     property var box
 
     spacing: 0
@@ -84,6 +86,9 @@ ColumnLayout {
                                 }
 
                                 CellText {
+
+                                    visible: !root.minimal
+
                                     text: " "
                                 }
 
@@ -110,7 +115,7 @@ ColumnLayout {
 
                                         CellProgressSquare {
 
-                                            w: stream.w - 5 - 5*icon.success
+                                            w: stream.w - 5 - 5*icon.success + root.minimal*1
                                             percent: stream.volume
                                             interactive: true
                                             adjustOnHold: false
@@ -142,7 +147,7 @@ ColumnLayout {
 
                                 padding: 1
                                 w: stream.w
-                                type: 2
+                                type: root.minimal ? 0 : 2
                                 color: Colors.bgOverlay
 
                             }
@@ -317,6 +322,8 @@ ColumnLayout {
     }
 
     CellSeparator {
+
+        visible: !root.minimal
 
         type: 2
         padding: 1

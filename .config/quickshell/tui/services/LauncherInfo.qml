@@ -42,7 +42,7 @@ Singleton {
                 PopupManager.close("launcher")
             }
             if (item.category == "calc_result") {
-                NotificationsInfo.send("","","Launcher", "Copied calculation result: " + item.description)
+                NotificationsInfo.send("System","","Launcher", "Copied calculation result: " + item.description)
             }
         }
         if (item.type == "exec") SystemInfo.runDetached(item.value)
@@ -50,7 +50,7 @@ Singleton {
         if (item.type == "dir" || item.type == "file") {
             SystemInfo.copy_clipboard(item.value)
             console.log(["bash", "-c", `dolphin --select ${item.value}`])
-            NotificationsInfo.send("","","Launcher",`Copied ${item.type == "dir" ? "directory's" : "file's"} path to clipboard.`)
+            NotificationsInfo.send("System","","Launcher",`Copied ${item.type == "dir" ? "directory's" : "file's"} path to clipboard.`)
             SystemInfo.runDetached(["bash", "-c", `dolphin --select "${item.value}"`])
         }
     }

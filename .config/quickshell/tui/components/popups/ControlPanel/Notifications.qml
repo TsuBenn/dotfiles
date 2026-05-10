@@ -11,6 +11,8 @@ ColumnLayout {
 
     id: root
 
+    property bool minimal: SettingsInfo.minimal
+
     property var box
 
     spacing: 0
@@ -26,7 +28,7 @@ ColumnLayout {
         id: list
 
         w: root.box.contentW
-        h: 25
+        h: 25 - root.minimal*1
 
         property var expanded_app: []
 
@@ -350,7 +352,7 @@ ColumnLayout {
                                                 text: g.summary
                                                 font: Cell.fontB
                                                 preferedW: list.contentW - 10 - group_time.text.length
-                                                wrap: !SettingsInfo.minimal
+                                                wrap: !root.minimal
                                                 color : {
                                                     switch (g.urgency) {
                                                         case 0: return Colors.fgBase
@@ -423,7 +425,7 @@ ColumnLayout {
                                 id: sg
 
                                 w: list.contentW
-                                h: list.expanded_notif.includes(id) && list.expanded_app.includes(app) ? Cell.hCount(subgroup_layout.implicitHeight) + 1*!SettingsInfo.minimal : 0
+                                h: list.expanded_notif.includes(id) && list.expanded_app.includes(app) ? Cell.hCount(subgroup_layout.implicitHeight) + 1*!root.minimal : 0
 
                                 color: "transparent"
 
@@ -458,7 +460,7 @@ ColumnLayout {
 
                                 RowLayout {
 
-                                    y: Cell.h(1)*!SettingsInfo.minimal
+                                    y: Cell.h(1)*!root.minimal
 
                                     id: subgroup_layout
 
@@ -482,7 +484,7 @@ ColumnLayout {
                                                 text: sg.summary
                                                 font: Cell.fontB
                                                 preferedW: list.contentW - 10 - subgroup_time.text.length
-                                                wrap: !SettingsInfo.minimal
+                                                wrap: !root.minimal
                                                 color : {
                                                     switch (sg.urgency) {
                                                         case 0: return Colors.fgBase

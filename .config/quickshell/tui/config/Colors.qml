@@ -15,7 +15,7 @@ Singleton {
         if (Object.keys(colors).includes(current)) {
             apply()
         } else {
-            NotificationsInfo.send("","","System",`Color palette "${current}" not found!`)
+            NotificationsInfo.send("System","","Colors",`Color palette "${current}" not found!`)
         }
     }
 

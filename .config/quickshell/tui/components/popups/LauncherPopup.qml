@@ -11,6 +11,8 @@ CellPopup {
 
     id: root
 
+    property bool minimal: SettingsInfo.minimal
+
     w: 80
     h: Cell.hCount(layout.implicitHeight)
 
@@ -82,7 +84,7 @@ CellPopup {
 
             Cells {
 
-                visible: !SettingsInfo.minimal
+                visible: !root.minimal
 
                 w: box.contentW
                 h: 10
@@ -107,13 +109,13 @@ CellPopup {
                 id: text_wrapper
 
                 w: box.contentW
-                h: SettingsInfo.minimal ? 2 : 3
+                h: root.minimal ? 2 : 3
 
                 color: "transparent"
 
                 CellBox {
 
-                    visible: !SettingsInfo.minimal
+                    visible: !root.minimal
 
                     id: textbox
 
@@ -132,7 +134,7 @@ CellPopup {
 
                         RowLayout {
 
-                            parent: SettingsInfo.minimal ? text_wrapper : text_layout
+                            parent: root.minimal ? text_wrapper : text_layout
 
                             spacing: 0
 
@@ -283,7 +285,7 @@ CellPopup {
                 CellSeparator {
                     y: Cell.h(1)
                     w: parent.w
-                    visible: SettingsInfo.minimal
+                    visible: root.minimal
                 }
 
             }
@@ -381,7 +383,7 @@ CellPopup {
 
                             ShortcutHandler {
 
-                                property int result_h: SettingsInfo.minimal ? 2 : 3
+                                property int result_h: root.minimal ? 2 : 3
 
                                 shortcuts: [
                                     {
@@ -491,7 +493,7 @@ CellPopup {
 
                                     id: result
 
-                                    active: (index - Math.ceil(results.offset/(SettingsInfo.minimal ? 2 : 3)) < Math.ceil(15/(SettingsInfo.minimal ? 2 : 3)) * 2)
+                                    active: (index - Math.ceil(results.offset/(root.minimal ? 2 : 3)) < Math.ceil(15/(root.minimal ? 2 : 3)) * 2)
                                     && (root.visible || !SettingsInfo.optimizeMemory)
 
                                     required property int index
@@ -507,12 +509,12 @@ CellPopup {
 
                                     property bool selected: textfield.selected == index
 
-                                    asynchronous: (index < Math.ceil(15/(SettingsInfo.minimal ? 2 : 3)) ? false : true) || type == "file" || type == "dir"
+                                    asynchronous: (index < Math.ceil(15/(root.minimal ? 2 : 3)) ? false : true) || type == "file" || type == "dir"
 
                                     sourceComponent: Cells {
 
                                         w: results.contentW
-                                        h: SettingsInfo.minimal ? 2 : 3
+                                        h: root.minimal ? 2 : 3
 
                                         color: Colors.bgSurface
 
@@ -531,7 +533,7 @@ CellPopup {
                                                 }
 
                                                 CellIcon {
-                                                    visible: !SettingsInfo.minimal
+                                                    visible: !root.minimal
                                                     id: result_icon
                                                     icon: [result.icon, result.icon ? result.label : ""]
                                                     w: 5
@@ -556,7 +558,7 @@ CellPopup {
                                                     }
 
                                                     CellText {
-                                                        visible: !SettingsInfo.minimal
+                                                        visible: !root.minimal
                                                         text: result.description
                                                         preferedW: results.contentW - 5 - 5*result_icon.success
                                                         color: Colors.fgSubtle
@@ -570,7 +572,7 @@ CellPopup {
                                                 Cells {
 
                                                     w: 1
-                                                    h: SettingsInfo.minimal ? 1 : 2
+                                                    h: root.minimal ? 1 : 2
 
                                                     color: result.selected ? Colors.accentStrong : Colors.bgOverlay
 
@@ -592,7 +594,7 @@ CellPopup {
                                         Cells {
 
                                             w: results.contentW
-                                            h: SettingsInfo.minimal ? 1 : 2
+                                            h: root.minimal ? 1 : 2
                                             color: "transparent"
 
                                             MouseControl {

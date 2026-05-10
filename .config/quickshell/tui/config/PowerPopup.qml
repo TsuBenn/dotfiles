@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import qs.config
 import qs.modules
 import qs.services
@@ -7,237 +9,250 @@ import QtQuick.Layouts
 
 CellPopup {
 
+    implicitWidth: monitor.width
+    implicitHeight: monitor.height
+
+    x: 0
+    y: 0
+
     id: root
 
-    w: 18
-    h: Cell.hCount(layout.implicitHeight)
+    ShortcutHandler {
+        shortcuts: [
+            {
+                binds: "1",
+                action: () => {PowerManager.call("Sleep", 3)},
+            },
+            {
+                binds: "2",
+                action: () => {PowerManager.call("Reboot", 3)},
+            },
+            {
+                binds: "3",
+                action: () => {PowerManager.call("Shutdown", 3)},
+            },
+            {
+                binds: "5",
+                action: () => {PowerManager.call("Logout", 3)},
+            },
+            {
+                binds: "0",
+                action: () => {PopupManager.close()},
+            },
+            {
+                binds: "Up",
+                action: () => {menu.selected = (menu.selected - 1 + 6)%6},
+            },
+            {
+                binds: "Down",
+                action: () => {menu.selected = (menu.selected + 1 + 6)%6},
+            },
+            {
+                binds: "Return",
+                action: () => {menu.actions[menu.selected]()},
+            },
+        ]
+    }
 
-    CellBox {
+    Cells {
 
-        w: root.w + 2
-        h: root.h + 2
+        id: menu
 
-        ColumnLayout {
+        onVisibleChanged: {
+            selected = 0
+        }
 
-            id: layout
+        property int selected: 0
+        property color select_color: Colors.blend(Colors.accentStrong,Colors.secondary, 0.5)
+        property color base_color: Colors.fgDim
 
-            spacing: 0
+        property var actions: [
+            () => PowerManager.call("Sleep", 3),
+            () => PowerManager.call("Reboot", 3),
+            () => PowerManager.call("Shutdown", 3),
+                                () => NotificationsInfo.send("System","","Power","This function is not available <i>yet</i>", 0, false, "echo Hello"),
+            () => PowerManager.call("Logout", 3),
+            () => PopupManager.close(),
+        ]
 
-            ShortcutHandler {
-                shortcuts: [
-                    {
-                        binds: "1",
-                        action: () => {PowerManager.call("Sleep", 3)},
-                    },
-                    {
-                        binds: "2",
-                        action: () => {PowerManager.call("Reboot", 3)},
-                    },
-                    {
-                        binds: "3",
-                        action: () => {PowerManager.call("Shutdown", 3)},
-                    },
-                    {
-                        binds: "4",
-                        action: () => {PowerManager.call("Logout", 3)},
-                    },
-                    {
-                        binds: "0",
-                        action: () => {PopupManager.close()},
-                    },
-                ]
-            }
+        w: Cell.wCount(root.implicitWidth) + 1
+        h: Cell.hCount(root.implicitHeight) + 1
 
-            RowLayout {
+        color: Colors.transparent(Qt.darker(Colors.bgBase,2),0.8)
 
-                spacing: 0
+        Loader {
+
+            active: root.visible || !SettingsInfo.optimizeMemory
+
+            sourceComponent: ColumnLayout {
+
+                Component.onCompleted: {
+
+                    x = Cell.centerWCell(implicitWidth, menu.implicitWidth)
+                    y = Cell.centerHCell(implicitHeight, menu.implicitHeight) - Cell.h(2)
+
+                }
+
+
+                spacing: Cell.h(1)
 
                 CellText {
-                    text: " "
-                }
 
-                CellKeyHint {
-                    visible: SettingsInfo.hints
-                    key: "1"
-                    hint: ""
-                }
+                    property int index: 0
+                    property int selected: menu.selected == index
 
-                CellButton {
+                    text: ANSI.render("1.suspend",selected ? 2 : 1)
+                    clip: true
 
-                    padding: 1
+                    MouseControl {
+                        anchors.fill: parent
 
-                    text: "Sleep"
+                        onEntered: {
+                            menu.selected = parent.index
+                        }
 
-                    centered: false
-
-                    w: root.w - 2 - 4*SettingsInfo.hints
-
-                    color: ["transparent", Colors.bgOverlay, Colors.fgBase]
-                    fg: [Colors.fgBase, Colors.bgSurface]
-
-                    onReleased: (button) => {
-                        if (button == "L") {
-                            PowerManager.call("Sleep", 3)
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                menu.actions[parent.index]()
+                            }
                         }
                     }
 
+                    color: selected ? menu.select_color : menu.base_color
+
                 }
-
-            }
-
-            RowLayout {
-
-                spacing: Cell.w(0)
 
                 CellText {
-                    text: " "
-                }
 
-                CellKeyHint {
-                    visible: SettingsInfo.hints
-                    key: "2"
-                    hint: ""
-                }
+                    property int index: 1
+                    property int selected: menu.selected == index
 
-                CellButton {
+                    text: ANSI.render("2.reboot",selected ? 2 : 1)
+                    clip: true
 
-                    padding: 1
+                    MouseControl {
+                        anchors.fill: parent
 
-                    text: "Reboot"
+                        onEntered: {
+                            menu.selected = parent.index
+                        }
 
-                    centered: false
-
-                    w: root.w - 2 - 4*SettingsInfo.hints
-
-                    color: ["transparent", Colors.bgOverlay, Colors.fgBase]
-                    fg: [Colors.fgBase, Colors.bgSurface]
-
-                    onReleased: (button) => {
-                        if (button == "L") {
-                            PowerManager.call("Reboot", 3)
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                menu.actions[parent.index]()
+                            }
                         }
                     }
 
+                    color: selected ? menu.select_color : menu.base_color
+
                 }
-
-            }
-
-
-            RowLayout {
-
-                spacing: Cell.w(0)
 
                 CellText {
-                    text: " "
-                }
 
-                CellKeyHint {
-                    visible: SettingsInfo.hints
-                    key: "3"
-                    hint: ""
-                }
+                    property int index: 2
+                    property int selected: menu.selected == index
 
-                CellButton {
+                    text: ANSI.render("3.shutdown",selected ? 2 : 1)
+                    clip: true
 
-                    padding: 1
+                    MouseControl {
+                        anchors.fill: parent
 
-                    text: "Shutdown"
+                        onEntered: {
+                            menu.selected = parent.index
+                        }
 
-                    centered: false
-
-                    w: root.w - 2 - 4*SettingsInfo.hints
-
-                    color: ["transparent", Colors.bgOverlay, Colors.fgBase]
-                    fg: [Colors.fgBase, Colors.bgSurface]
-
-                    onReleased: (button) => {
-                        if (button == "L") {
-                            PowerManager.call("Shutdown", 3)
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                menu.actions[parent.index]()
+                            }
                         }
                     }
 
+                    color: selected ? menu.select_color : menu.base_color
+
                 }
-            }
-
-
-            RowLayout {
-
-                spacing: Cell.w(0)
 
                 CellText {
-                    text: " "
-                }
 
-                CellKeyHint {
-                    visible: SettingsInfo.hints
-                    key: "4"
-                    hint: ""
-                }
+                    property int index: 3
+                    property int selected: menu.selected == index
 
-                CellButton {
+                    text: ANSI.render("4.lock",selected ? 2 : 1)
+                    clip: true
 
-                    padding: 1
+                    MouseControl {
+                        anchors.fill: parent
 
-                    text: "Logout"
+                        onEntered: {
+                            menu.selected = parent.index
+                        }
 
-                    centered: false
-
-                    w: root.w - 2 - 4*SettingsInfo.hints
-
-                    color: ["transparent", Colors.bgOverlay, Colors.fgBase]
-                    fg: [Colors.fgBase, Colors.bgSurface]
-
-                    onReleased: (button) => {
-                        if (button == "L") {
-                            PowerManager.call("Logout", 3)
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                menu.actions[parent.index]()
+                            }
                         }
                     }
 
+                    color: selected ? menu.select_color : menu.base_color
+
                 }
-            }
-
-
-            CellText {
-                text: ""
-            }
-
-            RowLayout {
-
-                spacing: Cell.w(0)
 
                 CellText {
-                    text: " "
-                }
 
-                CellKeyHint {
-                    visible: SettingsInfo.hints
-                    key: "0"
-                    hint: ""
-                }
+                    property int index: 4
+                    property int selected: menu.selected == index
 
-                CellButton {
+                    text: ANSI.render("5.logout",selected ? 2 : 1)
+                    clip: true
 
-                    padding: 1
+                    MouseControl {
+                        anchors.fill: parent
 
-                    text: "Cancel"
+                        onEntered: {
+                            menu.selected = parent.index
+                        }
 
-                    centered: false
-
-                    w: root.w - 2 - 4*SettingsInfo.hints
-
-                    color: ["transparent", Colors.bgOverlay, Colors.fgBase]
-                    fg: [Colors.fgBase, Colors.bgSurface]
-
-                    onReleased: (button) => {
-                        if (button == "L") {
-                            PopupManager.close()
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                menu.actions[parent.index]()
+                            }
                         }
                     }
 
+                    color: selected ? menu.select_color : menu.base_color
+
                 }
+
+                CellText {
+
+                    property int index: 5
+                    property int selected: menu.selected == index
+
+                    text: ANSI.render("0.cancel",selected ? 2 : 1)
+                    clip: true
+
+                    MouseControl {
+                        anchors.fill: parent
+
+                        onEntered: {
+                            menu.selected = parent.index
+                        }
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                menu.actions[parent.index]()
+                            }
+                        }
+                    }
+
+                    color: selected ? menu.select_color : menu.base_color
+
+                }
+
             }
-
-
         }
 
 

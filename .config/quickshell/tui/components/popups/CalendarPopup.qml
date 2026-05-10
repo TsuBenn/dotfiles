@@ -11,7 +11,9 @@ CellPopup {
 
     id: root
 
-    w: 80 - SettingsInfo.minimal*15
+    property bool minimal: SettingsInfo.minimal
+
+    w: 80 - root.minimal*15
     h: Cell.hCount(layout.implicitHeight)
 
     property bool edit: false
@@ -236,7 +238,7 @@ CellPopup {
 
                 Cells {
 
-                    visible: !SettingsInfo.minimal
+                    visible: !root.minimal
 
                     id: col1
 
@@ -300,7 +302,7 @@ CellPopup {
 
                 CellSeparator {
 
-                    visible: !SettingsInfo.minimal
+                    visible: !root.minimal
 
                     Layout.alignment: Qt.AlignTop
                     Layout.topMargin: Cell.centerHCell(implicitHeight, row1.implicitHeight)
@@ -1390,7 +1392,7 @@ CellPopup {
                     spacing: 0
 
                     CellText {
-                        text: SettingsInfo.minimal ? (edit.add ? `ADD on ` : `EDIT on `) : (edit.add ? `ADD REMINDER on ` : `EDIT REMINDER on `)
+                        text: root.minimal ? (edit.add ? `ADD on ` : `EDIT on `) : (edit.add ? `ADD REMINDER on ` : `EDIT REMINDER on `)
                         font: Cell.fontB
                     }
 
@@ -1591,7 +1593,7 @@ CellPopup {
                         spacing: 0
 
                         CellText {
-                            visible: !SettingsInfo.minimal
+                            visible: !root.minimal
                             text: " Mode "
                         }
 
@@ -1634,7 +1636,7 @@ CellPopup {
 
                         CellText {
 
-                            visible: frequency.selected == 0 && !SettingsInfo.minimal
+                            visible: frequency.selected == 0 && !root.minimal
                             text: "Span "
                         }
 
@@ -1683,7 +1685,7 @@ CellPopup {
                         }
 
                         CellText {
-                            visible: !SettingsInfo.minimal
+                            visible: !root.minimal
                             text: "Time "
                         }
 
@@ -1825,7 +1827,7 @@ CellPopup {
                         }
 
                         CellText {
-                            visible: !SettingsInfo.minimal
+                            visible: !root.minimal
                             text: "Urgency "
                         }
 
@@ -1915,14 +1917,14 @@ CellPopup {
                 CellKeyHint {
 
                     key: "← ↑ ↓ →"
-                    hint: SettingsInfo.minimal ? "Nav" : "Navigate"
+                    hint: root.minimal ? "Nav" : "Navigate"
 
                 }
 
                 CellKeyHint {
 
                     key: "Enter"
-                    hint: SettingsInfo.minimal ? (edit.add ? "Add" : "Edit") : (edit.add ? "Add reminder" : "Edit reminder" )
+                    hint: root.minimal ? (edit.add ? "Add" : "Edit") : (edit.add ? "Add reminder" : "Edit reminder" )
 
                 }
 

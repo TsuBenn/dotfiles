@@ -277,6 +277,13 @@ SETTINGS = [
         "type": "menu",
         "value": [
             {
+                "label": "System Info",
+                "description": "Show system infomations and its usage.",
+                "category": "setting",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "open_popup", "system"],
+            },
+            {
                 "label": "Control Panel",
                 "description": "Essential system settings and notifications.",
                 "category": "setting",

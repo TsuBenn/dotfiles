@@ -11,6 +11,8 @@ CellPopup {
 
     id: root
 
+    property bool minimal: SettingsInfo.minimal
+
     w: 100
     h: Cell.hCount(layout.implicitHeight)
 
@@ -47,7 +49,7 @@ CellPopup {
 
                 id: preview
 
-                visible: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 && !SettingsInfo.minimal
+                visible: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 && !root.minimal
 
                 w: box.contentW
                 h: Math.floor(root.w/16*9/2.2)
@@ -95,7 +97,7 @@ CellPopup {
                 id: thumbnails
 
                 w: box.contentW
-                h: preview.visible && !SettingsInfo.minimal ? 8 : 6
+                h: preview.visible && !root.minimal ? 8 : 6
 
                 color: "transparent"
 

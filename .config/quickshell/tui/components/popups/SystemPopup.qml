@@ -11,8 +11,10 @@ CellPopup {
 
     id: root
 
+    property bool minimal: SettingsInfo.minimal
+
     w: box.eW*3 + 3
-    h: 27
+    h: minimal ? 21 : 27
 
     function fmt(str, ...args) {
         return str.replace(/{}/g, () => args.shift());
@@ -177,6 +179,9 @@ CellPopup {
                     }
 
                     CellSeparator {
+
+                        visible: !root.minimal
+
                         w: box.eW
                         padding: 1
                         color: Colors.bgOverlay
@@ -208,6 +213,9 @@ CellPopup {
                     }
 
                     CellSeparator {
+
+                        visible: !root.minimal
+
                         w: box.eW
                         padding: 1
                         color: Colors.bgOverlay
@@ -289,6 +297,9 @@ CellPopup {
                     }
 
                     CellSeparator {
+
+                        visible: !root.minimal
+
                         w: box.eW
                         padding: 1
                         color: Colors.bgOverlay
@@ -320,6 +331,9 @@ CellPopup {
                     }
 
                     CellSeparator {
+
+                        visible: !root.minimal
+
                         w: box.eW
                         padding: 1
                         color: Colors.bgOverlay
@@ -387,6 +401,9 @@ CellPopup {
                     }
 
                     CellSeparator {
+
+                        visible: !root.minimal
+
                         w: box.eW
                         padding: 1
                         color: Colors.bgOverlay
@@ -418,6 +435,9 @@ CellPopup {
                     }
 
                     CellSeparator {
+
+                        visible: !root.minimal
+
                         w: box.eW
                         padding: 1
                         color: Colors.bgOverlay
@@ -568,6 +588,9 @@ CellPopup {
                     }
 
                     CellSeparator {
+
+                        visible: !root.minimal
+
                         w: box.eW
                         padding: 1
                         color: Colors.bgOverlay
@@ -623,6 +646,9 @@ CellPopup {
                     }
 
                     CellSeparator {
+
+                        visible: !root.minimal
+
                         w: box.eW
                         padding: 1
                         color: Colors.bgOverlay
@@ -637,7 +663,7 @@ CellPopup {
                     CellScrollView {
 
                         w: box.eW
-                        h: 8
+                        h: root.minimal ? 4 : 8
 
                         ColumnLayout {
 
@@ -666,37 +692,47 @@ CellPopup {
 
                                         spacing: 0
 
-                                        Stat {
-                                            key: root.fmt("<b>{}</b> <i>{}</i>", disks.name, disks.fs)
-                                            value: root.fmt("<b>{}G</b>",SystemInfo.ktoG(disks.used).toFixed(1))
+                                        MarqueeCellText {
 
-                                            //key_color: box.dyn
+                                            Layout.leftMargin: Cell.w(1)
 
-                                            w: box.eW - box.p - disk.w
+                                            text: root.fmt("<b>{}</b> <i>{}</i>",disks.name, disks.fs)
+                                            fg: box.stc
+                                            cellw: box.eW - box.p*2 - 1 - diskused.w - disktotal.w
+
                                         }
 
                                         CellText {
 
-                                            Layout.leftMargin: -Cell.w(box.p)
+                                            id: diskused
 
-                                            id: disk
+                                            text: root.fmt("<b>{}G</b>",SystemInfo.ktoG(disks.used))
+                                            color: box.dyn
 
-                                            text: root.fmt("/{}G",SystemInfo.ktoG(disks.total).toFixed(1))
+                                        }
+
+                                        CellText {
+
+                                            id: disktotal
+
+                                            text: root.fmt("<b>/{}G</b>",SystemInfo.ktoG(disks.total))
                                             color: box.stc
 
                                         }
 
                                     }
 
-                                    CellText {
+                                    MarqueeCellText {
+
+                        visible: !root.minimal
 
                                         Layout.leftMargin: Cell.w(1)
 
                                         text: disks.mountpoint
 
-                                        color: Colors.fgSubtle
+                                        fg: Colors.fgSubtle
 
-                                        preferedW: box.eW - box.p 
+                                        cellw: box.eW - box.p*2 - 1 
 
                                     }
 
@@ -728,6 +764,8 @@ CellPopup {
                                     }
 
                                     CellSeparator {
+
+                        visible: !root.minimal
 
                                         w: box.eW - box.p
                                         padding: 1
@@ -895,6 +933,9 @@ CellPopup {
                     }
 
                     Stat {
+                        
+                        visible: !root.minimal
+
                         key: "Channel:"
                         value: SystemInfo.wifi["channel"]
                         stc: true
@@ -961,7 +1002,7 @@ CellPopup {
                     CellScrollView {
 
                         w: box.eW
-                        h: 6
+                        h: root.minimal ? 3 : 6
 
                         ColumnLayout {
 
@@ -983,13 +1024,34 @@ CellPopup {
 
                                     spacing: 0
 
-                                    Stat {
-                                        key: root.fmt("<b>{}</b> <i>{}</i>",phydisks.name, phydisks.type)
-                                        value: root.fmt("<b>{}G</b>",SystemInfo.ktoG(phydisks.size))
-                                        stc: true
+                                    RowLayout {
+
+                                        spacing: 0
+
+                                        MarqueeCellText {
+
+                                            Layout.leftMargin: Cell.w(1)
+
+                                            text: root.fmt("<b>{}</b> <i>{}</i>",phydisks.name, phydisks.type)
+                                            fg: box.stc
+                                            cellw: box.eW - box.p*2 - 1 - phydisk.w
+
+                                        }
+
+                                        CellText {
+
+                                            id: phydisk
+
+                                            text: root.fmt("<b>{}G</b>",SystemInfo.ktoG(phydisks.size))
+                                            color: box.stc
+
+                                        }
+
                                     }
 
                                     CellSeparator {
+
+                        visible: !root.minimal
 
                                         w: box.eW - box.p
                                         padding: 1
@@ -1012,24 +1074,42 @@ CellPopup {
                     Header { text: "OPERATION SYSTEM" }
 
                     Stat {
+
+                        visible: !root.minimal
+
                         key: "Username:"
                         value: SystemInfo.username
                         stc: true
                     }
 
                     Stat {
+
+                        visible: !root.minimal
+
                         key: "Hostname:"
                         value: SystemInfo.hostname
                         stc: true
                     }
 
                     Stat {
-                        key: "OS:"
-                        value: SystemInfo.os
+
+                        visible: root.minimal
+
+                        key: "user@host:"
+                        value: root.fmt("{}@{}", SystemInfo.username, SystemInfo.hostname)
                         stc: true
                     }
 
                     Stat {
+                        key: "OS:"
+                        value: root.minimal ? root.fmt("{} ({})", SystemInfo.os, SystemInfo.architecture) : SystemInfo.os
+                        stc: true
+                    }
+
+                    Stat {
+
+                        visible: !root.minimal
+
                         key: "Arch:"
                         value: SystemInfo.architecture
                         stc: true

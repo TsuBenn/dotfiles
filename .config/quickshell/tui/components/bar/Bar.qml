@@ -268,7 +268,7 @@ Scope {
 
                     property bool mouse_check: false
 
-                    anchors.topMargin: root.implicitHeight
+                    //anchors.topMargin: root.implicitHeight
                     anchors.top: parent.top
                     anchors.right: parent.right
                     anchors.left: parent.left

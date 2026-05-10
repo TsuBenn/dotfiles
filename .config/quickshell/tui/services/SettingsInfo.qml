@@ -69,7 +69,7 @@ Singleton {
     }
 
     function notification_check() {
-        NotificationsInfo.send("", "", "Notification Check", "Check check check!\nClick here to show another similar notification!", 0, false, "qs -c tui ipc call config notification_check")
+        NotificationsInfo.send("System", "", "Notification Check", "Check check check!\nClick here to show another similar notification!", 0, false, "qs -c tui ipc call config notification_check")
     }
 
     function audio_check() {

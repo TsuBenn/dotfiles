@@ -16,7 +16,7 @@ CellPopup {
     h: box.h
 
     cellX: ContextMenuManager.x
-    cellY: ContextMenuManager.y - 1
+    cellY: ContextMenuManager.y
 
     safeMargin: 0
 

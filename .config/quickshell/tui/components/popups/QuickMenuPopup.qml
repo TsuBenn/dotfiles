@@ -158,14 +158,14 @@ CellPopup {
                 label: "6",
                 description: "Toggle minimal",
                 action: () => {
-                    SettingsInfo.minimal = !SettingsInfo.minimal
+                    SettingsInfo.toggleMinimal()
                 },
             },
             {
                 label: "7",
-                description: "Show grids",
+                description: "System Info",
                 action: () => {
-                    SettingsInfo.showGrid()
+                    PopupManager.open("system")
                 },
             },
             {

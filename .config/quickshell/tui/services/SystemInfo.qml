@@ -180,16 +180,16 @@ Singleton {
     }
 
     // IO stuff
-    property int  networktransmit
-    property int  networkreceive
+    property int  networktransmit // transmit speed
+    property int  networkreceive // receive speed
 
     property int  receivedbytes
     property int  transmitedbytes
 
     property int  diskread
-    property real diskreadspeed
+    property real diskreadspeed // read speed
     property int  diskwrite
-    property real diskwritespeed
+    property real diskwritespeed // read speed
     property int  diskusage
 
     property int  diskreaded
@@ -200,7 +200,7 @@ Singleton {
 
     Timer {
         id: timer
-        interval: root.onbattery ? 2000 : 1000
+        interval: root.onbattery ? 2000 : 1000 // Reduce polling speed on hardware ran on battery, idk if it really make any difference lol
         running: true
         repeat: true
         triggeredOnStart: true

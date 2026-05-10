@@ -36,7 +36,7 @@ Item {
 
     function getCharWidth(char) {
         // Basic wide-char detection (CJK, fullwidth, etc.)
-        return /[\u1100-\u115F\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE10-\uFE19\uFE30-\uFE6F\uFF00-\uFF60\uFFE0-\uFFE6]/.test(char)
+        return /[\u4e00-\u9fff\u3040-\u30ff\u31f0-\u31ff\uff00-\uffef]/.test(char)
         ? 2
         : 1;
     }
@@ -182,9 +182,8 @@ Item {
         let ellipses = ""
 
         for (const c of placeholder) {
-            const isCJK = /[\u4e00-\u9fff\u3040-\u30ff\u31f0-\u31ff\uff00-\uffef]/.test(c)
             const isNone = /[\uffff]/.test(c)
-            const costs = isCJK ? 2 : (isNone ? 0 : 1)
+            const costs = (isNone ? 0 : getCharWidth(c))
             cells.push(costs)
         }
         for (const i in cells) {
@@ -297,17 +296,23 @@ Item {
 
                             required property string text
                             required property int cells
+                            required property bool isCJK
 
                             clip: root.clip
 
                             h: 1
                             w: cells
 
+                            whole: true
+
                             color: root.bg
 
                             Text {
 
-                                anchors.centerIn: parent
+                                anchors.centerIn: !text_cell.isCJK ? undefined : parent
+
+                                anchors.left: !text_cell.isCJK ? text_cell.left : undefined
+                                anchors.top: !text_cell.isCJK ? text_cell.top : undefined
 
                                 id: texts
                                 textFormat: Text.RichText

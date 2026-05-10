@@ -9,7 +9,9 @@ CellPopup {
 
     id: root
 
-    w: 51 - Cell.wCount(Cell.h(6),"ceil")*SettingsInfo.minimal
+    property bool minimal: SettingsInfo.minimal
+
+    w: 51 - Cell.wCount(Cell.h(6),"ceil")*root.minimal
     h: Cell.hCount(layout.implicitHeight)
 
     ShortcutHandler {
@@ -60,7 +62,7 @@ CellPopup {
 
                     id: art
 
-                    visible: thumbnail.source != "" && !SettingsInfo.minimal
+                    visible: thumbnail.source != "" && !root.minimal
 
                     w: Cell.wCount(Cell.h(6),"ceil")
                     h: 6
@@ -86,7 +88,7 @@ CellPopup {
 
                 CellText {
 
-                    visible: thumbnail.source != "" && !SettingsInfo.minimal
+                    visible: thumbnail.source != "" && !root.minimal
 
                     text: " "
                 }
@@ -306,7 +308,7 @@ CellPopup {
 
             CellSeparator {
 
-                visible: !SettingsInfo.minimal
+                visible: !root.minimal
 
                 w: box.contentW
                 type: 2
@@ -315,7 +317,7 @@ CellPopup {
 
             CellAudioVisual {
 
-                visible: !SettingsInfo.minimal
+                visible: !root.minimal
 
                 Layout.leftMargin: Cell.w(1)
 
