@@ -863,7 +863,7 @@ CellPopup {
                         key: "Health:"
                         value: SystemInfo.batteryhealth != "" ? parseFloat(SystemInfo.batteryhealth).toFixed(1) + "%" : "inf"
                         value_color: {
-                            const value = parseInt(SystemInfo.battery)
+                            const value = parseInt(SystemInfo.batteryhealth)
                             if (value) {
                                 if (value <= 80 ) {
                                     return Colors.danger
