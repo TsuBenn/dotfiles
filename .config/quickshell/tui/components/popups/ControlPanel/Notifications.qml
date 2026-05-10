@@ -268,8 +268,9 @@ ColumnLayout {
                                         }
 
                                         CellText {
-                                            text: a.expanded ? " ⏶ " : " ⏷ "
+                                            text: a.expanded ? " - " : " + "
                                             color: a.expandable ? Colors.fgBase : Colors.bgOverlay
+                                            font: Cell.fontB
                                         }
 
                                     }

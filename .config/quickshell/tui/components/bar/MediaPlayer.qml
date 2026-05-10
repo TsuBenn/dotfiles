@@ -33,7 +33,7 @@ RowLayout {
 
         id: button
 
-        text: MediaPlayerInfo.status == "playing" ? " ⏸ " : " ▶ "
+        text: MediaPlayerInfo.status == "playing" ? " 1 " : " 0 "
         font: Cell.fontB
         fg: MediaPlayerInfo.activePlayer ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
 

@@ -11,7 +11,8 @@ CellPopup {
 
     id: root
 
-    property bool minimal: SettingsInfo.minimal
+    // Somehow I like the minimal one better so i'll leave it on permanently for now
+    property bool minimal: true //SettingsInfo.minimal
 
     w: box.eW*3 + 3
     h: minimal ? 21 : 27
@@ -904,7 +905,7 @@ CellPopup {
 
                     Stat {
                         key: SystemInfo.wifi["ethernet"] ? "Ethernet:" : "Wifi:"
-                        value: root.fmt("<b>{}</b>" ,SystemInfo.wifi["ethernet"] ? SystemInfo.wifi["device"] : SystemInfo.wifi["name"])
+                        value: root.fmt("<b>{}</b>" , SystemInfo.wifi["ethernet"] ? SystemInfo.wifi["device"] : SystemInfo.wifi["name"])
                     }
 
                     Stat {
@@ -1034,8 +1035,12 @@ CellPopup {
 
                                             text: root.fmt("<b>{}</b> <i>{}</i>",phydisks.name, phydisks.type)
                                             fg: box.stc
-                                            cellw: box.eW - box.p*2 - 1 - phydisk.w
+                                            cellw: box.eW - box.p*2 - 2 - phydisk.w
 
+                                        }
+
+                                        CellText {
+                                            text: " "
                                         }
 
                                         CellText {

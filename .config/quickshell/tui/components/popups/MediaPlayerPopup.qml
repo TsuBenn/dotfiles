@@ -246,7 +246,7 @@ CellPopup {
 
                             id: button
 
-                            text: MediaPlayerInfo.status == "playing" ? " ⏸ " : " ▶ "
+                            text: MediaPlayerInfo.status == "playing" ? " 1 " : " 0 "
                             font: Cell.fontB
                             fg: MediaPlayerInfo.activePlayer ? [Colors.bgSurface, Colors.fgBase] : Colors.fgSubtle
 

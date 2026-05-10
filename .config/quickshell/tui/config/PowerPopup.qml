@@ -64,7 +64,7 @@ CellPopup {
 
         property int selected: 0
         property color select_color: Colors.blend(Colors.accentStrong,Colors.secondary, 0.5)
-        property color base_color: Colors.fgDim
+        property color base_color: Colors.fgBase
 
         property var actions: [
             () => PowerManager.call("Sleep", 3),

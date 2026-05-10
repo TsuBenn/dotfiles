@@ -71,107 +71,134 @@ Item {
         return result
     }
 
-    Rectangle {
+    Loader {
 
-        visible: root.type == 0
+        active: root.type == 0 && (root.visible || !SettingsInfo.optimizeMemory)
 
-        anchors.bottom: parent.bottom
-        implicitWidth: root.vertical ? Cell.w(root.w) : Math.min(Cell.w(Math.round(root.w*(root.raw_percent/100)*8)/8),Cell.w(root.w))
-        implicitHeight: root.vertical ? Math.min(Cell.h(Math.round(root.h*(root.raw_percent/100)*8)/8),Cell.h(root.h)) : Cell.h(root.h) 
-        color: root.fg
+        sourceComponent: Rectangle {
 
-    }
+            visible: root.type == 0
 
-    RowLayout {
-
-        visible: root.type == 1
-
-        spacing: 0
-
-        Repeater {
-
-            model: root.w
-
-            delegate: CellText {
-
-                required property real modelData
-
-                text: "■"
-
-                color: root.color
-
-            }
-
-        }
-
-    }
-
-    RowLayout {
-
-        visible: root.type == 1
-
-        spacing: 0
-
-        Repeater {
-
-            model: root.sections(root.w, root.raw_percent)
-
-            delegate: CellText {
-
-                required property real modelData
-
-                text: "■"
-
-                color: Colors.transparent(root.fg, Math.round(modelData*root.cellInterval)/root.cellInterval)
-
-            }
+            anchors.bottom: parent.bottom
+            implicitWidth: root.vertical ? Cell.w(root.w) : Math.min(Cell.w(Math.round(root.w*(root.raw_percent/100)*8)/8),Cell.w(root.w))
+            implicitHeight: root.vertical ? Math.min(Cell.h(Math.round(root.h*(root.raw_percent/100)*8)/8),Cell.h(root.h)) : Cell.h(root.h) 
+            color: root.fg
 
         }
 
     }
 
 
-    RowLayout {
+    Loader {
 
-        visible: root.type == 2
+        active: root.type == 1 && (root.visible || !SettingsInfo.optimizeMemory)
 
-        spacing: 0
+        sourceComponent: Item {
 
-        Repeater {
+            RowLayout {
 
-            model: root.w
+                visible: root.type == 1
 
-            delegate: CellText {
+                spacing: 0
 
-                required property real modelData
+                Repeater {
 
-                text: "━"
+                    model: root.w
 
-                color: root.color
+                    delegate: CellText {
+
+                        required property real modelData
+
+                        text: "■"
+
+                        color: root.color
+
+                    }
+
+                }
 
             }
+
+            RowLayout {
+
+                visible: root.type == 1
+
+                spacing: 0
+
+                Repeater {
+
+                    model: root.sections(root.w, root.raw_percent)
+
+                    delegate: CellText {
+
+                        required property real modelData
+
+                        text: "■"
+
+                        color: Colors.transparent(root.fg, Math.round(modelData*root.cellInterval)/root.cellInterval)
+
+                    }
+
+                }
+
+            }
+
 
         }
 
     }
 
-    RowLayout {
+    Loader {
 
-        visible: root.type == 2
+        active: root.type == 2 && (root.visible || !SettingsInfo.optimizeMemory)
 
-        spacing: 0
+        sourceComponent: Item {
 
-        Repeater {
+            RowLayout {
 
-            model: root.sections(root.w, root.raw_percent)
+                visible: root.type == 2
 
-            delegate: CellText {
+                spacing: 0
 
-                required property real modelData
+                Repeater {
 
-                text: "━"
+                    model: root.w
 
-                color: Colors.transparent(root.fg, Math.round(modelData*root.cellInterval)/root.cellInterval)
+                    delegate: CellText {
+
+                        required property real modelData
+
+                        text: "━"
+
+                        color: root.color
+
+                    }
+
+                }
+
+            }
+
+            RowLayout {
+
+                visible: root.type == 2
+
+                spacing: 0
+
+                Repeater {
+
+                    model: root.sections(root.w, root.raw_percent)
+
+                    delegate: CellText {
+
+                        required property real modelData
+
+                        text: "━"
+
+                        color: Colors.transparent(root.fg, Math.round(modelData*root.cellInterval)/root.cellInterval)
+
+                    }
+
+                }
 
             }
 
