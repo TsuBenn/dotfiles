@@ -89,45 +89,47 @@ Item {
                 bg: root.border.type == 0 ? root.border.color : "transparent"
 
                 text: {
+                    const header = truncate(root.header.text,root.w-2-Math.max(root.header.offset,0))
+                    const footer = truncate(root.footer.text,root.w-2-Math.max(root.footer.offset,0))
                     switch (root.border.type) {
                         case 0: return " ";
                         case 1: {
                             return "┌"
-                            +(root.header.text.length > 0 ? "─".repeat(root.header.offset)+(root.header.text)+"─".repeat(root.w - 2 - root.header.offset - root.header.text.length) : "─".repeat(root.w-2))
+                            +(header.length > 0 ? "─".repeat(Math.max(root.header.offset,0))+(header)+"─".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.length) : "─".repeat(root.w-2))
                             +"┐\n"
                             +("│"+" ".repeat(root.w-2)+"│\n").repeat(root.h-2)
                             +"└"
-                            +(root.footer.text.length > 0 ? "─".repeat(root.footer.offset)+(root.footer.text)+"─".repeat(root.w - 2 - root.footer.offset - root.footer.text.length) : "─".repeat(root.w-2))
+                            +(footer.length > 0 ? "─".repeat(Math.max(root.footer.offset,0))+(footer)+"─".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.length) : "─".repeat(root.w-2))
                             +"┘";
                         }
 
                         case 2: {
                             return "┏"
-                            +(root.header.text.length > 0 ? "━".repeat(root.header.offset)+(root.header.text)+"━".repeat(root.w - 2 - root.header.offset - root.header.text.length) : "━".repeat(root.w-2))
+                            +(header.length > 0 ? "━".repeat(Math.max(root.header.offset,0))+(header)+"━".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.length) : "━".repeat(root.w-2))
                             +"┓\n"
                             +("┃"+" ".repeat(root.w-2)+"┃\n").repeat(root.h-2)
                             +"┗"
-                            +(root.footer.text.length > 0 ? "━".repeat(root.footer.offset)+(root.footer.text)+"━".repeat(root.w - 2 - root.footer.offset - root.footer.text.length) : "━".repeat(root.w-2))
+                            +(footer.length > 0 ? "━".repeat(Math.max(root.footer.offset,0))+(footer)+"━".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.length) : "━".repeat(root.w-2))
                             +"┛";
                         }
 
                         case 3: {
                             return "╔"
-                            +(root.header.text.length > 0 ? "═".repeat(root.header.offset)+(root.header.text)+"═".repeat(root.w - 2 - root.header.offset - root.header.text.length) : "═".repeat(root.w-2))
+                            +(header.length > 0 ? "═".repeat(Math.max(root.header.offset,0))+(header)+"═".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.length) : "═".repeat(root.w-2))
                             +"╗\n"
                             +("║"+" ".repeat(root.w-2)+"║\n").repeat(root.h-2)
                             +"╚"
-                            +(root.footer.text.length > 0 ? "═".repeat(root.footer.offset)+(root.footer.text)+"═".repeat(root.w - 2 - root.footer.offset - root.footer.text.length) : "═".repeat(root.w-2))
+                            +(footer.length > 0 ? "═".repeat(Math.max(root.footer.offset,0))+(footer)+"═".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.length) : "═".repeat(root.w-2))
                             +"╝";
                         }
 
                         case 4: {
                             return "╭"
-                            +(root.header.text.length > 0 ? "─".repeat(root.header.offset)+(root.header.text)+"─".repeat(root.w - 2 - root.header.offset - root.header.text.length) : "─".repeat(root.w-2))
+                            +(header.length > 0 ? "─".repeat(Math.max(root.header.offset,0))+(header)+"─".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.length) : "─".repeat(root.w-2))
                             +"╮\n"
                             +("│"+" ".repeat(root.w-2)+"│\n").repeat(root.h-2)
                             +"╰"
-                            +(root.footer.text.length > 0 ? "─".repeat(root.footer.offset)+(root.footer.text)+"─".repeat(root.w - 2 - root.footer.offset - root.footer.text.length) : "─".repeat(root.w-2))
+                            +(footer.length > 0 ? "─".repeat(Math.max(root.footer.offset,0))+(footer)+"─".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.length) : "─".repeat(root.w-2))
                             +"╯";
                         }
                     }

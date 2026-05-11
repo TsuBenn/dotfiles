@@ -176,7 +176,7 @@ SETTINGS = [
     },
     {
         "id": "color_themes",
-        "label": "Color themes",
+        "label": "",
         "description": "Changes your shell's color palette that fit your vibe.",
         "category": "setting",
         "type": "menu",

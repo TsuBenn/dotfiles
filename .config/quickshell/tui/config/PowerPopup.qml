@@ -70,7 +70,7 @@ CellPopup {
             () => PowerManager.call("Sleep", 3),
             () => PowerManager.call("Reboot", 3),
             () => PowerManager.call("Shutdown", 3),
-                                () => NotificationsInfo.send("System","","Power","This function is not available <i>yet</i>", 0, false, "echo Hello"),
+            () => NotificationsInfo.send("System","","Power","This function is not available <i>yet</i>", 0, false, "echo Hello"),
             () => PowerManager.call("Logout", 3),
             () => PopupManager.close(),
         ]
@@ -78,7 +78,7 @@ CellPopup {
         w: Cell.wCount(root.implicitWidth) + 1
         h: Cell.hCount(root.implicitHeight) + 1
 
-        color: Colors.transparent(Qt.darker(Colors.bgBase,2),0.8)
+        color: Colors.transparent(Qt.darker(Colors.bgBase,2),0.7)
 
         Loader {
 
@@ -89,22 +89,27 @@ CellPopup {
                 Component.onCompleted: {
 
                     x = Cell.centerWCell(implicitWidth, menu.implicitWidth)
-                    y = Cell.centerHCell(implicitHeight, menu.implicitHeight) - Cell.h(2)
+                    y = Cell.centerHCell(implicitHeight, menu.implicitHeight)
 
                 }
-
 
                 spacing: Cell.h(1)
 
-                CellText {
+                component Option: CellText {
+
+                    id: option
 
                     property int index: 0
-                    property int selected: menu.selected == index
+                    property string title: "1.suspend"
+                    property var action: undefined
 
-                    text: ANSI.render("1.suspend",selected ? 2 : 1)
+                    readonly property int selected: menu.selected == index
+
+                    text: ANSI.render(title,selected ? 2 : 1)
                     clip: true
 
                     MouseControl {
+
                         anchors.fill: parent
 
                         onEntered: {
@@ -113,7 +118,11 @@ CellPopup {
 
                         onReleased: (button) => {
                             if (button == "L") {
-                                menu.actions[parent.index]()
+                                if (option.action) {
+                                    option.action()
+                                } else {
+                                    menu.actions[option.index]()
+                                }
                             }
                         }
                     }
@@ -122,134 +131,34 @@ CellPopup {
 
                 }
 
-                CellText {
-
-                    property int index: 1
-                    property int selected: menu.selected == index
-
-                    text: ANSI.render("2.reboot",selected ? 2 : 1)
-                    clip: true
-
-                    MouseControl {
-                        anchors.fill: parent
-
-                        onEntered: {
-                            menu.selected = parent.index
-                        }
-
-                        onReleased: (button) => {
-                            if (button == "L") {
-                                menu.actions[parent.index]()
-                            }
-                        }
-                    }
-
-                    color: selected ? menu.select_color : menu.base_color
-
+                Option {
+                    index: 0
+                    title: "1.suspend"
                 }
 
-                CellText {
-
-                    property int index: 2
-                    property int selected: menu.selected == index
-
-                    text: ANSI.render("3.shutdown",selected ? 2 : 1)
-                    clip: true
-
-                    MouseControl {
-                        anchors.fill: parent
-
-                        onEntered: {
-                            menu.selected = parent.index
-                        }
-
-                        onReleased: (button) => {
-                            if (button == "L") {
-                                menu.actions[parent.index]()
-                            }
-                        }
-                    }
-
-                    color: selected ? menu.select_color : menu.base_color
-
+                Option {
+                    index: 1
+                    title: "2.reboot"
                 }
 
-                CellText {
-
-                    property int index: 3
-                    property int selected: menu.selected == index
-
-                    text: ANSI.render("4.lock",selected ? 2 : 1)
-                    clip: true
-
-                    MouseControl {
-                        anchors.fill: parent
-
-                        onEntered: {
-                            menu.selected = parent.index
-                        }
-
-                        onReleased: (button) => {
-                            if (button == "L") {
-                                menu.actions[parent.index]()
-                            }
-                        }
-                    }
-
-                    color: selected ? menu.select_color : menu.base_color
-
+                Option {
+                    index: 2
+                    title: "3.Shutdown"
                 }
 
-                CellText {
-
-                    property int index: 4
-                    property int selected: menu.selected == index
-
-                    text: ANSI.render("5.logout",selected ? 2 : 1)
-                    clip: true
-
-                    MouseControl {
-                        anchors.fill: parent
-
-                        onEntered: {
-                            menu.selected = parent.index
-                        }
-
-                        onReleased: (button) => {
-                            if (button == "L") {
-                                menu.actions[parent.index]()
-                            }
-                        }
-                    }
-
-                    color: selected ? menu.select_color : menu.base_color
-
+                Option {
+                    index: 3
+                    title: "4.lock"
                 }
 
-                CellText {
+                Option {
+                    index: 4
+                    title: "5.logout"
+                }
 
-                    property int index: 5
-                    property int selected: menu.selected == index
-
-                    text: ANSI.render("0.cancel",selected ? 2 : 1)
-                    clip: true
-
-                    MouseControl {
-                        anchors.fill: parent
-
-                        onEntered: {
-                            menu.selected = parent.index
-                        }
-
-                        onReleased: (button) => {
-                            if (button == "L") {
-                                menu.actions[parent.index]()
-                            }
-                        }
-                    }
-
-                    color: selected ? menu.select_color : menu.base_color
-
+                Option {
+                    index: 5
+                    title: "0.cancel"
                 }
 
             }

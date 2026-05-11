@@ -314,6 +314,8 @@ Item {
                                 anchors.left: !text_cell.isCJK ? text_cell.left : undefined
                                 anchors.top: !text_cell.isCJK ? text_cell.top : undefined
 
+                                anchors.topMargin: !text_cell.isCJK ? -(Cell.cellHeight/0.9)*0.05 : undefined
+
                                 id: texts
                                 textFormat: Text.RichText
                                 text: text_cell.text

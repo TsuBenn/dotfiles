@@ -10,6 +10,14 @@ Singleton {
 
     id: root
 
+    //
+    // nmcli connection add type wifi con-name 'connection_name' ifname wlan0 ssid 'ssid' -- 802-1x.eap peap 802-1x.phase2-auth mschapv2 802-1x.identity 'username' 802-1x.password 'password' 802-1x.system-ca-certs no wifi-sec.key-mgmt wpa-eap
+    //
+    //
+    function fmt(str, ...args) {
+        return str.replace(/{}/g, () => args.shift());
+    }
+
     property bool enabled: SystemInfo.wifi.enabled
     property string wifi_name: SystemInfo.wifi.name
     property var wifi_save: []
@@ -25,13 +33,15 @@ Singleton {
         scan(false, true)
     }
 
-    function connect(wifi: string, password = "") {
+    function connect(wifi: string, security, password = "", username = "") {
         if (connect.running) return 1
 
         connect.wifi = wifi
 
-        if (password == "") {
+        if (security == "--" || isSaved(wifi)) {
             connect.exec(["nmcli", "device", "wifi", "connect", wifi])
+        } else if (security == "WPA2 802.1X") {
+            connect.exec(["bash", "-c", root.fmt("nmcli connection add type wifi con-name {} ifname wlan0 ssid {} -- 802-1x.eap peap 802-1x.phase2-auth mschapv2 802-1x.identity {} 802-1x.password {} 802-1x.system-ca-certs no wifi-sec.key-mgmt wpa-eap",wifi,wifi,username,password)])
         } else {
             connect.exec(["nmcli", "device", "wifi", "connect", wifi, "password", password])
         }
@@ -74,6 +84,7 @@ Singleton {
 
         stdout: StdioCollector {
             onStreamFinished: {
+                console.log(text)
             }
         }
         stderr: StdioCollector {

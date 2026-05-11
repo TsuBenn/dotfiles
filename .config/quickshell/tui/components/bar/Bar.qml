@@ -243,6 +243,10 @@ Scope {
                 WlrLayershell.layer: WlrLayer.Overlay
                 WlrLayershell.namespace: "popups"
 
+                margins {
+                    top: -root.implicitHeight
+                }
+
                 implicitWidth: root.monitor.width
                 implicitHeight: root.monitor.height
 
@@ -268,7 +272,6 @@ Scope {
 
                     property bool mouse_check: false
 
-                    //anchors.topMargin: root.implicitHeight
                     anchors.top: parent.top
                     anchors.right: parent.right
                     anchors.left: parent.left

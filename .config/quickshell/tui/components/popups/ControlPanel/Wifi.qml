@@ -139,6 +139,7 @@ ColumnLayout {
                     h: Cell.hCount(wifi_button.implicitHeight)
 
                     property bool password: false
+                    property bool username: false
 
                     onVisibleChanged: {
                         password = false
@@ -146,18 +147,28 @@ ColumnLayout {
 
                     color: "transparent"
 
-                    function connect(pass = "") {
-                        if (pass.length < 8) {
+                    function connect(pass = "", user = "") {
+                        if (user.length < 1 && username) {
+                            if (!username) {
+                                username = true
+                                return
+                            }
+                            wifi_report.status = "Info"
+                            wifi_report.report = "Username should not be leave empty."
+                            return
+                        }
+                        if (pass.length < 8 && password) {
                             if (!password) {
                                 password = true
                                 return
                             }
                             wifi_report.status = "Info"
-                            wifi_report.report = "Password must be 8 characters or more"
+                            wifi_report.report = "Password must be 8 characters or more."
                             return
                         }
-                        WifiInfo.connect(name, pass)
+                        WifiInfo.connect(name, security, pass, user)
                         password = false
+                        username = false
                     }
 
                     Component.onCompleted: {
@@ -176,6 +187,7 @@ ColumnLayout {
                             if (!name || !wifi) return
                             if (name != wifi.name) {
                                 wifi.password = false
+                                wifi.username = false
                             }
                         })
                     }
@@ -220,7 +232,7 @@ ColumnLayout {
                                 CellText {
 
                                     text: `${wifi.name}`
-                                    preferedW: list.contentW - 14
+                                    preferedW: list.contentW - wifi_security.w - 5
                                     color: !WifiInfo.scanning ? (wifi.in_use ? Colors.success : Colors.fgBase) : Colors.fgSubtle
                                     font: wifi.in_use ? Cell.fontB : Cell.font
 
@@ -228,9 +240,66 @@ ColumnLayout {
 
                                 CellText {
 
-                                    text: ` ${wifi.security == "--" ? "" : "\uf023"} ${wifi.freq >= 5 ? `[5G]` : `[2.4G]`}`
-                                    preferedW: list.contentW - 4
+                                    id: wifi_security
+
+                                    text: `${wifi.security == "--" ? "" : "\uf023"} ${wifi.freq >= 5 ? `[5G]  ` : `[2.4G]`}`
                                     color: Colors.fgSubtle
+
+                                }
+
+                            }
+
+                        }
+
+                        CellText {
+
+                            visible: wifi.username
+                            text: ""
+
+                        }
+
+                        RowLayout {
+
+                            visible: wifi.username
+
+                            spacing: 0
+
+                            CellText {
+                                text: "  User: "
+                            }
+
+                            Cells {
+
+                                w: list.contentW - 10
+                                h: 1
+
+                                color: Colors.bgOverlay
+
+                                CellTextField {
+                                    id: user_input
+                                    w: parent.w
+                                    h: 1
+
+                                    focus: false
+
+                                    onVisibleChanged: {
+                                        if (visible) {
+                                            fieldFocus(true)
+                                            return
+                                        }
+                                        fieldFocus(false)
+                                    }
+
+                                    onEntered: (text) => {
+                                        wifi.connect(pass_input.text, text)
+                                    }
+
+                                    Keys.onPressed: (event) => {
+                                        if (event.key == Qt.Key_Tab) {
+                                            user_input.unFocus()
+                                            pass_input.grabFocus()
+                                        }
+                                    }
 
                                 }
 
@@ -279,7 +348,14 @@ ColumnLayout {
                                     }
 
                                     onEntered: (text) => {
-                                        wifi.connect(text)
+                                        wifi.connect(text, user_input.text)
+                                    }
+
+                                    Keys.onPressed: (event) => {
+                                        if (event.key == Qt.Key_Tab) {
+                                            pass_input.unFocus()
+                                            user_input.grabFocus()
+                                        }
                                     }
                                 }
 
@@ -289,7 +365,7 @@ ColumnLayout {
 
                         CellText {
 
-                            visible: wifi.password
+                            visible: wifi.password || wifi.username
                             text: ""
 
                         }
@@ -307,7 +383,7 @@ ColumnLayout {
 
                                 onReleased: (button) => {
                                     if (button == "L") {
-                                        wifi.connect(pass_input.text)
+                                        wifi.connect(pass_input.text, user_input.text)
                                     }
                                 }
 
@@ -319,6 +395,7 @@ ColumnLayout {
                                 onReleased: (button) => {
                                     if (button == "L") {
                                         wifi.password = !wifi.password
+                                        wifi.username = !wifi.username
                                     }
                                 }
 
@@ -358,6 +435,10 @@ ColumnLayout {
                                 if (wifi.in_use) return
                                 if (wifi.security == "--" || WifiInfo.isSaved(wifi.name)) {
                                     console.log(WifiInfo.connect(wifi.name))
+                                } else if (wifi.security == "WPA2 802.1X") {
+                                    list.collapse(wifi.name)
+                                    wifi.password = !wifi.password
+                                    wifi.username = !wifi.username
                                 } else {
                                     list.collapse(wifi.name)
                                     wifi.password = !wifi.password

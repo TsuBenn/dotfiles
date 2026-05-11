@@ -394,10 +394,18 @@ CellPopup {
                                         action: () => {
                                             safe_mouse.safe = 1
                                             safe_mouse.visible = true
-                                            if (textfield.selected == 0) {
-                                                textfield.selected = 5
+                                            textfield.selected = Math.min((textfield.selected - 1 + LauncherInfo.result.length)% + LauncherInfo.result.length, textfield.selected + 15/result_h - 1)
+                                            if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
+                                                results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
                                             }
-                                            textfield.selected -= 1
+                                        }
+                                    },
+                                    {
+                                        binds: "Ctrl+Up",
+                                        action: () => {
+                                            safe_mouse.safe = 1
+                                            safe_mouse.visible = true
+                                            textfield.selected = Math.min((textfield.selected - 15/result_h + LauncherInfo.result.length)% + LauncherInfo.result.length, textfield.selected + 15/result_h - 1)
                                             if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
                                                 results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
                                             }
@@ -408,14 +416,26 @@ CellPopup {
                                         action: () => {
                                             safe_mouse.safe = 1
                                             safe_mouse.visible = true
-                                            if (textfield.selected >= LauncherInfo.result.length-1) {
-                                                textfield.selected = 0
-                                                return
-                                            }
-                                            textfield.selected += 1
+                                            textfield.selected = Math.min((textfield.selected + 1 + LauncherInfo.result.length)% + LauncherInfo.result.length, textfield.selected + 15/result_h - 1)
                                             if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
                                                 results.offset = textfield.selected*result_h
+                                            } else if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
+                                                results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
                                             }
+                                        }
+                                    },
+                                    {
+                                        binds: "Ctrl+Down",
+                                        action: () => {
+                                            safe_mouse.safe = 1
+                                            safe_mouse.visible = true
+                                            textfield.selected = Math.min((textfield.selected + 15/result_h + LauncherInfo.result.length)% + LauncherInfo.result.length, textfield.selected + 15/result_h - 1)
+                                            if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
+                                                results.offset = textfield.selected*result_h
+                                            } else if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
+                                                results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
+                                            }
+
                                         }
                                     },
                                     {

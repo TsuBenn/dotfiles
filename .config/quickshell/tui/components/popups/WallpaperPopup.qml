@@ -52,7 +52,7 @@ CellPopup {
                 visible: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 && !root.minimal
 
                 w: box.contentW
-                h: Math.floor(root.w/16*9/2.2)
+                h: Math.floor(root.w/16*9/2)
 
                 color: "transparent"
 
@@ -87,7 +87,7 @@ CellPopup {
 
                 w: box.contentW
                 type: 2
-                title.text: "Wallpapers"
+                title.text: preview.visible ? "Preview" : "Wallpapers"
                 color: Colors.bgOverlay
 
             }
@@ -97,7 +97,7 @@ CellPopup {
                 id: thumbnails
 
                 w: box.contentW
-                h: preview.visible && !root.minimal ? 8 : 6
+                h: preview.visible && !root.minimal ? 8 : 7
 
                 color: "transparent"
 
@@ -105,7 +105,7 @@ CellPopup {
 
                 RowLayout {
 
-                    x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                    x: Cell.centerWCell(implicitWidth, parent.implicitWidth) - Cell.w(1)
 
                     id: selection
 
@@ -180,7 +180,7 @@ CellPopup {
 
                                 Layout.topMargin: Cell.h(1)
 
-                                w: Math.round((h-1)/9*16*2.2)-1
+                                w: Math.round((h-1)/9*16*2)-1
                                 h: thumbnails.h
 
                                 footer.text: " " + value + " "
@@ -264,11 +264,25 @@ CellPopup {
             Cells {
 
                 w: box.contentW
-                h: 3
+                h: root.minimal ? 2 : 3
 
                 color: "transparent"
 
+                id: text_wrapper
+
+                CellSeparator {
+
+                    visible: root.minimal
+
+                    type: 0
+                    w: box.contentW
+                    color: Colors.fgSubtle
+
+                }
+
                 CellBox {
+
+                    visible: !root.minimal
 
                     id: textbox
 
@@ -278,73 +292,82 @@ CellPopup {
                     border.type: 4
                     border.color: textfield.text.trim().length > 0 ? Colors.secondary : Colors.fgBase
 
-                    CellTextField {
+                    Item {
 
-                        x: Cell.w(1)
+                        id: text_layout
 
-                        id: textfield
+                        CellTextField {
 
-                        w: textbox.contentW - 2
-                        h: 1
+                            parent: root.minimal ? text_wrapper : text_layout
 
-                        editable: false
+                            x: Cell.w(1)
+                            y: root.minimal ? Cell.h(1) : 0
 
-                        placeholder: "Search wallpaper"
+                            id: textfield
 
-                        onTextInput: (query) => {
-                            if (text == " ") {
-                                const current = selection.wallpapers.length > 1 ? selection.wallpapers[selection.selected] : selection.wallpapers[0]
-                                if (WallpaperInfo.inSet(current)) {
-                                    WallpaperInfo.remove(current)
-                                } else {
-                                    WallpaperInfo.add(current)
+                            w: textbox.contentW - 2
+                            h: 1
+
+                            editable: false
+
+                            placeholder: "Search wallpaper"
+
+                            onTextInput: (query) => {
+                                if (text == " ") {
+                                    const current = selection.wallpapers.length > 1 ? selection.wallpapers[selection.selected] : selection.wallpapers[0]
+                                    if (WallpaperInfo.inSet(current)) {
+                                        WallpaperInfo.remove(current)
+                                    } else {
+                                        WallpaperInfo.add(current)
+                                    }
+                                    repeater.refresh()
+                                    set("")
+                                    return
                                 }
-                                repeater.refresh()
-                                set("")
-                                return
+                                selection.wallpapers = WallpaperInfo.search(text)
                             }
-                            selection.wallpapers = WallpaperInfo.search(text)
-                        }
 
-                        ShortcutHandler {
-                            shortcuts: [
-                                {
-                                    binds: ["Left", "Shift+Tab"],
-                                    action: () => {
-                                        selection.advance(-1)
-                                    }
-                                },
-                                {
-                                    binds: ["Right", "Tab"],
-                                    action: () => {
-                                        selection.advance(1)
-                                    }
-                                },
-                                {
-                                    binds: "Escape",
-                                    action: () => {
-                                        if (!textfield.focus) {
-                                            textfield.focus = true
-                                            return
+                            ShortcutHandler {
+                                shortcuts: [
+                                    {
+                                        binds: ["Left", "Shift+Tab"],
+                                        action: () => {
+                                            selection.advance(-1)
                                         }
-                                        PopupManager.close("wallpaper")
-                                    }
-                                },
-                            ]
-                        }
-
-                        Keys.onPressed: (event) => {
-                            if (event.key == Qt.Key_Return) {
-                                const current = selection.wallpapers.length > 1 ? selection.wallpapers[selection.selected] : selection.wallpapers[0]
-                                if (WallpaperInfo.inSet(current)) {
-                                    WallpaperInfo.remove(current)
-                                } else {
-                                    WallpaperInfo.add(current)
-                                }
-                                repeater.refresh()
+                                    },
+                                    {
+                                        binds: ["Right", "Tab"],
+                                        action: () => {
+                                            selection.advance(1)
+                                        }
+                                    },
+                                    {
+                                        binds: "Escape",
+                                        action: () => {
+                                            if (!textfield.focus) {
+                                                textfield.focus = true
+                                                return
+                                            }
+                                            PopupManager.close("wallpaper")
+                                        }
+                                    },
+                                ]
                             }
-                        }
 
+                            Keys.onPressed: (event) => {
+                                if (event.key == Qt.Key_Return) {
+                                    const current = selection.wallpapers.length > 1 ? selection.wallpapers[selection.selected] : selection.wallpapers[0]
+                                    if (WallpaperInfo.inSet(current)) {
+                                        WallpaperInfo.remove(current)
+                                    } else {
+                                        WallpaperInfo.add(current)
+                                    }
+                                    repeater.refresh()
+                                }
+                            }
+
+
+                        }
 
                     }
 
@@ -355,8 +378,8 @@ CellPopup {
             CellSeparator {
 
                 w: box.contentW
-                type: 2
-                color: Colors.bgOverlay
+                type: root.minimal ? 0 : 2
+                color: root.minimal ? Colors.fgSubtle : Colors.bgOverlay
 
             }
 

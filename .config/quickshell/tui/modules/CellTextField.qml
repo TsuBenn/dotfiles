@@ -144,7 +144,7 @@ Item {
 
         id: cursor_timer
 
-        running: root.blinkCursor && !root.disabled
+        running: (root.blinkCursor && !root.disabled && root.focus) || root.showCursor
         interval: 500
         repeat: true
         onTriggered: {

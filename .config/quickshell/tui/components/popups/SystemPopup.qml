@@ -36,6 +36,9 @@ CellPopup {
         property color stc: Colors.fgDim
         property color dyn: Colors.fgBase
 
+        property int warning_thres: 70
+        property int danger_thres: 80
+
         w: root.w+2
         h: root.h+2
 
@@ -193,19 +196,19 @@ CellPopup {
                         value: SystemInfo.cpuusage
 
                         value_color: {
-                            if (value > 90) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90,10)/10)
-                            } else if (value > 80) {
-                                return Colors.blend(box.bar, Colors.warning, Math.min(value - 80,10)/10)
+                            if (value > box.danger_thres) {
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                            } else if (value > box.warning_thres) {
+                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres,10)/10)
                             }
                             return box.bar
                         }
 
                         key_color: {
-                            if (value > 90) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90,10)/10)
-                            } else if (value > 80) {
-                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - 80,10)/10)
+                            if (value > box.danger_thres) {
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                            } else if (value > box.warning_thres) {
+                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
                             }
                             return box.dyn
                         }
@@ -227,10 +230,10 @@ CellPopup {
 
                         value_color: {
                             const value = SystemInfo.cputemp
-                            if (value > 80) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90,10)/10)
+                            if (value > box.warning_thres) {
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
                             } else if (value > 70) {
-                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - 80,10)/10)
+                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
                             }
                             return box.dyn
                         }
@@ -311,19 +314,19 @@ CellPopup {
                         value: gpu.model.usage
 
                         value_color: {
-                            if (value > 90) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90,10)/10)
-                            } else if (value > 80) {
-                                return Colors.blend(box.bar, Colors.warning, Math.min(value - 80,10)/10)
+                            if (value > box.danger_thres) {
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                            } else if (value > box.warning_thres) {
+                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres,10)/10)
                             }
                             return box.bar
                         }
 
                         key_color: {
-                            if (value > 90) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90,10)/10)
-                            } else if (value > 80) {
-                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - 80,10)/10)
+                            if (value > box.danger_thres) {
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                            } else if (value > box.warning_thres) {
+                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
                             }
                             return box.dyn
                         }
@@ -345,10 +348,10 @@ CellPopup {
 
                         value_color: {
                             const value = gpu.model.temp
-                            if (value > 80) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90,10)/10)
+                            if (value > box.warning_thres) {
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
                             } else if (value > 70) {
-                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - 80,10)/10)
+                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
                             }
                             return box.dyn
                         }
@@ -378,10 +381,10 @@ CellPopup {
 
                             value_color: {
                                 const value = (SystemInfo.ktoG(gpu.model.memoryused).toFixed(1)/SystemInfo.ktoG(gpu.model.memorytotal).toFixed(1))*100
-                                if (value > 90) {
-                                    return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90,10)/10)
-                                } else if (value > 80) {
-                                    return Colors.blend(box.dyn, Colors.warning, Math.min(value - 80,10)/10)
+                                if (value > box.danger_thres) {
+                                    return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                } else if (value > box.warning_thres) {
+                                    return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
                                 }
                                 return box.dyn
                             }
@@ -415,19 +418,19 @@ CellPopup {
                         value: (gpu.model.memoryused/gpu.model.memorytotal)*100
 
                         value_color: {
-                            if (value > 90) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90,10)/10)
-                            } else if (value > 80) {
-                                return Colors.blend(box.bar, Colors.warning, Math.min(value - 80,10)/10)
+                            if (value > box.danger_thres) {
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                            } else if (value > box.warning_thres) {
+                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres,10)/10)
                             }
                             return box.bar
                         }
 
                         key_color: {
-                            if (value > 90) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90,10)/10)
-                            } else if (value > 80) {
-                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - 80,10)/10)
+                            if (value > box.danger_thres) {
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                            } else if (value > box.warning_thres) {
+                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
                             }
                             return box.dyn
                         }
@@ -568,19 +571,19 @@ CellPopup {
                         value: SystemInfo.memusage
 
                         value_color: {
-                            if (value > 90) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90,10)/10)
-                            } else if (value > 80) {
-                                return Colors.blend(box.bar, Colors.warning, Math.min(value - 80,10)/10)
+                            if (value > box.danger_thres) {
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                            } else if (value > box.warning_thres) {
+                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres,10)/10)
                             }
                             return box.bar
                         }
 
                         key_color: {
-                            if (value > 90) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90,10)/10)
-                            } else if (value > 80) {
-                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - 80,10)/10)
+                            if (value > box.danger_thres) {
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                            } else if (value > box.warning_thres) {
+                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
                             }
                             return box.dyn
                         }
@@ -626,19 +629,19 @@ CellPopup {
                         value: SystemInfo.swapusage
 
                         value_color: {
-                            if (value > 90) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90,10)/10)
-                            } else if (value > 80) {
-                                return Colors.blend(box.bar, Colors.warning, Math.min(value - 80,10)/10)
+                            if (value > box.danger_thres) {
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                            } else if (value > box.warning_thres) {
+                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres,10)/10)
                             }
                             return box.bar
                         }
 
                         key_color: {
-                            if (value > 90) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90,10)/10)
-                            } else if (value > 80) {
-                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - 80,10)/10)
+                            if (value > box.danger_thres) {
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                            } else if (value > box.warning_thres) {
+                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
                             }
                             return box.dyn
                         }
@@ -724,7 +727,7 @@ CellPopup {
 
                                     MarqueeCellText {
 
-                        visible: !root.minimal
+                                        visible: !root.minimal
 
                                         Layout.leftMargin: Cell.w(1)
 
@@ -744,19 +747,19 @@ CellPopup {
                                         w: box.eW - box.p
 
                                         value_color: {
-                                            if (value > 90) {
-                                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90,10)/10)
-                                            } else if (value > 80) {
-                                                return Colors.blend(box.bar, Colors.warning, Math.min(value - 80,10)/10)
+                                            if (value > box.danger_thres) {
+                                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                            } else if (value > box.warning_thres) {
+                                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres,10)/10)
                                             }
                                             return box.bar
                                         }
 
                                         key_color: {
-                                            if (value > 90) {
-                                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90,10)/10)
-                                            } else if (value > 80) {
-                                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - 80,10)/10)
+                                            if (value > box.danger_thres) {
+                                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                            } else if (value > box.warning_thres) {
+                                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
                                             }
                                             return box.dyn
                                         }
@@ -765,7 +768,7 @@ CellPopup {
 
                                     CellSeparator {
 
-                        visible: !root.minimal
+                                        visible: !root.minimal
 
                                         w: box.eW - box.p
                                         padding: 1
@@ -933,7 +936,7 @@ CellPopup {
                     }
 
                     Stat {
-                        
+
                         visible: !root.minimal
 
                         key: "Channel:"
@@ -1055,7 +1058,7 @@ CellPopup {
 
                                     CellSeparator {
 
-                        visible: !root.minimal
+                                        visible: !root.minimal
 
                                         w: box.eW - box.p
                                         padding: 1
