@@ -244,7 +244,7 @@ Scope {
                 WlrLayershell.namespace: "popups"
 
                 margins {
-                    top: -root.implicitHeight
+                    top: -root.implicitHeight*PopupManager.isOpen("power")
                 }
 
                 implicitWidth: root.monitor.width
@@ -272,6 +272,7 @@ Scope {
 
                     property bool mouse_check: false
 
+                    anchors.topMargin: -root.implicitHeight*!PopupManager.isOpen("power")
                     anchors.top: parent.top
                     anchors.right: parent.right
                     anchors.left: parent.left

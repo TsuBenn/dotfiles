@@ -353,7 +353,7 @@ def search_settings(data, query):
 
     for r in results: r.pop("search_score", None)
     
-    return results
+    return [result for result in results if result.get("label") != ""]
 
 # ─── File find ───────────────────────────────────────────────────────────────
 
@@ -563,7 +563,7 @@ def main():
             if query:
                 result.extend(search_settings(settings, query))
             else:
-                result.extend(settings)
+                result.extend([result for result in settings if result.get("label") != ""])
             if (timer):
                 print(f"[timer] Settings searched: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 

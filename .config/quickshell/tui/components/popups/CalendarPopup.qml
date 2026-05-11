@@ -1104,8 +1104,7 @@ CellPopup {
                                                                 reminder.range == 0
                                                             ) {
                                                                 if (
-                                                                    DateTime.hour24 >= parseInt(time[0]) && 
-                                                                    DateTime.minute >= parseInt(time[1])
+                                                                    parseInt(DateTime.hour24)*60 + parseInt(DateTime.minute) >= parseInt(time[0])*60 + parseInt(time[1])
                                                                 ) {
                                                                     return Colors.danger
                                                                 } else if ((parseInt(time[0])*60 + parseInt(time[1])) - (parseInt(DateTime.hour24) * 60 + parseInt(DateTime.minute)) < 10) {

@@ -167,26 +167,28 @@ COLORS = {
 }
 
 SETTINGS = [
+    { 
+        # These are hidden items that are only show up when searched. 
+        # Mainly for options within another menu that can still be accessed quickly without using that menu.
+
+        "category": "setting",
+        "type": "menu",
+        "value": [
+            {
+            "label": COLORS[color]["name"],
+            "description": COLORS[color]["description"],
+            "category": "setting",
+            "type": "exec",
+            "value": ["qs", "-c", "tui", "ipc", "call", "config", "set_color_theme", color],
+        } for color in COLORS
+        ]
+    },
     {
         "label": "Wallpapers",
         "description": "Changes how your wallpaper looks and behaves.",
         "category": "setting",
         "type": "exec",
         "value": ["qs", "-c", "tui", "ipc", "call", "config", "open_popup", "wallpaper"]
-    },
-    {
-        "id": "color_themes",
-        "label": "",
-        "description": "Changes your shell's color palette that fit your vibe.",
-        "category": "setting",
-        "type": "menu",
-        "value": [{
-            "label": COLORS[color]["name"],
-            "description": COLORS[color]["description"],
-                "category": "setting",
-            "type": "exec",
-            "value": ["qs", "-c", "tui", "ipc", "call", "config", "set_color_theme", color],
-        } for color in COLORS]
     },
     {
         "id": "system_checks",

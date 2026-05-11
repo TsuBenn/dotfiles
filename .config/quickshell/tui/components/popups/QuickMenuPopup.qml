@@ -73,49 +73,49 @@ CellPopup {
     ShortcutHandler {
         shortcuts: [
             {
-                binds: "1",
+                binds: ["W","1"],
                 action: () => {
                     root.shortcut(1)
                 }
             },
             {
-                binds: "2",
+                binds: ["E","2"],
                 action: () => {
                     root.shortcut(2)
                 }
             },
             {
-                binds: "3",
+                binds: ["D","3"],
                 action: () => {
                     root.shortcut(3)
                 }
             },
             {
-                binds: "4",
+                binds: ["C","4"],
                 action: () => {
                     root.shortcut(4)
                 }
             },
             {
-                binds: "5",
+                binds: ["X","S","5"],
                 action: () => {
                     root.shortcut(5)
                 }
             },
             {
-                binds: "6",
+                binds: ["Z","6"],
                 action: () => {
                     root.shortcut(6)
                 }
             },
             {
-                binds: "7",
+                binds: ["A","7"],
                 action: () => {
                     root.shortcut(7)
                 }
             },
             {
-                binds: "8",
+                binds: ["Q","8"],
                 action: () => {
                     root.shortcut(8)
                 }
@@ -132,14 +132,14 @@ CellPopup {
 
         property var items: [
             {
-                label: "3",
+                label: "D",
                 description: "Calendar",
                 action: () => {
                     PopupManager.open("calendar")
                 },
             },
             {
-                label: "4",
+                label: "C",
                 description: "Audio mixer",
                 action: () => {
                     PopupManager.sendSignal("control_panel", "mixer")
@@ -147,7 +147,7 @@ CellPopup {
                 },
             },
             {
-                label: "5",
+                label: "X",
                 description: "Notifications",
                 action: () => {
                     PopupManager.sendSignal("control_panel", "notif")
@@ -155,35 +155,35 @@ CellPopup {
                 },
             },
             {
-                label: "6",
+                label: "Z",
                 description: "Toggle minimal",
                 action: () => {
                     SettingsInfo.toggleMinimal()
                 },
             },
             {
-                label: "7",
+                label: "A",
                 description: "System Info",
                 action: () => {
                     PopupManager.open("system")
                 },
             },
             {
-                label: "8",
+                label: "Q",
                 description: "Wallpaper",
                 action: () => {
                     PopupManager.open("wallpaper")
                 },
             },
             {
-                label: "1",
+                label: "W",
                 description: "Power",
                 action: () => {
                     PopupManager.open("power")
                 },
             },
             {
-                label: "2",
+                label: "E",
                 description: "Media player",
                 action: () => {
                     PopupManager.open("media_player")

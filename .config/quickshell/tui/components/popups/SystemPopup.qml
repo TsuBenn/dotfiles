@@ -155,6 +155,8 @@ CellPopup {
 
             active: root.visible || !SettingsInfo.optimizeMemory
 
+            asynchronous: true
+
             sourceComponent: RowLayout {
 
                 spacing: 0

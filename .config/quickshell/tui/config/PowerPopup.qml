@@ -78,87 +78,109 @@ CellPopup {
         w: Cell.wCount(root.implicitWidth) + 1
         h: Cell.hCount(root.implicitHeight) + 1
 
-        color: Colors.transparent(Qt.darker(Colors.bgBase,2),0.7)
+        color: Colors.transparent(Qt.darker(Colors.bgBase,2),0.8)
+
+        MouseControl {
+
+            anchors.fill: parent
+
+            onReleased: (button) => {
+                if (button == "L") {
+                    PopupManager.close()
+                }
+            }
+
+        }
 
         Loader {
 
             active: root.visible || !SettingsInfo.optimizeMemory
 
-            sourceComponent: ColumnLayout {
+            sourceComponent: Cells {
+
+                w: Cell.wCount(layout.implicitWidth)
+                h: Cell.hCount(layout.implicitHeight)
+
+                color: "transparent"
 
                 Component.onCompleted: {
-
                     x = Cell.centerWCell(implicitWidth, menu.implicitWidth)
-                    y = Cell.centerHCell(implicitHeight, menu.implicitHeight)
-
+                    y = Cell.centerHCell(implicitHeight, menu.implicitHeight) - Cell.h(1)
                 }
 
-                spacing: Cell.h(1)
+                ColumnLayout {
 
-                component Option: CellText {
+                    id: layout
 
-                    id: option
 
-                    property int index: 0
-                    property string title: "1.suspend"
-                    property var action: undefined
+                    spacing: Cell.h(1)
 
-                    readonly property int selected: menu.selected == index
+                    component Option: CellText {
 
-                    text: ANSI.render(title,selected ? 2 : 1)
-                    clip: true
+                        id: option
 
-                    MouseControl {
+                        property int index: 0
+                        property string title: "1.suspend"
+                        property var action: undefined
 
-                        anchors.fill: parent
+                        readonly property int selected: menu.selected == index
 
-                        onEntered: {
-                            menu.selected = parent.index
-                        }
+                        text: ANSI.render(title,selected ? 2 : 1)
+                        clip: true
 
-                        onReleased: (button) => {
-                            if (button == "L") {
-                                if (option.action) {
-                                    option.action()
-                                } else {
-                                    menu.actions[option.index]()
+                        MouseControl {
+
+                            anchors.fill: parent
+
+                            onEntered: {
+                                menu.selected = parent.index
+                            }
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    if (option.action) {
+                                        option.action()
+                                    } else {
+                                        menu.actions[option.index]()
+                                    }
                                 }
                             }
                         }
+
+                        color: selected ? menu.select_color : menu.base_color
+
                     }
 
-                    color: selected ? menu.select_color : menu.base_color
+                    Option {
+                        index: 0
+                        title: "1.suspend"
+                    }
 
-                }
+                    Option {
+                        index: 1
+                        title: "2.reboot"
+                    }
 
-                Option {
-                    index: 0
-                    title: "1.suspend"
-                }
+                    Option {
+                        index: 2
+                        title: "3.Shutdown"
+                    }
 
-                Option {
-                    index: 1
-                    title: "2.reboot"
-                }
+                    Option {
+                        index: 3
+                        title: "4.lock"
+                    }
 
-                Option {
-                    index: 2
-                    title: "3.Shutdown"
-                }
+                    Option {
+                        index: 4
+                        title: "5.logout"
+                    }
 
-                Option {
-                    index: 3
-                    title: "4.lock"
-                }
+                    Option {
+                        index: 5
+                        title: "0.cancel"
+                    }
 
-                Option {
-                    index: 4
-                    title: "5.logout"
-                }
-
-                Option {
-                    index: 5
-                    title: "0.cancel"
                 }
 
             }
