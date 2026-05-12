@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# UUID=UUID /mnt/storage ntfs3 defaults,uid=1000,gid=1000,nofail 0 0
+
 # ===== Color Definitions =====
 RED='\033[0;31m'
 GREEN='\033[0;32m'
