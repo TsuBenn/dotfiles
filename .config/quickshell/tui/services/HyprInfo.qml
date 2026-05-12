@@ -8,6 +8,10 @@ Singleton {
 
     id: root
 
+    function fmt(str, ...args) {
+        return str.replace(/{}/g, () => args.shift());
+    }
+
     property int focusedworkspace: Hyprland.focusedWorkspace?.id ?? 1
     property int focusedspecial: 0
 
@@ -25,10 +29,10 @@ Singleton {
 
     function switchWorkspace(n) {
         if (Number.isInteger(n)) {
-            Hyprland.dispatch("workspace " + n)
+            Hyprland.dispatch(root.fmt("hl.dsp.focus({workspace = {}})", n)) // New lua config
             return
         }
-        Hyprland.dispatch("togglespecialworkspace " + n)
+        Hyprland.dispatch(root.fmt(`hl.dsp.workspace.toggle_special("{}")`, n)) // New lua config
     }
 
     function windowCount(n) {

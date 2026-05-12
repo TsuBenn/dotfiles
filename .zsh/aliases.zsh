@@ -74,7 +74,7 @@ ayanoSetup() {
 }
 
 alias dot='cd ~/dotfiles/ && nvim .'
-alias hyprconf='cd ~/dotfiles/ && nvim ~/.config/hypr/hyprland.conf'
+alias hyprconf='cd ~/dotfiles/ && nvim ~/.config/hypr/hyprland.lua'
 alias kittyconf='cd ~/dotfiles/ && nvim ~/.config/kitty/kitty.conf'
 alias ghosttyconf='cd ~/dotfiles/ && nvim ~/.config/ghostty/config'
 alias tmuxconf='cd ~/dotfiles/ && nvim ~/.tmux.conf'
