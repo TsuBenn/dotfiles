@@ -17,16 +17,29 @@ Singleton {
     property bool dnd               : false // Do not disturb
     property bool optimizeMemory    : false // Reduce memory usage significantly, but takes more time to load UI elements
 
+    property bool hyprAnim          : false // Toggles Hyprland animations
+
+    property bool bgCava            : true  // Run cava on top of the wallpaper
+
+    property var toggles: [
+        "hints",
+        "minimal",
+        "optimizeMemory",
+        "safeNotifications",
+        "dnd",
+        "hyprAnim",
+        "bgCava",
+    ]
+
     signal showGrid()
 
     function get_state(text) {
         let state = -1
-        switch (text) {
-            case "hints"             : state = hints; break
-            case "minimal"           : state = minimal; break
-            case "optimizeMemory"    : state = optimizeMemory; break
-            case "safeNotifications" : state = safeNotifications; break
-            case "dnd"               : state = dnd; break
+        for (const toggle of toggles) {
+            if (text == toggle) {
+                state = root[toggle]
+                break
+            }
         }
         if (state != -1) {
             return state ? "[X]" : "[ ]"
@@ -44,11 +57,9 @@ Singleton {
 
             const config = JSON.parse(text())
 
-            root.hints             = config.hints             ?? false
-            root.minimal           = config.minimal           ?? false
-            root.safeNotifications = config.safeNotifications ?? false
-            root.dnd               = config.dnd               ?? false
-            root.optimizeMemory    = config.optimizeMemory    ?? false
+            for (const toggle of root.toggles) {
+                root[toggle] = config[toggle] ?? false
+            }
 
         }
 
@@ -56,13 +67,13 @@ Singleton {
 
     function saveConfig() {
 
-        const config = {
-            "hints": hints,
-            "minimal": minimal,
-            "safeNotifications": safeNotifications,
-            "dnd": dnd,
-            "optimizeMemory": optimizeMemory,
+        let config = ({})
+
+        for (const toggle of toggles) {
+            config[toggle] = root[toggle] ?? false
         }
+
+        //console.log(JSON.stringify(config, null, 2))
 
         exec.exec(["bash", "-c", `echo '${JSON.stringify(config)}' > ${SystemInfo.configdir + "/scripts/config.json"}`])
 
@@ -77,6 +88,16 @@ Singleton {
         const sound = Math.round(rng*3)
         const sounds = ["hallo","mambo","mambo_tongye","mambo_wow"]
         AudioInfo.playSound(sounds[sound], 1)
+    }
+
+    function toggleBgCava() {
+        bgCava = !bgCava
+        saveConfig()
+    }
+
+    function toggleHyprAnim() {
+        hyprAnim = !hyprAnim
+        saveConfig()
     }
 
     function toggleDND() {
@@ -128,6 +149,8 @@ Singleton {
         function toggle_safe_notifications(): void {root.toggleSafeNotifications()}
         function toggle_hints(): void {root.toggleHints()}
         function toggle_dnd(): void {root.toggleDND()}
+        function toggle_hypranim(): void {root.toggleHyprAnim()}
+        function toggle_bgcava(): void {root.toggleBgCava()}
 
 
         function dummy(): void {

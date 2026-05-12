@@ -89,53 +89,68 @@ Item {
                 bg: root.border.type == 0 ? root.border.color : "transparent"
 
                 text: {
-                    const header = truncate(root.header.text,root.w-2-Math.max(root.header.offset,0))
-                    const footer = truncate(root.footer.text,root.w-2-Math.max(root.footer.offset,0))
                     switch (root.border.type) {
                         case 0: return " ";
                         case 1: {
                             return "┌"
-                            +(header.length > 0 ? "─".repeat(Math.max(root.header.offset,0))+(header)+"─".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.length) : "─".repeat(root.w-2))
+                            +(header.w > 0 ? "─".repeat(Math.max(root.header.offset,0))+" ".repeat(header.w)+"─".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.w) : "─".repeat(root.w-2))
                             +"┐\n"
                             +("│"+" ".repeat(root.w-2)+"│\n").repeat(root.h-2)
                             +"└"
-                            +(footer.length > 0 ? "─".repeat(Math.max(root.footer.offset,0))+(footer)+"─".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.length) : "─".repeat(root.w-2))
+                            +(footer.w > 0 ? "─".repeat(Math.max(root.footer.offset,0))+" ".repeat(footer.w)+"─".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.w) : "─".repeat(root.w-2))
                             +"┘";
                         }
 
                         case 2: {
                             return "┏"
-                            +(header.length > 0 ? "━".repeat(Math.max(root.header.offset,0))+(header)+"━".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.length) : "━".repeat(root.w-2))
+                            +(header.w > 0 ? "━".repeat(Math.max(root.header.offset,0))+" ".repeat(header.w)+"━".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.w) : "━".repeat(root.w-2))
                             +"┓\n"
                             +("┃"+" ".repeat(root.w-2)+"┃\n").repeat(root.h-2)
                             +"┗"
-                            +(footer.length > 0 ? "━".repeat(Math.max(root.footer.offset,0))+(footer)+"━".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.length) : "━".repeat(root.w-2))
+                            +(footer.w > 0 ? "━".repeat(Math.max(root.footer.offset,0))+" ".repeat(footer.w)+"━".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.w) : "━".repeat(root.w-2))
                             +"┛";
                         }
 
                         case 3: {
                             return "╔"
-                            +(header.length > 0 ? "═".repeat(Math.max(root.header.offset,0))+(header)+"═".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.length) : "═".repeat(root.w-2))
+                            +(header.w > 0 ? "═".repeat(Math.max(root.header.offset,0))+" ".repeat(header.w)+"═".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.w) : "═".repeat(root.w-2))
                             +"╗\n"
                             +("║"+" ".repeat(root.w-2)+"║\n").repeat(root.h-2)
                             +"╚"
-                            +(footer.length > 0 ? "═".repeat(Math.max(root.footer.offset,0))+(footer)+"═".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.length) : "═".repeat(root.w-2))
+                            +(footer.w > 0 ? "═".repeat(Math.max(root.footer.offset,0))+" ".repeat(footer.w)+"═".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.w) : "═".repeat(root.w-2))
                             +"╝";
                         }
 
                         case 4: {
                             return "╭"
-                            +(header.length > 0 ? "─".repeat(Math.max(root.header.offset,0))+(header)+"─".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.length) : "─".repeat(root.w-2))
+                            +(header.w > 0 ? "─".repeat(Math.max(root.header.offset,0))+" ".repeat(header.w)+"─".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.w) : "─".repeat(root.w-2))
                             +"╮\n"
                             +("│"+" ".repeat(root.w-2)+"│\n").repeat(root.h-2)
                             +"╰"
-                            +(footer.length > 0 ? "─".repeat(Math.max(root.footer.offset,0))+(footer)+"─".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.length) : "─".repeat(root.w-2))
+                            +(footer.w > 0 ? "─".repeat(Math.max(root.footer.offset,0))+" ".repeat(footer.w)+"─".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.w) : "─".repeat(root.w-2))
                             +"╯";
                         }
                     }
                 }
                 color: root.border.color
 
+            }
+
+            CellText {
+                id: header
+                x: Cell.w(Math.max(root.header.offset,0)+1)
+                anchors.top: parent.top
+                text: root.header.text
+                preferedW: text == "" || text.length < root.w-2-Math.max(root.header.offset,0) ? 0 : root.w-2-Math.max(root.header.offset,0)
+                font: root.header.font
+            }
+            CellText {
+                id: footer
+                x: Cell.w(Math.max(root.footer.offset,0)+1)
+                anchors.bottom: parent.bottom
+                text: root.footer.text
+                preferedW: text == "" || text.length < root.w-2-Math.max(root.footer.offset,0) ? 0 : root.w-2-Math.max(root.footer.offset,0)
+                font: root.footer.font
             }
 
         }

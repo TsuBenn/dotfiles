@@ -1,5 +1,7 @@
 pragma Singleton 
 
+import qs.services
+
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -10,8 +12,8 @@ Singleton {
 
     property list<int> points: []
     property list<int> pointsFlipped: []
-    property int framerate: 60
-    property int bars: 26
+    property int framerate: HyprInfo.maxRefreshRate
+    property int bars: 60
 
     property int activeUser: 0
 

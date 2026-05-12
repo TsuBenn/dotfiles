@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import qs.components.bar
 import qs.components.popups
 import qs.modules
@@ -10,6 +12,7 @@ import Quickshell.Hyprland
 import Quickshell.Wayland
 import QtQuick.Layouts
 import QtQuick
+import Qt5Compat.GraphicalEffects
 
 Scope {
     Variants {
@@ -193,6 +196,139 @@ Scope {
 
             PanelWindow {
 
+                WlrLayershell.layer: WlrLayer.Bottom
+                WlrLayershell.namespace: "qs_background"
+
+                mask: Region {
+                    item: background
+                }
+
+                focusable: false
+
+                visible: true
+
+                color: "transparent"
+
+                anchors {
+                    top: true
+                    left: true
+                    right: true
+                    bottom: true
+                }
+
+                Item {
+
+                    id: background
+
+                    anchors.fill: parent
+
+                    Cells {
+
+                        y: Cell.h()
+
+                        id: bg
+
+                        w: Cell.wCount(root.monitor.width)
+                        h: Cell.hCount(root.monitor.height) - 2
+
+                        color: "transparent"
+
+
+                        Rectangle {
+
+                            visible: opacity
+
+                            opacity: SettingsInfo.bgCava
+
+                            Behavior on opacity {NumberAnimation {
+                                duration: 200
+                                easing.type: Easing.OutCubic
+                            }}
+
+                            anchors.fill: parent
+
+                            gradient: Gradient {
+                                orientation: Gradient.Vertical
+                                GradientStop { position: 0.0; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5) }
+                                GradientStop { position: 0.4; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0) }
+                                GradientStop { position: 0.6; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0) }
+                                GradientStop { position: 1.0; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5) }
+                            }
+
+                        }
+
+                        Rectangle {
+
+                            id: cava_mask
+
+                            visible: false
+
+                            anchors.fill: parent
+
+                            gradient: Gradient {
+                                orientation: Gradient.Vertical
+                                GradientStop { position: 0.0; color: "transparent" }
+                                GradientStop { position: 0.3; color: "white"}
+                                GradientStop { position: 0.7; color: "white"}
+                                GradientStop { position: 1.0; color: "transparent" }
+                            }
+
+                        }
+
+                        component BgCava: CellAudioVisual {
+
+                            visible: opacity
+
+                            opacity: SettingsInfo.bgCava*0.8
+
+                            Behavior on opacity {NumberAnimation {
+                                duration: 200
+                                easing.type: Easing.OutCubic
+                            }}
+
+                            Component.onCompleted: {
+                                if (visible) {
+                                    Cava.requestStart()
+                                }
+                            }
+                            onVisibleChanged: {
+                                if (visible) {
+                                    Cava.requestStart()
+                                }
+                            }
+
+                            w: bg.w
+                            h: bg.h/2
+
+                            spacing: 2
+                            barW: 2
+
+                            color: [Colors.secondary, Colors.warning, Colors.danger]
+
+                            layer.enabled: true
+                            layer.effect: OpacityMask {
+                                maskSource: cava_mask
+                            }
+
+                        }
+
+                        BgCava {
+                            anchors.bottom: parent.bottom
+                        }
+
+                        BgCava {
+                            anchors.top: parent.top
+                            rotation: 180
+                        }
+
+                    }
+
+                }
+
+            }
+
+            PanelWindow {
+
                 id: notifcations
 
                 anchors {
@@ -244,7 +380,7 @@ Scope {
                 WlrLayershell.namespace: "popups"
 
                 margins {
-                    top: -root.implicitHeight*PopupManager.isOpen("power")
+                    top: -root.implicitHeight
                 }
 
                 implicitWidth: root.monitor.width
@@ -252,7 +388,7 @@ Scope {
 
                 visible: true
 
-                focusable: root.shield
+                focusable: false
 
                 HyprlandFocusGrab {
                     active: root.shield
@@ -272,13 +408,12 @@ Scope {
 
                     property bool mouse_check: false
 
-                    anchors.topMargin: -root.implicitHeight*!PopupManager.isOpen("power")
+                    anchors.topMargin: root.implicitHeight*!PopupManager.isOpen("power")
                     anchors.top: parent.top
                     anchors.right: parent.right
                     anchors.left: parent.left
 
                     implicitHeight: root.shield ? root.monitor.height : 0
-
 
                     MouseControl {
 

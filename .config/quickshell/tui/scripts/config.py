@@ -171,6 +171,8 @@ SETTINGS = [
         # These are hidden items that are only show up when searched. 
         # Mainly for options within another menu that can still be accessed quickly without using that menu.
 
+        "label": "",
+        "description": "Changes how your shells color.",
         "category": "setting",
         "type": "menu",
         "value": [
@@ -257,10 +259,24 @@ SETTINGS = [
             },
             {
                 "label": "{dnd} Do not disturb",
-                "description": "Remove notification popups",
+                "description": "Remove notification popups.",
                 "category": "setting",
                 "type": "exec",
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_dnd"],
+            },
+            {
+                "label": "{hyprAnim} Hyprland animations",
+                "description": "Toggling Hyprland animations.",
+                "category": "setting",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_hypranim"],
+            },
+            {
+                "label": "{bgCava} Cava in the background",
+                "description": "Having cava run on top of the wallpaper.",
+                "category": "setting",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_bgcava"],
             },
         ],
     },

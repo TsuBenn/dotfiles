@@ -117,7 +117,7 @@ Singleton {
     }
 
     function rescan() {
-        scan.running = true
+        cache.running = true
     }
 
     Timer {
@@ -141,7 +141,7 @@ Singleton {
 
         stdout: StdioCollector {
             onStreamFinished: {
-                    scan.running = true
+                scan.running = true
             }
         }
 

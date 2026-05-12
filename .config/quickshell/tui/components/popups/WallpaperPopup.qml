@@ -141,6 +141,16 @@ CellPopup {
                         selected = (selected + selection.wallpapers.length + step)%selection.wallpapers.length
                     }
 
+                    function select() {
+                        const current = items[2]
+                        if (WallpaperInfo.inSet(current)) {
+                            WallpaperInfo.remove(current)
+                        } else {
+                            WallpaperInfo.add(current)
+                        }
+                        repeater.refresh()
+                    }
+
                     Repeater {
 
                         id: repeater
@@ -170,9 +180,6 @@ CellPopup {
 
                                 property string value: modelData.split(".")[0]
                                 property bool selected: {
-                                    if (selection.wallpapers.length > 1) {
-                                        return modelData == selection.wallpapers[selection.selected]
-                                    }
                                     return index == 2
                                 } 
 
@@ -223,13 +230,7 @@ CellPopup {
                                     onReleased: (button) => {
                                         if (button == "L") {
                                             if (thumbnail.selected) {
-                                                const current = selection.wallpapers.length > 1 ? selection.wallpapers[selection.selected] : selection.wallpapers[0]
-                                                if (WallpaperInfo.inSet(current)) {
-                                                    WallpaperInfo.remove(current)
-                                                } else {
-                                                    WallpaperInfo.add(current)
-                                                }
-                                                repeater.refresh()
+                                                selection.select()
                                             } else {
                                                 selection.advance(thumbnail.index - 2)
                                             }
@@ -314,13 +315,7 @@ CellPopup {
 
                             onTextInput: (query) => {
                                 if (text == " ") {
-                                    const current = selection.wallpapers.length > 1 ? selection.wallpapers[selection.selected] : selection.wallpapers[0]
-                                    if (WallpaperInfo.inSet(current)) {
-                                        WallpaperInfo.remove(current)
-                                    } else {
-                                        WallpaperInfo.add(current)
-                                    }
-                                    repeater.refresh()
+                                    selection.select()
                                     set("")
                                     return
                                 }
@@ -351,19 +346,14 @@ CellPopup {
                                             PopupManager.close("wallpaper")
                                         }
                                     },
-                                ]
-                            }
-
-                            Keys.onPressed: (event) => {
-                                if (event.key == Qt.Key_Return) {
-                                    const current = selection.wallpapers.length > 1 ? selection.wallpapers[selection.selected] : selection.wallpapers[0]
-                                    if (WallpaperInfo.inSet(current)) {
-                                        WallpaperInfo.remove(current)
-                                    } else {
-                                        WallpaperInfo.add(current)
+                                    {
+                                        binds: "Return",
+                                        active: textfield.focus,
+                                        action: () => {
+                                            selection.select()
+                                        }
                                     }
-                                    repeater.refresh()
-                                }
+                                ]
                             }
 
 
@@ -584,7 +574,7 @@ CellPopup {
                     property bool yes: false
 
                     color: yes ? Colors.accentStrong : Colors.bgOverlay
-                    fg: yes ? Colors.onAccent : Colors.fgSubtle
+                    fg: yes ? Colors.onAccent : Colors.fgBase
 
                     onPressed: (button) => {
                         if (button == "L") {

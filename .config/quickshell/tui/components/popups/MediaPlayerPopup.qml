@@ -319,13 +319,13 @@ CellPopup {
 
                 visible: !root.minimal
 
-                Layout.leftMargin: Cell.w(1)
-
-                w: box.contentW
+                w: box.contentW-1
                 h: 5
                 spacing: 1
+                barW: 1
 
                 color: [Colors.secondary, Colors.warning, Colors.danger]
+
             }
 
             CellSeparator {

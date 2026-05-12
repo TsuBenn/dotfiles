@@ -17,12 +17,15 @@ ShellRoot {
             Colors.applied.connect(() => {
                 init()
             })
+            SettingsInfo.hyprAnimChanged.connect(() => {
+                init()
+            })
         }
 
         function init() {
             const active_border = "rgba(" + Colors.borderActive.toString().slice(1) + "ff)"
             const inactive_border = "rgba(" + Colors.borderInactive.toString().slice(1) + "ff)"
-            process.exec(["bash", SystemInfo.configdir + "/scripts/init.sh", active_border, inactive_border, "true"])
+            process.exec(["bash", SystemInfo.configdir + "/scripts/init.sh", active_border, inactive_border, SettingsInfo.hyprAnim ?? false])
         }
     }
 

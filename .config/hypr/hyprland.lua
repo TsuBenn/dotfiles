@@ -20,7 +20,7 @@ require("hyprmonitor")
 hl.on("hyprland.start", function () 
     hl.exec_cmd(browser)
     hl.exec_cmd("systemctl --user enable opentabletdriver.service --now")
-    hl.exec_cmd("hyprctl dispatch workspace 2 && "..terminal)
+    hl.exec_cmd('hyprctl "dispatch hl.dsp.focus({workspace = \"2\"})" && '..terminal)
     hl.exec_cmd("vesktop")
     hl.exec_cmd("steam")
     hl.exec_cmd("qs -c ~/.config/quickshell/tui/ -d")
@@ -90,6 +90,10 @@ hl.config({
     },
 
 })
+
+----------------------
+----  ANIMATIONS  ----
+----------------------
 
 -- Default curves and animations, see https://wiki.hypr.land/Configuring/Advanced-and-Cool/Animations/
 
@@ -183,12 +187,15 @@ hl.config({
         kb_layout  = "us",
         kb_variant = "",
         kb_model   = "",
-        kb_options = "",
+        kb_options = "caps:escape",
         kb_rules   = "",
 
         follow_mouse = 1,
 
-        sensitivity = 0.4, -- -1.0 - 1.0, 0 means no modification.
+        force_no_accel = true,
+        accel_profile= "flat",
+
+        sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
 
         touchpad = {
             natural_scroll = true,
@@ -247,25 +254,37 @@ hl.bind(SUPER.."N", hl.dsp.exec_cmd("LD_PRELOAD=/usr/local/lib/spotify-adblock.s
 
 hl.bind(SUPER.."V", hl.dsp.exec_cmd("clipvault list | rofi -dmenu -display-columns 2 | clipvault get | wl-copy"))
 
+hl.bind(SUPER.."period", hl.dsp.exec_cmd(emoji))
+
 hl.bind(SUPER..SHIFT.."P", hl.dsp.exec_cmd("pkill -f qs"))
 
 hl.bind(SUPER.."EQUAL", hl.dsp.exec_cmd("qalculate-qt"))
 hl.bind("XF86Calculator", hl.dsp.exec_cmd("qalculate-qt"))
 
-hl.bind(SUPER.."A", hl.dsp.exec_cmd(""))
+hl.bind(SUPER.."A", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
+hl.bind(SUPER..SHIFT.."A", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
 
 local zoom = 1
 local zoom_strength = 1.5
 
 hl.bind(SUPER.."tab", function()
-    zoom = math.max(zoom / zoom_strength, 1)
+    zoom = math.max(zoom/zoom_strength, 1)
     hl.config({
         cursor = {
             zoom_factor = zoom
         }
     })
-    end
+end
 )
+hl.bind(SUPER.."tab", function()
+    zoom = 1
+    hl.config({
+        cursor = {
+            zoom_factor = zoom
+        }
+    })
+end
+, {long_press = true})
 
 hl.bind(SUPER..SHIFT.."tab", function()
     zoom = math.max(zoom * zoom_strength, 1)
@@ -274,7 +293,7 @@ hl.bind(SUPER..SHIFT.."tab", function()
             zoom_factor = zoom
         }
     })
-    end
+end
 )
 
 -- local closeWindowBind = hl.bind(SUPER .. " + C", hl.dsp.window.close())

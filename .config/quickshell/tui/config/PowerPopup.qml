@@ -104,8 +104,8 @@ CellPopup {
                 color: "transparent"
 
                 Component.onCompleted: {
-                    x = Cell.centerWCell(implicitWidth, menu.implicitWidth)
-                    y = Cell.centerHCell(implicitHeight, menu.implicitHeight) - Cell.h(1)
+                    x = Cell.centerWCell(implicitWidth, menu.implicitWidth) - Cell.w(3)
+                    y = Cell.centerHCell(implicitHeight, menu.implicitHeight)
                 }
 
                 ColumnLayout {

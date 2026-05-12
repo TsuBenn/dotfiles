@@ -13,6 +13,7 @@ Item {
     property int h: 3
 
     property int spacing: 0 
+    property int barW: 1
 
     property var color: Colors.fgBase
 
@@ -21,19 +22,27 @@ Item {
     implicitWidth: Cell.w(w)
     implicitHeight: Cell.h(h)
 
-    property var pointsFlipped: downSample(Cava.pointsFlipped, root.w/(1+spacing))
-    property var points: downSample(Cava.points, root.w/(1+spacing))
+    property int barCount: (root.w+spacing)/(barW+spacing)
+
+    property var pointsFlipped: downSample(Cava.pointsFlipped, barCount)
+    property var points: downSample(Cava.points, barCount)
 
     function downSample(list, targetSize) {
-        if (targetSize >= list.length) return list; // No need to shrink
+        if (targetSize >= list.length) return list;
+        if (targetSize <= 1) return [list[0]]; // Edge case
 
         return Array.from({ length: targetSize }, (_, i) => {
-            // Determine the "sampling point" in the original array
-            const sampleIndex = Math.round(i * (list.length - 1) / (targetSize - 1));
-            return list[sampleIndex];
-        });  
-    }
+            // Calculate the exact fractional position
+            const position = i * (list.length - 1) / (targetSize - 1);
 
+            const indexLow = Math.floor(position);
+            const indexHigh = Math.ceil(position);
+            const weight = position - indexLow; // How far are we toward indexHigh?
+
+            // The "Lerp" formula: (1 - weight) * A + weight * B
+            return (1 - weight) * list[indexLow] + weight * list[indexHigh];
+        });
+    }
     onVisibleChanged: {
         if (visible) {
             Cava.requestStart()
@@ -70,51 +79,46 @@ Item {
 
         RowLayout {
 
+            id: layout
+
+            x: Cell.w(Math.round(root.w/2 - (root.points.length*root.barW + (root.points.length-1)*root.spacing)/2))
+
             spacing: Cell.w(root.spacing)
 
             Repeater {
 
                 model: root.w
 
-                delegate: Loader {
-
-                    active: root.visible || !SettingsInfo.optimizeMemory
-
-                    id: loader
+                delegate: Cells {
 
                     required property int index
 
-                    sourceComponent: Cells {
+                    w: root.barW
+                    h: container.h
+                    color: "transparent"
 
-                        property int index: loader.index
+                    Cells {
 
-                        w: 1
-                        h: container.h
-                        color: "transparent"
+                        anchors.bottom: parent.bottom
 
-                        Cells {
+                        property real percent: (root.flipped ? root.pointsFlipped[index] ?? 0 : root.points[index] ?? 0)/100
 
-                            anchors.bottom: parent.bottom
+                        w: root.barW
+                        h: container.h*(Math.round(percent*(8*container.h))/(8*container.h))
+                        whole: false
 
-                            property real percent: (root.flipped ? root.pointsFlipped[index] ?? 0 : root.points[index] ?? 0)/100
-
-                            w: 1
-                            h: container.h*(Math.round(percent*(8*container.h))/(8*container.h))
-                            whole: false
-
-                            color: {
-                                if (Array.isArray(root.color)) {
-                                    return container.getMultiBlend(root.color,Math.round(percent*(8*container.h))/(8*container.h))
-                                }
-                                return root.color
+                        color: {
+                            if (Array.isArray(root.color)) {
+                                return container.getMultiBlend(root.color,Math.round(percent*(8*container.h))/(8*container.h))
                             }
-
+                            return root.color
                         }
-
 
                     }
 
+
                 }
+
             }
 
         }

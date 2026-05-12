@@ -12,6 +12,8 @@ Singleton {
         return str.replace(/{}/g, () => args.shift());
     }
 
+    property int maxRefreshRate: 0
+
     property int focusedworkspace: Hyprland.focusedWorkspace?.id ?? 1
     property int focusedspecial: 0
 
@@ -28,6 +30,7 @@ Singleton {
     signal cursorPos(ex: int, why: int)
 
     function switchWorkspace(n) {
+        console.log("what")
         if (Number.isInteger(n)) {
             Hyprland.dispatch(root.fmt("hl.dsp.focus({workspace = {}})", n)) // New lua config
             return
@@ -158,6 +161,11 @@ Singleton {
                     const model = data.model
                     const refreshRate = data.refreshRate
                     const focused = data.focused
+
+                    if (refreshRate > root.maxRefreshRate) {
+                        root.maxRefreshRate = refreshRate
+                    }
+
                     monitors[name] = {
                         "id": id,
                         "name": name,

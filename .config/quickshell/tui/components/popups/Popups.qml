@@ -35,7 +35,7 @@ Item {
         name: "calendar"
 
         cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2)
-        cellY: 1
+        cellY: 0
 
     }
 
@@ -46,7 +46,7 @@ Item {
         name: "media_player"
 
         cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2)
-        cellY: 1
+        cellY: 0
 
     }
 
@@ -57,7 +57,7 @@ Item {
         name: "system"
 
         cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2)
-        cellY: 1
+        cellY: 0
 
     }
 
@@ -68,7 +68,7 @@ Item {
         name: "color"
 
         cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2)
-        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 1
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 2
 
     }
 
@@ -79,7 +79,7 @@ Item {
         name: "wallpaper"
 
         cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2)
-        cellY: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 ? Cell.hCount(root.monitor.height/2,"floor") - Math.floor(h/2) - 3 : Cell.hCount(root.monitor.height,"floor") - Math.floor(h) - 2
+        cellY: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 ? Cell.hCount(root.monitor.height/2,"floor") - Math.floor(h/2) - 2 : Cell.hCount(root.monitor.height,"floor") - Math.floor(h) - 2
 
     }
 
@@ -100,7 +100,7 @@ Item {
         name: "power_countdown"
 
         cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2)
-        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2)
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 2
 
     }
 
@@ -109,7 +109,7 @@ Item {
         name: "control_panel"
 
         cellX: Cell.wCount(root.monitor.width-Cell.w(w))
-        cellY: 1
+        cellY: 0
 
     }
 
@@ -120,7 +120,7 @@ Item {
         name: "launcher"
 
         cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2)
-        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 1
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 2
 
     }
 
@@ -134,14 +134,14 @@ Item {
         Component.onCompleted: {
             HyprInfo.cursorPos.connect((x, y) => {
                 quick_menu.cellX = Cell.wCount(x) - w/2
-                quick_menu.cellY = Cell.hCount(y) - h/2 - 2
+                quick_menu.cellY = Cell.hCount(y) - h/2 - 1
             })
         }
 
         name: "quick_menu"
 
         cellX: 0
-        cellY: 1
+        cellY: 0
 
     }
 

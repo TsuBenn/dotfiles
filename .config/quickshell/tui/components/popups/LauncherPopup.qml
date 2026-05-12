@@ -194,6 +194,8 @@ CellPopup {
                                 w: textbox.contentW - 2 - breadcrumbs.text.length
                                 h: 1
 
+                                autoApply: false
+
                                 onEntered: (query) => {
                                     if (LauncherInfo.result.length > 0) {
                                         LauncherInfo.run(textfield.selected)
