@@ -229,7 +229,7 @@ Scope {
                         id: bg
 
                         w: Cell.wCount(root.monitor.width)
-                        h: Cell.hCount(root.monitor.height) - 2
+                        h: Cell.hCount(root.monitor.height, "ceil") - 2
 
                         color: "transparent"
 
@@ -279,7 +279,7 @@ Scope {
 
                             visible: opacity
 
-                            opacity: SettingsInfo.bgCava*0.8
+                            opacity: SettingsInfo.bgCava*0.5
 
                             Behavior on opacity {NumberAnimation {
                                 duration: 200

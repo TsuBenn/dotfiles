@@ -169,8 +169,8 @@ Singleton {
                     monitors[name] = {
                         "id": id,
                         "name": name,
-                        "width": width,
-                        "height": height,
+                        "width": width/scale,
+                        "height": height/scale,
                         "scale": scale,
                         "model": model,
                         "refreshRate": refreshRate,
@@ -179,8 +179,8 @@ Singleton {
                     monitors[id] = {
                         "id": id,
                         "name": name,
-                        "width": width,
-                        "height": height,
+                        "width": width/scale,
+                        "height": height/scale,
                         "scale": scale,
                         "model": model,
                         "refreshRate": refreshRate,

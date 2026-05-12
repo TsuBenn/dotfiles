@@ -1,3 +1,5 @@
 file_cache.json
 frequency.json
 icon_cache.json
+
+/__pycache__

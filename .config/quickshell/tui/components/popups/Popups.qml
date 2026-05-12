@@ -34,7 +34,7 @@ Item {
 
         name: "calendar"
 
-        cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2)
+        cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2) - 1
         cellY: 0
 
     }
@@ -45,7 +45,7 @@ Item {
 
         name: "media_player"
 
-        cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2)
+        cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2) - 1
         cellY: 0
 
     }
@@ -56,7 +56,7 @@ Item {
 
         name: "system"
 
-        cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2)
+        cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2) - 1
         cellY: 0
 
     }
@@ -67,8 +67,8 @@ Item {
 
         name: "color"
 
-        cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2)
-        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 2
+        cellX: Cell.wCount(root.monitor.width/2,"floor") - Math.floor(w/2) - 1
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 1
 
     }
 
@@ -78,8 +78,8 @@ Item {
 
         name: "wallpaper"
 
-        cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2)
-        cellY: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 ? Cell.hCount(root.monitor.height/2,"floor") - Math.floor(h/2) - 2 : Cell.hCount(root.monitor.height,"floor") - Math.floor(h) - 2
+        cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2) - 1
+        cellY: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 ? Cell.hCount(root.monitor.height/2,"floor") - Math.floor(h/2) - 1 : Cell.hCount(root.monitor.height,"floor") - Math.floor(h) - 3
 
     }
 
@@ -99,8 +99,8 @@ Item {
 
         name: "power_countdown"
 
-        cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2)
-        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 2
+        cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2) - 1
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 1
 
     }
 
@@ -119,8 +119,8 @@ Item {
 
         name: "launcher"
 
-        cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2)
-        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 2
+        cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2) - 1
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 1
 
     }
 

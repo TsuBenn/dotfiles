@@ -5,23 +5,26 @@ local fileManager = "dolphin"
 local menu = "rofi -show drun"
 local emoji = "rofi -mode emoji -show emoji"
 local browser = "zen-browser"
+local discord = "vesktop"
+local spotify = "LD_PRELOAD=/usr/local/lib/spotify-adblock.so spotify"
 
 -- Monitor
 
 hl.monitor({
-    output = "", -- e.g DP-1 
-    mode = "1920x1080@60", -- e.g 1920x1080@60
-    position = "0x0",
-    scale = 1,
+    output = "eDP-1", -- e.g DP-1
+    mode = "prefered", -- e.g 1920x1080@60
+    position = "auto",
+    scale = "1",
 })
 
-require("hyprmonitor")
+package.path = package.path .. ";" .. os.getenv("HOME") .. "/?.lua"
+require("hyprmonitor")   -- loads ~/myfile.lua
 
-hl.on("hyprland.start", function () 
+hl.on("hyprland.start", function ()
     hl.exec_cmd(browser)
     hl.exec_cmd("systemctl --user enable opentabletdriver.service --now")
     hl.exec_cmd('hyprctl "dispatch hl.dsp.focus({workspace = \"2\"})" && '..terminal)
-    hl.exec_cmd("vesktop")
+    hl.exec_cmd(discord)
     hl.exec_cmd("steam")
     hl.exec_cmd("qs -c ~/.config/quickshell/tui/ -d")
     hl.exec_cmd("easyeffects --gapplication-service")
@@ -65,6 +68,8 @@ hl.config({
     decoration = {
         rounding       = 7,
         rounding_power = 2,
+
+        dim_special = 0.5,
 
         -- Change transparency of focused and unfocused windows
         active_opacity   = 1.0,
@@ -195,10 +200,12 @@ hl.config({
         force_no_accel = true,
         accel_profile= "flat",
 
-        sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
+        sensitivity = -0.5, -- -1.0 - 1.0, 0 means no modification.
 
         touchpad = {
             natural_scroll = true,
+            scroll_factor = 0.2,
+            drag_lock = 0,
         },
     },
 })
@@ -250,7 +257,7 @@ hl.bind(CTRL.."print",  hl.dsp.exec_cmd(screenshot_window))
 hl.bind(SUPER.."print",  hl.dsp.exec_cmd(screenshot_full))
 hl.bind("print",  hl.dsp.exec_cmd(screenshot_region))
 
-hl.bind(SUPER.."N", hl.dsp.exec_cmd("LD_PRELOAD=/usr/local/lib/spotify-adblock.so spotify"))
+hl.bind(SUPER.."N", hl.dsp.exec_cmd(spotify))
 
 hl.bind(SUPER.."V", hl.dsp.exec_cmd("clipvault list | rofi -dmenu -display-columns 2 | clipvault get | wl-copy"))
 
@@ -447,7 +454,7 @@ hl.window_rule({
 })
 hl.window_rule({
     match = {
-        class = ".*vesktop.*",
+        class = ".*"..discord..".*",
     },
 
     workspace = "4",
@@ -466,6 +473,14 @@ hl.window_rule({
 
     workspace = "2",
 })
+
+for i = 1, 5 do
+    hl.workspace_rule({workspace = '"'..i..'"', persistent = true})
+end
+
+hl.workspace_rule({workspace = "2", on_created_empty="ghostty"})
+hl.workspace_rule({workspace = "4", on_created_empty=discord})
+hl.workspace_rule({workspace = "special:mahou", on_created_empty=spotify})
 
 
 
