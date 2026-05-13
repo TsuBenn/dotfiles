@@ -215,7 +215,13 @@ Singleton {
     }
 
     function copy_clipboard(text: string) {
-        power.command = ["wl-copy", `"${text}"`]
+        power.command = ["wl-copy", text]
+        power.startDetached()
+        power.command = []
+    }
+
+    function type(text: string) {
+        power.command = ["wtype", text]
         power.startDetached()
         power.command = []
     }

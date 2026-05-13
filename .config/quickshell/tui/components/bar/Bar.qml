@@ -294,11 +294,18 @@ Scope {
                             onVisibleChanged: {
                                 if (visible) {
                                     Cava.requestStart()
+                                } else {
+                                    Cava.release()
                                 }
                             }
 
                             w: bg.w
-                            h: bg.h/2
+                            h: ((bg.h+1)/2)*(opacity/0.5)
+
+                            Behavior on h {NumberAnimation {
+                                duration: 500
+                                easing.type: Easing.OutCubic
+                            }}
 
                             spacing: 2
                             barW: 2
@@ -312,14 +319,26 @@ Scope {
 
                         }
 
-                        BgCava {
-                            anchors.bottom: parent.bottom
+                        Loader {
+
+                            active: SettingsInfo.bgCava
+
+                            sourceComponent: ColumnLayout {
+
+                                spacing: 0
+
+                                BgCava {
+                                    rotation: 180
+                                }
+
+                                BgCava {
+                                }
+
+
+                            }
                         }
 
-                        BgCava {
-                            anchors.top: parent.top
-                            rotation: 180
-                        }
+
 
                     }
 
@@ -392,7 +411,7 @@ Scope {
 
                 HyprlandFocusGrab {
                     active: root.shield
-                    windows: [popups_screen,root]
+                    windows: [root, popups_screen]
                 }
 
                 color: "transparent"
@@ -400,7 +419,6 @@ Scope {
                 mask: Region {
                     item: shield
                 }
-
 
                 Item {
 

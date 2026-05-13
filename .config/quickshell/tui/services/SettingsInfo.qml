@@ -18,6 +18,7 @@ Singleton {
     property bool optimizeMemory    : false // Reduce memory usage significantly, but takes more time to load UI elements
 
     property bool hyprAnim          : false // Toggles Hyprland animations
+    property bool hyprBlur          : false // Toggles Hyprland background blur for windows
 
     property bool bgCava            : true  // Run cava on top of the wallpaper
 
@@ -28,6 +29,7 @@ Singleton {
         "safeNotifications",
         "dnd",
         "hyprAnim",
+        "hyprBlur",
         "bgCava",
     ]
 
@@ -90,38 +92,8 @@ Singleton {
         AudioInfo.playSound(sounds[sound], 1)
     }
 
-    function toggleBgCava() {
-        bgCava = !bgCava
-        saveConfig()
-    }
-
-    function toggleHyprAnim() {
-        hyprAnim = !hyprAnim
-        saveConfig()
-    }
-
-    function toggleDND() {
-        dnd = !dnd
-        saveConfig()
-    }
-
-    function toggleMinimal() {
-        minimal = !minimal
-        saveConfig()
-    }
-
-    function toggleHints() {
-        hints = !hints
-        saveConfig()
-    }
-
-    function toggleSafeNotifications() {
-        safeNotifications = !safeNotifications
-        saveConfig()
-    }
-
-    function toggleOptimizeMemory() {
-        optimizeMemory = !optimizeMemory
+    function toggle(config) {
+        root[config] = !root[config]
         saveConfig()
     }
 
@@ -143,20 +115,21 @@ Singleton {
         function audio_check(): void {
             root.audio_check()
         }
-        function toggle_grids(): void {root.showGrid()}
-        function toggle_minimal(): void {root.toggleMinimal()}
-        function toggle_memory_optimize(): void {root.toggleOptimizeMemory()}
-        function toggle_safe_notifications(): void {root.toggleSafeNotifications()}
-        function toggle_hints(): void {root.toggleHints()}
-        function toggle_dnd(): void {root.toggleDND()}
-        function toggle_hypranim(): void {root.toggleHyprAnim()}
-        function toggle_bgcava(): void {root.toggleBgCava()}
+        function toggle_grids(): void              { root.showGrid() }
+        function toggle_minimal(): void            { root.toggle("minimal") }
+        function toggle_memory_optimize(): void    { root.toggle("optimizeMemory") }
+        function toggle_safe_notifications(): void { root.toggle("safeNotifications") }
+        function toggle_hints(): void              { root.toggle("hints") }
+        function toggle_dnd(): void                { root.toggle("dnd") }
+        function toggle_hypranim(): void           { root.toggle("hyprAnim") }
+        function toggle_hyprblur(): void           { root.toggle("hyprBlur") }
+        function toggle_bgcava(): void             { root.toggle("bgCava") }
 
 
         function dummy(): void {
             // Contains debugging features that can be accessed by SUPER + P
 
-            //HyprInfo.getCursorPos()
+            PopupManager.toggle("color")
         }
     }
 

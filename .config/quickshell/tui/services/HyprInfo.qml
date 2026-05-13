@@ -30,7 +30,6 @@ Singleton {
     signal cursorPos(ex: int, why: int)
 
     function switchWorkspace(n) {
-        console.log("what")
         if (Number.isInteger(n)) {
             Hyprland.dispatch(root.fmt("hl.dsp.focus({workspace = {}})", n)) // New lua config
             return
@@ -69,6 +68,7 @@ Singleton {
             root.hyprEvent(event.name)
             //console.log(event.name)
         })
+
     }
 
     Process {

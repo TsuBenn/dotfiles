@@ -20,13 +20,13 @@ Item {
     property color color: Colors.bgOverlay
 
     property color fg: Colors.fgBase 
-    property int percent: SystemInfo.cpuusage
+    property real percent: SystemInfo.cpuusage
 
     property int percentSmoother: 200
 
     property int type: 1
 
-    property int raw_percent: percent
+    property real raw_percent: percent
 
     property int min: 0
     property int max: 100
@@ -45,7 +45,7 @@ Item {
 
     property int wheelInterval: 5
     property int adjustInterval: 100
-    property int syncDelay: 100
+    property int syncDelay: 5000 // recommend 5s
 
     Behavior on percent {NumberAnimation {duration: root.percentSmoother; easing.type: Easing.OutCubic}}
 

@@ -19,6 +19,10 @@ Singleton {
         }
     }
 
+    function reload() {
+        load.reload()
+    }
+
     signal applied()
 
     // Background
@@ -103,22 +107,19 @@ Singleton {
         root.applied()
     }
 
-    Component.onCompleted: {
-        get.running = true
-    }
-
     property var colors: ({})
 
-    Process {
-        id: get
-        command: ["python", SystemInfo.configdir + "/scripts/config.py", "--colors"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                if (text) {
-                    root.colors = JSON.parse(text)
-                    root.apply()
-                }
-            }
+    FileView {
+
+        id: load
+
+        path: SystemInfo.configdir + "/scripts/colors.json"
+
+        onLoaded: {
+            root.colors = JSON.parse(text())
+            root.apply()
         }
+
+
     }
 }

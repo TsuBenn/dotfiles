@@ -11,14 +11,24 @@ local spotify = "LD_PRELOAD=/usr/local/lib/spotify-adblock.so spotify"
 -- Monitor
 
 hl.monitor({
-    output = "eDP-1", -- e.g DP-1
+    output = "", -- e.g DP-1
     mode = "prefered", -- e.g 1920x1080@60
     position = "auto",
     scale = "1",
 })
 
+local function file_exists(path)
+    local f = io.open(path, "r")
+    if f then f:close() return true end
+    return false
+end
+
 package.path = package.path .. ";" .. os.getenv("HOME") .. "/?.lua"
-require("hyprmonitor")   -- loads ~/myfile.lua
+if file_exists(os.getenv("HOME") .. "/hyprmonitor.lua") then
+    require("hyprmonitor")
+else
+    hl.exec_cmd('notify-send "HYPRLAND" "<i>hyprmonitor.lua</i> can not be found in the HOME directory.\nIf you want to configure your monitor settings, please create a file named <i>hyprmonitor.lua</i> in the home directory and put your monitor configuration there." --app-name="System"')
+end
 
 hl.on("hyprland.start", function ()
     hl.exec_cmd(browser)
@@ -242,7 +252,6 @@ hl.bind(SUPER.."F1", hl.dsp.exit)
 hl.bind(SUPER.."E", hl.dsp.exec_cmd(fileManager))
 hl.bind(SUPER.."F", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(SUPER.."space", hl.dsp.exec_cmd(menu))
-hl.bind(SUPER.."P", hl.dsp.window.pseudo())
 
 hl.bind(SUPER.."+ slash",  hl.dsp.exec_cmd("hypruler"))
 
@@ -262,8 +271,6 @@ hl.bind(SUPER.."N", hl.dsp.exec_cmd(spotify))
 hl.bind(SUPER.."V", hl.dsp.exec_cmd("clipvault list | rofi -dmenu -display-columns 2 | clipvault get | wl-copy"))
 
 hl.bind(SUPER.."period", hl.dsp.exec_cmd(emoji))
-
-hl.bind(SUPER..SHIFT.."P", hl.dsp.exec_cmd("pkill -f qs"))
 
 hl.bind(SUPER.."EQUAL", hl.dsp.exec_cmd("qalculate-qt"))
 hl.bind("XF86Calculator", hl.dsp.exec_cmd("qalculate-qt"))
@@ -291,7 +298,7 @@ hl.bind(SUPER.."tab", function()
         }
     })
 end
-, {long_press = true})
+    , {long_press = true})
 
 hl.bind(SUPER..SHIFT.."tab", function()
     zoom = math.max(zoom * zoom_strength, 1)
@@ -493,6 +500,7 @@ hl.workspace_rule({workspace = "special:mahou", on_created_empty=spotify})
 -- overlayLayerRule:set_enabled(false)
 
 -- Hyprland-run windowrule
+
 hl.window_rule({
     name  = "move-hyprland-run",
     match = { class = "hyprland-run" },

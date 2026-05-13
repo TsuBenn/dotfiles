@@ -10,6 +10,7 @@ Item {
     id: root
 
     property string text: "cell text"
+    property string raw_text: text
     property font font: Cell.font
     property color color: Colors.fgBase
     property color bg: "transparent"
@@ -23,15 +24,30 @@ Item {
     property int h: 0
 
     Component.onCompleted: {
+        raw_text = text
         if (wrap && preferedW > 0) {
             // We use a temporary variable to prevent infinite loops
             let wrapped = wrapText(text, preferedW);
-            if (text !== wrapped) text = wrapped; 
+            if (text !== wrapped) raw_text = wrapped; 
         }
 
         // Now update the actual dimensions
         w = calculateRequiredWidth();
-        h = text.split("\n").length;
+        h = raw_text.split("\n").length;
+    }
+
+    // Trigger this whenever the text changes
+    onTextChanged: {
+        raw_text = text
+        if (wrap && preferedW > 0) {
+            // We use a temporary variable to prevent infinite loops
+            let wrapped = wrapText(text, preferedW);
+            if (text !== wrapped) raw_text = wrapped; 
+        }
+
+        // Now update the actual dimensions
+        w = calculateRequiredWidth();
+        h = raw_text.split("\n").length;
     }
 
     function getCharWidth(char) {
@@ -107,7 +123,7 @@ Item {
 
                 // Normal case
                 if (currentWidth + tokenWidth > maxWidth) {
-                    wrapped.push(current.trim());
+                    wrapped.push(current);
                     current = token;
                     currentWidth = tokenWidth;
                 } else {
@@ -117,25 +133,13 @@ Item {
             }
 
             if (current.length > 0) {
-                wrapped.push(current.trim());
+                wrapped.push(current);
             }
         }
 
         return wrapped.join('\n');
     }
 
-    // Trigger this whenever the text changes
-    onTextChanged: {
-        if (wrap && preferedW > 0) {
-            // We use a temporary variable to prevent infinite loops
-            let wrapped = wrapText(text, preferedW);
-            if (text !== wrapped) text = wrapped; 
-        }
-
-        // Now update the actual dimensions
-        w = calculateRequiredWidth();
-        h = text.split("\n").length;
-    }
 
     implicitHeight: Cell.h(h)
     implicitWidth: Cell.w(w)
@@ -271,7 +275,7 @@ Item {
 
             Repeater {
 
-                model: root.text.split("\n")
+                model: root.raw_text.split("\n")
 
                 delegate: RowLayout {
 

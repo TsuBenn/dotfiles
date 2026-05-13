@@ -75,6 +75,7 @@ Item {
         padding: root.padding
         type: 1
         color: root.color.fg
+        bg: root.color.bg
 
     }
 

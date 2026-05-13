@@ -6,11 +6,17 @@ Singleton {
 
     id: root
 
-    readonly property bool active: active_fields > 0
+    property bool active: false
 
     property int active_fields: 0
 
     onActive_fieldsChanged: {
+        if (active_fields > 0) {
+            active = true
+        } else {
+            active = false
+        }
+
         //console.log(`active fields: ${active_fields}`)
     }
 

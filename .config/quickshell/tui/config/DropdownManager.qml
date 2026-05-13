@@ -30,7 +30,7 @@ Singleton {
         w = mw
         h = mh
         x = Cell.wCount(mx)
-        y = Cell.hCount(my,"floor") + 1
+        y = Cell.hCount(my,"floor")
         root.selected = selected
         root.padding = padding
         root.color = color

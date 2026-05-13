@@ -22,6 +22,12 @@ SET_COLOR="hl.config({
         rounding = 0,
         shadow  = {
             enabled = false
+        },
+        blur = {
+            enabled = ${4},
+            size = 1,
+            passes = 2,
+            vibrancy = 0.2,
         }
     },
 
@@ -60,10 +66,13 @@ hl.animation({ leaf = \"zoomFactor\",          enabled = 1, speed = 5,    bezier
 
 hl.unbind(\"SUPER + space\")
 hl.unbind(\"SUPER + escape\")
+hl.unbind(\"SUPER + SHIFT + P\")
 hl.unbind(\"SUPER + P\")
 hl.bind(\"SUPER + space\", hl.dsp.exec_cmd(\"qs -c tui ipc call config toggle_popup quick_menu\"))
 hl.bind(\"SUPER + escape\", hl.dsp.exec_cmd(\"qs -c tui ipc call launcher toggle\"))
 hl.bind(\"SUPER + P\", hl.dsp.exec_cmd(\"qs -c tui ipc call config dummy\"))
+hl.bind(\"SUPER + SHIFT + P\", hl.dsp.exec_cmd(\"pkill -f qs\"))
+
 
 "
 

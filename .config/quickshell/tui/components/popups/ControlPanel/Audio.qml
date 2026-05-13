@@ -119,7 +119,7 @@ ColumnLayout {
                                             percent: stream.volume
                                             interactive: true
                                             adjustOnHold: false
-                                            syncDelay: 20000
+                                            syncDelay: 5000
                                             adjustOnPress: true
                                             cellInterval: 2
 
@@ -218,7 +218,7 @@ ColumnLayout {
             w: root.box.w - 6
             percent: AudioInfo.volume
             interactive: true
-            syncDelay: 200
+            syncDelay: 5000
             adjustOnHold: false
             cellInterval: 2
 

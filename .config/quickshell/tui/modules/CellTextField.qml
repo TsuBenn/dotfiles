@@ -23,8 +23,10 @@ Item {
 
     property bool autoClear: false
 
-    property bool showCursor : true
+    property bool showCursor : false
     property bool blinkCursor : true
+
+    property bool canCopy: true
 
     property bool escapeToUnFocus : true
 
@@ -34,6 +36,9 @@ Item {
     property bool visual: visualPos != 0
 
     property bool editable: true
+
+    property bool scroll: true
+    property bool wrap: false
 
     implicitWidth: root.w > 0 ? Cell.w(w) : text.length + 1
     implicitHeight: root.h > 0 ? Cell.h(h) : 1
@@ -54,11 +59,16 @@ Item {
     signal entered(text: string)
     signal textInput(text: string, change: string, mode: string)
     signal textAdded(text: string)
+    signal textCopied(text: string)
     signal textRemoved(text: string)
 
     clip: true
 
     onFocusChanged: {
+        if (disabled) {
+            unFocus()
+            return
+        }
         if (focus) {
             TextFieldManager.activated()
             resetCursor()
@@ -75,7 +85,8 @@ Item {
             set("")
         }
         if (bindText) {
-            set(bindText)
+            text = Qt.binding(()=>bindText)
+            cursorPos = bindText.length
         } 
     }
 
@@ -114,6 +125,9 @@ Item {
 
     onVisibleChanged: {
         clear()
+        if (bindText != "") {
+            text = Qt.binding(()=>bindText)
+        }
         if (visible && focusOnVisible) {
             focus = true
             return
@@ -157,119 +171,179 @@ Item {
 
     }
 
-    Item {
+    onTextCopied: {
+        copied_anim.restart()
+    }
 
-        id: textfield
+    SequentialAnimation {
+        id: copied_anim
+        ColorAnimation {
+            target: snap
+            property: "color"
+            to: root.color
+            duration: 0
+        }
+        ColorAnimation {
+            target: snap
+            property: "color"
+            to: Colors.transparent(root.color, 0)
+            duration: 500
+            easing.type: Easing.OutCubic
+        }
+        ColorAnimation {
+            target: snap
+            property: "color"
+            to: "transparent"
+            duration: 0
+            easing.type: Easing.OutCubic
+        }
+    }
 
-        property int offset: 0
 
-        x: Math.min(Cell.w(offset),0)
+    ColumnLayout {
 
-        implicitHeight: Cell.h(root.h)
-        implicitWidth: Cell.w(root.w - (root.unit.length > 0 ? root.unit.length - 1 : 0))
+        spacing: 0
 
-        Loader {
+        Item {
 
-            active: root.visible || !SettingsInfo.optimizeMemory
+            id: textfield
 
-            sourceComponent: Item {
+            property int offset: 0
 
-                CellText {
+            Layout.leftMargin: (!root.wrap && root.scroll) ? Math.min(Cell.w(offset),0) : 0
 
-                    visible: root.text.length == 0
+            implicitHeight: Cell.h(1)
+            implicitWidth: Cell.w(root.w - (root.unit.length > 0 ? root.unit.length - 1 : 0))
 
-                    id: placeholder
+            Repeater {
 
-                    text: root.placeholder
-                    color: root.disabled_color
+                model: root.h
 
-                }
+                delegate: Loader {
 
-                CellText {
+                    id: loader
 
-                    visible: !root.hidden
+                    required property int index
 
-                    id: input
+                    active: root.visible || !SettingsInfo.optimizeMemory
 
-                    text: root.text
-                    font: root.font
-                    color: root.disabled ? root.disabled_color : root.color
+                    sourceComponent: Item {
 
-                }
+                        y: Cell.h(loader.index)
+                        x: -Cell.w(loader.index*root.w)
 
-                CellText {
+                        CellText {
 
-                    text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + "█".repeat(Math.abs(root.visualPos))
-                    font: root.font
-                    color: root.visual_color
+                            visible: root.text.length == 0
 
-                }
+                            id: placeholder
 
-                CellText {
+                            text: root.placeholder
+                            color: root.disabled_color
 
-                    id: cursor
+                        }
 
-                    text: " ".repeat(root.cursorPos) + (root.showCursor && !(root.visual && root.cursorPos == root.text.length) ? "█" : "")
-                    font: root.font
-                    color: root.disabled ? root.disabled_color : root.color
+                        CellText {
 
-                    CellText {
+                            visible: !root.hidden
 
-                        visible: root.showCursor && !root.hidden
+                            id: input
 
-                        text: " ".repeat(root.cursorPos) + (root.text[root.cursorPos] ?? "")
-                        color: root.invert
+                            text: root.text
+                            font: root.font
+                            color: root.disabled ? root.disabled_color : root.color
 
-                    }
+                        }
 
-                }
+                        CellText {
 
-                CellText {
+                            text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + "█".repeat(Math.abs(root.visualPos))
+                            font: root.font
+                            color: root.visual_color
 
-                    id: visual
+                        }
 
-                    visible: !root.hidden
+                        CellText {
 
-                    text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + root.text.slice(root.visualPos > 0 ? root.cursorPos : root.cursorPos+root.visualPos, root.visualPos > 0 ? root.cursorPos+root.visualPos : root.cursorPos)
-                    font: root.fontB
-                    color: root.disabled ? root.disabled_color : root.invert
+                            id: cursor
 
-                }
+                            text: " ".repeat(root.cursorPos) + (root.showCursor && !(root.visual && root.cursorPos == root.text.length) ? "█" : "")
+                            font: root.font
+                            color: root.disabled ? root.disabled_color : root.color
 
-                RowLayout {
+                            CellText {
 
-                    visible: root.hidden
+                                visible: root.showCursor && !root.hidden
 
-                    spacing: 0
+                                text: " ".repeat(root.cursorPos) + (root.text[root.cursorPos] ?? "")
+                                color: root.invert
 
-                    Repeater {
-
-                        model: root.text.length
-
-                        delegate: CellText {
-
-                            required property int index
-
-                            property bool invert: {
-                                if (root.visualPos > 0 && index >= root.cursorPos && index < root.cursorPos+root.visualPos) {
-                                    return true
-                                } else if (root.visualPos < 0 && index <= root.cursorPos && index > root.cursorPos+root.visualPos) {
-                                    return true
-                                }
-                                return false
                             }
 
-                            text: "*"
-                            font: invert ? root.fontB : root.font
-                            color: root.disabled ? root.disabled_color : (invert ? root.invert : root.color)
                         }
-                    }
 
+                        CellText {
+
+                            id: visual
+
+                            visible: !root.hidden
+
+                            text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + root.text.slice(root.visualPos > 0 ? root.cursorPos : root.cursorPos+root.visualPos, root.visualPos > 0 ? root.cursorPos+root.visualPos : root.cursorPos)
+                            font: root.fontB
+                            color: root.disabled ? root.disabled_color : root.invert
+
+                        }
+
+                        RowLayout {
+
+                            visible: root.hidden
+
+                            spacing: 0
+
+                            Repeater {
+
+                                model: root.text.length
+
+                                delegate: CellText {
+
+                                    required property int index
+
+                                    property bool invert: {
+                                        if (root.visualPos > 0 && index >= root.cursorPos && index < root.cursorPos+root.visualPos) {
+                                            return true
+                                        } else if (root.visualPos < 0 && index <= root.cursorPos && index > root.cursorPos+root.visualPos) {
+                                            return true
+                                        }
+                                        return false
+                                    }
+
+                                    text: "*"
+                                    font: invert ? root.fontB : root.font
+                                    color: root.disabled ? root.disabled_color : (invert ? root.invert : root.color)
+                                }
+                            }
+
+                        }
+
+                    }
                 }
 
             }
+
+
+
         }
 
+    }
+
+    Cells {
+
+        id: snap
+
+        h: root.h
+        w: root.w
+
+        color: "transparent"
 
     }
 
@@ -466,14 +540,55 @@ Item {
         root.textAdded(char)
     }
 
+    function copy_selected() {
+        if (root.visualPos == 0) return
+        if (!root.canCopy) return
+        let copy = ""
+        if (root.visual) {
+            if (root.visualPos > 0) {
+                copy = root.text.slice(root.cursorPos, root.cursorPos+root.visualPos)
+            }
+            if (root.visualPos < 0) {
+                copy = root.text.slice(root.cursorPos+root.visualPos, root.cursorPos)
+            }
+        }
+        SystemInfo.copy_clipboard(copy)
+        root.textCopied(copy)
+    }
+
+    function cut_selected() {
+        if (root.visualPos == 0) return
+        if (!root.canCopy) return
+        let copy = ""
+        if (root.visual) {
+            if (root.visualPos > 0) {
+                copy = root.text.slice(root.cursorPos, root.cursorPos+root.visualPos)
+                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
+            }
+            if (root.visualPos < 0) {
+                copy = root.text.slice(root.cursorPos+root.visualPos, root.cursorPos)
+                root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
+                root.cursorPos = root.cursorPos+root.visualPos
+            }
+            root.visualPos = 0
+        }
+        SystemInfo.copy_clipboard(copy)
+        root.textCopied(copy)
+    }
+
+
     Keys.onPressed: (event) => {
         if (root.disabled) return
         if (event.key == Qt.Key_Return) {
             root.enter()
+        } else if (event.key == Qt.Key_C && event.modifiers == Qt.ControlModifier) {
+            root.copy_selected()
+        } else if (event.key == Qt.Key_X && event.modifiers == Qt.ControlModifier) {
+            root.cut_selected()
+        } else if (event.key == Qt.Key_V && event.modifiers == Qt.ControlModifier) {
+            ClipboardInfo.paste()
         } else if (event.key == Qt.Key_Escape) {
-            if (root.escapeToUnFocus) {
-                root.unFocus()
-            }
+            if (root.escapeToUnFocus) root.unFocus() 
         } else if (event.key == Qt.Key_Backspace && event.modifiers == Qt.ControlModifier) {
             root.delete_word_back()
         } else if (event.key == Qt.Key_Backspace) {

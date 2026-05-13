@@ -1,1 +1,1 @@
-{"hints":true,"minimal":false,"optimizeMemory":false,"safeNotifications":false,"dnd":false,"hyprAnim":false,"bgCava":false}
+{"hints":true,"minimal":false,"optimizeMemory":true,"safeNotifications":false,"dnd":false,"hyprAnim":true,"hyprBlur":true,"bgCava":true}
