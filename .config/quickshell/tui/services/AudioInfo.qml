@@ -243,11 +243,6 @@ Singleton {
 
                     switch (app.trim()) {
                     }
-                    switch (name.trim()) {
-                        case SystemInfo.configdir + "/assets/sfx/mambo.mp3": continue
-                        case SystemInfo.configdir + "/assets/sfx/mambo_tongye.mp3": continue
-                        case SystemInfo.configdir + "/assets/sfx/mambo_wow.mp3": continue
-                    }
 
                     streams.push({
                         "id": id, 

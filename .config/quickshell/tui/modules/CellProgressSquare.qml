@@ -267,6 +267,7 @@ Item {
                 }
                 return
             }
+            root.released(button)
             root.adjusted(root.clamp(root.raw_percent))
             sync.restart()
         }
