@@ -109,6 +109,28 @@ Singleton {
 
     property var colors: ({})
 
+    property var dummy: {
+        "name"           : "",
+        "description"    : "",
+        "bgbase"         : "",
+        "bgSurface"      : "",
+        "bgOverlay"      : "",
+        "fgBase"         : "",
+        "onAccent"       : "",
+        "fgDim"          : "",
+        "fgSubtle"       : "",
+        "accentStrong"   : "",
+        "accentDim"      : "",
+        "secondary"      : "",
+        "info"           : "",
+        "success"        : "",
+        "warning"        : "",
+        "danger"         : "",
+        "borderActive"   : "",
+        "borderInactive" : "",
+    }
+
+
     FileView {
 
         id: load

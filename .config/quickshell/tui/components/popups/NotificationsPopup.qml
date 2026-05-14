@@ -86,7 +86,7 @@ CellPopup {
                 }
 
                 w: root.w
-                h: 4 + (body.text.split("\n").length+(body.text.split("\n").length > 10)-1)
+                h: body.h + 3
 
                 border.color: {
                     if (popup.urgency == 2) {
@@ -169,22 +169,7 @@ CellPopup {
 
                             CellText {
                                 id: body
-                                text: {
-                                    if (popup.body?.length > 0) {
-                                        if (!SettingsInfo.safeNotifications || popup.app == "") {
-                                            const body = popup.body.trim()
-                                            const lines = body.split("\n")
-                                            if (lines.length > 5) {
-                                                return lines.slice(0,4).join("\n")
-                                            }
-                                            return body
-                                        } else {
-                                            return "[Safe Notifications is ON]"
-                                        }
-                                    } else {
-                                        return ""
-                                    }
-                                }
+                                text: body
                                 preferedW: root.w - 14
                                 wrap: true
                                 color: {
