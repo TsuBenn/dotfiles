@@ -70,7 +70,7 @@ CellPopup {
                         width: Cell.w(box.contentW)
                         height: Cell.h(preview.h)
 
-                        source: (selection.items[2] ? SystemInfo.homedir + WallpaperInfo.cache_path : "") + selection.items[2] + ".jpg"
+                        source: (selection.items[2] ? SystemInfo.homedir + WallpaperInfo.cache_path + selection.items[2] + ".jpg" : "")
 
                         fillMode: Image.PreserveAspectCrop
 
@@ -214,7 +214,7 @@ CellPopup {
                                         width: Cell.w(thumbnail.w)
                                         height: Cell.h(thumbnail.h-1)
 
-                                        source: (thumbnail.modelData ? SystemInfo.homedir + WallpaperInfo.cache_path : "") + thumbnail.modelData + ".jpg"
+                                        source: (thumbnail.modelData ? SystemInfo.homedir + WallpaperInfo.cache_path + thumbnail.modelData + ".jpg" : "")
 
                                         asynchronous: true
 

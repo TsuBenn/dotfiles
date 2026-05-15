@@ -98,7 +98,7 @@ CellPopup {
                                     type: 0
                                     color: Colors.bgOverlay
                                 }
-                                
+
                             }
 
                             MouseControl {
@@ -165,6 +165,44 @@ CellPopup {
                         w: preview.w
                         type: 2
                         color: color.color.accentStrong
+                        bg: "transparent"
+                    }
+
+                    CellText {
+                        Layout.leftMargin: Cell.w(1)
+                        text: "Name: "
+                        color: color.color.fgDim
+                    }
+
+                    CellText {
+                        Layout.leftMargin: Cell.w(1)
+                        text: color.color.name
+                        color: color.color.fgBase
+                        preferedW: preview.w-2
+                        font: Cell.fontB
+                    }
+
+                    CellText {
+                        Layout.leftMargin: Cell.w(1)
+                        text: "Description: "
+                        color: color.color.fgDim
+                    }
+
+                    CellText {
+                        Layout.leftMargin: Cell.w(1)
+                        text: color.color.description
+                        color: color.color.fgBase
+                        preferedW: preview.w-2
+                        preferedH: 3
+                        wrap: true
+                        font: Cell.fontB
+                    }
+
+                    CellSeparator {
+                        w: preview.w
+                        type: 0
+                        color: color.color.accentDim
+                        bg: "transparent"
                     }
 
                 }

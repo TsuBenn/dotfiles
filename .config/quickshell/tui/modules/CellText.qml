@@ -18,26 +18,41 @@ Item {
     property bool centered: false
     property bool wrap: false
 
+    property bool overflowed: false
+
+    component Type: Item {
+        override property bool enabled: true
+        property color color: Colors.secondary
+        property font font: Cell.font
+    }
+
+    property Type scroll: Type {}
+
+    property int offset: 0
+
     property int preferedW: 0
+    property int preferedH: 0
 
     property int w: 0
     property int h: 0
+    property int realH: 0
+
+    property bool debug: false
 
     Component.onCompleted: {
-        raw_text = text
-        if (wrap && preferedW > 0) {
-            // We use a temporary variable to prevent infinite loops
-            let wrapped = wrapText(text, preferedW);
-            if (text !== wrapped) raw_text = wrapped; 
-        }
-
-        // Now update the actual dimensions
-        w = calculateRequiredWidth();
-        h = raw_text.split("\n").length;
+        updateText()
     }
 
     // Trigger this whenever the text changes
     onTextChanged: {
+        updateText()
+    }
+
+    onOffsetChanged: {
+        updateText()
+    }
+
+    function updateText() {
         raw_text = text
         if (wrap && preferedW > 0) {
             // We use a temporary variable to prevent infinite loops
@@ -45,9 +60,25 @@ Item {
             if (text !== wrapped) raw_text = wrapped; 
         }
 
+        let buff_h = raw_text.split("\n").length
+        root.realH = buff_h
+
+        if (wrap && preferedH > 0 && preferedW > 0 && buff_h > preferedH) {
+            overflowed = true
+            let wrapped = wrapText(text, preferedW-2);
+            if (text !== wrapped) raw_text = wrapped; 
+
+            let lines = raw_text.split("\n")
+            lines = lines.slice(offset,offset + preferedH)
+            lines = lines.map(item => item == "" ? " " : item)
+            raw_text = lines.join("\n")
+        } else {
+            overflowed = false
+        }
+
         // Now update the actual dimensions
         w = calculateRequiredWidth();
-        h = raw_text.split("\n").length;
+        h = preferedH > 0 ? preferedH : raw_text.split("\n").length;
     }
 
     function getCharWidth(char) {
@@ -83,63 +114,141 @@ Item {
     }
 
     function wrapText(text, maxWidth) {
-
         const lines = text.split('\n');
         const wrapped = [];
 
+        // Basic unicode width check
+        function charWidth(char) {
+            const code = char.codePointAt(0);
 
-        for (const line of lines) {
-            // preserve empty lines
-            if (line.length === 0) {
+            // Tabs = 4 spaces
+            if (char === '\t') return 4;
+
+            // Control chars
+            if (code <= 31 || (code >= 0x7f && code <= 0x9f)) {
+                return 0;
+            }
+
+            // Wide chars (CJK, emoji, etc.)
+            if (
+                code >= 0x1100 &&
+                (
+                    code <= 0x115f ||
+                    code === 0x2329 ||
+                    code === 0x232a ||
+                    (code >= 0x2e80 && code <= 0xa4cf) ||
+                    (code >= 0xac00 && code <= 0xd7a3) ||
+                    (code >= 0xf900 && code <= 0xfaff) ||
+                    (code >= 0xfe10 && code <= 0xfe19) ||
+                    (code >= 0xfe30 && code <= 0xfe6f) ||
+                    (code >= 0xff00 && code <= 0xff60) ||
+                    (code >= 0xffe0 && code <= 0xffe6) ||
+                    (code >= 0x1f300 && code <= 0x1faff)
+                )
+            ) {
+                return 2;
+            }
+
+            return 1;
+        }
+
+        function stringWidth(str) {
+            let width = 0;
+            for (const char of str) {
+                width += charWidth(char);
+            }
+            return width;
+        }
+
+        // Split while preserving spaces
+        function tokenize(line) {
+            return line.match(/\s+|\S+/g) || [];
+        }
+
+        // Break very long tokens (paths, URLs, etc.)
+        function breakLongToken(token, maxWidth) {
+            const parts = [];
+            let current = '';
+            let width = 0;
+
+            for (const char of token) {
+                const w = charWidth(char);
+
+                if (width + w > maxWidth) {
+                    parts.push(current);
+                    current = char;
+                    width = w;
+                } else {
+                    current += char;
+                    width += w;
+                }
+            }
+
+            if (current) {
+                parts.push(current);
+            }
+
+            return parts;
+        }
+
+        for (const originalLine of lines) {
+            // Preserve fully empty lines
+            if (originalLine.length === 0) {
                 wrapped.push('');
                 continue;
             }
 
+            const tokens = tokenize(originalLine);
+
             let current = '';
             let currentWidth = 0;
 
-            // split but KEEP spaces as tokens
-            const tokens = line.match(/\S+|\s+/g) || [];
+            for (const token of tokens) {
+                const tokenWidth = stringWidth(token);
 
-            for (let token of tokens) {
-                let tokenWidth = getStringWidth(token);
-
-                // If token itself is longer than maxWidth → hard split
+                // Handle huge token
                 if (tokenWidth > maxWidth) {
-                    for (const ch of token) {
-                        const chWidth = getCharWidth(ch);
-
-                        if (currentWidth + chWidth > maxWidth) {
-                            wrapped.push(current);
-                            current = '';
-                            currentWidth = 0;
-                        }
-
-                        current += ch;
-                        currentWidth += chWidth;
+                    // Flush current line first
+                    if (current) {
+                        wrapped.push(current);
+                        current = '';
+                        currentWidth = 0;
                     }
+
+                    const broken = breakLongToken(token, maxWidth);
+
+                    for (let i = 0; i < broken.length; i++) {
+                        const part = broken[i];
+
+                        if (i === broken.length - 1) {
+                            current = part;
+                            currentWidth = stringWidth(part);
+                        } else {
+                            wrapped.push(part);
+                        }
+                    }
+
                     continue;
                 }
 
-                // Normal case
+                // Normal wrapping
                 if (currentWidth + tokenWidth > maxWidth) {
                     wrapped.push(current);
-                    current = token;
-                    currentWidth = tokenWidth;
+
+                    // Remove ONLY leading spaces caused by wrapping
+                    current = token.replace(/^\s+/, '');
+                    currentWidth = stringWidth(current);
                 } else {
                     current += token;
                     currentWidth += tokenWidth;
                 }
             }
 
-            if (current.length > 0) {
-                wrapped.push(current);
-            }
+            wrapped.push(current);
         }
 
         return wrapped.join('\n');
     }
-
 
     implicitHeight: Cell.h(h)
     implicitWidth: Cell.w(w)
@@ -267,72 +376,117 @@ Item {
 
         active: root.visible || !SettingsInfo.optimizeMemory
 
-        sourceComponent: ColumnLayout {
+        sourceComponent: Cells {
 
-            id: cell_text
+            w: root.w
+            h: root.h
 
-            spacing: 0
+            color: "transparent"
 
-            Repeater {
+            ColumnLayout {
 
-                model: root.raw_text.split("\n")
+                id: cell_text
 
-                delegate: RowLayout {
+                spacing: 0
 
-                    Layout.leftMargin: root.centered ? Cell.centerWCell(implicitWidth, Cell.w(root.w)) : 0
+                Repeater {
 
-                    id: cell_row
+                    model: root.raw_text.split("\n")
 
-                    required property int index
-                    required property string modelData
+                    delegate: RowLayout {
 
-                    spacing: 0
+                        Layout.leftMargin: root.centered ? Cell.centerWCell(implicitWidth, Cell.w(root.w)) : 0
 
-                    Repeater {
+                        id: cell_row
 
-                        model: root.preferedW > 0 
-                        ? root.splitCJK(root.truncate(parent.modelData, root.preferedW)) 
-                        : root.splitCJK(parent.modelData)
+                        required property int index
+                        required property string modelData
 
-                        delegate: Cells {
+                        spacing: 0
 
-                            id: text_cell
+                        Repeater {
 
-                            required property string text
-                            required property int cells
-                            required property bool isCJK
+                            model: root.preferedW > 0 
+                            ? root.splitCJK(root.truncate(parent.modelData, root.preferedW)) 
+                            : root.splitCJK(parent.modelData)
 
-                            clip: root.clip
+                            delegate: Cells {
 
-                            h: 1
-                            w: cells
+                                id: text_cell
 
-                            whole: true
+                                required property string text
+                                required property int cells
+                                required property bool isCJK
 
-                            color: root.bg
+                                clip: root.clip
 
-                            Text {
+                                h: 1
+                                w: cells
 
-                                anchors.centerIn: !text_cell.isCJK ? undefined : parent
+                                whole: true
 
-                                anchors.left: !text_cell.isCJK ? text_cell.left : undefined
-                                anchors.top: !text_cell.isCJK ? text_cell.top : undefined
+                                color: root.bg
 
-                                anchors.topMargin: !text_cell.isCJK ? -(Cell.cellHeight/0.9)*0.05 : undefined
+                                Text {
 
-                                id: texts
-                                textFormat: Text.RichText
-                                text: text_cell.text
-                                font: root.font
-                                color: root.color
+                                    anchors.centerIn: !text_cell.isCJK ? undefined : parent
 
+                                    anchors.left: !text_cell.isCJK ? text_cell.left : undefined
+                                    anchors.top: !text_cell.isCJK ? text_cell.top : undefined
+
+                                    anchors.topMargin: !text_cell.isCJK ? -(Cell.cellHeight/0.9)*0.05 : undefined
+
+                                    id: texts
+                                    textFormat: Text.RichText
+                                    text: text_cell.text
+                                    font: root.font
+                                    color: root.color
+
+                                }
                             }
+
                         }
 
                     }
-
                 }
             }
+
+            Text {
+
+                visible: root.overflowed && root.scroll.enabled
+
+                x: Cell.w(root.preferedW-1)
+
+                text: {
+                    if (root.preferedH > 1) {
+                        return (root.offset > 0 ? "↑" : "-") + "\n".repeat(preferedH-1) + (root.offset < preferedH-1 ? "↓" : "-")
+                    } else {
+                        if (root.offset == 0) {
+                            return "↓"
+                        } else if (root.offset == preferedH-1) {
+                            return "↑"
+                        } else {
+                            return "↕"
+                        }
+                    }
+                }
+
+                font: root.font
+                color: root.scroll.color
+                renderType: Text.CurveRendering
+
+            }
+
+            MouseControl {
+
+                anchors.fill: parent
+
+                onWheel: (delta) => {
+                    offset = Math.min(Math.max(root.offset - delta,0),root.realH-root.preferedH-1)
+                }
+
+            }
+
         }
     }
 

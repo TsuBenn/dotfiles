@@ -169,7 +169,7 @@ CellPopup {
 
                             CellText {
                                 id: body
-                                text: body
+                                text: popup.body
                                 preferedW: root.w - 14
                                 wrap: true
                                 color: {

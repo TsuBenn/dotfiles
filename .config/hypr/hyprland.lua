@@ -33,7 +33,7 @@ end
 hl.on("hyprland.start", function ()
     hl.exec_cmd(browser)
     hl.exec_cmd("systemctl --user enable opentabletdriver.service --now")
-    hl.exec_cmd('hyprctl "dispatch hl.dsp.focus({workspace = \"2\"})" && '..terminal)
+    -- hl.exec_cmd('hyprctl "dispatch hl.dsp.focus({workspace = \"2\"})" && '..terminal)
     hl.exec_cmd(discord)
     hl.exec_cmd("steam")
     hl.exec_cmd("qs -c ~/.config/quickshell/tui/ -d")

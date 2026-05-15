@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo ""
+echo ""
 echo "Setting up Hyprland's config"
 
 SET_COLOR="hl.config({

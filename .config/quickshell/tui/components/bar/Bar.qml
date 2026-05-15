@@ -86,7 +86,7 @@ Scope {
             }
 
             margins {
-                top: -Cell.h(1)*(Hyprland.focusedWorkspace.hasFullscreen && Hyprland.focusedMonitor.name == root.monitor.name)
+                top: -Cell.h(1)*((Hyprland.focusedWorkspace.hasFullscreen ?? false) && Hyprland.focusedMonitor.name == root.monitor.name)
             }
 
             implicitHeight: Cell.h(1)
