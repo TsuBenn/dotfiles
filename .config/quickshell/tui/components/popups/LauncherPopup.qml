@@ -30,20 +30,23 @@ CellPopup {
              auto_close.restart()
          }
          */
+
         if (!visible) {
-            auto_close.restart()
+            auto_rescan.restart()
             textfield.path = []
             textfield.set("")
             textfield.search("")
             breadcrumbs.updatePath()
         } else {
-            auto_close.stop()
+            auto_rescan.stop()
+            LauncherInfo.write("-r")
         }
+
     }
 
     Timer {
 
-        id: auto_close
+        id: auto_rescan
 
         interval: 1000
         onTriggered: {
@@ -187,6 +190,11 @@ CellPopup {
                                         textfield.set("")
                                         breadcrumbs.updatePath()
                                     })
+                                    LauncherInfo.fileCached.connect(()=>{
+                                        if (root.visible && textfield.text.length > 0) {
+                                            search(textfield.text, true)
+                                        }
+                                    })
                                 }
 
                                 Layout.leftMargin: Cell.w(1)
@@ -207,14 +215,14 @@ CellPopup {
                                 }
 
 
-                                function search(input) {
+                                function search(input, norush = false) {
                                     let tags = ""
                                     switch (tab.selected) {
-                                        case 0: tags = "ashf"; break;
-                                        case 1: tags = "af"; break;
-                                        case 2: tags = "sf"; break;
-                                        case 3: tags = "c"; break;
-                                        case 4: tags = "h"; break;
+                                        case 0: tags = "ashf" + (norush ? "n" : ""); break;
+                                        case 1: tags = "af"   + (norush ? "n" : ""); break;
+                                        case 2: tags = "sf"   + (norush ? "n" : ""); break;
+                                        case 3: tags = "c"    + (norush ? "n" : ""); break;
+                                        case 4: tags = "h"    + (norush ? "n" : ""); break;
                                     }
                                     safe_mouse.visible = true
                                     safe_mouse.safe = 1
@@ -519,7 +527,7 @@ CellPopup {
                                     id: result
 
                                     active: (index - Math.ceil(results.offset/(root.minimal ? 2 : 3)) < Math.ceil(15/(root.minimal ? 2 : 3)) * 2)
-                                    && (root.visible || !SettingsInfo.optimizeMemory)
+                                    && (root.visible || !SettingsInfo.optimizeMemory) || type == "dir" || type == "app"
 
                                     required property int index
 

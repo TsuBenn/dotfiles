@@ -357,7 +357,7 @@ def search_settings(data, query):
 
 # ─── File find ───────────────────────────────────────────────────────────────
 
-def preload_files(rescan_only = False):
+def preload_files(origin, rescan_only = False):
     cached = []
     
     def load_files():
@@ -394,13 +394,16 @@ def preload_files(rescan_only = False):
             paths.clear()
             paths.extend(new_paths)
             print(f"[timer] Files cached: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+            print("*")
+            sys.stdout.flush()
         except FileNotFoundError:
             pass
 
     if not rescan_only:
-        # threading.Thread(target=load_files, daemon=True).start()
         load_files()
-    threading.Thread(target=rescan, args=(cached,), daemon=True).start()
+        threading.Thread(target=rescan, args=(cached,), daemon=True).start()
+    else:
+        rescan(cached)
     
     return cached
 
@@ -413,7 +416,7 @@ def filter_files(paths, query):
         name = os.path.basename(path).lower()
 
         score = max(
-            fuzzy_match(query, name.lower()),
+            fuzzy_match(query, name),
             fuzzy_match(query, path.lower()),
         )
 
@@ -446,34 +449,24 @@ def async_file_search(paths, query, stop, base_result):
     for path in paths:
         if stop.is_set():
             return
-
-        name = os.path.basename(path[:-1]) if path.endswith("/") else os.path.basename(path)
-
-        score = max(
-            fuzzy_match(query, name.lower()),
-            fuzzy_match(query, path.lower()),
-        )
-
-        if score:
+        name = os.path.basename(path)
+        if query in name.lower() or query in path.lower():
             local_results.append({
                 "id": path,
-                "label": name,
+                "label": os.path.basename(path[:-1]) if path.endswith("/") else os.path.basename(path),
                 "description": path,
                 "icon": "",
                 "value": path,
-                "category": "file",
                 "type": "dir" if os.path.isdir(path) else "file"
             })
             if len(local_results) > 50:
                 break
 
-        sys.stdout.flush()
-
     # only print if not cancelled
     if not stop.is_set():
         print(json.dumps([*base_result, *local_results]))
         sys.stdout.flush()
-        print(f"[timer] Files searched asynchrounously: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+    print(f"[timer] Files searched asynchrounously: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
 def search_files_async(paths, query, base_result):
     global stop_event, file_search_thread
@@ -509,7 +502,7 @@ def main():
     apps = []
     file_paths = []
 
-    timer = True
+    timer = False
 
     def load():
         nonlocal apps, file_paths
@@ -620,8 +613,10 @@ def main():
             threading.Thread(target=load, daemon=True).start()
             continue
 
-        print(json.dumps(result))
-        sys.stdout.flush()
+        if not "n" in tags:
+            print(json.dumps(result))
+            sys.stdout.flush()
+
         if (timer):
             print(f"[timer] Search finished: {time.perf_counter() - init:.4f}s", file=sys.stderr)
 

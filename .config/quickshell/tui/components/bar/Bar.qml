@@ -63,12 +63,17 @@ Scope {
                         //case "activewindow":
                         case "activespecial":
                         case "closewindow":
+                        case "openwindow":
                         case "focusedmon": 
                         case "workspace": 
                         case "movewindow": {
                             PopupManager.close()
                             DropdownManager.hide()
                             ContextMenuManager.hide()
+                            break;
+                        }
+                        case "configreloaded": {
+                            SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/revive.sh"])
                         }
                     }
                 })

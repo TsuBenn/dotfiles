@@ -238,12 +238,13 @@ CellPopup {
 
                         component PreviewWidget: RowLayout {
 
-                            spacing: Cell.w(1)
+                            spacing: 0
 
                             property string label: "Buttons"
                             property int label_width: 14
 
                             CellText {
+                                Layout.alignment: Qt.AlignTop
                                 text: parent.label
                                 color: color.color.secondary
                                 preferedW: parent.label_width
@@ -275,38 +276,51 @@ CellPopup {
 
                             label: "Buttons"
 
-                            CellButton {
-                                text: "Click me!"
-                                color: [color.color.accentStrong, color.color.bgOverlay]
-                                fg: [color.color.onAccent, color.color.fgBase]
-                            }
+                            RowLayout {
 
-                            CellButton {
-                                text: "Disabled!"
-                                clickable: false
-                                color: color.color.bgOverlay
-                                fg: color.color.fgSubtle
+                                spacing: Cell.w(1)
+
+                                CellButton {
+                                    text: "Click me!"
+                                    color: [color.color.accentStrong, color.color.bgOverlay]
+                                    fg: [color.color.onAccent, color.color.fgBase]
+                                }
+
+                                CellButton {
+                                    text: "Disabled!"
+                                    clickable: false
+                                    color: color.color.bgOverlay
+                                    fg: color.color.fgSubtle
+                                }
+
                             }
 
                         }
 
                         WidgetSep {}
 
-                        Cells {
+                        PreviewWidget {
 
-                            w: preview_widgets.widgets_width
-                            h: 2
+                            label: "Text field"
 
-                            color: color.color.bgOverlay
+                            Cells {
 
-                            CellTextField {
+                                w: preview_widgets.widgets_width
+                                h: 2
 
-                                placeholder: "Write something here!"
+                                color: color.color.bgOverlay
 
-                                focusOnVisible: false
+                                CellTextField {
 
-                                w: parent.w
-                                h: parent.h
+                                    placeholder: "Write something here!"
+
+                                    focusOnVisible: false
+                                    wrap: true
+
+                                    w: parent.w
+                                    h: parent.h
+
+                                }
 
                             }
 

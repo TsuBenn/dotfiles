@@ -19,6 +19,7 @@ Singleton {
 
     signal searched(data: var)
     signal pathFound(id: string, label: string)
+    signal fileCached()
 
     function search(tags: string, paths = [], query = "") {
         let le_paths = ""
@@ -104,6 +105,9 @@ Singleton {
         stdout: SplitParser {
             onRead: (text) => {
                 if (text) {
+                    if (text == "*") {
+                        root.fileCached()
+                    }
                     let data = []
                     try {
                         data = JSON.parse(text)
@@ -112,8 +116,10 @@ Singleton {
                         return
                     }
                     if (data) {
-                        root.result = data
-                        root.searched(data)
+                        if (JSON.stringify(root.result) != JSON.stringify(data)) {
+                            root.result = data
+                            root.searched(data)
+                        }
                         //console.log(JSON.stringify(data,null,2))
                     } else {
                         console.log("LauncherInfo: No data: " + text)
