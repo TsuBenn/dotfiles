@@ -399,28 +399,46 @@ Item {
     }
 
     function delete_word_back() {
-        if (root.visual) {
-            if (root.visualPos > 0) {
-                const removed = root.text.slice(root.cursorPos,root.cursorPos+root.visualPos)
-                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
-                root.textRemoved(removed)
+        if (root.text.length > 0) {
+            if (root.visual) {
+                if (root.visualPos > 0) {
+                    const removed = root.text.slice(root.cursorPos,root.cursorPos+root.visualPos)
+                    root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
+                    root.textRemoved(removed)
+                }
+                if (root.visualPos < 0) {
+                    const removed = root.text.slice(root.cursorPos+root.visualPos,root.cursorPos)
+                    root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
+                    root.cursorPos = root.cursorPos+root.visualPos
+                    root.textRemoved(removed)
+                }
+                root.visualPos = 0
+                return
             }
-            if (root.visualPos < 0) {
-                const removed = root.text.slice(root.cursorPos+root.visualPos,root.cursorPos)
-                root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
-                root.cursorPos = root.cursorPos+root.visualPos
-                root.textRemoved(removed)
+
+            const start = cursorPos
+
+            let inword = 0
+
+            while (cursorPos > 0) {
+                cursorPos -= 1
+                if (root.text[cursorPos] != " ") {
+                    continue
+                }
+                if (root.text[cursorPos-1] == " ") {
+                    continue
+                }
+                break
             }
-            root.visualPos = 0
-            return
-        }
-        const removed = root.text.match(/\S+\s*$/)[0]
-        root.text = root.text.replace(/\S+\s*$/, "")
-        if (removed) {
-            root.cursorPos -= removed.length
+
+            const end = cursorPos
+
+            const removed = root.text.slice(end,start)
+            root.text = root.text.slice(0, end) + root.text.slice(start, root.text.length)
             root.textRemoved(removed)
-        } 
-        else root.textRemoved("")
+
+        } else root.textRemoved("")
+
     }
 
     function enter() {
@@ -578,40 +596,51 @@ Item {
 
 
     Keys.onPressed: (event) => {
+        event.accepted = true
         if (root.disabled) return
+
+        if (event.modifiers == Qt.ControlModifier) {
+            if (event.key == Qt.Key_C) {
+                root.copy_selected()
+            } else if (event.key == Qt.Key_X) {
+                root.cut_selected()
+            } else if (event.key == Qt.Key_V) {
+                ClipboardInfo.paste()
+            } else if (event.key == Qt.Key_Left) {
+                root.move_cursor_back_word()
+            } else if (event.key == Qt.Key_Right) {
+                root.move_cursor_forward_word()
+            } else if (event.key == Qt.Key_A) {
+                root.select_all()
+            } else if (event.key == Qt.Key_Backspace) {
+                root.delete_word_back()
+            }
+        }
+
         if (event.key == Qt.Key_Return) {
             root.enter()
-        } else if (event.key == Qt.Key_C && event.modifiers == Qt.ControlModifier) {
-            root.copy_selected()
-        } else if (event.key == Qt.Key_X && event.modifiers == Qt.ControlModifier) {
-            root.cut_selected()
-        } else if (event.key == Qt.Key_V && event.modifiers == Qt.ControlModifier) {
-            ClipboardInfo.paste()
         } else if (event.key == Qt.Key_Escape) {
             if (root.escapeToUnFocus) root.unFocus() 
-        } else if (event.key == Qt.Key_Backspace && event.modifiers == Qt.ControlModifier) {
-            root.delete_word_back()
         } else if (event.key == Qt.Key_Backspace) {
             root.delete_char_back()
         } else if (event.key == Qt.Key_Delete) {
             root.delete_char_forward()
         } else if (event.text.length > 0 && event.text >= " ") {
             root.type(event.text)
-        } else if (event.key == Qt.Key_Left && event.modifiers == Qt.ControlModifier) {
-            root.move_cursor_back_word()
-        } else if (event.key == Qt.Key_Right && event.modifiers == Qt.ControlModifier) {
-            root.move_cursor_forward_word()
-        } else if (event.key == Qt.Key_Left && event.modifiers == Qt.ShiftModifier) {
-            root.select_char_back()
-        } else if (event.key == Qt.Key_Right && event.modifiers == Qt.ShiftModifier) {
-            root.select_char_forward()
         } else if (event.key == Qt.Key_Left) {
             root.move_cursor_back()
         } else if (event.key == Qt.Key_Right) {
             root.move_cursor_forward()
-        } else if (event.key == Qt.Key_A && event.modifiers == Qt.ControlModifier) {
-            root.select_all()
         }
+
+        if (event.modifiers == Qt.ShiftModifier) {
+            if (event.key == Qt.Key_Left) {
+                root.select_char_back()
+            } else if (event.key == Qt.Key_Right) {
+                root.select_char_forward()
+            }
+        }
+
     }
 
 }

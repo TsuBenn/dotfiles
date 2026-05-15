@@ -530,11 +530,12 @@ CellPopup {
                                     property string description: modelData.description ?? ""
                                     property string icon: modelData.icon ?? ""
                                     property string type: modelData.type ?? ""
+                                    property string category: modelData.category ?? ""
                                     property var value: modelData.value ?? []
 
                                     property bool selected: textfield.selected == index
 
-                                    asynchronous: (index < Math.ceil(15/(root.minimal ? 2 : 3)) ? false : true) || type == "file" || type == "dir"
+                                    asynchronous: (index < Math.ceil(15/(root.minimal ? 2 : 3)) ? false : true)
 
                                     sourceComponent: Cells {
 

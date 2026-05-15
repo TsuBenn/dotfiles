@@ -398,7 +398,8 @@ def preload_files(rescan_only = False):
             pass
 
     if not rescan_only:
-        threading.Thread(target=load_files, daemon=True).start()
+        # threading.Thread(target=load_files, daemon=True).start()
+        load_files()
     threading.Thread(target=rescan, args=(cached,), daemon=True).start()
     
     return cached
@@ -412,7 +413,7 @@ def filter_files(paths, query):
         name = os.path.basename(path).lower()
 
         score = max(
-            fuzzy_match(query, name),
+            fuzzy_match(query, name.lower()),
             fuzzy_match(query, path.lower()),
         )
 
@@ -437,6 +438,7 @@ file_search_thread = None
 stop_event = threading.Event()
 
 def async_file_search(paths, query, stop, base_result):
+    start = time.perf_counter()
     local_results = []
     if not query:
         return
@@ -444,20 +446,34 @@ def async_file_search(paths, query, stop, base_result):
     for path in paths:
         if stop.is_set():
             return
-        name = os.path.basename(path)
-        if query in name.lower():
+
+        name = os.path.basename(path[:-1]) if path.endswith("/") else os.path.basename(path)
+
+        score = max(
+            fuzzy_match(query, name.lower()),
+            fuzzy_match(query, path.lower()),
+        )
+
+        if score:
             local_results.append({
                 "id": path,
                 "label": name,
                 "description": path,
                 "icon": "",
                 "value": path,
+                "category": "file",
                 "type": "dir" if os.path.isdir(path) else "file"
             })
+            if len(local_results) > 50:
+                break
+
+        sys.stdout.flush()
+
     # only print if not cancelled
     if not stop.is_set():
         print(json.dumps([*base_result, *local_results]))
         sys.stdout.flush()
+        print(f"[timer] Files searched asynchrounously: {time.perf_counter() - start:.4f}s", file=sys.stderr)
 
 def search_files_async(paths, query, base_result):
     global stop_event, file_search_thread
@@ -493,7 +509,7 @@ def main():
     apps = []
     file_paths = []
 
-    timer = False
+    timer = True
 
     def load():
         nonlocal apps, file_paths

@@ -205,6 +205,151 @@ CellPopup {
                         bg: "transparent"
                     }
 
+                    CellTabs {
+
+                        id: preview_tab
+
+                        w: preview.w
+
+                        items: [
+                            "Widgets",
+                            "Color list",
+                        ]
+
+                        color {
+                            bg: color.color.bgSurface
+                            fg: color.color.bgOverlay
+                            base: color.color.fgBase
+                            inactive: color.color.fgSubtle
+                            active: color.color.accentStrong
+                        }
+                    }
+
+                    ColumnLayout {
+
+                        id: preview_widgets
+
+                        Layout.leftMargin: Cell.w(1)
+
+                        property int label_width: 14
+                        property int widgets_width: preview.w - 2 - label_width
+
+                        spacing: 0
+
+                        component PreviewWidget: RowLayout {
+
+                            spacing: Cell.w(1)
+
+                            property string label: "Buttons"
+                            property int label_width: 14
+
+                            CellText {
+                                text: parent.label
+                                color: color.color.secondary
+                                preferedW: parent.label_width
+                            }
+
+                        }
+
+                        component WidgetSep: CellSeparator {
+
+                            w: preview.w - 2
+                            color: color.color.bgOverlay
+
+                        }
+
+                        PreviewWidget {
+
+                            label: "Text"
+
+                            CellText {
+                                text: "Normal <b>Bold</b> <i>Italic</i> <i><b>Bold and Italic</b><i/>"
+                                color: color.color.fgBase
+                            }
+
+                        }
+
+                        WidgetSep {}
+
+                        PreviewWidget {
+
+                            label: "Buttons"
+
+                            CellButton {
+                                text: "Click me!"
+                                color: [color.color.accentStrong, color.color.bgOverlay]
+                                fg: [color.color.onAccent, color.color.fgBase]
+                            }
+
+                            CellButton {
+                                text: "Disabled!"
+                                clickable: false
+                                color: color.color.bgOverlay
+                                fg: color.color.fgSubtle
+                            }
+
+                        }
+
+                        WidgetSep {}
+
+                        Cells {
+
+                            w: preview_widgets.widgets_width
+                            h: 2
+
+                            color: color.color.bgOverlay
+
+                            CellTextField {
+
+                                placeholder: "Write something here!"
+
+                                focusOnVisible: false
+
+                                w: parent.w
+                                h: parent.h
+
+                            }
+
+                        }
+
+                        WidgetSep {}
+
+                        PreviewWidget {
+
+                            label: "Dropdown"
+
+                            CellDropdown {
+
+                                menu {
+                                    color: color.color.bgOverlay
+                                    fg: color.color.fgBase
+                                    active: color.color.accentStrong
+                                    active_invert: color.color.onAccent
+                                }
+
+                                button {
+                                    color: color.color.bgOverlay
+                                    fg: color.color.fgBase
+                                    active: color.color.bgOverlay
+                                    active_invert: color.color.fgBase
+                                }
+
+                                w: 12
+
+                                text: ""
+
+                                items: [
+                                    { label: "Item 1", action: () => {selected = 0} },
+                                    { label: "Item 2", action: () => {selected = 1} },
+                                    { label: "Item 3", action: () => {selected = 2} },
+                                ]
+
+                            }
+
+                        }
+
+                    }
+
                 }
 
             }

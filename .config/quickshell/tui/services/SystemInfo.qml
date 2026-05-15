@@ -351,14 +351,14 @@ Singleton {
 
                     // WIFI
                     root.wifi = {
-                        "device": datas[13].result[0]?.inf.description ?? "None",
-                        "name": datas[13].result[0].conn.ssid ?? "Disconnected",
-                        "localip": datas[12].result[0]?.ipv4 ?? "None",
-                        "signal": datas[13].result[0]?.conn.signalQuality ?? 0,
-                        "channel": datas[13].result[0]?.conn.channel ?? 0,
-                        "freq": datas[13].result[0]?.conn.frequency ?? 0,
-                        "ethernet": datas[12].result[0]?.name.startsWith("en"),
-                        "enabled": datas[13].result[0]?.inf.status == "up"
+                        "device"   : datas[13]?.result[0]?.inf.description ?? "None",
+                        "name"     : datas[13]?.result[0]?.conn.ssid ?? "Disconnected",
+                        "localip"  : datas[12]?.result[0]?.ipv4 ?? "None",
+                        "signal"   : datas[13]?.result[0]?.conn.signalQuality ?? 0,
+                        "channel"  : datas[13]?.result[0]?.conn.channel ?? 0,
+                        "freq"     : datas[13]?.result[0]?.conn.frequency ?? 0,
+                        "ethernet" : datas[12]?.result[0]?.name.startsWith("en"),
+                        "enabled"  : datas[13]?.result[0]?.inf.status == "up"
                     }
 
                     // PHYSICAL DISKS
