@@ -190,11 +190,6 @@ CellPopup {
                                         textfield.set("")
                                         breadcrumbs.updatePath()
                                     })
-                                    LauncherInfo.fileCached.connect(()=>{
-                                        if (root.visible && textfield.text.length > 0) {
-                                            search(textfield.text, true)
-                                        }
-                                    })
                                 }
 
                                 Layout.leftMargin: Cell.w(1)

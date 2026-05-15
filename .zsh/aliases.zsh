@@ -42,11 +42,11 @@ ayano() {
     print() {
         tree -I "venv|logs|audio|__pycache__|__init__.py|.pyc|.git|*.png"
     }
-run() {
-    pkill -f main.py
-    python main.py &
-    clear
-}
+    run() {
+        pkill -f main.py
+        python main.py &
+        clear
+    }
 }
 
 ayanoSetup() {

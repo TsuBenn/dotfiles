@@ -1,26 +1,58 @@
-#include <stdio.h>
+#include <iostream>
+#include <bits/stdc++.h>
+using namespace std;
+
+class NhanVatGame {
+    private:
+        int hp;
+        string tenNhanvat;
+
+    public:
+        string gettenNhanvat()
+        {
+            return tenNhanvat;
+        }
+
+        int getHP()//ham xem
+        {
+            return hp;
+        }
+
+        void setTenNhanVat(string ten) {
+            tenNhanvat = ten;
+        }
+
+        void setHP(int newhp)
+        {
+           if(newhp > 100)
+           {
+                hp = 100;
+           }
+           else if(newhp < 0)
+           {
+                hp = 0;
+                cout<<"Nhan Vat "<<tenNhanvat<<" Da heo";
+           }
+           else 
+           {
+                hp = newhp;
+           }
+        }
+};
 
 
-int F(int n) {
-    if (n == 0) return 0;
-    if (n == 1) return 1;
-    return F(n-1) + F(n-2);
-}
 
-int sum(int a, int b) {
-    return a + b;
-}
+int main()
+{
+    NhanVatGame Yasuo;
 
-int sum(int a, int b, int c) {
-    return a + b + c;
-}
+    Yasuo.setTenNhanVat("Yasou");
 
-
-
-int main() {
-
-    printf("%d", sum(5, 5, 5));
-
+    Yasuo.setHP(-4);
+    cout<<Yasuo.getHP()<<endl;
+    Yasuo.setHP(106);
+    cout<<Yasuo.getHP()<<endl;
+    Yasuo.setHP(99);
+    cout<<Yasuo.getHP()<<endl;
     return 0;
 }
-
