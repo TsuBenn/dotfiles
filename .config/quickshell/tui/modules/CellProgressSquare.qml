@@ -43,7 +43,7 @@ Item {
 
     property bool hovered: false
 
-    property int wheelInterval: 5
+    property real wheelInterval: 5
     property int adjustInterval: 100
     property int syncDelay: 5000 // recommend 5s
 
@@ -53,8 +53,13 @@ Item {
     signal exited()
     signal pressed(button: string)
     signal released(button: string)
-    signal adjusted(percent: int)
+    signal adjusted(percent: real)
     signal synced()
+
+    function sync() {
+        root.raw_percent = Qt.binding(()=>root.percent)
+        root.synced()
+    }
 
     function sections(n, percent) {
         const filled = percent/100 * n
@@ -206,7 +211,7 @@ Item {
 
     }
 
-    function clamp(n) {
+    function clamp(n: real): real {
         return Math.max(Math.min(n,max),min)
     }
 
@@ -241,21 +246,26 @@ Item {
             } else {
                 root.raw_percent = 100 - mouseY/Cell.h(root.h)*100
             }
+            root.raw_percent = root.clamp(root.raw_percent)
+            root.adjusted(root.raw_percent)
         }
         onMoved: (x, y) => {
             if (!root.drag) return
             if (buttonDown != "L") return
-            sync.restart()
             if (!root.vertical) {
                 root.raw_percent = x/Cell.w(root.w)*100
             } else {
                 root.raw_percent = 100 - y/Cell.h(root.h)*100
             }
+            root.raw_percent = root.clamp(root.raw_percent)
+            root.adjusted(root.raw_percent)
+            sync.restart()
         }
         onHeld: {
             if (!root.drag && !root.adjustOnHold) return
             if (buttonDown != "L") return
-            root.adjusted(root.clamp(root.raw_percent))
+            root.raw_percent = root.clamp(root.raw_percent)
+            root.adjusted(root.raw_percent)
             sync.restart()
         }
         onReleased: (button) => {
@@ -268,13 +278,15 @@ Item {
                 return
             }
             root.released(button)
-            root.adjusted(root.clamp(root.raw_percent))
+            root.raw_percent = root.clamp(root.raw_percent)
+            root.adjusted(root.raw_percent)
             sync.restart()
         }
         onWheel: (delta) => {
             if (!root.wheel) return
             root.raw_percent = Math.round(root.raw_percent/root.wheelInterval)*root.wheelInterval + root.wheelInterval*delta
-            root.adjusted(root.clamp(root.raw_percent))
+            root.raw_percent = root.clamp(root.raw_percent)
+            root.adjusted(root.raw_percent)
             sync.restart()
         }
 
@@ -284,8 +296,7 @@ Item {
         id: sync
         interval: root.syncDelay
         onTriggered: {
-            root.raw_percent = Qt.binding(()=>root.percent)
-            root.synced()
+            root.sync()
         }
     }
 

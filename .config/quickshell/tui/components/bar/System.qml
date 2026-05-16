@@ -44,18 +44,6 @@ Cells {
 
     } 
 
-    MouseControl {
-
-        anchors.fill: parent
-
-        onReleased: (button) => {
-            if (button == "L") {
-                PopupManager.toggle("system")
-            }
-        }
-
-    }
-
     RowLayout {
 
         id: layout
@@ -77,6 +65,18 @@ Cells {
         Stat {
             stat: "VRAM"
             percent: SystemInfo.gpumemusage
+        }
+
+    }
+
+    MouseControl {
+
+        anchors.fill: parent
+
+        onReleased: (button) => {
+            if (button == "L") {
+                PopupManager.toggle("system")
+            }
         }
 
     }

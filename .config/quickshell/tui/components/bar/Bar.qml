@@ -100,7 +100,11 @@ Scope {
 
             Item {
 
+                id: bar
+
                 anchors.fill: parent
+                anchors.leftMargin: Cell.w(1)
+                anchors.rightMargin: Cell.w(1)
 
                 MouseArea {
 
@@ -134,7 +138,7 @@ Scope {
                         property string wTitle: HyprInfo.focusedwindow.title
                         property string wClass: HyprInfo.focusedwindow.class
 
-                        preferedW: Cell.wCount(root.width/2-clock.implicitWidth/2-system.implicitWidth-workspaces.implicitWidth) - 10
+                        preferedW: Cell.wCount(bar.width/2-clock.implicitWidth/2-system.implicitWidth-workspaces.implicitWidth) - 10
 
                         text: `${wClass}`
                         font: Cell.font
@@ -152,7 +156,7 @@ Scope {
 
                 Clock {
                     id: clock
-                    x: Cell.centerWCell(implicitWidth,root.width)
+                    x: Cell.centerWCell(implicitWidth,bar.width)
                 }
 
                 MediaPlayer {
@@ -163,7 +167,7 @@ Scope {
 
                 RowLayout {
 
-                    x: Cell.alignRightWCell(implicitWidth, root.width)
+                    x: Cell.alignRightWCell(implicitWidth, bar.width)
 
                     spacing: Cell.w(0)
 
@@ -214,6 +218,10 @@ Scope {
 
                 color: "transparent"
 
+                margins {
+                    top: -root.implicitHeight
+                }
+
                 anchors {
                     top: true
                     left: true
@@ -234,7 +242,7 @@ Scope {
                         id: bg
 
                         w: Cell.wCount(root.monitor.width)
-                        h: Cell.hCount(root.monitor.height, "ceil") - 2
+                        h: Cell.hCount(root.monitor.height, "ceil") - 1
 
                         color: "transparent"
 
@@ -246,7 +254,7 @@ Scope {
                             opacity: SettingsInfo.bgCava
 
                             Behavior on opacity {NumberAnimation {
-                                duration: 200
+                                duration: 1000
                                 easing.type: Easing.OutCubic
                             }}
 
@@ -282,12 +290,12 @@ Scope {
 
                         component BgCava: CellAudioVisual {
 
-                            visible: opacity
+                            visible: opacity > 0
 
                             opacity: SettingsInfo.bgCava*0.5
 
                             Behavior on opacity {NumberAnimation {
-                                duration: 200
+                                duration: 1000
                                 easing.type: Easing.OutCubic
                             }}
 
@@ -307,11 +315,6 @@ Scope {
                             w: bg.w
                             h: ((bg.h+1)/2)*(opacity/0.5)
 
-                            Behavior on h {NumberAnimation {
-                                duration: 500
-                                easing.type: Easing.OutCubic
-                            }}
-
                             spacing: 2
                             barW: 2
 
@@ -324,25 +327,16 @@ Scope {
 
                         }
 
-                        Loader {
-
-                            active: SettingsInfo.bgCava
-
-                            sourceComponent: ColumnLayout {
-
-                                spacing: 0
-
-                                BgCava {
-                                    rotation: 180
-                                }
-
-                                BgCava {
-                                }
-
-
-                            }
+                        BgCava {
+                            anchors.topMargin: -Cell.h((bg.h+2)/2)*(1-opacity/0.5)
+                            anchors.top: parent.top
+                            rotation: 180
                         }
 
+                        BgCava {
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: -Cell.h((bg.h+2)/2)*(1-opacity/0.5)
+                        }
 
 
                     }

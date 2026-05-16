@@ -29,6 +29,7 @@ Item {
     property bool canCopy: true
 
     property bool escapeToUnFocus : true
+    property bool unfocusOnEntered: false
 
     property int cursorPos: 0
     property int visualPos: 0
@@ -64,6 +65,10 @@ Item {
 
     clip: true
 
+    onEntered: {
+        if (unfocusOnEntered) unFocus()
+    }
+
     onFocusChanged: {
         if (disabled) {
             unFocus()
@@ -79,15 +84,15 @@ Item {
 
         if (autoApply && !focus) {
             entered(text)
-            return
-        }
-        if (autoClear && focus) {
-            set("")
         }
         if (bindText) {
             text = Qt.binding(()=>bindText)
             cursorPos = bindText.length
+            return
         } 
+        if (autoClear && focus) {
+            set("")
+        }
     }
 
     onTextAdded: (text) => {

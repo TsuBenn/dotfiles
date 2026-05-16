@@ -522,7 +522,7 @@ CellPopup {
                                     id: result
 
                                     active: (index - Math.ceil(results.offset/(root.minimal ? 2 : 3)) < Math.ceil(15/(root.minimal ? 2 : 3)) * 2)
-                                    && (root.visible || !SettingsInfo.optimizeMemory) || type == "dir" || type == "app"
+                                    && (root.visible || !SettingsInfo.optimizeMemory)
 
                                     required property int index
 
@@ -538,7 +538,7 @@ CellPopup {
 
                                     property bool selected: textfield.selected == index
 
-                                    asynchronous: (index < Math.ceil(15/(root.minimal ? 2 : 3)) ? false : true)
+                                    asynchronous: (index < Math.ceil(15/(root.minimal ? 2 : 3)) ? false : true) || type == "dir" || type == "file"
 
                                     sourceComponent: Cells {
 

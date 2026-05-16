@@ -145,21 +145,6 @@ ColumnLayout {
                                     }
                                 }
 
-                                MouseControl {
-
-                                    anchors.fill: parent
-
-                                    onReleased: (button) => {
-                                        if (button == "L") {
-                                            if (a.expandable) {
-                                                a.expanded ? list.collapse_app(a.app) : list.expand_app(a.app) 
-                                            } else {
-                                                NotificationsInfo.action(a.object)
-                                            }
-                                        }
-                                    }
-
-                                }
 
                                 RowLayout {
 
@@ -278,6 +263,22 @@ ColumnLayout {
 
                                 }
 
+                                MouseControl {
+
+                                    anchors.fill: parent
+
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            if (a.expandable) {
+                                                a.expanded ? list.collapse_app(a.app) : list.expand_app(a.app) 
+                                            } else {
+                                                NotificationsInfo.action(a.object)
+                                            }
+                                        }
+                                    }
+
+                                }
+
                             }
 
                         }
@@ -306,28 +307,6 @@ ColumnLayout {
 
                                 property bool    expanded   : list.expanded_notif.includes(id) && expandable
 
-                                MouseControl {
-
-                                    anchors.fill: parent
-
-                                    onReleased: (button) => {
-                                        if (button == "L") {
-                                            if (mouseX <= Cell.h(7)) {
-                                                if (g.expandable) {
-                                                    g.expanded ? list.collapse_group(g.id) : list.expand_group(g.id)
-                                                } else {
-                                                    list.collapse_app(g.app)
-                                                }
-                                                return
-                                            } else if (mouseX > Cell.w(list.contentW) - Cell.h(9)){
-                                                list.collapse_app(g.app)
-                                                return
-                                            }
-                                            NotificationsInfo.action(g.object)
-                                        }
-                                    }
-
-                                }
 
                                 RowLayout {
 
@@ -415,6 +394,29 @@ ColumnLayout {
 
                                 }
 
+                                MouseControl {
+
+                                    anchors.fill: parent
+
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            if (mouseX <= Cell.h(7)) {
+                                                if (g.expandable) {
+                                                    g.expanded ? list.collapse_group(g.id) : list.expand_group(g.id)
+                                                } else {
+                                                    list.collapse_app(g.app)
+                                                }
+                                                return
+                                            } else if (mouseX > Cell.w(list.contentW) - Cell.h(9)){
+                                                list.collapse_app(g.app)
+                                                return
+                                            }
+                                            NotificationsInfo.action(g.object)
+                                        }
+                                    }
+
+                                }
+
                             }
 
                         }
@@ -440,24 +442,6 @@ ColumnLayout {
                                 property string  summary    : modelData?.summary ?? ""
                                 property string  body       : modelData?.body ?? ""
 
-                                MouseControl {
-
-                                    anchors.fill: parent
-
-                                    onReleased: (button) => {
-                                        if (button == "L") {
-                                            if (mouseX <= Cell.h(7)) {
-                                                list.collapse_group(sg.id)
-                                                return
-                                            } else if (mouseX > Cell.w(list.contentW) - Cell.h(9)){
-                                                list.collapse_app(sg.app)
-                                                return
-                                            }
-                                            NotificationsInfo.action(sg.object)
-                                        }
-                                    }
-
-                                }
 
                                 RowLayout {
 
@@ -523,6 +507,25 @@ ColumnLayout {
 
                                 }
 
+                                MouseControl {
+
+                                    anchors.fill: parent
+
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            if (mouseX <= Cell.h(7)) {
+                                                list.collapse_group(sg.id)
+                                                return
+                                            } else if (mouseX > Cell.w(list.contentW) - Cell.h(9)){
+                                                list.collapse_app(sg.app)
+                                                return
+                                            }
+                                            NotificationsInfo.action(sg.object)
+                                        }
+                                    }
+
+                                }
+
                             }
                         }
 
@@ -544,17 +547,6 @@ ColumnLayout {
 
                                 property bool    expanded   : list.expanded_notif.includes(id)
 
-                                MouseControl {
-
-                                    anchors.fill: parent
-
-                                    onReleased: (button) => {
-                                        if (button == "L") {
-                                            ex.expanded ? list.collapse_group(id) : list.expand_group(id)
-                                        }
-                                    }
-
-                                }
 
                                 RowLayout {
 
@@ -569,6 +561,18 @@ ColumnLayout {
                                     CellText {
                                         text: ex.expanded ? "[Less]" : "[More]"
                                         color: Colors.fgSubtle
+                                    }
+
+                                }
+
+                                MouseControl {
+
+                                    anchors.fill: parent
+
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            ex.expanded ? list.collapse_group(id) : list.expand_group(id)
+                                        }
                                     }
 
                                 }
@@ -594,6 +598,16 @@ ColumnLayout {
 
                                 clip: true
 
+                                CellSeparator {
+
+                                    x: Cell.w(7)
+
+                                    w: parent.w - 8
+                                    type: 0
+                                    color: Colors.bgOverlay
+
+                                }
+
                                 MouseControl {
 
                                     anchors.fill: parent
@@ -603,16 +617,6 @@ ColumnLayout {
                                             g_sep.expanded ? list.collapse_group(g_sep.id) : list.expand_group(g_sep.id)
                                         }
                                     }
-
-                                }
-
-                                CellSeparator {
-
-                                    x: Cell.w(7)
-
-                                    w: parent.w - 8
-                                    type: 0
-                                    color: Colors.bgOverlay
 
                                 }
 

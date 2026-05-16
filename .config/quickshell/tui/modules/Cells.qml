@@ -16,11 +16,13 @@ Item {
     property bool grid: false
     property bool whole: true
 
+    property bool alignTop: false
+
     property color color: "white"
     property color color2: "lightgray"
 
-    implicitWidth: Cell.w(whole ? Math.round(w) : w)
-    implicitHeight: Cell.h(whole ? Math.round(h) : h)
+    implicitWidth: Cell.w(Math.ceil(w))
+    implicitHeight: Cell.h(Math.ceil(h))
 
     onWChanged: {
         if (w < 0) {
@@ -38,6 +40,8 @@ Item {
         active: (root.visible || !SettingsInfo.optimizeMemory) && (root.color != "transparent" || root.grid)
 
         sourceComponent: Rectangle {
+
+            y: root.alignTop ? 0 : root.implicitHeight - implicitHeight
 
             implicitWidth: Cell.w(root.w)
             implicitHeight: Cell.h(root.h)

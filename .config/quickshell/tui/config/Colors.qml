@@ -68,7 +68,7 @@ Singleton {
 
     // Helpers
     function transparent(c, factor) {
-        return Qt.rgba(c.r, c.g, c.b, factor)
+        return Qt.rgba(c.r, c.g, c.b, c.a*factor)
     }
 
     function blend(c1: color, c2: color, t: real): color {

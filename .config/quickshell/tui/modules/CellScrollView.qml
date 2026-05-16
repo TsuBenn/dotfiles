@@ -21,6 +21,12 @@ Cells {
 
     property int offset: 0
 
+    onOffsetChanged: {
+        if ((offset > Cell.hCount(content.implicitHeight)-root.h || offset < 0) && Cell.hCount(content.implicitHeight)-root.h > 0) {
+            offset = Math.max(Math.min(root.offset,Cell.hCount(content.implicitHeight)-root.h),0)
+        }
+    }
+
     property bool keyNav: true
 
     component Type: Item {
@@ -84,36 +90,36 @@ Cells {
     Loader {
 
         active: root.visible || !SettingsInfo.optimizeMemory
-        
+
         sourceComponent: CellScrollBar {
 
-        z: 2
+            z: 2
 
-        visible: root.scrollbar.enabled
+            visible: root.scrollbar.enabled
 
-        x: Cell.alignRightWCell(implicitWidth, root.implicitWidth)
+            x: Cell.alignRightWCell(implicitWidth, root.implicitWidth)
 
-        onAdjusted: (percent) => {
-            root.offset = (Cell.hCount(content.implicitHeight)-root.h)*percent
+            onAdjusted: (percent) => {
+                root.offset = (Cell.hCount(content.implicitHeight)-root.h)*percent
+            }
+
+            type {
+                bg: root.scrollbar.bg
+                fg: root.scrollbar.fg
+                arrow: root.scrollbar.arrow
+            }
+
+            toScale: root.scrollbar.toScale
+            thumbH: root.scrollbar.thumbH
+
+            h: root.h
+            progress: root.offset/(Cell.hCount(content.implicitHeight)-root.h)
+            contentH: Cell.hCount(content.implicitHeight)
+
+            bg: root.scrollbar.bg_color
+            color: root.scrollbar.color
+
         }
-
-        type {
-            bg: root.scrollbar.bg
-            fg: root.scrollbar.fg
-            arrow: root.scrollbar.arrow
-        }
-
-        toScale: root.scrollbar.toScale
-        thumbH: root.scrollbar.thumbH
-
-        h: root.h
-        progress: root.offset/(Cell.hCount(content.implicitHeight)-root.h)
-        contentH: Cell.hCount(content.implicitHeight)
-
-        bg: root.scrollbar.bg_color
-        color: root.scrollbar.color
-
-    }
     }
 
     MouseControl {

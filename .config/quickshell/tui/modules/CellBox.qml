@@ -29,8 +29,8 @@ Item {
     }
 
     property Border border: Border {
-        type: 1
-        color: Colors.fgBase
+        type: 4
+        color: Colors.accentStrong
     }
 
     property Header header: Header {

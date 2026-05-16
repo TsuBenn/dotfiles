@@ -457,21 +457,21 @@ hl.window_rule({
         class = "zen",
     },
 
-    workspace = "1 silent",
+    workspace = "1",
 })
 hl.window_rule({
     match = {
         class = ".*"..discord..".*",
     },
 
-    workspace = "4 silent",
+    workspace = "4",
 })
 hl.window_rule({
     match = {
         class = ".*steam.*",
     },
 
-    workspace = "5 silent",
+    workspace = "5",
 })
 hl.window_rule({
     match = {

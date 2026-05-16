@@ -24,6 +24,7 @@ CellPopup {
         return str.trim().replace(/<[^>]*>/g,"")
     }
 
+
     CellBox {
 
         id: box

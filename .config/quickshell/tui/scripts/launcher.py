@@ -444,7 +444,7 @@ def async_file_search(paths, query, stop, base_result):
     for path in paths:
         if stop.is_set():
             return
-        name = os.path.basename(path)
+        name = os.path.basename(path[:-1]) if path.endswith("/") else os.path.basename(path)
         if query in name.lower():
             local_results.append({
                 "id": path,

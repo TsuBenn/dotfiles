@@ -85,7 +85,6 @@ Cells {
             } else {
                 root.raw_percent = 100 - mouseY/Cell.h(root.h)*100
             }
-            sync.restart()
         }
         onMoved: (x, y) => {
             if (!root.drag) return
@@ -95,13 +94,11 @@ Cells {
             } else {
                 root.raw_percent = 100 - y/Cell.h(root.h)*100
             }
-            sync.restart()
         }
         onHeld: {
             if (!root.drag) return
             if (buttonDown != "L") return
             root.adjusted(root.clamp(root.raw_percent))
-            sync.restart()
         }
         onReleased: (button) => {
             if (!root.drag) {
