@@ -248,7 +248,7 @@ hl.bind(SUPER.."Q", hl.dsp.exec_cmd(terminal))
 hl.bind(SUPER.."B", hl.dsp.exec_cmd(browser))
 hl.bind(SUPER.."C", hl.dsp.window.close())
 hl.bind(SUPER..SHIFT.."C", hl.dsp.window.kill())
-hl.bind(SUPER.."F1", hl.dsp.exit)
+hl.bind(SUPER.."F1", hl.dsp.exit())
 hl.bind(SUPER.."E", hl.dsp.exec_cmd(fileManager))
 hl.bind(SUPER.."F", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(SUPER.."space", hl.dsp.exec_cmd(menu))
@@ -464,14 +464,14 @@ hl.window_rule({
         class = ".*"..discord..".*",
     },
 
-    workspace = "4",
+    workspace = "4 silent",
 })
 hl.window_rule({
     match = {
         class = ".*steam.*",
     },
 
-    workspace = "5",
+    workspace = "5 silent",
 })
 hl.window_rule({
     match = {

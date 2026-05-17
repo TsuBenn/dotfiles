@@ -22,7 +22,7 @@ ColumnLayout {
         id: list
 
         w: root.box.contentW
-        h: 20
+        h: 21
 
         ColumnLayout {
 
@@ -186,9 +186,9 @@ ColumnLayout {
     CellSeparator {
 
         type: 0
-        padding: 1
+        padding: 0
         w: root.box.contentW
-        color: Qt.darker(Colors.fgSubtle,1.5)
+        color: Colors.accentDim
         title.text: "MASTER VOLUME"
         title.font: Cell.fontB
 
@@ -324,8 +324,6 @@ ColumnLayout {
     }
 
     CellSeparator {
-
-        visible: !root.minimal
 
         type: 2
         padding: 1

@@ -83,7 +83,7 @@ Item {
         }
 
         if (autoApply && !focus) {
-            entered(text)
+            if (text != bindText) entered(text)
         }
         if (bindText) {
             text = Qt.binding(()=>bindText)

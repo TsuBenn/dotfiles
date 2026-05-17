@@ -13,6 +13,8 @@ Singleton {
 
     onCurrentChanged: {
         if (Object.keys(colors).includes(current)) {
+            config_saver.save = current
+            save_config()
             apply()
         } else {
             NotificationsInfo.send("System","","Colors",`Color palette "${current}" not found!`)
@@ -130,6 +132,35 @@ Singleton {
         "borderInactive" : "",
     }
 
+    function save() {
+        saver.running = true
+    }
+
+    function save_config() {
+        config_saver.running = true
+    }
+
+    Process {
+
+        id: saver
+        command: ["bash", "-c", `echo "${(JSON.stringify(JSON.stringify(root.colors,null,2)).slice(1,-1)).replace(/\\n/g, "\n")}" > ${SystemInfo.configdir + "/scripts/colors.json"}`]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                load.reload()
+            }
+        }
+
+    }
+
+    Process {
+
+        property string save: root.current
+
+        id: config_saver
+        command: ["bash", "-c", `echo "${save}" > ${SystemInfo.configdir + "/scripts/colors_config.txt"}`]
+
+    }
 
     FileView {
 
@@ -140,6 +171,19 @@ Singleton {
         onLoaded: {
             root.colors = JSON.parse(text())
             root.apply()
+        }
+
+
+    }
+
+    FileView {
+
+        id: load_config
+
+        path: SystemInfo.configdir + "/scripts/colors_config.txt"
+
+        onLoaded: {
+            root.current = text().trim()
         }
 
 

@@ -116,7 +116,7 @@ CellPopup {
                     CellSeparator {
                         w: box.contentW - 2 - 13*art.visible
                         type: 2
-                        color: Colors.bgOverlay
+                        color: Colors.accentDim
                     }
 
                     Cells {
@@ -311,8 +311,8 @@ CellPopup {
                 visible: !root.minimal
 
                 w: box.contentW
-                type: 2
-                color: Colors.fgSubtle
+                type: 0
+                color: Colors.accentStrong
             }
 
             CellAudioVisual {
@@ -333,8 +333,8 @@ CellPopup {
                 visible: SettingsInfo.hints
 
                 w: box.contentW
-                type: 2
-                color: Colors.bgOverlay
+                type: 0
+                color: Colors.accentStrong
 
             }
 

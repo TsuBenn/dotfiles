@@ -63,6 +63,7 @@ ColumnLayout {
 
         w: root.box.contentW
         padding: 0
+        color: Colors.accentStrong
 
     }
 
@@ -317,10 +318,10 @@ ColumnLayout {
 
     CellSeparator {
 
-        type: 2
-        padding: 1
+        type: 0
+        padding: 0
         w: root.box.contentW
-        color: Colors.bgOverlay
+        color: Colors.accentDim
 
     }
 
@@ -375,7 +376,7 @@ ColumnLayout {
         type: 2
 
         padding: 0
-        color: Colors.fgSubtle
+        color: Colors.accentStrong
 
     }
 
@@ -426,6 +427,7 @@ ColumnLayout {
 
         w: root.box.contentW
         padding: 0
+        color: Colors.accentStrong
 
     }
 

@@ -129,7 +129,7 @@ CellPopup {
                     h: parent.h
 
                     border.type: 4
-                    border.color: textfield.text.trim().length > 0 ? Colors.secondary : Colors.fgBase
+                    border.color: textfield.text.trim().length > 0 ? Colors.secondary : Colors.accentStrong
 
                     Item {
 
@@ -294,6 +294,7 @@ CellPopup {
                     y: Cell.h(1)
                     w: parent.w
                     visible: root.minimal
+                    color: Colors.accentStrong
                 }
 
             }
@@ -611,7 +612,7 @@ CellPopup {
 
                                             CellSeparator {
 
-                                                type: 2
+                                                type: 0
                                                 color: Colors.bgOverlay
                                                 padding: 1
                                                 w: results.contentW
@@ -661,8 +662,8 @@ CellPopup {
                 visible: SettingsInfo.hints
 
                 w: box.contentW
-                type: 2
-                color: Colors.bgOverlay
+                type: 0
+                color: Colors.accentStrong
             }
 
             GridLayout {

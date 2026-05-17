@@ -87,8 +87,8 @@ CellPopup {
 
                 w: box.contentW
                 type: 2
-                title.text: preview.visible ? "Preview" : "Wallpapers"
-                color: Colors.bgOverlay
+                title.text: preview.visible ? "" : "Wallpapers"
+                color: Colors.accentStrong
 
             }
 
@@ -277,7 +277,7 @@ CellPopup {
 
                     type: 0
                     w: box.contentW
-                    color: Colors.fgSubtle
+                    color: Colors.accentStrong
 
                 }
 
@@ -291,7 +291,7 @@ CellPopup {
                     h: 3
 
                     border.type: 4
-                    border.color: textfield.text.trim().length > 0 ? Colors.secondary : Colors.fgBase
+                    border.color: textfield.text.trim().length > 0 ? Colors.secondary : Colors.accentStrong
 
                     Item {
 
@@ -369,7 +369,7 @@ CellPopup {
 
                 w: box.contentW
                 type: root.minimal ? 0 : 2
-                color: root.minimal ? Colors.fgSubtle : Colors.bgOverlay
+                color: root.minimal ? Colors.accentStrong : Colors.accentDim
 
             }
 
@@ -1100,8 +1100,8 @@ CellPopup {
                 visible: SettingsInfo.hints
 
                 w: box.contentW
-                type: 2
-                color: Colors.bgOverlay
+                type: 0
+                color: Colors.accentStrong
             }
 
             RowLayout {

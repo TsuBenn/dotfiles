@@ -158,7 +158,7 @@ CellPopup {
                 label: "Z",
                 description: "Toggle minimal",
                 action: () => {
-                    SettingsInfo.toggleMinimal()
+                    SettingsInfo.toggle("minimal")
                 },
             },
             {

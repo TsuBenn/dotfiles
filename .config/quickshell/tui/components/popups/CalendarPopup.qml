@@ -283,7 +283,7 @@ CellPopup {
 
                             w: Cell.wCount(col1.implicitWidth)
                             type: 2
-                            color: Colors.fgSubtle
+                            color: Colors.accentDim
 
                         }
 
@@ -293,6 +293,7 @@ CellPopup {
 
                             text: `${DateTime.dayofweek_long.toUpperCase()}`
                             font: Cell.fontB
+                            color: Colors.secondary
 
                         }
 
@@ -310,6 +311,7 @@ CellPopup {
                     vertical: true
 
                     h: Cell.hCount(row1.implicitHeight)
+                    color: Colors.accentStrong
 
                 }
 
@@ -441,7 +443,7 @@ CellPopup {
                     CellSeparator {
                         w: Cell.wCount(grid.implicitWidth)
                         type: 2
-                        color: Colors.fgSubtle
+                        color: Colors.accentDim
                     }
 
                     RowLayout {
@@ -873,7 +875,7 @@ CellPopup {
                     CellSeparator {
                         w: Cell.wCount(grid.implicitWidth)
                         type: 2
-                        color: Colors.fgSubtle
+                        color: Colors.accentDim
                     }
 
                 }
@@ -886,6 +888,7 @@ CellPopup {
                     vertical: true
 
                     h: Cell.hCount(row1.implicitHeight)
+                    color: Colors.accentStrong
 
                 }
 
@@ -916,10 +919,9 @@ CellPopup {
 
                     CellSeparator {
 
-
                         w: Cell.wCount(col3.implicitWidth)
-                        type: 1
-                        color: Colors.bgOverlay
+                        type: 0
+                        color: Colors.accentStrong
 
                     }
 
@@ -1250,8 +1252,8 @@ CellPopup {
                     CellSeparator {
 
                         w: Cell.wCount(col3.implicitWidth)
-                        type: 1
-                        color: Colors.bgOverlay
+                        type: 0
+                        color: Colors.accentStrong
 
                     }
 
@@ -1901,8 +1903,8 @@ CellPopup {
                 visible: SettingsInfo.hints
 
                 w: box.contentW
-                type: 2
-                color: Colors.bgOverlay
+                type: 0
+                color: Colors.accentStrong
             }
 
             RowLayout {

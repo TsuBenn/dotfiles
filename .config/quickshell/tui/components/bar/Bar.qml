@@ -22,7 +22,7 @@ Scope {
 
             id: root
 
-            WlrLayershell.layer: WlrLayer.Top
+            WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.namespace: "bar"
 
             required property var modelData
@@ -67,6 +67,9 @@ Scope {
                         case "focusedmon": 
                         case "workspace": 
                         case "movewindow": {
+                            if (event == "movewindow") {
+                                showBar.restart()
+                            }
                             PopupManager.close()
                             DropdownManager.hide()
                             ContextMenuManager.hide()
@@ -74,6 +77,7 @@ Scope {
                         }
                         case "configreloaded": {
                             SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/revive.sh"])
+                            break;
                         }
                     }
                 })
@@ -84,15 +88,43 @@ Scope {
                 }
             }
 
+            SequentialAnimation {
+
+                id: showBar
+
+                ScriptAction {
+                    script: {
+                        root.peekBar = true
+                    }
+                }
+                PauseAnimation {
+                    duration: 1000
+                }
+                ScriptAction {
+                    script: {
+                        root.peekBar = false
+                    }
+                }
+            }
+
             anchors {
                 top: true
                 left: true
                 right: true
             }
 
+            property bool peekBar: false
+            property bool forceBar: PopupManager.active_popups.length > 0 && !PopupManager.isOpen("quick_menu") && !PopupManager.isOpen("power")
+            property bool hideBar: (
+                (Hyprland.focusedWorkspace.hasFullscreen ?? false) 
+                && Hyprland.focusedMonitor.name == root.monitor.name 
+            )
+
             margins {
-                top: -Cell.h(1)*((Hyprland.focusedWorkspace.hasFullscreen ?? false) && Hyprland.focusedMonitor.name == root.monitor.name)
+                top: -(Cell.h(1)-1)*(root.hideBar && !root.peekBar && !root.forceBar)
             }
+
+            exclusiveZone: root.implicitHeight*!root.hideBar
 
             implicitHeight: Cell.h(1)
 
@@ -100,11 +132,20 @@ Scope {
 
             Item {
 
+                opacity: (!root.hideBar || root.forceBar || root.peekBar)
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 200*SettingsInfo.hyprAnim
+                        easing.type: Easing.OutCubic
+                    }
+                }
+
                 id: bar
 
                 anchors.fill: parent
-                anchors.leftMargin: Cell.w(1)
-                anchors.rightMargin: Cell.w(1)
+                //anchors.leftMargin: Cell.w(1)
+                //anchors.rightMargin: Cell.w(1)
 
                 MouseArea {
 
@@ -201,6 +242,22 @@ Scope {
                     }
                 }
 
+                MouseArea {
+
+                    anchors.fill: parent
+
+                    hoverEnabled: true
+                    acceptedButtons: Qt.NoButton
+
+                    onEntered: {
+                        root.peekBar = true
+                    }
+
+                    onExited: {
+                        root.peekBar = false
+                    }
+                }
+
             }
 
             PanelWindow {
@@ -218,9 +275,7 @@ Scope {
 
                 color: "transparent"
 
-                margins {
-                    top: -root.implicitHeight
-                }
+                exclusionMode: ExclusionMode.Ignore
 
                 anchors {
                     top: true
@@ -359,6 +414,8 @@ Scope {
                 WlrLayershell.layer: WlrLayer.Top
                 WlrLayershell.namespace: "notifcations"
 
+                exclusionMode: ExclusionMode.Ignore
+
                 implicitWidth: root.monitor.width
                 implicitHeight: root.monitor.height
 
@@ -397,9 +454,7 @@ Scope {
                 WlrLayershell.layer: WlrLayer.Overlay
                 WlrLayershell.namespace: "popups"
 
-                margins {
-                    top: -root.implicitHeight
-                }
+                exclusionMode: ExclusionMode.Ignore
 
                 implicitWidth: root.monitor.width
                 implicitHeight: root.monitor.height

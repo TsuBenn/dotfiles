@@ -28,7 +28,7 @@ ColumnLayout {
         id: list
 
         w: root.box.contentW
-        h: 25 - root.minimal*1
+        h: 26
 
         property var expanded_app: []
 
@@ -660,8 +660,8 @@ ColumnLayout {
     CellSeparator {
         w: root.box.contentW
         padding: 0
-        color: Colors.bgOverlay
-        type: 2
+        color: Colors.accentDim
+        type: 0
     }
 
     RowLayout {

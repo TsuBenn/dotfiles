@@ -79,7 +79,7 @@ Item {
         name: "wallpaper"
 
         cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2) - 1
-        cellY: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 ? Cell.hCount(root.monitor.height/2,"floor") - Math.floor(h/2) - 1 : Cell.hCount(root.monitor.height,"floor") - Math.floor(h) - 3
+        cellY: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 ? Cell.hCount(root.monitor.height/2,"floor") - Math.floor(h/2) - 2 : Cell.hCount(root.monitor.height,"floor") - Math.floor(h) - 3
 
     }
 

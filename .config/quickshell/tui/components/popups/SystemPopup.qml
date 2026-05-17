@@ -32,7 +32,7 @@ CellPopup {
         property int eW: 42
         property int p: 1
         property color head: Colors.secondary
-        property color key: Colors.fgDim
+        property color key: Colors.fgSubtle
         property color bar: Colors.accentStrong
         property color stc: Colors.fgDim
         property color dyn: Colors.fgBase
@@ -56,7 +56,7 @@ CellPopup {
                 font: Cell.fontBB
                 color: box.head
             }
-            color: Qt.lighter(Colors.bgOverlay,1.2)
+            color: Colors.accentDim
 
         }
 
