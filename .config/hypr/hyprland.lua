@@ -464,14 +464,14 @@ hl.window_rule({
         class = ".*"..discord..".*",
     },
 
-    workspace = "4 silent",
+    workspace = "4",
 })
 hl.window_rule({
     match = {
         class = ".*steam.*",
     },
 
-    workspace = "5 silent",
+    workspace = "5",
 })
 hl.window_rule({
     match = {

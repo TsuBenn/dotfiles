@@ -267,6 +267,8 @@ ColumnLayout {
 
                                     anchors.fill: parent
 
+                                    acceptedButtons: mouseX > Cell.w(list.contentW-3) && mouseY <= Cell.h(1) ? Qt.NoButton : Qt.AllButtons
+
                                     onReleased: (button) => {
                                         if (button == "L") {
                                             if (a.expandable) {
@@ -397,6 +399,8 @@ ColumnLayout {
                                 MouseControl {
 
                                     anchors.fill: parent
+
+                                    acceptedButtons: mouseX > Cell.w(list.contentW-3) && mouseY <= Cell.h(1) ? Qt.NoButton : Qt.AllButtons
 
                                     onReleased: (button) => {
                                         if (button == "L") {

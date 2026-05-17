@@ -172,7 +172,7 @@ CellPopup {
                     color_picker.buffer = Qt.color(color.color[color_picker.key])
                 }
 
-                function toggleEdit(fork = false) {
+                function toggleEdit() {
                     edit = !edit
                     des_textfield.unFocus()
                     name_textfield.unFocus()
@@ -193,6 +193,9 @@ CellPopup {
 
                 Component.onCompleted: {
                     root.resultChanged.connect(()=> {
+                        root.resetList()
+                    })
+                    Colors.currentChanged.connect(()=> {
                         root.resetList()
                     })
                 }
@@ -232,7 +235,7 @@ CellPopup {
                                     required property int index
                                     required property string modelData
 
-                                    property var source: Colors.colors[modelData]
+                                    property var source: Colors.colors[modelData] ?? Colors.dummy
 
                                     property bool isCurrent: modelData == Colors.current
                                     property bool selected: color.selected == index
@@ -919,7 +922,7 @@ CellPopup {
 
             CellBox {
 
-                w: 56
+                w: 58
                 h: color.h+2
 
                 border {
@@ -935,7 +938,7 @@ CellPopup {
 
                     id: preview
 
-                    w: 54
+                    w: 56
                     h: 28
 
                     color: "transparent"
@@ -1460,7 +1463,7 @@ CellPopup {
                                                 }
 
                                                 Cells {
-                                                    w: 5
+                                                    w: 7
                                                     h: 1
                                                     color: color.color[palette.modelData]
                                                 }
@@ -1731,6 +1734,7 @@ CellPopup {
 
                                 onReleased: (button) => {
                                     if (button == "L") {
+                                        textfield.set("")
                                         const selected = color.selected
                                         if (root.result[color.selected] == id_textfield.text) {
                                             Colors.colors[root.result[color.selected]] = color.buffer
@@ -1750,6 +1754,36 @@ CellPopup {
                                         color.selected = selected
                                         color.toggleEdit()
                                         root.result = root.colors
+                                        Colors.save() // Careful now
+                                    }
+                                }
+
+                            }
+
+                            CellButton {
+
+                                visible: color.edit
+
+                                text: "Fork"
+
+                                clickable: JSON.stringify(color.color).toLowerCase() != JSON.stringify(color.source).toLowerCase() || root.result[color.selected] != id_textfield.text
+
+                                color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
+                                fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
+
+                                onReleased: (button) => {
+                                    if (button == "L") {
+                                        textfield.set("")
+                                        if (root.result[color.selected] == id_textfield.text) {
+                                            Colors.colors[`${root.result[color.selected]}_${root.getNextCopyNumber(root.result, root.result[color.selected])}`] = color.buffer
+                                        } else {
+                                            Colors.colors[id_textfield.text] = color.buffer
+                                            Colors.current = id_textfield.text
+                                        }
+                                        Colors.colorsChanged()
+                                        color.toggleEdit()
+                                        root.result = root.colors
+                                        color.selected = root.result.length-1
                                         Colors.save() // Careful now
                                     }
                                 }
@@ -1877,17 +1911,27 @@ CellPopup {
 
                             CellButton {
 
-                                text: "Fork"
+                                visible: color.edit
 
-                                color: color.edit ? color.color.accentStrong : color.color.bgOverlay
-                                fg:    color.edit ? color.color.onAccent : color.color.fgBase
+                                text: "Remove"
+
+                                clickable: root.colors.length > 1
+
+                                color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
+                                fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
 
                                 onReleased: (button) => {
                                     if (button == "L") {
-                                        color.toggleEdit(true)
+                                        textfield.set("")
+                                        delete Colors.colors[root.result[color.selected]]
+                                        Colors.current = root.result[color.selected-1]
+                                        Colors.colorsChanged()
+                                        color.toggleEdit()
+                                        root.result = root.colors
+                                        color.selected = root.result.length-1
+                                        Colors.save() // Careful now
                                     }
                                 }
-
 
                             }
 
@@ -1919,7 +1963,7 @@ CellPopup {
             Layout.leftMargin: Cell.w(2)
             Layout.topMargin: Cell.h(2)
 
-            w: 38+56
+            w: 38+58
             h: 3
 
             RowLayout {
