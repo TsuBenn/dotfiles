@@ -82,6 +82,10 @@ Item {
             showCursor = false
         }
 
+        if (!focus) {
+            visualPos = 0
+        }
+
         if (autoApply && !focus) {
             if (text != bindText) entered(text)
         }
@@ -237,97 +241,137 @@ Item {
                         y: Cell.h(loader.index)
                         x: -Cell.w(loader.index*root.w)
 
-                        CellText {
+                        Loader {
 
-                            visible: root.text.length == 0
+                            active: root.text.length == 0
 
-                            id: placeholder
+                            sourceComponent: CellText {
 
-                            text: root.placeholder
-                            color: root.disabled_color
+                                visible: root.text.length == 0
 
-                        }
+                                id: placeholder
 
-                        CellText {
-
-                            visible: !root.hidden
-
-                            id: input
-
-                            text: root.text
-                            font: root.font
-                            color: root.disabled ? root.disabled_color : root.color
-
-                        }
-
-                        CellText {
-
-                            text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + "█".repeat(Math.abs(root.visualPos))
-                            font: root.font
-                            color: root.visual_color
-
-                        }
-
-                        CellText {
-
-                            id: cursor
-
-                            text: " ".repeat(root.cursorPos) + (root.showCursor && !(root.visual && root.cursorPos == root.text.length) ? "█" : "")
-                            font: root.font
-                            color: root.disabled ? root.disabled_color : root.color
-
-                            CellText {
-
-                                visible: root.showCursor && !root.hidden
-
-                                text: " ".repeat(root.cursorPos) + (root.text[root.cursorPos] ?? "")
-                                color: root.invert
+                                text: root.placeholder
+                                color: root.disabled_color
 
                             }
 
                         }
 
-                        CellText {
 
-                            id: visual
+                        Loader {
 
-                            visible: !root.hidden
+                            active: !root.hidden
 
-                            text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + root.text.slice(root.visualPos > 0 ? root.cursorPos : root.cursorPos+root.visualPos, root.visualPos > 0 ? root.cursorPos+root.visualPos : root.cursorPos)
-                            font: root.fontB
-                            color: root.disabled ? root.disabled_color : root.invert
+                            sourceComponent: CellText {
+
+                                visible: !root.hidden
+
+                                id: input
+
+                                text: root.text
+                                font: root.font
+                                color: root.disabled ? root.disabled_color : root.color
+
+                            }
 
                         }
 
-                        RowLayout {
 
-                            visible: root.hidden
+                        Loader {
 
-                            spacing: 0
+                            active: root.visible || !SettingsInfo.optimizeMemory
 
-                            Repeater {
+                            sourceComponent: CellText {
 
-                                model: root.text.length
+                                text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + "█".repeat(Math.abs(root.visualPos))
+                                font: root.font
+                                color: root.visual_color
 
-                                delegate: CellText {
+                            }
 
-                                    required property int index
+                        }
 
-                                    property bool invert: {
-                                        if (root.visualPos > 0 && index >= root.cursorPos && index < root.cursorPos+root.visualPos) {
-                                            return true
-                                        } else if (root.visualPos < 0 && index <= root.cursorPos && index > root.cursorPos+root.visualPos) {
-                                            return true
-                                        }
-                                        return false
-                                    }
 
-                                    text: "*"
-                                    font: invert ? root.fontB : root.font
-                                    color: root.disabled ? root.disabled_color : (invert ? root.invert : root.color)
+                        Loader {
+
+                            active: root.visible || !SettingsInfo.optimizeMemory
+
+                            sourceComponent: CellText {
+
+                                id: cursor
+
+                                text: " ".repeat(root.cursorPos) + (root.showCursor && !(root.visual && root.cursorPos == root.text.length) ? "█" : "")
+                                font: root.font
+                                color: root.disabled ? root.disabled_color : root.color
+
+                                CellText {
+
+                                    visible: root.showCursor && !root.hidden
+
+                                    text: " ".repeat(root.cursorPos) + (root.text[root.cursorPos] ?? "")
+                                    color: root.invert
+
                                 }
+
                             }
 
+                        }
+
+
+                        Loader {
+
+                            active: !root.hidden
+
+                            sourceComponent: CellText {
+
+                                id: visual
+
+                                visible: !root.hidden
+
+                                text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + root.text.slice(root.visualPos > 0 ? root.cursorPos : root.cursorPos+root.visualPos, root.visualPos > 0 ? root.cursorPos+root.visualPos : root.cursorPos)
+                                font: root.fontB
+                                color: root.disabled ? root.disabled_color : root.invert
+
+                            }
+
+                        }
+
+
+                        Loader {
+
+                            active: root.hidden
+
+                            sourceComponent: RowLayout {
+
+                                visible: root.hidden
+
+                                spacing: 0
+
+                                Repeater {
+
+                                    model: root.text.length
+
+                                    delegate: CellText {
+
+                                        required property int index
+
+                                        property bool invert: {
+                                            if (root.visualPos > 0 && index >= root.cursorPos && index < root.cursorPos+root.visualPos) {
+                                                return true
+                                            } else if (root.visualPos < 0 && index <= root.cursorPos && index > root.cursorPos+root.visualPos) {
+                                                return true
+                                            }
+                                            return false
+                                        }
+
+                                        text: "*"
+                                        font: invert ? root.fontB : root.font
+                                        color: root.disabled ? root.disabled_color : (invert ? root.invert : root.color)
+                                    }
+                                }
+
+                            }
                         }
 
                     }

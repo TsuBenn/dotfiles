@@ -168,7 +168,7 @@ def search_apps(apps, query):
         "keywords": app["keywords"],
         "category": "app",
         "icon": app["icon"],
-        "value": ["bash", "-c", app["exec"]],
+        "value": ["bash", "-c", re.sub(r"%[a-zA-Z]", "", app["exec"]).strip()],
         "type": "exec",
     } for _, app in scored]
 

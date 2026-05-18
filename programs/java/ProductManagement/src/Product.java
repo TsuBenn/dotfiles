@@ -1,4 +1,3 @@
-
 import java.util.Scanner;
 
 /*
@@ -50,4 +49,3 @@ public class Product {
     // Must declare all fields and methods that the exam tells you to
 
 }
-

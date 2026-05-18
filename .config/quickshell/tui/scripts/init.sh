@@ -75,7 +75,6 @@ hl.bind(\"SUPER + escape\", hl.dsp.exec_cmd(\"qs -c tui ipc call launcher toggle
 hl.bind(\"SUPER + P\", hl.dsp.exec_cmd(\"qs -c tui ipc call config dummy\"))
 hl.bind(\"SUPER + SHIFT + P\", hl.dsp.exec_cmd(\"pkill -f qs\"))
 
-
 "
 
 hyprctl eval "$SET_COLOR"

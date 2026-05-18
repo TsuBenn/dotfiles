@@ -118,3 +118,8 @@ alias pacmanClearAllCache='echo "sudo pacman -Scc" && sudo pacman -Scc'
 alias yayInstall='echo "yay -S" && yay -S'
 alias yayClearCache='echo "yay -Sc" && yay -Sc'
 alias yayClearAllCache='echo "yay -Scc" && yay -Scc'
+
+
+
+# Java ANT
+alias antrun="ant run | awk '{gsub(/^ *\[java\] /, \"\"); print}'"

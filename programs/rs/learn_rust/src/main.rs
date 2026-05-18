@@ -1,9 +1,16 @@
+use std::io;
+
 fn main() {
 
-    let a = 8;
+    println!("Type in your Celsius: ");
 
-    println!("{}", &a);
+    let mut celsius = String::new();
+    io::stdin().read_line(&mut celsius).unwrap();
 
-    println!("{}", &a);
+    let celsius: f32 = celsius.trim().parse().unwrap();
+
+    let fahrenheit: f32 = celsius * 9.0/5.0 + 32.0;
+
+    println!("{} celcius converted to fahrenheit is: {:.1}", celsius, fahrenheit);
 
 }

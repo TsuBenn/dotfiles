@@ -16,6 +16,7 @@ CellPopup {
     h: Cell.hCount(popup.implicitHeight)
 
     property var result: Object.keys(Colors.colors)
+
     property var colors: Object.keys(Colors.colors)
 
     escapeToClose: textfield.focus
@@ -60,17 +61,10 @@ CellPopup {
                 }
             },
             {
-                binds: "Right",
-                active: !TextFieldManager.active,
+                binds: "Tab",
+                active: !TextFieldManager.active || textfield.focus,
                 action: () => {
-                    preview_tab.selected = (preview_tab.selected + 1)%2
-                }
-            },
-            {
-                binds: "Left",
-                active: !TextFieldManager.active,
-                action: () => {
-                    preview_tab.selected = (preview_tab.selected - 1 + 2)%2
+                    preview_tab.selected = (preview_tab.selected + 1 + 2)%2
                 }
             },
             {
@@ -140,6 +134,8 @@ CellPopup {
 
                 property int selected: 0
 
+                property int push: 0
+
                 property int h: 27
 
                 signal unFocusPalette()
@@ -177,6 +173,7 @@ CellPopup {
                     des_textfield.unFocus()
                     name_textfield.unFocus()
                     if (edit) {
+                        push = preview_tab.selected
                         id_textfield.set(root.result[color.selected])
                         textfield.unFocus()
                         preview_tab.selected = 1
@@ -184,7 +181,7 @@ CellPopup {
                         color.color = Qt.binding(()=>color.buffer)
                     } else {
                         id_textfield.set("")
-                        preview_tab.selected = 0
+                        preview_tab.selected = push
                         textfield.grabFocus()
                         color.color = Qt.binding(()=>color.source)
                         color.color_picker = false
@@ -270,6 +267,8 @@ CellPopup {
                                     }
 
                                     MouseControl {
+
+                                        visible: !color.edit
 
                                         id: theme_mouse
 
@@ -1107,6 +1106,10 @@ CellPopup {
 
                         CellTabs {
 
+                            onVisibleChanged: {
+                                selected = 0
+                            }
+
                             id: preview_tab
 
                             w: preview.w
@@ -1428,7 +1431,24 @@ CellPopup {
 
                                     Repeater {
 
-                                        model: Object.keys(color.color).slice(2)
+                                        model: [
+                                            "bgBase",
+                                            "bgSurface",
+                                            "bgOverlay",
+                                            "fgBase",
+                                            "onAccent",
+                                            "fgDim",
+                                            "fgSubtle",
+                                            "accentStrong",
+                                            "accentDim",
+                                            "secondary",
+                                            "info",
+                                            "success",
+                                            "warning",
+                                            "danger",
+                                            "borderActive",
+                                            "borderInactive",
+                                        ]
 
                                         delegate: ColumnLayout {
 
@@ -1465,7 +1485,7 @@ CellPopup {
                                                 Cells {
                                                     w: 7
                                                     h: 1
-                                                    color: color.color[palette.modelData]
+                                                    color: color.color[palette.modelData] ?? "#000000"
                                                 }
 
                                                 Cells {
@@ -1489,7 +1509,7 @@ CellPopup {
                                                         unfocusOnEntered: true
 
                                                         autoApply: true
-                                                        bindText: color.color[palette.modelData].toString().toUpperCase()
+                                                        bindText: color.color[palette.modelData]?.toString().toUpperCase() ?? ""
 
                                                         color: color.color.fgBase
                                                         invert: color.color.bgSurface
@@ -1503,12 +1523,6 @@ CellPopup {
                                                             }
                                                         }
 
-                                                        Keys.onPressed: (event) => {
-                                                            if (event.key == Qt.Key_Tab) {
-                                                                palette_hex.unFocus()
-                                                                palette_hue.grabFocus()
-                                                            }
-                                                        }
 
                                                     }
 
@@ -1978,7 +1992,8 @@ CellPopup {
                 }
 
                 CellKeyHint {
-                    key: "←/→"
+                    visible: !TextFieldManager.active || textfield.focus
+                    key: "Tab"
                     hint: "Switch tab"
                 }
 
