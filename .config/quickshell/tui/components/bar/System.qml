@@ -50,6 +50,10 @@ Cells {
 
         spacing: Cell.w(2)
 
+        CellText {
+            text: "FPS: " + SettingsInfo.fps
+        }
+
         Stat {
             stat: "CPU"
             percent: SystemInfo.cpuusage

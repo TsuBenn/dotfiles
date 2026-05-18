@@ -208,7 +208,6 @@ Item {
         }
     }
 
-
     ColumnLayout {
 
         spacing: 0

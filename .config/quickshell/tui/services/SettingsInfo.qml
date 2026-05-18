@@ -11,6 +11,13 @@ Singleton {
 
     id: root
 
+    FrameAnimation {
+        id: fpsMonitor
+        running: true
+    }
+
+    property int fps: fpsMonitor.smoothFrameTime > 0 ? Math.round(1.0 / fpsMonitor.smoothFrameTime) : 0
+
     property bool hints             : true  // Show keyboard hints
     property bool minimal           : false // Reduce UI elements
     property bool safeNotifications : false // Hide notifications' messages

@@ -1938,11 +1938,11 @@ CellPopup {
                                     if (button == "L") {
                                         textfield.set("")
                                         delete Colors.colors[root.result[color.selected]]
-                                        Colors.current = root.result[color.selected-1]
+                                        Colors.current = root.result[Math.max(color.selected-1,1)]
                                         Colors.colorsChanged()
                                         color.toggleEdit()
                                         root.result = root.colors
-                                        color.selected = root.result.length-1
+                                        color.selected = Math.max(color.selected-1,0)
                                         Colors.save() // Careful now
                                     }
                                 }
