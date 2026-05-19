@@ -146,8 +146,6 @@ CellPopup {
 
                 text: bar.key
 
-                color: bar.key_color
-
             }
 
         }

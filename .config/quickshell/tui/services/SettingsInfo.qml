@@ -29,6 +29,8 @@ Singleton {
 
     property bool bgCava            : true  // Run cava on top of the wallpaper
 
+    property bool debug            : true  // Used for random debugging
+
     property var toggles: [
         "hints",
         "minimal",
@@ -38,6 +40,7 @@ Singleton {
         "hyprAnim",
         "hyprBlur",
         "bgCava",
+        "debug",
     ]
 
     signal showGrid()
@@ -135,8 +138,7 @@ Singleton {
 
         function dummy(): void {
             // Contains debugging features that can be accessed by SUPER + P
-
-            PopupManager.toggle("color")
+            root.toggle("debug")
         }
     }
 

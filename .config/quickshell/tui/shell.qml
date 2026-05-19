@@ -34,6 +34,38 @@ ShellRoot {
 
     Bar {}
 
+    FloatingWindow {
+
+        visible: SettingsInfo.debug
+
+        minimumSize: Qt.size(Cell.w(80),Cell.h(30))
+        maximumSize: Qt.size(Cell.w(80),Cell.h(30))
+
+        Cells {
+
+            w: 80
+            h: 30
+
+            grid: true
+
+            CellScrollView {
+
+                w: 80
+                h: 30
+
+                CellTextNew {
+                    text: "sob😭skull💀sweat😅fire🔥 憂鬱、日々"
+                    color: Colors.bgSurface
+                    bg: Colors.accentStrong
+                }
+
+            }
+
+
+        }
+
+    }
+
     Process {
         id: process 
 

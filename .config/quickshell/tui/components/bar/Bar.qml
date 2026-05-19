@@ -297,7 +297,7 @@ Scope {
                         id: bg
 
                         w: Cell.wCount(root.monitor.width)
-                        h: Cell.hCount(root.monitor.height, "ceil") - 1
+                        h: Cell.hCount(root.monitor.height, "ceil")
 
                         color: "transparent"
 

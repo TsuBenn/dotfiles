@@ -19,6 +19,7 @@ Item {
     property bool wrap: false
 
     property bool overflowed: false
+    property bool pure: onlyLatin(text)
 
     component Type: Item {
         override property bool enabled: true
@@ -54,6 +55,7 @@ Item {
 
     function updateText() {
         raw_text = text
+        if (debug) console.log(raw_text)
         if (wrap && preferedW > 0) {
             // We use a temporary variable to prevent infinite loops
             let wrapped = wrapText(text, preferedW);
@@ -88,17 +90,56 @@ Item {
         : 1;
     }
 
+    function isFullWidth(char) {
+        const code = char.codePointAt(0);
+
+        if (!code) return false;
+
+        // Code point ranges for Full-width and Wide characters:
+        return (
+            (code >= 0x1100 && code <= 0x115F) || // Hangul Jamo
+            (code >= 0x2E80 && code <= 0xA4CF && code !== 0x303F) || // CJK Radicals, Symbols, Ideographs
+            (code >= 0xAC00 && code <= 0xD7A3) || // Hangul Syllables
+            (code >= 0xF900 && code <= 0xFAFF) || // CJK Compatibility Ideographs
+            (code >= 0xFE10 && code <= 0xFE19) || // Vertical Presentation Forms
+            (code >= 0xFE30 && code <= 0xFE6F) || // CJK Compatibility Forms
+            (code >= 0xFF00 && code <= 0xFF60) || // Fullwidth Forms (Letters, Numbers, Punctuation)
+            (code >= 0xFFE0 && code <= 0xFFE6) ||
+
+            (code >= 0x1F000 && code <= 0x1FFFF) || // Emojis
+            (code >= 0x2600 && code <= 0x27FF) || // Emojis
+            (code >= 0xFE00 && code <= 0xFEFF) || // Emojis
+
+            (code >= 0x20000 && code <= 0x3FAFF)  // Rare/Extension CJK Ideographs
+        );
+    }
+
+    function onlyLatin(str) {
+        for (const c of str) {
+            if (isFullWidth(c)) return false
+        }
+        return true
+    }
+
+    function purify(str) {
+        return str.replace(/<[^>]*>/g, "")
+    }
+
+    function getWidth(str) {
+        let count = 0
+        for (const c of str) {
+            isFullWidth(c) ? count += 2 : count += 1
+        }
+        return count
+    }
+
     function calculateRequiredWidth() {
         if (preferedW > 0) return preferedW;
 
         let maxW = 0;
-        const lines = text.split("\n");
+        const lines = purify(raw_text).split("\n");
         for (const line of lines) {
-            let lineWidth = 0;
-            const segments = splitCJK(line);
-            for (const segment of segments) {
-                lineWidth += segment.cells;
-            }
+            let lineWidth = getWidth(line)
             if (lineWidth > maxW) maxW = lineWidth;
         }
         return maxW;
@@ -108,7 +149,7 @@ Item {
     function getStringWidth(str) {
         let width = 0;
         for (const ch of str) {
-            width += getCharWidth(ch);
+            width += isFullWidth(ch) ? 2 : 1;
         }
         return width;
     }
@@ -130,22 +171,8 @@ Item {
             }
 
             // Wide chars (CJK, emoji, etc.)
-            if (
-                code >= 0x1100 &&
-                (
-                    code <= 0x115f ||
-                    code === 0x2329 ||
-                    code === 0x232a ||
-                    (code >= 0x2e80 && code <= 0xa4cf) ||
-                    (code >= 0xac00 && code <= 0xd7a3) ||
-                    (code >= 0xf900 && code <= 0xfaff) ||
-                    (code >= 0xfe10 && code <= 0xfe19) ||
-                    (code >= 0xfe30 && code <= 0xfe6f) ||
-                    (code >= 0xff00 && code <= 0xff60) ||
-                    (code >= 0xffe0 && code <= 0xffe6) ||
-                    (code >= 0x1f300 && code <= 0x1faff)
-                )
-            ) {
+            if (isFullWidth(char))
+            {
                 return 2;
             }
 
@@ -296,7 +323,7 @@ Item {
 
         for (const c of placeholder) {
             const isNone = /[\uffff]/.test(c)
-            const costs = (isNone ? 0 : getCharWidth(c))
+            const costs = (isNone ? 0 : (isFullWidth(c) ? 2 : 1))
             cells.push(costs)
         }
         for (const i in cells) {
@@ -363,8 +390,8 @@ Item {
                 result.push({
                     text: latin.replace(/ /g, "&nbsp;"),
                     raw: latin,
-                    count: decodeRichText(latin.replace(/<[^>]*>/g,"")).length,
-                    cells: decodeRichText(latin.replace(/<[^>]*>/g,"")).length,
+                    count: decodeRichText(purify(latin)).length,
+                    cells: decodeRichText(purify(latin)).length,
                     isCJK: false
                 })
             }
@@ -376,79 +403,99 @@ Item {
 
         active: root.visible || !SettingsInfo.optimizeMemory
 
-        sourceComponent: Cells {
+        sourceComponent: 
+
+        Cells {
+
+            id: cell_text
 
             w: root.w
             h: root.h
 
-            color: "transparent"
+            color: root.pure ? root.bg : "transparent"
 
-            ColumnLayout {
+            Loader {
 
-                id: cell_text
+                active: (root.visible || !SettingsInfo.optimizeMemory) && !root.pure
 
-                spacing: 0
+                sourceComponent: ColumnLayout {
 
-                Repeater {
+                    spacing: 0
 
-                    model: root.raw_text.split("\n")
+                    Repeater {
 
-                    delegate: RowLayout {
+                        model: root.raw_text.split("\n")
 
-                        Layout.leftMargin: root.centered ? Cell.centerWCell(implicitWidth, Cell.w(root.w)) : 0
+                        delegate: RowLayout {
 
-                        id: cell_row
+                            Layout.leftMargin: root.centered ? Cell.centerWCell(implicitWidth, Cell.w(root.w)) : 0
 
-                        required property int index
-                        required property string modelData
+                            required property int index
+                            required property string modelData
 
-                        spacing: 0
+                            spacing: 0
 
-                        Repeater {
+                            Repeater {
 
-                            model: root.preferedW > 0 
-                            ? root.splitCJK(root.truncate(parent.modelData, root.preferedW)) 
-                            : root.splitCJK(parent.modelData)
+                                model: root.preferedW > 0 
+                                ? root.splitCJK(root.truncate(parent.modelData, root.preferedW)) 
+                                : root.splitCJK(parent.modelData)
 
-                            delegate: Cells {
+                                delegate: Cells {
 
-                                id: text_cell
+                                    id: text_cell
 
-                                required property string text
-                                required property int cells
-                                required property bool isCJK
+                                    required property string text
+                                    required property int cells
+                                    required property bool isCJK
 
-                                clip: root.clip
+                                    clip: root.clip
 
-                                h: 1
-                                w: cells
+                                    h: 1
+                                    w: cells
 
-                                whole: true
+                                    whole: true
 
-                                color: root.bg
+                                    color: root.bg
 
-                                Text {
+                                    Text {
 
-                                    anchors.centerIn: !text_cell.isCJK ? undefined : parent
+                                        anchors.centerIn: !text_cell.isCJK ? undefined : parent
 
-                                    anchors.left: !text_cell.isCJK ? text_cell.left : undefined
-                                    anchors.top: !text_cell.isCJK ? text_cell.top : undefined
+                                        anchors.left: !text_cell.isCJK ? text_cell.left : undefined
+                                        anchors.top: !text_cell.isCJK ? text_cell.top : undefined
 
-                                    anchors.topMargin: !text_cell.isCJK ? -(Cell.cellHeight/0.9)*0.05 : undefined
+                                        anchors.topMargin: !text_cell.isCJK ? -(Cell.cellHeight/0.9)*0.05 : undefined
 
-                                    id: texts
-                                    textFormat: Text.RichText
-                                    text: text_cell.text
-                                    font: root.font
-                                    color: root.color
+                                        id: texts
+                                        textFormat: Text.RichText
+                                        text: text_cell.text
+                                        font: root.font
+                                        color: root.color
 
+                                    }
                                 }
+
                             }
 
                         }
-
                     }
                 }
+
+            }
+
+            Loader {
+
+                active: (root.visible || !SettingsInfo.optimizeMemory) && root.pure
+
+                sourceComponent: Text {
+                    x: root.centered ? Cell.centerWCell(implicitWidth, cell_text.implicitWidth) : 0
+                    text: root.raw_text
+                    font: root.font
+                    color: root.color
+                    lineHeight: 0.9
+                }
+
             }
 
             Text {
@@ -473,7 +520,6 @@ Item {
 
                 font: root.font
                 color: root.scroll.color
-                renderType: Text.CurveRendering
 
             }
 
