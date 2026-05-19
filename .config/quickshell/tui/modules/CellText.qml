@@ -27,6 +27,14 @@ Item {
         property font font: Cell.font
     }
 
+    property var processed_lines: {
+        const lines = raw_text.split("\n")
+        return lines.map(line => {
+            const truncated = preferedW > 0 ? truncate(line, preferedW) : line
+            return splitCJK(truncated)
+        })
+    }
+
     property Type scroll: Type {}
 
     property int offset: 0
@@ -50,12 +58,19 @@ Item {
     }
 
     onOffsetChanged: {
-        updateText()
+        if (overflowed) updateText()
+    }
+
+    function applyOffset() {
+        let lines = wrapText(text, preferedW - 2).split("\n")
+        lines = lines.slice(offset, offset + preferedH)
+        lines = lines.map(item => item == "" ? " " : item)
+        raw_text = lines.join("\n")
     }
 
     function updateText() {
         raw_text = text
-        if (debug) console.log(raw_text)
+        //if (debug) console.log(raw_text)
         if (wrap && preferedW > 0) {
             // We use a temporary variable to prevent infinite loops
             let wrapped = wrapText(text, preferedW);
@@ -83,16 +98,10 @@ Item {
         h = preferedH > 0 ? preferedH : raw_text.split("\n").length;
     }
 
-    function getCharWidth(char) {
-        // Basic wide-char detection (CJK, fullwidth, etc.)
-        return /[\u4e00-\u9fff\u3040-\u30ff\u31f0-\u31ff\uff00-\uffef]/.test(char)
-        ? 2
-        : 1;
-    }
-
     function isFullWidth(char) {
         const code = char.codePointAt(0);
 
+        //if (debug) console.log(char + "->" + code.toString(16))
         if (!code) return false;
 
         // Code point ranges for Full-width and Wide characters:
@@ -106,9 +115,13 @@ Item {
             (code >= 0xFF00 && code <= 0xFF60) || // Fullwidth Forms (Letters, Numbers, Punctuation)
             (code >= 0xFFE0 && code <= 0xFFE6) ||
 
-            (code >= 0x1F000 && code <= 0x1FFFF) || // Emojis
-            (code >= 0x2600 && code <= 0x27FF) || // Emojis
-            (code >= 0xFE00 && code <= 0xFEFF) || // Emojis
+            (code >= 0x1F600 && code <= 0x1F64F) || // Smileys & Emoticons
+            (code >= 0x1F300 && code <= 0x1F5FF) || // Misc Symbols & Pictographs
+            (code >= 0x1F680 && code <= 0x1F6FF) || // Transport & Map
+            (code >= 0x1F900 && code <= 0x1F9FF) || // Supplemental Symbols
+            (code >= 0x1FA70 && code <= 0x1FAFF) || // Symbols Extended-A
+            (code >= 0x2600  && code <= 0x26FF)  || // Misc Symbols (e.g., ☀, ☁, ⛑)
+            (code >= 0x2700  && code <= 0x27BF)  || // Dingbats (e.g., ✂, ✅)
 
             (code >= 0x20000 && code <= 0x3FAFF)  // Rare/Extension CJK Ideographs
         );
@@ -116,6 +129,7 @@ Item {
 
     function onlyLatin(str) {
         for (const c of str) {
+            //if (debug) console.log(c + " " + isFullWidth(c))
             if (isFullWidth(c)) return false
         }
         return true
@@ -354,21 +368,62 @@ Item {
         let result = []
         let i = 0
         while (i < str.length) {
+
+            if (debug) console.log(str[i])
+
             const ch = str[i]
-            if (/[\u4e00-\u9fff\u3040-\u30ff\u31f0-\u31ff\uff00-\uffef]/.test(ch)) {
+
+            // 1. Check for Emoji Surrogate Pairs first
+            const charCode = str.charCodeAt(i)
+            const isHighSurrogate = charCode >= 0xD800 && charCode <= 0xDBFF
+            const hasLowSurrogate = i + 1 < str.length && str.charCodeAt(i + 1) >= 0xDC00 && str.charCodeAt(i + 1) <= 0xDFFF
+
+            if (isHighSurrogate && hasLowSurrogate) {
+                let emojiCluster = ""
+                // Consume the complete emoji chunks safely
+                while (i < str.length) {
+                    const currentCode = str.charCodeAt(i)
+                    const nextCode = i + 1 < str.length ? str.charCodeAt(i + 1) : 0
+
+                    if (currentCode >= 0xD800 && currentCode <= 0xDBFF && nextCode >= 0xDC00 && nextCode <= 0xDFFF) {
+                        emojiCluster += str[i] + str[i + 1]
+                        i += 2 // Skip both code units at once
+                    } else {
+                        break // Not an emoji chunk anymore
+                    }
+                }
+
+                result.push({
+                    text: `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Mono CJK JP';">${emojiCluster}</span>`,
+                    raw: emojiCluster,
+                    count: emojiCluster.length, // Standard JS length (2 per basic emoji)
+                    cells: (emojiCluster.length / 2) * 2, // Most terminal/TUI grids render emojis as 2 cells wide
+                    isCJK: false, // Kept as false, or make an 'isEmoji' flag if needed
+                    isEmoji: true // Kept as false, or make an 'isEmoji' flag if needed
+                })
+            } 
+            // 2. Original CJK Logic
+            else if (root.isFullWidth(ch)) {
                 let cjk = ""
-                while (i < str.length && /[\u4e00-\u9fff\u3040-\u30ff\u31f0-\u31ff\uff00-\uffef]/.test(str[i])) {
+                while (i < str.length && root.isFullWidth(str[i])) {
+                    // Ensure we don't accidentally swallow an emoji start inside here
+                    const code = str.charCodeAt(i)
+                    if (code >= 0xD800 && code <= 0xDBFF) break
+
                     cjk += str[i]
                     i++
                 }
                 result.push({
-                    text: `<span style="font-size:${Cell.cellWidth*2}px;font-family:'Noto Sans Mono CJK JP';">${cjk}</span>`,
+                    text: `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Mono CJK JP';">${cjk}</span>`,
                     raw: cjk,
                     count: cjk.length,
                     cells: cjk.length * 2,
-                    isCJK: true
+                    isCJK: true,
+                    isEmoji: false,
                 })
-            } else if ((/[\u2800-\u28ff]/.test(ch))) {
+            } 
+            // 3. Original Braille Logic
+            else if ((/[\u2800-\u28ff]/.test(ch))) {
                 let braille = ""
                 while (i < str.length && /[\u2800-\u28ff]/.test(str[i])) {
                     braille += str[i]
@@ -379,20 +434,30 @@ Item {
                     raw: braille,
                     count: braille.length,
                     cells: braille.length,
-                    isCJK: true
+                    isCJK: true,
+                    isEmoji: false,
                 })
-            } else {
+            } 
+            // 4. Clean Latin Logic
+            else {
                 let latin = ""
-                while (i < str.length && !/[\u4e00-\u9fff\u3040-\u30ff\u31f0-\u31ff\uff00-\uffef]/.test(str[i])) {
+                while (i < str.length && !root.isFullWidth(str[i])) {
+                    // Stop immediately if a surrogate pair shows up
+                    const code = str.charCodeAt(i)
+                    if (code >= 0xD800 && code <= 0xDBFF) break
+                    if (typeof root.isBraille === 'function' ? root.isBraille(str[i]) : /[\u2800-\u28ff]/.test(str[i])) break
+
                     latin += str[i]
                     i++
                 }
+                const latinCells = decodeRichText(purify(latin)).length
                 result.push({
                     text: latin.replace(/ /g, "&nbsp;"),
                     raw: latin,
-                    count: decodeRichText(purify(latin)).length,
-                    cells: decodeRichText(purify(latin)).length,
-                    isCJK: false
+                    cells: latinCells,
+                    count: latinCells,
+                    isCJK: false,
+                    isEmoji: false,
                 })
             }
         }
@@ -424,22 +489,20 @@ Item {
 
                     Repeater {
 
-                        model: root.raw_text.split("\n")
+                        model: root.processed_lines
 
                         delegate: RowLayout {
 
                             Layout.leftMargin: root.centered ? Cell.centerWCell(implicitWidth, Cell.w(root.w)) : 0
 
                             required property int index
-                            required property string modelData
+                            required property var modelData
 
                             spacing: 0
 
                             Repeater {
 
-                                model: root.preferedW > 0 
-                                ? root.splitCJK(root.truncate(parent.modelData, root.preferedW)) 
-                                : root.splitCJK(parent.modelData)
+                                model: modelData
 
                                 delegate: Cells {
 
@@ -448,6 +511,7 @@ Item {
                                     required property string text
                                     required property int cells
                                     required property bool isCJK
+                                    required property bool isEmoji
 
                                     clip: root.clip
 
@@ -460,12 +524,15 @@ Item {
 
                                     Text {
 
-                                        anchors.centerIn: !text_cell.isCJK ? undefined : parent
+                                        anchors.centerIn: !text_cell.isCJK && !text_cell.isEmoji ? undefined : parent
 
-                                        anchors.left: !text_cell.isCJK ? text_cell.left : undefined
-                                        anchors.top: !text_cell.isCJK ? text_cell.top : undefined
+                                        anchors.left: !text_cell.isCJK && !text_cell.isEmoji ? text_cell.left : undefined
+                                        anchors.top: !text_cell.isCJK && !text_cell.isEmoji ? text_cell.top : undefined
 
-                                        anchors.topMargin: !text_cell.isCJK ? -(Cell.cellHeight/0.9)*0.05 : undefined
+                                        anchors.topMargin: !text_cell.isCJK && !text_cell.isEmoji ? -(Cell.cellHeight/0.9)*0.05 : undefined
+
+                                        anchors.verticalCenterOffset: text_cell.isEmoji ? Cell.cellHeight*0.05 : 0
+                                        anchors.horizontalCenterOffset: text_cell.isEmoji ? Cell.cellWidth*0.05 : 0
 
                                         id: texts
                                         textFormat: Text.RichText
@@ -498,29 +565,32 @@ Item {
 
             }
 
-            Text {
 
-                visible: root.overflowed && root.scroll.enabled
+            Loader {
+                active: root.overflowed && root.scroll.enabled
 
-                x: Cell.w(root.preferedW-1)
+                sourceComponent: Text {
 
-                text: {
-                    if (root.preferedH > 1) {
-                        return (root.offset > 0 ? "↑" : "-") + "\n".repeat(preferedH-1) + (root.offset < preferedH-1 ? "↓" : "-")
-                    } else {
-                        if (root.offset == 0) {
-                            return "↓"
-                        } else if (root.offset == preferedH-1) {
-                            return "↑"
+                    x: Cell.w(root.preferedW-1)
+
+                    text: {
+                        if (root.preferedH > 1) {
+                            return (root.offset > 0 ? "↑" : "-") + "\n".repeat(preferedH-1) + (root.offset < preferedH-1 ? "↓" : "-")
                         } else {
-                            return "↕"
+                            if (root.offset == 0) {
+                                return "↓"
+                            } else if (root.offset == preferedH-1) {
+                                return "↑"
+                            } else {
+                                return "↕"
+                            }
                         }
                     }
+
+                    font: root.font
+                    color: root.scroll.color
+
                 }
-
-                font: root.font
-                color: root.scroll.color
-
             }
 
             MouseControl {

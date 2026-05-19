@@ -821,7 +821,7 @@ CellPopup {
 
                         Stat {
                             key: "Read:"
-                            value: root.fmt("<b>{}</b>",SystemInfo.storageRounder(SystemInfo.diskreadspeed,1,10))
+                            value: SystemInfo.storageRounder(SystemInfo.diskreadspeed,1,10)
 
                             w: box.eW - diskio.w
                         }

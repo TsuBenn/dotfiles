@@ -8,6 +8,7 @@ import qs.services
 import Quickshell
 import Quickshell.Io
 import QtQuick
+import QtQuick.Layouts
 
 ShellRoot {
 
@@ -53,10 +54,21 @@ ShellRoot {
                 w: 80
                 h: 30
 
-                CellTextNew {
-                    text: "sob😭skull💀sweat😅fire🔥 憂鬱、日々"
-                    color: Colors.bgSurface
-                    bg: Colors.accentStrong
+                ColumnLayout {
+
+                    spacing: 0
+
+                    CellText {
+                        text: "sob😭skull💀sweat😅fire🔥 憂鬱、日々憂鬱" + onlyLatin("sob😭skull💀sweat😅fire🔥 憂鬱、日々憂鬱")
+                        color: Colors.bgSurface
+                        debug: true
+                    }
+                    CellText {
+
+                        text: ""
+                        color: Colors.bgSurface
+                    }
+
                 }
 
             }

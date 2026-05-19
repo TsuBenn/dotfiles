@@ -549,7 +549,7 @@ def main():
                     "description": app["genericName"] or app["description"],
                     "category": "app",
                     "icon": app["icon"],
-                    "value": ["bash", "-c", app["exec"]],
+                    "value": ["bash", "-c", re.sub(r"%[a-zA-Z]", "", app["exec"]).strip()],
                     "type": "exec"
                 } for app in apps]
 

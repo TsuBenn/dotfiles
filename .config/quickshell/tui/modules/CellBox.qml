@@ -88,6 +88,8 @@ Item {
 
                 bg: root.border.type == 0 ? root.border.color : "transparent"
 
+                pure: false
+
                 text: {
                     switch (root.border.type) {
                         case 0: return " ";
