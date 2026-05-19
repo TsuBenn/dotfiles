@@ -67,14 +67,11 @@ CellPopup {
             property string key: "Name:"
             property string value: "Ryzen R5 7600"
 
-            onValueChanged: {
-                stat_value.cellw = Math.min(box.eW - root.strip(key).length - box.p*2 - 1, root.strip(value).length)
-            }
-
             property color key_color: box.key
             property color value_color: stc ? box.stc : box.dyn
 
             property bool stc: false
+            property bool debug: false
 
             w: box.eW
             h: 1
@@ -90,6 +87,7 @@ CellPopup {
 
                 text: stat.key
                 color: stat.key_color
+                debug: stat.debug
 
             }
 
@@ -102,7 +100,8 @@ CellPopup {
 
                 text: stat.value
                 fg: stat.value_color
-                cellw: Math.min(box.eW - root.strip(stat.key).length - box.p*2 - 1, root.strip(stat.value).length)
+                cellw: stat.w - root.strip(stat.key).length - box.p*2 - 1
+                alignRight: true
 
             }
 
@@ -821,7 +820,7 @@ CellPopup {
 
                         Stat {
                             key: "Read:"
-                            value: SystemInfo.storageRounder(SystemInfo.diskreadspeed,1,10)
+                            value: root.fmt("<b>{}</b>",SystemInfo.storageRounder(SystemInfo.diskreadspeed,1,10))
 
                             w: box.eW - diskio.w
                         }
@@ -832,7 +831,6 @@ CellPopup {
 
                             text: "/s"
                             color: box.stc
-
                         }
 
                     }

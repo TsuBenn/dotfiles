@@ -115,7 +115,7 @@ CellPopup {
 
                     CellSeparator {
                         w: box.contentW - 2 - 13*art.visible
-                        type: 2
+                        type: 0
                         color: Colors.accentDim
                     }
 

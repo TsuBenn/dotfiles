@@ -20,6 +20,9 @@ Cells {
     property int excess: 0
     property bool paused: true
 
+    property bool centered: false
+    property bool alignRight: false
+
     readonly property string displayed: {
         const padded = text + "    "
         const doubled = padded + padded
@@ -103,6 +106,8 @@ Cells {
         preferedW: root.cellw
         font: root.font
         color: root.fg
+        centered: root.centered
+        alignRight: root.alignRight
     }
 
     onTextChanged: {

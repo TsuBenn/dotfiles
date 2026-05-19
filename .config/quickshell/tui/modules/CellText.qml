@@ -16,26 +16,11 @@ Item {
     property color bg: "transparent"
 
     property bool centered: false
+    property bool alignRight: false
+
     property bool wrap: false
 
-    property bool overflowed: false
     property bool pure: onlyLatin(text)
-
-    component Type: Item {
-        override property bool enabled: true
-        property color color: Colors.secondary
-        property font font: Cell.font
-    }
-
-    property var processed_lines: {
-        const lines = raw_text.split("\n")
-        return lines.map(line => {
-            const truncated = preferedW > 0 ? truncate(line, preferedW) : line
-            return splitCJK(truncated)
-        })
-    }
-
-    property Type scroll: Type {}
 
     property int offset: 0
 
@@ -48,54 +33,100 @@ Item {
 
     property bool debug: false
 
+    implicitHeight: Cell.h(h)
+    implicitWidth: Cell.w(w)
+
     Component.onCompleted: {
         updateText()
     }
 
-    // Trigger this whenever the text changes
     onTextChanged: {
         updateText()
     }
 
-    onOffsetChanged: {
-        if (overflowed) updateText()
+    function sliceWithTags(str, start, end) {
+        let result = '';
+        let visibleCount = 0;
+        let i = 0;
+        const openTags = [];
+
+        while (i < str.length && visibleCount < end) {
+            if (str[i] === '<') {
+                const closeIdx = str.indexOf('>', i);
+                const fullTag = str.slice(i, closeIdx + 1);
+                const isClosing = str[i + 1] === '/';
+                const tagName = fullTag.replace(/<\/?([a-zA-Z0-9]+)[^>]*>/, '$1');
+
+                if (visibleCount >= start) {
+                    result += fullTag;
+                }
+
+                if (isClosing) openTags.pop();
+                else openTags.push(tagName);
+
+                i = closeIdx + 1;
+            } else {
+                if (visibleCount >= start) result += str[i];
+                visibleCount++;
+                i++;
+            }
+        }
+
+        // Close any unclosed tags in reverse order
+        while (openTags.length) result += `</${openTags.pop()}>`;
+        return result;
     }
 
-    function applyOffset() {
-        let lines = wrapText(text, preferedW - 2).split("\n")
-        lines = lines.slice(offset, offset + preferedH)
-        lines = lines.map(item => item == "" ? " " : item)
-        raw_text = lines.join("\n")
+    // Hoist leading whitespace inside tags to outside
+    function hoistWhitespace(str) {
+        return str.replace(/(<[^>]+>)(\s+)/g, '$2$1');
+    }
+
+    function richify(str) {
+        const entityMap = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+        };
+
+        // Split the string into an array of [raw_text, tag, raw_text, tag...]
+        // The parenthesis inside the regex ensures the matched tags are kept in the split array
+        return str
+        .split(/(<\/?[a-zA-Z][^>]*>)/g) 
+        .map(part => {
+            // If this part is a valid HTML tag, pass it through untouched
+            if (part.startsWith("<") && part.endsWith(">")) {
+                return part;
+            }
+            // Otherwise, it's raw text—safely convert the problematic characters
+            return part.replace(/[&<>"']/g, char => entityMap[char]);
+        })
+        .join("").replace(/ /g, "&nbsp;").replace(/\n/g, "<br>");
     }
 
     function updateText() {
+
         raw_text = text
-        //if (debug) console.log(raw_text)
-        if (wrap && preferedW > 0) {
-            // We use a temporary variable to prevent infinite loops
-            let wrapped = wrapText(text, preferedW);
-            if (text !== wrapped) raw_text = wrapped; 
+
+        if (preferedW > 0) {
+            if (wrap) {
+                raw_text = wrapText(raw_text, preferedW)
+            } else {
+                raw_text = truncate(raw_text, preferedW)
+            }
         }
 
-        let buff_h = raw_text.split("\n").length
-        root.realH = buff_h
+        w = getMaxWidth(raw_text)
+        h = preferedH > 0 ? preferedH : raw_text.split("\n").length
 
-        if (wrap && preferedH > 0 && preferedW > 0 && buff_h > preferedH) {
-            overflowed = true
-            let wrapped = wrapText(text, preferedW-2);
-            if (text !== wrapped) raw_text = wrapped; 
-
-            let lines = raw_text.split("\n")
-            lines = lines.slice(offset,offset + preferedH)
-            lines = lines.map(item => item == "" ? " " : item)
-            raw_text = lines.join("\n")
-        } else {
-            overflowed = false
+        if (!pure) {
+            processed = splitUnpure(raw_text)
         }
 
-        // Now update the actual dimensions
-        w = calculateRequiredWidth();
-        h = preferedH > 0 ? preferedH : raw_text.split("\n").length;
+        raw_text = hoistWhitespace(richify(raw_text))
+
     }
 
     function isFullWidth(char) {
@@ -141,31 +172,23 @@ Item {
 
     function getWidth(str) {
         let count = 0
+        str = purify(str)
         for (const c of str) {
             isFullWidth(c) ? count += 2 : count += 1
         }
         return count
     }
 
-    function calculateRequiredWidth() {
+    function getMaxWidth(str) {
         if (preferedW > 0) return preferedW;
 
         let maxW = 0;
-        const lines = purify(raw_text).split("\n");
+        const lines = purify(str).split("\n");
         for (const line of lines) {
             let lineWidth = getWidth(line)
             if (lineWidth > maxW) maxW = lineWidth;
         }
         return maxW;
-    }
-
-
-    function getStringWidth(str) {
-        let width = 0;
-        for (const ch of str) {
-            width += isFullWidth(ch) ? 2 : 1;
-        }
-        return width;
     }
 
     function wrapText(text, maxWidth) {
@@ -291,42 +314,10 @@ Item {
         return wrapped.join('\n');
     }
 
-    implicitHeight: Cell.h(h)
-    implicitWidth: Cell.w(w)
-
-    function encodeRichText(str) {
-        const map = {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#39;"
-        };
-
-        return str
-        .split(/(<[^>]+>)/g) // split into [text, tag, text, tag...]
-        .map(part => {
-            if (part.startsWith("<") && part.endsWith(">")) {
-                return part; // keep tags untouched
-            }
-            return part.replace(/[&<>"']/g, char => map[char]);
-        })
-        .join("");
-    }
-
-    function decodeRichText(str) {
-        return str
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/&amp;/g, "&")
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'");
-    }
-
     function truncate(str, maxCells) {
         if (maxCells <= 0) return str
 
-        let placeholder = decodeRichText(str.replace(/<[^>]*>/g, (match) => "\uffff".repeat(match.length)))
+        let placeholder = str.replace(/<[^>]*>/g, (match) => "\uffff".repeat(match.length))
 
         let overflowed = str.length > maxCells
         let result = ""
@@ -363,114 +354,135 @@ Item {
         return result
     }
 
-    function splitCJK(str) {
-        str = encodeRichText(str)
-        let result = []
-        let i = 0
-        while (i < str.length) {
-
-            if (debug) console.log(str[i])
-
-            const ch = str[i]
-
-            // 1. Check for Emoji Surrogate Pairs first
-            const charCode = str.charCodeAt(i)
-            const isHighSurrogate = charCode >= 0xD800 && charCode <= 0xDBFF
-            const hasLowSurrogate = i + 1 < str.length && str.charCodeAt(i + 1) >= 0xDC00 && str.charCodeAt(i + 1) <= 0xDFFF
-
-            if (isHighSurrogate && hasLowSurrogate) {
-                let emojiCluster = ""
-                // Consume the complete emoji chunks safely
-                while (i < str.length) {
-                    const currentCode = str.charCodeAt(i)
-                    const nextCode = i + 1 < str.length ? str.charCodeAt(i + 1) : 0
-
-                    if (currentCode >= 0xD800 && currentCode <= 0xDBFF && nextCode >= 0xDC00 && nextCode <= 0xDFFF) {
-                        emojiCluster += str[i] + str[i + 1]
-                        i += 2 // Skip both code units at once
-                    } else {
-                        break // Not an emoji chunk anymore
-                    }
-                }
-
-                result.push({
-                    text: `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Mono CJK JP';">${emojiCluster}</span>`,
-                    raw: emojiCluster,
-                    count: emojiCluster.length, // Standard JS length (2 per basic emoji)
-                    cells: (emojiCluster.length / 2) * 2, // Most terminal/TUI grids render emojis as 2 cells wide
-                    isCJK: false, // Kept as false, or make an 'isEmoji' flag if needed
-                    isEmoji: true // Kept as false, or make an 'isEmoji' flag if needed
-                })
-            } 
-            // 2. Original CJK Logic
-            else if (root.isFullWidth(ch)) {
-                let cjk = ""
-                while (i < str.length && root.isFullWidth(str[i])) {
-                    // Ensure we don't accidentally swallow an emoji start inside here
-                    const code = str.charCodeAt(i)
-                    if (code >= 0xD800 && code <= 0xDBFF) break
-
-                    cjk += str[i]
-                    i++
-                }
-                result.push({
-                    text: `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Mono CJK JP';">${cjk}</span>`,
-                    raw: cjk,
-                    count: cjk.length,
-                    cells: cjk.length * 2,
-                    isCJK: true,
-                    isEmoji: false,
-                })
-            } 
-            // 3. Original Braille Logic
-            else if ((/[\u2800-\u28ff]/.test(ch))) {
-                let braille = ""
-                while (i < str.length && /[\u2800-\u28ff]/.test(str[i])) {
-                    braille += str[i]
-                    i++
-                }
-                result.push({
-                    text: `<span style="font-family:'Noto Sans Symbols 2';">${braille}</span>`,
-                    raw: braille,
-                    count: braille.length,
-                    cells: braille.length,
-                    isCJK: true,
-                    isEmoji: false,
-                })
-            } 
-            // 4. Clean Latin Logic
-            else {
-                let latin = ""
-                while (i < str.length && !root.isFullWidth(str[i])) {
-                    // Stop immediately if a surrogate pair shows up
-                    const code = str.charCodeAt(i)
-                    if (code >= 0xD800 && code <= 0xDBFF) break
-                    if (typeof root.isBraille === 'function' ? root.isBraille(str[i]) : /[\u2800-\u28ff]/.test(str[i])) break
-
-                    latin += str[i]
-                    i++
-                }
-                const latinCells = decodeRichText(purify(latin)).length
-                result.push({
-                    text: latin.replace(/ /g, "&nbsp;"),
-                    raw: latin,
-                    cells: latinCells,
-                    count: latinCells,
-                    isCJK: false,
-                    isEmoji: false,
-                })
-            }
-        }
-        return result
+    function wrapFullWidth(str) {
+        return `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Mono CJK JP';">${str}</span>`
     }
+
+    function splitUnpure(str) {
+
+        let result = []
+        for (const line of str.split("\n")) {
+            let processed = []  
+            // <span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Mono CJK JP';">${cjk}</span> 
+
+            let inFullWidth = false
+            let inEmoji = false
+            let buffer = ""
+
+            for (const c of line) {
+
+                if (c.length == 2) {
+                    if (inFullWidth) {
+                        if (buffer) {
+                            processed.push({
+                                text: wrapFullWidth(buffer),
+                                len: buffer.length,
+                                type: "cjk",
+                            })
+                        }
+                        buffer = ""
+                        inFullWidth = false
+                    } else if (!inEmoji) {
+                        if (buffer) {
+                            processed.push({
+                                text: hoistWhitespace(richify(buffer)),
+                                len: buffer.length,
+                                type: "pure",
+                            })
+                        }
+                        buffer = ""
+                        inEmoji = true
+                    }
+                    buffer += c
+
+                } else if (isFullWidth(c)) {
+                    if (inEmoji) {
+                        if (buffer) {
+                            processed.push({
+                                text: wrapFullWidth(buffer),
+                                len: buffer.length/2,
+                                type: "emoji",
+                            })
+                        }
+                        buffer = ""
+                        inEmoji = false
+                    } else if (!inFullWidth) {
+                        if (buffer) {
+                            processed.push({
+                                text: hoistWhitespace(richify(buffer)),
+                                len: buffer.length,
+                                type: "pure",
+                            })
+                        }
+                        buffer = ""
+                        inFullWidth = true
+                    }
+                    buffer += c
+
+                } else {
+                    if (inEmoji) {
+                        if (buffer) {
+                            processed.push({
+                                text: wrapFullWidth(buffer),
+                                len: buffer.length/2,
+                                type: "emoji",
+                            })
+                        }
+                        buffer = ""
+                        inEmoji = false
+                    } else if (inFullWidth) {
+                        if (buffer) {
+                            processed.push({
+                                text: wrapFullWidth(buffer),
+                                len: buffer.length,
+                                type: "cjk",
+                            })
+                        }
+                        buffer = ""
+                        inFullWidth = false
+                    }
+
+                    buffer += c
+                }
+
+            }
+
+            if (buffer) {
+                if (inFullWidth) {
+                    processed.push({
+                        text: wrapFullWidth(buffer),
+                        len: buffer.length,
+                        type: "cjk",
+                    })
+                } else if (inEmoji) {
+                    processed.push({
+                        text: wrapFullWidth(buffer),
+                        len: buffer.length/2,
+                        type: "emoji",
+                    })
+                } else {
+                    processed.push({
+                        text: hoistWhitespace(richify(buffer)),
+                        len: buffer.length,
+                        type: "pure",
+                    })
+                }
+            }
+
+            result.push(processed)
+        }
+
+        return result
+
+    }
+
+    property var processed: []
 
     Loader {
 
         active: root.visible || !SettingsInfo.optimizeMemory
 
-        sourceComponent: 
-
-        Cells {
+        sourceComponent: Cells {
 
             id: cell_text
 
@@ -489,64 +501,53 @@ Item {
 
                     Repeater {
 
-                        model: root.processed_lines
+                        model: processed
 
                         delegate: RowLayout {
 
-                            Layout.leftMargin: root.centered ? Cell.centerWCell(implicitWidth, Cell.w(root.w)) : 0
-
                             required property int index
-                            required property var modelData
 
                             spacing: 0
 
                             Repeater {
 
-                                model: modelData
+                                model: processed[parent.index]
 
                                 delegate: Cells {
 
-                                    id: text_cell
+                                    required property string text 
+                                    required property int len
+                                    required property string type 
 
-                                    required property string text
-                                    required property int cells
-                                    required property bool isCJK
-                                    required property bool isEmoji
-
-                                    clip: root.clip
-
+                                    w: len*( type == "emoji" || type == "cjk" ? 2 : 1)
                                     h: 1
-                                    w: cells
 
-                                    whole: true
+                                    color: "transparent"
 
-                                    color: root.bg
+                                    clip: true
 
                                     Text {
 
-                                        anchors.centerIn: !text_cell.isCJK && !text_cell.isEmoji ? undefined : parent
+                                        anchors.centerIn: parent.type == "emoji" || parent.type == "cjk" ? parent : undefined
 
-                                        anchors.left: !text_cell.isCJK && !text_cell.isEmoji ? text_cell.left : undefined
-                                        anchors.top: !text_cell.isCJK && !text_cell.isEmoji ? text_cell.top : undefined
+                                        anchors.verticalCenterOffset: parent.type == "emoji" ? Cell.cellHeight*0.05 : 0
+                                        anchors.horizontalCenterOffset: parent.type == "emoji" ? Cell.cellWidth*0.05 : 0
 
-                                        anchors.topMargin: !text_cell.isCJK && !text_cell.isEmoji ? -(Cell.cellHeight/0.9)*0.05 : undefined
-
-                                        anchors.verticalCenterOffset: text_cell.isEmoji ? Cell.cellHeight*0.05 : 0
-                                        anchors.horizontalCenterOffset: text_cell.isEmoji ? Cell.cellWidth*0.05 : 0
-
-                                        id: texts
                                         textFormat: Text.RichText
-                                        text: text_cell.text
+                                        text: parent.text
                                         font: root.font
                                         color: root.color
+                                        lineHeight: 0.9
 
                                     }
+
                                 }
 
                             }
-
                         }
+
                     }
+
                 }
 
             }
@@ -556,49 +557,19 @@ Item {
                 active: (root.visible || !SettingsInfo.optimizeMemory) && root.pure
 
                 sourceComponent: Text {
-                    x: root.centered ? Cell.centerWCell(implicitWidth, cell_text.implicitWidth) : 0
+
+                    x: if (root.centered) {
+                        return Cell.centerWCell(implicitWidth, cell_text.implicitWidth)
+                    } else if (root.alignRight) {
+                        return cell_text.implicitWidth - implicitWidth
+                    } else {
+                        return 0
+                    }
                     text: root.raw_text
+                    textFormat: Text.RichText
                     font: root.font
                     color: root.color
                     lineHeight: 0.9
-                }
-
-            }
-
-
-            Loader {
-                active: root.overflowed && root.scroll.enabled
-
-                sourceComponent: Text {
-
-                    x: Cell.w(root.preferedW-1)
-
-                    text: {
-                        if (root.preferedH > 1) {
-                            return (root.offset > 0 ? "↑" : "-") + "\n".repeat(preferedH-1) + (root.offset < preferedH-1 ? "↓" : "-")
-                        } else {
-                            if (root.offset == 0) {
-                                return "↓"
-                            } else if (root.offset == preferedH-1) {
-                                return "↑"
-                            } else {
-                                return "↕"
-                            }
-                        }
-                    }
-
-                    font: root.font
-                    color: root.scroll.color
-
-                }
-            }
-
-            MouseControl {
-
-                anchors.fill: parent
-
-                onWheel: (delta) => {
-                    offset = Math.min(Math.max(root.offset - delta,0),root.realH-root.preferedH-1)
                 }
 
             }

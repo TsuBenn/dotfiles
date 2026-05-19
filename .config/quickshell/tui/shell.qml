@@ -59,14 +59,25 @@ ShellRoot {
                     spacing: 0
 
                     CellText {
-                        text: "sob😭skull💀sweat😅fire🔥 憂鬱、日々憂鬱" + onlyLatin("sob😭skull💀sweat😅fire🔥 憂鬱、日々憂鬱")
+
+                        text: "sob😭skull💀sweat😅fire🔥\n憂鬱、日々憂鬱"
                         color: Colors.bgSurface
                         debug: true
+
                     }
+
                     CellText {
 
-                        text: ""
+                        text: " <b> 70%</b> " + pure
                         color: Colors.bgSurface
+
+                    }
+
+                    CellText {
+
+                        text: "First line\nSecond Line"
+                        color: Colors.bgSurface
+
                     }
 
                 }
