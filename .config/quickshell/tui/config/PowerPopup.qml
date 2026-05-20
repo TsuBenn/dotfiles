@@ -127,6 +127,8 @@ CellPopup {
 
                         readonly property int selected: menu.selected == index
 
+                        pure: false
+                        lockPure: true
                         text: ANSI.render(title,selected ? 2 : 1)
                         clip: true
 
