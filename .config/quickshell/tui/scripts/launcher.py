@@ -391,6 +391,7 @@ def preload_files(rescan_only = False):
             new_paths = process.stdout.strip().split('\n')
             with open(FILE_CACHE_FILE, 'w') as f:
                 json.dump(new_paths, f)
+
             paths.clear()
             paths.extend(new_paths)
             print(f"[timer] Files cached: {time.perf_counter() - start:.4f}s", file=sys.stderr)
@@ -398,7 +399,7 @@ def preload_files(rescan_only = False):
             pass
 
     if not rescan_only:
-        threading.Thread(target=load_files, daemon=True).start()
+        load_files()
     threading.Thread(target=rescan, args=(cached,), daemon=True).start()
     
     return cached
