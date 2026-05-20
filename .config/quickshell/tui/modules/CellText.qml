@@ -9,6 +9,8 @@ import QtQuick
 Item {
     id: root
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     property string text: "cell text"
     property string raw_text: text
     property font font: Cell.font
@@ -20,6 +22,7 @@ Item {
 
     property bool wrap: false
 
+    property bool lockPure: false
     property bool pure: onlyLatin(text)
 
     property int offset: 0
@@ -110,6 +113,11 @@ Item {
 
         raw_text = text
 
+        if (!lockPure) { pure = onlyLatin(raw_text) }
+
+        // if (debug) console.log(text)
+        // if (debug) console.log(pure)
+
         if (preferedW > 0) {
             if (wrap) {
                 raw_text = wrapText(raw_text, preferedW)
@@ -152,7 +160,7 @@ Item {
             (code >= 0x1F900 && code <= 0x1F9FF) || // Supplemental Symbols
             (code >= 0x1FA70 && code <= 0x1FAFF) || // Symbols Extended-A
             (code >= 0x2600  && code <= 0x26FF)  || // Misc Symbols (e.g., ☀, ☁, ⛑)
-            (code >= 0x2700  && code <= 0x27BF)  || // Dingbats (e.g., ✂, ✅)
+            //(code >= 0x2700  && code <= 0x27BF)  || // Dingbats (e.g., ✂, ✅)
 
             (code >= 0x20000 && code <= 0x3FAFF)  // Rare/Extension CJK Ideographs
         );
@@ -160,8 +168,9 @@ Item {
 
     function onlyLatin(str) {
         for (const c of str) {
-            //if (debug) console.log(c + " " + isFullWidth(c))
-            if (isFullWidth(c)) return false
+            if (isFullWidth(c)) {
+                return false
+            }
         }
         return true
     }
@@ -480,7 +489,7 @@ Item {
 
     Loader {
 
-        active: root.visible || !SettingsInfo.optimizeMemory
+        active: root.visible || !root.optimizeMemory
 
         sourceComponent: Cells {
 
@@ -493,9 +502,17 @@ Item {
 
             Loader {
 
-                active: (root.visible || !SettingsInfo.optimizeMemory) && !root.pure
+                active: (root.visible || !root.optimizeMemory) && !root.pure
 
                 sourceComponent: ColumnLayout {
+
+                    x: if (root.centered) {
+                        return Cell.centerWCell(implicitWidth, cell_text.implicitWidth)
+                    } else if (root.alignRight) {
+                        return cell_text.implicitWidth - implicitWidth
+                    } else {
+                        return 0
+                    }
 
                     spacing: 0
 
@@ -522,7 +539,7 @@ Item {
                                     w: len*( type == "emoji" || type == "cjk" ? 2 : 1)
                                     h: 1
 
-                                    color: "transparent"
+                                    color: root.bg
 
                                     clip: true
 
@@ -554,7 +571,7 @@ Item {
 
             Loader {
 
-                active: (root.visible || !SettingsInfo.optimizeMemory) && root.pure
+                active: (root.visible || !root.optimizeMemory) && root.pure
 
                 sourceComponent: Text {
 

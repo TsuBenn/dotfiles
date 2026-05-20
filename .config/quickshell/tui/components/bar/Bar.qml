@@ -244,6 +244,8 @@ Scope {
 
                 MouseArea {
 
+                    visible: root.hideBar
+
                     anchors.fill: parent
 
                     hoverEnabled: true

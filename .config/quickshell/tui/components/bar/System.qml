@@ -52,6 +52,16 @@ Cells {
 
         CellText {
             text: "FPS: " + SettingsInfo.fps
+            font: Cell.fontBB
+            color: {
+                if (SettingsInfo.fps > 50) {
+                    return Colors.success
+                } else if (SettingsInfo.fps > 30) {
+                    return Colors.warning
+                } else {
+                    return Colors.danger
+                }
+            }
         }
 
         Stat {

@@ -11,6 +11,8 @@ ColumnLayout {
 
     id: root
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     required property var box
 
     property int h: 20
@@ -421,7 +423,7 @@ ColumnLayout {
 
         Loader {
 
-            active: root.visible || !SettingsInfo.optimizeMemory
+            active: root.visible || !root.optimizeMemory
 
             sourceComponent: ColumnLayout {
 

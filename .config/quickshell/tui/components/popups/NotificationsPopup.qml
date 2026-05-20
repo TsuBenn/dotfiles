@@ -169,7 +169,7 @@ CellPopup {
 
                             CellText {
                                 id: body
-                                text: popup.body
+                                text: SettingsInfo.safeNotifications ? "[Safe notification is ON]" : popup.body
                                 preferedW: root.w - 14
                                 wrap: true
                                 color: {

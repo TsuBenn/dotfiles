@@ -11,6 +11,8 @@ Item {
 
     id: root
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     property int w: 1
     property int h: 1
 
@@ -38,7 +40,7 @@ Item {
 
     Loader {
 
-        active: (root.visible || !SettingsInfo.optimizeMemory) && !root.vertical
+        active: (root.visible || !root.optimizeMemory) && !root.vertical
 
         sourceComponent: CellText {
 
@@ -79,7 +81,7 @@ Item {
 
     Loader {
 
-        active: (root.visible || !SettingsInfo.optimizeMemory) && root.vertical
+        active: (root.visible || !root.optimizeMemory) && root.vertical
 
         sourceComponent: CellText {
 

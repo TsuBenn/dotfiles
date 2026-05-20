@@ -5,6 +5,9 @@ import qs.services
 import QtQuick
 
 Item {
+
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     visible: !SettingsInfo.minimal
     id: root
 
@@ -27,7 +30,7 @@ Item {
     }
 
     Loader {
-        active: root.visible || !SettingsInfo.optimizeMemory
+        active: root.visible || !root.optimizeMemory
 
         sourceComponent: Cells {
             w: root.success ? root.w : 0

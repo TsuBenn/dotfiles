@@ -9,6 +9,8 @@ import QtQuick
 
 Cells {
 
+    optimizeMemory: SettingsInfo.optimizeMemory
+
     id: root
 
     w: 10
@@ -89,7 +91,7 @@ Cells {
 
     Loader {
 
-        active: root.visible || !SettingsInfo.optimizeMemory
+        active: root.visible || !root.optimizeMemory
 
         sourceComponent: CellScrollBar {
 

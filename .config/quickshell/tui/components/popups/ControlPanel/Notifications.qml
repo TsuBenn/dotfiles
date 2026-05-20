@@ -11,6 +11,8 @@ ColumnLayout {
 
     id: root
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     property bool minimal: SettingsInfo.minimal
 
     property var box
@@ -113,7 +115,7 @@ ColumnLayout {
 
                     Loader {
 
-                        active: root.visible || !SettingsInfo.optimizeMemory
+                        active: root.visible || !root.optimizeMemory
 
                         required property var modelData
 

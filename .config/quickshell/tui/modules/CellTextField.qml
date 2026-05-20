@@ -11,6 +11,8 @@ Item {
 
     id: root
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     property int w: 0
     property int h: 1
 
@@ -208,6 +210,7 @@ Item {
         }
     }
 
+
     ColumnLayout {
 
         spacing: 0
@@ -233,7 +236,7 @@ Item {
 
                     required property int index
 
-                    active: root.visible || !SettingsInfo.optimizeMemory
+                    active: root.visible || !root.optimizeMemory
 
                     sourceComponent: Item {
 
@@ -279,7 +282,7 @@ Item {
 
                         Loader {
 
-                            active: root.visible || !SettingsInfo.optimizeMemory
+                            active: root.visible || !root.optimizeMemory
 
                             sourceComponent: CellText {
 
@@ -294,7 +297,7 @@ Item {
 
                         Loader {
 
-                            active: root.visible || !SettingsInfo.optimizeMemory
+                            active: root.visible || !root.optimizeMemory
 
                             sourceComponent: CellText {
 

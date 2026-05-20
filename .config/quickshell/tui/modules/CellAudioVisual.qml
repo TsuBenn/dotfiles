@@ -9,6 +9,8 @@ Item {
 
     id: root
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     property int w: 50
     property int h: 3
 
@@ -74,54 +76,60 @@ Item {
             let innerPercent = segment - index;
 
             // 4. Use your existing blend function
-            return Colors.blend(colors[index], colors[index + 1], innerPercent);
+            return Colors.blend(colors[index] ?? Colors.fgBase, colors[index + 1] ?? Colors.fgBase, innerPercent);
         }
 
-        RowLayout {
+        Loader {
 
-            id: layout
+            active: root.visible || !root.optimizeMemory
 
-            x: Cell.w(Math.round(root.w/2 - (root.points.length*root.barW + (root.points.length-1)*root.spacing)/2))
+            sourceComponent: RowLayout {
 
-            spacing: Cell.w(root.spacing)
+                id: layout
 
-            Repeater {
+                x: Cell.w(Math.round(root.w/2 - (root.points.length*root.barW + (root.points.length-1)*root.spacing)/2))
 
-                model: root.w
+                spacing: Cell.w(root.spacing)
 
-                delegate: Cells {
+                Repeater {
 
-                    required property int index
+                    model: root.w
 
-                    w: root.barW
-                    h: container.h
-                    color: "transparent"
+                    delegate: Cells {
 
-                    Cells {
-
-                        anchors.bottom: parent.bottom
-
-                        property real percent: (root.flipped ? root.pointsFlipped[index] ?? 0 : root.points[index] ?? 0)/100
+                        required property int index
 
                         w: root.barW
-                        h: container.h*(Math.round(percent*(8*container.h))/(8*container.h))
-                        whole: false
+                        h: container.h
+                        color: "transparent"
 
-                        color: {
-                            if (Array.isArray(root.color)) {
-                                return container.getMultiBlend(root.color,Math.round(percent*(8*container.h))/(8*container.h))
+                        Cells {
+
+                            anchors.bottom: parent.bottom
+
+                            property real percent: (root.flipped ? root.pointsFlipped[index] ?? 0 : root.points[index] ?? 0)/100
+
+                            w: root.barW
+                            h: container.h*(Math.round(percent*(8*container.h))/(8*container.h))
+                            whole: false
+
+                            color: {
+                                if (Array.isArray(root.color)) {
+                                    return container.getMultiBlend(root.color,Math.round(percent*(8*container.h))/(8*container.h))
+                                }
+                                return root.color
                             }
-                            return root.color
+
                         }
 
-                    }
 
+                    }
 
                 }
 
             }
-
         }
+
 
     }
 

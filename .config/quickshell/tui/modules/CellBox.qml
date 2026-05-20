@@ -11,6 +11,8 @@ Item {
 
     id: root
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     property int w: 3
     property int h: 3
 
@@ -66,7 +68,7 @@ Item {
 
     Loader {
 
-        active: root.visible || !SettingsInfo.optimizeMemory
+        active: root.visible || !root.optimizeMemory
 
         sourceComponent: Cells {
 
@@ -89,6 +91,7 @@ Item {
                 bg: root.border.type == 0 ? root.border.color : "transparent"
 
                 pure: false
+                lockPure: true
 
                 text: {
                     switch (root.border.type) {

@@ -80,6 +80,14 @@ ShellRoot {
 
                     }
 
+                    CellText {
+
+                        text: "[✓] " + pure
+                        pure: true
+                        color: Colors.bgSurface
+
+                    }
+
                 }
 
             }

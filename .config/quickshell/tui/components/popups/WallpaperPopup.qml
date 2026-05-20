@@ -11,6 +11,8 @@ CellPopup {
 
     id: root
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     property bool minimal: SettingsInfo.minimal
 
     w: 100
@@ -58,7 +60,7 @@ CellPopup {
 
                 Loader {
 
-                    active: root.visible || !SettingsInfo.optimizeMemory
+                    active: root.visible || !root.optimizeMemory
 
                     sourceComponent: Image {
 
@@ -166,7 +168,7 @@ CellPopup {
 
                             id: thumbnail_loader
 
-                            active: root.visible || !SettingsInfo.optimizeMemory
+                            active: root.visible || !root.optimizeMemory
 
                             required property string modelData
                             required property int index

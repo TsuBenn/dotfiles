@@ -11,6 +11,8 @@ CellPopup {
 
     id: root
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     property bool minimal: SettingsInfo.minimal
 
     w: box.eW*3 + 3
@@ -151,7 +153,7 @@ CellPopup {
 
         Loader {
 
-            active: root.visible || !SettingsInfo.optimizeMemory
+            active: root.visible || !root.optimizeMemory
 
             asynchronous: true
 

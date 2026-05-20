@@ -11,6 +11,31 @@ CellPopup {
 
     id: root
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
+    Component.onCompleted: {
+        PopupManager.preloaded.connect((name)=> {
+            if (name == root.name) {
+                console.log("preloaded")
+                optimizeMemory = false
+            }
+        })
+        PopupManager.unloaded.connect((name)=> {
+            if (name == root.name) {
+                unloader.restart()
+            }
+        })
+    }
+
+    Timer {
+        id: unloader
+        interval: 5000
+        onTriggered: {
+            console.log("unloaded")
+            optimizeMemory = true
+        }
+    }
+
     property bool minimal: SettingsInfo.minimal
 
     w: 80 - root.minimal*15
@@ -514,7 +539,7 @@ CellPopup {
 
                                 required property var modelData
 
-                                active: root.visible || !SettingsInfo.optimizeMemory
+                                active: root.visible || !root.optimizeMemory
 
                                 sourceComponent: Cells {
 
@@ -985,7 +1010,7 @@ CellPopup {
                                         required property int index
                                         required property var modelData
 
-                                        active: root.visible || !SettingsInfo.optimizeMemory
+                                        active: root.visible || !root.optimizeMemory
 
                                         sourceComponent: Cells {
 

@@ -225,63 +225,73 @@ CellPopup {
 
                                 model: root.result
 
-                                delegate: Cells {
+                                delegate: Loader {
 
-                                    id: theme
+                                    id: list_loader
+
+                                    active: list.visible
 
                                     required property int index
                                     required property string modelData
 
-                                    property var source: Colors.colors[modelData] ?? Colors.dummy
+                                    sourceComponent: Cells {
 
-                                    property bool isCurrent: modelData == Colors.current
-                                    property bool selected: color.selected == index
+                                        id: theme
 
-                                    w: list.contentW
-                                    h: 2
+                                        property int index: list_loader.index
+                                        property string modelData: list_loader.modelData
 
-                                    color: color.edit ? Colors.bgSurface : (isCurrent ? theme.source.accentStrong : (theme_mouse.hovered ? theme.source.bgOverlay : Colors.bgSurface))
+                                        property var source: Colors.colors[modelData] ?? Colors.dummy
 
-                                    ColumnLayout {
+                                        property bool isCurrent: modelData == Colors.current
+                                        property bool selected: color.selected == index
 
-                                        spacing: 0
+                                        w: list.contentW
+                                        h: 2
 
-                                        CellText {
+                                        color: color.edit ? Colors.bgSurface : (isCurrent ? theme.source.accentStrong : (theme_mouse.hovered ? theme.source.bgOverlay : Colors.bgSurface))
 
-                                            Layout.leftMargin: Cell.w(1)
+                                        ColumnLayout {
 
-                                            text: (theme.selected ? "> " : "  ") + theme.source.name
-                                            color: color.edit ? Colors.fgSubtle : (theme.isCurrent ? theme.source.onAccent : (theme_mouse.hovered ? theme.source.fgBase : Colors.fgBase))
-                                            font: theme.isCurrent ? Cell.fontB : Cell.font
+                                            spacing: 0
 
-                                            preferedW: theme.w - 4
+                                            CellText {
 
-                                        }
+                                                Layout.leftMargin: Cell.w(1)
 
-                                        CellSeparator {
-                                            w: theme.w
-                                            type: 0
-                                            color: Colors.bgOverlay
-                                        }
+                                                text: (theme.selected ? "> " : "  ") + theme.source.name
+                                                color: color.edit ? Colors.fgSubtle : (theme.isCurrent ? theme.source.onAccent : (theme_mouse.hovered ? theme.source.fgBase : Colors.fgBase))
+                                                font: theme.isCurrent ? Cell.fontB : Cell.font
 
-                                    }
+                                                preferedW: theme.w - 4
 
-                                    MouseControl {
-
-                                        visible: !color.edit
-
-                                        id: theme_mouse
-
-                                        anchors.fill: parent
-
-                                        onReleased: (button) => {
-                                            if (button == "L") {
-                                                color.selected = theme.index
                                             }
+
+                                            CellSeparator {
+                                                w: theme.w
+                                                type: 0
+                                                color: Colors.bgOverlay
+                                            }
+
+                                        }
+
+                                        MouseControl {
+
+                                            visible: !color.edit
+
+                                            id: theme_mouse
+
+                                            anchors.fill: parent
+
+                                            onReleased: (button) => {
+                                                if (button == "L") {
+                                                    color.selected = theme.index
+                                                }
+                                            }
+
                                         }
 
                                     }
-
                                 }
 
                             }
@@ -516,7 +526,7 @@ CellPopup {
 
                                 percent: parent.value
 
-                                color: Colors.bgOverlay
+                                color: "transparent"
                                 fg: "transparent"
 
                                 percentSmoother: 100
@@ -768,12 +778,10 @@ CellPopup {
                                 signal tabbed()
 
                                 function unFocus() {
-                                    console.log("unFocus")
                                     color_picker_rgb.unFocus()
                                 }
 
                                 function grabFocus() {
-                                    console.log("focus")
                                     color_picker_rgb.grabFocus()
                                 }
 
@@ -983,6 +991,11 @@ CellPopup {
                                     focusOnVisible: false
                                     unfocusOnEntered: true
 
+                                    color: color.color.fgBase
+                                    invert: color.color.bgSurface
+                                    visual_color: color.color.secondary
+                                    disabled_color: color.color.fgSubtle
+
                                     autoApply: true
 
                                 }
@@ -1034,6 +1047,11 @@ CellPopup {
                                 focusOnVisible: false
                                 unfocusOnEntered: true
 
+                                color: color.color.fgBase
+                                invert: color.color.bgSurface
+                                visual_color: color.color.secondary
+                                disabled_color: color.color.fgSubtle
+
                                 autoApply: true
                                 bindText: color.color.name
                                 wrap: true
@@ -1083,6 +1101,11 @@ CellPopup {
 
                                 focusOnVisible: false
                                 unfocusOnEntered: true
+
+                                color: color.color.fgBase
+                                invert: color.color.bgSurface
+                                visual_color: color.color.secondary
+                                disabled_color: color.color.fgSubtle
 
                                 autoApply: true
                                 bindText: color.color.description

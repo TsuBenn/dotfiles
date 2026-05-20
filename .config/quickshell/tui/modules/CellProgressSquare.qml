@@ -11,6 +11,8 @@ Item {
 
     id: root
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     property int w: 10
     property int h: 1
 
@@ -78,7 +80,7 @@ Item {
 
     Loader {
 
-        active: root.type == 0 && (root.visible || !SettingsInfo.optimizeMemory)
+        active: root.type == 0 && (root.visible || !root.optimizeMemory)
 
         sourceComponent: Rectangle {
 
@@ -96,7 +98,7 @@ Item {
 
     Loader {
 
-        active: root.type == 1 && (root.visible || !SettingsInfo.optimizeMemory)
+        active: root.type == 1 && (root.visible || !root.optimizeMemory)
 
         sourceComponent: Item {
 
@@ -155,7 +157,7 @@ Item {
 
     Loader {
 
-        active: root.type == 2 && (root.visible || !SettingsInfo.optimizeMemory)
+        active: root.type == 2 && (root.visible || !root.optimizeMemory)
 
         sourceComponent: Item {
 

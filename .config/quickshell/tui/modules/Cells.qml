@@ -10,6 +10,8 @@ Item {
 
     id: root
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     property real w
     property real h
 
@@ -37,7 +39,7 @@ Item {
 
     Loader {
 
-        active: (root.visible || !SettingsInfo.optimizeMemory) && (root.color != "transparent" || root.grid)
+        active: (root.visible || !root.optimizeMemory) && (root.color != "transparent" || root.grid)
 
         sourceComponent: Rectangle {
 

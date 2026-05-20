@@ -11,6 +11,8 @@ CellPopup {
 
     id: root
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     property bool minimal: SettingsInfo.minimal
 
     w: 80
@@ -87,6 +89,8 @@ CellPopup {
 
             Cells {
 
+                optimizeMemory: root.optimizeMemory
+
                 visible: !root.minimal
 
                 w: box.contentW
@@ -109,6 +113,8 @@ CellPopup {
 
             Cells {
 
+                optimizeMemory: root.optimizeMemory
+
                 id: text_wrapper
 
                 w: box.contentW
@@ -117,6 +123,8 @@ CellPopup {
                 color: "transparent"
 
                 CellBox {
+
+                    optimizeMemory: root.optimizeMemory
 
                     visible: !root.minimal
 
@@ -143,6 +151,8 @@ CellPopup {
 
                             CellText {
 
+                                optimizeMemory: root.optimizeMemory
+
                                 id: breadcrumbs
 
                                 function updatePath() {
@@ -167,6 +177,8 @@ CellPopup {
                             }
 
                             CellTextField {
+
+                                optimizeMemory: root.optimizeMemory
 
                                 id: textfield
 
@@ -291,6 +303,7 @@ CellPopup {
                 }
 
                 CellSeparator {
+                    optimizeMemory: root.optimizeMemory
                     y: Cell.h(1)
                     w: parent.w
                     visible: root.minimal
@@ -300,6 +313,8 @@ CellPopup {
             }
 
             CellTabs {
+
+                optimizeMemory: root.optimizeMemory
 
                 id: tab
 
@@ -329,6 +344,8 @@ CellPopup {
             }
 
             Cells {
+
+                optimizeMemory: root.optimizeMemory
 
                 w: box.contentW
                 h: 15
@@ -373,9 +390,11 @@ CellPopup {
 
                 Loader {
 
-                    active: root.visible || !SettingsInfo.optimizeMemory
+                    active: root.visible || !root.optimizeMemory
 
                     sourceComponent: CellScrollView {
+
+                        optimizeMemory: root.optimizeMemory
 
                         id: results
 
@@ -523,7 +542,7 @@ CellPopup {
                                     id: result
 
                                     active: (index - Math.ceil(results.offset/(root.minimal ? 2 : 3)) < Math.ceil(15/(root.minimal ? 2 : 3)) * 2)
-                                    && (root.visible || !SettingsInfo.optimizeMemory)
+                                    && (root.visible || !root.optimizeMemory)
 
                                     required property int index
 
@@ -543,6 +562,8 @@ CellPopup {
 
                                     sourceComponent: Cells {
 
+                                        optimizeMemory: root.optimizeMemory
+
                                         w: results.contentW
                                         h: root.minimal ? 2 : 3
 
@@ -559,10 +580,12 @@ CellPopup {
                                                 spacing: 0
 
                                                 CellText {
+                                        optimizeMemory: root.optimizeMemory
                                                     text: " "
                                                 }
 
                                                 CellIcon {
+                                        optimizeMemory: root.optimizeMemory
                                                     visible: !root.minimal
                                                     id: result_icon
                                                     icon: [result.icon, result.icon ? result.label : ""]
@@ -570,6 +593,7 @@ CellPopup {
                                                 }
 
                                                 CellText {
+                                        optimizeMemory: root.optimizeMemory
                                                     text: " "
                                                 }
 
@@ -577,6 +601,7 @@ CellPopup {
                                                     spacing: 0
 
                                                     CellText {
+                                        optimizeMemory: root.optimizeMemory
                                                         text: {
                                                             let macro = result.label.match(/\{(.*)\}/)?.[1] ?? ""
                                                             if (macro) {
@@ -588,6 +613,7 @@ CellPopup {
                                                     }
 
                                                     CellText {
+                                        optimizeMemory: root.optimizeMemory
                                                         visible: !root.minimal
                                                         text: result.description
                                                         preferedW: results.contentW - 5 - 5*result_icon.success
@@ -596,10 +622,13 @@ CellPopup {
                                                 }
 
                                                 CellText {
+                                        optimizeMemory: root.optimizeMemory
                                                     text: " "
                                                 }
 
                                                 Cells {
+
+                                        optimizeMemory: root.optimizeMemory
 
                                                     w: 1
                                                     h: root.minimal ? 1 : 2
@@ -612,6 +641,8 @@ CellPopup {
 
                                             CellSeparator {
 
+                                        optimizeMemory: root.optimizeMemory
+
                                                 type: 0
                                                 color: Colors.bgOverlay
                                                 padding: 1
@@ -622,6 +653,8 @@ CellPopup {
                                         }
 
                                         Cells {
+                                            
+                                        optimizeMemory: root.optimizeMemory
 
                                             w: results.contentW
                                             h: root.minimal ? 1 : 2
@@ -658,6 +691,8 @@ CellPopup {
             }
 
             CellSeparator {
+
+                                        optimizeMemory: root.optimizeMemory
 
                 visible: SettingsInfo.hints
 

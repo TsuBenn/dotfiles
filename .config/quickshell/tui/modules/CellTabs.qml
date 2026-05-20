@@ -11,6 +11,8 @@ Item {
 
     id: root
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     property bool centered: true
     property bool distributed: true
 
@@ -81,7 +83,7 @@ Item {
 
     Loader {
 
-        active: root.type == 0 && (root.visible || !SettingsInfo.optimizeMemory)
+        active: root.type == 0 && (root.visible || !root.optimizeMemory)
 
         sourceComponent: RowLayout {
 
@@ -149,7 +151,7 @@ Item {
 
     Loader {
 
-        active: root.type == 1 && (root.visible || !SettingsInfo.optimizeMemory)
+        active: root.type == 1 && (root.visible || !root.optimizeMemory)
 
         sourceComponent: CellBox {
 

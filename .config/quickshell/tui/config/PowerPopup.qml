@@ -9,6 +9,8 @@ import QtQuick.Layouts
 
 CellPopup {
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     implicitWidth: monitor.width
     implicitHeight: monitor.height
 
@@ -94,7 +96,7 @@ CellPopup {
 
         Loader {
 
-            active: root.visible || !SettingsInfo.optimizeMemory
+            active: root.visible || !root.optimizeMemory
 
             sourceComponent: Cells {
 

@@ -9,6 +9,8 @@ import QtQuick
 Item {
     id: root
 
+    property bool optimizeMemory: SettingsInfo.optimizeMemory
+
     property string text: "cell text"
     property string raw_text: text
     property font font: Cell.font
@@ -87,7 +89,7 @@ Item {
         color: root.bg
 
         Loader {
-            active: (root.visible || !SettingsInfo.optimizeMemory) && !root.onlyLatin(root.text)
+            active: (root.visible || !root.optimizeMemory) && !root.onlyLatin(root.text)
 
             sourceComponent: ColumnLayout {
 
@@ -96,7 +98,7 @@ Item {
 
         Loader {
 
-            active: (root.visible || !SettingsInfo.optimizeMemory) && root.onlyLatin(root.text)
+            active: (root.visible || !root.optimizeMemory) && root.onlyLatin(root.text)
 
             sourceComponent: Text {
                 text: root.text
