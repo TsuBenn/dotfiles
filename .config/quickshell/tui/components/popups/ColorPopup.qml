@@ -15,6 +15,8 @@ CellPopup {
     w: Cell.wCount(popup.implicitWidth)
     h: Cell.hCount(popup.implicitHeight)
 
+    property bool minimal: SettingsInfo.minimal
+
     property var result: Object.keys(Colors.colors)
 
     property var colors: Object.keys(Colors.colors)
@@ -208,14 +210,14 @@ CellPopup {
 
                     visible: !color.color_picker
 
-                    spacing: Cell.h(1)
+                    spacing: 0
 
                     CellScrollView {
 
                         id: list
 
                         w: 36
-                        h: color.h-3
+                        h: color.h-2
 
                         ColumnLayout {
 
@@ -301,14 +303,21 @@ CellPopup {
 
                     }
 
-                    CellBox {
-
-                        Layout.leftMargin: Cell.w(1)
+                    CellSeparator {
 
                         w: 36
-                        h: 3
+                        color: Colors.accentStrong
 
-                        border.type: 4
+                    }
+
+                    Cells {
+
+                        id: textwrapper
+
+                        w: 36
+                        h: 1
+
+                        color: "transparent"
 
                         CellTextField {
 
@@ -350,6 +359,7 @@ CellPopup {
                         }
 
                     }
+
 
                 }
 
@@ -1271,6 +1281,7 @@ CellPopup {
                                             placeholder: "Write something here!"
 
                                             focusOnVisible: false
+                                            unfocusOnEntered: true
                                             wrap: true
 
                                             w: parent.w

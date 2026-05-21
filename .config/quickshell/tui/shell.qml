@@ -37,7 +37,7 @@ ShellRoot {
 
     FloatingWindow {
 
-        visible: SettingsInfo.debug
+        visible: false
 
         minimumSize: Qt.size(Cell.w(80),Cell.h(30))
         maximumSize: Qt.size(Cell.w(80),Cell.h(30))

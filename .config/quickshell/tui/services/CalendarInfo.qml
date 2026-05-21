@@ -185,7 +185,7 @@ Singleton {
                     reminder.urgency, true,
                     "qs -c tui ipc call config open_popup calendar"
                 )
-                return
+                continue
             }
 
             function sendNotif(text) {

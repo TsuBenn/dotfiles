@@ -48,7 +48,8 @@ Item {
 
             color: root.color
 
-            clip: true
+            pure: false
+            lockPure: true
 
             text: {
                 let char = " "
@@ -85,7 +86,8 @@ Item {
 
         sourceComponent: CellText {
 
-            clip: true
+            pure: false
+            lockPure: true
 
             text: {
 

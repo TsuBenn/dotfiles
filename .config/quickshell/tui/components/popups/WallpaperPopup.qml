@@ -267,25 +267,13 @@ CellPopup {
             Cells {
 
                 w: box.contentW
-                h: root.minimal ? 2 : 3
+                h: 3
 
                 color: "transparent"
 
                 id: text_wrapper
 
-                CellSeparator {
-
-                    visible: root.minimal
-
-                    type: 0
-                    w: box.contentW
-                    color: Colors.accentStrong
-
-                }
-
                 CellBox {
-
-                    visible: !root.minimal
 
                     id: textbox
 
@@ -295,83 +283,66 @@ CellPopup {
                     border.type: 4
                     border.color: textfield.text.trim().length > 0 ? Colors.secondary : Colors.accentStrong
 
-                    Item {
+                    CellTextField {
 
-                        id: text_layout
+                        x: Cell.w(1)
+                        y: 0
 
-                        CellTextField {
+                        id: textfield
 
-                            parent: root.minimal ? text_wrapper : text_layout
+                        w: textbox.contentW - 2
+                        h: 1
 
-                            x: Cell.w(1)
-                            y: root.minimal ? Cell.h(1) : 0
+                        editable: false
 
-                            id: textfield
+                        placeholder: "Search wallpaper"
 
-                            w: textbox.contentW - 2
-                            h: 1
-
-                            editable: false
-
-                            placeholder: "Search wallpaper"
-
-                            onTextInput: (query) => {
-                                if (text == " ") {
-                                    selection.select()
-                                    set("")
-                                    return
-                                }
-                                selection.wallpapers = WallpaperInfo.search(text)
+                        onTextInput: (query) => {
+                            if (text == " ") {
+                                selection.select()
+                                set("")
+                                return
                             }
+                            selection.wallpapers = WallpaperInfo.search(text)
+                        }
 
-                            ShortcutHandler {
-                                shortcuts: [
-                                    {
-                                        binds: ["Left", "Shift+Tab"],
-                                        action: () => {
-                                            selection.advance(-1)
-                                        }
-                                    },
-                                    {
-                                        binds: ["Right", "Tab"],
-                                        action: () => {
-                                            selection.advance(1)
-                                        }
-                                    },
-                                    {
-                                        binds: "Escape",
-                                        action: () => {
-                                            if (!textfield.focus) {
-                                                textfield.focus = true
-                                                return
-                                            }
-                                            PopupManager.close("wallpaper")
-                                        }
-                                    },
-                                    {
-                                        binds: "Return",
-                                        active: textfield.focus,
-                                        action: () => {
-                                            selection.select()
-                                        }
+                        ShortcutHandler {
+                            shortcuts: [
+                                {
+                                    binds: ["Left", "Shift+Tab"],
+                                    action: () => {
+                                        selection.advance(-1)
                                     }
-                                ]
-                            }
-
-
+                                },
+                                {
+                                    binds: ["Right", "Tab"],
+                                    action: () => {
+                                        selection.advance(1)
+                                    }
+                                },
+                                {
+                                    binds: "Escape",
+                                    action: () => {
+                                        if (!textfield.focus) {
+                                            textfield.focus = true
+                                            return
+                                        }
+                                        PopupManager.close("wallpaper")
+                                    }
+                                },
+                                {
+                                    binds: "Return",
+                                    active: textfield.focus,
+                                    action: () => {
+                                        selection.select()
+                                    }
+                                }
+                            ]
                         }
 
                     }
 
                 }
-
-            }
-
-            CellSeparator {
-
-                w: box.contentW
-                type: root.minimal ? 0 : 2
-                color: root.minimal ? Colors.accentStrong : Colors.accentDim
 
             }
 

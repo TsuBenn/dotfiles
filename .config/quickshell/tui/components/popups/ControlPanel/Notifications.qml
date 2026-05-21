@@ -634,9 +634,10 @@ ColumnLayout {
                         property Component appSep: Component {
 
                             CellSeparator {
-                                padding: 1
+                                x: Cell.w(1)
+                                padding: 0
                                 type: 2
-                                w: list.contentW
+                                w: list.contentW - 1
                                 color: Qt.darker(Colors.fgSubtle,2)
                             }
 

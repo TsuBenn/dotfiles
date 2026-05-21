@@ -1,0 +1,146 @@
+```markdown
+# Milestone 1 – Requirements Analysis, Decomposition & Abstraction
+
+**Document Title:** Milestone 1 – Requirements Analysis, Decomposition & Abstraction  
+**Project:** Library Management System  
+**Student:** [Your Name]
+
+---
+
+## 1. Project Title
+
+Library Management System
+
+---
+
+## 2. Problem Description
+
+In this project, I aim to design a console-based system that manages the core operations of a local community library. The main users will be librarian staff who handle daily book and member management tasks. The system will help solve the problem of inefficient manual record-keeping by digitizing the tracking of books, members, and borrowing transactions. The key functions include managing book inventory, registering library members, processing borrow/return transactions, and generating statistical reports. This project will apply OOP and Computational Thinking to decompose the problem and build an efficient, maintainable solution.
+
+---
+
+## 3. Functional Requirements (User Stories)
+
+**Book Management**
+- As a librarian, I want to add new books with full details (ID, title, author, genre, publication year, quantity) so that the library database stays updated.
+- As a librarian, I want to update existing book information so that any corrections in inventory are accurately recorded.
+- As a librarian, I want to remove a book from the system (only if not currently borrowed) so that outdated books are cleared from the database.
+- As a librarian, I want to view all books and search by title, author, or genre so that I can quickly locate specific titles.
+
+**Member Management**
+- As a librarian, I want to register new members (ID, name, phone, email) so that readers are officially enrolled in the system.
+- As a librarian, I want to update or remove member profiles so that membership records remain accurate and inactive accounts are cleaned up.
+- As a librarian, I want to search for members by name or ID so that I can verify their status quickly.
+
+**Borrowing Management**
+- As a librarian, I want to record borrowing transactions (book ID, member ID, borrow date) so that the system tracks which member holds which book.
+- As a librarian, I want to process book returns and automatically calculate overdue fines so that late fees are strictly enforced.
+- As a librarian, I want to view borrowing history for a specific member so that I can resolve disputes or review reading activity.
+
+**Reporting**
+- As a librarian, I want to generate a list of overdue books so that I can follow up on late returns.
+- As a librarian, I want to see the most borrowed books and most active members so that management can make informed decisions about inventory.
+
+---
+
+## 4. System Decomposition
+
+The system can be divided into the following modules:
+
+1. **Book Management** – Handles adding, updating, deleting, viewing, and searching books.
+2. **Member Management** – Manages member registration, updates, deletion, and lookup.
+3. **Borrowing Management** – Processes borrow/return transactions and enforces business rules (availability check, borrow limit, overdue fines).
+4. **Reporting** – Generates reports on borrowed books, overdue items, popular books, and active members.
+5. **Console UI** – Displays menu-based interface, validates user input, and routes to the correct module.
+6. **File I/O** – Persists all data to disk on exit and reloads it on startup.
+7. **Validation & Exception Handling** – Validates all inputs and handles business rule violations (duplicate IDs, book not found, borrow limit exceeded, etc.).
+
+Each module has a clear, single responsibility in the system.
+
+---
+
+## 5. Identified Classes
+
+| Class Name             | Key Attributes                                                                 | Key Methods                                                      |
+|------------------------|--------------------------------------------------------------------------------|------------------------------------------------------------------|
+| `Book`                 | `bookId`, `title`, `author`, `genre`, `pubYear`, `quantity`                   | `getters/setters`, constructors                                  |
+| `Member` *(abstract)*  | `memberId`, `name`, `phone`, `email`, `borrowedBooks[]`                       | `getBorrowLimit()` *(abstract)*, `getters/setters`               |
+| `RegularMember`        | inherits from `Member`                                                         | `getBorrowLimit()` → returns 3, `calculateFine()`                |
+| `PremiumMember`        | inherits from `Member`                                                         | `getBorrowLimit()` → returns 5, `calculateFine()` *(different rate)* |
+| `BorrowingTransaction` | `transactionId`, `memberId`, `bookId`, `borrowDate`, `returnDate`             | `getters/setters`, constructors                                  |
+| `BookList`             | `ArrayList<Book>`                                                              | `addBook()`, `updateBook()`, `deleteBook()`, `searchBy...()`     |
+| `MemberList`           | `ArrayList<Member>`                                                            | `registerMember()`, `updateMember()`, `deleteMember()`           |
+| `BorrowingManager`     | `ArrayList<BorrowingTransaction>`                                              | `processBorrow()`, `processReturn()`, `getHistory()`             |
+| `ReportManager`        | references to above lists                                                      | `getOverdueBooks()`, `getTopBooks()`, `getTopMembers()`          |
+
+---
+
+## 6. Relationships Between Real-World Objects
+
+```
+Member (abstract)
+    ├── RegularMember  (borrowLimit = 3, fine = 5,000 VND/day)
+    └── PremiumMember  (borrowLimit = 5, fine = reduced rate)
+
+BorrowingTransaction
+    ├── references → Member  (via memberId)
+    └── references → Book    (via bookId)
+
+BorrowingManager
+    ├── manages → BorrowingTransaction[]
+    ├── uses    → BookList    (to check availability, update quantity)
+    └── uses    → MemberList  (to verify member exists, check borrow limit)
+```
+
+*(Full UML class diagram to be attached as image — drawn via draw.io)*
+
+---
+
+## 7. Encapsulation Evidence
+
+```java
+public class Book {
+    // Private attributes — only accessible via getters/setters
+    private String bookId;
+    private String title;
+    private String author;
+    private String genre;
+    private int pubYear;
+    private int quantity;
+
+    // Constructor
+    public Book(String bookId, String title, String author,
+                String genre, int pubYear, int quantity) {
+        this.bookId  = bookId;
+        this.title   = title;
+        this.author  = author;
+        this.genre   = genre;
+        this.pubYear = pubYear;
+        this.quantity = quantity;
+    }
+
+    // Getter
+    public String getTitle() {
+        return title;
+    }
+
+    // Setter with basic validation
+    public void setQuantity(int quantity) {
+        if (quantity >= 0) {
+            this.quantity = quantity;
+        }
+    }
+}
+```
+
+- `private` attributes prevent direct external modification.
+- Getters expose read access; setters enforce validation before writing.
+- The constructor guarantees an object is always initialized with valid data.
+
+---
+
+## 8. Reflection
+
+In this milestone, I learned that decomposition helps me break down what initially looks like one overwhelming system into smaller, independently manageable modules. I also practiced abstraction by identifying only the essential attributes and behaviors each class needs, without worrying about implementation details yet. By mapping relationships between classes early — for example, how `BorrowingTransaction` depends on both `Member` and `Book` — I can already anticipate where coupling might cause problems. The use of an abstract `Member` class with `RegularMember` and `PremiumMember` as subclasses is a natural fit because both types share most data but differ in borrowing limits and fine rates. This analysis will guide the next milestone where I implement full encapsulation, CRUD operations, and begin building the management classes.
+```
+
