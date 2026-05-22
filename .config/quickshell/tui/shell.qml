@@ -60,9 +60,8 @@ ShellRoot {
 
                     CellText {
 
-                        text: "sob😭skull💀sweat😅fire🔥\n憂鬱、日々憂鬱"
+                        text: "sob😭😢skull💀sweat😅fire🔥\n憂鬱、日々憂鬱"
                         color: Colors.bgSurface
-                        debug: true
 
                     }
 

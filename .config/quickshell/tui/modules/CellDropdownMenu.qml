@@ -35,14 +35,14 @@ CellPopup {
         id: menu
 
         w: root.w
-        h: root.scrollbar ? root.h : Cell.hCount(layout.implicitHeight)
+        h: root.scrollbar ? root.h : root.items.length
 
         CellScrollView {
 
             id: list
 
             w: root.w
-            h: root.scrollbar ? root.h : Cell.hCount(layout.implicitHeight)
+            h: root.scrollbar ? root.h : root.items.length
 
             scrollbar.enabled: root.scrollbar
 

@@ -21,9 +21,8 @@ Cells {
     property int padding: 0
     property int spacing: 0
 
-    property int virtualH: 0
-
     property int offset: 0
+    property int contentY: Cell.h(1)*root.offset
 
     onOffsetChanged: {
         if ((offset > Cell.hCount(content.contentHeight)-root.h || offset < 0) && Cell.hCount(content.contentHeight)-root.h > 0) {

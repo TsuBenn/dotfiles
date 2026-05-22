@@ -43,7 +43,12 @@ Singleton {
 
     property Type transition: Type {}
 
+    onTransitionChanged: {
+        saveConfig()
+    }
+
     onWallpapersChanged: {
+        saveConfig()
         advance(0)
         set.running = true
     }
@@ -167,6 +172,9 @@ Singleton {
                     const data = text.split("\n").slice(0,-1)
                     root.all = []
                     root.all = data
+
+                    root.wallpapers.filter(item => root.all.includes(item))
+
                     scan_cache.running = true
                 }
             }
@@ -197,7 +205,6 @@ Singleton {
 
         id: set
 
-        running: true
         command: ["bash", "-c", `awww img --transition-step ${root.transition.step} --transition-duration ${root.transition.duration} --transition-fps ${root.transition.fps} --transition-type ${root.transition.type} --transition-angle ${root.transition.angle} --transition-pos ${root.transition.pos.join(",")} --transition-wave ${root.transition.wave.join(",")} ${SystemInfo.homedir}/Wallpapers/` + root.current]
 
         stderr: StdioCollector {
@@ -206,6 +213,49 @@ Singleton {
                     console.log("WallpaperInfo: " + text)
                 }
             }
+        }
+
+    }
+
+    function saveConfig() {
+
+        let config = {
+            transition: {
+                "type"     : root.transition.type,
+                "step"     : root.transition.step,
+                "duration" : root.transition.duration,
+                "fps"      : root.transition.fps,
+                "angle"    : root.transition.angle,
+                "pos"      : root.transition.pos,
+                "wave"     : root.transition.wave,
+            },
+            wallpapers: root.wallpapers
+        }
+
+        SystemInfo.runDetached(["bash", "-c", "echo '" + JSON.stringify(config) + "' > " + SystemInfo.configdir + "/scripts/wallpapers_config.json"])
+    }
+
+    FileView {
+
+        id: loader
+
+        path: SystemInfo.configdir + "/scripts/wallpapers_config.json"
+
+        onLoaded: {
+            const data = JSON.parse(text())
+
+            root.transition.type     = data.transition.type     ?? root.transition.type    
+            root.transition.step     = data.transition.step     ?? root.transition.step    
+            root.transition.duration = data.transition.duration ?? root.transition.duration
+            root.transition.fps      = data.transition.fps      ?? root.transition.fps     
+            root.transition.angle    = data.transition.angle    ?? root.transition.angle   
+            root.transition.pos      = data.transition.pos      ?? root.transition.pos     
+            root.transition.wave     = data.transition.wave     ?? root.transition.wave    
+
+            root.wallpapers = data.wallpapers
+
+            set.running = true
+
         }
 
     }
