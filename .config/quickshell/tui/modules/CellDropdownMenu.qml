@@ -48,7 +48,7 @@ CellPopup {
 
             color: root.color
 
-            ColumnLayout {
+            source: ColumnLayout {
 
                 id: layout
 

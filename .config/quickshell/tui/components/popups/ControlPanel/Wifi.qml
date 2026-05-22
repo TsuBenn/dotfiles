@@ -117,7 +117,7 @@ ColumnLayout {
 
         signal collapse(wifi: string)
 
-        ColumnLayout {
+        source: ColumnLayout {
 
             spacing: 0
 

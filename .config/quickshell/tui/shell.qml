@@ -54,7 +54,7 @@ ShellRoot {
                 w: 80
                 h: 30
 
-                ColumnLayout {
+                source: ColumnLayout {
 
                     spacing: 0
 

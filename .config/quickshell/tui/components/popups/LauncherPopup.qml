@@ -405,7 +405,7 @@ CellPopup {
                             results.reset()
                         }
 
-                        ColumnLayout {
+                        source: ColumnLayout {
 
                             spacing: 0
 

@@ -90,7 +90,7 @@ ColumnLayout {
             })
         }
 
-        ColumnLayout {
+        source: ColumnLayout {
 
             spacing: 0
 

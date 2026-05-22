@@ -24,7 +24,7 @@ ColumnLayout {
         w: root.box.contentW
         h: 21
 
-        ColumnLayout {
+        source: ColumnLayout {
 
             spacing: 0
 

@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import qs.config
 import qs.modules
 import qs.services
@@ -11,8 +13,8 @@ CellPopup {
 
     id: root
 
-    w: 40
-    h: 10
+    w: 41
+    h: 20
 
     CellBox {
 
@@ -48,21 +50,26 @@ CellPopup {
 
                 id: emojis
 
+                property var result: EmojisInfo.emojis
+
                 property int offset: 0
 
             }
 
             CellScrollView {
-                w: box.contentW
-                h: 8
 
-                ColumnLayout {
+                id: list
+
+                w: box.contentW
+                h: root.h-2
+
+                source: ColumnLayout {
 
                     spacing: 0
 
                     Repeater {
 
-                        model: EmojisInfo.emojis.slice(emojis.offset, 4)
+                        model: Object.keys(EmojisInfo.emojis)
 
                         delegate: Loader {
 
@@ -71,20 +78,63 @@ CellPopup {
                             required property var modelData
                             required property int index
 
-                            active: true
+                            active: (root.visible || !root.optimizeMemory)
 
                             sourceComponent: ColumnLayout {
 
-                                id: emoji
+                                id: emoji_group
+
+                                spacing: 0
 
                                 property var modelData: emoji_loader.modelData
                                 property int index: emoji_loader.index
 
-                                spacing: 0
-
                                 CellText {
-                                    text: modelData.label
+                                    Layout.leftMargin: Cell.w(1)
+                                    text: emoji_group.modelData
+                                    color: Colors.fgDim
                                 }
+
+                                GridLayout {
+
+                                    rowSpacing: 0
+                                    columnSpacing: 0
+
+                                    columns: 8
+
+                                    Repeater {
+
+                                        model: EmojisInfo.emojis[emoji_group.modelData].slice(emojis.offset, 8)
+
+                                        delegate: Cells {
+
+                                            id: emoji
+
+                                            required property var modelData
+
+                                            w: 5
+                                            h: 3
+
+                                            CellBox {
+
+                                                w: 5
+                                                h: 3
+
+                                                border.color: Colors.fgSubtle
+
+                                                CellText {
+                                                    x: Cell.w(0.5)
+                                                    text: emoji.modelData.label
+                                                }
+
+                                            }
+
+                                        }
+
+                                    }
+
+                                }
+
 
                             }
 
@@ -93,6 +143,7 @@ CellPopup {
                     }
 
                 }
+
 
             }
 

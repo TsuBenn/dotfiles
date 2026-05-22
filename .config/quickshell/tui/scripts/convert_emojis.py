@@ -1,69 +1,44 @@
 import json
 import re
 
+def parse_emoji_file(input_path, output_path):
+    groups = {}
 
-def transform_emoji_line(line):
-    # Strip whitespace from ends
-    line = line.strip()
-    if not line:
-        return None
+    with open(input_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
 
-    # Split by 2 or more spaces, or tabs, to separate the main columns
-    parts = re.split(r"\s{2,}|\t", line)
+            parts = line.split("\t")
+            if len(parts) < 5:
+                continue
 
-    # Ensure we have the expected columns (at least emoji, group, subgroup, name)
-    if len(parts) < 4:
-        return None
+            emoji     = parts[0].strip()
+            group     = parts[1].strip()
+            subgroup  = parts[2].strip()
+            name      = parts[3].strip()
+            tags_raw  = parts[4].strip()
 
-    emoji = parts[0].strip()
-    category_group = parts[1].strip()
-    subgroup = parts[2].strip()
-    name = parts[3].strip()
+            keywords = [subgroup, name] + [t.strip() for t in tags_raw.split("|")]
+            description = f"{name.capitalize()} <i>{group}</i>"
 
-    # Capitalize the first letter of the name for the description
-    capitalized_name = name.capitalize()
-    description = f"{capitalized_name} <i>{category_group}</i>"
+            entry = {
+                "label": emoji,
+                "description": description,
+                "keywords": keywords,
+                "category": "emoji",
+                "value": ["bash", "-c", f"sleep 0.2 && wtype {emoji}"],
+                "type": "exec",
+            }
 
-    # Gather keywords: include subgroup, name, and split the pipe-delimited tags
-    keywords = [subgroup, name]
+            if group not in groups:
+                groups[group] = []
+            groups[group].append(entry)
 
-    if len(parts) > 4:
-        # Split the remaining part by '|' and clean up spaces
-        tags = [tag.strip() for tag in parts[4].split("|") if tag.strip()]
-        keywords.extend(tags)
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(groups, f, ensure_ascii=False, indent=4)
 
-    # Remove duplicates from keywords while preserving order
-    unique_keywords = list(dict.fromkeys(keywords))
+    print(f"Done! Written to {output_path}")
 
-    # Construct the final dictionary structure
-    return {
-        "label": emoji,
-        "description": description,
-        "keywords": unique_keywords,
-        "category": "emoji",
-        "value": ["bash", "-c", f"sleep 0.2 && wtype {emoji}"],
-        "type": "exec",
-    }
-
-
-def convert_emoji_file(input_filename, output_filename):
-    converted_emojis = []
-
-    with open(input_filename, "r", encoding="utf-8") as infile:
-        for line in infile:
-            entry = transform_emoji_line(line)
-            if entry:
-                converted_emojis.append(entry)
-
-    # Write out as a pretty-printed JSON array
-    with open(output_filename, "w", encoding="utf-8") as outfile:
-        json.dump(converted_emojis, outfile, ensure_ascii=False)
-
-
-if __name__ == "__main__":
-    # Change these filenames to match your local setup
-    input_file = "all_emojis.txt"
-    output_file = "emojis.json"
-
-    convert_emoji_file(input_file, output_file)
-    print(f"Successfully converted emojis to {output_file}!")
+parse_emoji_file("all_emojis.txt", "emojis.json")

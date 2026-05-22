@@ -670,7 +670,7 @@ CellPopup {
                         w: box.eW
                         h: root.minimal ? 4 : 8
 
-                        ColumnLayout {
+                        source: ColumnLayout {
 
                             spacing: 0
 
@@ -1008,7 +1008,7 @@ CellPopup {
                         w: box.eW
                         h: root.minimal ? 3 : 6
 
-                        ColumnLayout {
+                        source: ColumnLayout {
 
                             spacing: 0
 

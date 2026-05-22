@@ -219,7 +219,7 @@ CellPopup {
                         w: 36
                         h: color.h-2
 
-                        ColumnLayout {
+                        source: ColumnLayout {
 
                             spacing: 0
 
@@ -1459,7 +1459,7 @@ CellPopup {
                                     bg_color: color.color.bgOverlay
                                 }
 
-                                ColumnLayout {
+                                source: ColumnLayout {
 
                                     spacing: 0
 

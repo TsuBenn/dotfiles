@@ -103,7 +103,7 @@ ColumnLayout {
             expanded_notif = []
         }
 
-        ColumnLayout {
+        source: ColumnLayout {
 
             spacing: 0
 

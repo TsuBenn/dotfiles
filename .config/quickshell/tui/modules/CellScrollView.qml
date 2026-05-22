@@ -21,11 +21,13 @@ Cells {
     property int padding: 0
     property int spacing: 0
 
+    property int virtualH: 0
+
     property int offset: 0
 
     onOffsetChanged: {
-        if ((offset > Cell.hCount(content.implicitHeight)-root.h || offset < 0) && Cell.hCount(content.implicitHeight)-root.h > 0) {
-            offset = Math.max(Math.min(root.offset,Cell.hCount(content.implicitHeight)-root.h),0)
+        if ((offset > Cell.hCount(content.contentHeight)-root.h || offset < 0) && Cell.hCount(content.contentHeight)-root.h > 0) {
+            offset = Math.max(Math.min(root.offset,Cell.hCount(content.contentHeight)-root.h),0)
         }
     }
 
@@ -51,41 +53,34 @@ Cells {
         arrow: 0
     }
 
+    property Component source
+
     color: "transparent"
 
     function reset() {
         offset = 0
     }
 
-    onChildrenChanged: {
-        for (let i = 4; i < children.length; i++) {
-            children[i].parent = content
-        }
-    }
+    ListView {
 
-    Cells {
-
-        w: root.w - root.padding*2
-        h: root.h
+        implicitWidth: Cell.w(root.w - root.padding*2)
+        implicitHeight: Cell.h(root.h)
 
         clip: true
-        color: "transparent"
 
-        ColumnLayout {
+        contentY: Cell.h(1)*root.offset
 
-            spacing: 0
+        interactive: false
 
-            id: content
+        id: content
 
-            y: -Cell.h(1)*root.offset
-
-
-            onImplicitHeightChanged: {
-                root.offset = Math.max(Math.min(root.offset,Cell.hCount(content.implicitHeight)-root.h),0)
-            }
-
+        onContentHeightChanged: {
+                root.offset = Math.max(Math.min(root.offset,Cell.hCount(content.contentHeight)-root.h),0)
         }
 
+        model: 1
+
+        delegate: root.source
 
     }
 
@@ -102,7 +97,7 @@ Cells {
             x: Cell.alignRightWCell(implicitWidth, root.implicitWidth)
 
             onAdjusted: (percent) => {
-                root.offset = (Cell.hCount(content.implicitHeight)-root.h)*percent
+                root.offset = (Cell.hCount(content.contentHeight)-root.h)*percent
             }
 
             type {
@@ -115,8 +110,8 @@ Cells {
             thumbH: root.scrollbar.thumbH
 
             h: root.h
-            progress: root.offset/(Cell.hCount(content.implicitHeight)-root.h)
-            contentH: Cell.hCount(content.implicitHeight)
+            progress: root.offset/(Cell.hCount(content.contentHeight)-root.h)
+            contentH: Cell.hCount(content.contentHeight)
 
             bg: root.scrollbar.bg_color
             color: root.scrollbar.color
@@ -133,7 +128,7 @@ Cells {
         hoverEnabled: false
 
         onWheel: (delta) => {
-            root.offset = Math.max(Math.min(root.offset - delta,Cell.hCount(content.implicitHeight)-root.h),0)
+            root.offset = Math.max(Math.min(root.offset - delta,Cell.hCount(content.contentHeight)-root.h),0)
         }
 
     }

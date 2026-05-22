@@ -421,7 +421,7 @@ ColumnLayout {
         w: root.box.contentW
         h: root.h - 2 - 2*(bt_report.status != "")
 
-        Loader {
+        source: Loader {
 
             active: root.visible || !root.optimizeMemory
 
