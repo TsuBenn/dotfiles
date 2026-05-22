@@ -16,7 +16,7 @@ CellPopup {
     id: root
 
     w: 41
-    h: 9
+    h: 12
 
     onVisibleChanged: {
         mouseLocked: true
@@ -83,6 +83,10 @@ CellPopup {
 
                 required property var modelData
                 required property int index
+
+                property int offset: Math.floor(index/8)*3 + 1
+
+                active: offset >= list.offset - 2 && offset <= list.offset + 10
 
                 asynchronous: index > 16
 

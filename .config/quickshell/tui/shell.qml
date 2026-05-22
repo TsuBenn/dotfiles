@@ -42,55 +42,12 @@ ShellRoot {
         minimumSize: Qt.size(Cell.w(80),Cell.h(30))
         maximumSize: Qt.size(Cell.w(80),Cell.h(30))
 
-        Cells {
+        CellBox {
 
-            w: 80
-            h: 30
+            w: 20
+            h: 20
 
-            grid: true
-
-            CellScrollView {
-
-                w: 80
-                h: 30
-
-                source: ColumnLayout {
-
-                    spacing: 0
-
-                    CellText {
-
-                        text: "sob😭😢skull💀sweat😅fire🔥\n憂鬱、日々憂鬱"
-                        color: Colors.bgSurface
-
-                    }
-
-                    CellText {
-
-                        text: " <b> 70%</b> " + pure
-                        color: Colors.bgSurface
-
-                    }
-
-                    CellText {
-
-                        text: "First line\nSecond Line"
-                        color: Colors.bgSurface
-
-                    }
-
-                    CellText {
-
-                        text: "[✓] " + pure
-                        pure: true
-                        color: Colors.bgSurface
-
-                    }
-
-                }
-
-            }
-
+            border.type: 3
 
         }
 

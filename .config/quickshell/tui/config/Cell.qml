@@ -44,11 +44,11 @@ Singleton {
         return Cell.toH(container - item)
     }
 
-    function w(n: real): real {
+    function w(n: real): int {
         return Math.round(cellWidth)*n
     }
 
-    function h(n: real): real {
+    function h(n: real): int {
         return Math.round(cellHeight)*n
     }
 
