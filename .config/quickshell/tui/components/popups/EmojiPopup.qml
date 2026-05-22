@@ -15,8 +15,8 @@ CellPopup {
 
     id: root
 
-    w: 41
-    h: 12
+    w: 26
+    h: 8
 
     onVisibleChanged: {
         mouseLocked: true
@@ -28,38 +28,54 @@ CellPopup {
             {
                 binds: "Up",
                 action: () => {
-                    if (emojis.selected - 8 < 0) return
-                    else emojis.selected -= 8
+                    root.advance(-5)
+                    root.alignList()
                 }
             },
             {
                 binds: ["Left", "Shift+Tab"],
                 action: () => {
-                    if (emojis.selected - 1 < 0) return
-                    else emojis.selected -= 1
+                    root.advance(-1)
+                    root.alignList()
                 }
             },
             {
                 binds: "Down",
                 action: () => {
-                    if (emojis.selected + 8 > (emojis.result.length > 0 ? emojis.result.length-1 : EmojisInfo.recent.length)) return
-                    else emojis.selected += 8
+                    root.advance(5)
+                    root.alignList()
                 }
             },
             {
                 binds: ["Right", "Tab"],
                 action: () => {
-                    if (emojis.selected + 1 > (emojis.result.length > 0 ? emojis.result.length-1 : EmojisInfo.recent.length-1)) return
-                    else emojis.selected += 1
+                    root.advance(1)
+                    root.alignList()
                 }
             },
             {
                 binds: "Return",
                 action: () => {
                     root.select()
+                    root.alignList()
                 }
             },
         ]
+    }
+
+    function alignList() {
+        if (Math.floor(emojis.selected/5) > Math.floor(list.offset/3) + 1) {
+            list.offset = Math.floor(emojis.selected/5)*3
+        }
+        if (Math.floor(emojis.selected/5) < Math.floor(list.offset/3) + 1) {
+            list.offset = Math.floor(emojis.selected/5)*3
+        }
+    }
+
+    function advance(delta: int) {
+        if (emojis.selected + delta > (emojis.result.length > 0 ? emojis.result.length-1 : EmojisInfo.recent.length-1)) { if (Math.abs(delta) == 1) emojis.selected = 0 }
+        else if (emojis.selected + delta < 0) { if (Math.abs(delta) == 1) emojis.selected = (emojis.result.length > 0 ? emojis.result.length-1 : EmojisInfo.recent.length-1) }
+        else emojis.selected += delta
     }
 
     signal select()
@@ -69,7 +85,7 @@ CellPopup {
         rowSpacing: 0
         columnSpacing: 0
 
-        columns: 8
+        columns: 5
 
         property var model: emojis.result
 
@@ -84,11 +100,11 @@ CellPopup {
                 required property var modelData
                 required property int index
 
-                property int offset: Math.floor(index/8)*3 + 1
+                property int offset: Math.floor(index/5)*3 + 1
 
-                active: offset >= list.offset - 2 && offset <= list.offset + 10
+                active: offset >= list.offset - 2 && offset <= list.offset + 7
 
-                asynchronous: index > 16
+                asynchronous: index >= 10
 
                 sourceComponent: Cells {
 
@@ -213,22 +229,8 @@ CellPopup {
                     reset()
                 }
 
-                source: ColumnLayout {
-
-                    spacing: 0
-
-                    CellText {
-
-                        Layout.leftMargin: Cell.w(1)
-                        text: emojis.result.length > 0 ? "Results" : "Recents"
-                        color: Colors.fgSubtle
-
-                    }
-
-                    EmojiGrid {
-                        model: emojis.result.length > 0 ? emojis.result : EmojisInfo.recent
-                    }
-
+                source: EmojiGrid {
+                    model: emojis.result.length > 0 ? emojis.result : EmojisInfo.recent
                 }
 
             }

@@ -38,7 +38,6 @@ Singleton {
         property int fps: 60
         property int angle: 30
         property var pos: [0,0]
-        property var wave: [1920/2,1080/2]
     }
 
     property Type transition: Type {}
@@ -50,7 +49,6 @@ Singleton {
     onWallpapersChanged: {
         saveConfig()
         advance(0)
-        set.running = true
     }
 
     function getIndex(image: string): int {
@@ -73,7 +71,6 @@ Singleton {
         if (!slideshow) {
             singlify()
         }
-        set.running = true
     }
 
     function inSet(image: string): bool {
@@ -87,7 +84,6 @@ Singleton {
             return
         }
         singlify(image)
-        set.running = true
     }
 
     function remove(image: string) {
@@ -110,11 +106,10 @@ Singleton {
 
     function advance(step: int) {
         selected = (selected + wallpapers.length + step)%(wallpapers.length)
-        set.running = true
     }
 
     function set(image) {
-        set.exec(["bash", "-c", `awww img --transition-step ${root.transition.step} --transition-duration ${root.transition.duration} --transition-fps ${root.transition.fps} --transition-type ${root.transition.type} --transition-angle ${root.transition.angle} --transition-pos ${root.transition.pos.join(",")} --transition-wave ${root.transition.wave.join(",")} ${SystemInfo.homedir}Wallpapers/` + image])
+
     }
 
     function minute(min: int): int {
@@ -122,7 +117,7 @@ Singleton {
     }
 
     function rescan() {
-        cache.running = true
+
     }
 
     Timer {
@@ -138,80 +133,34 @@ Singleton {
 
     Process {
 
-        id: cache
-
-        running: true
-
-        command: ["bash", "-c", `mkdir -p ${SystemInfo.homedir}${root.cache_path} && echo ".qscache" > ${SystemInfo.homedir}${root.path}.gitignore && fd . ${SystemInfo.homedir}${root.path} -e png -e jpg -e jpeg -x magick {} -thumbnail 1920x1080^ -gravity center -extent 1920x1080 -quality 40 ${SystemInfo.homedir}${root.cache_path}{/}.jpg`]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                scan.running = true
-            }
-        }
-
-        stderr: StdioCollector {
-            onStreamFinished: {
-                if (text) {
-                    console.log(text)
-                }
-            }
-        }
-
-    }
-
-    Process {
-
         id: scan
 
-        command: ["ls", SystemInfo.homedir + "/Wallpapers/"]
+        running: true
+        command: ["ls", SystemInfo.homedir + root.path]
 
         stdout: StdioCollector {
             onStreamFinished: {
-                if (text) {
-                    const data = text.split("\n").slice(0,-1)
-                    root.all = []
-                    root.all = data
 
-                    root.wallpapers.filter(item => root.all.includes(item))
+                const data = text.split("\n").filter(item => item != "")
 
-                    scan_cache.running = true
+                let all = []
+
+                for (const wallpaper of data ) {
+                    if (/.*\.mp4$/.test(wallpaper)) {
+                        all.push({
+                            "name": wallpaper,
+                            "type": "live",
+                        })
+                        continue
+                    }
+                    all.push({
+                        "name": wallpaper,
+                        "type": "still",
+                    })
                 }
-            }
-        }
 
-    }
+                console.log(JSON.stringify(all,null,2))
 
-    Process {
-
-        id: scan_cache
-
-        command: ["ls", SystemInfo.homedir + "/Wallpapers/.qscache/"]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                if (text) {
-                    const data = text.split("\n").slice(0,-1)
-                    root.caches = []
-                    root.caches = data
-                    root.rescanned()
-                }
-            }
-        }
-
-    }
-
-    Process {
-
-        id: set
-
-        command: ["bash", "-c", `awww img --transition-step ${root.transition.step} --transition-duration ${root.transition.duration} --transition-fps ${root.transition.fps} --transition-type ${root.transition.type} --transition-angle ${root.transition.angle} --transition-pos ${root.transition.pos.join(",")} --transition-wave ${root.transition.wave.join(",")} ${SystemInfo.homedir}/Wallpapers/` + root.current]
-
-        stderr: StdioCollector {
-            onStreamFinished: {
-                if (text) {
-                    console.log("WallpaperInfo: " + text)
-                }
             }
         }
 
@@ -227,7 +176,6 @@ Singleton {
                 "fps"      : root.transition.fps,
                 "angle"    : root.transition.angle,
                 "pos"      : root.transition.pos,
-                "wave"     : root.transition.wave,
             },
             wallpapers: root.wallpapers
         }
@@ -250,7 +198,6 @@ Singleton {
             root.transition.fps      = data.transition.fps      ?? root.transition.fps     
             root.transition.angle    = data.transition.angle    ?? root.transition.angle   
             root.transition.pos      = data.transition.pos      ?? root.transition.pos     
-            root.transition.wave     = data.transition.wave     ?? root.transition.wave    
 
             root.wallpapers = data.wallpapers
 

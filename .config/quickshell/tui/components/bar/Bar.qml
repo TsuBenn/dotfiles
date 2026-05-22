@@ -200,7 +200,7 @@ Scope {
                     x: Cell.centerWCell(implicitWidth,bar.width)
                 }
 
-                MediaPlayer {
+                BarMediaPlayer {
                     id: media_player
                     anchors.left: clock.right
                     anchors.leftMargin: Cell.w(2)
@@ -291,6 +291,12 @@ Scope {
                     id: background
 
                     anchors.fill: parent
+
+                    WallpaperEngine {
+
+                        anchors.fill: parent
+
+                    }
 
                     Cells {
 

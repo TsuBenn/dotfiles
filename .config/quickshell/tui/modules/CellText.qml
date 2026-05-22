@@ -552,6 +552,8 @@ Item {
                                         anchors.verticalCenterOffset: parent.type == "emoji" ? Cell.cellHeight*0.05 : 0
                                         anchors.horizontalCenterOffset: parent.type == "emoji" ? Cell.cellWidth*0.05 : 0
 
+                                        y: -(Cell.cellHeight/0.9)*0.05
+
                                         textFormat: Text.RichText
                                         text: parent.text
                                         font: root.font
@@ -584,6 +586,9 @@ Item {
                     } else {
                         return 0
                     }
+
+                    y: -(Cell.cellHeight/0.9)*0.05
+
                     text: root.raw_text
                     textFormat: Text.RichText
                     font: root.font

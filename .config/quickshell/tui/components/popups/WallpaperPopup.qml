@@ -628,12 +628,6 @@ CellPopup {
                                         },
                                     },
                                     {
-                                        label: "Wave",
-                                        action: () => {
-                                            WallpaperInfo.transition.type = "wave"
-                                        },
-                                    },
-                                    {
                                         label: "Grow",
                                         action: () => {
                                             WallpaperInfo.transition.type = "grow"
@@ -943,105 +937,6 @@ CellPopup {
                                             let newpos = WallpaperInfo.transition.pos
                                             newpos[1] = Math.max(text,0)
                                             WallpaperInfo.transition.pos = [...newpos]
-                                            textfield.focus = true
-                                        }
-                                    }
-
-                                    onFocusChanged: {
-                                        if (focus) {
-                                            return
-                                        }
-                                    }
-
-                                    Keys.onPressed: (event) => {
-                                        if (event.key == Qt.Key_Escape) {
-                                            focus = false
-                                        }
-                                    }
-
-                                }
-                            }
-
-                        }
-
-                        RowLayout {
-
-                            spacing: Cell.w(1)
-
-                            visible: (
-                                WallpaperInfo.transition.type == "random" ||
-                                WallpaperInfo.transition.type == "wave"
-                            )
-
-                            CellText {
-                                text: "Wave"
-                            }
-
-                            Cells {
-
-                                w: 5
-                                h: 1
-
-                                color: Colors.bgOverlay
-
-                                CellTextField {
-
-                                    focusOnVisible: false
-
-                                    w: parent.w
-                                    h:1
-
-                                    bindText: WallpaperInfo.transition.wave[0]
-
-                                    autoApply: true
-
-                                    onEntered: (text) => {
-                                        if (/^\d+$/.test(text)) {
-                                            let newpos = WallpaperInfo.transition.wave
-                                            newpos[0] = Math.max(text,0)
-                                            WallpaperInfo.transition.wave = [...newpos]
-                                            textfield.focus = true
-                                        }
-                                    }
-
-                                    onFocusChanged: {
-                                        if (focus) {
-                                            return
-                                        }
-                                    }
-
-                                    Keys.onPressed: (event) => {
-                                        if (event.key == Qt.Key_Escape) {
-                                            focus = false
-                                        }
-                                    }
-
-                                }
-                            }
-
-                            Cells {
-
-                                w: 5
-                                h: 1
-
-                                color: Colors.bgOverlay
-
-                                CellTextField {
-
-                                    focusOnVisible: false
-
-                                    w: parent.w
-                                    h:1
-
-                                    bindText: WallpaperInfo.transition.wave[1]
-
-                                    autoApply: true
-
-                                    onEntered: (text) => {
-                                        if (/^\d+$/.test(text)) {
-                                            let newpos = WallpaperInfo.transition.wave
-                                            newpos[1] = Math.max(text,0)
-                                            WallpaperInfo.transition.wave = [...newpos]
                                             textfield.focus = true
                                         }
                                     }

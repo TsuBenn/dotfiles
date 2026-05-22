@@ -68,6 +68,13 @@
       "span": 1,
       "urgency": 0,
       "time": "12:30"
+    },
+    {
+      "title": "UNI-OSG202 (P.125)",
+      "body": "Operating System",
+      "span": 1,
+      "urgency": 0,
+      "time": "15:00"
     }
   ],
   "15-05-2026": [
