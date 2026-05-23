@@ -13,7 +13,7 @@ Singleton {
 
     property var all: []
 
-    property var wallpapers: ["detective_hutao.jpeg"]
+    property var wallpapers: []
 
     property string current: wallpapers[selected]
 
