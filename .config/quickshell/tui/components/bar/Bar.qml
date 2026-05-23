@@ -114,7 +114,7 @@ Scope {
             }
 
             property bool peekBar: false
-            property bool forceBar: PopupManager.active_popups.length > 0 && !PopupManager.isOpen("quick_menu") && !PopupManager.isOpen("power")
+            property bool forceBar: PopupManager.active_popups.length > 0 && !PopupManager.isOpen("quick_menu") && !PopupManager.isOpen("power") && !PopupManager.isOpen("emoji") && !PopupManager.isOpen("wallpaper")
             property bool hideBar: (
                 (Hyprland.focusedWorkspace.hasFullscreen ?? false) 
                 && Hyprland.focusedMonitor.name == root.monitor.name 

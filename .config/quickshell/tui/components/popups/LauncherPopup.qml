@@ -103,7 +103,7 @@ CellPopup {
                     width: Cell.w(box.contentW)
                     height: Cell.h(10)
 
-                    source: SystemInfo.homedir + WallpaperInfo.cache_path + WallpaperInfo.current + ".jpg"
+                    source: SystemInfo.homedir + WallpaperInfo.cache_path + WallpaperInfo.current + WallpaperInfo.cache_prefix
 
                     fillMode: Image.PreserveAspectCrop
 

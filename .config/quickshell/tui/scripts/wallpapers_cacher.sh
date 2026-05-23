@@ -30,9 +30,9 @@ fi
 FORCE_REGEN=false
 if [[ "$3" == "--force" ]]; then
     FORCE_REGEN=true
-    echo "Force mode enabled: Regenerating all thumbnails..."
+    echo "Force mode enabled: Regenerating all assets..."
 else
-    echo "Incremental mode: Skipping existing thumbnails..."
+    echo "Incremental mode: Skipping existing assets..."
 fi
 
 echo "Running with a maximum of $MAX_JOBS concurrent processes..."
@@ -50,11 +50,6 @@ for file in "$TARGET_DIR"/*; do
     # Predict the target thumbnail path
     thumb_path="$TARGET_DIR/.qscache/${filename}_thumb.jpg"
 
-    # CACHE CHECK: If the thumbnail exists AND force is false, skip it
-    if [[ -f "$thumb_path" ]] && [[ "$FORCE_REGEN" == "false" ]]; then
-        continue
-    fi
-
     # Extract the file extension and convert to lowercase
     ext="${filename##*.}"
     ext_lower=$(echo "$ext" | tr 'A-Z' 'a-z')
@@ -62,10 +57,34 @@ for file in "$TARGET_DIR"/*; do
     # --- PROCESS IN THE BACKGROUND ---
     case "$ext_lower" in
         mp4)
-            echo "Processing video: $filename"
-            ffmpeg -y -ss 00:00:05 -i "$file" -vframes 1 -vf "scale=1920:-1" -q:v 8 "$thumb_path" 2>/dev/null &
+            # Wallpaper still target: now tucked safely inside the hidden .qscache folder
+            wall_still_path="$TARGET_DIR/.qscache/${filename}_still.png"
+            
+            # Determine if we can completely skip processing this video
+            if [[ -f "$thumb_path" ]] && [[ -f "$wall_still_path" ]] && [[ "$FORCE_REGEN" == "false" ]]; then
+                continue
+            fi
+            
+            echo "Processing video (thumb + high-res still): $filename"
+            
+            # Run tasks sequentially inside a subshell background block
+            {
+                # Task 1: Fast UI Thumbnail (Compressed JPEG)
+                if [[ ! -f "$thumb_path" ]] || [[ "$FORCE_REGEN" == "true" ]]; then
+                    ffmpeg -y -ss 00:00:00 -i "$file" -vframes 1 -vf "scale=1920:-1" -q:v 8 "$thumb_path" 2>/dev/null
+                fi
+                # Task 2: Wallpaper Still (Pristine, native resolution, lossless PNG output)
+                if [[ ! -f "$wall_still_path" ]] || [[ "$FORCE_REGEN" == "true" ]]; then
+                    ffmpeg -y -ss 00:00:00 -i "$file" -vframes 1 "$wall_still_path" 2>/dev/null
+                fi
+            } &
             ;;
+            
         jpg|jpeg|png|webp)
+            # If the thumbnail exists and we aren't forcing, skip image work entirely
+            if [[ -f "$thumb_path" ]] && [[ "$FORCE_REGEN" == "false" ]]; then
+                continue
+            fi
             echo "Processing image: $filename"
             magick "$file" -resize 1920x -quality 40 "$thumb_path" &
             ;;

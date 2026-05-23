@@ -12,7 +12,6 @@ Singleton {
     id: root
 
     property var all: []
-    property var caches: []
 
     property var wallpapers: ["detective_hutao.jpeg"]
 
@@ -20,8 +19,12 @@ Singleton {
 
     property string path: "/Wallpapers/"
     property string cache_path: "/Wallpapers/.qscache/"
+    property string cache_prefix: "_thumb.jpg"
+    property string still_prefix: "_still.png"
 
     property bool slideshow: false
+
+    property bool live: true
 
     property bool scanning: scan.running
 
@@ -49,6 +52,11 @@ Singleton {
     onWallpapersChanged: {
         saveConfig()
         advance(0)
+        currentChanged()
+    }
+
+    function isLive(image: string): bool {
+        return /\.mp4$|\.mp4_thumb\.jpg$/.test(image)
     }
 
     function getIndex(image: string): int {
@@ -117,7 +125,8 @@ Singleton {
     }
 
     function rescan() {
-
+        cacher.recache = true
+        cacher.running = true
     }
 
     Timer {
@@ -133,33 +142,41 @@ Singleton {
 
     Process {
 
+        id: cacher
+
+        property bool recache: false
+
+        Component.onCompleted: {
+            SystemInfo.cputhreadsChanged.connect(()=> {
+                if (SystemInfo.cputhreads > 0) {
+                    cacher.running = true
+                }
+            })
+        }
+
+        command: [SystemInfo.configdir + "/scripts/wallpapers_cacher.sh", SystemInfo.homedir + root.path, SystemInfo.cputhreads, recache ? "--force" : ""]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                console.log(text)
+                cacher.recache = false
+                scan.running = true
+            }
+        }
+
+    }
+
+    Process {
+
         id: scan
 
-        running: true
         command: ["ls", SystemInfo.homedir + root.path]
 
         stdout: StdioCollector {
             onStreamFinished: {
 
                 const data = text.split("\n").filter(item => item != "")
-
-                let all = []
-
-                for (const wallpaper of data ) {
-                    if (/.*\.mp4$/.test(wallpaper)) {
-                        all.push({
-                            "name": wallpaper,
-                            "type": "live",
-                        })
-                        continue
-                    }
-                    all.push({
-                        "name": wallpaper,
-                        "type": "still",
-                    })
-                }
-
-                console.log(JSON.stringify(all,null,2))
+                root.all = data
 
             }
         }
@@ -181,6 +198,7 @@ Singleton {
         }
 
         SystemInfo.runDetached(["bash", "-c", "echo '" + JSON.stringify(config) + "' > " + SystemInfo.configdir + "/scripts/wallpapers_config.json"])
+
     }
 
     FileView {
@@ -200,8 +218,6 @@ Singleton {
             root.transition.pos      = data.transition.pos      ?? root.transition.pos     
 
             root.wallpapers = data.wallpapers
-
-            set.running = true
 
         }
 

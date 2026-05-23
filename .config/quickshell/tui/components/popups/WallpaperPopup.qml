@@ -72,7 +72,7 @@ CellPopup {
                         width: Cell.w(box.contentW)
                         height: Cell.h(preview.h)
 
-                        source: (selection.items[2] ? SystemInfo.homedir + WallpaperInfo.cache_path + selection.items[2] + ".jpg" : "")
+                        source: (selection.items[2] ? SystemInfo.homedir + WallpaperInfo.cache_path + selection.items[2] + WallpaperInfo.cache_prefix : "")
 
                         fillMode: Image.PreserveAspectCrop
 
@@ -198,6 +198,7 @@ CellPopup {
                                 footer.font: WallpaperInfo.inSet(modelData) ? Cell.fontB : Cell.font
 
                                 border.color: WallpaperInfo.inSet(modelData) ? Colors.secondary : "transparent"
+                                border.type: WallpaperInfo.isLive(modelData) ? 3 : 4
 
                                 Cells {
 
@@ -216,7 +217,7 @@ CellPopup {
                                         width: Cell.w(thumbnail.w)
                                         height: Cell.h(thumbnail.h-1)
 
-                                        source: (thumbnail.modelData ? SystemInfo.homedir + WallpaperInfo.cache_path + thumbnail.modelData + ".jpg" : "")
+                                        source: (thumbnail.modelData ? SystemInfo.homedir + WallpaperInfo.cache_path + thumbnail.modelData + WallpaperInfo.cache_prefix : "")
 
                                         asynchronous: true
 
