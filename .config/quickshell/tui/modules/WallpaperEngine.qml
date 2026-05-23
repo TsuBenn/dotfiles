@@ -15,12 +15,14 @@ Item {
 
     onCurrentChanged: {
         grabBuffer()
-        still.source = root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current
     }
 
     function grabBuffer() {
         root.grabToImage(function(result) {
             buffer.source = result.url
+            buffer.opacity = 1
+            still.source = root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current
+            fadeAnim.restart()
         })
     }
 
@@ -46,7 +48,6 @@ Item {
 
             onStatusChanged: {
                 if (status == Image.Ready) {
-                    fadeAnim.restart()
                     if (root.isLive) {
                         live.source = SystemInfo.homedir + WallpaperInfo.path + root.current
                         live.play()
