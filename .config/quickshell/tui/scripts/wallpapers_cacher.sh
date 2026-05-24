@@ -71,7 +71,7 @@ for file in "$TARGET_DIR"/*; do
             {
                 # Task 1: Fast UI Thumbnail (Compressed JPEG)
                 if [[ ! -f "$thumb_path" ]] || [[ "$FORCE_REGEN" == "true" ]]; then
-                    ffmpeg -y -ss 00:00:00 -i "$file" -vframes 1 -vf "scale=1920:-1" -q:v 8 "$thumb_path" 2>/dev/null
+                    ffmpeg -y -ss 00:00:05 -i "$file" -vframes 1 -vf "scale=1920:-1" -q:v 8 "$thumb_path" 2>/dev/null
                 fi
                 # Task 2: Wallpaper Still (Pristine, native resolution, lossless PNG output)
                 if [[ ! -f "$wall_still_path" ]] || [[ "$FORCE_REGEN" == "true" ]]; then

@@ -7,10 +7,19 @@ layout(location = 0) out vec4 fragColor;
 layout(std140, binding = 0) uniform buf {
     mat4 qt_Matrix;
     float qt_Opacity;
+    float progress;
 } ubuf;
+
+layout(binding = 1) uniform sampler2D oldSource;
+layout(binding = 2) uniform sampler2D newSource;
 
 void main() {
 
-    fragColor = vec4(0,0,0,0) * ubuf.qt_Opacity;
+    vec4 oldTex = texture(oldSource, qt_TexCoord0);
+    vec4 newTex = texture(newSource, qt_TexCoord0);
+
+    vec4 imgTex = mix(oldTex, newTex, ubuf.progress);
+
+    fragColor = imgTex * ubuf.qt_Opacity;
 
 }
