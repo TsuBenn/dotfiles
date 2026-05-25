@@ -12,19 +12,9 @@ public class Main {
 
     public static void main(String[] args) {
         
-        ListOfProducts arr = new ListOfProducts();
+        Product a = new Product("iPhone", 1200.0);
 
-        arr.addProducts();
-
-        arr.displayAll();
-
-        arr.displayAllPrice(800);
-
-        arr.displayAllName("iphone");
-
-        arr.displayAllMinMax(500, 1000);
-
-        arr.displayAllSellPrice(0.1);
+        a.printProduct();
         
     }
 

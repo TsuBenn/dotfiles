@@ -40,7 +40,8 @@ Singleton {
         property real duration: 0.5
         property int fps: 60
         property int angle: 30
-        property var pos: [0,0]
+        property real posX: 0
+        property real posY: 0
     }
 
     property Type transition: Type {}
@@ -192,7 +193,8 @@ Singleton {
                 "duration" : root.transition.duration,
                 "fps"      : root.transition.fps,
                 "angle"    : root.transition.angle,
-                "pos"      : root.transition.pos,
+                "posX"      : root.transition.posX,
+                "posY"      : root.transition.posY,
             },
             wallpapers: root.wallpapers
         }
@@ -215,7 +217,8 @@ Singleton {
             root.transition.duration = data.transition.duration ?? root.transition.duration
             root.transition.fps      = data.transition.fps      ?? root.transition.fps     
             root.transition.angle    = data.transition.angle    ?? root.transition.angle   
-            root.transition.pos      = data.transition.pos      ?? root.transition.pos     
+            root.transition.posX      = data.transition.posX      ?? root.transition.posX
+            root.transition.posY      = data.transition.posY      ?? root.transition.posY
 
             root.wallpapers = data.wallpapers
 

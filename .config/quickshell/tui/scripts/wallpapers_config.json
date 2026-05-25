@@ -1,1 +1,1 @@
-{"transition":{"type":"grow","step":10,"duration":0.5,"fps":60,"angle":30,"pos":[0,0]},"wallpapers":["miyabi_mindscape.jpg"]}
+{"transition":{"type":"shrink","step":1,"duration":1,"fps":60,"angle":30,"posX":0.5,"posY":0.5},"wallpapers":["live_hu_tao_forest.mp4"]}

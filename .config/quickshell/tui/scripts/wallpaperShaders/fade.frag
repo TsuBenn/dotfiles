@@ -18,6 +18,7 @@ void main() {
     vec4 oldTex = texture(oldSource, qt_TexCoord0);
     vec4 newTex = texture(newSource, qt_TexCoord0);
 
+
     vec4 imgTex = mix(oldTex, newTex, ubuf.progress);
 
     fragColor = imgTex * ubuf.qt_Opacity;

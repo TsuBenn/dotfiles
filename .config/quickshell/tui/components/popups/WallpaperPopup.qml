@@ -310,13 +310,27 @@ CellPopup {
                         ShortcutHandler {
                             shortcuts: [
                                 {
-                                    binds: ["Left", "Shift+Tab"],
+                                    binds: "Left",
                                     action: () => {
                                         selection.advance(-1)
                                     }
                                 },
                                 {
-                                    binds: ["Right", "Tab"],
+                                    binds: "Shift+Tab",
+                                    active: textfield.focus,
+                                    action: () => {
+                                        selection.advance(-1)
+                                    }
+                                },
+                                {
+                                    binds: "Right",
+                                    action: () => {
+                                        selection.advance(1)
+                                    }
+                                },
+                                {
+                                    binds: "Tab",
+                                    active: textfield.focus,
                                     action: () => {
                                         selection.advance(1)
                                     }
@@ -635,9 +649,9 @@ CellPopup {
                                         },
                                     },
                                     {
-                                        label: "Outer",
+                                        label: "Shrink",
                                         action: () => {
-                                            WallpaperInfo.transition.type = "outer"
+                                            WallpaperInfo.transition.type = "shrink"
                                         },
                                     },
                                     {
@@ -676,6 +690,8 @@ CellPopup {
                                     bindText: WallpaperInfo.transition.step
 
                                     autoApply: true
+                                    unfocusOnEntered: true
+                                    escapeToUnFocus: true
 
                                     onEntered: (text) => {
                                         if (/^\d+$/.test(text)) {
@@ -687,12 +703,6 @@ CellPopup {
                                     onFocusChanged: {
                                         if (focus) {
                                             return
-                                        }
-                                    }
-
-                                    Keys.onPressed: (event) => {
-                                        if (event.key == Qt.Key_Escape) {
-                                            focus = false
                                         }
                                     }
 
@@ -728,9 +738,11 @@ CellPopup {
                                     bindText: WallpaperInfo.transition.duration
 
                                     autoApply: true
+                                    unfocusOnEntered: true
+                                    escapeToUnFocus: true
 
                                     onEntered: (text) => {
-                                        if (/^-?\d*\.?\d+$/.test(text)) {
+                                        if (/^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(text)) {
                                             WallpaperInfo.transition.duration = Math.max(text,0)
                                             textfield.focus = true
                                         }
@@ -739,12 +751,6 @@ CellPopup {
                                     onFocusChanged: {
                                         if (focus) {
                                             return
-                                        }
-                                    }
-
-                                    Keys.onPressed: (event) => {
-                                        if (event.key == Qt.Key_Escape) {
-                                            focus = false
                                         }
                                     }
 
@@ -778,6 +784,8 @@ CellPopup {
                                     bindText: WallpaperInfo.transition.fps
 
                                     autoApply: true
+                                    unfocusOnEntered: true
+                                    escapeToUnFocus: true
 
                                     onEntered: (text) => {
                                         if (/^\d+$/.test(text)) {
@@ -789,12 +797,6 @@ CellPopup {
                                     onFocusChanged: {
                                         if (focus) {
                                             return
-                                        }
-                                    }
-
-                                    Keys.onPressed: (event) => {
-                                        if (event.key == Qt.Key_Escape) {
-                                            focus = false
                                         }
                                     }
 
@@ -834,10 +836,12 @@ CellPopup {
                                     bindText: WallpaperInfo.transition.angle
 
                                     autoApply: true
+                                    unfocusOnEntered: true
+                                    escapeToUnFocus: true
 
                                     onEntered: (text) => {
                                         if (/^\d+$/.test(text)) {
-                                            WallpaperInfo.transition.angle = Math.max(text,0)
+                                            WallpaperInfo.transition.angle = Math.max(Math.min(text,360),0)
                                             textfield.focus = true
                                         }
                                     }
@@ -845,12 +849,6 @@ CellPopup {
                                     onFocusChanged: {
                                         if (focus) {
                                             return
-                                        }
-                                    }
-
-                                    Keys.onPressed: (event) => {
-                                        if (event.key == Qt.Key_Escape) {
-                                            focus = false
                                         }
                                     }
 
@@ -864,7 +862,7 @@ CellPopup {
                             visible: (
                                 WallpaperInfo.transition.type == "random" ||
                                 WallpaperInfo.transition.type == "grow" ||
-                                WallpaperInfo.transition.type == "outer"
+                                WallpaperInfo.transition.type == "shrink"
                             )
 
                             spacing: Cell.w(1)
@@ -882,20 +880,22 @@ CellPopup {
 
                                 CellTextField {
 
+                                    id: posX
+
                                     focusOnVisible: false
 
                                     w: parent.w
                                     h:1
 
-                                    bindText: WallpaperInfo.transition.pos[0]
+                                    bindText: WallpaperInfo.transition.posX
 
                                     autoApply: true
+                                    unfocusOnEntered: true
+                                    escapeToUnFocus: true
 
                                     onEntered: (text) => {
-                                        if (/^\d+$/.test(text)) {
-                                            let newpos = WallpaperInfo.transition.pos
-                                            newpos[0] = Math.max(text,0)
-                                            WallpaperInfo.transition.pos = [...newpos]
+                                        if (/^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(text)) {
+                                            WallpaperInfo.transition.posX = parseFloat(text)
                                             textfield.focus = true
                                         }
                                     }
@@ -907,8 +907,9 @@ CellPopup {
                                     }
 
                                     Keys.onPressed: (event) => {
-                                        if (event.key == Qt.Key_Escape) {
-                                            focus = false
+                                        if (event.key == Qt.Key_Tab) {
+                                            posX.unFocus()
+                                            posY.grabFocus()
                                         }
                                     }
 
@@ -924,20 +925,22 @@ CellPopup {
 
                                 CellTextField {
 
+                                    id: posY
+
                                     focusOnVisible: false
 
                                     w: parent.w
                                     h:1
 
-                                    bindText: WallpaperInfo.transition.pos[1]
+                                    bindText: WallpaperInfo.transition.posY
 
                                     autoApply: true
+                                    unfocusOnEntered: true
+                                    escapeToUnFocus: true
 
                                     onEntered: (text) => {
-                                        if (/^\d+$/.test(text)) {
-                                            let newpos = WallpaperInfo.transition.pos
-                                            newpos[1] = Math.max(text,0)
-                                            WallpaperInfo.transition.pos = [...newpos]
+                                        if (/^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(text)) {
+                                            WallpaperInfo.transition.posY = parseFloat(text)
                                             textfield.focus = true
                                         }
                                     }
@@ -949,8 +952,9 @@ CellPopup {
                                     }
 
                                     Keys.onPressed: (event) => {
-                                        if (event.key == Qt.Key_Escape) {
-                                            focus = false
+                                        if (event.key == Qt.Key_Tab) {
+                                            posY.unFocus()
+                                            posX.grabFocus()
                                         }
                                     }
 

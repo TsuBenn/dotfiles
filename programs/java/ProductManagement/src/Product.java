@@ -48,4 +48,14 @@ public class Product {
 
     // Must declare all fields and methods that the exam tells you to
 
+    Product() {
+
+    }
+
+    Product(String name, double price) {
+        this.name = name;
+        this.price = price;
+        id = (int) System.currentTimeMillis();
+    }
+
 }

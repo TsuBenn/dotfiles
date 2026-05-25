@@ -1295,7 +1295,7 @@ CellPopup {
                 visible: root.edit
 
                 w: box.contentW
-                color: Colors.fgBase
+                color: Colors.accentStrong
 
             }
 

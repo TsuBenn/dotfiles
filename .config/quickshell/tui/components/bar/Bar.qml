@@ -294,6 +294,7 @@ Scope {
 
                     WallpaperEngine {
 
+                        monitor: root.monitor
                         anchors.fill: parent
 
                     }
