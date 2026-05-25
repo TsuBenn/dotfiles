@@ -18,6 +18,7 @@ Item {
     property string text: "Dropdown"
 
     property bool reversed: false
+    property bool scroll: false
 
     component Type: Item {
         property int padding: root.padding
@@ -44,6 +45,12 @@ Item {
         {label: "Button 1", action: () => console.log("Button 1 of the dropdown has been pressed")},
         {label: "Button 2", action: () => console.log("Button 2 of the dropdown has been pressed")}
     ]
+
+    function advance(delta: int) {
+        selected = (selected + items.length + delta)%items.length
+        items[selected].action()
+    }
+
 
     implicitWidth: Cell.w(w)
     implicitHeight: Cell.h(1)
@@ -86,6 +93,10 @@ Item {
 
     MouseControl {
         anchors.fill: parent
+
+        onWheel: (delta) => {
+            root.advance(-delta)
+        }
 
         onPressed: (button) => {
             if (button == "L") {

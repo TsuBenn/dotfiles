@@ -28,7 +28,7 @@ void main() {
     vec4 newTex = texture(newSource, qt_TexCoord0);
 
     float softness = (ubuf.transitionStep / 100.0);
-    float invert = 1.0;  
+    float invert = 0.0;  
 
     float dist = distance(uv, center);
 
@@ -39,7 +39,7 @@ void main() {
     float maxRadius = sqrt(maxDistX * maxDistX + maxDistY * maxDistY);
 
     // 3. Scale radius perfectly
-    float currentRadius = ubuf.progress * (maxRadius + softness);
+    float currentRadius = (1 - ubuf.progress) * (maxRadius + softness);
 
     float blendFactor = smoothstep(currentRadius - softness, currentRadius, dist);
     blendFactor = abs(invert - blendFactor);
@@ -48,3 +48,4 @@ void main() {
 
     fragColor = imgTex * ubuf.qt_Opacity;
 }
+

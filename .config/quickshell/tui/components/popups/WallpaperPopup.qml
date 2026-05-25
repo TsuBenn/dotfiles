@@ -22,6 +22,8 @@ CellPopup {
 
     escapeToClose: false
 
+    property bool edit: false
+
     MouseControl {
         anchors.fill: parent
 
@@ -51,7 +53,7 @@ CellPopup {
 
                 id: preview
 
-                visible: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 && !root.minimal
+                visible: root.edit || (HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 && !root.minimal)
 
                 w: box.contentW
                 h: Math.floor(root.w/16*9/2)
@@ -82,6 +84,30 @@ CellPopup {
 
                 }
 
+                CellText {
+                    x: Cell.w(Math.round((preview.w-1)*WallpaperInfo.transition.posX))
+                    y: Cell.h(Math.round((preview.h-1)*WallpaperInfo.transition.posY))
+                    text: "✕"
+                }
+
+                MouseControl {
+                    //visible: root.edit
+                    anchors.fill: parent
+
+                    onPressed: (button) => {
+                        if (button == "L") {
+
+                        }
+                    }
+
+                    onMoved: {
+                        if (buttonDown == "L") {
+                            WallpaperInfo.transition.posX = Math.max(Math.min(mouseX/preview.implicitWidth,1),0)
+                            WallpaperInfo.transition.posY = Math.max(Math.min(mouseY/preview.implicitHeight,1),0)
+                        }
+                    }
+
+                }
 
             }
 
@@ -316,13 +342,6 @@ CellPopup {
                                     }
                                 },
                                 {
-                                    binds: "Shift+Tab",
-                                    active: textfield.focus,
-                                    action: () => {
-                                        selection.advance(-1)
-                                    }
-                                },
-                                {
                                     binds: "Right",
                                     action: () => {
                                         selection.advance(1)
@@ -332,7 +351,7 @@ CellPopup {
                                     binds: "Tab",
                                     active: textfield.focus,
                                     action: () => {
-                                        selection.advance(1)
+                                        more.yes = !more.yes
                                     }
                                 },
                                 {
@@ -434,7 +453,7 @@ CellPopup {
 
                 Cells {
 
-                    w: 10
+                    w: 7
                     h: 1
 
                     color: Colors.bgOverlay
@@ -444,18 +463,18 @@ CellPopup {
                         focusOnVisible: false
 
                         w: parent.w
-                        h:1
+                        h: 1
 
-                        bindText: WallpaperInfo.slideshowInterval
+                        bindText: WallpaperInfo.slideshowInterval/1000
                         disabled: !WallpaperInfo.slideshow
 
-                        unit: "ms"
+                        unit: "s"
 
                         autoApply: true
 
                         onEntered: (text) => {
                             if (/^\d+$/.test(text)) {
-                                WallpaperInfo.slideshowInterval = text
+                                WallpaperInfo.slideshowInterval = text*1000
                                 textfield.focus = true
                             }
                         }
@@ -551,6 +570,27 @@ CellPopup {
 
                 CellButton {
 
+                    text: "Live"
+
+                    clickable: WallpaperInfo.isLive(selection.wallpapers[selection.selected])
+
+                    color: clickable && WallpaperInfo.live ? Colors.accentStrong : Colors.bgOverlay
+                    fg: clickable ? (WallpaperInfo.live ? Colors.onAccent : Colors.fgBase) : Colors.fgSubtle
+
+                    onPressed: (button) => {
+                        if (button == "L") {
+                            WallpaperInfo.live = !WallpaperInfo.live
+                        }
+                    }
+
+                }
+
+                CellText {
+                    text: "  "
+                }
+
+                CellButton {
+
                     id: more
 
                     text: "More"
@@ -588,7 +628,7 @@ CellPopup {
 
                 RowLayout {
 
-                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                    Layout.leftMargin: Cell.w(2)
 
                     spacing: Cell.w(2)
 
@@ -604,7 +644,7 @@ CellPopup {
 
                         rowSpacing: Cell.h(1)
                         columnSpacing: Cell.w(2)
-                        columns: WallpaperInfo.transition.type == "random" ? 6 : 100
+                        columns: 6
 
                         uniformCellHeights: false
                         uniformCellWidths: false
@@ -621,6 +661,7 @@ CellPopup {
                                 w: 10
                                 text: ""
                                 reversed: true
+                                scroll: true
                                 selected: {
                                     for (const i in items) {
                                         if (items[i].label.toLowerCase() == WallpaperInfo.transition.type) {
@@ -630,6 +671,12 @@ CellPopup {
                                     return 0
                                 }
                                 items: [
+                                    {
+                                        label: "None",
+                                        action: () => {
+                                            WallpaperInfo.transition.type = "none"
+                                        },
+                                    },
                                     {
                                         label: "Simple",
                                         action: () => {
@@ -655,9 +702,9 @@ CellPopup {
                                         },
                                     },
                                     {
-                                        label: "Random",
+                                        label: "Ripple",
                                         action: () => {
-                                            WallpaperInfo.transition.type = "random"
+                                            WallpaperInfo.transition.type = "ripple"
                                         },
                                     },
                                 ]
@@ -675,7 +722,7 @@ CellPopup {
 
                             Cells {
 
-                                w: 3
+                                w: 5
                                 h: 1
 
                                 color: Colors.bgOverlay
@@ -713,7 +760,7 @@ CellPopup {
 
                         RowLayout {
 
-                            visible: WallpaperInfo.transition.type != "simple"
+                            visible: WallpaperInfo.transition.type != "none"
 
                             spacing: Cell.w(1)
 
@@ -808,7 +855,6 @@ CellPopup {
                         RowLayout {
 
                             visible: (
-                                WallpaperInfo.transition.type == "random" ||
                                 WallpaperInfo.transition.type == "wipe" ||
                                 WallpaperInfo.transition.type == "wave"
                             )
@@ -860,7 +906,7 @@ CellPopup {
                         RowLayout {
 
                             visible: (
-                                WallpaperInfo.transition.type == "random" ||
+                                WallpaperInfo.transition.type == "ripple" ||
                                 WallpaperInfo.transition.type == "grow" ||
                                 WallpaperInfo.transition.type == "shrink"
                             )
@@ -887,7 +933,7 @@ CellPopup {
                                     w: parent.w
                                     h:1
 
-                                    bindText: WallpaperInfo.transition.posX
+                                    bindText: WallpaperInfo.transition.posX.toFixed(2)
 
                                     autoApply: true
                                     unfocusOnEntered: true
@@ -932,7 +978,7 @@ CellPopup {
                                     w: parent.w
                                     h:1
 
-                                    bindText: WallpaperInfo.transition.posY
+                                    bindText: WallpaperInfo.transition.posY.toFixed(2)
 
                                     autoApply: true
                                     unfocusOnEntered: true
@@ -986,13 +1032,9 @@ CellPopup {
                 spacing: Cell.w(2)
 
                 CellKeyHint {
-                    key: "S+Tab"
-                    hint: "Prev"
-                }
-
-                CellKeyHint {
-                    key: "Tab"
-                    hint: "Next"
+                    visible: textfield.text.length == 0
+                    key: "← →"
+                    hint: "Navigate"
                 }
 
                 CellKeyHint {

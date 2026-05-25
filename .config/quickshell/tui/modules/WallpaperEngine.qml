@@ -16,18 +16,29 @@ Item {
 
     property string current: WallpaperInfo.current
     property bool isLive: WallpaperInfo.isLive(WallpaperInfo.current)
-    property bool live: WallpaperInfo.live
+    property bool live: WallpaperInfo.live && isLive
 
     property string shaders_path: SystemInfo.configdir + "/scripts/wallpaperShaders/"
     property string shaders_ext: ".frag.qsb"
 
     property string transition_type: {
-        buffer_shader.special = false
         switch (WallpaperInfo.transition.type) {
+            case "none": return "none"
             case "simple": return "fade"
-            case "shrink": buffer_shader.special = true
+            case "wipe": return "wipe"
             case "grow": return "grow"
+            case "shrink": return "shrink"
+            case "ripple": return "ripple"
             default: return "fade"
+        }
+    }
+
+    onLiveChanged: {
+        if (root.live) {
+            live.source = SystemInfo.homedir + WallpaperInfo.path + root.current
+            live.play()
+        } else {
+            live.pause()
         }
     }
 
@@ -70,7 +81,7 @@ Item {
                     if (buffer.status == Image.Ready) {
                         fadeAnim.restart()
                     }
-                    if (root.isLive) {
+                    if (root.live) {
                         live.source = SystemInfo.homedir + WallpaperInfo.path + root.current
                         live.play()
                     } else {
@@ -142,7 +153,12 @@ Item {
 
     }
 
-    property real transitionProgress: 0
+    property double transitionProgress: 0
+
+    function quantize(value, steps) {
+        const step = 1 / steps;
+        return Math.round(value / step) * step;
+    }
 
     ShaderEffect {
 
@@ -153,16 +169,16 @@ Item {
         property variant oldSource: buffer
         property variant newSource: main_buffer
 
-        property real progress: root.transitionProgress
+        property real progress: {
+            return root.quantize(root.transitionProgress, WallpaperInfo.transition.fps*WallpaperInfo.transition.duration)
+        }
 
         property real winWidth: root.monitor.width
         property real winHeight: root.monitor.height
 
-        property bool special: false
-
         property real transitionStep: WallpaperInfo.transition.step
-        property real transitionFPS: WallpaperInfo.transition.step
-        property real transitionAngle: WallpaperInfo.transition.step
+        property real transitionFPS: WallpaperInfo.transition.fps
+        property real transitionAngle: WallpaperInfo.transition.angle
 
         property real posX: WallpaperInfo.transition.posX
         property real posY: WallpaperInfo.transition.posY

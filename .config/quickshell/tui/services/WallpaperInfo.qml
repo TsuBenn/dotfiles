@@ -24,7 +24,7 @@ Singleton {
 
     property bool slideshow: false
 
-    property bool live: true
+    property bool live: false
 
     property bool scanning: scan.running
 
@@ -44,11 +44,36 @@ Singleton {
         property real posY: 0
     }
 
-    property Type transition: Type {}
-
-    onTransitionChanged: {
-        saveConfig()
+    onLiveChanged: {
+        root.saveConfig()
     }
+
+    property Type transition: Type {
+
+        onTypeChanged: {
+            root.saveConfig()
+        }
+        onStepChanged: {
+            root.saveConfig()
+        }
+        onDurationChanged: {
+            root.saveConfig()
+        }
+        onFpsChanged: {
+            root.saveConfig()
+        }
+        onAngleChanged: {
+            root.saveConfig()
+        }
+        onPosXChanged: {
+            root.saveConfig()
+        }
+        onPosYChanged: {
+            root.saveConfig()
+        }
+
+    }
+
 
     onWallpapersChanged: {
         saveConfig()
@@ -71,6 +96,9 @@ Singleton {
 
     function search(image: string): var {
         return all.filter(item => {
+            item = item.toLowerCase().replace(/\s+/g,"").replace(/_/g,"")
+            image = image.toLowerCase().replace(/\s+/g,"").replace(/_/g,"")
+            console.log(item)
             return item.includes(image)
         })
     }
@@ -196,7 +224,8 @@ Singleton {
                 "posX"      : root.transition.posX,
                 "posY"      : root.transition.posY,
             },
-            wallpapers: root.wallpapers
+            wallpapers: root.wallpapers,
+            live: root.live
         }
 
         SystemInfo.runDetached(["bash", "-c", "echo '" + JSON.stringify(config) + "' > " + SystemInfo.configdir + "/scripts/wallpapers_config.json"])
@@ -210,6 +239,7 @@ Singleton {
         path: SystemInfo.configdir + "/scripts/wallpapers_config.json"
 
         onLoaded: {
+
             const data = JSON.parse(text())
 
             root.transition.type     = data.transition.type     ?? root.transition.type    
@@ -221,9 +251,11 @@ Singleton {
             root.transition.posY      = data.transition.posY      ?? root.transition.posY
 
             root.wallpapers = data.wallpapers
+            root.live = data.live
 
         }
 
     }
 
 }
+
