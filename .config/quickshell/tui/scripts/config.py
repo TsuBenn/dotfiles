@@ -95,6 +95,13 @@ SETTINGS = [
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_minimal"],
             },
             {
+                "label": "{hideBar} Hide status bar",
+                "description": "Hide status bar, hover to peek at it.",
+                "category": "setting",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_hidebar"],
+            },
+            {
                 "label": "{optimizeMemory} Memory optimization mode",
                 "description": "Trading <i>performace</i> for memory optimization.",
                 "category": "setting",

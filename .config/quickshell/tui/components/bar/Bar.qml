@@ -114,14 +114,29 @@ Scope {
             }
 
             property bool peekBar: false
-            property bool forceBar: PopupManager.active_popups.length > 0 && !PopupManager.isOpen("quick_menu") && !PopupManager.isOpen("power") && !PopupManager.isOpen("emoji") && !PopupManager.isOpen("wallpaper")
+            property bool forceBar: (
+                PopupManager.active_popups.length > 0 
+                && !PopupManager.isOpen("quick_menu") 
+                && !PopupManager.isOpen("power") 
+                && !PopupManager.isOpen("emoji") 
+                && !PopupManager.isOpen("wallpaper")
+                && !PopupManager.isOpen("launcher")
+            )
             property bool hideBar: (
-                (Hyprland.focusedWorkspace.hasFullscreen ?? false) 
-                && Hyprland.focusedMonitor.name == root.monitor.name 
+                ((Hyprland.focusedWorkspace.hasFullscreen ?? false) 
+                && Hyprland.focusedMonitor.name == root.monitor.name) 
+                || SettingsInfo.hideBar
             )
 
             margins {
                 top: -(Cell.h(1)-1)*(root.hideBar && !root.peekBar && !root.forceBar)
+
+                Behavior on top {
+                    NumberAnimation {
+                        duration: 200*!SettingsInfo.hyprAnim
+                        easing.type: Easing.OutCubic
+                    }
+                }
             }
 
             exclusiveZone: root.implicitHeight*!root.hideBar
@@ -133,13 +148,6 @@ Scope {
             Item {
 
                 opacity: (!root.hideBar || root.forceBar || root.peekBar)
-
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: 200*SettingsInfo.hyprAnim
-                        easing.type: Easing.OutCubic
-                    }
-                }
 
                 id: bar
 

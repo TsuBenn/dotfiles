@@ -27,9 +27,11 @@ Singleton {
 
     property bool hints             : true  // Show keyboard hints
     property bool minimal           : false // Reduce UI elements
+    property bool hideBar           : false // Hide status bar
     property bool safeNotifications : false // Hide notifications' messages
     property bool dnd               : false // Do not disturb
     property bool optimizeMemory    : false // Reduce memory usage significantly, but takes more time to load UI elements
+
 
     property bool hyprAnim          : false // Toggles Hyprland animations
     property bool hyprBlur          : false // Toggles Hyprland background blur for windows
@@ -41,6 +43,7 @@ Singleton {
     property var toggles: [
         "hints",
         "minimal",
+        "hideBar",
         "optimizeMemory",
         "safeNotifications",
         "dnd",
@@ -134,6 +137,7 @@ Singleton {
         }
         function toggle_grids(): void              { root.showGrid() }
         function toggle_minimal(): void            { root.toggle("minimal") }
+        function toggle_hidebar(): void            { root.toggle("hideBar") }
         function toggle_memory_optimize(): void    { root.toggle("optimizeMemory") }
         function toggle_safe_notifications(): void { root.toggle("safeNotifications") }
         function toggle_hints(): void              { root.toggle("hints") }

@@ -98,8 +98,8 @@ Item {
 
                 onStatusChanged: {
                     if (status == Image.Ready) {
-                        screen.live = true
                         main.current = root.current
+                        screen.live = true
                         fadeAnim.restart()
                     }
                 }

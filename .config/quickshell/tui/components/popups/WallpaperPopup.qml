@@ -36,17 +36,17 @@ CellPopup {
         NumberAnimation {
             target: root
             property: "opacity"
-            duration: 500
-            to: 0.2
+            duration: 300
+            to: 0.0
             easing.type: Easing.OutCubic
         }
         PauseAnimation {
-            duration: Math.max(WallpaperInfo.getTransition(WallpaperInfo.current).duration*1000 - 400,0)
+            duration: Math.max(WallpaperInfo.getTransition(WallpaperInfo.current).duration*1000 - 200,0)
         }
         NumberAnimation {
             target: root
             property: "opacity"
-            duration: 200
+            duration: 300
             to: 1
             easing.type: Easing.OutCubic
         }
@@ -55,6 +55,7 @@ CellPopup {
     Component.onCompleted: {
         WallpaperInfo.currentChanged.connect(()=>{
             if (HyprInfo.windowCount(HyprInfo.focusedworkspace) == 0) hide.restart()
+            root.edit = false
         })
     }
 
@@ -123,8 +124,11 @@ CellPopup {
 
                             id: wallpaper
 
-                            width: sourceSize.width * scalar
-                            height: sourceSize.height * scalar
+                            anchors.verticalCenterOffset: ((height - parent.height)/2)*WallpaperInfo.getReposition(selection.items[2]).verticalOffset
+                            anchors.horizontalCenterOffset: ((width - parent.width)/2)*WallpaperInfo.getReposition(selection.items[2]).horizontalOffset
+
+                            width:  sourceSize.width  * scalar * WallpaperInfo.getReposition(selection.items[2]).scalar
+                            height: sourceSize.height * scalar * WallpaperInfo.getReposition(selection.items[2]).scalar
 
                             property double scalar: Math.max(parent.width/sourceSize.width, parent.height/sourceSize.height)
 
