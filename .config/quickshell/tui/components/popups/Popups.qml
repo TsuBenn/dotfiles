@@ -76,6 +76,8 @@ Item {
 
         id: wallpaper
 
+        monitor: root.monitor
+
         name: "wallpaper"
 
         cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2) - 1

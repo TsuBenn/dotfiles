@@ -44,6 +44,44 @@ Singleton {
         property real posY: 0
     }
 
+    property var config: {
+        "macbook.jpg": {
+            "reposition": {
+                "scalar": 1,
+                "verticalOffset": 1,
+                "horizontalOffset": 0,
+            },
+            "transition": {
+                "type": "grow",
+                "step": 1,
+                "duration": 1,
+                "fps": 60,
+                "posX": 0,
+                "posY": 0,
+            }
+        }
+    }
+
+    function getTransition(image: string): var {
+        return {
+            "type"     : config[image]?.transition.type     ?? transition.type,
+            "step"     : config[image]?.transition.step     ?? transition.step,
+            "duration" : config[image]?.transition.duration ?? transition.duration,
+            "fps"      : config[image]?.transition.fps      ?? transition.fps,
+            "angle"    : config[image]?.transition.angle    ?? transition.angle,
+            "posX"     : config[image]?.transition.posX     ?? transition.posX,
+            "posY"     : config[image]?.transition.posY     ?? transition.posY,
+        }
+    }
+
+    function getReposition(image: string): var {
+        return {
+            "scalar"           : config[image]?.reposition.scalar           ?? 1,
+            "verticalOffset"   : config[image]?.reposition.verticalOffset   ?? 0,
+            "horizontalOffset" : config[image]?.reposition.horizontalOffset ?? 0,
+        }
+    }
+
     onLiveChanged: {
         root.saveConfig()
     }
@@ -142,7 +180,8 @@ Singleton {
     }
 
     function advance(step: int) {
-        selected = (selected + wallpapers.length + step)%(wallpapers.length)
+        if (wallpapers.length > 1) selected = (selected + wallpapers.length + step)%(wallpapers.length)
+        else selected = 0
     }
 
     function set(image) {
@@ -225,6 +264,7 @@ Singleton {
                 "posY"      : root.transition.posY,
             },
             wallpapers: root.wallpapers,
+            config: root.config,
             live: root.live
         }
 
@@ -250,7 +290,9 @@ Singleton {
             root.transition.posX      = data.transition.posX      ?? root.transition.posX
             root.transition.posY      = data.transition.posY      ?? root.transition.posY
 
-            root.wallpapers = data.wallpapers
+            root.wallpapers = data.wallpapers ?? []
+            root.config = data.config ?? ({})
+
             root.live = data.live
 
         }

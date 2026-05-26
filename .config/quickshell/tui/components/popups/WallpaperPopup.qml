@@ -22,8 +22,50 @@ CellPopup {
 
     escapeToClose: false
 
+    SequentialAnimation {
+        id: hide
+        NumberAnimation {
+            target: root
+            property: "opacity"
+            duration: 0
+            to: 1
+        }
+        PauseAnimation {
+            duration: 200
+        }
+        NumberAnimation {
+            target: root
+            property: "opacity"
+            duration: 500
+            to: 0.2
+            easing.type: Easing.OutCubic
+        }
+        PauseAnimation {
+            duration: Math.max(WallpaperInfo.getTransition(WallpaperInfo.current).duration*1000 - 400,0)
+        }
+        NumberAnimation {
+            target: root
+            property: "opacity"
+            duration: 200
+            to: 1
+            easing.type: Easing.OutCubic
+        }
+    }
+
+    Component.onCompleted: {
+        WallpaperInfo.currentChanged.connect(()=>{
+            if (HyprInfo.windowCount(HyprInfo.focusedworkspace) == 0) hide.restart()
+        })
+    }
+
     onVisibleChanged: {
         edit = false
+    }
+
+    onEditChanged: {
+        if (edit) {
+            pivotAnim.restart()
+        }
     }
 
     property bool edit: false
@@ -68,21 +110,38 @@ CellPopup {
 
                     active: root.visible || !root.optimizeMemory
 
-                    sourceComponent: Image {
+                    sourceComponent: Item {
 
-                        id: wallpaper
+                        implicitWidth: preview.implicitWidth
+                        implicitHeight: preview.implicitHeight
 
-                        sourceSize.width: Cell.w(box.contentW)
-                        sourceSize.height: Cell.h(preview.h)
+                        clip: true
 
-                        width: Cell.w(box.contentW)
-                        height: Cell.h(preview.h)
+                        Image {
 
-                        source: (selection.items[2] ? SystemInfo.homedir + WallpaperInfo.cache_path + selection.items[2] + WallpaperInfo.cache_prefix : "")
+                            anchors.centerIn: parent
 
-                        fillMode: Image.PreserveAspectCrop
+                            id: wallpaper
 
-                        asynchronous: true
+                            width: sourceSize.width * scalar
+                            height: sourceSize.height * scalar
+
+                            property double scalar: Math.max(parent.width/sourceSize.width, parent.height/sourceSize.height)
+
+                            source: (selection.items[2] ? SystemInfo.homedir + WallpaperInfo.cache_path + selection.items[2] + WallpaperInfo.cache_prefix : "")
+
+                        }
+
+                        Rectangle {
+
+                            implicitWidth: parent.width
+                            implicitHeight: (Cell.h(1)/root.monitor.height)*parent.height
+
+                            color: Colors.bgSurface
+
+                            opacity: 0.3
+
+                        }
 
                     }
 
@@ -193,7 +252,7 @@ CellPopup {
                 id: thumbnails
 
                 w: box.contentW
-                h: preview.visible && !root.minimal ? 8 : 7
+                h: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 && !root.minimal ? 8 : 7
 
                 color: "transparent"
 
@@ -312,8 +371,6 @@ CellPopup {
                                         height: Cell.h(thumbnail.h-1)
 
                                         source: (thumbnail.modelData ? SystemInfo.homedir + WallpaperInfo.cache_path + thumbnail.modelData + WallpaperInfo.cache_prefix : "")
-
-                                        asynchronous: true
 
                                         fillMode: Image.PreserveAspectCrop
 
@@ -665,6 +722,10 @@ CellPopup {
 
                     onVisibleChanged: {
                         yes = false
+                    }
+
+                    onYesChanged: {
+                        root.edit = false
                     }
 
                     property bool yes: false
@@ -1093,6 +1154,28 @@ CellPopup {
                         }
 
                     }
+                }
+
+                CellSeparator {
+                    w: box.contentW
+                    padding: 1
+                    color: Colors.bgOverlay
+                }
+
+                RowLayout {
+
+                    Layout.leftMargin: Cell.w(2)
+
+                    spacing: Cell.w(1)
+
+                    CellText {
+
+                        Layout.alignment: Qt.AlignTop
+
+                        text: "Reposition:"
+
+                    }
+
                 }
 
             }

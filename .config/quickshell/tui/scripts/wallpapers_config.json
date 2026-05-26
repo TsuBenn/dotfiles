@@ -1,1 +1,1 @@
-{"transition":{"type":"shrink","step":1,"duration":1,"fps":60,"angle":30,"posX":0.5,"posY":0.5},"wallpapers":["live_hu_tao_forest.mp4"],"live":true}
+{"transition":{"type":"shrink","step":1,"duration":1,"fps":60,"angle":30,"posX":0.5,"posY":0.5},"wallpapers":["live_hu_tao_forest.mp4"],"config":{"macbook.jpg":{"reposition":{"scalar":1,"verticalOffset":1,"horizontalOffset":0},"transition":{"type":"grow","step":1,"duration":1,"fps":60,"posX":0.5,"posY":0.5}}},"live":true}

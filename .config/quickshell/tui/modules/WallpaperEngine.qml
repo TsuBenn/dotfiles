@@ -22,7 +22,7 @@ Item {
     property string shaders_ext: ".frag.qsb"
 
     property string transition_type: {
-        switch (WallpaperInfo.transition.type) {
+        switch (WallpaperInfo.getTransition(main.current).type) {
             case "none": return "none"
             case "simple": return "fade"
             case "wipe": return "wipe"
@@ -47,10 +47,13 @@ Item {
         root.grabBuffer()
     }
 
+    Component.onCompleted: {
+        main.current = root.current
+    }
+
     function grabBuffer() {
         root.grabToImage(function(result) {
             buffer.source = result.url
-            still.source = root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current
             //fadeAnim.restart()
         })
     }
@@ -62,15 +65,25 @@ Item {
         id: main
         visible: false
 
+        clip: true
+
+        property string current: root.current
+
         Image {
 
             id: still
 
-            anchors.fill: parent
+            anchors.centerIn: parent
+
+            anchors.verticalCenterOffset: ((height - parent.height)/2)*WallpaperInfo.getReposition(main.current).verticalOffset
+            anchors.horizontalCenterOffset: ((width - parent.width)/2)*WallpaperInfo.getReposition(main.current).horizontalOffset
+
+            width:  sourceSize.width  * scalar * WallpaperInfo.getReposition(main.current).scalar
+            height: sourceSize.height * scalar * WallpaperInfo.getReposition(main.current).scalar
+
+            property double scalar: Math.max(parent.width/sourceSize.width, parent.height/sourceSize.height)
 
             source: root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current
-
-            fillMode: Image.PreserveAspectCrop
 
             retainWhileLoading: true
 
@@ -78,16 +91,8 @@ Item {
 
             onStatusChanged: {
                 if (status == Image.Ready) {
-                    if (buffer.status == Image.Ready) {
-                        fadeAnim.restart()
-                    }
-                    if (root.live) {
-                        live.source = SystemInfo.homedir + WallpaperInfo.path + root.current
-                        live.play()
-                    } else {
-                        live.source = ""
-                        live.stop()
-                    }
+                    main.current = root.current
+                    fadeAnim.restart()
                 }
             }
 
@@ -103,9 +108,21 @@ Item {
         }
 
         VideoOutput {
+
             id: live_output
-            anchors.fill: parent
+
+            anchors.centerIn: parent
+
+            anchors.verticalCenterOffset: ((height - parent.height)/2)*WallpaperInfo.getReposition(main.current).verticalOffset
+            anchors.horizontalCenterOffset: ((width - parent.width)/2)*WallpaperInfo.getReposition(main.current).horizontalOffset
+
+            width:  sourceRect.width  * scalar * WallpaperInfo.getReposition(main.current).scalar
+            height: sourceRect.height * scalar * WallpaperInfo.getReposition(main.current).scalar
+
+            property double scalar: Math.max(parent.width/sourceRect.width, parent.height/sourceRect.height)
+
             fillMode: VideoOutput.PreserveAspectCrop
+
         }
 
     }
@@ -117,7 +134,7 @@ Item {
             property: "transitionProgress"
             from: 0.0
             to: 1.0
-            duration: WallpaperInfo.transition.duration*1000
+            duration: WallpaperInfo.getTransition(main.current).duration*1000
             easing.type: Easing.InOutCubic
         }
 
@@ -138,15 +155,18 @@ Item {
         anchors.fill: parent
         visible: false
 
-        opacity: 0
-
         source: ""
 
         onStatusChanged: {
             if (status == Image.Ready) {
-                if (still.status == Image.Ready) {
-                    opacity = 1
-                    fadeAnim.restart()
+                root.transitionProgress = 0
+                still.source = root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current
+                if (root.live) {
+                    live.source = SystemInfo.homedir + WallpaperInfo.path + root.current
+                    live.play()
+                } else {
+                    live.source = ""
+                    live.stop()
                 }
             }
         }
@@ -170,18 +190,18 @@ Item {
         property variant newSource: main_buffer
 
         property real progress: {
-            return root.quantize(root.transitionProgress, WallpaperInfo.transition.fps*WallpaperInfo.transition.duration)
+            return root.quantize(root.transitionProgress, WallpaperInfo.getTransition(root.current).fps*WallpaperInfo.getTransition(main.current).duration)
         }
 
         property real winWidth: root.monitor.width
         property real winHeight: root.monitor.height
 
-        property real transitionStep: WallpaperInfo.transition.step
-        property real transitionFPS: WallpaperInfo.transition.fps
-        property real transitionAngle: WallpaperInfo.transition.angle
+        property real transitionStep: WallpaperInfo.getTransition(main.current).step
+        property real transitionFPS: WallpaperInfo.getTransition(main.current).fps
+        property real transitionAngle: WallpaperInfo.getTransition(main.current).angle
 
-        property real posX: WallpaperInfo.transition.posX
-        property real posY: WallpaperInfo.transition.posY
+        property real posX: WallpaperInfo.getTransition(main.current).posX
+        property real posY: WallpaperInfo.getTransition(main.current).posY
 
         fragmentShader: root.shaders_path + root.transition_type + root.shaders_ext
 
