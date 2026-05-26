@@ -22,6 +22,10 @@ CellPopup {
 
     escapeToClose: false
 
+    onVisibleChanged: {
+        edit = false
+    }
+
     property bool edit: false
 
     MouseControl {
@@ -84,19 +88,82 @@ CellPopup {
 
                 }
 
+                Cells {
+                    id: pivot_bg
+                    visible: root.edit
+                    w: parent.w
+                    h: parent.h
+                    opacity: 0
+                    color: "black"
+                }
+
                 CellText {
+                    id: crosshair
+                    visible: root.edit
                     x: Cell.w(Math.round((preview.w-1)*WallpaperInfo.transition.posX))
                     y: Cell.h(Math.round((preview.h-1)*WallpaperInfo.transition.posY))
                     text: "✕"
+                    font: Cell.fontBB
+
+                }
+
+                CellText {
+                    id: pivot
+                    opacity: 0
+                    x: Math.max(Math.min(crosshair.x + Cell.w(-Math.round(w/2)+1),Cell.w(preview.w-w)),0)
+                    y: crosshair.y + (Cell.hCount(crosshair.y,"ceil") >= preview.h ? Cell.h(-1) : Cell.h(1))
+                    text: WallpaperInfo.transition.posX.toFixed(2) + "✕" + WallpaperInfo.transition.posX.toFixed(2)
+                    bg: Colors.bgSurface
+                }
+
+                SequentialAnimation {
+                    id: pivotAnim
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: pivot
+                            property: "opacity"
+                            duration: 100
+                            to: 1
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            target: pivot_bg
+                            property: "opacity"
+                            duration: 100
+                            to: 0.5
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    PauseAnimation {
+                        duration: 400
+                    }
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: pivot
+                            property: "opacity"
+                            duration: 500
+                            to: 0
+                            easing.type: Easing.InCubic
+                        }
+                        NumberAnimation {
+                            target: pivot_bg
+                            property: "opacity"
+                            duration: 500
+                            to: 0
+                            easing.type: Easing.InCubic
+                        }
+                    }
                 }
 
                 MouseControl {
-                    //visible: root.edit
+                    visible: root.edit
                     anchors.fill: parent
 
                     onPressed: (button) => {
                         if (button == "L") {
-
+                            WallpaperInfo.transition.posX = Math.max(Math.min(mouseX/preview.implicitWidth,1),0)
+                            WallpaperInfo.transition.posY = Math.max(Math.min(mouseY/preview.implicitHeight,1),0)
+                            pivotAnim.restart()
                         }
                     }
 
@@ -104,6 +171,7 @@ CellPopup {
                         if (buttonDown == "L") {
                             WallpaperInfo.transition.posX = Math.max(Math.min(mouseX/preview.implicitWidth,1),0)
                             WallpaperInfo.transition.posY = Math.max(Math.min(mouseY/preview.implicitHeight,1),0)
+                            pivotAnim.restart()
                         }
                     }
 
@@ -630,7 +698,7 @@ CellPopup {
 
                     Layout.leftMargin: Cell.w(2)
 
-                    spacing: Cell.w(2)
+                    spacing: Cell.w(1)
 
                     CellText {
 
@@ -1005,6 +1073,21 @@ CellPopup {
                                     }
 
                                 }
+                            }
+
+                            CellButton {
+
+                                text: "Edit"
+
+                                color: root.edit ? Colors.accentStrong : Colors.bgOverlay
+                                fg: root.edit ? Colors.onAccent : Colors.fgBase
+
+                                onReleased: (button) => {
+                                    if (button == "L") {
+                                        root.edit = !root.edit
+                                    }
+                                }
+
                             }
 
                         }

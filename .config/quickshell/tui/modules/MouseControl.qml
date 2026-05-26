@@ -26,6 +26,10 @@ Item {
 
     property var acceptedButtons: Qt.AllButtons
 
+    onVisibleChanged: {
+        buttonDown = ""
+    }
+
     MouseArea {
 
         id: mouse
