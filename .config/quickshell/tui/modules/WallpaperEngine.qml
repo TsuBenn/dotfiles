@@ -44,6 +44,7 @@ Item {
 
     onCurrentChanged: {
         live.pause()
+        screen.live = false
         root.grabBuffer()
     }
 
@@ -52,7 +53,7 @@ Item {
     }
 
     function grabBuffer() {
-        root.grabToImage(function(result) {
+        screen.grabToImage(function(result) {
             buffer.source = result.url
             //fadeAnim.restart()
         })
@@ -60,118 +61,155 @@ Item {
 
     Item {
 
+        id: super_buffer
+
         anchors.fill: parent
 
-        id: main
-        visible: false
+        Item {
 
-        clip: true
+            anchors.fill: parent
 
-        property string current: root.current
+            id: main
+            visible: false
+
+            clip: true
+
+            property string current: root.current
+
+            Image {
+
+                id: still
+
+                anchors.centerIn: parent
+
+                anchors.verticalCenterOffset: ((height - parent.height)/2)*WallpaperInfo.getReposition(main.current).verticalOffset
+                anchors.horizontalCenterOffset: ((width - parent.width)/2)*WallpaperInfo.getReposition(main.current).horizontalOffset
+
+                width:  sourceSize.width  * scalar * WallpaperInfo.getReposition(main.current).scalar
+                height: sourceSize.height * scalar * WallpaperInfo.getReposition(main.current).scalar
+
+                property double scalar: Math.max(parent.width/sourceSize.width, parent.height/sourceSize.height)
+
+                source: root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current
+
+                retainWhileLoading: true
+
+                asynchronous: true
+
+                onStatusChanged: {
+                    if (status == Image.Ready) {
+                        screen.live = true
+                        main.current = root.current
+                        fadeAnim.restart()
+                    }
+                }
+
+            }
+
+            MediaPlayer {
+
+                id: live
+                source: ""
+                loops: MediaPlayer.Infinite
+                videoOutput: live_output
+
+            }
+
+            VideoOutput {
+
+                id: live_output
+
+                anchors.centerIn: parent
+
+                anchors.verticalCenterOffset: ((height - parent.height)/2)*WallpaperInfo.getReposition(main.current).verticalOffset
+                anchors.horizontalCenterOffset: ((width - parent.width)/2)*WallpaperInfo.getReposition(main.current).horizontalOffset
+
+                width:  sourceRect.width  * scalar * WallpaperInfo.getReposition(main.current).scalar
+                height: sourceRect.height * scalar * WallpaperInfo.getReposition(main.current).scalar
+
+                property double scalar: Math.max(parent.width/sourceRect.width, parent.height/sourceRect.height)
+
+                fillMode: VideoOutput.PreserveAspectCrop
+
+            }
+
+        }
+
+        SequentialAnimation {
+            id: fadeAnim
+            NumberAnimation {
+                target: root
+                property: "transitionProgress"
+                from: 0.0
+                to: 1.0
+                duration: WallpaperInfo.getTransition(main.current).duration*1000
+                easing.type: Easing.InOutCubic
+            }
+
+        }
+
+        ShaderEffectSource {
+            id: main_buffer
+            anchors.fill: parent
+            sourceItem: main
+            hideSource: true
+            live: true
+        }
 
         Image {
 
-            id: still
+            id: buffer
 
-            anchors.centerIn: parent
+            anchors.fill: parent
+            visible: false
 
-            anchors.verticalCenterOffset: ((height - parent.height)/2)*WallpaperInfo.getReposition(main.current).verticalOffset
-            anchors.horizontalCenterOffset: ((width - parent.width)/2)*WallpaperInfo.getReposition(main.current).horizontalOffset
-
-            width:  sourceSize.width  * scalar * WallpaperInfo.getReposition(main.current).scalar
-            height: sourceSize.height * scalar * WallpaperInfo.getReposition(main.current).scalar
-
-            property double scalar: Math.max(parent.width/sourceSize.width, parent.height/sourceSize.height)
-
-            source: root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current
-
-            retainWhileLoading: true
-
-            asynchronous: true
+            source: ""
 
             onStatusChanged: {
                 if (status == Image.Ready) {
-                    main.current = root.current
-                    fadeAnim.restart()
+                    root.transitionProgress = 0
+                    still.source = root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current
+                    if (root.live) {
+                        live.source = SystemInfo.homedir + WallpaperInfo.path + root.current
+                        live.play()
+                    } else {
+                        live.source = ""
+                        live.stop()
+                    }
                 }
             }
 
         }
 
-        MediaPlayer {
+        ShaderEffect {
 
-            id: live
-            source: ""
-            loops: MediaPlayer.Infinite
-            videoOutput: live_output
+            id: buffer_shader
 
-        }
+            anchors.fill: parent
 
-        VideoOutput {
+            property variant oldSource: buffer
+            property variant newSource: main_buffer
 
-            id: live_output
-
-            anchors.centerIn: parent
-
-            anchors.verticalCenterOffset: ((height - parent.height)/2)*WallpaperInfo.getReposition(main.current).verticalOffset
-            anchors.horizontalCenterOffset: ((width - parent.width)/2)*WallpaperInfo.getReposition(main.current).horizontalOffset
-
-            width:  sourceRect.width  * scalar * WallpaperInfo.getReposition(main.current).scalar
-            height: sourceRect.height * scalar * WallpaperInfo.getReposition(main.current).scalar
-
-            property double scalar: Math.max(parent.width/sourceRect.width, parent.height/sourceRect.height)
-
-            fillMode: VideoOutput.PreserveAspectCrop
-
-        }
-
-    }
-
-    SequentialAnimation {
-        id: fadeAnim
-        NumberAnimation {
-            target: root
-            property: "transitionProgress"
-            from: 0.0
-            to: 1.0
-            duration: WallpaperInfo.getTransition(main.current).duration*1000
-            easing.type: Easing.InOutCubic
-        }
-
-    }
-
-    ShaderEffectSource {
-        id: main_buffer
-        anchors.fill: parent
-        sourceItem: main
-        hideSource: true
-        live: true
-    }
-
-    Image {
-
-        id: buffer
-
-        anchors.fill: parent
-        visible: false
-
-        source: ""
-
-        onStatusChanged: {
-            if (status == Image.Ready) {
-                root.transitionProgress = 0
-                still.source = root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current
-                if (root.live) {
-                    live.source = SystemInfo.homedir + WallpaperInfo.path + root.current
-                    live.play()
-                } else {
-                    live.source = ""
-                    live.stop()
-                }
+            property real progress: {
+                return root.quantize(root.transitionProgress, WallpaperInfo.getTransition(root.current).fps*WallpaperInfo.getTransition(main.current).duration)
             }
+
+            property real winWidth: root.monitor.width
+            property real winHeight: root.monitor.height
+
+            property real transitionStep: WallpaperInfo.getTransition(main.current).step
+            property real transitionFPS: WallpaperInfo.getTransition(main.current).fps
+            property real transitionAngle: WallpaperInfo.getTransition(main.current).angle
+
+            property real posX: WallpaperInfo.getTransition(main.current).posX
+            property real posY: WallpaperInfo.getTransition(main.current).posY
+
+            fragmentShader: root.shaders_path + root.transition_type + root.shaders_ext
+
         }
 
     }
+
 
     property double transitionProgress: 0
 
@@ -180,31 +218,11 @@ Item {
         return Math.round(value / step) * step;
     }
 
-    ShaderEffect {
-
-        id: buffer_shader
-
+    ShaderEffectSource {
+        id: screen
         anchors.fill: parent
-
-        property variant oldSource: buffer
-        property variant newSource: main_buffer
-
-        property real progress: {
-            return root.quantize(root.transitionProgress, WallpaperInfo.getTransition(root.current).fps*WallpaperInfo.getTransition(main.current).duration)
-        }
-
-        property real winWidth: root.monitor.width
-        property real winHeight: root.monitor.height
-
-        property real transitionStep: WallpaperInfo.getTransition(main.current).step
-        property real transitionFPS: WallpaperInfo.getTransition(main.current).fps
-        property real transitionAngle: WallpaperInfo.getTransition(main.current).angle
-
-        property real posX: WallpaperInfo.getTransition(main.current).posX
-        property real posY: WallpaperInfo.getTransition(main.current).posY
-
-        fragmentShader: root.shaders_path + root.transition_type + root.shaders_ext
-
+        sourceItem: super_buffer
+        live: SettingsInfo.debug
     }
 
 }
