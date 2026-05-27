@@ -32,7 +32,61 @@ Singleton {
 
     property int slideshowInterval: 10000
 
+    property bool loaded: false
+
     signal rescanned()
+
+    function setConfig(imageName, propertyPath, value) {
+        var currentConfig = root.config || {};
+
+        if (!currentConfig[imageName]) {
+            currentConfig[imageName] = {};
+        }
+
+        var fileConfig = currentConfig[imageName];
+        var parts = propertyPath.split('.');
+
+        if (parts.length === 1) {
+            // Direct assignment (e.g., "transition")
+            var key = parts[0];
+            fileConfig[key] = value;
+        } else if (parts.length === 2) {
+            // Nested assignment (e.g., "reposition.scalar")
+            var parentKey = parts[0]; // "reposition" or "transition"
+            var childKey = parts[1];  // "scalar", "type", etc.
+
+            // If the parent doesn't exist, initialize it with your defaults
+            if (!fileConfig[parentKey]) {
+                if (parentKey === "reposition") {
+                    fileConfig["reposition"] = {
+                        "scalar": 1,
+                        "verticalOffset": 0,
+                        "horizontalOffset": 0
+                    };
+                } else if (parentKey === "transition") {
+                    fileConfig["transition"] = {
+                        "type": transition.type,
+                        "step": transition.step,
+                        "duration": transition.duration,
+                        "fps": transition.fps,
+                        "posX": transition.posX,
+                        "posY": transition.posY
+                    };
+                } else {
+                    // Fallback for any other unexpected nested objects
+                    fileConfig[parentKey] = {};
+                }
+            }
+
+            // Now safely overwrite the specific target property
+            fileConfig[parentKey][childKey] = value;
+        }
+
+        // Force QML to update reactive bindings
+        root.config = currentConfig;
+        saveConfig()
+        configChanged()
+    }
 
     component Type: Item {
         property string type: "wipe"
@@ -64,21 +118,21 @@ Singleton {
 
     function getTransition(image: string): var {
         return {
-            "type"     : config[image]?.transition.type     ?? transition.type,
-            "step"     : config[image]?.transition.step     ?? transition.step,
-            "duration" : config[image]?.transition.duration ?? transition.duration,
-            "fps"      : config[image]?.transition.fps      ?? transition.fps,
-            "angle"    : config[image]?.transition.angle    ?? transition.angle,
-            "posX"     : config[image]?.transition.posX     ?? transition.posX,
-            "posY"     : config[image]?.transition.posY     ?? transition.posY,
+            "type"     : config[image]?.transition?.type     ?? transition.type,
+            "step"     : config[image]?.transition?.step     ?? transition.step,
+            "duration" : config[image]?.transition?.duration ?? transition.duration,
+            "fps"      : config[image]?.transition?.fps      ?? transition.fps,
+            "angle"    : config[image]?.transition?.angle    ?? transition.angle,
+            "posX"     : config[image]?.transition?.posX     ?? transition.posX,
+            "posY"     : config[image]?.transition?.posY     ?? transition.posY,
         }
     }
 
     function getReposition(image: string): var {
         return {
-            "scalar"           : config[image]?.reposition.scalar           ?? 1,
-            "verticalOffset"   : config[image]?.reposition.verticalOffset   ?? 0,
-            "horizontalOffset" : config[image]?.reposition.horizontalOffset ?? 0,
+            "scalar"           : config[image]?.reposition?.scalar           ?? 1,
+            "verticalOffset"   : config[image]?.reposition?.verticalOffset   ?? 0,
+            "horizontalOffset" : config[image]?.reposition?.horizontalOffset ?? 0,
         }
     }
 
@@ -136,7 +190,7 @@ Singleton {
         return all.filter(item => {
             item = item.toLowerCase().replace(/\s+/g,"").replace(/_/g,"")
             image = image.toLowerCase().replace(/\s+/g,"").replace(/_/g,"")
-            console.log(item)
+            //console.log(item)
             return item.includes(image)
         })
     }
@@ -253,6 +307,42 @@ Singleton {
 
     function saveConfig() {
 
+        if (!root.loaded) return
+
+        let originalConfig = root.config;
+        let filteredConfig = {};
+
+        for (let fileName in originalConfig) {
+            if (originalConfig.hasOwnProperty(fileName)) {
+                let fileConfig = originalConfig[fileName];
+                let newFileConfig = {};
+
+                // Loop through internal properties ("reposition", "transition", etc.)
+                for (let prop in fileConfig) {
+                    if (fileConfig.hasOwnProperty(prop)) {
+                        if (prop === "reposition") {
+                            let repo = fileConfig.reposition;
+                            // Check if it's the specific "default" reposition we want to strip out
+                            if (repo.scalar === 1 && repo.verticalOffset === 0 && repo.horizontalOffset === 0) {
+                                continue; // Skip adding this default reposition block
+                            }
+                        }
+
+                        // Keep the property if it passed the check above
+                        newFileConfig[prop] = fileConfig[prop];
+                    }
+                }
+
+                // QML Check: Count how many keys are actually inside our new inner object
+                var remainingKeysCount = Object.keys(newFileConfig).length;
+
+                // Only add the file to our main config if it actually has data left
+                if (remainingKeysCount > 0) {
+                    filteredConfig[fileName] = newFileConfig;
+                }
+            }
+        }
+
         let config = {
             transition: {
                 "type"     : root.transition.type,
@@ -264,11 +354,11 @@ Singleton {
                 "posY"      : root.transition.posY,
             },
             wallpapers: root.wallpapers,
-            config: root.config,
+            config: filteredConfig,
             live: root.live
         }
 
-        SystemInfo.runDetached(["bash", "-c", "echo '" + JSON.stringify(config) + "' > " + SystemInfo.configdir + "/scripts/wallpapers_config.json"])
+        SystemInfo.runDetached(["bash", "-c", "echo '" + JSON.stringify(config,null,2) + "' > " + SystemInfo.configdir + "/scripts/wallpapers_config.json"])
 
     }
 
@@ -294,6 +384,8 @@ Singleton {
             root.config = data.config ?? ({})
 
             root.live = data.live
+
+            root.loaded = true
 
         }
 

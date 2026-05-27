@@ -165,6 +165,12 @@ Item {
         focus = on
     }
 
+    Component.onCompleted: {
+        TextFieldManager.unFocusAll.connect(() => {
+            unFocus()
+        })
+    }
+
     Timer {
 
         id: cursor_timer

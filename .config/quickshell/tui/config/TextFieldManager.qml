@@ -20,6 +20,8 @@ Singleton {
         //console.log(`active fields: ${active_fields}`)
     }
 
+    signal unFocusAll()
+
     function activated() {
         active_fields += 1
     }

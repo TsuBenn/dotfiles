@@ -56,20 +56,30 @@ CellPopup {
         WallpaperInfo.currentChanged.connect(()=>{
             if (HyprInfo.windowCount(HyprInfo.focusedworkspace) == 0) hide.restart()
             root.edit = false
+            root.reposition = false
         })
     }
 
     onVisibleChanged: {
         edit = false
+        reposition = false
     }
 
     onEditChanged: {
         if (edit) {
             pivotAnim.restart()
+            reposition = false
+        }
+    }
+
+    onRepositionChanged: {
+        if (reposition) {
+            edit = false
         }
     }
 
     property bool edit: false
+    property bool reposition: false
 
     MouseControl {
         anchors.fill: parent
@@ -100,52 +110,46 @@ CellPopup {
 
                 id: preview
 
-                visible: root.edit || (HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 && !root.minimal)
+                visible: root.edit || root.reposition || (HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 && !root.minimal)
 
                 w: box.contentW
                 h: Math.floor(root.w/16*9/2)
 
                 color: "transparent"
 
-                Loader {
+                Item {
 
-                    active: root.visible || !root.optimizeMemory
+                    implicitWidth: preview.implicitWidth
+                    implicitHeight: preview.implicitHeight
 
-                    sourceComponent: Item {
+                    clip: true
 
-                        implicitWidth: preview.implicitWidth
-                        implicitHeight: preview.implicitHeight
+                    Image {
 
-                        clip: true
+                        anchors.centerIn: parent
 
-                        Image {
+                        id: wallpaper
 
-                            anchors.centerIn: parent
+                        anchors.verticalCenterOffset: ((height - parent.height)/2)*WallpaperInfo.getReposition(selection.items[2]).verticalOffset
+                        anchors.horizontalCenterOffset: ((width - parent.width)/2)*WallpaperInfo.getReposition(selection.items[2]).horizontalOffset
 
-                            id: wallpaper
+                        width:  sourceSize.width  * scalar * WallpaperInfo.getReposition(selection.items[2]).scalar
+                        height: sourceSize.height * scalar * WallpaperInfo.getReposition(selection.items[2]).scalar
 
-                            anchors.verticalCenterOffset: ((height - parent.height)/2)*WallpaperInfo.getReposition(selection.items[2]).verticalOffset
-                            anchors.horizontalCenterOffset: ((width - parent.width)/2)*WallpaperInfo.getReposition(selection.items[2]).horizontalOffset
+                        property double scalar: Math.max(parent.width/sourceSize.width, parent.height/sourceSize.height)
 
-                            width:  sourceSize.width  * scalar * WallpaperInfo.getReposition(selection.items[2]).scalar
-                            height: sourceSize.height * scalar * WallpaperInfo.getReposition(selection.items[2]).scalar
+                        source: (selection.items[2] ? SystemInfo.homedir + WallpaperInfo.cache_path + selection.items[2] + WallpaperInfo.cache_prefix : "")
 
-                            property double scalar: Math.max(parent.width/sourceSize.width, parent.height/sourceSize.height)
+                    }
 
-                            source: (selection.items[2] ? SystemInfo.homedir + WallpaperInfo.cache_path + selection.items[2] + WallpaperInfo.cache_prefix : "")
+                    Rectangle {
 
-                        }
+                        implicitWidth: parent.width
+                        implicitHeight: (Cell.h(1)/root.monitor.height)*parent.height
 
-                        Rectangle {
+                        color: Colors.bgSurface
 
-                            implicitWidth: parent.width
-                            implicitHeight: (Cell.h(1)/root.monitor.height)*parent.height
-
-                            color: Colors.bgSurface
-
-                            opacity: 0.3
-
-                        }
+                        opacity: 0.3
 
                     }
 
@@ -163,8 +167,8 @@ CellPopup {
                 CellText {
                     id: crosshair
                     visible: root.edit
-                    x: Cell.w(Math.round((preview.w-1)*WallpaperInfo.transition.posX))
-                    y: Cell.h(Math.round((preview.h-1)*WallpaperInfo.transition.posY))
+                    x: Cell.w(Math.round((preview.w-1)*WallpaperInfo.getTransition(selection.items[2]).posX))
+                    y: Cell.h(Math.round((preview.h-1)*WallpaperInfo.getTransition(selection.items[2]).posY))
                     text: "✕"
                     font: Cell.fontBB
 
@@ -173,9 +177,10 @@ CellPopup {
                 CellText {
                     id: pivot
                     opacity: 0
+                    visible: root.edit
                     x: Math.max(Math.min(crosshair.x + Cell.w(-Math.round(w/2)+1),Cell.w(preview.w-w)),0)
                     y: crosshair.y + (Cell.hCount(crosshair.y,"ceil") >= preview.h ? Cell.h(-1) : Cell.h(1))
-                    text: WallpaperInfo.transition.posX.toFixed(2) + "✕" + WallpaperInfo.transition.posX.toFixed(2)
+                    text: WallpaperInfo.getTransition(selection.items[2]).posX.toFixed(2) + "✕" + WallpaperInfo.getTransition(selection.items[2]).posY.toFixed(2)
                     bg: Colors.bgSurface
                 }
 
@@ -218,23 +223,186 @@ CellPopup {
                     }
                 }
 
+                SequentialAnimation {
+                    id: repoAnim
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: repo_bg
+                            property: "opacity"
+                            to: 0
+                            duration: 200
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            target: repo_hint
+                            property: "opacity"
+                            to: 0
+                            duration: 200
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    PauseAnimation {
+                        duration: 200
+                    }
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: repo_bg
+                            property: "opacity"
+                            to: 0.5
+                            duration: 500
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            target: repo_hint
+                            property: "opacity"
+                            to: 1
+                            duration: 500
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                }
+
+                SequentialAnimation {
+                    id: repoAnimStart
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: repo_bg
+                            property: "opacity"
+                            from: 0
+                            to: 0.5
+                            duration: 500
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            target: repo_hint
+                            property: "opacity"
+                            from: 0
+                            to: 1
+                            duration: 500
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                }
+
+                Cells {
+                    id: repo_bg
+                    visible: root.reposition
+                    onVisibleChanged: {
+                        repoAnimStart.restart()
+                    }
+                    w: parent.w
+                    h: parent.h
+                    opacity: 0.5
+                    color: "black"
+
+                }
+
+                CellText {
+
+                    id: repo_hint
+
+                    visible: root.reposition
+
+                    x: Cell.centerWCell(implicitWidth, repo_bg.implicitWidth)
+                    y: Cell.centerHCell(implicitHeight, repo_bg.implicitHeight)
+
+                    text: [
+                        "                   ↑                  ",
+                        "                                      ",
+                        "                                      ",
+                        "                                      ",
+                        "                                      ",
+                        "                                      ",
+                        "                                      ",
+                        "                                      ",
+                        "                                      ",
+                        "←    Drag to Move & Wheel to Zoom    →",
+                        "                                      ",
+                        "                                      ",
+                        "                                      ",
+                        "                                      ",
+                        "                                      ",
+                        "                                      ",
+                        "                                      ",
+                        "                                      ",
+                        "                   ↓                  ",
+                    ].join("\n")
+                }
+
                 MouseControl {
                     visible: root.edit
                     anchors.fill: parent
 
                     onPressed: (button) => {
                         if (button == "L") {
-                            WallpaperInfo.transition.posX = Math.max(Math.min(mouseX/preview.implicitWidth,1),0)
-                            WallpaperInfo.transition.posY = Math.max(Math.min(mouseY/preview.implicitHeight,1),0)
+                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
+                                WallpaperInfo.setConfig(selection.items[2], "transition.posX", Math.max(Math.min(mouseX/preview.implicitWidth,1),0))
+                                WallpaperInfo.setConfig(selection.items[2], "transition.posY", Math.max(Math.min(mouseY/preview.implicitHeight,1),0))
+                            } else {
+                                WallpaperInfo.transition.posX = Math.max(Math.min(mouseX/preview.implicitWidth,1),0)
+                                WallpaperInfo.transition.posY = Math.max(Math.min(mouseY/preview.implicitHeight,1),0)
+                            }
                             pivotAnim.restart()
                         }
                     }
 
                     onMoved: {
                         if (buttonDown == "L") {
-                            WallpaperInfo.transition.posX = Math.max(Math.min(mouseX/preview.implicitWidth,1),0)
-                            WallpaperInfo.transition.posY = Math.max(Math.min(mouseY/preview.implicitHeight,1),0)
+                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
+                                WallpaperInfo.setConfig(selection.items[2], "transition.posX", Math.max(Math.min(mouseX/preview.implicitWidth,1),0))
+                                WallpaperInfo.setConfig(selection.items[2], "transition.posY", Math.max(Math.min(mouseY/preview.implicitHeight,1),0))
+                            } else {
+                                WallpaperInfo.transition.posX = Math.max(Math.min(mouseX/preview.implicitWidth,1),0)
+                                WallpaperInfo.transition.posY = Math.max(Math.min(mouseY/preview.implicitHeight,1),0)
+                            }
                             pivotAnim.restart()
+                        }
+                    }
+
+                }
+
+                MouseControl {
+
+                    visible: root.reposition
+                    anchors.fill: parent
+
+                    property real oldVert: 0
+                    property real oldHori: 0
+
+                    property int baseX: 0
+                    property int baseY: 0
+                    property real deltaX: 0
+                    property real deltaY: 0
+
+                    onWheel: (delta) => {
+                        repoAnim.restart()
+                        WallpaperInfo.setConfig(selection.items[2],"reposition.scalar", Math.max(WallpaperInfo.getReposition(selection.items[2]).scalar+(delta/10),1))
+                        wallpaper.width - preview.width == 0 ? WallpaperInfo.setConfig(selection.items[2],"reposition.horizontalOffset", 0) : 0
+                        wallpaper.height - preview.height == 0 ? WallpaperInfo.setConfig(selection.items[2],"reposition.verticalOffset", 0) : 0
+                    }
+
+                    onPressed: (button) => {
+                        if (button == "L") {
+                            repoAnim.restart()
+                            baseX = mouseX
+                            baseY = mouseY
+
+                            oldVert = WallpaperInfo.getReposition(selection.items[2]).verticalOffset
+                            oldHori = WallpaperInfo.getReposition(selection.items[2]).horizontalOffset
+                        }
+                    }
+
+                    onMoved: (x, y) => {
+                        if (buttonDown == "L") {
+
+                            repoAnim.restart()
+
+                            deltaX = wallpaper.width - preview.width == 0 ? 0 : (x - baseX)/((wallpaper.width - preview.width)/2)
+                            deltaY = wallpaper.height - preview.height == 0 ? 0 : (y - baseY)/((wallpaper.height - preview.height)/2)
+
+                            WallpaperInfo.setConfig(selection.items[2],"reposition.horizontalOffset", wallpaper.width - preview.width == 0 ? 0 : Math.max(Math.min(oldHori + deltaX,1),-1))
+                            WallpaperInfo.setConfig(selection.items[2],"reposition.verticalOffset", wallpaper.height - preview.height == 0 ? 0 : Math.max(Math.min(oldVert + deltaY,1),-1))
+
                         }
                     }
 
@@ -296,11 +464,15 @@ CellPopup {
                     }
 
                     function advance(step: int) {
+                        TextFieldManager.unFocusAll()
+                        textfield.grabFocus()
                         if (autoAdvance.auto) WallpaperInfo.add(items[2+step])
                         selected = (selected + selection.wallpapers.length + step)%selection.wallpapers.length
                     }
 
                     function select() {
+                        TextFieldManager.unFocusAll()
+                        textfield.grabFocus()
                         const current = items[2]
                         if (WallpaperInfo.inSet(current)) {
                             WallpaperInfo.remove(current)
@@ -761,7 +933,7 @@ CellPopup {
 
                 RowLayout {
 
-                    Layout.leftMargin: Cell.w(2)
+                    Layout.leftMargin: Cell.w(1)
 
                     spacing: Cell.w(1)
 
@@ -797,7 +969,7 @@ CellPopup {
                                 scroll: true
                                 selected: {
                                     for (const i in items) {
-                                        if (items[i].label.toLowerCase() == WallpaperInfo.transition.type) {
+                                        if (items[i].label.toLowerCase() == WallpaperInfo.getTransition(selection.items[2]).type) {
                                             return i
                                         }
                                     }
@@ -807,37 +979,61 @@ CellPopup {
                                     {
                                         label: "None",
                                         action: () => {
-                                            WallpaperInfo.transition.type = "none"
+                                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
+                                                WallpaperInfo.setConfig(selection.items[2], "transition.type", "none")
+                                            } else {
+                                                WallpaperInfo.transition.type = "none"
+                                            }
                                         },
                                     },
                                     {
                                         label: "Simple",
                                         action: () => {
-                                            WallpaperInfo.transition.type = "simple"
+                                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
+                                                WallpaperInfo.setConfig(selection.items[2], "transition.type", "simple")
+                                            } else {
+                                                WallpaperInfo.transition.type = "simple"
+                                            }
                                         },
                                     },
                                     {
                                         label: "Wipe",
                                         action: () => {
-                                            WallpaperInfo.transition.type = "wipe"
+                                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
+                                                WallpaperInfo.setConfig(selection.items[2], "transition.type", "wipe")
+                                            } else {
+                                                WallpaperInfo.transition.type = "wipe"
+                                            }
                                         },
                                     },
                                     {
                                         label: "Grow",
                                         action: () => {
-                                            WallpaperInfo.transition.type = "grow"
+                                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
+                                                WallpaperInfo.setConfig(selection.items[2], "transition.type", "grow")
+                                            } else {
+                                                WallpaperInfo.transition.type = "grow"
+                                            }
                                         },
                                     },
                                     {
                                         label: "Shrink",
                                         action: () => {
-                                            WallpaperInfo.transition.type = "shrink"
+                                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
+                                                WallpaperInfo.setConfig(selection.items[2], "transition.type", "shrink")
+                                            } else {
+                                                WallpaperInfo.transition.type = "shrink"
+                                            }
                                         },
                                     },
                                     {
                                         label: "Ripple",
                                         action: () => {
-                                            WallpaperInfo.transition.type = "ripple"
+                                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
+                                                WallpaperInfo.setConfig(selection.items[2], "transition.type", "ripple")
+                                            } else {
+                                                WallpaperInfo.transition.type = "ripple"
+                                            }
                                         },
                                     },
                                 ]
@@ -855,7 +1051,7 @@ CellPopup {
 
                             Cells {
 
-                                w: 5
+                                w: 4
                                 h: 1
 
                                 color: Colors.bgOverlay
@@ -867,7 +1063,7 @@ CellPopup {
                                     w: parent.w
                                     h:1
 
-                                    bindText: WallpaperInfo.transition.step
+                                    bindText: WallpaperInfo.getTransition(selection.items[2]).step
 
                                     autoApply: true
                                     unfocusOnEntered: true
@@ -875,7 +1071,12 @@ CellPopup {
 
                                     onEntered: (text) => {
                                         if (/^\d+$/.test(text)) {
-                                            WallpaperInfo.transition.step = Math.max(text,1)
+                                            text = Math.max(Math.min(text,100),1)
+                                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
+                                                WallpaperInfo.setConfig(selection.items[2], "transition.step", text)
+                                            } else {
+                                                WallpaperInfo.transition.step = text
+                                            }
                                             textfield.focus = true
                                         }
                                     }
@@ -893,7 +1094,7 @@ CellPopup {
 
                         RowLayout {
 
-                            visible: WallpaperInfo.transition.type != "none"
+                            visible: WallpaperInfo.getTransition(selection.items[2]).type != "none"
 
                             spacing: Cell.w(1)
 
@@ -915,7 +1116,7 @@ CellPopup {
                                     w: parent.w
                                     h:1
 
-                                    bindText: WallpaperInfo.transition.duration
+                                    bindText: WallpaperInfo.getTransition(selection.items[2]).duration
 
                                     autoApply: true
                                     unfocusOnEntered: true
@@ -923,7 +1124,12 @@ CellPopup {
 
                                     onEntered: (text) => {
                                         if (/^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(text)) {
-                                            WallpaperInfo.transition.duration = Math.max(text,0)
+                                            text = Math.max(text,0)
+                                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
+                                                WallpaperInfo.setConfig(selection.items[2], "transition.duration", text)
+                                            } else {
+                                                WallpaperInfo.transition.duration = text
+                                            }
                                             textfield.focus = true
                                         }
                                     }
@@ -961,7 +1167,7 @@ CellPopup {
                                     w: parent.w
                                     h:1
 
-                                    bindText: WallpaperInfo.transition.fps
+                                    bindText: WallpaperInfo.getTransition(selection.items[2]).fps
 
                                     autoApply: true
                                     unfocusOnEntered: true
@@ -969,7 +1175,12 @@ CellPopup {
 
                                     onEntered: (text) => {
                                         if (/^\d+$/.test(text)) {
-                                            WallpaperInfo.transition.fps = Math.max(text,1)
+                                            text = Math.max(text,1)
+                                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
+                                                WallpaperInfo.setConfig(selection.items[2], "transition.fps", text)
+                                            } else {
+                                                WallpaperInfo.transition.fps = text
+                                            }
                                             textfield.focus = true
                                         }
                                     }
@@ -988,8 +1199,8 @@ CellPopup {
                         RowLayout {
 
                             visible: (
-                                WallpaperInfo.transition.type == "wipe" ||
-                                WallpaperInfo.transition.type == "wave"
+                                WallpaperInfo.getTransition(selection.items[2]).type == "wipe" ||
+                                WallpaperInfo.getTransition(selection.items[2]).type == "wave"
                             )
 
                             spacing: Cell.w(1)
@@ -1012,7 +1223,7 @@ CellPopup {
                                     w: parent.w
                                     h:1
 
-                                    bindText: WallpaperInfo.transition.angle
+                                    bindText: WallpaperInfo.getTransition(selection.items[2]).angle
 
                                     autoApply: true
                                     unfocusOnEntered: true
@@ -1020,7 +1231,12 @@ CellPopup {
 
                                     onEntered: (text) => {
                                         if (/^\d+$/.test(text)) {
-                                            WallpaperInfo.transition.angle = Math.max(Math.min(text,360),0)
+                                            text = Math.max(Math.min(text,360),0)
+                                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
+                                                WallpaperInfo.setConfig(selection.items[2], "transition.angle", text)
+                                            } else {
+                                                WallpaperInfo.transition.angle = text
+                                            }
                                             textfield.focus = true
                                         }
                                     }
@@ -1039,9 +1255,9 @@ CellPopup {
                         RowLayout {
 
                             visible: (
-                                WallpaperInfo.transition.type == "ripple" ||
-                                WallpaperInfo.transition.type == "grow" ||
-                                WallpaperInfo.transition.type == "shrink"
+                                WallpaperInfo.getTransition(selection.items[2]).type == "ripple" ||
+                                WallpaperInfo.getTransition(selection.items[2]).type == "grow" ||
+                                WallpaperInfo.getTransition(selection.items[2]).type == "shrink"
                             )
 
                             spacing: Cell.w(1)
@@ -1066,7 +1282,7 @@ CellPopup {
                                     w: parent.w
                                     h:1
 
-                                    bindText: WallpaperInfo.transition.posX.toFixed(2)
+                                    bindText: WallpaperInfo.getTransition(selection.items[2]).posX.toFixed(2)
 
                                     autoApply: true
                                     unfocusOnEntered: true
@@ -1074,7 +1290,12 @@ CellPopup {
 
                                     onEntered: (text) => {
                                         if (/^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(text)) {
-                                            WallpaperInfo.transition.posX = parseFloat(text)
+                                            text = Math.max(Math.min(parseFloat(text),1),0)
+                                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
+                                                WallpaperInfo.setConfig(selection.items[2], "transition.posX", text)
+                                            } else {
+                                                WallpaperInfo.transition.posX = text
+                                            }
                                             textfield.focus = true
                                         }
                                     }
@@ -1111,7 +1332,7 @@ CellPopup {
                                     w: parent.w
                                     h:1
 
-                                    bindText: WallpaperInfo.transition.posY.toFixed(2)
+                                    bindText: WallpaperInfo.getTransition(selection.items[2]).posY.toFixed(2)
 
                                     autoApply: true
                                     unfocusOnEntered: true
@@ -1119,7 +1340,12 @@ CellPopup {
 
                                     onEntered: (text) => {
                                         if (/^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(text)) {
-                                            WallpaperInfo.transition.posY = parseFloat(text)
+                                            text = Math.max(Math.min(parseFloat(text),1),0)
+                                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
+                                                WallpaperInfo.setConfig(selection.items[2], "transition.posY", text)
+                                            } else {
+                                                WallpaperInfo.transition.posY = text
+                                            }
                                             textfield.focus = true
                                         }
                                     }
@@ -1158,6 +1384,26 @@ CellPopup {
                         }
 
                     }
+
+                    CellButton {
+
+                        text: "Bind"
+
+                        color: WallpaperInfo.config[selection.items[2]]?.transition ? Colors.accentStrong : Colors.bgOverlay
+                        fg: WallpaperInfo.config[selection.items[2]]?.transition ? Colors.onAccent : Colors.fgBase
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                if (WallpaperInfo.config[selection.items[2]]?.transition) {
+                                    delete WallpaperInfo.config[selection.items[2]].transition
+                                    WallpaperInfo.configChanged()
+                                } else {
+                                    WallpaperInfo.setConfig(selection.items[2], "transition", WallpaperInfo.getTransition(""))
+                                }
+                            }
+                        }
+
+                    }
                 }
 
                 CellSeparator {
@@ -1168,15 +1414,189 @@ CellPopup {
 
                 RowLayout {
 
-                    Layout.leftMargin: Cell.w(2)
+                    Layout.leftMargin: Cell.w(1)
 
-                    spacing: Cell.w(1)
+                    spacing: 0
 
                     CellText {
 
                         Layout.alignment: Qt.AlignTop
 
                         text: "Reposition:"
+
+                    }
+
+                    CellText {
+                        text: "  "
+                    }
+
+                    CellText {
+                        text: "Scale "
+                    }
+
+                    Cells {
+
+                        w: 5
+                        h: 1
+
+                        color: Colors.bgOverlay
+
+                        CellTextField {
+
+                            id: scalar_textfield
+
+                            w: parent.w
+                            h: parent.h
+
+                            focusOnVisible: false
+                            autoApply: true
+                            escapeToUnFocus: true
+                            unfocusOnEntered: true
+
+                            bindText: WallpaperInfo.getReposition(selection.items[2]).scalar.toFixed(2)
+
+                            onEntered: (input) => {
+                                if (/^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(input)) {
+                                    input = Math.max(parseFloat(input),1)
+                                    WallpaperInfo.setConfig(selection.items[2],"reposition.scalar", input)
+
+                                    textfield.focus = true
+                                }
+                            }
+
+                        }
+                    }
+
+                    CellText {
+                        text: "  "
+                    }
+
+                    CellText {
+                        text: "Vertical offset "
+                    }
+
+                    Cells {
+
+                        w: 6
+                        h: 1
+
+                        color: Colors.bgOverlay
+
+                        CellTextField {
+
+                            id: vert_textfield
+
+                            w: parent.w
+                            h: parent.h
+
+                            focusOnVisible: false
+                            autoApply: true
+                            escapeToUnFocus: true
+                            unfocusOnEntered: true
+
+                            bindText: WallpaperInfo.getReposition(selection.items[2]).verticalOffset.toFixed(2)
+
+                            onEntered: (input) => {
+                                if (/^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(input)) {
+                                    input = Math.max(Math.min(parseFloat(input),1),0)
+                                    WallpaperInfo.setConfig(selection.items[2],"reposition.verticalOffset",input)
+                                    textfield.focus = true
+                                }
+                            }
+
+                        }
+                    }
+
+                    CellText {
+                        text: "  "
+                    }
+
+                    CellText {
+                        text: "Horizontal offset "
+                    }
+
+                    Cells {
+
+                        w: 6
+                        h: 1
+
+                        color: Colors.bgOverlay
+
+                        CellTextField {
+
+                            id: hori_textfield
+
+                            w: parent.w
+                            h: parent.h
+
+                            focusOnVisible: false
+                            autoApply: true
+                            escapeToUnFocus: true
+                            unfocusOnEntered: true
+
+                            bindText: WallpaperInfo.getReposition(selection.items[2]).horizontalOffset.toFixed(2)
+
+                            onEntered: (input) => {
+                                if (/^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(input)) {
+                                    input = Math.max(Math.min(parseFloat(input),1),0)
+                                    WallpaperInfo.setConfig(selection.items[2],"reposition.horizontalOffset",input)
+
+                                    textfield.focus = true
+                                }
+                            }
+
+                        }
+                    }
+
+                    CellText {
+                        text: "  "
+                    }
+
+                    CellButton {
+
+                        text: "Edit"
+
+                        color: root.reposition ? Colors.accentStrong : Colors.bgOverlay
+                        fg: root.reposition ? Colors.onAccent : Colors.fgBase
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                root.reposition = !root.reposition
+                            }
+                        }
+
+                    }
+
+                    CellText {
+                        text: "  "
+                    }
+
+                    CellButton {
+
+                        text: "Re-center"
+
+                        color: [Colors.accentStrong, Colors.bgOverlay]
+                        fg: [Colors.onAccent, Colors.fgBase]
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                scalar_textfield.unFocus()
+                                vert_textfield.unFocus()
+                                hori_textfield.unFocus()
+                                if (WallpaperInfo.config[selection.items[2]]?.reposition) {
+                                    WallpaperInfo.config[selection.items[2]].reposition.scalar = 1
+                                    WallpaperInfo.config[selection.items[2]].reposition.horizontalOffset = 0
+                                    WallpaperInfo.config[selection.items[2]].reposition.verticalOffset = 0
+                                } else {
+                                    WallpaperInfo.config[selection.items[2]].reposition = {
+                                        scalar: 1,
+                                        verticalOffset: 0,
+                                        horizontalOffset: 0,
+                                    }
+                                }
+                                WallpaperInfo.configChanged()
+                            }
+                        }
 
                     }
 

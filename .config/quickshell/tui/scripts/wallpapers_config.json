@@ -1,1 +1,101 @@
-{"transition":{"type":"shrink","step":1,"duration":1,"fps":60,"angle":30,"posX":0.5,"posY":0.5},"wallpapers":["live_hu_tao_forest.mp4"],"config":{"macbook.jpg":{"reposition":{"scalar":1,"verticalOffset":1,"horizontalOffset":0},"transition":{"type":"grow","step":1,"duration":1,"fps":60,"posX":0.5,"posY":0.5}}},"live":true}
+{
+  "transition": {
+    "type": "shrink",
+    "step": 1,
+    "duration": 1,
+    "fps": 60,
+    "angle": 30,
+    "posX": 0.5,
+    "posY": 0.5
+  },
+  "wallpapers": [
+    "live_hu_tao_forest.mp4"
+  ],
+  "config": {
+    "macbook.jpg": {
+      "transition": {
+        "type": "grow",
+        "step": 1,
+        "duration": 1,
+        "fps": 60,
+        "posX": 0.5600907029478458,
+        "posY": 0.8353174603174603
+      },
+      "reposition": {
+        "scalar": 1,
+        "verticalOffset": 1,
+        "horizontalOffset": 0
+      }
+    },
+    "live_hu_tao_forest.mp4": {
+      "transition": {
+        "type": "grow",
+        "step": 1,
+        "duration": 1,
+        "fps": 60,
+        "angle": 30,
+        "posX": 0.3673469387755102,
+        "posY": 0.051587301587301584
+      },
+      "reposition": {
+        "scalar": 1,
+        "verticalOffset": 0,
+        "horizontalOffset": -0.21726646643503678
+      }
+    },
+    "live_hu_tao_forest_fire.mp4": {
+      "transition": {
+        "type": "grow",
+        "step": 1,
+        "duration": 1,
+        "fps": 60,
+        "angle": 30,
+        "posX": 0.6870748299319728,
+        "posY": 0.08531746031746032
+      }
+    },
+    "gura.jpg": {
+      "reposition": {
+        "scalar": 1,
+        "verticalOffset": 0.7560886950199929,
+        "horizontalOffset": 0
+      }
+    },
+    "frog.jpg": {
+      "reposition": {
+        "scalar": 1,
+        "verticalOffset": 1,
+        "horizontalOffset": 0
+      }
+    },
+    "balcony_chill.jpg": {
+      "reposition": {
+        "scalar": 1.2000000000000002,
+        "verticalOffset": -0.228174603174603,
+        "horizontalOffset": 0.2334754797441364
+      }
+    },
+    "seele_bronya.jpg": {
+      "reposition": {
+        "scalar": 1,
+        "verticalOffset": 1,
+        "horizontalOffset": 0
+      }
+    },
+    "miyabi_mindscape_0.jpg": {
+      "reposition": {
+        "scalar": 1,
+        "verticalOffset": 0,
+        "horizontalOffset": 0.33308706651442904
+      }
+    },
+    "miyabi_mindscape.jpg": {
+      "reposition": {
+        "scalar": 1,
+        "verticalOffset": -1,
+        "horizontalOffset": 0.3475856128480191
+      }
+    }
+  },
+  "live": true
+}

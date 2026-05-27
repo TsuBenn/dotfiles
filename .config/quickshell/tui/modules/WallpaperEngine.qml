@@ -88,6 +88,11 @@ Item {
                 width:  sourceSize.width  * scalar * WallpaperInfo.getReposition(main.current).scalar
                 height: sourceSize.height * scalar * WallpaperInfo.getReposition(main.current).scalar
 
+                Behavior on width {NumberAnimation {duration: 200*(root.transitionProgress == 1); easing.type: Easing.OutCubic}}
+                Behavior on height {NumberAnimation {duration: 200*(root.transitionProgress == 1); easing.type: Easing.OutCubic}}
+                Behavior on x {NumberAnimation {duration: 200*(root.transitionProgress == 1); easing.type: Easing.OutCubic}}
+                Behavior on y {NumberAnimation {duration: 200*(root.transitionProgress == 1); easing.type: Easing.OutCubic}}
+
                 property double scalar: Math.max(parent.width/sourceSize.width, parent.height/sourceSize.height)
 
                 source: root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current
@@ -121,11 +126,16 @@ Item {
 
                 anchors.centerIn: parent
 
-                anchors.verticalCenterOffset: ((height - parent.height)/2)*WallpaperInfo.getReposition(main.current).verticalOffset
-                anchors.horizontalCenterOffset: ((width - parent.width)/2)*WallpaperInfo.getReposition(main.current).horizontalOffset
+                anchors.verticalCenterOffset   : ((height - parent.height)/2)*WallpaperInfo.getReposition(main.current).verticalOffset
+                anchors.horizontalCenterOffset : ((width - parent.width)/2)*WallpaperInfo.getReposition(main.current).horizontalOffset
 
                 width:  sourceRect.width  * scalar * WallpaperInfo.getReposition(main.current).scalar
                 height: sourceRect.height * scalar * WallpaperInfo.getReposition(main.current).scalar
+
+                Behavior on width {NumberAnimation {duration: 200*(root.transitionProgress == 1); easing.type: Easing.OutCubic}}
+                Behavior on height {NumberAnimation {duration: 200*(root.transitionProgress == 1); easing.type: Easing.OutCubic}}
+                Behavior on x {NumberAnimation {duration: 200*(root.transitionProgress == 1); easing.type: Easing.OutCubic}}
+                Behavior on y {NumberAnimation {duration: 200*(root.transitionProgress == 1); easing.type: Easing.OutCubic}}
 
                 property double scalar: Math.max(parent.width/sourceRect.width, parent.height/sourceRect.height)
 

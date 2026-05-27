@@ -989,7 +989,7 @@ CellPopup {
                                 visible: color.edit
                                 w: preview.w - 15
                                 h: 1
-                                color: Colors.bgOverlay
+                                color: color.color.bgOverlay
 
                                 CellTextField {
 
@@ -1782,6 +1782,9 @@ CellPopup {
 
                                 onReleased: (button) => {
                                     if (button == "L") {
+                                        id_textfield.unFocus()
+                                        name_textfield.unFocus()
+                                        des_textfield.unFocus()
                                         textfield.set("")
                                         const selected = color.selected
                                         if (root.result[color.selected] == id_textfield.text) {
