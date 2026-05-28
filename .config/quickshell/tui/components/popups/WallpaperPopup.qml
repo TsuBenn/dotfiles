@@ -113,46 +113,59 @@ CellPopup {
                 visible: root.edit || root.reposition || (HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 && !root.minimal)
 
                 w: box.contentW
-                h: Math.floor(root.w/16*9/2)
+                h: Math.floor(root.w / 16 * 9 / 2)
 
                 color: "transparent"
 
-                Item {
+                // --- ALIASES & CACHED PROPERTIES TO REMOVE REPETITION ---
+                property string currentItem: selection.items[2] || ""
 
+                // Cache the configuration objects so we aren't querying C++/JS backend repeatedly
+                property var repoData: WallpaperInfo.getReposition(currentItem)
+                property var transData: WallpaperInfo.getTransition(currentItem)
+                property var configData: WallpaperInfo.config[currentItem]
+
+                Item {
                     implicitWidth: preview.implicitWidth
                     implicitHeight: preview.implicitHeight
-
                     clip: true
 
                     Image {
-
-                        anchors.centerIn: parent
-
                         id: wallpaper
+                        anchors.centerIn: parent
+                        width: sourceSize.width  
+                        height: sourceSize.height 
 
-                        anchors.verticalCenterOffset: ((height - parent.height)/2)*WallpaperInfo.getReposition(selection.items[2]).verticalOffset
-                        anchors.horizontalCenterOffset: ((width - parent.width)/2)*WallpaperInfo.getReposition(selection.items[2]).horizontalOffset
+                        property bool animation: true
+                        scale: 1 * scalar
 
-                        width:  sourceSize.width  * scalar * WallpaperInfo.getReposition(selection.items[2]).scalar
-                        height: sourceSize.height * scalar * WallpaperInfo.getReposition(selection.items[2]).scalar
+                        // Simplified math utilizing our cached backend data references
+                        property real maxDeltaW: (width * scalar - parent.width) / 2
+                        property real maxDeltaH: (height * scalar - parent.height) / 2
 
-                        property double scalar: Math.max(parent.width/sourceSize.width, parent.height/sourceSize.height)
+                        anchors.verticalCenterOffset: maxDeltaH * (preview.repoData ? preview.repoData.verticalOffset : 0)
+                        anchors.horizontalCenterOffset: maxDeltaW * (preview.repoData ? preview.repoData.horizontalOffset : 0)
 
-                        source: (selection.items[2] ? SystemInfo.homedir + WallpaperInfo.cache_path + selection.items[2] + WallpaperInfo.cache_prefix : "")
+                        Behavior on scale                       { NumberAnimation { duration: 200 * wallpaper.animation; easing.type: Easing.OutCubic } }
+                        Behavior on anchors.verticalCenterOffset   { NumberAnimation { duration: 200 * wallpaper.animation; easing.type: Easing.OutCubic } }
+                        Behavior on anchors.horizontalCenterOffset { NumberAnimation { duration: 200 * wallpaper.animation; easing.type: Easing.OutCubic } }
 
+                        property double scalar: Math.max(parent.width / sourceSize.width, parent.height / sourceSize.height) * (preview.repoData ? preview.repoData.scalar : 1)
+                        source: preview.currentItem ? (SystemInfo.homedir + WallpaperInfo.cache_path + preview.currentItem + WallpaperInfo.cache_prefix) : ""
+                    }
+
+                    Timer {
+                        id: wallpaperAnimationCooldown
+                        interval: 200
+                        onTriggered: wallpaper.animation = true
                     }
 
                     Rectangle {
-
                         implicitWidth: parent.width
-                        implicitHeight: (Cell.h(1)/root.monitor.height)*parent.height
-
+                        implicitHeight: (Cell.h(1) / root.monitor.height) * parent.height
                         color: Colors.bgSurface
-
                         opacity: 0.3
-
                     }
-
                 }
 
                 Cells {
@@ -167,134 +180,65 @@ CellPopup {
                 CellText {
                     id: crosshair
                     visible: root.edit
-                    x: Cell.w(Math.round((preview.w-1)*WallpaperInfo.getTransition(selection.items[2]).posX))
-                    y: Cell.h(Math.round((preview.h-1)*WallpaperInfo.getTransition(selection.items[2]).posY))
+                    x: Cell.w(Math.round((preview.w - 1) * (preview.transData ? preview.transData.posX : 0)))
+                    y: Cell.h(Math.round((preview.h - 1) * (preview.transData ? preview.transData.posY : 0)))
                     text: "✕"
                     font: Cell.fontBB
-
                 }
 
                 CellText {
                     id: pivot
                     opacity: 0
                     visible: root.edit
-                    x: Math.max(Math.min(crosshair.x + Cell.w(-Math.round(w/2)+1),Cell.w(preview.w-w)),0)
-                    y: crosshair.y + (Cell.hCount(crosshair.y,"ceil") >= preview.h ? Cell.h(-1) : Cell.h(1))
-                    text: WallpaperInfo.getTransition(selection.items[2]).posX.toFixed(2) + "✕" + WallpaperInfo.getTransition(selection.items[2]).posY.toFixed(2)
+                    x: Math.max(Math.min(crosshair.x + Cell.w(-Math.round(w / 2) + 1), Cell.w(preview.w - w)), 0)
+                    y: crosshair.y + (Cell.hCount(crosshair.y, "ceil") >= preview.h ? Cell.h(-1) : Cell.h(1))
+                    text: (preview.transData ? preview.transData.posX.toFixed(2) : "0.00") + "✕" + (preview.transData ? preview.transData.posY.toFixed(2) : "0.00")
                     bg: Colors.bgSurface
                 }
 
+                // --- ANIMATIONS ---
                 SequentialAnimation {
                     id: pivotAnim
                     ParallelAnimation {
-                        NumberAnimation {
-                            target: pivot
-                            property: "opacity"
-                            duration: 100
-                            to: 1
-                            easing.type: Easing.OutCubic
-                        }
-                        NumberAnimation {
-                            target: pivot_bg
-                            property: "opacity"
-                            duration: 100
-                            to: 0.5
-                            easing.type: Easing.OutCubic
-                        }
+                        NumberAnimation { target: pivot; property: "opacity"; duration: 100; to: 1; easing.type: Easing.OutCubic }
+                        NumberAnimation { target: pivot_bg; property: "opacity"; duration: 100; to: 0.5; easing.type: Easing.OutCubic }
                     }
-                    PauseAnimation {
-                        duration: 400
-                    }
+                    PauseAnimation { duration: 400 }
                     ParallelAnimation {
-                        NumberAnimation {
-                            target: pivot
-                            property: "opacity"
-                            duration: 500
-                            to: 0
-                            easing.type: Easing.InCubic
-                        }
-                        NumberAnimation {
-                            target: pivot_bg
-                            property: "opacity"
-                            duration: 500
-                            to: 0
-                            easing.type: Easing.InCubic
-                        }
+                        NumberAnimation { target: pivot; property: "opacity"; duration: 500; to: 0; easing.type: Easing.InCubic }
+                        NumberAnimation { target: pivot_bg; property: "opacity"; duration: 500; to: 0; easing.type: Easing.InCubic }
                     }
                 }
 
                 SequentialAnimation {
                     id: repoAnim
                     ParallelAnimation {
-                        NumberAnimation {
-                            target: repo_bg
-                            property: "opacity"
-                            to: 0
-                            duration: 200
-                            easing.type: Easing.OutCubic
-                        }
-                        NumberAnimation {
-                            target: repo_hint
-                            property: "opacity"
-                            to: 0
-                            duration: 200
-                            easing.type: Easing.OutCubic
-                        }
+                        NumberAnimation { target: repo_bg; property: "opacity"; to: 0; duration: 200; easing.type: Easing.OutCubic }
+                        NumberAnimation { target: repo_hint; property: "opacity"; to: 0; duration: 200; easing.type: Easing.OutCubic }
                     }
-                    PauseAnimation {
-                        duration: 200
-                    }
+                    PauseAnimation { duration: 200 }
                     ParallelAnimation {
-                        NumberAnimation {
-                            target: repo_bg
-                            property: "opacity"
-                            to: 0.5
-                            duration: 500
-                            easing.type: Easing.OutCubic
-                        }
-                        NumberAnimation {
-                            target: repo_hint
-                            property: "opacity"
-                            to: 1
-                            duration: 500
-                            easing.type: Easing.OutCubic
-                        }
+                        NumberAnimation { target: repo_bg; property: "opacity"; to: 0.5; duration: 500; easing.type: Easing.OutCubic }
+                        NumberAnimation { target: repo_hint; property: "opacity"; to: 1; duration: 500; easing.type: Easing.OutCubic }
                     }
                 }
 
                 SequentialAnimation {
                     id: repoAnimStart
                     ParallelAnimation {
-                        NumberAnimation {
-                            target: repo_bg
-                            property: "opacity"
-                            from: 0
-                            to: 0.5
-                            duration: 500
-                            easing.type: Easing.OutCubic
-                        }
-                        NumberAnimation {
-                            target: repo_hint
-                            property: "opacity"
-                            from: 0
-                            to: 1
-                            duration: 500
-                            easing.type: Easing.OutCubic
-                        }
+                        NumberAnimation { target: repo_bg; property: "opacity"; from: 0; to: 0.5; duration: 500; easing.type: Easing.OutCubic }
+                        NumberAnimation { target: repo_hint; property: "opacity"; from: 0; to: 1; duration: 500; easing.type: Easing.OutCubic }
                     }
                 }
 
                 Cells {
                     id: repo_bg
                     visible: root.reposition
-                    onVisibleChanged: {
-                        repoAnimStart.restart()
-                    }
+                    onVisibleChanged: repoAnimStart.restart()
                     w: parent.w
                     h: parent.h
                     opacity: 0.5
                     color: "black"
-
                 }
 
                 CellText {
@@ -329,85 +273,62 @@ CellPopup {
                     ].join("\n")
                 }
 
+                // --- REFACTORED INPUT CONTROLS ---
                 MouseControl {
                     visible: root.edit
                     anchors.fill: parent
 
-                    onPressed: (button) => {
-                        if (button == "L") {
-                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
-                                WallpaperInfo.setConfig(selection.items[2], "transition.posX", Math.max(Math.min(mouseX/preview.implicitWidth,1),0))
-                                WallpaperInfo.setConfig(selection.items[2], "transition.posY", Math.max(Math.min(mouseY/preview.implicitHeight,1),0))
-                            } else {
-                                WallpaperInfo.transition.posX = Math.max(Math.min(mouseX/preview.implicitWidth,1),0)
-                                WallpaperInfo.transition.posY = Math.max(Math.min(mouseY/preview.implicitHeight,1),0)
-                            }
-                            pivotAnim.restart()
-                        }
+                    function updateTransition(mx, my) {
+                        let path = preview.configData?.transition ? "transition." : "";
+                        WallpaperInfo.setConfig(preview.currentItem, path + "posX", Math.max(Math.min(mx / preview.implicitWidth, 1), 0));
+                        WallpaperInfo.setConfig(preview.currentItem, path + "posY", Math.max(Math.min(my / preview.implicitHeight, 1), 0));
+                        pivotAnim.restart();
                     }
 
-                    onMoved: {
-                        if (buttonDown == "L") {
-                            if (WallpaperInfo.config[selection.items[2]]?.transition) {
-                                WallpaperInfo.setConfig(selection.items[2], "transition.posX", Math.max(Math.min(mouseX/preview.implicitWidth,1),0))
-                                WallpaperInfo.setConfig(selection.items[2], "transition.posY", Math.max(Math.min(mouseY/preview.implicitHeight,1),0))
-                            } else {
-                                WallpaperInfo.transition.posX = Math.max(Math.min(mouseX/preview.implicitWidth,1),0)
-                                WallpaperInfo.transition.posY = Math.max(Math.min(mouseY/preview.implicitHeight,1),0)
-                            }
-                            pivotAnim.restart()
-                        }
-                    }
-
+                    onPressed: (button) => { if (button === "L") updateTransition(mouseX, mouseY) }
+                    onMoved: { if (buttonDown === "L") updateTransition(mouseX, mouseY) }
                 }
 
                 MouseControl {
-
                     visible: root.reposition
                     anchors.fill: parent
 
                     property real oldVert: 0
                     property real oldHori: 0
-
                     property int baseX: 0
                     property int baseY: 0
-                    property real deltaX: 0
-                    property real deltaY: 0
 
                     onWheel: (delta) => {
-                        repoAnim.restart()
-                        WallpaperInfo.setConfig(selection.items[2],"reposition.scalar", Math.max(WallpaperInfo.getReposition(selection.items[2]).scalar+(delta/10),1))
-                        wallpaper.width - preview.width == 0 ? WallpaperInfo.setConfig(selection.items[2],"reposition.horizontalOffset", 0) : 0
-                        wallpaper.height - preview.height == 0 ? WallpaperInfo.setConfig(selection.items[2],"reposition.verticalOffset", 0) : 0
+                        repoAnim.restart();
+                        let newScalar = Math.max((preview.repoData ? preview.repoData.scalar : 1) + (delta / 10), 1);
+                        WallpaperInfo.setConfig(preview.currentItem, "reposition.scalar", newScalar);
+
+                        if (wallpaper.maxDeltaW === 0) WallpaperInfo.setConfig(preview.currentItem, "reposition.horizontalOffset", 0);
+                        if (wallpaper.maxDeltaH === 0) WallpaperInfo.setConfig(preview.currentItem, "reposition.verticalOffset", 0);
                     }
 
                     onPressed: (button) => {
-                        if (button == "L") {
-                            repoAnim.restart()
-                            baseX = mouseX
-                            baseY = mouseY
-
-                            oldVert = WallpaperInfo.getReposition(selection.items[2]).verticalOffset
-                            oldHori = WallpaperInfo.getReposition(selection.items[2]).horizontalOffset
+                        if (button === "L") {
+                            repoAnim.restart();
+                            baseX = mouseX;
+                            baseY = mouseY;
+                            oldVert = preview.repoData ? preview.repoData.verticalOffset : 0;
+                            oldHori = preview.repoData ? preview.repoData.horizontalOffset : 0;
                         }
                     }
 
                     onMoved: (x, y) => {
-                        if (buttonDown == "L") {
+                        if (buttonDown === "L") {
+                            repoAnim.restart();
 
-                            repoAnim.restart()
+                            let deltaX = wallpaper.maxDeltaW === 0 ? 0 : (x - baseX) / wallpaper.maxDeltaW;
+                            let deltaY = wallpaper.maxDeltaH === 0 ? 0 : (y - baseY) / wallpaper.maxDeltaH;
 
-                            deltaX = wallpaper.width - preview.width == 0 ? 0 : (x - baseX)/((wallpaper.width - preview.width)/2)
-                            deltaY = wallpaper.height - preview.height == 0 ? 0 : (y - baseY)/((wallpaper.height - preview.height)/2)
-
-                            WallpaperInfo.setConfig(selection.items[2],"reposition.horizontalOffset", wallpaper.width - preview.width == 0 ? 0 : Math.max(Math.min(oldHori + deltaX,1),-1))
-                            WallpaperInfo.setConfig(selection.items[2],"reposition.verticalOffset", wallpaper.height - preview.height == 0 ? 0 : Math.max(Math.min(oldVert + deltaY,1),-1))
-
+                            WallpaperInfo.setConfig(preview.currentItem, "reposition.horizontalOffset", wallpaper.maxDeltaW === 0 ? 0 : Math.max(Math.min(oldHori + deltaX, 1), -1));
+                            WallpaperInfo.setConfig(preview.currentItem, "reposition.verticalOffset", wallpaper.maxDeltaH === 0 ? 0 : Math.max(Math.min(oldVert + deltaY, 1), -1));
                         }
                     }
-
                 }
-
             }
 
             CellSeparator {
@@ -459,6 +380,9 @@ CellPopup {
                         const length = wallpapers.length
                         const offset = selected + length
                         const available = wallpapers
+
+                        wallpaper.animation = false
+                        wallpaperAnimationCooldown.restart()
 
                         return [available[(offset - 2)%length],available[(offset - 1)%length],available[(offset)%length],available[(offset+1)%length],available[(offset+2)%length]]
                     }
@@ -631,6 +555,12 @@ CellPopup {
                                 set("")
                                 return
                             }
+                            if (query == "") {
+                                selection.wallpapers = WallpaperInfo.all
+                                selection.selected = WallpaperInfo.getIndex(WallpaperInfo.current)
+                                return
+                            }
+
                             selection.wallpapers = WallpaperInfo.search(text)
                         }
 

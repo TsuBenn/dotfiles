@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="TestTUI" default="run" basedir=".">
+<project name="StaffManagement" default="run" basedir=".">
 
     <property name="src.dir" value="src"/>
     <property name="build.dir" value="build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
-    <property name="main-class" value="Main"/>
+    <property name="main-class" value="view.Main"/>
 
     <target name="clean">
         <delete dir="${build.dir}"/>

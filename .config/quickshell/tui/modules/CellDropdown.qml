@@ -47,8 +47,7 @@ Item {
     ]
 
     function advance(delta: int) {
-        selected = (selected + items.length + delta)%items.length
-        items[selected].action()
+        items[(selected + items.length + delta)%items.length].action()
     }
 
 

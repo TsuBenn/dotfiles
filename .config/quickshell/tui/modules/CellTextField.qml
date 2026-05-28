@@ -167,7 +167,9 @@ Item {
 
     Component.onCompleted: {
         TextFieldManager.unFocusAll.connect(() => {
-            unFocus()
+            if (root) {
+                root.unFocus()
+            }
         })
     }
 

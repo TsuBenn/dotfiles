@@ -104,7 +104,25 @@
       "time": ""
     }
   ],
-  "01-06-2026": [
+  "25-06-2026": [
+    {
+      "title": "DNG103 Final Exam",
+      "body": "",
+      "span": 1,
+      "urgency": 2,
+      "time": "07:00"
+    }
+  ],
+  "29-06-2026": [
+    {
+      "title": "DNG103 Presentation",
+      "body": "",
+      "span": 1,
+      "urgency": 2,
+      "time": "07:00"
+    }
+  ],
+  "04-06-2026": [
     {
       "title": "Mid-term exam DNG103",
       "body": "",

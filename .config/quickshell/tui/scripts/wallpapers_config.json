@@ -34,13 +34,8 @@
         "duration": 1,
         "fps": 60,
         "angle": 30,
-        "posX": 0.3673469387755102,
-        "posY": 0.051587301587301584
-      },
-      "reposition": {
-        "scalar": 1,
-        "verticalOffset": 0,
-        "horizontalOffset": -0.21726646643503678
+        "posX": 0.36507936507936506,
+        "posY": 0.047619047619047616
       }
     },
     "live_hu_tao_forest_fire.mp4": {
@@ -97,5 +92,5 @@
       }
     }
   },
-  "live": true
+  "live": false
 }

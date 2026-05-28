@@ -36,6 +36,10 @@ Singleton {
 
     signal rescanned()
 
+    onConfigChanged: {
+        saveConfig()
+    }
+
     function setConfig(imageName, propertyPath, value) {
         var currentConfig = root.config || {};
 
@@ -283,6 +287,7 @@ Singleton {
                 console.log(text)
                 cacher.recache = false
                 scan.running = true
+                root.rescanned()
             }
         }
 
