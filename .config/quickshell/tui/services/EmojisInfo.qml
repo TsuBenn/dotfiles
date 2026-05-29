@@ -45,7 +45,8 @@ Singleton {
         }
 
         saveRecent()
-        SystemInfo.runDetached(["bash", "-c", "wtype \"" + emoji.label + "\""]);
+        SystemInfo.type(emoji.label);
+        SystemInfo.copy_clipboard(emoji.label);
     }
 
     function saveRecent() {

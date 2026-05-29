@@ -37,18 +37,15 @@ ShellRoot {
 
     FloatingWindow {
 
-        visible: false
+        visible: SettingsInfo.debug
 
         minimumSize: Qt.size(Cell.w(80),Cell.h(30))
         maximumSize: Qt.size(Cell.w(80),Cell.h(30))
 
-        CellBox {
+        color: Colors.bgSurface
 
-            w: 20
-            h: 20
-
-            border.type: 3
-
+        CellText {
+            text: ClipboardInfo.preview
         }
 
     }

@@ -45,7 +45,7 @@ ayano() {
 
     # 3. Use standard Zsh aliases instead of nesting functions globally
     alias project='tree -I "venv|logs|audio|__pycache__|__init__.py|.pyc|.git|*.png"'
-    alias run='pkill -f main.py; python main.py &; clear'
+    alias run='pkill -f main.py; clear; python main.py &; clear'
 
 }
 

@@ -71,11 +71,13 @@ hl.unbind(\"SUPER + escape\")
 hl.unbind(\"SUPER + SHIFT + P\")
 hl.unbind(\"SUPER + P\")
 hl.unbind(\"SUPER + period\")
+hl.unbind(\"SUPER + V\")
 hl.bind(\"SUPER + space\", hl.dsp.exec_cmd(\"qs -c tui ipc call config toggle_popup quick_menu\"))
 hl.bind(\"SUPER + escape\", hl.dsp.exec_cmd(\"qs -c tui ipc call launcher toggle\"))
 hl.bind(\"SUPER + P\", hl.dsp.exec_cmd(\"qs -c tui ipc call config dummy\"))
 hl.bind(\"SUPER + SHIFT + P\", hl.dsp.exec_cmd(\"pkill -f qs\"))
 hl.bind(\"SUPER + period\", hl.dsp.exec_cmd(\"qs -c tui ipc call config toggle_popup emoji\"))
+hl.bind(\"SUPER + V\", hl.dsp.exec_cmd(\"qs -c tui ipc call config toggle_popup clipboard\"))
 
 "
 

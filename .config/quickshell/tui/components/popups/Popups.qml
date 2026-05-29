@@ -95,6 +95,17 @@ Item {
 
     }
 
+    ClipboardPopup {
+
+        id: clipboard
+
+        name: "clipboard"
+
+        cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2) - 1
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 1
+
+    }
+
     PowerCountdownPopup {
 
         id: power_countdown

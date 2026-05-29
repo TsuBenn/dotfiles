@@ -122,7 +122,12 @@ Item {
             if (wrap) {
                 raw_text = wrapText(raw_text, preferedW)
             } else {
-                raw_text = truncate(raw_text, preferedW)
+                const lines = raw_text.split("\n")
+                let new_lines = []
+                for (const line of lines) {
+                    new_lines.push(truncate(line, preferedW))
+                }
+                raw_text = new_lines.join("\n")
             }
         }
 
@@ -532,36 +537,47 @@ Item {
 
                                 model: processed[parent.index]
 
-                                delegate: Cells {
+                                delegate: Loader {
+
+                                    id: cell_loader
 
                                     required property string text 
                                     required property int len
                                     required property string type 
 
-                                    w: len*( type == "emoji" || type == "cjk" ? 2 : 1)
-                                    h: 1
+                                    active: root.visible
 
-                                    color: root.bg
+                                    sourceComponent: Cells {
 
-                                    clip: true
+                                        property string text : cell_loader.text
+                                        property int    len  : cell_loader.len
+                                        property string type : cell_loader.type
 
-                                    Text {
+                                        w: len*( type == "emoji" || type == "cjk" ? 2 : 1)
+                                        h: 1
 
-                                        anchors.centerIn: parent.type == "emoji" || parent.type == "cjk" ? parent : undefined
+                                        color: root.bg
 
-                                        anchors.verticalCenterOffset: parent.type == "emoji" ? Cell.cellHeight*0.05 : 0
-                                        anchors.horizontalCenterOffset: parent.type == "emoji" ? Cell.cellWidth*0.05 : 0
+                                        clip: true
 
-                                        y: -(Cell.cellHeight/0.9)*0.05
+                                        Text {
 
-                                        textFormat: Text.RichText
-                                        text: parent.text
-                                        font: root.font
-                                        color: root.color
-                                        lineHeight: 0.9
+                                            anchors.centerIn: parent.type == "emoji" || parent.type == "cjk" ? parent : undefined
+
+                                            anchors.verticalCenterOffset: parent.type == "emoji" ? Cell.cellHeight*0.05 : 0
+                                            anchors.horizontalCenterOffset: parent.type == "emoji" ? Cell.cellWidth*0.05 : 0
+
+                                            y: -(Cell.cellHeight/0.9)*0.05
+
+                                            textFormat: Text.RichText
+                                            text: parent.text
+                                            font: root.font
+                                            color: root.color
+                                            lineHeight: 0.9
+
+                                        }
 
                                     }
-
                                 }
 
                             }
