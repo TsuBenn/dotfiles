@@ -140,13 +140,15 @@ CellPopup {
                         scale: 1 * scalar
 
                         // Simplified math utilizing our cached backend data references
-                        property real maxDeltaW: (width * scalar - parent.width) / 2
+                        property real maxDeltaW: (width * monitorScalar - root.monitor.width) / 2
                         property real maxDeltaH: (height * scalar - parent.height) / 2
+
+                        property double monitorScalar: Math.max(root.monitor.width / sourceSize.width, root.monitor.height / sourceSize.height) * (preview.repoData ? preview.repoData.scalar : 1)
 
                         anchors.verticalCenterOffset: maxDeltaH * (preview.repoData ? preview.repoData.verticalOffset : 0)
                         anchors.horizontalCenterOffset: maxDeltaW * (preview.repoData ? preview.repoData.horizontalOffset : 0)
 
-                        Behavior on scale                       { NumberAnimation { duration: 200 * wallpaper.animation; easing.type: Easing.OutCubic } }
+                        Behavior on scale                          { NumberAnimation { duration: 200 * wallpaper.animation; easing.type: Easing.OutCubic } }
                         Behavior on anchors.verticalCenterOffset   { NumberAnimation { duration: 200 * wallpaper.animation; easing.type: Easing.OutCubic } }
                         Behavior on anchors.horizontalCenterOffset { NumberAnimation { duration: 200 * wallpaper.animation; easing.type: Easing.OutCubic } }
 

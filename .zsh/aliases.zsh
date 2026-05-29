@@ -24,53 +24,29 @@ alias setup='cd ~/dotfiles/ && bash ./arch_autosetup.sh'
 alias setupEdit='cd ~/dotfiles/ && nvim ./arch_autosetup.sh'
 
 ayano() {
-    cd ~/ayano || return
-    if [ -f "venv/bin/activate" ]; then
-        source venv/bin/activate
-    else
-        echo "No venv found!"
-        echo "Creating venv..."
-        python -m venv venv
-        echo "Installing required Python Library"
-        source venv/bin/activate
-        pip install PySide6
-        pip install requests
-        sudo pacman -S ollama-cuda
-        sudo systemctl enable --now ollama.service
-        echo "Finished..."
-    fi
-    print() {
-        tree -I "venv|logs|audio|__pycache__|__init__.py|.pyc|.git|*.png"
-    }
-    run() {
-        pkill -f main.py
-        python main.py &
-        clear
-    }
-}
 
-ayanoSetup() {
     cd ~/ayano || return
-    echo "Setting up Ayano Project"
-    echo ""
-    echo "Creating venv..."
-    python -m venv venv
-    echo ""
-    echo "Installing required Python Libraries"
-    source venv/bin/activate
-    echo ""
-    pip install PySide6
-    pip install requests
-    echo ""
-    sudo pacman -S ollama-cuda --needed
-    sudo systemctl enable --now ollama.service
-    echo ""
-    echo "Finished..."
-    run() {
-        pkill -f main.py
-        python main.py &
-        clear
-    }
+
+    # 1. Handle venv creation and activation properly
+    if [ ! -d "venv" ]; then
+        echo "No venv found! Creating venv..."
+        python -m venv venv
+        source venv/bin/activate
+        echo "Installing required Python Library..."
+        pip install ollama requests websockets  # Added websockets since we need it!
+    else
+        source venv/bin/activate
+    fi
+
+    # 2. Arch packages and systemd services should NOT live inside a daily-use function
+    if ! command -v ollama &> /dev/null; then
+        echo "Ollama not found. Please install ollama-cuda manually via pacman."
+    fi
+
+    # 3. Use standard Zsh aliases instead of nesting functions globally
+    alias project='tree -I "venv|logs|audio|__pycache__|__init__.py|.pyc|.git|*.png"'
+    alias run='pkill -f main.py; python main.py &; clear'
+
 }
 
 alias dot='cd ~/dotfiles/ && nvim .'

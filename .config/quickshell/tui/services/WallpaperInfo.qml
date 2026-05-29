@@ -311,6 +311,19 @@ Singleton {
     }
 
     function saveConfig() {
+        saveDelay.restart()
+    }
+
+    Timer {
+        id: saveDelay
+
+        interval: 200
+        onTriggered: {
+            root.save()
+        }
+    }
+
+    function save() {
 
         if (!root.loaded) return
 
@@ -364,6 +377,8 @@ Singleton {
         }
 
         SystemInfo.runDetached(["bash", "-c", "echo '" + JSON.stringify(config,null,2) + "' > " + SystemInfo.configdir + "/scripts/wallpapers_config.json"])
+
+        //console.log("saved")
 
     }
 

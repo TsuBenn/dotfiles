@@ -45,8 +45,8 @@
         "duration": 1,
         "fps": 60,
         "angle": 30,
-        "posX": 0.6870748299319728,
-        "posY": 0.08531746031746032
+        "posX": 0.6893424036281179,
+        "posY": 0.09126984126984126
       }
     },
     "gura.jpg": {
@@ -90,7 +90,18 @@
         "verticalOffset": -1,
         "horizontalOffset": 0.3475856128480191
       }
+    },
+    "kokomi.jpg": {
+      "transition": {
+        "type": "ripple",
+        "step": 100,
+        "duration": 1.5,
+        "fps": 60,
+        "angle": 30,
+        "posX": 0.5,
+        "posY": 0.5
+      }
     }
   },
-  "live": false
+  "live": true
 }
