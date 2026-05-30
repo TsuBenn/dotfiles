@@ -9,7 +9,7 @@ Singleton {
 
     id: root
 
-    property string cache_path: SystemInfo.configdir + "/scripts/screenshot_cache.png"
+    property string cache_path: SystemInfo.configdir + "/scripts/screenshot_cache.ppm"
 
     property string path: SystemInfo.homedir + "/Screenshots/"
 
@@ -35,7 +35,7 @@ Singleton {
         const minutes = now.getMinutes().toString().padStart(2, "0"); 
         const seconds = now.getSeconds().toString().padStart(2, "0"); 
 
-        if (!name) name = `screenshot_${day}_${month}_${year}_${hours}_${minutes}_${seconds}`;
+        if (!name) name = `screenshot_${day}_${month}_${year}_${hours}${minutes}${seconds}`;
 
         const path = `${root.path}${name}.png`; // Added a slash to prevent folder name mashup
 
@@ -71,7 +71,7 @@ Singleton {
 
         id: cacher
 
-        command: ["grim", root.cache_path]
+        command: ["grim","-t","ppm", root.cache_path]
 
         stderr: StdioCollector {
             onStreamFinished: {

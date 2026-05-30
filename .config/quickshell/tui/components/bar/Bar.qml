@@ -468,7 +468,7 @@ Scope {
                     bottom: true
                 }
 
-                WlrLayershell.layer: WlrLayer.Overlay
+                WlrLayershell.layer: PopupManager.active_popups.length > 0 ? WlrLayer.Overlay : WlrLayer.Top
                 WlrLayershell.namespace: "popups"
 
                 exclusionMode: ExclusionMode.Ignore

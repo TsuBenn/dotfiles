@@ -59,9 +59,12 @@ Item {
         onPressed: (event) => {
             if (root.holdEnabled) timer_offset.start()
             var result = ""
-            if (event.button == Qt.LeftButton) result = "L"
-            else if (event.button == Qt.RightButton) result = "R"
-            else if (event.button == Qt.MiddleButton) result = "M"
+            if (event.modifiers == Qt.ShiftModifier) result = "S"
+            else if (event.modifiers == Qt.ControlModifier) result = "C"
+            else if (event.modifiers == Qt.AltModifier) result = "A"
+            if (event.button == Qt.LeftButton) result += "L"
+            else if (event.button == Qt.RightButton) result += "R"
+            else if (event.button == Qt.MiddleButton) result += "M"
             timer.button = result
             root.buttonDown = result
             root.pressed(result)
@@ -74,9 +77,12 @@ Item {
             timer.stop()
             timer.button = ""
             var result = ""
-            if (event.button == Qt.LeftButton) result = "L"
-            else if (event.button == Qt.RightButton) result = "R"
-            else if (event.button == Qt.MiddleButton) result = "M"
+            if (event.modifiers == Qt.ShiftModifier) result = "S"
+            else if (event.modifiers == Qt.ControlModifier) result = "C"
+            else if (event.modifiers == Qt.AltModifier) result = "A"
+            if (event.button == Qt.LeftButton) result += "L"
+            else if (event.button == Qt.RightButton) result += "R"
+            else if (event.button == Qt.MiddleButton) result += "M"
             root.buttonDown = ""
             root.released(result)
         }

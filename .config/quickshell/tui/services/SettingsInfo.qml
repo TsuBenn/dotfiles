@@ -138,12 +138,10 @@ Singleton {
             root.audio_check()
         }
         function screenshot(full: bool): void { 
-            if (PopupManager.isOpen("screenshot") || screenshot_cooldown.running) {
+            if (PopupManager.isOpen("screenshot")) {
                 PopupManager.sendSignal("screenshot", "full_now")
-                screenshot_cooldown.stop()
                 return
             }
-            screenshot_cooldown.restart()
             ScreenshotInfo.requestCache()
             if (full) PopupManager.sendSignal("screenshot", "full")
         }
@@ -163,11 +161,6 @@ Singleton {
             // Contains debugging features that can be accessed by SUPER + P
             root.toggle("debug")
         }
-    }
-
-    Timer {
-        id: screenshot_cooldown
-        interval: 200
     }
 
     Process {

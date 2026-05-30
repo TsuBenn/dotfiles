@@ -44,8 +44,9 @@ CellPopup {
 
     Component.onCompleted: {
         ScreenshotInfo.cached.connect(() => {
+            if (root.visible) return
             cache.source = ""
-            cache.source = SystemInfo.configdir + "/scripts/screenshot_cache.png"
+            cache.source = ScreenshotInfo.cache_path
             PopupManager.open("screenshot")
         })
         PopupManager.signalSent.connect((id, sig) => {
@@ -53,6 +54,8 @@ CellPopup {
                 root.fullscreen = true
             }
             if (id == "screenshot" && sig == "full_now") {
+                if (snapAnim.running) return
+                PopupManager.open("screenshot")
                 mask.visible = true
                 mouse.x1 = 0
                 mouse.y1 = 0
@@ -76,7 +79,7 @@ CellPopup {
             property: "color"
             from: Colors.transparent(Colors.fgDim,0)
             to: Colors.fgDim
-            duration: 100
+            duration: 0
             easing.type: Easing.OutCubic
         }
         ColorAnimation {
@@ -109,6 +112,15 @@ CellPopup {
                 action: () => {
                     root.edit = true
                     full_select.restart()
+                }
+            },
+            {
+                binds: "Return",
+                active: root.edit,
+                action: () => {
+                    if (snapAnim.running) return
+                    root.screenshot()
+                    snapAnim.restart()
                 }
             },
             {
@@ -185,8 +197,7 @@ CellPopup {
             Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
             Behavior on color { ColorAnimation { duration: 200; easing.type: Easing.OutCubic } }
 
-            color: !mouse.buttonDown && ( overlay.implicitWidth-2 == 0 || overlay.implicitHeight-2 == 0)
-            || mouse.buttonDown
+            color: !root.edit
             ? Colors.transparent(Qt.darker(Colors.bgBase,1.5),0.5)
             : Colors.transparent(Qt.darker(Colors.bgBase,1.5),0.9)
 
@@ -210,7 +221,7 @@ CellPopup {
             text: [
                 "      Drag to select screenshot region      ",
                 "                                            ",
-                "     Right Drag to select region & edit     ",
+                "     Shift Drag to select region & edit     ",
                 "                                            ",
                 "End or Print to screenshot the whole monitor",
                 "                                            ",
@@ -301,7 +312,7 @@ CellPopup {
 
         Timer {
             id: drag_delay
-            running: mouse.buttonDown == "L" || mouse.buttonDown == "R" 
+            running: mouse.buttonDown == "L" || mouse.buttonDown == "SL" 
             repeat: true
             interval: SettingsInfo.frameTime*1000
             onTriggered: {
@@ -327,7 +338,7 @@ CellPopup {
             property int y2: 0
 
             onPressed: (button) => {
-                if (buttonDown == "L" || buttonDown == "R") {
+                if (buttonDown == "L" || buttonDown == "SL") {
                     root.edit = false
                     x1 = mouseX
                     y1 = mouseY
@@ -337,7 +348,7 @@ CellPopup {
             }
 
             onMoved: (x, y) => {
-                if ((buttonDown == "L" || buttonDown == "R") && (x-x1)%3==0 && (y-y1)%3==0 ) {
+                if ((buttonDown == "L" || buttonDown == "SL") && (x-x1)%3==0 && (y-y1)%3==0 ) {
                     mask.selectRegion()
                 }
             }
@@ -348,7 +359,7 @@ CellPopup {
                     mask.selectRegion()
                     root.screenshot()
                     snapAnim.restart()
-                } if (button == "R") {
+                } if (button == "SL") {
                     root.edit = true
                 }
             }
