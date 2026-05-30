@@ -25,7 +25,7 @@ Singleton {
         cacher.running = true
     }
 
-    function screenshot(x: number, y: number, w: number, h: number, name = "", copy = true, save = true) {
+    function screenshot(x: int, y: int, w: int, h: int, name = "", copy = true, save = true) {
         const now = new Date();
 
         const day     = now.getDate().toString().padStart(2, "0");

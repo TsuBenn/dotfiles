@@ -18,6 +18,8 @@ CellPopup {
     property bool edit: false
     property bool fullscreen: false
 
+    escapeToClose: false
+
     onVisibleChanged: {
         if (visible) {
             if (fullscreen) {
@@ -105,15 +107,47 @@ CellPopup {
             {
                 binds: "Ctrl+A",
                 action: () => {
-                    mouse.x1 = 0
-                    mouse.y1 = 0
-                    mouse.x2 = root.monitor.width
-                    mouse.y2 = root.monitor.height
-                    ScreenshotInfo.screenshot(screenshot_region.x, screenshot_region.y, screenshot_region.implicitWidth, screenshot_region.implicitHeight)
-                    snapAnim.restart()
+                    root.edit = true
+                    full_select.restart()
+                }
+            },
+            {
+                binds: "Escape",
+                action: () => {
+                    if (namer_textfield.focus) {
+                        namer.visible = false
+                    } else {
+                        root.close()
+                    }
                 }
             }
         ]
+    }
+
+    SequentialAnimation {
+        id: full_select
+        ScriptAction {
+            script: {
+                if (overlay.implicitWidth-2 == 0 || overlay.implicitHeight-2 == 0) {
+                    mouse.x1 = root.monitor.width/2
+                    mouse.y1 = root.monitor.height/2
+                    mouse.x2 = root.monitor.width/2
+                    mouse.y2 = root.monitor.height/2
+                }
+                if (mouse.x1 > mouse.x2) {
+                    [mouse.x2, mouse.x1] = [mouse.x1,mouse.x2]
+                }
+                if (mouse.y1 > mouse.y2) {
+                    [mouse.y2, mouse.y1] = [mouse.y1,mouse.y2]
+                }
+            }
+        }
+        ParallelAnimation {
+            NumberAnimation {target: mouse; property: "x1"; to: 0; duration: 200; easing.type: Easing.OutCubic}
+            NumberAnimation {target: mouse; property: "y1"; to: 0; duration: 200; easing.type: Easing.OutCubic}
+            NumberAnimation {target: mouse; property: "x2"; to: root.monitor.width; duration: 200; easing.type: Easing.OutCubic}
+            NumberAnimation {target: mouse; property: "y2"; to: root.monitor.height; duration: 200; easing.type: Easing.OutCubic}
+        }
     }
 
     Item {
@@ -241,10 +275,26 @@ CellPopup {
 
             Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
 
-            x: Cell.toW(overlay.x) < 0 ? Cell.toW(overlay.x+overlay.implicitWidth,"ceil") : Cell.toW(overlay.x)
-            y: Cell.toH(overlay.y) - Cell.h(1) < 0 ? Cell.toH(overlay.y+overlay.implicitHeight,"ceil") : Cell.toH(overlay.y) - Cell.h(1)
+            x: Math.max(Cell.toW(overlay.x),0)
+            y: {
+                if (Cell.toH(overlay.y) - Cell.h(1) < 0) {
+                    if (Cell.toH(overlay.y + overlay.implicitHeight-2,"ceil") + Cell.h(1) >= Cell.toH(root.monitor.height,"floor")) {
+                        return Cell.toH(overlay.y+overlay.implicitHeight,"floor") - Cell.h(1)
+                    } else {
+                        return Cell.toH(overlay.y+overlay.implicitHeight,"floor") + Cell.h(1)
+                    }
+                } else {
+                    if (Cell.toH(overlay.y + overlay.implicitHeight-2,"ceil") + Cell.h(1) >= Cell.toH(root.monitor.height,"floor")) {
+                        return Cell.toH(overlay.y+overlay.implicitHeight,"floor") - Cell.h(1)
+                    } else {
+                        return Cell.toH(overlay.y - Cell.h(0.5),"floor") - Cell.h(1)
+                    }
+                }
+            }
 
-            text: `${overlay.implicitWidth-2}x${overlay.implicitHeight-2}`
+            bg: Colors.bgSurface
+
+            text: `${overlay.implicitWidth.toFixed(0)-2}x${overlay.implicitHeight.toFixed(0)-2}`
 
         }
 
@@ -315,7 +365,7 @@ CellPopup {
             spacing: Cell.w(1)
 
             x: Cell.toW(overlay.x + overlay.implicitWidth - implicitWidth)
-            y: Cell.toH(overlay.y + overlay.implicitHeight) + Cell.h(1)
+            y: Cell.toH(overlay.y + overlay.implicitHeight,"ceil") + Cell.h(1) >= Cell.toH(root.monitor.height,"floor") ? Cell.toH(overlay.y + overlay.implicitHeight) - Cell.h(1) : Cell.toH(overlay.y + overlay.implicitHeight) + Cell.h(1)
 
             CellButton {
 

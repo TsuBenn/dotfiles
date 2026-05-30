@@ -77,7 +77,6 @@ qsR() {
 
 programs() {
     cd ~/dotfiles/programs/$1
-    nvim .
 }
 
 alias easyeffectsRestart='easyeffects -q && easyeffects --gapplication-service &'
