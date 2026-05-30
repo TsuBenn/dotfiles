@@ -16,6 +16,8 @@ Singleton {
         running: true
     }
 
+    property real frameTime: fpsMonitor.smoothFrameTime 
+
     property int fps: fpsMonitor.smoothFrameTime > 0 ? Math.round(1.0 / fpsMonitor.smoothFrameTime) : 0
 
     Timer {
@@ -119,8 +121,8 @@ Singleton {
 
     IpcHandler {
         target: "config"
-        function open_popup(popup: string): void {PopupManager.open(popup); console.log(popup)}
-        function close_popup(popup: string): void {PopupManager.close(popup)}
+        function open_popup(popup:   string): void {PopupManager.open(popup);}
+        function close_popup(popup:  string): void {PopupManager.close(popup)}
         function toggle_popup(popup: string): void {PopupManager.toggle(popup)}
         function send_popup_sig(id: string, sig: string, open: bool): void {
             PopupManager.sendSignal(id, sig)
@@ -134,6 +136,16 @@ Singleton {
         }
         function audio_check(): void {
             root.audio_check()
+        }
+        function screenshot(full: bool): void { 
+            if (PopupManager.isOpen("screenshot") || screenshot_cooldown.running) {
+                PopupManager.sendSignal("screenshot", "full_now")
+                screenshot_cooldown.stop()
+                return
+            }
+            screenshot_cooldown.restart()
+            ScreenshotInfo.requestCache()
+            if (full) PopupManager.sendSignal("screenshot", "full")
         }
         function toggle_grids(): void              { root.showGrid() }
         function toggle_minimal(): void            { root.toggle("minimal") }
@@ -151,6 +163,11 @@ Singleton {
             // Contains debugging features that can be accessed by SUPER + P
             root.toggle("debug")
         }
+    }
+
+    Timer {
+        id: screenshot_cooldown
+        interval: 200
     }
 
     Process {

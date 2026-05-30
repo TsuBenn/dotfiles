@@ -202,8 +202,8 @@ CellPopup {
                 SequentialAnimation {
                     id: pivotAnim
                     ParallelAnimation {
-                        NumberAnimation { target: pivot; property: "opacity"; duration: 100; to: 1; easing.type: Easing.OutCubic }
-                        NumberAnimation { target: pivot_bg; property: "opacity"; duration: 100; to: 0.5; easing.type: Easing.OutCubic }
+                        NumberAnimation { target: pivot; property: "opacity"; duration: 200; to: 1; easing.type: Easing.OutCubic }
+                        NumberAnimation { target: pivot_bg; property: "opacity"; duration: 200; to: 0.5; easing.type: Easing.OutCubic }
                     }
                     PauseAnimation { duration: 400 }
                     ParallelAnimation {

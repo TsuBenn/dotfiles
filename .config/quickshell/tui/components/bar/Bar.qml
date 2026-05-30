@@ -497,7 +497,7 @@ Scope {
 
                     property bool mouse_check: false
 
-                    anchors.topMargin: root.implicitHeight*!PopupManager.isOpen("power")
+                    anchors.topMargin: root.implicitHeight*(!PopupManager.isOpen("power")&&!PopupManager.isOpen("screenshot"))
                     anchors.top: parent.top
                     anchors.right: parent.right
                     anchors.left: parent.left
@@ -585,10 +585,6 @@ Scope {
                     bottom: true
                     left: true
                     right: true
-                }
-
-                margins {
-                    top: -Cell.h(1)
                 }
 
                 focusable: false

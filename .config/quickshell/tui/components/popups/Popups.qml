@@ -169,4 +169,14 @@ Item {
 
     }
 
+    ScreenshotPopup {
+
+        id: screenshot
+
+        monitor: root.monitor
+
+        name: "screenshot"
+
+    }
+
 }

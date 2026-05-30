@@ -17,6 +17,7 @@ CellPopup {
     onVisibleChanged: {
         ClipboardInfo.reload()
         clipboard.selected = 0
+        clipboard.selectedChanged()
         list.reset()
     }
 
@@ -173,6 +174,9 @@ CellPopup {
                 }
 
                 MouseControl {
+
+                    visible: image_preview.visible
+
                     anchors.fill: parent
 
                     property real oldVert: 0
@@ -183,8 +187,15 @@ CellPopup {
                     property int deltaX: mouseX - baseX
                     property int deltaY: mouseY - baseY
 
+                    property int maxVerticalOffset: Math.min(image_wrapper.height/2 - image_preview.height*image_preview.scalar/2,0)
+                    property int minVerticalOffset: Math.max(-image_wrapper.height/2 + image_preview.height*image_preview.scalar/2,0)
+                    property int maxHorizontalOffset: Math.min(image_wrapper.width/2 - image_preview.width*image_preview.scalar/2,0)
+                    property int minHorizontalOffset: Math.max(-image_wrapper.width/2 + image_preview.width*image_preview.scalar/2,0)
+
                     onWheel: (delta) => {
                         image_preview.scalar = Math.max(image_preview.scalar + delta*0.1,image_preview.minScale)
+                        image_preview.vertOff = Math.max(Math.min(image_preview.vertOff,minVerticalOffset),maxVerticalOffset)
+                        image_preview.horiOff = Math.max(Math.min(image_preview.horiOff,minHorizontalOffset),maxHorizontalOffset)
                     }
 
                     onPressed: (button) => {
@@ -198,8 +209,8 @@ CellPopup {
 
                     onMoved: (x, y) => {
                         if (buttonDown === "L") {
-                            image_preview.vertOff = oldVert + deltaY
-                            image_preview.horiOff = oldHori + deltaX
+                            image_preview.vertOff = Math.max(Math.min(oldVert + deltaY,minVerticalOffset),maxVerticalOffset)
+                            image_preview.horiOff = Math.max(Math.min(oldHori + deltaX,minHorizontalOffset),maxHorizontalOffset)
                         }
                     }
                 }
@@ -233,6 +244,8 @@ CellPopup {
 
                             required property var modelData
                             required property int index
+
+                            active: index >= list.offset && index <= list.offset + 6
 
                             sourceComponent: Cells {
 

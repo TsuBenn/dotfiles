@@ -1,0 +1,503 @@
+pragma ComponentBehavior: Bound
+
+import qs.config
+import qs.modules
+import qs.services
+
+import QtQuick
+import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
+
+CellPopup {
+
+    id: root
+
+    implicitWidth: monitor.width
+    implicitHeight: monitor.height
+
+    property bool edit: false
+    property bool fullscreen: false
+
+    onVisibleChanged: {
+        if (visible) {
+            if (fullscreen) {
+                mask.visible = true
+                mouse.x1 = 0
+                mouse.y1 = 0
+                mouse.x2 = root.monitor.width
+                mouse.y2 = root.monitor.height
+                ScreenshotInfo.screenshot(0, 0, root.monitor.width, root.monitor.height)
+                snapAnim.restart()
+                fullscreen = false
+            }
+        } else {
+            root.edit = false
+            mask.visible = false
+            mouse.x1 = 0
+            mouse.x2 = 0
+            mouse.y1 = 0
+            mouse.y2 = 0
+        }
+    }
+
+    Component.onCompleted: {
+        ScreenshotInfo.cached.connect(() => {
+            cache.source = ""
+            cache.source = SystemInfo.configdir + "/scripts/screenshot_cache.png"
+            PopupManager.open("screenshot")
+        })
+        PopupManager.signalSent.connect((id, sig) => {
+            if (id == "screenshot" && sig == "full") {
+                root.fullscreen = true
+            }
+            if (id == "screenshot" && sig == "full_now") {
+                mask.visible = true
+                mouse.x1 = 0
+                mouse.y1 = 0
+                mouse.x2 = root.monitor.width
+                mouse.y2 = root.monitor.height
+                ScreenshotInfo.screenshot(0, 0, root.monitor.width, root.monitor.height)
+                snapAnim.restart()
+                fullscreen = false
+            }
+        })
+    }
+
+    function screenshot() {
+        ScreenshotInfo.screenshot(screenshot_region.x, screenshot_region.y, screenshot_region.implicitWidth, screenshot_region.implicitHeight)
+    }
+
+    SequentialAnimation {
+        id: snapAnim
+        ColorAnimation {
+            target: overlay
+            property: "color"
+            from: Colors.transparent(Colors.fgDim,0)
+            to: Colors.fgDim
+            duration: 100
+            easing.type: Easing.OutCubic
+        }
+        ColorAnimation {
+            target: overlay
+            property: "color"
+            from: Colors.fgDim
+            to: Colors.transparent(Colors.fgDim,0)
+            duration: 300
+            easing.type: Easing.OutCubic
+        }
+        NumberAnimation {
+            target: mask
+            property: "opacity"
+            to: 0
+            duration: 300
+            easing.type: Easing.OutCubic
+        }
+        ScriptAction {
+            script: {
+                root.close()
+                mask.opacity = 1
+            }
+        }
+    }
+
+    ShortcutHandler {
+        shortcuts: [
+            {
+                binds: "Ctrl+A",
+                action: () => {
+                    mouse.x1 = 0
+                    mouse.y1 = 0
+                    mouse.x2 = root.monitor.width
+                    mouse.y2 = root.monitor.height
+                    ScreenshotInfo.screenshot(screenshot_region.x, screenshot_region.y, screenshot_region.implicitWidth, screenshot_region.implicitHeight)
+                    snapAnim.restart()
+                }
+            }
+        ]
+    }
+
+    Item {
+
+        id: mask
+
+        anchors.fill: parent
+
+        visible: false
+
+        Image {
+
+            id: cache
+
+            anchors.fill: parent
+
+            source: ""
+
+            cache: false
+
+            onStatusChanged: {
+                if (status == Image.Ready && !root.fullscreen) {
+                    mask.visible = true
+                }
+            }
+
+        }
+
+        Rectangle {
+
+            anchors.fill: parent
+
+            opacity: mask.visible
+
+            Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+            Behavior on color { ColorAnimation { duration: 200; easing.type: Easing.OutCubic } }
+
+            color: !mouse.buttonDown && ( overlay.implicitWidth-2 == 0 || overlay.implicitHeight-2 == 0)
+            || mouse.buttonDown
+            ? Colors.transparent(Qt.darker(Colors.bgBase,1.5),0.5)
+            : Colors.transparent(Qt.darker(Colors.bgBase,1.5),0.9)
+
+            layer.enabled: true
+            layer.effect: OpacityMask {
+                maskSource: region
+                invert: true
+            }
+
+        }
+
+        CellText {
+
+            opacity: ( overlay.implicitWidth-2 == 0 || overlay.implicitHeight-2 == 0) && mask.visible && !root.fullscreen && SettingsInfo.hints
+
+            Behavior on opacity { NumberAnimation { duration: 500; easing.type: Easing.OutCubic } }
+
+            x: Cell.centerWCell(implicitWidth,root.monitor.width)
+            y: Cell.centerHCell(implicitHeight,root.monitor.height)
+
+            text: [
+                "      Drag to select screenshot region      ",
+                "                                            ",
+                "     Right Drag to select region & edit     ",
+                "                                            ",
+                "End or Print to screenshot the whole monitor",
+                "                                            ",
+                "     Ctrl+A to select the whole monitor     ",
+            ].join("\n")
+
+        }
+
+        Rectangle {
+
+            id: region
+
+            visible: false
+
+            anchors.fill: parent
+
+            color: "transparent"
+
+            Rectangle {
+
+                id: screenshot_region
+
+                x: Math.min(mouse.x1,mouse.x2)
+                y: Math.min(mouse.y1,mouse.y2)
+
+                implicitWidth:  Math.abs(mouse.x1-mouse.x2)
+                implicitHeight: Math.abs(mouse.y1-mouse.y2)
+
+            }
+
+        }
+
+        Rectangle {
+
+            id: overlay
+
+            opacity: !(
+                overlay.implicitWidth-2 == 0
+                || overlay.implicitHeight-2 == 0
+            )
+
+            x: Math.min(mouse.x1,mouse.x2) - 1
+            y: Math.min(mouse.y1,mouse.y2) - 1
+
+            implicitWidth:  Math.abs(mouse.x1-mouse.x2) + 2
+            implicitHeight: Math.abs(mouse.y1-mouse.y2) + 2
+
+            color: "transparent"
+
+            border.width: 1
+            border.color: Colors.transparent(Colors.fgBase, 0.5)
+
+        }
+
+
+        CellText {
+
+            opacity: !(
+                overlay.implicitWidth-2 == 0
+                || overlay.implicitHeight-2 == 0
+            )
+
+            Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+
+            x: Cell.toW(overlay.x) < 0 ? Cell.toW(overlay.x+overlay.implicitWidth,"ceil") : Cell.toW(overlay.x)
+            y: Cell.toH(overlay.y) - Cell.h(1) < 0 ? Cell.toH(overlay.y+overlay.implicitHeight,"ceil") : Cell.toH(overlay.y) - Cell.h(1)
+
+            text: `${overlay.implicitWidth-2}x${overlay.implicitHeight-2}`
+
+        }
+
+
+        Timer {
+            id: drag_delay
+            running: mouse.buttonDown == "L" || mouse.buttonDown == "R" 
+            repeat: true
+            interval: SettingsInfo.frameTime*1000
+            onTriggered: {
+                mask.selectRegion()
+            }
+        }
+
+        function selectRegion() {
+            mouse.x2 = mouse.mouseX
+            mouse.y2 = mouse.mouseY
+        }
+
+        MouseControl {
+
+            id: mouse
+
+            anchors.fill: parent
+
+            property int x1: 0
+            property int y1: 0
+
+            property int x2: 0
+            property int y2: 0
+
+            onPressed: (button) => {
+                if (buttonDown == "L" || buttonDown == "R") {
+                    root.edit = false
+                    x1 = mouseX
+                    y1 = mouseY
+                    x2 = mouseX
+                    y2 = mouseY
+                }
+            }
+
+            onMoved: (x, y) => {
+                if ((buttonDown == "L" || buttonDown == "R") && (x-x1)%3==0 && (y-y1)%3==0 ) {
+                    mask.selectRegion()
+                }
+            }
+
+            onReleased: (button) => {
+                if ( overlay.implicitWidth-2 == 0 || overlay.implicitHeight-2 == 0) return
+                if (button == "L") {
+                    mask.selectRegion()
+                    root.screenshot()
+                    snapAnim.restart()
+                } if (button == "R") {
+                    root.edit = true
+                }
+            }
+
+        }
+
+        RowLayout {
+
+            visible: !(
+                overlay.implicitWidth-2 == 0
+                || overlay.implicitHeight-2 == 0
+            ) && root.edit == true
+
+            spacing: Cell.w(1)
+
+            x: Cell.toW(overlay.x + overlay.implicitWidth - implicitWidth)
+            y: Cell.toH(overlay.y + overlay.implicitHeight) + Cell.h(1)
+
+            CellButton {
+
+                text: "Save & Rename"
+
+                color: [Colors.accentStrong, Colors.bgOverlay]
+                fg: [Colors.onAccent, Colors.fgBase]
+
+                onReleased: (button) => {
+                    if (button == "L") {
+                        namer.visible = true
+                    }
+                }
+            }
+
+            CellButton {
+                text: "Save & Copy"
+
+                color: [Colors.accentStrong, Colors.bgOverlay]
+                fg: [Colors.onAccent, Colors.fgBase]
+
+                onReleased: (button) => {
+                    if (button == "L") {
+                        ScreenshotInfo.screenshot(screenshot_region.x, screenshot_region.y, screenshot_region.implicitWidth, screenshot_region.implicitHeight)
+                        snapAnim.restart()
+                    }
+                }
+            }
+
+            CellButton {
+
+                text: "Copy & Delete"
+
+                color: [Colors.accentStrong, Colors.bgOverlay]
+                fg: [Colors.onAccent, Colors.fgBase]
+
+                onReleased: (button) => {
+                    if (button == "L") {
+                        ScreenshotInfo.screenshot(screenshot_region.x, screenshot_region.y, screenshot_region.implicitWidth, screenshot_region.implicitHeight, "", true, false)
+                        snapAnim.restart()
+                    }
+                }
+
+            }
+
+        }
+
+        MouseControl {
+
+            visible: namer.visible
+
+            anchors.fill: parent
+
+            onPressed: (button) => {
+                namer.visible = false
+            }
+
+        }
+
+        CellBox {
+
+            x: Cell.centerWCell(implicitWidth, parent.width)
+            y: Cell.centerHCell(implicitHeight, parent.height)
+
+            id: namer
+
+            visible: false
+
+            w: 40
+            h: 9
+
+            ColumnLayout {
+
+                y: Cell.h(1)
+
+                spacing: Cell.h(1)
+
+                CellText {
+
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                    text: "Rename screenshot"
+
+                }
+
+                Cells {
+
+                    Layout.leftMargin: Cell.w(1)
+
+                    w: namer.contentW - 2
+                    h: 1
+
+                    color: Colors.bgOverlay
+
+                    CellTextField {
+
+                        id: namer_textfield
+
+                        w: parent.w
+                        h: parent.h
+
+                        placeholder: "Screenshot name (No spaces allowed)"
+
+                        onTextAdded: (input) => {
+                            if (input == " ") {
+                                set(text.replace(/ /g, ""))
+                            }
+                        }
+
+                        onEntered: (input) => {
+                            ScreenshotInfo.screenshot(screenshot_region.x, screenshot_region.y, screenshot_region.implicitWidth, screenshot_region.implicitHeight, namer_textfield.text, true, true)
+                            namer.visible = false
+                            snapAnim.restart()
+                        }
+
+                    }
+
+                }
+
+                RowLayout {
+
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                    spacing: Cell.w(2)
+
+                    CellButton {
+
+                        text: "Save & Copy"
+
+                        color: [Colors.accentStrong, Colors.bgOverlay]
+                        fg: [Colors.onAccent, Colors.fgBase]
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                ScreenshotInfo.screenshot(screenshot_region.x, screenshot_region.y, screenshot_region.implicitWidth, screenshot_region.implicitHeight, namer_textfield.text, true, true)
+                                namer.visible = false
+                                snapAnim.restart()
+                            }
+                        }
+
+                    }
+
+                    CellButton {
+
+                        text: "Save"
+
+                        color: [Colors.accentStrong, Colors.bgOverlay]
+                        fg: [Colors.onAccent, Colors.fgBase]
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                ScreenshotInfo.screenshot(screenshot_region.x, screenshot_region.y, screenshot_region.implicitWidth, screenshot_region.implicitHeight, namer_textfield.text, false, true)
+                                namer.visible = false
+                                snapAnim.restart()
+                            }
+                        }
+
+                    }
+
+                    CellButton {
+
+                        text: "Cancel"
+
+                        color: [Colors.accentStrong, Colors.bgOverlay]
+                        fg: [Colors.onAccent, Colors.fgBase]
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                namer.visible = false
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+        }
+
+    }
+
+}
+
