@@ -84,6 +84,8 @@ hl.bind(\"SUPER + period\", hl.dsp.exec_cmd(\"qs -c tui ipc call config toggle_p
 hl.bind(\"SUPER + V\", hl.dsp.exec_cmd(\"qs -c tui ipc call config toggle_popup clipboard\"))
 hl.bind(\"end\", hl.dsp.exec_cmd(\"qs -c tui ipc call config screenshot false\"))
 hl.bind(\"SUPER + end\", hl.dsp.exec_cmd(\"qs -c tui ipc call config screenshot true\"))
+hl.bind(\"print\", hl.dsp.exec_cmd(\"qs -c tui ipc call config screenshot false\"))
+hl.bind(\"SUPER + print\", hl.dsp.exec_cmd(\"qs -c tui ipc call config screenshot true\"))
 
 "
 
