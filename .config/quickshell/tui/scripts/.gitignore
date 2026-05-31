@@ -3,6 +3,6 @@ frequency.json
 icon_cache.json
 
 clipboard_cache.png
-screenshot_cache.png
+screenshot_cache.ppm
 
 /__pycache__
