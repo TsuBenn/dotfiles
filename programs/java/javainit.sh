@@ -25,6 +25,7 @@ cat << EOF > build.xml
     <property name="src.dir" value="src"/>
     <property name="build.dir" value="build"/>
     <property name="classes.dir" value="\${build.dir}/classes"/>
+    <property name="dist.dir" value="dist"/>
     <property name="main-class" value="Main"/>
 
     <target name="clean">
@@ -34,6 +35,16 @@ cat << EOF > build.xml
     <target name="compile">
         <mkdir dir="\${classes.dir}"/>
         <javac srcdir="\${src.dir}" destdir="\${classes.dir}" includeantruntime="false"/>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${dist.dir}"/>
+        <jar destfile="${dist.dir}/${ant.project.name}.jar">
+            <fileset dir="${classes.dir}"/>
+            <manifest>
+                <attribute name="Main-Class" value="${main-class}"/>
+            </manifest>
+        </jar>
     </target>
 
     <target name="run" depends="compile">

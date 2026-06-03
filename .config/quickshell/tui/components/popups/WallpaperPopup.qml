@@ -86,7 +86,7 @@ CellPopup {
 
         onPressed: {
             if (!textfield.focus) {
-                textfield.focus = true
+                textfield.grabFocus()
             }
         }
 
@@ -591,7 +591,7 @@ CellPopup {
                                     binds: "Escape",
                                     action: () => {
                                         if (!textfield.focus) {
-                                            textfield.focus = true
+                                            textfield.grabFocus()
                                             return
                                         }
                                         PopupManager.close("wallpaper")
@@ -708,7 +708,7 @@ CellPopup {
                         onEntered: (text) => {
                             if (/^\d+$/.test(text)) {
                                 WallpaperInfo.slideshowInterval = text*1000
-                                textfield.focus = true
+                                textfield.grabFocus()
                             }
                         }
 
@@ -1009,7 +1009,7 @@ CellPopup {
                                             } else {
                                                 WallpaperInfo.transition.step = text
                                             }
-                                            textfield.focus = true
+                                            textfield.grabFocus()
                                         }
                                     }
 
@@ -1062,7 +1062,7 @@ CellPopup {
                                             } else {
                                                 WallpaperInfo.transition.duration = text
                                             }
-                                            textfield.focus = true
+                                            textfield.grabFocus()
                                         }
                                     }
 
@@ -1113,7 +1113,7 @@ CellPopup {
                                             } else {
                                                 WallpaperInfo.transition.fps = text
                                             }
-                                            textfield.focus = true
+                                            textfield.grabFocus()
                                         }
                                     }
 
@@ -1169,7 +1169,7 @@ CellPopup {
                                             } else {
                                                 WallpaperInfo.transition.angle = text
                                             }
-                                            textfield.focus = true
+                                            textfield.grabFocus()
                                         }
                                     }
 
@@ -1228,7 +1228,7 @@ CellPopup {
                                             } else {
                                                 WallpaperInfo.transition.posX = text
                                             }
-                                            textfield.focus = true
+                                            textfield.grabFocus()
                                         }
                                     }
 
@@ -1278,7 +1278,7 @@ CellPopup {
                                             } else {
                                                 WallpaperInfo.transition.posY = text
                                             }
-                                            textfield.focus = true
+                                            textfield.grabFocus()
                                         }
                                     }
 
@@ -1392,7 +1392,7 @@ CellPopup {
                                     input = Math.max(parseFloat(input),1)
                                     WallpaperInfo.setConfig(selection.items[2],"reposition.scalar", input)
 
-                                    textfield.focus = true
+                                    textfield.grabFocus()
                                 }
                             }
 
@@ -1432,7 +1432,7 @@ CellPopup {
                                 if (/^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(input)) {
                                     input = Math.max(Math.min(parseFloat(input),1),0)
                                     WallpaperInfo.setConfig(selection.items[2],"reposition.verticalOffset",input)
-                                    textfield.focus = true
+                                    textfield.grabFocus()
                                 }
                             }
 
@@ -1473,7 +1473,7 @@ CellPopup {
                                     input = Math.max(Math.min(parseFloat(input),1),0)
                                     WallpaperInfo.setConfig(selection.items[2],"reposition.horizontalOffset",input)
 
-                                    textfield.focus = true
+                                    textfield.grabFocus()
                                 }
                             }
 

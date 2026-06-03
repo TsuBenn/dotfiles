@@ -109,7 +109,7 @@ Item {
     }
 
     function grabFocus() {
-        focus = true
+        forceActiveFocus()
     }
 
     function unFocus() {
@@ -140,7 +140,7 @@ Item {
             text = Qt.binding(()=>bindText)
         }
         if (visible && focusOnVisible) {
-            focus = true
+            forceActiveFocus()
             return
         }
         focus = false
@@ -424,7 +424,7 @@ Item {
 
         onPressed: (button) => {
             if (button == "L") {
-                root.focus = true
+                root.forceActiveFocus()
             }
         }
     }

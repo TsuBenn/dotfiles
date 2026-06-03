@@ -34,7 +34,6 @@ ColumnLayout {
 
         color: "transparent"
 
-
         RowLayout {
 
             spacing: 0
@@ -276,19 +275,15 @@ ColumnLayout {
                                 color: Colors.bgOverlay
 
                                 CellTextField {
+
                                     id: user_input
                                     w: parent.w
                                     h: 1
 
-                                    focus: false
+                                    escapeToUnFocus: false
 
-                                    onVisibleChanged: {
-                                        if (visible) {
-                                            fieldFocus(true)
-                                            return
-                                        }
-                                        fieldFocus(false)
-                                    }
+                                    focus: false
+                                    focusOnVisible: false
 
                                     onEntered: (text) => {
                                         wifi.connect(pass_input.text, text)
@@ -298,6 +293,9 @@ ColumnLayout {
                                         if (event.key == Qt.Key_Tab) {
                                             user_input.unFocus()
                                             pass_input.grabFocus()
+                                        } else if (event.key == Qt.Key_Escape) {
+                                            wifi.username = false
+                                            wifi.password = false
                                         }
                                     }
 
@@ -337,15 +335,10 @@ ColumnLayout {
                                     h: 1
                                     hidden: true
 
-                                    focus: false
+                                    escapeToUnFocus: false
 
-                                    onVisibleChanged: {
-                                        if (visible) {
-                                            fieldFocus(true)
-                                            return
-                                        }
-                                        fieldFocus(false)
-                                    }
+                                    focus: false
+                                    focusOnVisible: false
 
                                     onEntered: (text) => {
                                         wifi.connect(text, user_input.text)
@@ -353,8 +346,14 @@ ColumnLayout {
 
                                     Keys.onPressed: (event) => {
                                         if (event.key == Qt.Key_Tab) {
-                                            pass_input.unFocus()
-                                            user_input.grabFocus()
+                                            console.log("bruh")
+                                            if (wifi.username) {
+                                                pass_input.unFocus()
+                                                user_input.grabFocus()
+                                            }
+                                        } else if (event.key == Qt.Key_Escape) {
+                                            wifi.username = false
+                                            wifi.password = false
                                         }
                                     }
                                 }
@@ -394,8 +393,8 @@ ColumnLayout {
 
                                 onReleased: (button) => {
                                     if (button == "L") {
-                                        wifi.password = !wifi.password
-                                        wifi.username = !wifi.username
+                                        wifi.password = false
+                                        wifi.username = false
                                     }
                                 }
 
@@ -439,9 +438,15 @@ ColumnLayout {
                                     list.collapse(wifi.name)
                                     wifi.password = !wifi.password
                                     wifi.username = !wifi.username
+                                    if (wifi.username) {
+                                        user_input.grabFocus()
+                                    }
                                 } else {
                                     list.collapse(wifi.name)
                                     wifi.password = !wifi.password
+                                    if (wifi.password) {
+                                        pass_input.grabFocus()
+                                    }
                                 }
                             } else if (button == "R") {
                                 if (wifi.in_use) {
@@ -479,6 +484,8 @@ ColumnLayout {
         visible: wifi_report.status != ""
 
         w: root.box.contentW
+
+        color: Colors.accentDim
 
     }
 
