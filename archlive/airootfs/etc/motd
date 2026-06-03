@@ -5,7 +5,7 @@
    / / (__  ) /_/ / /_/ /  __/ / / / / / /        
   /_/ /____/\____/_____/\___/_/ /_/_/ /_/         
 
-[0mWelcome to TsuBenn's Arch live environment!
+[0mWelcome to [36mTsuBenn's Arch Live Environment![0m
 
 Ethernet will automatically be connected it available.
 For Wifi, use [34mnmcli [0mto connect to wifi.
@@ -14,3 +14,4 @@ For quick installation, use [34marchinstall[37m.
 If you're here not for the installation, then you must be here for maintenance.
 
 [41m [41m [41m [40m [44m [40m [41m [46m [45m [41m [46m [43m [41m [44m [45m [40m [44m [40m [41m [44m [41m [41m [46m [42m [41m [44m [43m [41m [45m [40m [40m [44m [40m [41m [44m [42m [41m [46m [44m [41m [46m [47m [0m
+
