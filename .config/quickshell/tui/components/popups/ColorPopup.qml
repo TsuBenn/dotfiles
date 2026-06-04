@@ -49,7 +49,7 @@ CellPopup {
                 action: () => {
                     color.selected = Math.max(color.selected - 1,0)
                     if (color.selected - list.offset/2 < 0) {
-                        list.offset = Math.floor(color.selected/12)*24
+                        list.offset = Math.floor(color.selected/13)*26
                     }
                 }
             },
@@ -57,8 +57,8 @@ CellPopup {
                 binds: "Down",
                 action: () => {
                     color.selected = Math.min(color.selected + 1,root.result.length-1)
-                    if (color.selected - list.offset/2 >= 12) {
-                        list.offset = Math.floor(color.selected/12)*24
+                    if (color.selected - list.offset/2 >= 13) {
+                        list.offset = Math.floor(color.selected/13)*26
                     }
                 }
             },
@@ -94,7 +94,7 @@ CellPopup {
         if (color.edit) {
             color.toggleEdit()
         }
-        resetList()
+        //resetList()
     }
 
     function resetList() {
@@ -102,12 +102,7 @@ CellPopup {
         if (color.selected == -1) {
             color.selected = 0
         }
-        if (color.selected - list.offset/2 < 0) {
-            list.offset = Math.floor(color.selected/12)*24
-        }
-        else if (color.selected - list.offset/2 >= 12) {
-            list.offset = Math.floor(color.selected/12)*24
-        }
+        list.offset = Math.floor(color.selected/13)*26
     }
 
     ColumnLayout {
@@ -138,7 +133,7 @@ CellPopup {
 
                 property int push: 0
 
-                property int h: 27
+                property int h: 28
 
                 signal unFocusPalette()
 
@@ -192,10 +187,10 @@ CellPopup {
 
                 Component.onCompleted: {
                     root.resultChanged.connect(()=> {
-                        root.resetList()
+                        //root.resetList()
                     })
                     Colors.currentChanged.connect(()=> {
-                        root.resetList()
+                        //root.resetList()
                     })
                 }
 
@@ -218,6 +213,10 @@ CellPopup {
 
                         w: 36
                         h: color.h-2
+
+                        onContentHChanged: {
+                            root.resetList()
+                        }
 
                         source: ColumnLayout {
 
@@ -1087,7 +1086,7 @@ CellPopup {
                             text: color.color.description
                             color: color.color.fgBase
                             preferedW: preview.w-2
-                            preferedH: 3
+                            preferedH: 4
                             wrap: true
                             font: Cell.fontB
                         }
@@ -1098,7 +1097,7 @@ CellPopup {
                             Layout.leftMargin: Cell.w(1)
 
                             w: preview.w - 2
-                            h: 3
+                            h: 4
 
                             color: color.color.bgOverlay
 

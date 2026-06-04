@@ -17,6 +17,7 @@ Cells {
     h: 5
 
     property int contentW: w - scrollbar.enabled
+    property int contentH: content.contentHeight
 
     property int padding: 0
     property int spacing: 0

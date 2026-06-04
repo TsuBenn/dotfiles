@@ -38,11 +38,11 @@ cat << EOF > build.xml
     </target>
 
     <target name="jar" depends="compile">
-        <mkdir dir="${dist.dir}"/>
-        <jar destfile="${dist.dir}/${ant.project.name}.jar">
-            <fileset dir="${classes.dir}"/>
+        <mkdir dir="\${dist.dir}"/>
+        <jar destfile="\${dist.dir}/\${ant.project.name}.jar">
+            <fileset dir="\${classes.dir}"/>
             <manifest>
-                <attribute name="Main-Class" value="${main-class}"/>
+                <attribute name="Main-Class" value="\${main-class}"/>
             </manifest>
         </jar>
     </target>

@@ -97,4 +97,4 @@ alias yayClearAllCache='echo "yay -Scc" && yay -Scc'
 
 
 # Java ANT
-alias antrun="ant run | awk '{gsub(/^ *\[java\] /, \"\"); print}'"
+alias antrun="ant jar && clear && java -jar dist/*.jar"

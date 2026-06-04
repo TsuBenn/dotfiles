@@ -140,7 +140,7 @@ CellPopup {
                         scale: 1 * scalar
 
                         // Simplified math utilizing our cached backend data references
-                        property real maxDeltaW: (width * monitorScalar - root.monitor.width) / 2
+                        property real maxDeltaW: ((width * scalar - parent.width) / 2)
                         property real maxDeltaH: (height * scalar - parent.height) / 2
 
                         property double monitorScalar: Math.max(root.monitor.width / sourceSize.width, root.monitor.height / sourceSize.height) * (preview.repoData ? preview.repoData.scalar : 1)
@@ -1430,7 +1430,7 @@ CellPopup {
 
                             onEntered: (input) => {
                                 if (/^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(input)) {
-                                    input = Math.max(Math.min(parseFloat(input),1),0)
+                                    input = Math.max(Math.min(parseFloat(input),1),-1)
                                     WallpaperInfo.setConfig(selection.items[2],"reposition.verticalOffset",input)
                                     textfield.grabFocus()
                                 }
@@ -1470,7 +1470,7 @@ CellPopup {
 
                             onEntered: (input) => {
                                 if (/^[+-]?(?:\d+\.?\d*|\.\d+)$/.test(input)) {
-                                    input = Math.max(Math.min(parseFloat(input),1),0)
+                                    input = Math.max(Math.min(parseFloat(input),1),-1)
                                     WallpaperInfo.setConfig(selection.items[2],"reposition.horizontalOffset",input)
 
                                     textfield.grabFocus()

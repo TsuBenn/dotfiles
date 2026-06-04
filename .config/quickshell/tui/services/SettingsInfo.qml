@@ -40,6 +40,8 @@ Singleton {
 
     property bool bgCava            : true  // Run cava on top of the wallpaper
 
+    property bool screenshotStay    : false  // Keep the screenshot buffer after screenshotting
+
     property bool debug            : true  // Used for random debugging
 
     property var toggles: [
@@ -52,6 +54,7 @@ Singleton {
         "hyprAnim",
         "hyprBlur",
         "bgCava",
+        "screenshotStay",
         "debug",
     ]
 

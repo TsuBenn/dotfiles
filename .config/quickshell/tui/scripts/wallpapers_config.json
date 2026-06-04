@@ -9,7 +9,7 @@
     "posY": 0.5
   },
   "wallpapers": [
-    "live_hu_tao_forest.mp4"
+    "minami.jpg"
   ],
   "config": {
     "macbook.jpg": {
@@ -101,7 +101,21 @@
         "posX": 0.5,
         "posY": 0.5
       }
+    },
+    "cafe_chill.jpg": {
+      "reposition": {
+        "scalar": 1.15,
+        "verticalOffset": 0,
+        "horizontalOffset": 1
+      }
+    },
+    "asuka_landscape.jpg": {
+      "reposition": {
+        "scalar": 1.4000000000000004,
+        "verticalOffset": -0.05456349206349202,
+        "horizontalOffset": 0
+      }
     }
   },
-  "live": false
+  "live": true
 }

@@ -29,10 +29,11 @@ CellPopup {
                 mouse.x2 = root.monitor.width
                 mouse.y2 = root.monitor.height
                 ScreenshotInfo.screenshot(0, 0, root.monitor.width, root.monitor.height)
-                snapAnim.restart()
+                snapAndCloseAnim.restart()
                 fullscreen = false
             }
         } else {
+            namer.visible = false
             root.edit = false
             mask.visible = false
             mouse.x1 = 0
@@ -54,7 +55,7 @@ CellPopup {
                 root.fullscreen = true
             }
             if (id == "screenshot" && sig == "full_now") {
-                if (snapAnim.running) return
+                if (snapAndCloseAnim.running) return
                 PopupManager.open("screenshot")
                 mask.visible = true
                 mouse.x1 = 0
@@ -62,7 +63,7 @@ CellPopup {
                 mouse.x2 = root.monitor.width
                 mouse.y2 = root.monitor.height
                 ScreenshotInfo.screenshot(0, 0, root.monitor.width, root.monitor.height)
-                snapAnim.restart()
+                snapAndCloseAnim.restart()
                 fullscreen = false
             }
         })
@@ -73,7 +74,7 @@ CellPopup {
     }
 
     SequentialAnimation {
-        id: snapAnim
+        id: snapAndCloseAnim
         ColorAnimation {
             target: overlay
             property: "color"
@@ -105,6 +106,61 @@ CellPopup {
         }
     }
 
+    SequentialAnimation {
+        id: snapAnim
+        ColorAnimation {
+            target: overlay
+            property: "color"
+            from: Colors.transparent(Colors.fgDim,0)
+            to: Colors.fgDim
+            duration: 0
+            easing.type: Easing.OutCubic
+        }
+        ColorAnimation {
+            target: overlay
+            property: "color"
+            from: Colors.fgDim
+            to: Colors.transparent(Colors.fgDim,0)
+            duration: 300
+            easing.type: Easing.OutCubic
+        }
+        ParallelAnimation {
+            NumberAnimation {
+                target: mouse
+                property: "x1"
+                duration: 200
+                to: mouse.x1 + (mouse.x2 - mouse.x1)/2
+                easing.type: Easing.OutCubic
+            }
+            NumberAnimation {
+                target: mouse
+                property: "x2"
+                duration: 200
+                to: mouse.x1 + (mouse.x2 - mouse.x1)/2
+                easing.type: Easing.OutCubic
+            }
+            NumberAnimation {
+                target: mouse
+                property: "y1"
+                duration: 200
+                to: mouse.y1 + (mouse.y2 - mouse.y1)/2
+                easing.type: Easing.OutCubic
+            }
+            NumberAnimation {
+                target: mouse
+                property: "y2"
+                duration: 200
+                to: mouse.y1 + (mouse.y2 - mouse.y1)/2
+                easing.type: Easing.OutCubic
+            }
+            ScriptAction {
+                script: {
+                    root.edit = false
+                }
+            }
+        }
+    }
+
     ShortcutHandler {
         shortcuts: [
             {
@@ -116,11 +172,11 @@ CellPopup {
             },
             {
                 binds: "Return",
-                active: root.edit,
+                active: root.edit && !namer.visible,
                 action: () => {
-                    if (snapAnim.running) return
+                    if (snapAndCloseAnim.running) return
                     root.screenshot()
-                    snapAnim.restart()
+                    stay.yes ? snapAnim.restart() : snapAndCloseAnim.restart()
                 }
             },
             {
@@ -282,7 +338,7 @@ CellPopup {
             opacity: !(
                 overlay.implicitWidth-2 == 0
                 || overlay.implicitHeight-2 == 0
-            )
+            ) && !snapAnim.running
 
             Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
 
@@ -358,7 +414,7 @@ CellPopup {
                 if (button == "L") {
                     mask.selectRegion()
                     root.screenshot()
-                    snapAnim.restart()
+                    snapAndCloseAnim.restart()
                 } if (button == "SL") {
                     root.edit = true
                 }
@@ -377,6 +433,24 @@ CellPopup {
 
             x: Cell.toW(overlay.x + overlay.implicitWidth - implicitWidth)
             y: Cell.toH(overlay.y + overlay.implicitHeight,"ceil") + Cell.h(1) >= Cell.toH(root.monitor.height,"floor") ? Cell.toH(overlay.y + overlay.implicitHeight) - Cell.h(1) : Cell.toH(overlay.y + overlay.implicitHeight) + Cell.h(1)
+
+            CellButton {
+
+                id: stay
+
+                property bool yes: SettingsInfo.screenshotStay
+
+                text: "Lock"
+
+                color: yes ? Colors.accentStrong : Colors.bgOverlay
+                fg: yes ? Colors.onAccent : Colors.fgBase
+
+                onReleased: (button) => {
+                    if (button == "L") {
+                        SettingsInfo.toggle("screenshotStay")
+                    }
+                }
+            }
 
             CellButton {
 
@@ -401,7 +475,7 @@ CellPopup {
                 onReleased: (button) => {
                     if (button == "L") {
                         ScreenshotInfo.screenshot(screenshot_region.x, screenshot_region.y, screenshot_region.implicitWidth, screenshot_region.implicitHeight)
-                        snapAnim.restart()
+                        stay.yes ? snapAnim.restart() : snapAndCloseAnim.restart()
                     }
                 }
             }
@@ -416,7 +490,7 @@ CellPopup {
                 onReleased: (button) => {
                     if (button == "L") {
                         ScreenshotInfo.screenshot(screenshot_region.x, screenshot_region.y, screenshot_region.implicitWidth, screenshot_region.implicitHeight, "", true, false)
-                        snapAnim.restart()
+                        stay.yes ? snapAnim.restart() : snapAndCloseAnim.restart()
                     }
                 }
 
@@ -489,7 +563,7 @@ CellPopup {
                         onEntered: (input) => {
                             ScreenshotInfo.screenshot(screenshot_region.x, screenshot_region.y, screenshot_region.implicitWidth, screenshot_region.implicitHeight, namer_textfield.text, true, true)
                             namer.visible = false
-                            snapAnim.restart()
+                            stay.yes ? snapAnim.restart() : snapAndCloseAnim.restart()
                         }
 
                     }
@@ -513,7 +587,7 @@ CellPopup {
                             if (button == "L") {
                                 ScreenshotInfo.screenshot(screenshot_region.x, screenshot_region.y, screenshot_region.implicitWidth, screenshot_region.implicitHeight, namer_textfield.text, true, true)
                                 namer.visible = false
-                                snapAnim.restart()
+                                stay.yes ? snapAnim.restart() : snapAndCloseAnim.restart()
                             }
                         }
 
@@ -530,7 +604,7 @@ CellPopup {
                             if (button == "L") {
                                 ScreenshotInfo.screenshot(screenshot_region.x, screenshot_region.y, screenshot_region.implicitWidth, screenshot_region.implicitHeight, namer_textfield.text, false, true)
                                 namer.visible = false
-                                snapAnim.restart()
+                                stay.yes ? snapAnim.restart() : snapAndCloseAnim.restart()
                             }
                         }
 
