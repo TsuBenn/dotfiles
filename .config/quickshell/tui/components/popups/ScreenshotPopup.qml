@@ -128,28 +128,28 @@ CellPopup {
             NumberAnimation {
                 target: mouse
                 property: "x1"
-                duration: 200
+                duration: 100
                 to: mouse.x1 + (mouse.x2 - mouse.x1)/2
                 easing.type: Easing.OutCubic
             }
             NumberAnimation {
                 target: mouse
                 property: "x2"
-                duration: 200
+                duration: 100
                 to: mouse.x1 + (mouse.x2 - mouse.x1)/2
                 easing.type: Easing.OutCubic
             }
             NumberAnimation {
                 target: mouse
                 property: "y1"
-                duration: 200
+                duration: 100
                 to: mouse.y1 + (mouse.y2 - mouse.y1)/2
                 easing.type: Easing.OutCubic
             }
             NumberAnimation {
                 target: mouse
                 property: "y2"
-                duration: 200
+                duration: 100
                 to: mouse.y1 + (mouse.y2 - mouse.y1)/2
                 easing.type: Easing.OutCubic
             }
