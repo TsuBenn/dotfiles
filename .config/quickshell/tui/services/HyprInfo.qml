@@ -17,9 +17,12 @@ Singleton {
     property int focusedworkspace: Hyprland.focusedWorkspace?.id ?? 1
     property int focusedspecial: 0
 
+    property string activespecial: ""
+
     property var focusedwindow: {"title": "", "class": ""}
 
     property var workspaces
+
     property var specialworkspaces
     property var monitors: ({})
 
@@ -50,6 +53,12 @@ Singleton {
 
         Hyprland.rawEvent.connect((event) => {
             switch (event.name) {
+                case "workspace": {
+                    if (root.activespecial) {
+                        switchWorkspace(root.activespecial.replace("special:",""))
+                    }
+                    break
+                }
                 case "openwindow":
                 case "closewindow":
                 case "movewindow":
@@ -64,9 +73,14 @@ Singleton {
                     monitor.running = true
                     break
                 }
+                case "activespecial": {
+                    const data = event.data.split(",")[0]
+                    root.activespecial = data
+                    break
+                }
             }
             root.hyprEvent(event.name)
-            //console.log(event.name)
+
         })
 
     }
