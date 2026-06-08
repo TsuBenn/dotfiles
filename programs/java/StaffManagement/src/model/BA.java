@@ -3,6 +3,7 @@ package model;
 import java.util.Scanner;
 
 public class BA extends Staff {
+
     private String domain;
 
     public BA() {
@@ -29,6 +30,7 @@ public class BA extends Staff {
         System.out.println("\u001B[A" + "Enter staff's domain:");
         domain = sc.nextLine();
         System.out.println("");
+        sc.close();
     }
 
     public void outputBA() {

@@ -9,7 +9,7 @@
     "posY": 0.5
   },
   "wallpapers": [
-    "minami.jpg"
+    "live_hu_tao_forest.mp4"
   ],
   "config": {
     "macbook.jpg": {
@@ -117,5 +117,5 @@
       }
     }
   },
-  "live": true
+  "live": false
 }

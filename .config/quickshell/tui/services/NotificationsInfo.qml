@@ -126,8 +126,8 @@ Singleton {
                         "expandable" : group.group.length > 1,
                         "time"       : group.group[0]?.time ?? 0,
                         "urgency"    : group.urgency ?? 0,
-                        "summary"    : group.group[0]?.summary ?? 0,
-                        "body"       : group.group[0]?.body ?? 0,
+                        "summary"    : group.group[0]?.summary ?? "",
+                        "body"       : group.group[0]?.body ?? "",
                     })
 
                     if (group.group.length > 1) {
@@ -139,8 +139,8 @@ Singleton {
                                 "object"  : group.object,
                                 "urgency" : group.urgency,
                                 "time"    : group.group[i]?.time ?? 0,
-                                "summary" : group.group[i]?.summary ?? 0,
-                                "body"    : group.group[i]?.body ?? 0,
+                                "summary" : group.group[i]?.summary ?? "",
+                                "body"    : group.group[i]?.body ?? "",
                             })
                         }
                         results.push({
@@ -399,6 +399,101 @@ Singleton {
         //root.refresh() // Let this function handles the clean up
 
     }
+
+    /*
+
+     !!! NEED TEST !!!
+
+     function add(summary, body, app, icon, image, urgency, object) {
+
+         const buffer = [...notifications_groups]
+
+         const subgroup = {
+             "summary": summary,
+             "body": body,
+             "image": image,
+             "time": root.timer,
+             toJSON() {
+                 return formatTime(this.time)
+             }
+         }
+
+         const notif = {
+             "id": getGroupID(),
+             "object": object.id,
+             "actions": object.actions ?? [],
+             "urgency": urgency,
+             "group": [subgroup],
+             toJSON() {
+                 return { 
+                     object: this.object,
+                     group: this.group,
+                 }
+             }
+         }
+
+         const new_app = {
+             "app": app,
+             "icon": icon,
+             "notifications": [notif],
+         }
+
+         const index = buffer.findIndex(item => item.app == app)
+
+         if (index != -1) { 
+             const group = buffer.splice(index, 1)[0] 
+
+             if (exists(group.notifications[0].object)) {
+                 // Check if the exact message text already exists in this active notification group
+                 const isDuplicate = group.notifications[0].group.some(
+                     item => item.summary === summary && item.body === body
+                 )
+
+                 if (!isDuplicate) {
+                     group.notifications.unshift(notif)
+                 } else {
+                     // It's a duplicate alert; update the timestamp of the existing one so it moves to "Now"
+                     const dupItem = group.notifications[0].group.find(
+                         item => item.summary === summary && item.body === body
+                     )
+                     if (dupItem) dupItem.time = root.timer
+                     group.notifications[0].object = object.id
+                 }
+             } 
+             else {
+                 // CRITICAL REPETITION FIX HERE:
+                 // If the old notification object died but we are recycling the slot,
+                 // check if this text content is already sitting in the group history stack.
+                 const isDuplicate = group.notifications[0].group.some(
+                     item => item.summary === summary && item.body === body
+                 )
+
+                 if (!isDuplicate) {
+                     // Not a duplicate? Safe to append as a new history row
+                     group.notifications[0].object = object.id 
+                     group.notifications[0].urgency = urgency
+                     group.notifications[0].group.unshift(subgroup)
+                 } else {
+                     // It IS a duplicate! Find the old one, update its time to now, and refresh the active object ID
+                     const dupItem = group.notifications[0].group.find(
+                         item => item.summary === summary && item.body === body
+                     )
+                     if (dupItem) dupItem.time = root.timer
+                     group.notifications[0].object = object.id
+                     group.notifications[0].urgency = urgency
+                 }
+             }
+
+             buffer.unshift(group)
+
+         } else {
+             buffer.unshift(new_app)
+         }
+
+         root.notifications_groups = buffer
+     }
+
+     */
 
     function toRawUnicode(str) {
         return str.split('').map(char => {

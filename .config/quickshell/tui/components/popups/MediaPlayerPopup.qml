@@ -186,9 +186,15 @@ CellPopup {
                             MediaPlayerInfo.setPos(MediaPlayerInfo.length*(percent/100))
                         }
 
+                        onVisibleChanged: {
+                            if (visible) {
+                                MediaPlayerInfo.requestPos()
+                            }
+                        }
+
                         Timer {
 
-                            running: visible && MediaPlayerInfo.status == "playing"
+                            running: parent.visible && MediaPlayerInfo.status == "playing"
                             repeat: true
                             interval: 1000
                             onTriggered: {

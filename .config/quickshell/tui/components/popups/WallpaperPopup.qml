@@ -126,8 +126,12 @@ CellPopup {
                 property var configData: WallpaperInfo.config[currentItem]
 
                 Item {
-                    implicitWidth: preview.implicitWidth
+
+                    anchors.centerIn: parent
+
+                    implicitWidth: preview.implicitHeight*(root.monitor.width/root.monitor.height)
                     implicitHeight: preview.implicitHeight
+
                     clip: true
 
                     Image {
