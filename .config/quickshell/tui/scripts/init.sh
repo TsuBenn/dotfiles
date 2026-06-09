@@ -76,6 +76,7 @@ hl.unbind(\"end\")
 hl.unbind(\"SUPER + end\")
 hl.unbind(\"print\")
 hl.unbind(\"SUPER + print\")
+hl.unbind(\"SUPER + grave\")
 hl.bind(\"SUPER + space\", hl.dsp.exec_cmd(\"qs -c tui ipc call config toggle_popup quick_menu\"))
 hl.bind(\"SUPER + escape\", hl.dsp.exec_cmd(\"qs -c tui ipc call launcher toggle\"))
 hl.bind(\"SUPER + P\", hl.dsp.exec_cmd(\"qs -c tui ipc call config dummy\"))
@@ -86,6 +87,7 @@ hl.bind(\"end\", hl.dsp.exec_cmd(\"qs -c tui ipc call config screenshot false\")
 hl.bind(\"SUPER + end\", hl.dsp.exec_cmd(\"qs -c tui ipc call config screenshot true\"))
 hl.bind(\"print\", hl.dsp.exec_cmd(\"qs -c tui ipc call config screenshot false\"))
 hl.bind(\"SUPER + print\", hl.dsp.exec_cmd(\"qs -c tui ipc call config screenshot true\"))
+hl.bind(\"SUPER + backspace\", hl.dsp.exec_cmd(\"qs -c tui ipc call config toggle_hidebar\"))
 
 "
 
