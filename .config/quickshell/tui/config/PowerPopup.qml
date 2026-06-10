@@ -17,7 +17,45 @@ CellPopup {
     x: 0
     y: 0
 
+    property bool lock: false
+
     id: root
+
+    onVisibleChanged: {
+        if (visible) {
+            openAnim.restart()
+        }
+    }
+
+    function close() {
+        if (closeAnim.running) return
+        closeAnim.restart()
+    }
+
+    SequentialAnimation {
+        id: closeAnim
+        NumberAnimation { 
+            target: root
+            property: "opacity"
+            to: 0
+            duration: 200
+            easing.type: Easing.OutCubic
+        }
+        ScriptAction {
+            script: PopupManager.close(root.name)
+        }
+    }
+    SequentialAnimation {
+        id: openAnim
+        NumberAnimation { 
+            target: root
+            property: "opacity"
+            from: 0
+            to: 1
+            duration: 200
+            easing.type: Easing.OutCubic
+        }
+    }
 
     ShortcutHandler {
         shortcuts: [
@@ -34,12 +72,17 @@ CellPopup {
                 action: () => {PowerManager.call("Shutdown", 3)},
             },
             {
-                binds: "5",
+                binds: "4",
+                active: !root.lock,
+                action: () => {SystemInfo.lock()},
+            },
+            {
+                binds: root.lock ? "4" : "5",
                 action: () => {PowerManager.call("Logout", 3)},
             },
             {
                 binds: "0",
-                action: () => {PopupManager.close()},
+                action: () => {root.close()},
             },
             {
                 binds: "Up",
@@ -72,9 +115,9 @@ CellPopup {
             () => PowerManager.call("Sleep", 3),
             () => PowerManager.call("Reboot", 3),
             () => PowerManager.call("Shutdown", 3),
-            () => NotificationsInfo.send("System","","Power","This function is not available <i>yet</i>", 0, false, "echo Hello"),
+            () => SystemInfo.lock(),
             () => PowerManager.call("Logout", 3),
-            () => PopupManager.close(),
+            () => root.close(),
         ]
 
         w: Cell.wCount(root.implicitWidth) + 1
@@ -88,7 +131,7 @@ CellPopup {
 
             onReleased: (button) => {
                 if (button == "L") {
-                    PopupManager.close()
+                    root.close()
                 }
             }
 
@@ -171,13 +214,14 @@ CellPopup {
                     }
 
                     Option {
+                        visible: !root.lock
                         index: 3
                         title: "4.lock"
                     }
 
                     Option {
                         index: 4
-                        title: "5.logout"
+                        title: root.lock ? "4.logout" : "5.logout"
                     }
 
                     Option {

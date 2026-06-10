@@ -42,7 +42,11 @@ Singleton {
 
     property bool screenshotStay    : false  // Keep the screenshot buffer after screenshotting
 
+    property bool lockScreenMusic    : false  // Music playing during lock session
+
     property bool debug            : true  // Used for random debugging
+
+    signal debugSig()
 
     property var toggles: [
         "hints",
@@ -55,6 +59,7 @@ Singleton {
         "hyprBlur",
         "bgCava",
         "screenshotStay",
+        "lockScreenMusic",
         "debug",
     ]
 
@@ -158,11 +163,14 @@ Singleton {
         function toggle_hypranim(): void           { root.toggle("hyprAnim") }
         function toggle_hyprblur(): void           { root.toggle("hyprBlur") }
         function toggle_bgcava(): void             { root.toggle("bgCava") }
+        function toggle_lock_screen_music(): void  { root.toggle("lockScreenMusic") }
 
+        function lock_screen(): void               { SystemInfo.lock() }
 
         function dummy(): void {
             // Contains debugging features that can be accessed by SUPER + P
             root.toggle("debug")
+            SystemInfo.lock()
         }
     }
 

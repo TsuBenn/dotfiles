@@ -71,34 +71,40 @@ Item {
         if (unfocusOnEntered) unFocus()
     }
 
-    onFocusChanged: {
-        if (disabled) {
+    onDisabledChanged: {
+        if (focus && disabled) {
             unFocus()
             return
         }
+        if (!disabled && focusOnVisible) {
+            grabFocus()
+        }
+    }
+
+    onFocusChanged: {
         if (focus) {
+            if (disabled) {
+                unFocus()
+                return
+            }
+            if (autoClear) {
+                set("")
+            }
             TextFieldManager.activated()
             resetCursor()
         } else if (!focus) {
             TextFieldManager.deactivated()
             showCursor = false
-        }
-
-        if (!focus) {
             visualPos = 0
-        }
-
-        if (autoApply && !focus) {
-            if (text != bindText) entered(text)
+            if (autoApply) {
+                if (text != bindText) entered(text)
+            }
         }
         if (bindText) {
             text = Qt.binding(()=>bindText)
             cursorPos = bindText.length
             return
         } 
-        if (autoClear && focus) {
-            set("")
-        }
     }
 
     onTextAdded: (text) => {

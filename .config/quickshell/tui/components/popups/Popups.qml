@@ -19,15 +19,6 @@ Item {
         "height": 1080,
     }
 
-    Component.onCompleted: {
-        PowerManager.called.connect((mode, count) => {
-            power_countdown.mode = mode
-            power_countdown.count = count
-            power_countdown.active = true
-            PopupManager.open("power_countdown")
-        })
-    }
-
     CalendarPopup {
 
         id: calendar

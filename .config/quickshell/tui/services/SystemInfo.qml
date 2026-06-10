@@ -130,9 +130,12 @@ Singleton {
         return usage.toFixed(2)
     }
 
+    signal lockRequest()
+
     function shutdown() {power.exec(["shutdown", "-h", "now"])}
     function sleep() {power.exec(["systemctl", "suspend"])}
     function reboot() {power.exec(["reboot"])}
+    function lock() {root.lockRequest()}
     function logout() {power.exec(["hyprctl", "dispatch", "exit"])}
 
     function formatNum(num, i) {

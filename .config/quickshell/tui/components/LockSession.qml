@@ -1,0 +1,456 @@
+pragma ComponentBehavior: Bound
+
+import qs.components.popups
+import qs.config
+import qs.services
+import qs.modules
+
+import Quickshell.Wayland
+import Quickshell.Io
+import QtQuick
+import QtQuick.Layouts
+import QtMultimedia
+import Qt5Compat.GraphicalEffects
+
+WlSessionLockSurface {
+
+    id: root
+
+    property bool processing: false
+
+    signal unlockSession()
+
+    property bool focus: mouse.hovered || password_field.text != "" || true
+
+    property var monitor: {
+        "width": 1920,
+        "height": 1080,
+    }
+
+    onVisibleChanged: {
+        password_field.focus = true
+        check_pwd.running = true
+        lock_screen_anim.restart()
+    }
+
+    function unlock(password: string) {
+        check_pwd.write(password + "\n")
+    }
+
+    MediaPlayer {
+        id: lock_screen_music
+        source: SystemInfo.configdir + "/assets/lock_screen_music.mp3"
+        audioOutput: AudioOutput {
+            id: lock_screen_music_output
+        }
+        Component.onCompleted: {
+            if (SettingsInfo.lockScreenMusic && MediaPlayerInfo.status != "playing") {
+                play()
+            } else {
+                stop()
+            }
+        }
+    }
+
+    WallpaperEngine {
+        anchors.fill: parent
+        layer.enabled: true
+        layer.effect: GaussianBlur {
+
+            Behavior on radius {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
+
+            cached: true
+            radius: root.focus ? 10 : 0
+            samples: 10
+            transparentBorder: false
+        }
+        Rectangle {
+
+            visible: opacity
+
+            opacity: SettingsInfo.bgCava
+
+            Behavior on opacity {NumberAnimation {
+                duration: 1000
+                easing.type: Easing.OutCubic
+            }}
+
+            anchors.fill: parent
+
+            gradient: Gradient {
+                orientation: Gradient.Vertical
+                GradientStop { position: 0.0; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5) }
+                GradientStop { position: 0.4; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0) }
+                GradientStop { position: 0.6; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0) }
+                GradientStop { position: 1.0; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5) }
+            }
+
+        }
+        Rectangle {
+            anchors.fill: parent
+            color: Qt.darker(Colors.bgBase,2)
+            opacity: root.focus ? 0.5 : 0
+            Behavior on opacity {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
+        }
+    }
+
+    Rectangle {
+
+        id: cava_mask
+
+        visible: false
+
+        anchors.fill: parent
+
+        gradient: Gradient {
+            orientation: Gradient.Vertical
+            GradientStop { position: 0.0; color: "transparent" }
+            GradientStop { position: 0.3; color: "white"}
+            GradientStop { position: 0.7; color: "white"}
+            GradientStop { position: 1.0; color: "transparent" }
+        }
+
+    }
+
+    component BgCava: CellAudioVisual {
+
+        visible: opacity > 0
+
+        opacity: SettingsInfo.bgCava*0.2
+
+        property real interval: 3
+
+        Behavior on opacity {NumberAnimation {
+            duration: 1000
+            easing.type: Easing.OutCubic
+        }}
+
+        Component.onCompleted: {
+            if (visible) {
+                Cava.requestStart()
+            }
+        }
+        onVisibleChanged: {
+            if (visible) {
+                Cava.requestStart()
+            } else {
+                Cava.release()
+            }
+        }
+
+        w: Cell.wCount(parent.width,"floor")
+        h: Cell.hCount(parent.height/interval,"floor")
+
+        spacing: 2
+        barW: 2
+
+        color: [Colors.secondary, Colors.warning, Colors.danger]
+
+        layer.enabled: true
+        layer.effect: OpacityMask {
+            maskSource: cava_mask
+        }
+
+    }
+
+    BgCava {rotation: 180}
+
+    BgCava {y: parent.height - parent.height/interval}
+
+    ColumnLayout {
+
+        opacity: root.focus ? 1 : 0.1
+
+        layer.enabled: true
+        Behavior on opacity {NumberAnimation {duration: 500*SettingsInfo.hyprAnim; easing.type: Easing.OutCubic}}
+
+        id: layout
+
+        x: Cell.centerWCell(implicitWidth, root.monitor.width)
+        y: Cell.centerHCell(implicitHeight, root.monitor.height)
+
+        spacing: 0
+
+        CellText {
+            Layout.leftMargin: Cell.centerWCell(width, parent.width)
+            text: ANSI.render(DateTime.hour12 + ":" + DateTime.minute)
+        }
+
+        CellText {
+            Layout.leftMargin: Cell.centerWCell(width, parent.width)
+            text: `--${DateTime.dayofweek_long.toUpperCase()}--`
+            font: Cell.fontBB
+        }
+        CellText {
+            Layout.leftMargin: Cell.centerWCell(width, parent.width)
+            text: `${DateTime.date}th ${DateTime.month_numeral}, ${DateTime.year}`
+            font: Cell.fontBB
+        }
+
+        CellText {
+            text: "\n\n\n"
+        }
+
+        CellText {
+            id: user
+            Layout.leftMargin: Cell.centerWCell(width, parent.width)
+            text: SystemInfo.username + (user.text.length%2!=0 ? " " : "") + "@" + SystemInfo.hostname
+            color: Colors.accentStrong
+            font: Cell.fontB
+        }
+
+        CellText {
+            Layout.leftMargin: Cell.centerWCell(width, parent.width)
+            text: `--locked--`
+            color: Colors.warning
+        }
+
+        CellText {
+            text: ""
+        }
+
+        Cells {
+
+            w: 30
+            h: 3
+
+            color: "transparent"
+
+            CellBox {
+
+                w: parent.w
+                h: parent.h
+
+                CellTextField {
+
+                    id: password_field
+
+                    x: Cell.w(1)
+
+                    w: 26
+                    h: parent.h
+
+                    hidden: true
+
+                    disabled: root.processing   
+
+                    escapeToUnFocus: false
+
+                    placeholder: "Password"
+
+                    onEntered: (input) => {
+                        root.processing = true
+                        pwd_status.text = " Info: Processing password... "
+                        pwd_status.color = Colors.info
+                        root.unlock(input)
+                    }
+
+                }
+
+            }
+
+        }
+
+        CellText {
+            text: ""
+        }
+
+        RowLayout {
+
+            Layout.leftMargin: Cell.centerWCell(width, parent.width)
+
+            spacing: Cell.w(2)
+
+            CellButton {
+
+                text: "Music"
+
+                color: SettingsInfo.lockScreenMusic ? Colors.accentStrong : Colors.bgOverlay
+                fg: SettingsInfo.lockScreenMusic ? Colors.onAccent : Colors.fgBase
+
+                onReleased: (button) => {
+                    if (button == "L") {
+                        SettingsInfo.toggle("lockScreenMusic")
+                        if (SettingsInfo.lockScreenMusic && MediaPlayerInfo.status != "playing") {
+                            lock_screen_music.play()
+                        } else {
+                            MediaPlayerInfo.pauseMedia()
+                            lock_screen_music.stop()
+                        }
+                    }
+                }
+
+            }
+
+            CellButton {
+
+                text: "Cava"
+
+                color: SettingsInfo.bgCava ? Colors.accentStrong : Colors.bgOverlay
+                fg: SettingsInfo.bgCava ? Colors.onAccent : Colors.fgBase
+
+                onReleased: (button) => {
+                    if (button == "L") {
+                        SettingsInfo.toggle("bgCava")
+                    }
+                }
+
+            }
+
+            CellButton {
+
+                text: "Power"
+
+                color: [Colors.accentStrong, Colors.bgOverlay]
+                fg: [Colors.onAccent, Colors.fgBase]
+
+                onReleased: (button) => {
+                    if (button == "L") {
+                        PopupManager.open("power")
+                    }
+                }
+
+            }
+
+        }
+
+        CellText {
+            text: ""
+        }
+
+        CellText {
+            Layout.leftMargin: Cell.centerWCell(width, parent.width)
+            id: pwd_status
+            text: ""
+            bg: Colors.bgSurface
+        }
+
+
+    }
+
+    MouseControl {
+
+        id: mouse
+
+        x: layout.x - 200
+        y: layout.y - 200
+        height: layout.height + 400
+        width: layout.width + 400
+
+        acceptedButtons: Qt.NoButton
+
+    }
+
+    Timer {
+        id: reset_pwd_status
+        interval: 5000
+        onTriggered: {
+            pwd_status.text = ""
+        }
+    }
+
+    ParallelAnimation {
+        id: lock_screen_anim
+        NumberAnimation {
+            target: black_lock_screen
+            property: "opacity"
+            to: 0
+            duration: 500
+            easing.type: Easing.OutCubic
+        }
+        NumberAnimation {
+            target: lock_screen_music_output
+            property: "volume"
+            to: AudioInfo.volume/100
+            duration: 1000
+            easing.type: Easing.InCubic
+        }
+    }
+
+    Rectangle {
+        id: black_lock_screen
+        anchors.fill: parent
+        color: "black"
+        opacity: 1
+    }
+
+    PowerPopup {
+
+        monitor: root.monitor
+
+        name: "power"
+
+        lock: true
+
+    }
+
+    PowerCountdownPopup {
+
+        id: power_countdown
+
+        name: "power_countdown"
+
+        cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2) - 1
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) + 1
+
+        onVisibleChanged: {
+            if (visible) {
+                active = true
+            }
+        }
+
+    }
+
+    SequentialAnimation {
+        id: unlock_anim
+        ParallelAnimation {
+            NumberAnimation {
+                target: black_lock_screen
+                property: "opacity"
+                to: 1
+                duration: 500
+                easing.type: Easing.InCubic
+            }
+            NumberAnimation {
+                target: lock_screen_music_output
+                property: "volume"
+                to: 0
+                duration: 500
+                easing.type: Easing.InCubic
+            }
+        }
+        ScriptAction {
+            script: {
+                root.unlockSession()
+            }
+        }
+    }
+
+    Process {
+
+        id: check_pwd
+
+        onRunningChanged: {
+            if (!running) {
+                running = true
+            }
+        }
+
+        command: [SystemInfo.configdir + "/scripts/password_checker"]
+
+        stdout: SplitParser {
+            onRead: (text) => {
+                if (text == "1") {
+                    unlock_anim.restart()
+                } else if (text == "0") {
+                    pwd_status.text = " Error: Wrong password! "
+                    pwd_status.color = Colors.danger
+                    reset_pwd_status.running = true
+                    password_field.set("")
+                    root.processing = false
+                }
+            }
+        }
+
+    }
+}

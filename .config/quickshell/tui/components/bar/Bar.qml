@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 
+import qs.components
 import qs.components.bar
 import qs.components.popups
 import qs.modules
@@ -12,6 +13,7 @@ import Quickshell.Hyprland
 import Quickshell.Wayland
 import QtQuick.Layouts
 import QtQuick
+import QtMultimedia
 import Qt5Compat.GraphicalEffects
 
 Scope {
@@ -220,17 +222,17 @@ Scope {
 
                     spacing: Cell.w(0)
 
+                    OBS {} 
+
+                    CellText { text: " " }
+
                     Volume {}
 
-                    CellText {
-                        text: " "
-                    }
+                    CellText { text: " " }
 
                     ControlPanel {}
 
-                    CellText {
-                        text: " "
-                    }
+                    CellText { text: " " }
 
                     Search {
                         id: search
@@ -366,6 +368,8 @@ Scope {
 
                             opacity: SettingsInfo.bgCava*0.5
 
+                            property real interval: 4
+
                             Behavior on opacity {NumberAnimation {
                                 duration: 1000
                                 easing.type: Easing.OutCubic
@@ -384,9 +388,9 @@ Scope {
                                 }
                             }
 
-                            w: bg.w
-                            h: ((bg.h+1)/2)*(opacity/0.5)
-
+                            w: Cell.wCount(background.width,"floor")
+                            h: Cell.hCount(background.height/interval,"floor")
+    
                             spacing: 2
                             barW: 2
 
@@ -399,16 +403,9 @@ Scope {
 
                         }
 
-                        BgCava {
-                            anchors.topMargin: -Cell.h((bg.h+2)/2)*(1-opacity/0.5)
-                            anchors.top: parent.top
-                            rotation: 180
-                        }
+                        BgCava { rotation: 180 }
 
-                        BgCava {
-                            anchors.bottom: parent.bottom
-                            anchors.bottomMargin: -Cell.h((bg.h+2)/2)*(1-opacity/0.5)
-                        }
+                        BgCava { y: background.height - background.height/interval }
 
 
                     }
@@ -573,9 +570,10 @@ Scope {
 
             PanelWindow {
 
-                visible: !BrightnessInfo.available
+                id: brightness
 
-                WlrLayershell.layer: WlrLayer.Overlay
+                WlrLayershell.layer: popups_screen.WlrLayershell.layer == WlrLayer.Overlay ? WlrLayer.Overlay : WlrLayer.Top
+
                 WlrLayershell.namespace: "brightness"
 
                 exclusionMode: ExclusionMode.Ignore
@@ -589,7 +587,7 @@ Scope {
 
                 focusable: false
 
-                color: Qt.rgba(
+                color: BrightnessInfo.available ? "transparent" : Qt.rgba(
                     0,
                     0,
                     0,
@@ -598,6 +596,90 @@ Scope {
 
                 mask: Region {
                     item: null
+                }
+
+            }
+
+            PanelWindow {
+
+                id: lock_screen_background
+
+                visible: opacity > 0
+
+                WlrLayershell.layer: opacity > 0 ? WlrLayer.Overlay : WlrLayer.Top
+
+                WlrLayershell.namespace: "lock_screen_background"
+
+                exclusionMode: ExclusionMode.Ignore
+
+                anchors {
+                    top: true
+                    bottom: true
+                    left: true
+                    right: true
+                }
+
+                focusable: false
+
+                color: Qt.rgba(0,0,0,opacity)
+
+                property real opacity: 0
+
+                mask: Region {
+                    item: null
+                }
+
+                Component.onCompleted: {
+                    SystemInfo.lockRequest.connect(()=> {
+                        lockAnimStart.restart()
+                    })
+                }
+
+            }
+
+            SequentialAnimation {
+                id: lockAnimStart
+                NumberAnimation {
+                    target: lock_screen_background
+                    property: "opacity"
+                    to: 1
+                    duration: 200
+                    easing.type: Easing.InCubic
+                }
+                ScriptAction {
+                    script: {
+                        lock_session.locked = true
+                    }
+                }
+            }
+
+            SequentialAnimation {
+                id: lockAnimEnd
+                NumberAnimation {
+                    target: lock_screen_background
+                    property: "opacity"
+                    to: 0
+                    duration: 200
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            WlSessionLock {
+
+                id: lock_session
+
+                onLockedChanged: {
+                    lockAnimEnd.restart()
+                }
+
+                LockSession {
+
+                    monitor: root.monitor
+
+                    onUnlockSession: {
+                        lock_session.locked = false
+                    }
+
                 }
 
             }

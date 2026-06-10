@@ -1,4 +1,7 @@
 pragma Singleton
+
+import qs.services
+
 import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland

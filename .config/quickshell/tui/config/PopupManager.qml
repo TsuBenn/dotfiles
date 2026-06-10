@@ -1,5 +1,7 @@
 pragma Singleton
 
+import qs.services
+
 import Quickshell
 import QtQuick
 
@@ -8,6 +10,12 @@ Singleton {
     id: root
 
     property var active_popups: []
+
+    Component.onCompleted: {
+        SystemInfo.lockRequest.connect(() => {
+            root.close()
+        })
+    }
 
     signal opened(name: string)
     signal closed(name: string)

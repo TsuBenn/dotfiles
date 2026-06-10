@@ -143,6 +143,13 @@ SETTINGS = [
                 "type": "exec",
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_bgcava"],
             },
+            {
+                "label": "{bgCava} Lock screen music",
+                "description": "Play music during lock session.",
+                "category": "setting",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_lock_screen_music"],
+            },
         ],
     },
     {

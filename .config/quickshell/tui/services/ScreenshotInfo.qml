@@ -71,7 +71,7 @@ Singleton {
 
         id: cacher
 
-        command: ["grim","-t","ppm", root.cache_path]
+        command: ["grim","-c","-t","ppm", root.cache_path]
 
         stderr: StdioCollector {
             onStreamFinished: {
