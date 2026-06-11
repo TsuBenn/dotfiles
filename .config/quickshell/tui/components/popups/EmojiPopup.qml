@@ -16,7 +16,7 @@ CellPopup {
     id: root
 
     w: 26
-    h: 8
+    h: 12
 
     onVisibleChanged: {
         mouseLocked: true
@@ -176,6 +176,36 @@ CellPopup {
 
             spacing: 0
 
+            Cells {
+
+                Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                w: 6
+                h: 3
+
+                color: "transparent"
+
+                Text {
+
+                    anchors.centerIn: parent
+
+                    id: emoji_preview
+
+                    text: ""
+
+                    font {
+                        family: "Apple Color Emoji"
+                        pointSize: 50
+                    }
+
+                }
+            }
+
+            CellSeparator {
+                w: box.contentW
+                color: Colors.accentStrong
+            }
+
             CellTextField {
 
                 Layout.leftMargin: Cell.w(1)
@@ -188,7 +218,10 @@ CellPopup {
 
                 onTextInput: (input) => {
                     if (input.length > 0) emojis.result = EmojisInfo.search(input, 200) 
-                    else emojis.result = []
+                    else {
+                        emoji_preview.text = EmojisInfo.recent[emojis.selected]?.label ?? ""
+                        emojis.result = []
+                    }
                 }
 
             }
@@ -205,6 +238,7 @@ CellPopup {
                 property var result: []
 
                 onResultChanged: {
+                    emoji_preview.text = result[selected]?.label ?? ""
                     root.mouseLocked = true
                     selected = 0
                 }

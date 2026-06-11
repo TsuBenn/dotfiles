@@ -8,6 +8,10 @@ import QtQuick
 
 CellText {
 
+    id: root
+
+    property bool interactive: true
+
     Timer {
         id: blinking
 
@@ -29,6 +33,8 @@ CellText {
     bg: Colors.bgOverlay
 
     MouseControl {
+
+        visible: root.interactive
 
         anchors.fill: parent
 

@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 
+import qs.components.bar
 import qs.components.popups
 import qs.config
 import qs.services
@@ -116,7 +117,7 @@ WlSessionLockSurface {
 
         visible: opacity > 0
 
-        opacity: SettingsInfo.bgCava*0.2
+        opacity: SettingsInfo.bgCavaLock*0.2
 
         property real interval: 3
 
@@ -157,6 +158,95 @@ WlSessionLockSurface {
 
     BgCava {y: parent.height - parent.height/interval}
 
+    Rectangle {
+
+        id: util_bar
+
+        property bool peek: false
+
+        Behavior on anchors.topMargin {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+
+        anchors.topMargin: -Cell.h(1)*!peek
+
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        implicitHeight: Cell.h(1)
+
+        color: Colors.bgSurface
+
+
+        Item {
+
+            RowLayout {
+
+                spacing: Cell.w(2)
+
+                x: Cell.w(1)
+
+                System {
+                    interactive: false
+                }
+
+            }
+
+            RowLayout {
+
+                spacing: Cell.w(1)
+
+                x: Cell.toW(root.width,"floor") - width
+
+                OBS {
+                    interactive: false
+                }
+
+                CellText {
+                    text: "*" + NotificationsInfo.totalMessagesCount()
+                    color: Colors.danger
+                }
+
+                Volume {}
+
+            }
+
+        }
+
+    }
+
+    MouseArea {
+
+        acceptedButtons: Qt.NoButton
+        hoverEnabled: true
+
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        implicitHeight: util_bar.peek ? Cell.h(3) : 1
+
+        onEntered: {
+            util_bar.peek = true
+            unpeek_util.stop()
+        }
+
+        onExited: {
+            unpeek_util.restart()
+        }
+
+    }
+
+
+    Timer {
+
+        id: unpeek_util
+        interval: 500
+        onTriggered: {
+            util_bar.peek = false
+        }
+
+    }
+
     ColumnLayout {
 
         opacity: root.focus ? 1 : 0.1
@@ -174,6 +264,8 @@ WlSessionLockSurface {
         CellText {
             Layout.leftMargin: Cell.centerWCell(width, parent.width)
             text: ANSI.render(DateTime.hour12 + ":" + DateTime.minute)
+            pure: false
+            lockPure: true
         }
 
         CellText {
@@ -194,14 +286,16 @@ WlSessionLockSurface {
         CellText {
             id: user
             Layout.leftMargin: Cell.centerWCell(width, parent.width)
-            text: SystemInfo.username + (user.text.length%2!=0 ? " " : "") + "@" + SystemInfo.hostname
+            text: SystemInfo.username + (`${SystemInfo.username}@${SystemInfo.hostname}`.length%2!=0 ? " " : "") + "@" + SystemInfo.hostname
             color: Colors.accentStrong
             font: Cell.fontB
         }
 
         CellText {
+            id: lock_status
+            property string status: "locked"
             Layout.leftMargin: Cell.centerWCell(width, parent.width)
-            text: `--locked--`
+            text: `--${status}--`
             color: Colors.warning
         }
 
@@ -271,7 +365,10 @@ WlSessionLockSurface {
                 onReleased: (button) => {
                     if (button == "L") {
                         SettingsInfo.toggle("lockScreenMusic")
-                        if (SettingsInfo.lockScreenMusic && MediaPlayerInfo.status != "playing") {
+                        if (SettingsInfo.lockScreenMusic) {
+                            if (MediaPlayerInfo.status == "playing") {
+                                MediaPlayerInfo.pauseMedia()
+                            }
                             lock_screen_music.play()
                         } else {
                             MediaPlayerInfo.pauseMedia()
@@ -286,12 +383,12 @@ WlSessionLockSurface {
 
                 text: "Cava"
 
-                color: SettingsInfo.bgCava ? Colors.accentStrong : Colors.bgOverlay
-                fg: SettingsInfo.bgCava ? Colors.onAccent : Colors.fgBase
+                color: SettingsInfo.bgCavaLock ? Colors.accentStrong : Colors.bgOverlay
+                fg: SettingsInfo.bgCavaLock ? Colors.onAccent : Colors.fgBase
 
                 onReleased: (button) => {
                     if (button == "L") {
-                        SettingsInfo.toggle("bgCava")
+                        SettingsInfo.toggle("bgCavaLock")
                     }
                 }
 
@@ -441,6 +538,7 @@ WlSessionLockSurface {
         stdout: SplitParser {
             onRead: (text) => {
                 if (text == "1") {
+                    lock_status.status = "unlocked"
                     unlock_anim.restart()
                 } else if (text == "0") {
                     pwd_status.text = " Error: Wrong password! "

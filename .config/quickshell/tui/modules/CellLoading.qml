@@ -46,6 +46,8 @@ Item {
 
             visible: root.style == 0
             text: frames[root.frame % frames.length]
+            pure: false
+            lockPure: true
         }
 
         CellText {
@@ -54,6 +56,8 @@ Item {
 
             visible: root.style == 1
             text: frames[root.frame % frames.length]
+            pure: false
+            lockPure: true
         }
 
         CellText {
@@ -62,6 +66,8 @@ Item {
 
             visible: root.style == 2
             text: frames[root.frame % frames.length]
+            pure: false
+            lockPure: true
         }
 
     }

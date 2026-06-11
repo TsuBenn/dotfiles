@@ -96,7 +96,7 @@ Scope {
 
                 ScriptAction {
                     script: {
-                        root.peekBar = true
+                        bar.peekBar = true
                     }
                 }
                 PauseAnimation {
@@ -104,7 +104,7 @@ Scope {
                 }
                 ScriptAction {
                     script: {
-                        root.peekBar = false
+                        bar.peekBar = false
                     }
                 }
             }
@@ -115,7 +115,7 @@ Scope {
                 right: true
             }
 
-            property bool peekBar: false
+            property bool peekBar: bar.peekBar
             property bool forceBar: (
                 PopupManager.active_popups.length > 0 
                 && !PopupManager.isOpen("quick_menu") 
@@ -147,128 +147,12 @@ Scope {
 
             color: Colors.bgSurface
 
-            Item {
-
-                opacity: (!root.hideBar || root.forceBar || root.peekBar)
+            StatusBar {
 
                 id: bar
 
-                anchors.fill: parent
-                //anchors.leftMargin: Cell.w(1)
-                //anchors.rightMargin: Cell.w(1)
-
-                MouseArea {
-
-                    visible: PopupManager.active_popups.length > 0
-
-                    anchors.fill: parent
-
-                    onPressed: {
-                        PopupManager.close()
-                    }
-                }
-
-                RowLayout {
-
-                    spacing: 0
-
-                    Workspaces {
-                        id: workspaces
-                    }
-
-                    CellText {
-                        visible: window_title.text
-                        text: "│ "
-                        color: Colors.fgSubtle
-                    }
-
-                    CellText {
-
-                        id: window_title
-
-                        property string wTitle: HyprInfo.focusedwindow.title
-                        property string wClass: HyprInfo.focusedwindow.class
-
-                        preferedW: Cell.wCount(bar.width/2-clock.implicitWidth/2-system.implicitWidth-workspaces.implicitWidth) - 10
-
-                        text: `${wClass}`
-                        font: Cell.font
-                        color: Colors.fgBase
-
-                    }
-
-                }
-
-                System {
-                    id: system
-                    anchors.right: clock.left
-                    anchors.rightMargin: Cell.w(2)
-                }
-
-                Clock {
-                    id: clock
-                    x: Cell.centerWCell(implicitWidth,bar.width)
-                }
-
-                BarMediaPlayer {
-                    id: media_player
-                    anchors.left: clock.right
-                    anchors.leftMargin: Cell.w(2)
-                }
-
-                RowLayout {
-
-                    x: Cell.alignRightWCell(implicitWidth, bar.width)
-
-                    spacing: Cell.w(0)
-
-                    OBS {} 
-
-                    CellText { text: " " }
-
-                    Volume {}
-
-                    CellText { text: " " }
-
-                    ControlPanel {}
-
-                    CellText { text: " " }
-
-                    Search {
-                        id: search
-                    }
-
-                }
-
-                MouseArea {
-
-                    visible: ContextMenuManager.visible || ContextMenuManager.visible
-
-                    anchors.fill: parent
-
-                    onPressed: {
-                        ContextMenuManager.hide()
-                        DropdownManager.hide()
-                    }
-                }
-
-                MouseArea {
-
-                    visible: root.hideBar
-
-                    anchors.fill: parent
-
-                    hoverEnabled: true
-                    acceptedButtons: Qt.NoButton
-
-                    onEntered: {
-                        root.peekBar = true
-                    }
-
-                    onExited: {
-                        root.peekBar = false
-                    }
-                }
+                hideBar: root.hideBar
+                forceBar: root.forceBar
 
             }
 
@@ -659,7 +543,7 @@ Scope {
                     target: lock_screen_background
                     property: "opacity"
                     to: 0
-                    duration: 200
+                    duration: 500
                     easing.type: Easing.OutCubic
                 }
             }

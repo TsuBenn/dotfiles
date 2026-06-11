@@ -29,7 +29,9 @@ Singleton {
 
     property bool hints             : true  // Show keyboard hints
     property bool minimal           : false // Reduce UI elements
+    property bool textBasedVolume   : false // Bar's volume rocker do be text
     property bool hideBar           : false // Hide status bar
+    property bool bottomBar         : false // Status bar placed on the bottom of the screen instead of top
     property bool safeNotifications : false // Hide notifications' messages
     property bool dnd               : false // Do not disturb
     property bool optimizeMemory    : false // Reduce memory usage significantly, but takes more time to load UI elements
@@ -39,6 +41,7 @@ Singleton {
     property bool hyprBlur          : false // Toggles Hyprland background blur for windows
 
     property bool bgCava            : true  // Run cava on top of the wallpaper
+    property bool bgCavaLock        : false  // Run cava on top of the wallpaper (lockscreen)
 
     property bool screenshotStay    : false  // Keep the screenshot buffer after screenshotting
 
@@ -51,13 +54,16 @@ Singleton {
     property var toggles: [
         "hints",
         "minimal",
+        "textBasedVolume",
         "hideBar",
+        "bottomBar",
         "optimizeMemory",
         "safeNotifications",
         "dnd",
         "hyprAnim",
         "hyprBlur",
         "bgCava",
+        "bgCavaLock",
         "screenshotStay",
         "lockScreenMusic",
         "debug",
@@ -163,7 +169,10 @@ Singleton {
         function toggle_hypranim(): void           { root.toggle("hyprAnim") }
         function toggle_hyprblur(): void           { root.toggle("hyprBlur") }
         function toggle_bgcava(): void             { root.toggle("bgCava") }
+        function toggle_bgcava_lock(): void        { root.toggle("bgCavaLock") }
         function toggle_lock_screen_music(): void  { root.toggle("lockScreenMusic") }
+        function toggle_bottom_bar(): void         { root.toggle("bottomBar") }
+        function toggle_text_based_volume(): void  { root.toggle("textBasedVolume") }
 
         function lock_screen(): void               { SystemInfo.lock() }
 

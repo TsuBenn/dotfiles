@@ -98,6 +98,18 @@ Singleton {
         root.timer = Math.floor(Date.now()/1000) - root.startTimer
     }
 
+    function totalMessagesCount() {
+        let count = 0
+
+        for (const app of notifications_groups) {
+            for (const notif of app.notifications) {
+                count += notif.group.length
+            }
+        }
+
+        return count
+    }
+
     function flatten() {
 
         const buffer = notifications_groups

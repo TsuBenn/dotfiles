@@ -13,6 +13,12 @@ Singleton {
         family: "JetBrainsMono Nerd Font",
         pointSize: root.pointSize,
     })
+
+    readonly property font fontE: Qt.font({
+        family: "Apple Color Emoji",
+        pointSize: root.pointSize,
+    })
+
     readonly property font fontB: Qt.font({
         family: "JetBrainsMono Nerd Font",
         pointSize: root.pointSize,

@@ -14,6 +14,7 @@ Item {
     property string text: "cell text"
     property string raw_text: text
     property font font: Cell.font
+    property font fontE: Cell.fontE
     property color color: Colors.fgBase
     property color bg: "transparent"
 
@@ -371,126 +372,69 @@ Item {
     function wrapFullWidth(str) {
         return `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Mono CJK JP';">${str}</span>`
     }
+    function wrapBraille(str) {
+        return `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Symbols 2';">${str}</span>`
+    }
 
-    function splitUnpure(str) {
+function splitUnpure(str) {
+    let result = [];
 
-        let result = []
-        for (const line of str.split("\n")) {
-            let processed = []  
-            // <span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Mono CJK JP';">${cjk}</span> 
+    for (const line of str.split("\n")) {
+        let processed = [];
+        // Added inBraille state flag
+        let inFullWidth = false, inEmoji = false, inBraille = false, buffer = "";
 
-            let inFullWidth = false
-            let inEmoji = false
-            let buffer = ""
-
-            for (const c of line) {
-
-                if (c.length == 2) {
-                    if (inFullWidth) {
-                        if (buffer) {
-                            processed.push({
-                                text: wrapFullWidth(buffer),
-                                len: buffer.length,
-                                type: "cjk",
-                            })
-                        }
-                        buffer = ""
-                        inFullWidth = false
-                    } else if (!inEmoji) {
-                        if (buffer) {
-                            processed.push({
-                                text: hoistWhitespace(richify(buffer)),
-                                len: buffer.length,
-                                type: "pure",
-                            })
-                        }
-                        buffer = ""
-                        inEmoji = true
-                    }
-                    buffer += c
-
-                } else if (isFullWidth(c)) {
-                    if (inEmoji) {
-                        if (buffer) {
-                            processed.push({
-                                text: wrapFullWidth(buffer),
-                                len: buffer.length/2,
-                                type: "emoji",
-                            })
-                        }
-                        buffer = ""
-                        inEmoji = false
-                    } else if (!inFullWidth) {
-                        if (buffer) {
-                            processed.push({
-                                text: hoistWhitespace(richify(buffer)),
-                                len: buffer.length,
-                                type: "pure",
-                            })
-                        }
-                        buffer = ""
-                        inFullWidth = true
-                    }
-                    buffer += c
-
-                } else {
-                    if (inEmoji) {
-                        if (buffer) {
-                            processed.push({
-                                text: wrapFullWidth(buffer),
-                                len: buffer.length/2,
-                                type: "emoji",
-                            })
-                        }
-                        buffer = ""
-                        inEmoji = false
-                    } else if (inFullWidth) {
-                        if (buffer) {
-                            processed.push({
-                                text: wrapFullWidth(buffer),
-                                len: buffer.length,
-                                type: "cjk",
-                            })
-                        }
-                        buffer = ""
-                        inFullWidth = false
-                    }
-
-                    buffer += c
-                }
-
+        // Helper to push buffer contents and reset it
+        const flush = () => {
+            if (!buffer) return;
+            if (inFullWidth) {
+                processed.push({ text: wrapFullWidth(buffer), len: buffer.length, type: "cjk" });
+            } else if (inEmoji) {
+                processed.push({ text: `<span style="font-size:${Cell.cellHeight*1.4}px;font-family:'Apple Color Emoji';">${str}</span>`, len: buffer.length / 2, type: "emoji" });
+            } else if (inBraille) {
+                // Braille type output format
+                processed.push({ text: wrapBraille(buffer), len: buffer.length, type: "braille" });
+            } else {
+                processed.push({ text: hoistWhitespace(richify(buffer)), len: buffer.length, type: "pure" });
             }
+            buffer = "";
+        };
 
-            if (buffer) {
-                if (inFullWidth) {
-                    processed.push({
-                        text: wrapFullWidth(buffer),
-                        len: buffer.length,
-                        type: "cjk",
-                    })
-                } else if (inEmoji) {
-                    processed.push({
-                        text: wrapFullWidth(buffer),
-                        len: buffer.length/2,
-                        type: "emoji",
-                    })
-                } else {
-                    processed.push({
-                        text: hoistWhitespace(richify(buffer)),
-                        len: buffer.length,
-                        type: "pure",
-                    })
-                }
+        for (const c of line) {
+            // Check if character belongs to the Unicode Braille Patterns block
+            const isBraille = /[\u2800-\u28FF]/.test(c);
+
+            if (c.length === 2) {
+                if (inFullWidth || !inEmoji || inBraille) flush();
+                inFullWidth = false;
+                inEmoji = true;
+                inBraille = false;
+            } else if (isBraille) {
+                if (inFullWidth || inEmoji || !inBraille) flush();
+                inFullWidth = false;
+                inEmoji = false;
+                inBraille = true;
+            } else if (isFullWidth(c)) {
+                if (inEmoji || !inFullWidth || inBraille) flush();
+                inEmoji = false;
+                inFullWidth = true;
+                inBraille = false;
+            } else {
+                if (inEmoji || inFullWidth || inBraille) flush();
+                inEmoji = false;
+                inFullWidth = false;
+                inBraille = false;
             }
-
-            result.push(processed)
+            buffer += c;
         }
 
-        if (debug) console.log(JSON.stringify(result, null, 2))
-
-        return result
-
+        flush(); // Handle leftover characters at the end of the line
+        result.push(processed);
     }
+
+    if (debug) console.log(JSON.stringify(result, null, 2));
+    return result;
+}
 
     property var processed: []
 
@@ -529,6 +473,8 @@ Item {
 
                         delegate: RowLayout {
 
+                            Layout.alignment: root.alignRight ? Qt.AlignRight : Qt.AlignLeft
+
                             required property int index
 
                             spacing: 0
@@ -562,16 +508,16 @@ Item {
 
                                         Text {
 
-                                            anchors.centerIn: parent.type == "emoji" || parent.type == "cjk" ? parent : undefined
+                                            anchors.centerIn: parent.type == "emoji" || parent.type == "cjk" || parent.type == "braille" ? parent : undefined
 
-                                            anchors.verticalCenterOffset: parent.type == "emoji" ? Cell.cellHeight*0.05 : 0
+                                            anchors.verticalCenterOffset: parent.type == "emoji" ? Cell.cellHeight*-0.05 : 0
                                             anchors.horizontalCenterOffset: parent.type == "emoji" ? Cell.cellWidth*0.05 : 0
 
                                             y: -(Cell.cellHeight/0.9)*0.05
 
                                             textFormat: Text.RichText
                                             text: parent.text
-                                            font: root.font
+                                            font: parent.type == "emoji" ? root.fontE : root.font
                                             color: root.color
                                             lineHeight: 0.9
 
@@ -607,6 +553,7 @@ Item {
 
                     text: root.raw_text
                     textFormat: Text.RichText
+                    horizontalAlignment: root.alignRight ? Text.AlignRight : Text.AlignLeft
                     font: root.font
                     color: root.color
                     lineHeight: 0.9

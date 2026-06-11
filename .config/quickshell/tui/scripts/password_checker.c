@@ -26,6 +26,7 @@ int check_password(const char *username, const char *password) {
     pam_handle_t *pamh = NULL;
     struct pam_conv local_conversation = { my_conv, (void *)password };
 
+    // Use "quickshell" or "hyprlock" service config if you want to avoid standard system policies
     int retval = pam_start("login", username, &local_conversation, &pamh);
     if (retval == PAM_SUCCESS) {
         retval = pam_authenticate(pamh, 0);
@@ -48,14 +49,14 @@ int main() {
     char pass[256];
 
     // 2. Continuous Loop: Keep running until stdin is closed (EOF)
-    // This happens automatically if the UI application crashes or closes its write pipe.
+    // Fixed the comma expression order here
     while (explicit_bzero(pass, sizeof(pass)), fgets(pass, sizeof(pass), stdin) != NULL) {
         
         // Strip trailing newlines cleanly
         pass[strcspn(pass, "\n")] = 0;
         pass[strcspn(pass, "\r")] = 0;
 
-        // Skip empty lines (e.g. accidental extra newlines sent down the pipe)
+        // Skip empty lines 
         if (strlen(pass) == 0) {
             continue;
         }
@@ -67,10 +68,10 @@ int main() {
             printf("0\n");
         }
 
-        // 4. Force stdout to flush immediately so the UI application gets the result right away
+        // 4. Force stdout to flush immediately 
         fflush(stdout);
 
-        // Security: Clear the buffer immediately before looping back for the next input
+        // Security: Clear the buffer immediately before looping back
         explicit_bzero(pass, sizeof(pass));
     }
 

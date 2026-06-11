@@ -111,13 +111,39 @@ CellPopup {
 
                 visible: !image_preview.visible
 
-                w: parent.contentW
-                h: parent.contentH
+                w: 78
+                h: 18
 
-                source: CellText {
-                    text: layout.dedent(ClipboardInfo.preview)
-                    preferedW: preview_list.contentW
-                    debug: true
+                source: RowLayout {
+
+                    spacing: Cell.w(1)
+
+                    CellText {
+                        text: ""
+                    }
+
+                    CellText {
+
+                        id: line_num
+
+                        Layout.alignment: Qt.AlignTop
+
+                        text: [...Array((ClipboardInfo.preview).split("\n").length).keys()].map(i => i + 1).join("\n")
+                        color: Colors.fgSubtle
+
+                        alignRight: true
+
+                    }
+
+                    CellText {
+
+                        Layout.alignment: Qt.AlignTop
+
+                        text: layout.dedent(ClipboardInfo.preview)
+                        preferedW: preview_list.contentW - line_num.w - 2
+                        debug: true
+
+                    }
                 }
 
             }

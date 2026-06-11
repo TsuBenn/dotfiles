@@ -44,8 +44,27 @@ ShellRoot {
 
         color: Colors.bgSurface
 
-        CellText {
-            text: ClipboardInfo.preview
+        Cells {
+            w: 80
+            h: 30
+            grid: true
+            ColumnLayout {
+
+                spacing: 0
+
+                CellText {
+                    text: "😭"
+                    pure: false
+                    lockPure: true
+                }
+
+                Text {
+                    text: "😭"
+                    font.pointSize: 12
+                    font.family: "Apple Color Emoji"
+                }
+
+            }
         }
 
     }

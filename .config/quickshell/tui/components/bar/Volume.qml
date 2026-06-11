@@ -35,7 +35,7 @@ Cells {
         w: text_state ? text_based.w : Cell.wCount(slider_based.implicitWidth)
         h: 1
 
-        property bool text_state: true
+        property bool text_state: SettingsInfo.textBasedVolume
 
         color: "transparent"
 
@@ -74,7 +74,7 @@ Cells {
                     if (button == "L") {
                         AudioInfo.muteVolume(AudioInfo.sinkDefault)
                     } else if (button == "R") {
-                        volume.text_state = !volume.text_state
+                        SettingsInfo.toggle("textBasedVolume")
                     }
                 }
 
@@ -101,7 +101,7 @@ Cells {
 
                 onReleased: (button) => {
                     if (button == "R") { 
-                        volume.text_state = !volume.text_state
+                        SettingsInfo.toggle("textBasedVolume")
                     }
                     else if (button == "L") {
                         AudioInfo.muteVolume(AudioInfo.sinkDefault)

@@ -55,7 +55,7 @@ bit_format = 16bit")`]
 
         stdout: SplitParser {
             onRead: (data) => {
-                if (root.activeUser == 0) return
+                // if (root.activeUser == 0) return
                 root.points = data.split(";").slice(0,root.bars)
                 root.pointsFlipped = [...data.split(";").slice(root.bars/2,root.bars),...data.split(";").slice(0, (root.bars/2))].reverse()
                 

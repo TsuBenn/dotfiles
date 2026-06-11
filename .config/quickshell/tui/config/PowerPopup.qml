@@ -120,8 +120,8 @@ CellPopup {
             () => root.close(),
         ]
 
-        w: Cell.wCount(root.implicitWidth) + 1
-        h: Cell.hCount(root.implicitHeight) + 1
+        w: Cell.wCount(root.implicitWidth, "ceil")
+        h: Cell.hCount(root.implicitHeight, "ceil")
 
         color: Colors.transparent(Qt.darker(Colors.bgBase,2),0.8)
 
@@ -156,7 +156,6 @@ CellPopup {
                 ColumnLayout {
 
                     id: layout
-
 
                     spacing: Cell.h(1)
 

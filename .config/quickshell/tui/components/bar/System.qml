@@ -7,10 +7,14 @@ import QtQuick
 
 Cells {
 
+    id: root
+
     w: Cell.wCount(layout.implicitWidth)
     h: 1
 
     color: "transparent"
+
+    property bool interactive: true
 
     component Stat: RowLayout {
         id: stat
@@ -84,6 +88,8 @@ Cells {
     }
 
     MouseControl {
+
+        visible: root.interactive
 
         anchors.fill: parent
 
