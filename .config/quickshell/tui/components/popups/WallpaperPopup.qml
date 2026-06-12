@@ -144,8 +144,8 @@ CellPopup {
                         scale: 1 * scalar
 
                         // Simplified math utilizing our cached backend data references
-                        property real maxDeltaW: ((width * scalar - parent.width) / 2)
-                        property real maxDeltaH: (height * scalar - parent.height) / 2
+                        property real maxDeltaW: (Math.round(width * scalar) - Math.round(parent.width)) / 2
+                        property real maxDeltaH: (Math.round(height * scalar) - Math.round(parent.height)) / 2
 
                         property double monitorScalar: Math.max(root.monitor.width / sourceSize.width, root.monitor.height / sourceSize.height) * (preview.repoData ? preview.repoData.scalar : 1)
 

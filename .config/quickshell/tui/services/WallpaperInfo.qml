@@ -284,7 +284,7 @@ Singleton {
 
         stdout: StdioCollector {
             onStreamFinished: {
-                console.log(text)
+                console.log("WallpaperInfo: " + text)
                 cacher.recache = false
                 scan.running = true
                 root.rescanned()

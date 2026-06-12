@@ -12,16 +12,6 @@ CellPopup {
     w: 36 - (mode.length%2==1)
     h: 7
 
-    Component.onCompleted: {
-        PowerManager.called.connect((mode, count) => {
-            root.mode = mode
-            root.count = count
-            root.active = true
-            PopupManager.open("power_countdown")
-        })
-    }
-
-
     property int count: 3
 
     property string mode: "Sleep"

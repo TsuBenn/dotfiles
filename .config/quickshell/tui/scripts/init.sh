@@ -90,7 +90,6 @@ hl.bind(\"print\", hl.dsp.exec_cmd(\"qs -c tui ipc call config screenshot false\
 hl.bind(\"SUPER + print\", hl.dsp.exec_cmd(\"qs -c tui ipc call config screenshot true\"))
 hl.bind(\"SUPER + backspace\", hl.dsp.exec_cmd(\"qs -c tui ipc call config toggle_hidebar\"))
 hl.bind(\"SUPER + L\", hl.dsp.exec_cmd(\"qs -c tui ipc call config lock_screen\"))
-
 "
 
 hyprctl eval "$SET_COLOR"

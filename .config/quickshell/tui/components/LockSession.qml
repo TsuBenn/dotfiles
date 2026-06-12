@@ -288,7 +288,7 @@ WlSessionLockSurface {
             id: user
             Layout.leftMargin: Cell.centerWCell(width, parent.width)
             text: SystemInfo.username + (`${SystemInfo.username}@${SystemInfo.hostname}`.length%2!=0 ? " " : "") + "@" + SystemInfo.hostname
-            color: Colors.accentStrong
+            color: Colors.secondary
             font: Cell.fontB
         }
 

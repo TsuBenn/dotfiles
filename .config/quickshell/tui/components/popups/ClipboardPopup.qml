@@ -253,8 +253,8 @@ CellPopup {
 
                 id: list
 
-                w: parent.contentW
-                h: parent.contentH
+                w: 78
+                h: 6
 
                 source: ColumnLayout {
 

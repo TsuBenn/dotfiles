@@ -15,8 +15,12 @@ FloatingWindow {
 
     visible: true
 
-    implicitWidth: Cell.w(box.w) + Cell.w(0.9)
-    implicitHeight: Cell.h(box.h) + Cell.h(0.9)
+    onClosed: {
+        SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/quit.sh"])
+    }
+
+    implicitWidth: Cell.w(box.w) + Cell.w(1)
+    implicitHeight: Cell.h(box.h) + Cell.h(1)
 
     maximumSize: Qt.size(implicitWidth,implicitHeight)
     minimumSize: Qt.size(implicitWidth,implicitHeight)
@@ -51,6 +55,7 @@ FloatingWindow {
         ScriptAction {
             script: {
                 SettingsInfo.dependenciesChecked = true
+                if (SettingsInfo.sfx) AudioInfo.playSound("wow", 1)
             }
         }
     }
@@ -87,7 +92,7 @@ FloatingWindow {
                 CellText {
                     id: title
                     text: "Checking dependencies"
-                    color: Colors.accentStrong
+                    color: Colors.secondary
                     font: Cell.fontB
                 }
 
@@ -110,129 +115,100 @@ FloatingWindow {
                 id: list
 
                 w: box.w
-                h: box.h - 3 - status.h
+                h: box.h - 3 - Cell.hCount(footer.implicitHeight)
 
-                virtualH: true
+                source: ColumnLayout {
 
-                source: ListView {
+                    spacing: 0
 
-                    interactive: false
+                    Repeater {
 
-                    model: dep.results
+                        model: dep.results
 
-                    contentY: list.contentY
+                        delegate: Loader {
 
-                    implicitWidth: Cell.w(list.contentW)
-                    implicitHeight: Cell.h(list.h)
+                            id: dep_loader
 
-                    onContentHeightChanged: list.contentH = contentHeight
+                            required property var modelData
 
-                    delegate: Cells {
+                            property string stat: modelData.status
+                            required property string manager
+                            required property string pkg
+                            required property string name
+                            required property string description
 
-                        id: dependency
+                            active: true
 
-                        required property string status
-                        required property string manager
-                        required property string pkg
-                        required property string name
-                        required property string description
+                            sourceComponent: Cells {
 
-                        color: "transparent"
+                                id: dependency
 
-                        w: list.contentW
-                        h: Cell.hCount(dep_layout.implicitHeight)
+                                property string status      : dep_loader.stat
+                                property string manager     : dep_loader.manager    
+                                property string pkg         : dep_loader.pkg        
+                                property string name        : dep_loader.name       
+                                property string description : dep_loader.description
 
-                        ColumnLayout {
+                                color: "transparent"
 
-                            id: dep_layout
-
-                            spacing: 0
-
-                            RowLayout {
-
-                                Layout.leftMargin: Cell.w(1)
-
-                                spacing: 0
-
-                                CellText {
-                                    text: "Name: "
-                                    color: Colors.fgDim
-                                }
-
-                                CellText {
-                                    text: dependency.name
-                                    color: {
-                                        if (dependency.status == "START") {
-                                            return Colors.fgBase
-                                        } else if (dependency.status == "OK") {
-                                            return Colors.success
-                                        } else if (dependency.status == "MISSING") {
-                                            return Colors.danger
-                                        }
-                                    }
-                                    preferedW: list.contentW - 8 - dependency.pkg.length
-                                    font: Cell.fontB
-                                }
-
-                                CellText {
-                                    text: dependency.pkg
-                                    color: Colors.fgSubtle
-                                }
-
-                            }
-
-                            RowLayout {
-
-                                Layout.leftMargin: Cell.w(1)
-
-                                spacing: 0
-
-                                CellText {
-                                    text: "Status: "
-                                    color: Colors.fgDim
-                                }
-
-                                CellText {
-                                    text: dependency.status.replace("START","CHECKING")
-                                    color: {
-                                        if (dependency.status == "START") {
-                                            return Colors.fgBase
-                                        } else if (dependency.status == "OK") {
-                                            return Colors.success
-                                        } else if (dependency.status == "MISSING") {
-                                            return Colors.danger
-                                        }
-                                    }
-                                    preferedW: list.contentW - 9
-                                }
-
-                            }
-
-                            RowLayout {
-
-                                Layout.leftMargin: Cell.w(1)
-
-                                spacing: 0
-
-                                CellText {
-                                    Layout.alignment: Qt.AlignTop
-                                    text: "Description: "
-                                    color: Colors.fgDim
-                                }
-
-                                CellText {
-                                    text: dependency.description
-                                    color: Colors.fgBase
-                                    preferedW: list.contentW - 15
-                                    wrap: true
-                                }
-
-                            }
-
-                            CellSeparator {
                                 w: list.contentW
-                                type: 2
-                                color: Colors.bgOverlay
+                                h: Cell.hCount(layout.implicitHeight)
+
+                                ColumnLayout {
+
+                                    id: layout
+
+                                    spacing: 0
+
+                                    CellText {
+                                        text: ` ${dependency.name} (${dependency.status == "START" ? "CHECKING" : dependency.status})`
+                                        preferedW: list.contentW
+                                        font: Cell.fontB
+                                        color: {
+                                            if (dependency.status == "OK") {
+                                                return Colors.success
+                                            } else if (dependency.status == "MISSING") {
+                                                return Colors.danger
+                                            }
+                                            return Colors.fgBase
+                                        }
+                                    }
+
+                                    Loader {
+
+                                        active: dependency.status == "MISSING"
+
+                                        sourceComponent: ColumnLayout {
+
+                                            spacing: 0
+
+                                            CellText {
+                                                text: ` Install by: ${dependency.manager == "pacman" ? "sudo pacman -S" : "yay -S"} ${dependency.pkg}`
+                                                preferedW: list.contentW
+                                                color: Colors.fgDim
+                                            }
+
+                                            CellText {
+                                                text: " " + dependency.description
+                                                wrap: true
+                                                preferedW: list.contentW
+                                                color: Colors.fgSubtle
+                                            }
+
+                                        }
+
+
+                                    }
+
+
+                                    CellSeparator {
+                                        w: list.contentW
+                                        type: 2
+                                        color: Colors.bgOverlay
+                                    }
+
+                                }
+
                             }
 
                         }
@@ -248,13 +224,70 @@ FloatingWindow {
                 color: Colors.accentStrong
             }
 
-            CellText {
-                Layout.leftMargin: Cell.w(1)
-                id: status
-                text: "Initializing dependencies check..."
-                color: Colors.info
-                preferedW: box.w - 2
-                wrap: true
+            ColumnLayout {
+
+                id: footer
+
+                property bool error: false
+
+                spacing: 0
+
+                CellText {
+                    Layout.leftMargin: Cell.w(1)
+                    id: status
+                    text: "Initializing dependencies check..."
+                    color: Colors.info
+                    preferedW: box.w - 2
+                    wrap: true
+                }
+
+                CellSeparator {
+                    visible: parent.error
+                    w: box.w
+                    type: 0
+                    color: Colors.bgOverlay
+                }
+
+                RowLayout {
+                    visible: parent.error
+
+                    Layout.alignment: Qt.AlignRight
+                    Layout.rightMargin: Cell.w(1)
+
+                    spacing: Cell.w(2)
+
+                    CellButton {
+
+                        text: "Retry"
+
+                        color: [Colors.accentStrong, Colors.bgOverlay]
+                        fg: [Colors.onAccent, Colors.fgBase]
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/revive.sh"])
+                            }
+                        }
+
+                    }
+
+                    CellButton {
+
+                        text: "Quit"
+
+                        color: [Colors.bgOverlay, Colors.fgBase]
+                        fg: [Colors.fgBase, Colors.bgSurface]
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/quit.sh"])
+                            }
+                        }
+
+                    }
+
+                }
+
             }
 
         }
@@ -286,13 +319,9 @@ FloatingWindow {
                         status.color = Colors.success
                     }
                     else {
+                        footer.error = true
                         result += `${missing_pkg.length} package${missing_pkg.length > 1 ? "s" : ""} missing`
                         status.color = Colors.danger
-                    }
-
-
-                    for (const pkg of missing_pkg) {
-                        result += `\n---\nName: ${pkg.name}\nInstall: ${pkg.manager == "pacman" ? "sudo pacman" : "yay"} -S ${pkg.pkg}\nDescription: ${pkg.description}`
                     }
 
                     status.text = result

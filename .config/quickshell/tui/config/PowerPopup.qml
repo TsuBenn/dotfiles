@@ -24,6 +24,12 @@ CellPopup {
     onVisibleChanged: {
         if (visible) {
             openAnim.restart()
+            blackout.opacity = 0
+            countdown.opacity = 1
+            top_bar.implicitHeight = 0
+            bottom_bar.implicitHeight = 0
+        } else {
+            countdown.active = false
         }
     }
 
@@ -54,6 +60,38 @@ CellPopup {
             to: 1
             duration: 200
             easing.type: Easing.OutCubic
+        }
+    }
+
+    ParallelAnimation {
+        id: blacking_out
+        NumberAnimation {
+            target: blackout
+            property: "opacity"
+            to: 1
+            duration: 3000
+            easing.type: Easing.InQuart
+        }
+        NumberAnimation {
+            target: countdown
+            property: "opacity"
+            to: 0
+            duration: 3000
+            easing.type: Easing.InQuart
+        }
+        NumberAnimation {
+            target: top_bar
+            property: "implicitHeight"
+            to: root.monitor.height/2
+            duration: 3000
+            easing.type: Easing.InQuart
+        }
+        NumberAnimation {
+            target: bottom_bar
+            property: "implicitHeight"
+            to: root.monitor.height/2
+            duration: 3000
+            easing.type: Easing.InQuart
         }
     }
 
@@ -139,7 +177,7 @@ CellPopup {
 
         Loader {
 
-            active: root.visible || !root.optimizeMemory
+            active: (root.visible || !root.optimizeMemory) && !countdown.active
 
             sourceComponent: Cells {
 
@@ -233,6 +271,110 @@ CellPopup {
             }
         }
 
+        Component.onCompleted: {
+            PowerManager.called.connect((mode, count) => {
+                countdown.mode = mode
+                countdown.count = count
+                countdown.active = true
+                blacking_out.restart()
+                if (!PopupManager.isOpen("power")) {
+                    PopupManager.open("power")
+                }
+            })
+        }
+
+        Rectangle {
+
+            id: blackout
+
+            anchors.fill: parent
+
+            color: "black"
+
+        }
+
+        Rectangle {
+
+            id: top_bar
+
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            implicitHeight: root.monitor.height/2
+
+            color: "black"
+
+        }
+
+        Rectangle {
+
+            id: bottom_bar
+
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            implicitHeight: root.monitor.height/2
+
+            color: "black"
+
+        }
+
+        CellText {
+
+            id: countdown
+
+            property int count: 3
+
+            property string mode: "Sleep"
+
+            property bool active: false
+
+            visible: active
+
+            layer.enabled: true
+
+            x: Cell.centerWCell(implicitWidth, menu.implicitWidth) - Cell.w(3)
+            y: Cell.centerHCell(implicitHeight, menu.implicitHeight)
+            pure: false
+            lockPure: true
+            text: ANSI.render(mode + " in " + count, 2)
+            color: menu.select_color
+
+        }
+
+        Timer {
+            id: close_delay
+            interval: 1000
+            onTriggered: {
+                root.close()
+            }
+        }
+
+        Timer {
+            id: timer
+
+            interval: 1000
+            running: countdown.active
+            repeat: true
+            onTriggered: {
+                if (countdown.count > 0) {
+                    countdown.count--
+                }
+                if (countdown.count == 0 && countdown.active) {
+                    countdown.active = false
+                    close_delay.running = true
+                    switch (countdown.mode) {
+                        case "Shutdown": SystemInfo.shutdown(); break;
+                        case "Sleep": SystemInfo.sleep(); break;
+                        case "Reboot": SystemInfo.reboot(); break;
+                        case "Logout": SystemInfo.logout(); break;
+                    }
+                }
+            }
+
+        }
 
     }
 

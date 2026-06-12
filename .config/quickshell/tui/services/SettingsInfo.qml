@@ -50,6 +50,8 @@ Singleton {
 
     property bool lockScreenMusic   : false // Music playing during lock session
 
+    property bool sfx               : true  // Random ahh sound effects
+
     property bool debug             : true  // Used for random debugging
 
     signal debugSig()
@@ -70,6 +72,7 @@ Singleton {
         "screenshotStay",
         "screenshotCursor",
         "lockScreenMusic",
+        "sfx",
         "debug",
     ]
 
@@ -185,6 +188,7 @@ Singleton {
         function toggle_lock_screen_music(): void  { root.toggle("lockScreenMusic") }
         function toggle_bottom_bar(): void         { root.toggle("bottomBar") }
         function toggle_text_based_volume(): void  { root.toggle("textBasedVolume") }
+        function toggle_sfx(): void                { root.toggle("sfx") }
 
         function lock_screen(): void               { SystemInfo.lock() }
 

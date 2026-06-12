@@ -30,8 +30,8 @@ Singleton {
         weight: Font.Black,
     })
 
-    readonly property real cellWidth: metrics.averageCharacterWidth
-    readonly property real cellHeight: metrics.height*0.9
+    readonly property int cellWidth: metrics.averageCharacterWidth
+    readonly property int cellHeight: metrics.height*0.9
     readonly property real cellRatio: cellWidth/cellHeight
 
     function centerWCell(item: double, container: double) : double {

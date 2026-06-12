@@ -238,11 +238,11 @@ CellPopup {
                 property var result: []
 
                 onSelectedChanged: {
-                    emoji_preview.text = result[selected]?.label ?? EmojisInfo.recent[selected].label
+                    emoji_preview.text = (result[selected]?.label ?? EmojisInfo.recent[selected]?.label) ?? ""
                 }
 
                 onResultChanged: {
-                    emoji_preview.text = result[selected]?.label ?? EmojisInfo.recent[selected].label
+                    emoji_preview.text = (result[selected]?.label ?? EmojisInfo.recent[selected]?.label) ?? ""
                     root.mouseLocked = true
                     selected = 0
                 }
@@ -268,7 +268,7 @@ CellPopup {
                 }
 
                 source: EmojiGrid {
-                    model: emojis.result.length > 0 ? emojis.result : EmojisInfo.recent
+                    model: (emojis.result.length > 0 ? emojis.result : EmojisInfo.recent) ?? []
                 }
 
             }

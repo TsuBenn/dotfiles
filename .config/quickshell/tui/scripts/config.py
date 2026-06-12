@@ -194,6 +194,13 @@ SETTINGS = [
                 "type": "exec",
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_lock_screen_music"],
             },
+            {
+                "label": "{sfx} Sound effects",
+                "description": "Random anime sound effects for everything.",
+                "category": "settings",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_sfx"],
+            },
         ],
     },
     {

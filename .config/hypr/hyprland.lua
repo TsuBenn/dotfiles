@@ -53,6 +53,9 @@ hl.env("XMODIFIERS", "@im=fcitx")
 hl.env("INPUT_METHOD", "fcitx")
 hl.env("SDL_IM_MODULE", "fcitx")
 
+hl.env("LIBVA_DRIVER_NAME", "nvidia")
+hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
+
 hl.config({
     general = {
         gaps_in  = {top = 8, left = 3, bottom = 8, right = 3},
