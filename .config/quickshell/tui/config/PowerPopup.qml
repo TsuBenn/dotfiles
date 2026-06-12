@@ -14,6 +14,8 @@ CellPopup {
     implicitWidth: monitor.width
     implicitHeight: monitor.height
 
+    layer.enabled: true
+
     x: 0
     y: 0
 
@@ -69,29 +71,32 @@ CellPopup {
             target: blackout
             property: "opacity"
             to: 1
-            duration: 3000
-            easing.type: Easing.InQuart
-        }
-        NumberAnimation {
-            target: countdown
-            property: "opacity"
-            to: 0
-            duration: 3000
+            duration: 2000
             easing.type: Easing.InQuart
         }
         NumberAnimation {
             target: top_bar
             property: "implicitHeight"
-            to: root.monitor.height/2
-            duration: 3000
+            to: root.monitor.height/2 + Cell.h(1)
+            duration: 2000
             easing.type: Easing.InQuart
         }
         NumberAnimation {
             target: bottom_bar
             property: "implicitHeight"
-            to: root.monitor.height/2
-            duration: 3000
+            to: root.monitor.height/2 + Cell.h(1)
+            duration: 2000
             easing.type: Easing.InQuart
+        }
+        SequentialAnimation {
+            PauseAnimation {duration: 2000}
+            NumberAnimation {
+                target: countdown
+                property: "opacity"
+                to: 0
+                duration: 1000
+                easing.type: Easing.InCubic
+            }
         }
     }
 
@@ -346,7 +351,7 @@ CellPopup {
 
         Timer {
             id: close_delay
-            interval: 1000
+            interval: 500
             onTriggered: {
                 root.close()
             }
