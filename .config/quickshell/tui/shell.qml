@@ -35,40 +35,6 @@ ShellRoot {
 
     Bar {}
 
-    FloatingWindow {
-
-        visible: false
-
-        minimumSize: Qt.size(Cell.w(80),Cell.h(30))
-        maximumSize: Qt.size(Cell.w(80),Cell.h(30))
-
-        color: Colors.bgSurface
-
-        Cells {
-            w: 80
-            h: 30
-            grid: true
-            ColumnLayout {
-
-                spacing: 0
-
-                CellText {
-                    text: "😭"
-                    pure: false
-                    lockPure: true
-                }
-
-                Text {
-                    text: "😭"
-                    font.pointSize: 12
-                    font.family: "Apple Color Emoji"
-                }
-
-            }
-        }
-
-    }
-
     Process {
         id: process 
 

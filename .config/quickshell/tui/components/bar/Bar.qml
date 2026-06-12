@@ -123,6 +123,7 @@ Scope {
                 && !PopupManager.isOpen("emoji") 
                 && !PopupManager.isOpen("wallpaper")
                 && !PopupManager.isOpen("launcher")
+                && !PopupManager.isOpen("screenshot")
             )
             property bool hideBar: (
                 ((Hyprland.focusedWorkspace.hasFullscreen ?? false) 
@@ -546,6 +547,10 @@ Scope {
                     duration: 500
                     easing.type: Easing.OutCubic
                 }
+            }
+
+            DependenciesChecker {
+                visible: false
             }
 
             WlSessionLock {

@@ -181,32 +181,33 @@ WlSessionLockSurface {
 
             RowLayout {
 
-                spacing: Cell.w(2)
+                spacing: Cell.w(1)
 
-                x: Cell.w(1)
+                x: Cell.toW(root.width,"floor") - width - Cell.w(1)
 
                 System {
+                    visible: false
                     interactive: false
                 }
 
-            }
-
-            RowLayout {
-
-                spacing: Cell.w(1)
-
-                x: Cell.toW(root.width,"floor") - width
+                CellText {
+                    text: ""
+                }
 
                 OBS {
                     interactive: false
                 }
+
+                Volume {}
 
                 CellText {
                     text: "*" + NotificationsInfo.totalMessagesCount()
                     color: Colors.danger
                 }
 
-                Volume {}
+                ControlPanel {
+                    interactive: false
+                }
 
             }
 

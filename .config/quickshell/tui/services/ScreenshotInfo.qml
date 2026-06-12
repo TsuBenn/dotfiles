@@ -9,7 +9,10 @@ Singleton {
 
     id: root
 
-    property string cache_path: SystemInfo.configdir + "/scripts/screenshot_cache.ppm"
+    property string cache_path: SystemInfo.configdir + "/scripts/screenshot_cache" + (SettingsInfo.screenshotCursor ? "_cursor" : "") + ".ppm"
+
+    property string cache_path_no_cursor: SystemInfo.configdir + "/scripts/screenshot_cache.ppm"
+    property string cache_path_cursor: SystemInfo.configdir + "/scripts/screenshot_cache_cursor.ppm"
 
     property string path: SystemInfo.homedir + "/Screenshots/"
 
@@ -20,6 +23,10 @@ Singleton {
     property int h: 0
 
     signal cached()
+
+    function clear_cache() {
+        cache_remover.running = true
+    }
 
     function requestCache() {
         cacher.running = true
@@ -71,7 +78,7 @@ Singleton {
 
         id: cacher
 
-        command: ["grim","-c","-t","ppm", root.cache_path]
+        command: ["bash", "-c",`grim -c -t ppm ${root.cache_path_cursor} & grim -t ppm ${root.cache_path_no_cursor} & wait`]
 
         stderr: StdioCollector {
             onStreamFinished: {
@@ -79,6 +86,14 @@ Singleton {
                 root.cached()
             }
         }
+
+    }
+
+    Process {
+
+        id: cache_remover
+
+        command: ["bash", "-c",`rm ${root.cache_path_no_cursor} ${root.cache_path_cursor}`]
 
     }
 

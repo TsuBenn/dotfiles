@@ -41,13 +41,14 @@ Singleton {
     property bool hyprBlur          : false // Toggles Hyprland background blur for windows
 
     property bool bgCava            : true  // Run cava on top of the wallpaper
-    property bool bgCavaLock        : false  // Run cava on top of the wallpaper (lockscreen)
+    property bool bgCavaLock        : false // Run cava on top of the wallpaper (lockscreen)
 
-    property bool screenshotStay    : false  // Keep the screenshot buffer after screenshotting
+    property bool screenshotStay    : false // Keep the screenshot buffer after screenshotting
+    property bool screenshotCursor  : true  // Capture cursor
 
-    property bool lockScreenMusic    : false  // Music playing during lock session
+    property bool lockScreenMusic   : false // Music playing during lock session
 
-    property bool debug            : true  // Used for random debugging
+    property bool debug             : true  // Used for random debugging
 
     signal debugSig()
 
@@ -65,6 +66,7 @@ Singleton {
         "bgCava",
         "bgCavaLock",
         "screenshotStay",
+        "screenshotCursor",
         "lockScreenMusic",
         "debug",
     ]

@@ -7,7 +7,11 @@ import QtQuick
 
 RowLayout {
 
+    id: root
+
     spacing: Cell.w(0)
+
+    property bool interactive: true
 
     CellButton {
 
@@ -84,6 +88,8 @@ RowLayout {
                 text: "▏"
                 color: Colors.fgDim
                 font: Cell.fontB
+                pure: false
+                lockPure: true
             }
 
             MarqueeCellText {
@@ -97,11 +103,15 @@ RowLayout {
                 text: " │"
                 color: Colors.fgDim
                 font: Cell.fontB
+                pure: false
+                lockPure: true
             }
 
         }
 
         MouseControl {
+
+            visible: root.interactive
 
             anchors.fill: parent
 

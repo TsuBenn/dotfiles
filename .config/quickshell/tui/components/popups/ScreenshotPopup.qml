@@ -33,6 +33,7 @@ CellPopup {
                 fullscreen = false
             }
         } else {
+            ScreenshotInfo.clear_cache()
             namer.visible = false
             root.edit = false
             mask.visible = false
@@ -49,6 +50,10 @@ CellPopup {
             cache.source = ""
             cache.source = ScreenshotInfo.cache_path
             PopupManager.open("screenshot")
+        })
+        SettingsInfo.screenshotCursorChanged.connect(() => {
+            cache.source = ""
+            cache.source = ScreenshotInfo.cache_path
         })
         PopupManager.signalSent.connect((id, sig) => {
             if (id == "screenshot" && sig == "full") {
@@ -126,37 +131,33 @@ CellPopup {
         }
         ParallelAnimation {
             NumberAnimation {
-                target: mouse
-                property: "x1"
-                duration: 100
-                to: mouse.x1 + (mouse.x2 - mouse.x1)/2
+                target: overlay
+                property: "opacity"
+                to: 0
+                duration: 300
                 easing.type: Easing.OutCubic
             }
             NumberAnimation {
-                target: mouse
-                property: "x2"
-                duration: 100
-                to: mouse.x1 + (mouse.x2 - mouse.x1)/2
-                easing.type: Easing.OutCubic
-            }
-            NumberAnimation {
-                target: mouse
-                property: "y1"
-                duration: 100
-                to: mouse.y1 + (mouse.y2 - mouse.y1)/2
-                easing.type: Easing.OutCubic
-            }
-            NumberAnimation {
-                target: mouse
-                property: "y2"
-                duration: 100
-                to: mouse.y1 + (mouse.y2 - mouse.y1)/2
+                target: screenshot_region
+                property: "opacity"
+                to: 0
+                duration: 300
                 easing.type: Easing.OutCubic
             }
             ScriptAction {
                 script: {
                     root.edit = false
                 }
+            }
+        }
+        ScriptAction {
+            script: {
+                overlay.opacity = 1
+                screenshot_region.opacity = 1
+                mouse.x1 = 0
+                mouse.x2 = 0
+                mouse.y1 = 0
+                mouse.y2 = 0
             }
         }
     }
@@ -177,6 +178,12 @@ CellPopup {
                     if (snapAndCloseAnim.running) return
                     root.screenshot()
                     stay.yes ? snapAnim.restart() : snapAndCloseAnim.restart()
+                }
+            },
+            {
+                binds: "C",
+                action: () => {
+                    SettingsInfo.toggle("screenshotCursor")
                 }
             },
             {
@@ -267,7 +274,11 @@ CellPopup {
 
         CellText {
 
-            opacity: ( overlay.implicitWidth-2 == 0 || overlay.implicitHeight-2 == 0) && mask.visible && !root.fullscreen && SettingsInfo.hints
+            id: hints
+
+            property real real_opacity: 1
+
+            opacity: (( overlay.implicitWidth-2 == 0 || overlay.implicitHeight-2 == 0) && mask.visible && !root.fullscreen && SettingsInfo.hints)*real_opacity
 
             Behavior on opacity { NumberAnimation { duration: 500; easing.type: Easing.OutCubic } }
 
@@ -275,14 +286,17 @@ CellPopup {
             y: Cell.centerHCell(implicitHeight,root.monitor.height)
 
             text: [
-                "      Drag to select screenshot region      ",
+                "      <b>Drag</b> <i>to select screenshot region</i>      ",
                 "                                            ",
-                "     Shift Drag to select region & edit     ",
+                "     <b>Shift Drag</b> <i>to select region & edit</i>     ",
                 "                                            ",
-                "End or Print to screenshot the whole monitor",
+                "<b>End</b> <i>or</i> <b>Print</b> <i>to screenshot the whole monitor</i>",
                 "                                            ",
-                "     Ctrl+A to select the whole monitor     ",
+                "     <b>Ctrl+A</b> <i>to select the whole monitor</i>     ",
+                "                                            ",
+                "      <b>C</b> <i>to toggle cursor capture <b>(" + (SettingsInfo.screenshotCursor ? "ON " : "OFF") + ")</b></i>      ",
             ].join("\n")
+
 
         }
 
@@ -431,7 +445,7 @@ CellPopup {
 
             spacing: Cell.w(1)
 
-            x: Cell.toW(overlay.x + overlay.implicitWidth - implicitWidth)
+            x: Math.max(Cell.toW(overlay.x + overlay.implicitWidth - implicitWidth),Cell.w(1))
             y: Cell.toH(overlay.y + overlay.implicitHeight,"ceil") + Cell.h(1) >= Cell.toH(root.monitor.height,"floor") ? Cell.toH(overlay.y + overlay.implicitHeight) - Cell.h(1) : Cell.toH(overlay.y + overlay.implicitHeight) + Cell.h(1)
 
             CellButton {
@@ -448,6 +462,24 @@ CellPopup {
                 onReleased: (button) => {
                     if (button == "L") {
                         SettingsInfo.toggle("screenshotStay")
+                    }
+                }
+            }
+
+            CellButton {
+
+                id: cursor
+
+                property bool yes: SettingsInfo.screenshotCursor
+
+                text: "Cursor"
+
+                color: yes ? Colors.accentStrong : Colors.bgOverlay
+                fg: yes ? Colors.onAccent : Colors.fgBase
+
+                onReleased: (button) => {
+                    if (button == "L") {
+                        SettingsInfo.toggle("screenshotCursor")
                     }
                 }
             }

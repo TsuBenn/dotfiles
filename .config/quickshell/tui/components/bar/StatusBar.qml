@@ -101,6 +101,13 @@ Item {
 
         CellText { text: " " }
 
+        CellText {
+            text: "*" + NotificationsInfo.totalMessagesCount()
+            color: Colors.danger
+        }
+
+        CellText { text: " " }
+
         ControlPanel {}
 
         CellText { text: " " }

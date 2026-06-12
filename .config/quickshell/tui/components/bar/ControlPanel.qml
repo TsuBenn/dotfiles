@@ -15,6 +15,8 @@ Cells {
 
     color: Colors.bgOverlay
 
+    property bool interactive: true
+
     RowLayout {
 
         spacing: Cell.w(0)
@@ -100,6 +102,9 @@ Cells {
     }
 
     MouseControl {
+
+        visible: root.interactive
+
         anchors.fill: parent
 
         onReleased: (button) => {
