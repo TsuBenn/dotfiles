@@ -549,10 +549,6 @@ Scope {
                 }
             }
 
-            DependenciesChecker {
-                visible: false
-            }
-
             WlSessionLock {
 
                 id: lock_session

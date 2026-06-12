@@ -1,0 +1,2465 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+airootfs/
+  etc/
+    keyd/
+      default.conf
+    mkinitcpio.conf.d/
+      archiso.conf
+    mkinitcpio.d/
+      linux.preset
+    modprobe.d/
+      broadcom-wl.conf
+    pacman.d/
+      hooks/
+        uncomment-mirrors.hook
+        zzzz99-remove-custom-hooks-from-airootfs.hook
+    ssh/
+      sshd_config.d/
+        10-archiso.conf
+    systemd/
+      journald.conf.d/
+        volatile-storage.conf
+      logind.conf.d/
+        do-not-suspend.conf
+      network/
+        20-ethernet.network
+        20-wlan.network
+        20-wwan.network
+      networkd.conf.d/
+        ipv6-privacy-extensions.conf
+      resolved.conf.d/
+        archiso.conf
+      system/
+        getty@tty1.service.d/
+          autologin.conf
+        systemd-networkd-wait-online.service.d/
+          wait-for-only-one-interface.conf
+        choose-mirror.service
+        etc-pacman.d-gnupg.mount
+        livecd-alsa-unmuter.service
+        livecd-talk.service
+        pacman-init.service
+    hostname
+    locale.conf
+    motd
+    passwd
+    shadow
+    vconsole.conf
+  root/
+    .config/
+      nvim/
+        colors/
+          hutao.lua
+        lua/
+          tsubenn/
+            init.lua
+            keymap.lua
+            set.lua
+            tabline.lua
+        init.lua
+    .gnupg/
+      scdaemon.conf
+    .automated_script.sh
+    .zlogin
+    .zshrc
+  usr/
+    local/
+      bin/
+        choose-mirror
+        Installation_guide
+        livecd-sound
+      share/
+        livecd-sound/
+          asound.conf.in
+efiboot/
+  loader/
+    entries/
+      01-archiso-linux.conf
+      02-archiso-speech-linux.conf
+      03-archiso-memtest86+x64.conf
+    loader.conf
+grub/
+  grub.cfg
+  loopback.cfg
+syslinux/
+  archiso_head.cfg
+  archiso_pxe-linux.cfg
+  archiso_pxe.cfg
+  archiso_sys-linux.cfg
+  archiso_sys.cfg
+  archiso_tail.cfg
+  splash.png
+  syslinux.cfg
+bootstrap_packages
+packages.x86_64
+pacman.conf
+profiledef.sh
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="airootfs/etc/keyd/default.conf">
+[ids]
+*
+
+[main]
+
+capslock = esc
+</file>
+
+<file path="airootfs/etc/mkinitcpio.conf.d/archiso.conf">
+HOOKS=(base udev microcode modconf kms memdisk archiso archiso_loop_mnt archiso_pxe_common archiso_pxe_nbd archiso_pxe_http archiso_pxe_nfs block filesystems keyboard)
+COMPRESSION="xz"
+COMPRESSION_OPTIONS=(-9e)
+</file>
+
+<file path="airootfs/etc/mkinitcpio.d/linux.preset">
+# mkinitcpio preset file for the 'linux' package on archiso
+
+PRESETS=('archiso')
+
+ALL_kver='/boot/vmlinuz-linux'
+archiso_config='/etc/mkinitcpio.conf.d/archiso.conf'
+
+archiso_image="/boot/initramfs-linux.img"
+</file>
+
+<file path="airootfs/etc/modprobe.d/broadcom-wl.conf">
+# The broadcom-wl package requires some modules to be disabled in order to use
+# wl. Since the ISO image needs to cover many hardware cases, this file
+# overrides the default blacklist in /usr/lib/modprobe.d/
+#
+# If you need to use wl, you may need to delete this file, then `rmmod` any
+# already-loaded modules that are now blacklisted before proceeding to modprobe
+# wl itself.
+</file>
+
+<file path="airootfs/etc/pacman.d/hooks/uncomment-mirrors.hook">
+# remove from airootfs!
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = pacman-mirrorlist
+
+[Action]
+Description = Uncommenting HTTPS mirrors in /etc/pacman.d/mirrorlist...
+When = PostTransaction
+Depends = pacman-mirrorlist
+Depends = sed
+Exec = /usr/bin/sed -E -i 's/#(Server = https:)/\1/g' /etc/pacman.d/mirrorlist
+</file>
+
+<file path="airootfs/etc/pacman.d/hooks/zzzz99-remove-custom-hooks-from-airootfs.hook">
+# remove from airootfs!
+# As a workaround for https://bugs.archlinux.org/task/49347 , remove pacman hooks specific to the ISO build process.
+# If not, they would be used when pacstrap is run in the live environment.
+
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Work around FS#49347 by removing custom pacman hooks that are only required during ISO build...
+When = PostTransaction
+Depends = sh
+Depends = coreutils
+Depends = grep
+Exec = /bin/sh -c "rm -- $(grep -Frl 'remove from airootfs' /etc/pacman.d/hooks/)"
+</file>
+
+<file path="airootfs/etc/ssh/sshd_config.d/10-archiso.conf">
+# Allow root login using password authentication
+PasswordAuthentication yes
+PermitRootLogin yes
+</file>
+
+<file path="airootfs/etc/systemd/journald.conf.d/volatile-storage.conf">
+[Journal]
+Storage=volatile
+</file>
+
+<file path="airootfs/etc/systemd/logind.conf.d/do-not-suspend.conf">
+[Login]
+HandleSuspendKey=ignore
+HandleHibernateKey=ignore
+HandleLidSwitch=ignore
+</file>
+
+<file path="airootfs/etc/systemd/network/20-ethernet.network">
+[Match]
+Type=ether
+# Exclude virtual Ethernet interfaces
+Kind=!*
+
+[Link]
+RequiredForOnline=routable
+
+[Network]
+DHCP=yes
+MulticastDNS=yes
+
+# systemd-networkd does not set per-interface-type default route metrics
+# https://github.com/systemd/systemd/issues/17698
+# Explicitly set route metric, so that Ethernet is preferred over Wi-Fi and Wi-Fi is preferred over mobile broadband.
+# Use values from NetworkManager. From nm_device_get_route_metric_default in
+# https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/blob/main/src/core/devices/nm-device.c
+[DHCPv4]
+RouteMetric=100
+
+[IPv6AcceptRA]
+RouteMetric=100
+</file>
+
+<file path="airootfs/etc/systemd/network/20-wlan.network">
+[Match]
+Type=wlan
+
+[Link]
+RequiredForOnline=routable
+
+[Network]
+DHCP=yes
+MulticastDNS=yes
+
+# systemd-networkd does not set per-interface-type default route metrics
+# https://github.com/systemd/systemd/issues/17698
+# Explicitly set route metric, so that Ethernet is preferred over Wi-Fi and Wi-Fi is preferred over mobile broadband.
+# Use values from NetworkManager. From nm_device_get_route_metric_default in
+# https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/blob/main/src/core/devices/nm-device.c
+[DHCPv4]
+RouteMetric=600
+
+[IPv6AcceptRA]
+RouteMetric=600
+</file>
+
+<file path="airootfs/etc/systemd/network/20-wwan.network">
+[Match]
+Type=wwan
+
+[Link]
+RequiredForOnline=routable
+
+[Network]
+DHCP=yes
+
+# systemd-networkd does not set per-interface-type default route metrics
+# https://github.com/systemd/systemd/issues/17698
+# Explicitly set route metric, so that Ethernet is preferred over Wi-Fi and Wi-Fi is preferred over mobile broadband.
+# Use values from NetworkManager. From nm_device_get_route_metric_default in
+# https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/blob/main/src/core/devices/nm-device.c
+[DHCPv4]
+RouteMetric=700
+
+[IPv6AcceptRA]
+RouteMetric=700
+</file>
+
+<file path="airootfs/etc/systemd/networkd.conf.d/ipv6-privacy-extensions.conf">
+[Network]
+IPv6PrivacyExtensions=yes
+</file>
+
+<file path="airootfs/etc/systemd/resolved.conf.d/archiso.conf">
+# Default systemd-resolved configuration for archiso
+
+[Resolve]
+MulticastDNS=yes
+</file>
+
+<file path="airootfs/etc/systemd/system/getty@tty1.service.d/autologin.conf">
+[Service]
+ExecStart=
+ExecStart=-/usr/bin/agetty --noreset --noclear --autologin root - ${TERM}
+</file>
+
+<file path="airootfs/etc/systemd/system/systemd-networkd-wait-online.service.d/wait-for-only-one-interface.conf">
+# Allow systemd-networkd-wait-online to succeed with one interface, otherwise, if multiple network interfaces exist,
+# network-online.target gets needlessly delayed.
+# See https://wiki.archlinux.org/title/systemd-networkd#systemd-networkd-wait-online
+[Service]
+ExecStart=
+ExecStart=/usr/lib/systemd/systemd-networkd-wait-online --any
+</file>
+
+<file path="airootfs/etc/systemd/system/choose-mirror.service">
+[Unit]
+Description=Choose mirror from the kernel command line
+ConditionKernelCommandLine=mirror
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/choose-mirror
+
+[Install]
+WantedBy=multi-user.target
+</file>
+
+<file path="airootfs/etc/systemd/system/etc-pacman.d-gnupg.mount">
+[Unit]
+Description=Temporary /etc/pacman.d/gnupg directory
+
+[Mount]
+What=tmpfs
+Where=/etc/pacman.d/gnupg
+Type=tmpfs
+Options=mode=0755,noswap
+</file>
+
+<file path="airootfs/etc/systemd/system/livecd-alsa-unmuter.service">
+[Unit]
+Description=Unmute All Sound Card Controls For Use With The Live Arch Environment
+# This needs to run after the audio device becomes available.
+Wants=systemd-udev-settle.service
+After=systemd-udev-settle.service sound.target
+ConditionKernelCommandLine=accessibility=on
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/livecd-sound -u
+
+[Install]
+WantedBy=sound.target
+</file>
+
+<file path="airootfs/etc/systemd/system/livecd-talk.service">
+[Unit]
+Description=Screen reader service
+After=livecd-alsa-unmuter.service
+Before=getty@tty1.service
+ConditionKernelCommandLine=accessibility=on
+
+[Service]
+Type=oneshot
+TTYPath=/dev/tty13
+ExecStartPre=/usr/bin/chvt 13
+ExecStart=/usr/local/bin/livecd-sound -p
+ExecStartPost=/usr/bin/chvt 1
+ExecStartPost=systemctl start espeakup.service
+StandardInput=tty
+TTYVHangup=yes
+TTYVTDisallocate=yes
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
+</file>
+
+<file path="airootfs/etc/systemd/system/pacman-init.service">
+[Unit]
+Description=Initializes Pacman keyring
+Requires=etc-pacman.d-gnupg.mount
+After=etc-pacman.d-gnupg.mount time-sync.target
+BindsTo=etc-pacman.d-gnupg.mount
+Before=archlinux-keyring-wkd-sync.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/pacman-key --init
+ExecStart=/usr/bin/pacman-key --populate
+
+[Install]
+WantedBy=multi-user.target
+</file>
+
+<file path="airootfs/etc/hostname">
+tsubennusb
+</file>
+
+<file path="airootfs/etc/locale.conf">
+LANG=C.UTF-8
+</file>
+
+<file path="airootfs/etc/motd">
+[2J[H[36m
+    ______           ____                           
+   /_  __/______  __/ __ )___  ____  ____           
+    / / / ___/ / / / __  / _ \/ __ \/ __ \       
+   / / (__  ) /_/ / /_/ /  __/ / / / / / /        
+  /_/ /____/\____/_____/\___/_/ /_/_/ /_/         
+
+[0mWelcome to [36mTsuBenn's Arch Live Environment![0m
+
+Ethernet will automatically be connected it available.
+For Wifi, use [34mnmcli [0mto connect to wifi.
+
+For quick installation, use [34marchinstall[0m.
+If you're here not for the installation, then you must be here for maintenance.
+
+Keep in mind that [31mCAPSLOCK key has been changed to ESC.[0m
+
+[41m [41m [41m [40m [44m [40m [41m [46m [45m [41m [46m [43m [41m [44m [45m [40m [44m [40m [41m [44m [41m [41m [46m [42m [41m [44m [43m [41m [45m [40m [40m [44m [40m [41m [44m [42m [41m [46m [44m [41m [46m [47m [0m
+</file>
+
+<file path="airootfs/etc/passwd">
+root:x:0:0:root:/root:/usr/bin/zsh
+</file>
+
+<file path="airootfs/etc/shadow">
+root::14871::::::
+</file>
+
+<file path="airootfs/etc/vconsole.conf">
+FONT=ter-120b
+</file>
+
+<file path="airootfs/root/.config/nvim/colors/hutao.lua">
+local colors = {
+    fg        = "#f0e6e2",
+    bg_ui     = "#3a2929",
+    bg_ui_bright = "#6a5151", -- brighter active statusline
+    comment   = "#b89a92",
+
+    red       = "#e8837a",
+    orange    = "#f59b75",
+    yellow    = "#f2c97d",
+    brown     = "#a27868",
+    rose      = "#e7a1a1",
+    teal      = "#89aaa2",
+}
+
+-- Normal
+vim.api.nvim_set_hl(0, "Normal",        { fg = colors.fg, bg = "none" })
+vim.api.nvim_set_hl(0, "Comment",       { fg = colors.comment, italic = true })
+
+-- Cursorline
+vim.api.nvim_set_hl(0, "CursorLine",    { bg = "#241c1c" })
+vim.api.nvim_set_hl(0, "CursorLineNr",  { fg = colors.yellow, bold = true })
+
+-- ColorColumn
+vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#241c1c" })
+
+-- Visual
+vim.api.nvim_set_hl(0, "Visual",        { fg = "#ffffff",  bg = "#567782" })
+vim.api.nvim_set_hl(0, "VisualNOS",     { bg = "#567782" })
+vim.api.nvim_set_hl(0, "MatchParen",    { fg = "#ffffff", bg = "#567782", bold = true })
+
+-- Statusline
+vim.api.nvim_set_hl(0, "StatusLine",    { fg = colors.fg, bg = colors.bg_ui_bright, bold = true })
+vim.api.nvim_set_hl(0, "StatusLineNC",  { fg = colors.comment, bg = colors.bg_ui })
+
+-- Tabline
+vim.api.nvim_set_hl(0, "TabLine",       { fg = colors.comment, bg = colors.bg_ui })
+vim.api.nvim_set_hl(0, "TabLineSel",    { fg = colors.fg, bg = colors.bg_ui_bright})
+vim.api.nvim_set_hl(0, "TabLineFill",   { bg = colors.bg_ui })
+
+-- Search
+vim.api.nvim_set_hl(0, "Search",        { fg = colors.bg_ui, bg = colors.yellow, bold = true })
+
+-- Syntax
+vim.api.nvim_set_hl(0, "String",        { fg = colors.orange })
+vim.api.nvim_set_hl(0, "Function",      { fg = colors.rose })
+vim.api.nvim_set_hl(0, "Keyword",       { fg = colors.red, bold = true })
+vim.api.nvim_set_hl(0, "Type",          { fg = colors.yellow })
+vim.api.nvim_set_hl(0, "Constant",      { fg = colors.brown })
+vim.api.nvim_set_hl(0, "Identifier",    { fg = colors.teal })
+
+-- Popup
+vim.api.nvim_set_hl(0, "Pmenu",         { fg = colors.fg, bg = colors.bg_ui })
+vim.api.nvim_set_hl(0, "PmenuSel",      { fg = colors.bg_ui, bg = colors.red, bold = true })
+
+-- NETRW (Hu Tao palette)
+vim.api.nvim_set_hl(0, "Directory",     { fg = colors.orange, bold = true }) -- dirs
+vim.api.nvim_set_hl(0, "netrwDir",      { fg = colors.orange, bold = true })
+vim.api.nvim_set_hl(0, "netrwClassify", { fg = colors.yellow })
+vim.api.nvim_set_hl(0, "netrwSymlink",  { fg = colors.teal, italic = true })
+vim.api.nvim_set_hl(0, "netrwExe",      { fg = colors.red, bold = true })    -- executables
+vim.api.nvim_set_hl(0, "netrwPlain",    { fg = colors.fg })
+
+vim.api.nvim_set_hl(0, "IblIndent", { fg = "#30292c"})
+
+vim.api.nvim_set_hl(0, "MiniIndentscopeSymbol", { fg = "#6b5261" }) -- regular lines
+
+
+-- Background and Border of the Completion Menu (Pmenu/CmpNormal)
+vim.api.nvim_set_hl(0, "CmpNormal", { fg = colors.fg, bg = colors.bg_ui })
+vim.api.nvim_set_hl(0, "CmpBorder", { fg = colors.bg_ui_bright, bg = colors.bg_ui })
+vim.api.nvim_set_hl(0, "Pmenu", { fg = colors.fg, bg = "#151515" })
+vim.api.nvim_set_hl(0, "PmenuSel", { fg = "#000000" , bg = colors.rose , bold = true }) -- Selected Item
+-- The Abbreviation/Text of the completion item
+vim.api.nvim_set_hl(0, "CmpItemAbbr", { fg = colors.fg, bg = "NONE" })
+
+-- The part of the abbreviation that *matches* your input
+vim.api.nvim_set_hl(0, "CmpItemAbbrMatch", { fg = colors.red, bg = "NONE", bold = true })
+vim.api.nvim_set_hl(0, "CmpItemAbbrMatchFuzzy", { fg = colors.orange, bg = "NONE" })
+
+-- The documentation/details window (CmpDoc)
+vim.api.nvim_set_hl(0, "CmpDoc", { fg = colors.fg, bg = colors.bg_ui })
+vim.api.nvim_set_hl(0, "CmpDocBorder", { fg = colors.bg_ui_bright, bg = colors.bg_ui })
+
+-- The Item Kinds (Function, Variable, Keyword etc.)
+vim.api.nvim_set_hl(0, "CmpItemKind", { fg = colors.comment, bg = "NONE" }) -- Default Kind Text/Icon
+
+-- Specific Kinds (You can map these to your different color names)
+vim.api.nvim_set_hl(0, "CmpItemKindFunction", { fg = colors.teal, bg = "NONE" })
+vim.api.nvim_set_hl(0, "CmpItemKindMethod", { fg = colors.teal, bg = "NONE" })
+vim.api.nvim_set_hl(0, "CmpItemKindVariable", { fg = colors.rose, bg = "NONE" })
+vim.api.nvim_set_hl(0, "CmpItemKindKeyword", { fg = colors.red, bg = "NONE" })
+vim.api.nvim_set_hl(0, "CmpItemKindText", { fg = colors.fg, bg = "NONE" })
+vim.api.nvim_set_hl(0, "CmpItemKindSnippet", { fg = colors.orange, bg = "NONE" })
+vim.api.nvim_set_hl(0, "CmpItemKindField", { fg = colors.brown, bg = "NONE" })
+
+-- For Markdown Rendering
+vim.api.nvim_set_hl(0, "RenderMarkdownH1", { fg = "#add8ff", bold = true })
+vim.api.nvim_set_hl(0, "RenderMarkdownH2", { fg = "#ff6161", bold = true })
+vim.api.nvim_set_hl(0, "RenderMarkdownH3", { fg = "#ffb380", bold = true })
+vim.api.nvim_set_hl(0, "RenderMarkdownH4", { fg = "#e0c0ff", bold = true })
+vim.api.nvim_set_hl(0, "RenderMarkdownH5", { fg = "#c0eaff", bold = true })
+vim.api.nvim_set_hl(0, "RenderMarkdownH6", { fg = "#ffaabb", bold = true })
+
+vim.api.nvim_set_hl(0, "RenderMarkdownH1Bg", { bg = "#2a3f6f" })
+vim.api.nvim_set_hl(0, "RenderMarkdownH2Bg", { bg = "#822b2b" })
+vim.api.nvim_set_hl(0, "RenderMarkdownH3Bg", { bg = "#4a2e1a" })
+vim.api.nvim_set_hl(0, "RenderMarkdownH4Bg", { bg = "#3a2a5a" })
+vim.api.nvim_set_hl(0, "RenderMarkdownH5Bg", { bg = "#1a3a5a" })
+vim.api.nvim_set_hl(0, "RenderMarkdownH6Bg", { bg = "#5a1a2a" })
+
+vim.api.nvim_set_hl(0, "RenderMarkdownCode", { bg = "#1e2030" })
+
+-- 1. Main Floating Window (The box background and text)
+vim.api.nvim_set_hl(0, "NormalFloat", { fg = colors.fg, bg = colors.bg_ui })
+
+-- 2. Floating Window Border
+vim.api.nvim_set_hl(0, "FloatBorder", { fg = colors.bg_ui_bright, bg = colors.bg_ui })
+
+-- 3. Diagnostic Floating Window Specifics
+-- This ensures diagnostic popups use your theme's colors
+vim.api.nvim_set_hl(0, "DiagnosticFloatingError", { fg = colors.red })
+vim.api.nvim_set_hl(0, "DiagnosticFloatingWarn",  { fg = colors.orange })
+vim.api.nvim_set_hl(0, "DiagnosticFloatingInfo",  { fg = colors.teal })
+vim.api.nvim_set_hl(0, "DiagnosticFloatingHint",  { fg = colors.comment })
+-- Lspsaga Hover and Winbar
+vim.api.nvim_set_hl(0, "SagaNormal", { bg = colors.bg_ui, fg = colors.fg })
+vim.api.nvim_set_hl(0, "SagaBorder", { fg = colors.bg_ui_bright, bg = colors.bg_ui })
+
+-- Lspsaga Title (The text at the top of the box)
+vim.api.nvim_set_hl(0, "SagaTitle", { fg = colors.red, bold = true })
+
+-- Lspsaga Beacon (The cursor flash when jumping)
+vim.api.nvim_set_hl(0, "SagaBeacon", { bg = colors.rose })
+</file>
+
+<file path="airootfs/root/.config/nvim/lua/tsubenn/init.lua">
+require('tsubenn.set')
+vim.cmd("colorscheme hutao")
+require('tsubenn.tabline')
+require('tsubenn.keymap')
+</file>
+
+<file path="airootfs/root/.config/nvim/lua/tsubenn/keymap.lua">
+vim.g.mapleader = " "
+
+vim.keymap.set({'x','o'}, 'in', 'h')
+vim.keymap.del({'x','o'}, 'in')
+
+local inlay_hint = false
+
+vim.keymap.set('n', 'h', function()
+    vim.lsp.inlay_hint.enable(inlay_hint)
+    inlay_hint = not inlay_hint
+end)
+
+--[[ Hover check type ]]--
+--vim.keymap.set('n', 'h', vim.lsp.buf.hover, {})
+
+-- Show diagnostics in a floating window
+--vim.keymap.set('n', ';', vim.diagnostic.open_float)
+--
+-- Move to the PREVIOUS diagnostic
+--vim.keymap.set('n', ',', function()
+--  vim.diagnostic.jump({ count = -1, float = true })
+--end)
+--
+-- Move to the NEXT diagnostic
+--vim.keymap.set('n', '.', function()
+--  vim.diagnostic.jump({ count = 1, float = true })
+--end)
+
+--[[ Quit Neovim ]]--
+vim.keymap.set('n','ZZ', function()
+    local quit = string.lower(vim.fn.input("Quit Neovim? (Y/N) > "))
+    if quit == 'y' then return 'ZZ'
+    else return ':lua print("Did not quit Neovim!")<CR>'
+    end
+end, {expr = true})
+
+
+--[[ Program runner ]]--
+vim.keymap.set({'x','n','i'},'<C-r>', function()
+    --[[ Compiler's Language ]]
+    local file = vim.fn.expand("%:p")
+    local output = vim.fn.expand("%:p:r")
+    local exten = vim.fn.expand("%:e")
+    local lang = {
+        -- <input> = { "<run cmd>", "<name>"} --
+        py = {"python "..file.."<CR>","Python"},
+        lua ={"so<CR>", "Lua"},
+        cpp ={"clang++ "..file.." -o "..output..".exe && "..output..".exe<CR>", "C++"},
+        c ={"clang "..file.." -o "..output..".exe && "..output..".exe<CR>", "C"},
+        js ={"node "..file.."<CR>", "JavaScript"},
+        rb ={"ruby "..file.."<CR>", "Ruby"},
+        rs = {
+            vim.fn.filereadable(vim.fn.getcwd() .. "/Cargo.toml") == 1
+                and "cargo run<CR>"
+                or "rustc "..file.." -o "..output.." && "..output.."<CR>",
+            "Rust"
+        },
+
+    }
+    --local ask = vim.fn.input("Language > ")
+
+    if lang[exten] then
+        if exten == "lua" then
+            return ':'..lang[exten][1]
+        else
+            return "<ESC>:tabnew | term "..lang[exten][1].."A"
+        end
+    end
+end, {expr = true, silent = true})
+
+--[[ Execute macro ]]--
+vim.keymap.set('n','e','@') -- [E]xecute Macro
+
+--[[ Enter Explorer ]]--
+vim.keymap.set('n','we', vim.cmd.Ex)
+
+--[[ Close Window ]]--
+vim.keymap.set('n','wq', function()
+    if vim.fn.winnr("$") > 1 or vim.fn.tabpagenr("$") > 1 or vim.bo.readonly == true then
+        return ":wq<CR>"
+    else
+        return ':w<CR>:Ex<CR>'
+    end
+end, {expr = true, silent = true}) -- Save then Exit
+vim.keymap.set('n','wQ',':q<CR>') -- Discard then Exit
+
+--[[ Switch Window ]]--
+vim.keymap.set('n','w<leader>','<C-w>w') -- Switch Window in general
+vim.keymap.set('n','wi','<C-w>k') -- Switch to the Window above
+vim.keymap.set('n','wj','<C-w>h') -- Switch to the left Window 
+vim.keymap.set('n','wk','<C-w>j') -- Switch to the Window below
+vim.keymap.set('n','wl','<C-w>l') -- Switch to the right Window
+vim.keymap.set('n','wI', function()
+    if vim.fn.winnr('$') > 1 then
+        return '<C-w>k:Ex<CR>'
+    else return '<C-w>k'
+    end
+end,{expr = true}) -- Switch to the Window above then open Explorer
+vim.keymap.set('n','wJ',function()
+    if vim.fn.winnr('$') > 1 then
+        return '<C-w>h:Ex<CR>'
+    else return '<C-w>h'
+    end
+end,{expr = true}) -- Switch to the left Window then open Explorer
+vim.keymap.set('n','wK',function()
+    if vim.fn.winnr('$') > 1 then
+        return '<C-w>j:Ex<CR>'
+    else return '<C-w>j'
+    end
+end,{expr = true}) -- Switch to the Window below then open Explorer
+vim.keymap.set('n','wL',function()
+    if vim.fn.winnr('$') > 1 then
+        return '<C-w>l:Ex<CR>'
+    else return '<C-w>l'
+    end
+end,{expr = true}) -- Switch to the right Window then open Explorer
+
+--[[ Adjust Window ]]--
+vim.keymap.set('n','ww=','<C-w>=') -- Equalize Windows' sizes
+vim.keymap.set('n','<S-Up>',':resize +1<CR>',{silent = true}) -- Add Window's height by 1
+vim.keymap.set('n','<C-Up>',':resize +5<CR>',{silent = true}) -- Add Window's height by 5
+vim.keymap.set('n','<S-Down>',':resize -1<CR>',{silent = true}) -- Remove Window's height by 1
+vim.keymap.set('n','<C-Down>',':resize -5<CR>',{silent = true}) -- Remove Window's height by 5
+vim.keymap.set('n','<S-Right>',':vertical resize +1<CR>',{silent = true}) -- Add Window's width by 1
+vim.keymap.set('n','<C-Right>',':vertical resize +5<CR>',{silent = true}) -- Add Window's width by 5
+vim.keymap.set('n','<S-Left>',':vertical resize -1<CR>',{silent = true}) -- Remove Window's width by 1
+vim.keymap.set('n','<C-Left>',':vertical resize -5<CR>',{silent = true}) -- Remove Window's width by 5
+
+--[[ Move Window ]]--
+vim.keymap.set('n','wwx','<C-w>x<C-w>w') -- Exchange current Window with the next one
+vim.keymap.set('n','wwi','<C-w>K') -- Move current Window to the top
+vim.keymap.set('n','wwj','<C-w>H') -- Move current Window to the left
+vim.keymap.set('n','wwk','<C-w>J') -- Move current Window to the bottom
+vim.keymap.set('n','wwl','<C-w>L') -- Move current Window to the right
+
+--[[ Split Windows ]]--
+vim.keymap.set('n','Wj','<C-w>v') -- Add Left
+vim.keymap.set('n','Wl','<C-w>v<C-w>w') -- Add Right
+vim.keymap.set('n','Wi','<C-w>s') -- Add Top
+vim.keymap.set('n','Wk','<C-w>s<C-w>w') -- Add Top
+
+--[[ Split Windows and enter Explorer ]]--
+vim.keymap.set('n','WJ','<C-w>v:Ex<CR>') -- Add Left
+vim.keymap.set('n','WL','<C-w>v<C-w>w:Ex<CR>') -- Add Right
+vim.keymap.set('n','WI','<C-w>s:Ex<CR>') -- Add Top
+vim.keymap.set('n','WK','<C-w>s<C-w>w:Ex<CR>') -- Add Top
+
+--[[ New Tab ]]--
+vim.keymap.set('n','Wt',':tabnew<CR>:Ex<CR>')
+
+--[[ Close Tab ]]--
+-- vim.keymap.set('n','tQ',':tabo<CR>') -- Close all except current tab
+-- vim.keymap.set('n','tq',':tabc<CR>') -- Close current tab
+
+--[[ Move current Window to new Tab ]]--
+vim.keymap.set('n','WT','<C-w>T')
+
+--[[ Tab navigation ]]--
+vim.keymap.set('n','>','gt') -- Next Tab
+vim.keymap.set('n','<','gT') -- Prev Tab
+--[[ vim.keymap.set('n','wt', function()
+    local num = vim.fn.input("Jump to tab > ")
+    if tonumber(num) then
+        return num .. "gt"
+    else
+        return ":echo 'Invalid Number<CR>'"
+    end
+end, {expr = true}) ]]--
+
+--[[ Tab Adjustment ]]--
+vim.keymap.set('n','wT', function()
+    local num = vim.fn.input("Move tab to position > ")
+
+    if num == "1" then num = "0" end
+
+    return ":tabm "..num.."<CR>"
+end, {expr = true}) -- New tab
+
+--[[ Save Files ]]--
+vim.keymap.set('n', '<C-s>', ':w<CR>')
+vim.keymap.set({'i','x'}, '<C-s>', '<ESC>:w<CR>')
+
+
+--[[ Undo ]]--
+vim.keymap.set('n', '<c-z>', 'u')
+vim.keymap.set('i', '<c-z>', '<ESC>u')
+vim.keymap.set('n', '<c-y>', '<C-r>')
+
+--[[ Copying ]]--
+vim.keymap.set('n', 'c' , 'yy') -- Copy whole line(normal)
+vim.keymap.set('n', 'C' , 'yyp') -- Copy whole line(normal)
+vim.keymap.set('x', 'C' , '<ESC>`<^V`>y`>p') -- Copy whole line(normal)
+vim.keymap.set('x', 'c' , 'y') -- Copy whole line(visual)
+
+--[[ Basic movement ]]--
+vim.keymap.set({'n','x'},'i',"v:count == 0 ? 'gk' : 'k'", { expr = true })
+vim.keymap.set({'n','x'},'j','h')
+vim.keymap.set({'n','x'},'l','l')
+vim.keymap.set({'n','x'},'k',"v:count == 0 ? 'gj' : 'j'", { expr = true })
+
+--[[ Word jump ]]--
+vim.keymap.set({'n','x'},'J','b')
+vim.keymap.set({'n','x'},'L','w')
+vim.keymap.set({'n','x'},'<M-l>','e')
+vim.keymap.set({'n','x'},'<M-j>','ge')
+
+--[[ Scrolling ]]--
+vim.keymap.set({'n','x','i'},'<C-w>i','<C-y>')
+vim.keymap.set({'n','x','i'},'<C-w>I','5<C-y>')
+vim.keymap.set({'n','x','i'},'<C-w>k','<C-e>')
+vim.keymap.set({'n','x','i'},'<C-w>K','5<C-e>')
+
+--[[ Multi-line jumping ]]--
+local mul_ln_jmp = 3
+vim.keymap.set({'n','x'},'I', function()
+    return mul_ln_jmp.."k"
+end, {expr = true})
+vim.keymap.set({'n','x'},'K', function()
+    return mul_ln_jmp.."j"
+end, {expr = true})
+
+--[[ Paragraph jumping ]]--
+-- vim.keymap.set({'n','x'},'.','}')
+-- vim.keymap.set({'n','x'},',','{')
+
+--[[ Jump to the start and end of document ]]--
+vim.keymap.set({'n','x'},'<leader>i','gg')
+vim.keymap.set({'n','x'},'<leader>k','G')
+
+--[[ Jump to the start and end of line  ]]--
+vim.keymap.set({'n'},'<leader>l','$')
+vim.keymap.set({'x'},'<leader>l','$h')
+vim.keymap.set({'n','x'},'<leader>j','^')
+
+
+--[[Move line ]]--
+vim.keymap.set('n','<M-i>',"V:m '<-2<CR>gv=gv<ESC>")
+vim.keymap.set('n','<M-k>',"V:m '>+1<CR>gv=gv<ESC>")
+vim.keymap.set('x','<M-i>', ":m '<-2<CR>gv=gv")
+vim.keymap.set('x','<M-k>', ":m '>+1<CR>gv=gv")
+
+--[[ Insert mode ]]--
+vim.keymap.set('n','a','i')
+vim.keymap.set('n','d','a')
+
+--[[ Insert to the end of word ]]--
+vim.keymap.set('n','A','viwb<ESC>i')
+vim.keymap.set('x','A', function()
+    if vim.fn.mode() == 'v' or vim.fn.mode() == 'V' then return 'iwb<ESC>i'
+    else return 'I'
+    end
+end, {expr = true})
+vim.keymap.set('n','D','viwA')
+vim.keymap.set('x','D', function()
+    if vim.fn.mode() == 'v' or vim.fn.mode() == 'V' then return 'iwA'
+    else return 'A'
+    end
+end, {expr = true})
+
+
+--[[ Insert to the end of line ]]--
+vim.keymap.set({'n','x'},'E','<ESC>A')
+vim.keymap.set({'n','x'},'Q','<ESC>I')
+
+--[[ Tab then enter insert mode ]]--
+vim.keymap.set({'n','x'}, '<TAB>', 'i<TAB>')
+
+--[[ Indent Selected Line ]]--
+vim.keymap.set('x', '<TAB>', function()
+    vim.cmd([[execute "normal! \<ESC>"]])
+    local start_pos = vim.fn.line("'<")
+    local end_pos = vim.fn.line("'>")
+
+    local h = end_pos - start_pos
+
+    vim.api.nvim_feedkeys("`<","n",false)
+
+    for i = 0, h do vim.api.nvim_feedkeys(">>j","n",false) end
+    vim.api.nvim_feedkeys("`<V`>","n",false)
+end)
+vim.keymap.set('x', '<leader><TAB>', function()
+    vim.cmd([[execute "normal! \<ESC>"]])
+    local start_pos = vim.fn.line("'<")
+    local end_pos = vim.fn.line("'>")
+
+    local h = end_pos - start_pos
+
+    vim.api.nvim_feedkeys("`<","n",false)
+
+    for i = 0, h do vim.api.nvim_feedkeys("<<j","n",false) end
+
+    vim.api.nvim_feedkeys("`<V`>","n",false)
+end)
+
+
+--[[ Create new line above and enter insert mode ]]--
+vim.keymap.set({'n','x'},"<leader><CR>",'<ESC>O')
+
+--[[ Backspace enter insert mode ]]--
+vim.keymap.set({'n','x'},'<BS>','s')
+
+--[[ Backspace(normal) and Cut(visual) ]]--
+vim.keymap.set('n','f','a<BS><ESC>') -- BS
+vim.keymap.set('x','f','x') -- Cut selected letter(s)
+vim.keymap.set('x','F',function()
+    if vim.fn.mode() == "v" then
+        vim.cmd([[execute "normal! \<ESC>"]])
+        local start_pos = vim.fn.col("'<")
+        local end_pos = vim.fn.col("'>")
+
+        local len = end_pos - start_pos + 1
+
+        if len <= 1 then vim.cmd("normal! viwx")
+        else
+            if vim.fn.getpos(".")[3] == start_pos then
+                vim.cmd("normal! `>viwo`<liw")
+                vim.api.nvim_feedkeys("x","n",false)
+            else
+                vim.cmd("normal! `<viw`>hiw")
+                vim.api.nvim_feedkeys("x","n",false)
+            end
+        end
+    end
+end) -- Cut selected word(s)
+
+--[[ Delete ]]--
+vim.keymap.set('n','X','Vx') -- Delete whole line
+vim.keymap.set('x','x','x') -- Delete selected letter(s)
+vim.keymap.set('x','X', function()
+    if vim.fn.mode() == "v" then
+        vim.cmd([[execute "normal! \<ESC>"]])
+        local start_pos = vim.fn.col("'<")
+        local end_pos = vim.fn.col("'>")
+
+        local len = end_pos - start_pos + 1
+
+        if len <= 1 then vim.cmd("normal! viwx")
+        else
+            if vim.fn.getpos(".")[3] == start_pos then
+                vim.cmd("normal! `>viwo`<liw")
+                vim.api.nvim_feedkeys("x","n",false)
+            else
+                vim.cmd("normal! `<viw`>hiw")
+                vim.api.nvim_feedkeys("x","n",false)
+            end
+        end
+    end
+end) -- Delete selected word(s)
+
+
+
+
+--[[ Remove word(normal) and enter Insert mode ]]--
+vim.keymap.set('n','S','viws')
+vim.keymap.set({'n', 'x'},'<leader>e','<ESC>v$hxA')
+vim.keymap.set({'n', 'x'},'<leader>q','<ESC>hv^xI')
+
+--[[ Remove selected words then enter insert mode ]]--
+vim.keymap.set('x','S',function()
+    if vim.fn.mode() == "v" then
+        vim.cmd([[execute "normal! \<ESC>"]])
+        local start_pos = vim.fn.col("'<")
+        local end_pos = vim.fn.col("'>")
+
+        local len = end_pos - start_pos + 1
+
+        if len <= 1 then
+            vim.cmd("normal! viw")
+            vim.api.nvim_feedkeys("s","n",false)
+        else
+            if vim.fn.getpos(".")[3] == start_pos then
+                vim.cmd("normal! `>viwo`<liw")
+                vim.api.nvim_feedkeys("s","n",false)
+            else
+                vim.cmd("normal! `<viw`>hiw")
+                vim.api.nvim_feedkeys("s","n",false)
+            end
+        end
+    end
+end)
+
+--[[ Remove selected letters and enter insert mode ]]--
+vim.keymap.set('x','s','s')
+
+--[[ Remove line and enter Insert mode ]]--
+vim.keymap.set({'n','x'}, 'F', 'S')
+
+--[[ Backspace/Delete in Insert Mode ]]--
+vim.keymap.set('i','<C-l>','<DEL>')
+vim.keymap.set('i','<C-j>','<BS>')
+vim.keymap.set('i','<C-i>','<ESC>viws')
+vim.keymap.set('i','<C-k>','<ESC>llviws')
+
+--[[ Enter Visual block mode ]]--
+vim.keymap.set({'n','x'},'<M-v>','<C-v>')
+
+--[[ Center Screen ]]--
+vim.keymap.set({'n','x'},'<C-f>', 'zz')
+
+--[[ Open and close brackets selected words ]]--
+vim.keymap.set('x','a{', "<ESC>`>a}<ESC>`<i{<ESC>")
+vim.keymap.set('x','a(', "<ESC>`>a)<ESC>`<i(<ESC>")
+vim.keymap.set('x','a[', "<ESC>`>a]<ESC>`<i[<ESC>")
+vim.keymap.set('x','a<', "<ESC>`>a><ESC>`<i<<ESC>")
+vim.keymap.set('x','a"', '<ESC>`>a"<ESC>`<i"<ESC>')
+vim.keymap.set('x',"a'", "<ESC>`>a'<ESC>`<i'<ESC>")
+vim.keymap.set('x',"a-", "<ESC>`>a<leader>]]--<ESC>`<i--[[<leader><ESC>")
+
+--[[ Check char behind/after curstor Func ]]--
+local function char_behind_cursor()
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    if col == 0 then return nil end
+    local line = vim.api.nvim_get_current_line()
+    local char = line:sub(col,col)
+    return char
+end
+local function char_behind_behind_cursor()
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    if col == 0 then return nil end
+    local line = vim.api.nvim_get_current_line()
+    local char = line:sub(col-1,col-1)
+    return char
+end
+local function char_after_cursor()
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    --if col == 0 then return nil end
+    local line = vim.api.nvim_get_current_line()
+    local char = line:sub(col+1,col+1)
+    return char
+end
+
+--[[ Brackets and Quotes Table ]]--
+local bracket = {}
+bracket["{"] = "}"
+bracket["("] = ")"
+bracket["["] = "]"
+--bracket["<"] = ">"
+local quote = {'"',"'"}
+
+--[[ Remove empty brackets ]]--
+vim.keymap.set({'i'},'<BS>',function()
+    for b, a in pairs(bracket) do
+        if char_behind_cursor() == b and char_after_cursor() == a then
+            return "<BS><DEL>"
+        end
+    end
+    for i, q in pairs(quote) do
+        if char_behind_cursor() == q and char_after_cursor() == q then
+            return "<BS><DEL>"
+        end
+    end
+    return "<BS>"
+end, {expr = true})
+
+--[[ Create new line and enter insert mode ]]--
+vim.keymap.set('n','<CR>',function()
+    if char_after_cursor() == bracket[char_behind_cursor()] then
+        return 'i<CR><ESC>O'
+    else return 'o'
+    end
+end, {expr = true})
+vim.keymap.set('x','<CR>','s<CR>')
+
+--[[ Squeeze into between brackets when Enter inside them ]]--
+vim.keymap.set('i','<CR>',function()
+    if char_after_cursor() == bracket[char_behind_cursor()] then
+        return '<CR><ESC>O'
+    elseif char_behind_cursor() then
+        if char_behind_cursor() == bracket[char_behind_behind_cursor()] then
+            return '<Left><CR><ESC>O'
+        end
+        return '<CR>'
+    else return '<CR>'
+    end
+end, {expr = true})
+
+--[[ Select within brackets ]]--
+vim.keymap.set('x','(','ib')
+vim.keymap.set('x','<leader>(','ab')
+vim.keymap.set('x','[','i[')
+vim.keymap.set('x','<leader>[','a[')
+vim.keymap.set('x','{','iB')
+vim.keymap.set('x','<leader>{','aB')
+vim.keymap.set('x',"'","<ESC>F'lvf'h")
+vim.keymap.set('x',"<leader>'","<ESC>F'vf'")
+vim.keymap.set('x','"','<ESC>F"lvf"h')
+vim.keymap.set('x','<leader>"','<ESC>F"vf"')
+
+--[[ Backspace in insert mode ]]--
+vim.keymap.set('i','<C-BS>','<ESC>viws')
+
+--[[ Select word ]]--
+vim.keymap.set('x','v', function()
+    if vim.fn.mode() == "v" then
+        vim.cmd([[execute "normal! \<ESC>"]])
+        local start_pos = vim.fn.getpos("'<")
+        local end_pos = vim.fn.getpos("'>")
+
+        local len = end_pos[3] - start_pos[3] + 1
+
+        if len <= 1 then vim.cmd("normal! viw")
+        else
+            if vim.fn.getpos(".")[3] == start_pos[3] then
+                vim.cmd("normal! `>viwo`<liw")
+            else
+                vim.cmd("normal! `<viw`>hiw")
+            end
+        end
+    end
+end)
+vim.keymap.set('x','V',function()
+    if vim.fn.mode() == "v" then
+        vim.cmd([[execute "normal! \<ESC>"]])
+        local start_pos = vim.fn.getpos("'<")
+        local end_pos = vim.fn.getpos("'>")
+
+        local len = end_pos[3] - start_pos[3] + 1
+
+        if len <= 1 then vim.cmd("normal! viW")
+        else
+            if vim.fn.getpos(".")[3] == start_pos[3] then
+                vim.cmd("normal! `>viWo`<liW")
+            else
+                vim.cmd("normal! `<viW`>hiW")
+            end
+        end
+    end
+end)
+
+
+--[[ Select Paragraph ]]--
+vim.keymap.set({'n','x', 'i'},'<C-a>',function()
+    if vim.api.nvim_buf_line_count(0) == 1 then
+        return '<ESC>V'
+    elseif vim.fn.mode() ~= 'V' then
+        return '<ESC>{jV}k$'
+    else
+        return '<ESC>GVgg'
+    end
+end, {expr = true})
+
+--[[ Find next occurence or next bracket pair ]]--
+vim.keymap.set({'n','x'},'<c-l>', function()
+    for b, a in pairs(bracket) do
+        if char_after_cursor() == b or char_after_cursor() == a then
+            return '%'
+        end
+    end
+    return 'g*'
+end, {expr = true})
+vim.keymap.set({'n','x'},'<c-j>', function()
+    for b, a in pairs(bracket) do
+        if char_after_cursor() == b or char_after_cursor() == a then
+            return '%'
+        end
+    end
+    return 'g#'
+end, {expr = true})
+
+
+--[[ Connecting lines ]]--
+vim.keymap.set('n', 'u', 'kJ') -- Bring current line up with space
+vim.keymap.set('n', 'U', 'J')  -- Bring line below up
+vim.keymap.set('n', '<C-u>', 'kgJ') -- Bring current line up without space
+
+--[[ Break line ]]--
+vim.keymap.set('n', 'o', 'i<CR><ESC>') -- Break line at cursor and move cursor down
+vim.keymap.set('n', 'O', 'i<CR><ESC>k$')  -- Break line at cursor and don't move cursor down
+vim.keymap.set('n', '<C-o>', '<ESC>i<CR><ESC>O') -- Break line then squeeze in between two line (Normal)
+vim.keymap.set('i', '<C-o>', '<ESC>a<CR><ESC>O') -- Break line then squeeze in between two line (Insert)
+
+--[[ Indentation Correction ]]--
+vim.keymap.set('n', '<leader>=', 'maggVG=`a')
+
+--[[ Netrw  Keymapping ]]--
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "netrw",
+    callback = function()
+        local opts = {buffer = true, silent = true, remap = true}
+
+        --[[ Basic Movement ]]--
+        vim.keymap.set('n','i','<Up>', opts)
+        vim.keymap.set('n','j','-', opts)
+        vim.keymap.set('n','k','<Down>', opts)
+        vim.keymap.set('n','l','<CR>', opts)
+
+        --[[ Big Movement ]]--
+        vim.keymap.set('n','I','3<Up>', opts)
+        vim.keymap.set('n','K','3<Down>', opts)
+
+        --[[ Exit Explorer ]]--
+        vim.keymap.set('n','wq',':bd<CR>', opts)
+
+        --[[ Split Windows ]]--
+        vim.keymap.set('n','Wj','v<C-w>w', opts) -- Add Left
+        vim.keymap.set('n','Wl','v<C-w>x', opts) -- Add Right
+        vim.keymap.set('n','Wi','o<C-w>w', opts) -- Add Top
+        vim.keymap.set('n','Wk','o<C-w>x', opts) -- Add Top
+
+        --[[ Split Windows ]]--
+        vim.keymap.set('n','WJ','v', opts) -- Add Left
+        vim.keymap.set('n','WL','v<C-w>x<C-w>w', opts) -- Add Right
+        vim.keymap.set('n','WI','o', opts) -- Add Top
+        vim.keymap.set('n','WK','o<C-w>x<C-w>w', opts) -- Add Top
+
+        --[[ Split Windows ]]--
+        vim.keymap.set('n','Wt','v<C-w>TgT', opts) -- Add Left
+        vim.keymap.set('n','WT','v<C-w>T', opts) -- Add Left
+
+        --[[ Adjust Window ]]--
+        vim.keymap.set('n','ww=','<C-w>=',opts) -- Equalize Windows' sizes
+        vim.keymap.set('n','wwx','<C-w>x<C-w>w',opts) -- Exchange current Window with the next one
+        vim.keymap.set('n','wwi','<C-w>K',opts) -- Move current Window to the top
+        vim.keymap.set('n','wwj','<C-w>H',opts) -- Move current Window to the left
+        vim.keymap.set('n','wwk','<C-w>J',opts) -- Move current Window to the bottom
+        vim.keymap.set('n','wwl','<C-w>L',opts) -- Move current Window to the right
+
+        vim.keymap.set('n','<S-Up>',':resize +1<CR>',opts) -- Add Window's height by 1
+        vim.keymap.set('n','<C-Up>',':resize +5<CR>',opts) -- Add Window's height by 5
+        vim.keymap.set('n','<S-Down>',':resize -1<CR>',opts) -- Remove Window's height by 1
+        vim.keymap.set('n','<C-Down>',':resize -5<CR>',opts) -- Remove Window's height by 5
+        vim.keymap.set('n','<S-Right>',':vertical resize +1<CR>',opts) -- Add Window's width by 1
+        vim.keymap.set('n','<C-Right>',':vertical resize +5<CR>',opts) -- Add Window's width by 5
+        vim.keymap.set('n','<S-Left>',':vertical resize -1<CR>',opts) -- Remove Window's width by 1
+        vim.keymap.set('n','<C-Left>',':vertical resize -5<CR>',opts) -- Remove Window's width by 5
+
+
+    end})
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "undotree",
+    callback = function()
+        local opts = {buffer = true, silent = true, remap = false}
+
+        --[[ Basic Movement ]]--
+        vim.keymap.set('n','i','<Up>', opts)
+        vim.keymap.set('n','j','<Left>', opts)
+        vim.keymap.set('n','k','<Down>', opts)
+        vim.keymap.set('n','l','<Right>', opts)
+    end})
+</file>
+
+<file path="airootfs/root/.config/nvim/lua/tsubenn/set.lua">
+vim.opt.cursorline = true
+
+vim.opt.number = true
+vim.opt.relativenumber = false
+
+vim.opt.wrap = true
+
+vim.opt.swapfile = false
+vim.opt.backup = false
+
+vim.lsp.inlay_hint.enable(true)
+
+vim.opt.undodir = os.getenv("HOME") .. "/.nvim/undodir"
+if vim.env.DISPLAY or vim.env.WAYLAND_DISPLAY then
+    vim.opt.clipboard = "unnamedplus"
+end
+
+
+vim.opt.undofile = true
+
+vim.opt.hlsearch = false
+vim.opt.incsearch = true
+
+vim.opt.termguicolors = true
+
+vim.opt.scrolloff = 10
+vim.opt.signcolumn = "yes"
+vim.opt.isfname:append("@-@")
+
+vim.opt.updatetime = 50
+
+vim.opt.colorcolumn = ""
+
+vim.g.netrw_banner = 0
+vim.g.netrw_liststyle = 0
+vim.g.netrw_sort_by = "exten"
+
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
+vim.opt.smartindent = true
+
+vim.opt.winborder = "rounded"
+
+-- vim.opt.guicursor = "n-v-c:block"
+
+vim.opt.ignorecase= true
+vim.opt.smartcase= true
+
+vim.api.nvim_create_autocmd('TextYankPost', {
+    group = vim.api.nvim_create_augroup('hightlight-yank', {clear = true}),
+    callback = function()
+        vim.highlight.on_yank()
+    end
+})
+
+vim.g.mapleader = " "
+</file>
+
+<file path="airootfs/root/.config/nvim/lua/tsubenn/tabline.lua">
+-- Storage for renamed tab titles
+_G.custom_tabnames = {}
+
+-- Function to build the tabline
+function MyTabLine()
+  local s = ""
+  local num_tabs = vim.fn.tabpagenr('$')
+
+  for i = 1, num_tabs do
+    local win = vim.fn.tabpagewinnr(i)
+    local bufnr = vim.fn.tabpagebuflist(i)[win]
+    local fname = vim.fn.bufname(bufnr)
+    fname = fname ~= "" and vim.fn.fnamemodify(fname, ":t") or "No Name"
+
+    -- Use custom name if it exists
+    local display_name = _G.custom_tabnames[i] or fname
+
+    local label = string.format("[%d - %s]", i, display_name)
+
+    if i == vim.fn.tabpagenr() then
+      s = s .. "%#TabLineSel#" .. " " .. label .. " "
+    else
+      s = s .. "%#TabLine#" .. " " .. label .. " "
+    end
+  end
+    s = s .. "%#TabLineFill#"
+  return s
+end
+
+vim.o.tabline = "%!v:lua.MyTabLine()"
+
+-- Command to rename the current tab's custom name
+function RenameTab()
+  local tabnr = vim.fn.tabpagenr()
+  local current = _G.custom_tabnames[tabnr] or ""
+  vim.ui.input({ prompt = "Rename tab to > ", default = current }, function(input)
+    if input ~= nil then
+      _G.custom_tabnames[tabnr] = input ~= "" and input or nil
+      vim.cmd("redrawtabline")
+    end
+  end)
+end
+
+-- Reset function: remove custom name
+function ResetTabName()
+  local tabnr = vim.fn.tabpagenr()
+  _G.custom_tabnames[tabnr] = nil
+  vim.cmd("redrawtabline")
+end
+
+-- Keymaps
+vim.keymap.set("n", "tt", function() RenameTab() end, { noremap = true, silent = true })
+vim.keymap.set("n", "tT", function() ResetTabName() end, { noremap = true, silent = true })
+
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "netrw",
+	callback = function()
+		local opts = {buffer = true, silent = true, remap = true}
+		vim.keymap.set("n", "tt", function() RenameTab() end, opts)
+		vim.keymap.set("n", "tT", function() ResetTabName() end, opts)
+	end})
+</file>
+
+<file path="airootfs/root/.config/nvim/init.lua">
+require("tsubenn")
+</file>
+
+<file path="airootfs/root/.gnupg/scdaemon.conf">
+disable-ccid
+disable-pinpad
+pcsc-driver /usr/lib/libpcsclite.so
+pcsc-shared
+</file>
+
+<file path="airootfs/root/.automated_script.sh">
+#!/usr/bin/env bash
+
+script_cmdline() {
+    local param
+    for param in $(</proc/cmdline); do
+        case "${param}" in
+            script=*)
+                echo "${param#*=}"
+                return 0
+                ;;
+        esac
+    done
+}
+
+automated_script() {
+    local script rt
+    script="$(script_cmdline)"
+    if [[ -n "${script}" && ! -x /tmp/startup_script ]]; then
+        if [[ "${script}" =~ ^((http|https|ftp|tftp)://) ]]; then
+            printf '%s: downloading %s\n' "$0" "${script}"
+            # there's no synchronization for network availability before executing this script; to ensure the network
+            # is online, we use a transient systemd service that depends on network-online.target to download the
+            # script rather than manually polling the target
+            systemd-run --pty --quiet -p Wants=network-online.target -p After=network-online.target \
+                curl "${script}" --location --retry-connrefused --retry 10 --fail -s -o /tmp/startup_script
+            rt=$?
+        else
+            cp "${script}" /tmp/startup_script
+            rt=$?
+        fi
+        if [[ ${rt} -eq 0 ]]; then
+            chmod +x /tmp/startup_script
+            printf '%s: executing automated script\n' "$0"
+            # note that script is executed when other services (like pacman-init) may be still in progress, please
+            # synchronize to "systemctl is-system-running --wait" when your script depends on other services
+            /tmp/startup_script
+        fi
+    fi
+}
+
+if [[ $(tty) == "/dev/tty1" ]]; then
+    automated_script
+fi
+</file>
+
+<file path="airootfs/root/.zlogin">
+# fix for screen readers
+if grep -Fqa 'accessibility=' /proc/cmdline &> /dev/null; then
+    setopt SINGLE_LINE_ZLE
+fi
+
+~/.automated_script.sh
+</file>
+
+<file path="airootfs/root/.zshrc">
+PROMPT='  %F{cyan}%n %F{white}(%@): %F{white}%~ %F{yellow}$ %F{white}'
+# fzf keybind
+zmodload zsh/terminfo
+export KEYTIMEOUT=1
+
+# --- History Navigation ---
+# Standard Up/Down arrows
+bindkey "${terminfo[kcuu1]}" history-search-backward
+bindkey "${terminfo[kcud1]}" history-search-forward
+
+# --- Word Movement ---
+# Ctrl + Left / Right
+bindkey '^[[1;5D' backward-word
+bindkey '^[[1;5C' forward-word
+
+# --- Tab & Suggestions ---
+# Tab: Standard completion (handled by Zsh/Zinit completions)
+bindkey '^I' expand-or-complete 
+
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^w' edit-command-line
+
+bindkey '^z' undo
+
+bindkey ' ' magic-space
+
+# --- Custom Selection Widgets ---
+
+# Shift + Left
+backward-char-select() {
+  (( REGION_ACTIVE )) || zle set-mark-command
+  zle backward-char
+}
+
+# Shift + Right
+forward-char-select() {
+  (( REGION_ACTIVE )) || zle set-mark-command
+  zle forward-char
+}
+
+# Ctrl + Shift + Left
+backward-word-select() {
+  (( REGION_ACTIVE )) || zle set-mark-command
+  zle backward-word
+}
+
+# Ctrl + Shift + Right
+forward-word-select() {
+  (( REGION_ACTIVE )) || zle set-mark-command
+  zle forward-word
+}
+
+# Register all of them
+zle -N backward-char-select
+zle -N forward-char-select
+zle -N backward-word-select
+zle -N forward-word-select
+
+# Shift + Arrows
+bindkey '^[[1;2D' backward-char-select
+bindkey '^[[1;2C' forward-char-select
+
+# Ctrl + Shift + Arrows
+bindkey '^[[1;6D' backward-word-select
+bindkey '^[[1;6C' forward-word-select
+
+
+
+# Create the Select All widget
+select-all() {
+    # Move to the end of the line
+    zle end-of-line
+    # Set the 'mark' (the start of a selection)
+    zle set-mark-command
+    # Move to the beginning of the line
+    zle beginning-of-line
+}
+
+# Register it as a widget
+zle -N select-all
+
+# Bind it to Ctrl+A
+bindkey '^A' select-all
+
+# This function checks if a selection is active. 
+# If yes, it deletes the selection. If no, it deletes one char.
+backward-delete-char-or-selection() {
+    if (( REGION_ACTIVE )); then
+        zle kill-region
+    else
+        zle backward-delete-char
+    fi
+}
+
+# Register and bind it to Backspace (^?)
+zle -N backward-delete-char-or-selection
+bindkey '^?' backward-delete-char-or-selection
+
+# Do the same for the Delete key
+delete-char-or-selection() {
+    if (( REGION_ACTIVE )); then
+        zle kill-region
+    else
+        zle delete-char
+    fi
+}
+
+zle -N delete-char-or-selection
+bindkey "^[[3~" delete-char-or-selection # Standard Delete key code
+
+bindkey -s '^f' 'fzf\n'
+
+# --- Modern Ctrl + Backspace ---
+modern-backward-kill-word() {
+  if (( REGION_ACTIVE )); then
+    zle kill-region
+  else
+    zle backward-kill-word
+  fi
+}
+
+zle -N modern-backward-kill-word
+
+# The keycode for Ctrl+Backspace can vary:
+# '^H' is common for Alacritty/Kitty
+# '^?' is sometimes used, but that's usually just Backspace
+bindkey '^H' modern-backward-kill-word
+
+clear-keep-buffer() {
+    zle clear-screen
+}
+zle -N clear-keep-buffer
+bindkey '^X' clear-keep-buffer
+</file>
+
+<file path="airootfs/usr/local/bin/choose-mirror">
+#!/bin/bash
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+get_cmdline() {
+    local param
+    for param in $(</proc/cmdline); do
+        case "${param}" in
+            "${1}="*)
+                echo "${param##*=}"
+                return 0
+                ;;
+        esac
+    done
+}
+
+mirror="$(get_cmdline mirror)"
+[[ "$mirror" == 'auto' ]] && mirror="$(get_cmdline archiso_http_srv)"
+[[ -n "$mirror" ]] || exit 0
+
+mv /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.orig
+cat >/etc/pacman.d/mirrorlist <<EOF
+#
+# Arch Linux repository mirrorlist
+# Generated by archiso
+#
+
+Server = ${mirror%%/}/\$repo/os/\$arch
+EOF
+</file>
+
+<file path="airootfs/usr/local/bin/Installation_guide">
+#!/bin/sh
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+exec xdg-open 'https://wiki.archlinux.org/title/Installation_guide'
+</file>
+
+<file path="airootfs/usr/local/bin/livecd-sound">
+#!/usr/bin/env bash
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+usage() {
+    cat <<-_EOF_
+    live cd sound helper script.
+    Usage: livecdsound [OPTION]
+    OPTIONS
+        -u, --unmute      unmute all sound cards
+        -p, --pick        select a card for speech output
+        -h, --help        Show this usage message
+
+_EOF_
+}
+
+bugout() {
+    printf "/usr/local/bin/livecdsound: programming error"
+    stat_fail
+}
+
+echo_card_indices() {
+    if [[ -f /proc/asound/cards ]]; then
+        sed -n -e's/^[[:space:]]*\([0-7]\)[[:space:]].*/\1/p' /proc/asound/cards
+    fi
+}
+
+# The following functions try to set many controls.
+# No card has all the controls and so some of the attempts are bound to fail.
+# Because of this, the functions can't return useful status values.
+
+# $1 <card id>
+# $2 <control>
+# $3 <level>
+unmute_and_set_level() {
+    [[ -n "$3" && -n "$2" && -n "$1" ]] || bugout
+    systemd-cat -t "livecdsound" printf "Setting: %s on card: %s to %s\n" "$2" "$1" "$3"
+    systemd-cat -t "livecdsound" amixer -c "$1" set "$2" "$3" unmute
+    return 0
+}
+
+# $1 <card id>
+# $2 <control>
+mute_and_zero_level() {
+    [[ -n "$1" && -n "$2" ]] || bugout
+    systemd-cat -t "livecdsound" printf "Muting control: %s on card: %s\n" "$2" "$1"
+    systemd-cat -t "livecdsound" amixer -c "$1" set "$2" "0%" mute
+    return 0
+}
+
+# $1 <card ID>
+# $2 <control>
+# $3 "on" | "off"
+switch_control() {
+    [[ -n "$3" && -n "$1" ]] || bugout
+    systemd-cat -t "livecdsound" printf "Switching control: %s on card: %s to %s\n" "$2" "$1" "$3"
+    systemd-cat -t "livecdsound" amixer -c "$1" set "$2" "$3"
+    return 0
+}
+
+# $1 <card ID>
+sanify_levels_on_card() {
+    unmute_and_set_level "$1" "Front" "80%"
+    unmute_and_set_level "$1" "Master" "80%"
+    unmute_and_set_level "$1" "Master Mono" "80%"
+    unmute_and_set_level "$1" "Master Digital" "80%"   # E.g., cs4237B
+    unmute_and_set_level "$1" "Playback" "80%"
+    unmute_and_set_level "$1" "Headphone" "100%"
+    unmute_and_set_level "$1" "PCM" "80%"
+    unmute_and_set_level "$1" "PCM,1" "80%"   # E.g., ess1969
+    unmute_and_set_level "$1" "DAC" "80%"     # E.g., envy24, cs46xx
+    unmute_and_set_level "$1" "DAC,0" "80%"   # E.g., envy24
+    unmute_and_set_level "$1" "DAC,1" "80%"   # E.g., envy24
+    unmute_and_set_level "$1" "Synth" "80%"
+    unmute_and_set_level "$1" "CD" "80%"
+    unmute_and_set_level "$1" "PC Speaker" "100%"
+
+    mute_and_zero_level "$1" "Mic"
+    mute_and_zero_level "$1" "IEC958"         # Ubuntu #19648
+
+    # Intel P4P800-MX
+    switch_control "$1" "Master Playback Switch" on
+    switch_control "$1" "Master Surround" on
+
+    # Trident/YMFPCI/emu10k1:
+    unmute_and_set_level "$1" "Wave" "80%"
+    unmute_and_set_level "$1" "Music" "80%"
+    unmute_and_set_level "$1" "AC97" "80%"
+
+    # DRC:
+    unmute_and_set_level "$1" "Dynamic Range Compression" "80%"
+
+    # Required for HDA Intel (hda-intel):
+    unmute_and_set_level "$1" "Front" "80%"
+
+    # Required for SB Live 7.1/24-bit (ca0106):
+    unmute_and_set_level "$1" "Analog Front" "80%"
+
+    # Required at least for Via 823x hardware on DFI K8M800-MLVF Motherboard
+    switch_control "$1" "IEC958 Capture Monitor" off
+
+    # Required for hardware allowing toggles for AC97 through IEC958,
+    #  valid values are 0, 1, 2, 3. Needs to be set to 0 for PCM1.
+    unmute_and_set_level "$1" "IEC958 Playback AC97-SPSA" "0"
+
+    # Required for newer Via hardware
+    unmute_and_set_level "$1" "VIA DXS,0" "80%"
+    unmute_and_set_level "$1" "VIA DXS,1" "80%"
+    unmute_and_set_level "$1" "VIA DXS,2" "80%"
+    unmute_and_set_level "$1" "VIA DXS,3" "80%"
+
+    # Required on some notebooks with ICH4:
+    switch_control "$1" "Headphone Jack Sense" off
+    switch_control "$1" "Line Jack Sense" off
+
+    # Some machines need one or more of these to be on;
+    # others need one or more of these to be off:
+
+    switch_control "$1" "Audigy Analog/Digital Output Jack" on
+    switch_control "$1" "SB Live Analog/Digital Output Jack" on
+
+    # D1984 -- Thinkpad T61/X61
+    switch_control "$1" "Speaker" on
+    switch_control "$1" "Headphone" on
+
+    # HDA-Intel w/ "Digital" capture mixer (See Ubuntu #193823)
+    unmute_and_set_level "$1" "Digital" "80%"
+
+    return 0
+}
+
+# $1 <card ID> | "all"
+sanify_levels() {
+    local ttsdml_returnstatus=0
+    local card
+    case "$1" in
+        all)
+            for card in $(echo_card_indices); do
+                sanify_levels_on_card "$card" || ttsdml_returnstatus=1
+            done
+            ;;
+        *)
+            sanify_levels_on_card "$1" || ttsdml_returnstatus=1
+            ;;
+    esac
+    return "$ttsdml_returnstatus"
+}
+
+# List all cards that *should* be usable for PCM audio.  In my experience,
+# the console speaker (handled by the pcsp driver) isn't a suitable playback
+# device, so we'll exclude it.
+list_non_pcsp_cards() {
+    for card in $(echo_card_indices); do
+        local cardfile="/proc/asound/card${card}/id"
+        if [[ -r "$cardfile" && -f "$cardfile" && "$(cat "$cardfile")" != pcsp ]]; then
+            echo "$card"
+        fi
+    done
+}
+
+# Properly initialize the sound card so that we have audio at boot.
+unmute_all_cards() {
+    sanify_levels all
+}
+
+is_numeric() {
+    local str="$1"
+    [[ "$str" =~ ^[0-9]+$ ]]
+}
+
+set_default_card() {
+    local card="$1"
+    sed -e "s/%card%/$card/g" </usr/local/share/livecd-sound/asound.conf.in \
+        >/etc/asound.conf
+}
+
+play_on_card() {
+    local card="$1" file="$2"
+    aplay -q "-Dplughw:$card,0" "$file"
+}
+
+# If there are multiple usable sound cards, prompt the user to choose one,
+# using auditory feedback.
+pick_a_card() {
+    set -f
+    mapfile -t usable_cards < <(list_non_pcsp_cards)
+    num_usable_cards="${#usable_cards[@]}"
+
+    if (( num_usable_cards == 1 )); then
+        systemd-cat -t "livecdsound" printf "Only one sound card is detected\n"
+        exit 0
+    fi
+    systemd-cat -t "livecdsound" printf "multiple sound cards detected\n"
+    for card in "${usable_cards[@]}"; do
+        if ! is_numeric "$card"; then
+            continue
+        fi
+        play_on_card "$card" /usr/share/livecd-sounds/pick-a-card.wav &
+    done
+    wait
+    sleep 1
+    for card in "${usable_cards[@]}"; do
+        if ! is_numeric "$card"; then
+            continue
+        fi
+        play_on_card "$card" /usr/share/livecd-sounds/beep.wav
+        if read -r -t 10; then
+            systemd-cat -t "livecdsound" printf "Selecting %s sound card as default\n" "$card"
+            set_default_card "$card"
+            break
+        fi
+    done
+}
+
+if (( $# == 0 )); then
+    echo "error: No argument passed."
+    exit 1
+fi
+while [[ "${1}" != "" ]]; do
+    case ${1} in
+        -h|--help)
+            usage
+            exit
+            ;;
+        -u|--unmute)
+            systemd-cat -t "livecdsound" printf "Unmuting all cards"
+            unmute_all_cards
+            ;;
+        -p|--pick)
+            pick_a_card
+            ;;
+        *)
+            echo "error: Unsupported argument"
+            usage
+            exit 1
+            ;;
+    esac
+    shift
+done
+</file>
+
+<file path="airootfs/usr/local/share/livecd-sound/asound.conf.in">
+Defaults node
+defaults.ctl.card %card%;
+defaults.pcm.card %card%;
+</file>
+
+<file path="efiboot/loader/entries/01-archiso-linux.conf">
+title    Arch Linux install medium (%ARCH%, UEFI)
+sort-key 01
+linux    /%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux
+initrd   /%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img
+options  archisobasedir=%INSTALL_DIR% archisosearchuuid=%ARCHISO_UUID%
+</file>
+
+<file path="efiboot/loader/entries/02-archiso-speech-linux.conf">
+title    Arch Linux install medium (%ARCH%, UEFI) with speech
+sort-key 02
+linux    /%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux
+initrd   /%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img
+options  archisobasedir=%INSTALL_DIR% archisosearchuuid=%ARCHISO_UUID% accessibility=on
+</file>
+
+<file path="efiboot/loader/entries/03-archiso-memtest86+x64.conf">
+title    Memtest86+
+sort-key 03
+efi      /boot/memtest86+/memtest.efi
+architecture x64
+</file>
+
+<file path="efiboot/loader/loader.conf">
+timeout 15
+default 01-archiso-linux.conf
+beep on
+</file>
+
+<file path="grub/grub.cfg">
+# Load partition table and file system modules
+insmod part_gpt
+insmod part_msdos
+insmod fat
+insmod iso9660
+insmod ntfs
+insmod ntfscomp
+insmod exfat
+insmod udf
+
+# Use graphics-mode output
+if loadfont "${prefix}/fonts/unicode.pf2" ; then
+    insmod all_video
+    set gfxmode="auto"
+    terminal_input console
+    terminal_output console
+fi
+
+# Enable serial console
+insmod serial
+insmod usbserial_common
+insmod usbserial_ftdi
+insmod usbserial_pl2303
+insmod usbserial_usbdebug
+if serial --unit=0 --speed=115200; then
+    terminal_input --append serial
+    terminal_output --append serial
+fi
+
+# Get a human readable platform identifier
+if [ "${grub_platform}" == 'efi' ]; then
+    archiso_platform='UEFI'
+elif [ "${grub_platform}" == 'pc' ]; then
+    archiso_platform='BIOS'
+else
+    archiso_platform="${grub_cpu}-${grub_platform}"
+fi
+
+# Set default menu entry
+default=archlinux
+timeout=15
+timeout_style=menu
+
+
+# Menu entries
+
+menuentry "Arch Linux install medium (%ARCH%, ${archiso_platform})" --class arch --class gnu-linux --class gnu --class os --id 'archlinux' {
+    set gfxpayload=keep
+    linux /%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux archisobasedir=%INSTALL_DIR% archisosearchuuid=%ARCHISO_UUID%
+    initrd /%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img
+}
+
+menuentry "Arch Linux install medium with speakup screen reader (%ARCH%, ${archiso_platform})" --hotkey s --class arch --class gnu-linux --class gnu --class os --id 'archlinux-accessibility' {
+    set gfxpayload=keep
+    linux /%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux archisobasedir=%INSTALL_DIR% archisosearchuuid=%ARCHISO_UUID% accessibility=on
+    initrd /%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img
+}
+
+
+if [ "${grub_platform}" == 'efi' -a "${grub_cpu}" == 'x86_64' -a -f '/boot/memtest86+/memtest.efi' ]; then
+    menuentry 'Run Memtest86+ (RAM test)' --class memtest86 --class memtest --class gnu --class tool {
+        set gfxpayload=800x600,1024x768
+        linux /boot/memtest86+/memtest.efi
+    }
+fi
+if [ "${grub_platform}" == 'pc' -a -f '/boot/memtest86+/memtest' ]; then
+    menuentry 'Run Memtest86+ (RAM test)' --class memtest86 --class memtest --class gnu --class tool {
+        set gfxpayload=800x600,1024x768
+        linux /boot/memtest86+/memtest
+    }
+fi
+if [ "${grub_platform}" == 'efi' ]; then
+    if [ "${grub_cpu}" == 'x86_64' -a -f '/shellx64.efi' ]; then
+        menuentry 'UEFI Shell' --class efi {
+            chainloader /shellx64.efi
+        }
+    elif [ "${grub_cpu}" == 'i386' -a -f '/shellia32.efi' ]; then
+        menuentry 'UEFI Shell' --class efi {
+            chainloader /shellia32.efi
+        }
+    elif [ "${grub_cpu}" == 'arm64' -a -f '/shellaa64.efi' ]; then
+        menuentry 'UEFI Shell' --class efi {
+            chainloader /shellaa64.efi
+        }
+    elif [ "${grub_cpu}" == 'riscv64' -a -f '/shellriscv64.efi' ]; then
+        menuentry 'UEFI Shell' --class efi {
+            chainloader /shellriscv64.efi
+        }
+    elif [ "${grub_cpu}" == 'loongarch64' -a -f '/shellloongarch64.efi' ]; then
+        menuentry 'UEFI Shell' --class efi {
+            chainloader /shellloongarch64.efi
+        }
+    fi
+
+    menuentry 'UEFI Firmware Settings' --id 'uefi-firmware' {
+        fwsetup
+    }
+fi
+
+menuentry 'System shutdown' --class shutdown --class poweroff {
+    echo 'System shutting down...'
+    halt
+}
+
+menuentry 'System restart' --class reboot --class restart {
+    echo 'System rebooting...'
+    reboot
+}
+
+
+# GRUB init tune for accessibility
+play 600 988 1 1319 4
+</file>
+
+<file path="grub/loopback.cfg">
+# https://www.supergrubdisk.org/wiki/Loopback.cfg
+
+# Search for the ISO volume
+search --no-floppy --set=archiso_img_dev --file "${iso_path}"
+probe --set archiso_img_dev_uuid --fs-uuid "${archiso_img_dev}"
+
+# Get a human readable platform identifier
+if [ "${grub_platform}" == 'efi' ]; then
+    archiso_platform='UEFI'
+elif [ "${grub_platform}" == 'pc' ]; then
+    archiso_platform='BIOS'
+else
+    archiso_platform="${grub_cpu}-${grub_platform}"
+fi
+
+# Set default menu entry
+default=archlinux
+timeout=15
+timeout_style=menu
+
+
+# Menu entries
+
+menuentry "Arch Linux install medium (%ARCH%, ${archiso_platform})" --class arch --class gnu-linux --class gnu --class os --id 'archlinux' {
+    set gfxpayload=keep
+    linux /%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux archisobasedir=%INSTALL_DIR% img_dev=UUID=${archiso_img_dev_uuid} img_loop="${iso_path}"
+    initrd /%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img
+}
+
+menuentry "Arch Linux install medium with speakup screen reader (%ARCH%, ${archiso_platform})" --hotkey s --class arch --class gnu-linux --class gnu --class os --id 'archlinux-accessibility' {
+    set gfxpayload=keep
+    linux /%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux archisobasedir=%INSTALL_DIR% img_dev=UUID=${archiso_img_dev_uuid} img_loop="${iso_path}" accessibility=on
+    initrd /%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img
+}
+
+
+if [ "${grub_platform}" == 'efi' -a "${grub_cpu}" == 'x86_64' -a -f '/boot/memtest86+/memtest.efi' ]; then
+    menuentry 'Run Memtest86+ (RAM test)' --class memtest86 --class memtest --class gnu --class tool {
+        set gfxpayload=800x600,1024x768
+        linux /boot/memtest86+/memtest.efi
+    }
+fi
+if [ "${grub_platform}" == 'pc' -a -f '/boot/memtest86+/memtest' ]; then
+    menuentry 'Run Memtest86+ (RAM test)' --class memtest86 --class memtest --class gnu --class tool {
+        set gfxpayload=800x600,1024x768
+        linux /boot/memtest86+/memtest
+    }
+fi
+if [ "${grub_platform}" == 'efi' ]; then
+    if [ "${grub_cpu}" == 'x86_64' -a -f '/shellx64.efi' ]; then
+        menuentry 'UEFI Shell' --class efi {
+            chainloader /shellx64.efi
+        }
+    elif [ "${grub_cpu}" == 'i386' -a -f '/shellia32.efi' ]; then
+        menuentry 'UEFI Shell' --class efi {
+            chainloader /shellia32.efi
+        }
+    elif [ "${grub_cpu}" == 'arm64' -a -f '/shellaa64.efi' ]; then
+        menuentry 'UEFI Shell' --class efi {
+            chainloader /shellaa64.efi
+        }
+    elif [ "${grub_cpu}" == 'riscv64' -a -f '/shellriscv64.efi' ]; then
+        menuentry 'UEFI Shell' --class efi {
+            chainloader /shellriscv64.efi
+        }
+    elif [ "${grub_cpu}" == 'loongarch64' -a -f '/shellloongarch64.efi' ]; then
+        menuentry 'UEFI Shell' --class efi {
+            chainloader /shellloongarch64.efi
+        }
+    fi
+
+    menuentry 'UEFI Firmware Settings' --id 'uefi-firmware' {
+        fwsetup
+    }
+fi
+
+menuentry 'System shutdown' --class shutdown --class poweroff {
+    echo 'System shutting down...'
+    halt
+}
+
+menuentry 'System restart' --class reboot --class restart {
+    echo 'System rebooting...'
+    reboot
+}
+</file>
+
+<file path="syslinux/archiso_head.cfg">
+SERIAL 0 115200
+UI vesamenu.c32
+MENU TITLE Arch Linux
+MENU BACKGROUND splash.png
+
+MENU WIDTH 78
+MENU MARGIN 4
+MENU ROWS 7
+MENU VSHIFT 10
+MENU TABMSGROW 14
+MENU CMDLINEROW 14
+MENU HELPMSGROW 16
+MENU HELPMSGENDROW 29
+
+# Refer to https://wiki.syslinux.org/wiki/index.php/Comboot/menu.c32
+
+MENU COLOR border       30;44   #40ffffff #a0000000 std
+MENU COLOR title        1;36;44 #9033ccff #a0000000 std
+MENU COLOR sel          7;37;40 #e0ffffff #20ffffff all
+MENU COLOR unsel        37;44   #50ffffff #a0000000 std
+MENU COLOR help         37;40   #c0ffffff #a0000000 std
+MENU COLOR timeout_msg  37;40   #80ffffff #00000000 std
+MENU COLOR timeout      1;37;40 #c0ffffff #00000000 std
+MENU COLOR msg07        37;40   #90ffffff #a0000000 std
+MENU COLOR tabmsg       31;40   #30ffffff #00000000 std
+
+MENU CLEAR
+MENU IMMEDIATE
+</file>
+
+<file path="syslinux/archiso_pxe-linux.cfg">
+LABEL arch_nbd
+TEXT HELP
+Boot the Arch Linux install medium using NBD.
+It allows you to install Arch Linux or perform system maintenance.
+ENDTEXT
+MENU LABEL Arch Linux install medium (%ARCH%, NBD)
+LINUX ::/%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux
+INITRD ::/%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img
+APPEND archisobasedir=%INSTALL_DIR% archisosearchuuid=%ARCHISO_UUID% archiso_nbd_srv=${pxeserver} cms_verify=y
+SYSAPPEND 3
+
+LABEL arch_nfs
+TEXT HELP
+Boot the Arch Linux live medium using NFS.
+It allows you to install Arch Linux or perform system maintenance.
+ENDTEXT
+MENU LABEL Arch Linux install medium (%ARCH%, NFS)
+LINUX ::/%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux
+INITRD ::/%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img
+APPEND archisobasedir=%INSTALL_DIR% archiso_nfs_srv=${pxeserver}:/run/archiso/bootmnt cms_verify=y
+SYSAPPEND 3
+
+LABEL arch_http
+TEXT HELP
+Boot the Arch Linux live medium using HTTP.
+It allows you to install Arch Linux or perform system maintenance.
+ENDTEXT
+MENU LABEL Arch Linux install medium (%ARCH%, HTTP)
+LINUX ::/%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux
+INITRD ::/%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img
+APPEND archisobasedir=%INSTALL_DIR% archiso_http_srv=http://${pxeserver}/ cms_verify=y
+SYSAPPEND 3
+</file>
+
+<file path="syslinux/archiso_pxe.cfg">
+INCLUDE archiso_head.cfg
+
+INCLUDE archiso_pxe-linux.cfg
+
+INCLUDE archiso_tail.cfg
+</file>
+
+<file path="syslinux/archiso_sys-linux.cfg">
+LABEL arch
+TEXT HELP
+Boot the Arch Linux install medium on BIOS.
+It allows you to install Arch Linux or perform system maintenance.
+ENDTEXT
+MENU LABEL Arch Linux install medium (%ARCH%, BIOS)
+LINUX /%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux
+INITRD /%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img
+APPEND archisobasedir=%INSTALL_DIR% archisosearchuuid=%ARCHISO_UUID%
+
+# Accessibility boot option
+LABEL archspeech
+TEXT HELP
+Boot the Arch Linux install medium on BIOS with speakup screen reader.
+It allows you to install Arch Linux or perform system maintenance with speech feedback.
+ENDTEXT
+MENU LABEL Arch Linux install medium (%ARCH%, BIOS) with ^speech
+LINUX /%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux
+INITRD /%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img
+APPEND archisobasedir=%INSTALL_DIR% archisosearchuuid=%ARCHISO_UUID% accessibility=on
+</file>
+
+<file path="syslinux/archiso_sys.cfg">
+INCLUDE archiso_head.cfg
+
+DEFAULT arch
+TIMEOUT 150
+
+INCLUDE archiso_sys-linux.cfg
+
+INCLUDE archiso_tail.cfg
+</file>
+
+<file path="syslinux/archiso_tail.cfg">
+LABEL existing
+TEXT HELP
+Boot an existing operating system.
+Press TAB to edit the disk and partition number to boot.
+ENDTEXT
+MENU LABEL Boot existing OS
+COM32 chain.c32
+APPEND hd0 0
+
+# https://www.memtest.org/
+LABEL memtest
+MENU LABEL Run Memtest86+ (RAM test)
+LINUX /boot/memtest86+/memtest
+
+# https://wiki.syslinux.org/wiki/index.php/Hdt_(Hardware_Detection_Tool)
+LABEL hdt
+MENU LABEL Hardware Information (HDT)
+COM32 hdt.c32
+APPEND modules_alias=hdt/modalias.gz pciids=hdt/pciids.gz
+
+LABEL reboot
+TEXT HELP
+Reboot computer.
+The computer's firmware must support APM.
+ENDTEXT
+MENU LABEL Reboot
+COM32 reboot.c32
+
+LABEL poweroff
+TEXT HELP
+Power off computer.
+The computer's firmware must support APM.
+ENDTEXT
+MENU LABEL Power Off
+COM32 poweroff.c32
+</file>
+
+<file path="syslinux/syslinux.cfg">
+DEFAULT select
+
+LABEL select
+COM32 whichsys.c32
+APPEND -pxe- pxe -sys- sys -iso- sys
+
+LABEL pxe
+CONFIG archiso_pxe.cfg
+
+LABEL sys
+CONFIG archiso_sys.cfg
+</file>
+
+<file path="bootstrap_packages">
+arch-install-scripts
+base
+</file>
+
+<file path="packages.x86_64">
+linux
+alsa-utils
+amd-ucode
+arch-install-scripts
+archinstall
+base
+btrfs-progs
+cryptsetup
+ddrescue
+diffutils
+dmidecode
+dosfstools
+e2fsprogs
+edk2-shell
+efibootmgr
+ethtool
+exfatprogs
+fatresize
+foot-terminfo
+fsarchiver
+gpart
+gptfdisk
+grub
+hdparm
+intel-ucode
+kitty-terminfo
+less
+libusb-compat
+linux-atm
+linux-firmware
+lsscsi
+man-db
+man-pages
+memtest86+
+memtest86+-efi
+mkinitcpio
+mkinitcpio-archiso
+mkinitcpio-nfs-utils
+mtools
+nano
+nfs-utils
+nmap
+ntfs-3g
+nvme-cli
+openssh
+openvpn
+parted
+pv
+reflector
+rsync
+rxvt-unicode-terminfo
+sdparm
+sg3_utils
+smartmontools
+sof-firmware
+squashfs-tools
+sudo
+syslinux
+systemd-resolvconf
+tcpdump
+terminus-font
+testdisk
+tmux
+usb_modeswitch
+usbmuxd
+usbutils
+vim
+wireless-regdb
+xdg-utils
+zsh
+neovim
+git
+networkmanager
+fastfetch
+htop
+curl
+wget
+keyd
+</file>
+
+<file path="pacman.conf">
+#
+# /etc/pacman.conf
+#
+# See the pacman.conf(5) manpage for option and repository directives
+
+#
+# GENERAL OPTIONS
+#
+[options]
+# The following paths are commented out with their default values listed.
+# If you wish to use different paths, uncomment and update the paths.
+#RootDir     = /
+#DBPath      = /var/lib/pacman/
+#CacheDir    = /var/cache/pacman/pkg/
+#LogFile     = /var/log/pacman.log
+#GPGDir      = /etc/pacman.d/gnupg/
+#HookDir     = /etc/pacman.d/hooks/
+HoldPkg     = pacman glibc
+#XferCommand = /usr/bin/curl -L -C - -f -o %o %u
+#XferCommand = /usr/bin/wget --passive-ftp -c -O %o %u
+#CleanMethod = KeepInstalled
+Architecture = auto
+
+# Pacman won't upgrade packages listed in IgnorePkg and members of IgnoreGroup
+#IgnorePkg   =
+#IgnoreGroup =
+
+#NoUpgrade   =
+#NoExtract   =
+
+# Misc options
+#UseSyslog
+#Color
+#NoProgressBar
+# We cannot check disk space from within a chroot environment
+#CheckSpace
+#VerbosePkgLists
+ParallelDownloads = 5
+#DownloadUser = alpm
+#DisableSandbox
+
+# By default, pacman accepts packages signed by keys that its local keyring
+# trusts (see pacman-key and its man page), as well as unsigned packages.
+SigLevel    = Required DatabaseOptional
+LocalFileSigLevel = Optional
+#RemoteFileSigLevel = Required
+
+# NOTE: You must run `pacman-key --init` before first using pacman; the local
+# keyring can then be populated with the keys of all official Arch Linux
+# packagers with `pacman-key --populate archlinux`.
+
+#
+# REPOSITORIES
+#   - can be defined here or included from another file
+#   - pacman will search repositories in the order defined here
+#   - local/custom mirrors can be added here or in separate files
+#   - repositories listed first will take precedence when packages
+#     have identical names, regardless of version number
+#   - URLs will have $repo replaced by the name of the current repo
+#   - URLs will have $arch replaced by the name of the architecture
+#
+# Repository entries are of the format:
+#       [repo-name]
+#       Server = ServerName
+#       Include = IncludePath
+#
+# The header [repo-name] is crucial - it must be present and
+# uncommented to enable the repo.
+#
+
+# The testing repositories are disabled by default. To enable, uncomment the
+# repo name header and Include lines. You can add preferred servers immediately
+# after the header, and they will be used before the default mirrors.
+
+#[core-testing]
+#Include = /etc/pacman.d/mirrorlist
+
+[core]
+Include = /etc/pacman.d/mirrorlist
+
+#[extra-testing]
+#Include = /etc/pacman.d/mirrorlist
+
+[extra]
+Include = /etc/pacman.d/mirrorlist
+
+# If you want to run 32 bit applications on your x86_64 system,
+# enable the multilib repositories as required here.
+
+#[multilib-testing]
+#Include = /etc/pacman.d/mirrorlist
+
+#[multilib]
+#Include = /etc/pacman.d/mirrorlist
+
+# An example of a custom package repository.  See the pacman manpage for
+# tips on creating your own repositories.
+#[custom]
+#SigLevel = Optional TrustAll
+#Server = file:///home/custompkgs
+</file>
+
+<file path="profiledef.sh">
+#!/usr/bin/env bash
+# shellcheck disable=SC2034
+
+iso_name="archlinux"
+iso_label="ARCH_$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y%m)"
+iso_publisher="Arch Linux <https://archlinux.org>"
+iso_application="Arch Linux Live/Rescue DVD"
+iso_version="$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y.%m.%d)"
+install_dir="arch"
+buildmodes=('iso')
+bootmodes=('bios.syslinux'
+           'uefi.systemd-boot')
+pacman_conf="pacman.conf"
+airootfs_image_type="squashfs"
+airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M' '-Xdict-size' '1M')
+bootstrap_tarball_compression=('zstd' '-c' '-T0' '--auto-threads=logical' '--long' '-19')
+file_permissions=(
+  ["/etc/shadow"]="0:0:400"
+  ["/root"]="0:0:750"
+  ["/root/.automated_script.sh"]="0:0:755"
+  ["/root/.gnupg"]="0:0:700"
+  ["/usr/local/bin/choose-mirror"]="0:0:755"
+  ["/usr/local/bin/Installation_guide"]="0:0:755"
+  ["/usr/local/bin/livecd-sound"]="0:0:755"
+)
+</file>
+
+</files>

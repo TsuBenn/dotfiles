@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import qs.config
 import qs.modules
 import qs.components.bar
+import qs.components
 import qs.services
 
 import Quickshell
@@ -33,7 +34,20 @@ ShellRoot {
         }
     }
 
-    Bar {}
+    Loader {
+
+        active: SettingsInfo.dependenciesChecked
+
+        sourceComponent: Bar {}
+
+    }
+
+    Loader {
+
+        active: !SettingsInfo.dependenciesChecked
+
+        sourceComponent: DependenciesChecker {}
+    }
 
     Process {
         id: process 

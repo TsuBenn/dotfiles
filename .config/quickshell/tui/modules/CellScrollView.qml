@@ -25,9 +25,13 @@ Cells {
     property int offset: 0
     property int contentY: Cell.h(1)*root.offset
 
+    property bool virtualH: false
+
+    readonly property int maxOffset: Math.floor(root.contentH/Cell.cellHeight)-root.h
+
     onOffsetChanged: {
-        if ((offset > Cell.hCount(content.contentHeight)-root.h || offset < 0) && Cell.hCount(content.contentHeight)-root.h > 0) {
-            offset = Math.max(Math.min(root.offset,Cell.hCount(content.contentHeight)-root.h),0)
+        if ((offset > maxOffset || offset < 0) && maxOffset > 0) {
+            offset = Math.max(Math.min(root.offset,maxOffset),0)
         }
     }
 
@@ -68,14 +72,16 @@ Cells {
 
         clip: true
 
-        contentY: Cell.h(1)*root.offset
+        contentY: Cell.h(1)*root.offset*!root.virtualH
 
         interactive: false
 
         id: content
 
+        spacing: 0
+
         onContentHeightChanged: {
-                root.offset = Math.max(Math.min(root.offset,Cell.hCount(content.contentHeight)-root.h),0)
+            root.offset = Math.max(Math.min(root.offset,root.maxOffset),0)
         }
 
         model: 1
@@ -97,7 +103,7 @@ Cells {
             x: Cell.alignRightWCell(implicitWidth, root.implicitWidth)
 
             onAdjusted: (percent) => {
-                root.offset = (Cell.hCount(content.contentHeight)-root.h)*percent
+                root.offset = (root.maxOffset)*percent
             }
 
             type {
@@ -110,8 +116,8 @@ Cells {
             thumbH: root.scrollbar.thumbH
 
             h: root.h
-            progress: root.offset/(Cell.hCount(content.contentHeight)-root.h)
-            contentH: Cell.hCount(content.contentHeight)
+            progress: root.offset/(root.maxOffset)
+            contentH: Math.floor(root.contentH/Cell.cellHeight)
 
             bg: root.scrollbar.bg_color
             color: root.scrollbar.color
@@ -128,7 +134,7 @@ Cells {
         hoverEnabled: false
 
         onWheel: (delta) => {
-            root.offset = Math.max(Math.min(root.offset - delta,Cell.hCount(content.contentHeight)-root.h),0)
+            root.offset = Math.max(Math.min(root.offset - delta,root.maxOffset),0)
         }
 
     }

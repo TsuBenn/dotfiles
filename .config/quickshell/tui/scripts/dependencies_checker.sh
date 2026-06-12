@@ -3,6 +3,7 @@
 # Format: "package_name|Clean Title|Description"
 PACMAN_DEPS=(
     "hyprland|Hyprland|The core Wayland compositor and window manager."
+    "quickshell|Quickshell|The flexible desktop shell framework driving this UI repo."
     "fastfetch|Fastfetch|System information fetching tool for the dashboard."
     "qt6-multimedia|Qt6 Multimedia|Qt module for audio and video playback features."
     "qt6-5compat|Qt6 5Compat|Compatibility layer for graphical blur and mask effects."
@@ -29,7 +30,6 @@ PACMAN_DEPS=(
 )
 
 AUR_DEPS=(
-    "quickshell|Quickshell|The flexible desktop shell framework driving this UI repo."
     "ttf-apple-emoji|Apple Color Emoji|Apple style color emojis for layout elements."
 )
 
@@ -46,17 +46,21 @@ check_list() {
         # Format: ACTION:TYPE:PKG:TITLE:DESCRIPTION
         echo "START:$type:$pkg:$title:$desc"
         fflush /dev/stdout 2>/dev/null
-        
-        # sleep 0.08
+
+        sleep 0.009
 
         if pacman -Qi "$pkg" &> /dev/null; then
             echo "OK:$type:$pkg:$title:$desc"
         else
             echo "MISSING:$type:$pkg:$title:$desc"
         fi
+
+        sleep 0.009
+
         fflush /dev/stdout 2>/dev/null
     done
 }
 
 check_list "pacman" "${PACMAN_DEPS[@]}"
 check_list "aur" "${AUR_DEPS[@]}"
+echo "TERMINATE"

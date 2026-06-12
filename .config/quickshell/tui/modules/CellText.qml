@@ -44,6 +44,10 @@ Item {
         updateText()
     }
 
+    onPreferedWChanged: {
+        updateText()
+    }
+
     onTextChanged: {
         updateText()
     }

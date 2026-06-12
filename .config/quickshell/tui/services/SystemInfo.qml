@@ -21,6 +21,8 @@ Singleton {
     property string uptime: "0h0m0s"
     property string wm: "n/a"
 
+    signal auth(string prompt)
+
     //Specs
     property string cpumodel: "CPU"
     property int cpucores

@@ -27,6 +27,8 @@ Singleton {
         onTriggered: root.fps = fpsMonitor.smoothFrameTime > 0 ? Math.round(1.0 / fpsMonitor.smoothFrameTime) : 0
     }
 
+    property bool dependenciesChecked : false  // Use to initiallize the bar
+
     property bool hints             : true  // Show keyboard hints
     property bool minimal           : false // Reduce UI elements
     property bool textBasedVolume   : false // Bar's volume rocker do be text
@@ -135,8 +137,11 @@ Singleton {
         saveConfig()
     }
 
+    signal pacman()
+
     IpcHandler {
         target: "config"
+        function boot_pacman(): void {root.pacman()}
         function open_popup(popup:   string): void {PopupManager.open(popup);}
         function close_popup(popup:  string): void {PopupManager.close(popup)}
         function toggle_popup(popup: string): void {PopupManager.toggle(popup)}
@@ -146,6 +151,11 @@ Singleton {
                 PopupManager.open(id)
             }
         }
+        function shutdown(): void {PowerManager.call("Shutdown", 3)}
+        function sleep(): void {PowerManager.call("Sleep", 3)}
+        function reboot(): void {PowerManager.call("Reboot", 3)}
+        function logout(): void {PowerManager.call("Logout", 3)}
+        function lock(): void {SystemInfo.lock()}
         function set_color_theme(color: string): void {Colors.current = color}
         function notification_check(): void {
             root.notification_check()
