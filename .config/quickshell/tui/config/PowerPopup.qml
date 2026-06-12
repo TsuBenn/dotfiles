@@ -37,6 +37,9 @@ CellPopup {
 
     function close() {
         if (closeAnim.running) return
+        countdown.active = false
+        blacking_out.stop()
+        timer.stop()
         closeAnim.restart()
     }
 
@@ -46,11 +49,17 @@ CellPopup {
             target: root
             property: "opacity"
             to: 0
-            duration: 200
+            duration: 200*(1+blackout.opacity)
             easing.type: Easing.OutCubic
         }
         ScriptAction {
-            script: PopupManager.close(root.name)
+            script: {
+                blackout.opacity = 0
+                countdown.opacity = 1
+                top_bar.implicitHeight = 0
+                bottom_bar.implicitHeight = 0
+                PopupManager.close(root.name)
+            }
         }
     }
     SequentialAnimation {
