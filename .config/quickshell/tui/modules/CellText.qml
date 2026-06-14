@@ -380,65 +380,65 @@ Item {
         return `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Symbols 2';">${str}</span>`
     }
 
-function splitUnpure(str) {
-    let result = [];
+    function splitUnpure(str) {
+        let result = [];
 
-    for (const line of str.split("\n")) {
-        let processed = [];
-        // Added inBraille state flag
-        let inFullWidth = false, inEmoji = false, inBraille = false, buffer = "";
+        for (const line of str.split("\n")) {
+            let processed = [];
+            // Added inBraille state flag
+            let inFullWidth = false, inEmoji = false, inBraille = false, buffer = "";
 
-        // Helper to push buffer contents and reset it
-        const flush = () => {
-            if (!buffer) return;
-            if (inFullWidth) {
-                processed.push({ text: wrapFullWidth(buffer), len: buffer.length, type: "cjk" });
-            } else if (inEmoji) {
-                processed.push({ text: `<span style="font-size:${Cell.cellHeight*1.4}px;font-family:'Apple Color Emoji';">${str}</span>`, len: buffer.length / 2, type: "emoji" });
-            } else if (inBraille) {
-                // Braille type output format
-                processed.push({ text: wrapBraille(buffer), len: buffer.length, type: "braille" });
-            } else {
-                processed.push({ text: hoistWhitespace(richify(buffer)), len: buffer.length, type: "pure" });
+            // Helper to push buffer contents and reset it
+            const flush = () => {
+                if (!buffer) return;
+                if (inFullWidth) {
+                    processed.push({ text: wrapFullWidth(buffer), len: buffer.length, type: "cjk" });
+                } else if (inEmoji) {
+                    processed.push({ text: `<span style="font-size:${Cell.cellHeight*1.4}px;font-family:'Apple Color Emoji';">${str}</span>`, len: buffer.length / 2, type: "emoji" });
+                } else if (inBraille) {
+                    // Braille type output format
+                    processed.push({ text: wrapBraille(buffer), len: buffer.length, type: "braille" });
+                } else {
+                    processed.push({ text: hoistWhitespace(richify(buffer)), len: buffer.length, type: "pure" });
+                }
+                buffer = "";
+            };
+
+            for (const c of line) {
+                // Check if character belongs to the Unicode Braille Patterns block
+                const isBraille = /[\u2800-\u28FF]/.test(c);
+
+                if (c.length === 2) {
+                    if (inFullWidth || !inEmoji || inBraille) flush();
+                    inFullWidth = false;
+                    inEmoji = true;
+                    inBraille = false;
+                } else if (isBraille) {
+                    if (inFullWidth || inEmoji || !inBraille) flush();
+                    inFullWidth = false;
+                    inEmoji = false;
+                    inBraille = true;
+                } else if (isFullWidth(c)) {
+                    if (inEmoji || !inFullWidth || inBraille) flush();
+                    inEmoji = false;
+                    inFullWidth = true;
+                    inBraille = false;
+                } else {
+                    if (inEmoji || inFullWidth || inBraille) flush();
+                    inEmoji = false;
+                    inFullWidth = false;
+                    inBraille = false;
+                }
+                buffer += c;
             }
-            buffer = "";
-        };
 
-        for (const c of line) {
-            // Check if character belongs to the Unicode Braille Patterns block
-            const isBraille = /[\u2800-\u28FF]/.test(c);
-
-            if (c.length === 2) {
-                if (inFullWidth || !inEmoji || inBraille) flush();
-                inFullWidth = false;
-                inEmoji = true;
-                inBraille = false;
-            } else if (isBraille) {
-                if (inFullWidth || inEmoji || !inBraille) flush();
-                inFullWidth = false;
-                inEmoji = false;
-                inBraille = true;
-            } else if (isFullWidth(c)) {
-                if (inEmoji || !inFullWidth || inBraille) flush();
-                inEmoji = false;
-                inFullWidth = true;
-                inBraille = false;
-            } else {
-                if (inEmoji || inFullWidth || inBraille) flush();
-                inEmoji = false;
-                inFullWidth = false;
-                inBraille = false;
-            }
-            buffer += c;
+            flush(); // Handle leftover characters at the end of the line
+            result.push(processed);
         }
 
-        flush(); // Handle leftover characters at the end of the line
-        result.push(processed);
+        if (debug) console.log(JSON.stringify(result, null, 2));
+        return result;
     }
-
-    if (debug) console.log(JSON.stringify(result, null, 2));
-    return result;
-}
 
     property var processed: []
 
@@ -523,7 +523,8 @@ function splitUnpure(str) {
                                             text: parent.text
                                             font: parent.type == "emoji" ? root.fontE : root.font
                                             color: root.color
-                                            lineHeight: 0.9
+                                            lineHeight: Cell.cellHeight + ((Cell.realCellHeight*0.1)/2)
+                                            lineHeightMode: Text.FixedHeight
 
                                         }
 
@@ -560,7 +561,8 @@ function splitUnpure(str) {
                     horizontalAlignment: root.alignRight ? Text.AlignRight : Text.AlignLeft
                     font: root.font
                     color: root.color
-                    lineHeight: 0.9
+                    lineHeight: Cell.cellHeight + ((Cell.realCellHeight*0.1)/2)
+                    lineHeightMode: Text.FixedHeight
                 }
 
             }

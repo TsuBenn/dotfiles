@@ -32,6 +32,7 @@ Singleton {
 
     readonly property int cellWidth: metrics.averageCharacterWidth
     readonly property int cellHeight: metrics.height*0.9
+    readonly property int realCellHeight: metrics.height
     readonly property real cellRatio: cellWidth/cellHeight
 
     function centerWCell(item: double, container: double) : double {
@@ -50,22 +51,22 @@ Singleton {
         return Cell.toH(container - item)
     }
 
-    function w(n: real): int {
+    function w(n: int): int {
         return Math.round(cellWidth)*n
     }
 
-    function h(n: real): int {
+    function h(n: int): int {
         return Math.round(cellHeight)*n
     }
 
-    function toW(n: real): real {
+    function toW(n: int): int {
         return w(Math.floor(n/cellWidth))
     }
-    function toH(n: real): real {
+    function toH(n: int): int {
         return h(Math.floor(n/cellHeight))
     }
 
-    function wCount(n: real, mode = ""): real {
+    function wCount(n: int, mode = ""): int {
         if (mode == "ceil") {
             return Math.ceil(n/cellWidth)
         } else if (mode == "floor") {
@@ -73,7 +74,7 @@ Singleton {
         }
         return Math.round(n/cellWidth)
     }
-    function hCount(n: real, mode = ""): real {
+    function hCount(n: int, mode = ""): int {
         if (mode == "ceil") {
             return Math.ceil(n/cellHeight)
         } else if (mode == "floor") {

@@ -421,10 +421,11 @@ Scope {
                         anchors.fill: parent
 
                         onMoved: {
-                            if (HintManager.visible) HintManager.hide()
+                            if (HintManager.visible && HintManager.timer == 0) HintManager.hide()
                         }
 
                         onPressed: {
+                            if (!HintManager.visible || HintManager.timer != 0) HintManager.hide()
                             ContextMenuManager.hide()
                             DropdownManager.hide()
                         }
@@ -459,8 +460,9 @@ Scope {
                         h: 100
                         w: 400
                         grid: true
-                        opacity: 0.02
+                        opacity: 0.2
 
+                        color: "black"
                         color2: "transparent"
 
                     }

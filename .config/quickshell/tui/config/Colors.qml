@@ -22,7 +22,7 @@ Singleton {
     }
 
     function reload() {
-        load.reload()
+        load.running = true
     }
 
     signal applied()
@@ -114,22 +114,42 @@ Singleton {
     property var dummy: {
         "name"           : "",
         "description"    : "",
-        "bgbase"         : "",
-        "bgSurface"      : "",
-        "bgOverlay"      : "",
-        "fgBase"         : "",
-        "onAccent"       : "",
-        "fgDim"          : "",
-        "fgSubtle"       : "",
-        "accentStrong"   : "",
-        "accentDim"      : "",
-        "secondary"      : "",
-        "info"           : "",
-        "success"        : "",
-        "warning"        : "",
-        "danger"         : "",
-        "borderActive"   : "",
-        "borderInactive" : "",
+        "light": {
+            "bgbase"         : "",
+            "bgSurface"      : "",
+            "bgOverlay"      : "",
+            "fgBase"         : "",
+            "onAccent"       : "",
+            "fgDim"          : "",
+            "fgSubtle"       : "",
+            "accentStrong"   : "",
+            "accentDim"      : "",
+            "secondary"      : "",
+            "info"           : "",
+            "success"        : "",
+            "warning"        : "",
+            "danger"         : "",
+            "borderActive"   : "",
+            "borderInactive" : "",
+        },
+        "dark": {
+            "bgbase"         : "",
+            "bgSurface"      : "",
+            "bgOverlay"      : "",
+            "fgBase"         : "",
+            "onAccent"       : "",
+            "fgDim"          : "",
+            "fgSubtle"       : "",
+            "accentStrong"   : "",
+            "accentDim"      : "",
+            "secondary"      : "",
+            "info"           : "",
+            "success"        : "",
+            "warning"        : "",
+            "danger"         : "",
+            "borderActive"   : "",
+            "borderInactive" : "",
+        }
     }
 
     function save() {
@@ -144,13 +164,16 @@ Singleton {
         WallpaperInfo.currentChanged.connect(() => {
             color_from_image.running = true
         })
+        SettingsInfo.lightModeChanged.connect(() => {
+            load.running = true
+        })
     }
 
     Process {
 
         id: color_from_image
 
-        command: ["python", SystemInfo.configdir + "/scripts/color_extractor.py", WallpaperInfo.getCacheLocation()]
+        command: ["python", SystemInfo.configdir + "/scripts/color_extractor.py", WallpaperInfo.getCacheLocation(), SettingsInfo.lightMode ? "--light": "--dark"]
 
         stdout: StdioCollector {
             onStreamFinished: {
@@ -158,8 +181,17 @@ Singleton {
                 data.name = "<b><i>Let me cook</i></b>"
                 data.description = "The shell will try it's best to find the best palette from the current wallpaper you're choosing"
                 root.colors["auto"] = data
+                root.colorsChanged()
                 root.apply()
                 // console.log(JSON.stringify(data, null, 2))
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    console.log("Colors (color_from_image): " + text)
+                }
             }
         }
 
@@ -172,7 +204,7 @@ Singleton {
 
         stdout: StdioCollector {
             onStreamFinished: {
-                load.reload()
+                load.running = true
             }
         }
 
@@ -187,15 +219,25 @@ Singleton {
 
     }
 
-    FileView {
+    Process {
 
         id: load
 
-        path: SystemInfo.configdir + "/scripts/colors.json"
+        running: true
+        command: ["python", SystemInfo.configdir + `/scripts/colors_lightify.py`, SystemInfo.configdir + `/scripts/colors.json`, SettingsInfo.lightMode ? "--light" : "--dark"]
 
-        onLoaded: {
-            root.colors = JSON.parse(text())
-            root.apply()
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.colors = JSON.parse(text)
+                root.apply()
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text) console.log("Colors (load): " + text)
+                else color_from_image.running = true
+            }
         }
 
 

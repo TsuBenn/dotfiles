@@ -25,6 +25,8 @@ Item {
 
     property int safeMargin: 2
 
+    signal marginsPressed()
+
     property bool escapeToClose: true
 
     x: {
@@ -69,10 +71,13 @@ Item {
 
     MouseControl {
         anchors.fill: parent
-        anchors.leftMargin: -Cell.w(root.safeMargin)
-        anchors.rightMargin: -Cell.w(root.safeMargin)
+        anchors.leftMargin: -Cell.w(root.safeMargin)*2
+        anchors.rightMargin: -Cell.w(root.safeMargin)*2
         anchors.topMargin: -Cell.h(root.safeMargin)
         anchors.bottomMargin: -Cell.h(root.safeMargin)
+        onReleased: {
+            root.marginsPressed()
+        }
     }
 
 }

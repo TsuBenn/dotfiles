@@ -29,6 +29,8 @@ Singleton {
 
     property bool dependenciesChecked : false  // Use to initiallize the bar
 
+    property bool lightMode         : false // Light mode
+
     property bool hints             : true  // Show keyboard hints
     property bool minimal           : false // Reduce UI elements
     property bool textBasedVolume   : false // Bar's volume rocker do be text
@@ -73,6 +75,7 @@ Singleton {
         "screenshotCursor",
         "lockScreenMusic",
         "sfx",
+        "lightMode",
         "debug",
     ]
 
@@ -186,6 +189,7 @@ Singleton {
         function toggle_bottom_bar(): void         { root.toggle("bottomBar") }
         function toggle_text_based_volume(): void  { root.toggle("textBasedVolume") }
         function toggle_sfx(): void                { root.toggle("sfx") }
+        function toggle_light_mode(): void         { root.toggle("lightMode") }
 
         function lock_screen(): void               { SystemInfo.lock() }
 

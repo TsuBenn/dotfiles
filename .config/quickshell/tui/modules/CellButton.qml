@@ -28,6 +28,9 @@ Item {
     property int holdInterval: 100
     property int holdOffset: 0
 
+    property int mouseX: mouse.mouseX
+    property int mouseY: mouse.mouseY
+
     signal entered()
     signal exited()
     signal pressed(button: string)

@@ -102,8 +102,6 @@ CellPopup {
 
         ColumnLayout {
 
-            layer.enabled: true
-
             id: layout
 
             spacing: 0
@@ -438,7 +436,7 @@ CellPopup {
 
                                 id: thumbnail
 
-                                property string modelData : thumbnail_loader.modelData
+                                property string modelData : thumbnail_loader.modelData.replace("undefined", "")
                                 property int index        : thumbnail_loader.index
 
                                 property string value: modelData.split(".")[0]
@@ -478,7 +476,7 @@ CellPopup {
                                         width: Cell.w(thumbnail.w)
                                         height: Cell.h(thumbnail.h-1)
 
-                                        source: (thumbnail.modelData ? SystemInfo.homedir + WallpaperInfo.cache_path + thumbnail.modelData + WallpaperInfo.cache_prefix : "")
+                                        source: (thumbnail.modelData ? (SystemInfo.homedir + WallpaperInfo.cache_path + thumbnail.modelData + WallpaperInfo.cache_prefix) : "")
 
                                         fillMode: Image.PreserveAspectCrop
 

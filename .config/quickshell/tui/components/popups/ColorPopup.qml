@@ -166,6 +166,7 @@ CellPopup {
                 }
 
                 function toggleEdit() {
+                    if (root.result[color.selected] == "auto") return
                     edit = !edit
                     des_textfield.unFocus()
                     name_textfield.unFocus()
@@ -183,6 +184,7 @@ CellPopup {
                         color.color = Qt.binding(()=>color.source)
                         color.color_picker = false
                     }
+
                 }
 
                 Component.onCompleted: {
@@ -322,43 +324,63 @@ CellPopup {
 
                         color: "transparent"
 
-                        CellTextField {
+                        RowLayout {
 
-                            id: textfield
+                                x: Cell.w(1)
 
-                            x: Cell.w(1)
+                            spacing: Cell.w(1)
 
-                            w: 32
-                            h: 1
+                            CellTextField {
 
-                            placeholder: "Search themes"
+                                id: textfield
 
-                            focusOnVisible: !color.edit
+                                w: 26
+                                h: 1
 
-                            onVisibleChanged: {
-                                if (visible) {
-                                    root.result = root.colors
+                                placeholder: "Search themes"
+
+                                focusOnVisible: !color.edit
+
+                                onVisibleChanged: {
+                                    if (visible) {
+                                        root.result = root.colors
+                                    }
                                 }
+
+                                onFocusChanged: {
+                                    if (color.edit && focus) {
+                                        color.toggleEdit()
+                                    }
+                                }
+
+                                onTextInput: (input) => {
+                                    if (input == "") {
+                                        root.result = root.colors
+                                    } else {
+                                        root.result = root.colors.filter((item) => {
+                                            return Colors.colors[item].name.toLowerCase().includes(input.toLowerCase())
+                                            || Colors.colors[item].description.toLowerCase().includes(input.toLowerCase())
+                                            || item.includes(input.toLowerCase())
+                                        })
+                                    }
+                                }
+
                             }
 
-                            onFocusChanged: {
-                                if (color.edit && focus) {
-                                    color.toggleEdit()
-                                }
-                            }
+                            CellButton {
 
-                            onTextInput: (input) => {
-                                if (input == "") {
-                                    root.result = root.colors
-                                } else {
-                                    root.result = root.colors.filter((item) => {
-                                        return Colors.colors[item].name.toLowerCase().includes(input.toLowerCase())
-                                        || Colors.colors[item].description.toLowerCase().includes(input.toLowerCase())
-                                        || item.includes(input.toLowerCase())
-                                    })
-                                }
-                            }
+                                text: "Light"
 
+                                color: SettingsInfo.lightMode ? Colors.accentStrong : Colors.bgOverlay
+                                fg: SettingsInfo.lightMode ? Colors.onAccent : Colors.fgBase
+
+                                onReleased: (button) => {
+                                    if (button == "L") {
+                                        SettingsInfo.toggle("lightMode")
+                                    }
+                                }
+
+                            }
                         }
 
                     }
@@ -1951,14 +1973,39 @@ CellPopup {
 
                                 text: "Edit"
 
-                                visible: Colors.current != "auto"
+                                property bool available: root.result[color.selected] != "auto" && !SettingsInfo.lightMode
 
-                                color: color.edit ? color.color.accentStrong : color.color.bgOverlay
-                                fg:    color.edit ? color.color.onAccent : color.color.fgBase
+                                property Component hint: ColumnLayout {
+                                    spacing: 0
+                                    CellText {
+                                        text: "<b>You cannot edit an auto generated palette</b>"
+                                    }
+                                    CellSeparator {
+                                        visible: root.result[color.selected] != "auto" && SettingsInfo.lightMode
+                                        w: 41
+                                        color: Colors.fgSubtle
+                                    }
+                                    CellText {
+                                        visible: root.result[color.selected] != "auto" && SettingsInfo.lightMode
+                                        text: "<i>This palette's light mode has been auto generated. Please switch back to dark mode to edit the original palette.</i>"
+                                        preferedW: 41
+                                        wrap: true
+                                        color: Colors.fgDim
+                                    }
+                                }
+
+                                color: !available ? color.color.bgOverlay : (color.edit ? color.color.accentStrong : color.color.bgOverlay)
+                                fg:    !available ? color.color.fgSubtle : (color.edit ? color.color.onAccent : color.color.fgBase)
 
                                 onReleased: (button) => {
+                                    const global = mapToGlobal(mouseX, mouseY)
                                     if (button == "L") {
-                                        color.toggleEdit()
+                                        if (available) {
+                                            color.toggleEdit()
+                                        } else {
+                                            HintManager.hint = hint
+                                            HintManager.show(global.x, global.y, 0, "", 1000 + (root.result[color.selected] != "auto" && SettingsInfo.lightMode)*2000)
+                                        }
                                     }
                                 }
 

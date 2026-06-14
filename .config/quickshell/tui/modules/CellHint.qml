@@ -12,16 +12,22 @@ CellPopup {
 
     visible: HintManager.visible
 
-    w: HintManager.w
+    w: box.w
     h: box.h
 
     cellX: HintManager.x - Math.round(box.w/2)
     cellY: HintManager.y
 
-    safeMargin: 6
+    safeMargin: HintManager.margins
 
     property Component hint: HintManager.hint
     property string header: HintManager.header
+
+    name: "hint"
+
+    onMarginsPressed: {
+        close()
+    }
 
     CellBox {
 
@@ -37,6 +43,8 @@ CellPopup {
         ColumnLayout {
 
             id: wrapper
+
+            spacing: 0
 
             Loader {
 

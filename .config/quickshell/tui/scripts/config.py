@@ -125,6 +125,13 @@ SETTINGS = [
         "type": "menu",
         "value": [
             {
+                "label": "{lightMode} Light mode",
+                "description": "Turn on light mode If you're not a vampire.",
+                "category": "settings",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_light_mode"],
+            },
+            {
                 "label": "{hints} Show hints",
                 "description": "Show key binds for navigating menus.",
                 "category": "settings",
