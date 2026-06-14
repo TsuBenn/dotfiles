@@ -218,6 +218,10 @@ CellPopup {
                             root.resetList()
                         }
 
+                        onMaxOffsetChanged: {
+                            list.snapBack()
+                        }
+
                         source: ColumnLayout {
 
                             spacing: 0
@@ -1946,6 +1950,8 @@ CellPopup {
                             CellButton {
 
                                 text: "Edit"
+
+                                visible: Colors.current != "auto"
 
                                 color: color.edit ? color.color.accentStrong : color.color.bgOverlay
                                 fg:    color.edit ? color.color.onAccent : color.color.fgBase

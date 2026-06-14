@@ -40,6 +40,10 @@ Singleton {
         saveConfig()
     }
 
+    function getCacheLocation() {
+        return SystemInfo.homedir + root.cache_path+root.current+root.cache_prefix 
+    }
+
     function setConfig(imageName, propertyPath, value) {
         var currentConfig = root.config || {};
 

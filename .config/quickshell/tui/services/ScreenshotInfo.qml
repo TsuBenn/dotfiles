@@ -16,6 +16,8 @@ Singleton {
 
     property string path: SystemInfo.homedir + "/Screenshots/"
 
+    property var monitor: HyprInfo.focusedMonitor
+
     property int x: 0
     property int y: 0
 
@@ -25,7 +27,7 @@ Singleton {
     signal cached()
 
     function clear_cache() {
-        cache_remover.running = true
+        //cache_remover.running = true
     }
 
     function requestCache() {
@@ -78,11 +80,18 @@ Singleton {
 
         id: cacher
 
-        command: ["bash", "-c",`grim -c -t ppm ${root.cache_path_cursor} & grim -t ppm ${root.cache_path_no_cursor} & wait`]
+        command: [
+            "bash", 
+            "-c",
+            `grim -c -t ppm -o "${root.monitor.name}" ${root.cache_path_cursor} & \
+            grim -t ppm -o "${root.monitor.name}" ${root.cache_path_no_cursor} & \
+            wait`]
 
         stderr: StdioCollector {
             onStreamFinished: {
-                if (text) return
+                if (text) {
+                    return
+                }
                 root.cached()
             }
         }

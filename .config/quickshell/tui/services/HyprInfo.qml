@@ -48,6 +48,11 @@ Singleton {
         return workspaces[n]?.length ?? 0
     }
 
+    function isCurrentMonitor(name: string): bool {
+        // console.log(`${focusedMonitor.name} == ${name}`)
+        return focusedMonitor.name == name
+    }
+
     function getCursorPos() {
         get_cursorpos.running = true
     }
@@ -57,6 +62,9 @@ Singleton {
         Hyprland.rawEvent.connect((event) => {
             switch (event.name) {
                 case "workspace": {
+                    if (!SettingsInfo.dependenciesChecked) {
+                        Hyprland.dispatch(root.fmt("hl.dsp.window.move({workspace = {}, window = \"title:tsubenn_tui_qs_depcheck\"})", event.data))
+                    }
                     if (root.activespecial) {
                         switchWorkspace(root.activespecial.replace("special:",""))
                     }
@@ -79,11 +87,14 @@ Singleton {
                 case "activespecial": {
                     const data = event.data.split(",")[0]
                     root.activespecial = data
+                    if (!SettingsInfo.dependenciesChecked) {
+                        Hyprland.dispatch(root.fmt("hl.dsp.window.move({workspace = \"{}\", window = \"title:tsubenn_tui_qs_depcheck\"})", data == "" ? root.focusedworkspace : data))
+                    }
                     break
                 }
             }
             root.hyprEvent(event.name)
-
+            // console.log(JSON.stringify(event))
         })
 
     }
@@ -172,6 +183,8 @@ Singleton {
                 for (const data of datas) {
                     const id = data.id
                     const name = data.name
+                    const x = data.x
+                    const y = data.y
                     const width = data.width
                     const height = data.height
                     const scale = data.scale
@@ -186,6 +199,8 @@ Singleton {
                     monitors[name] = {
                         "id": id,
                         "name": name,
+                        "x": x,
+                        "y": y,
                         "width": width/scale,
                         "height": height/scale,
                         "scale": scale,
@@ -196,6 +211,8 @@ Singleton {
                     monitors[id] = {
                         "id": id,
                         "name": name,
+                        "x": x,
+                        "y": y,
                         "width": width/scale,
                         "height": height/scale,
                         "scale": scale,

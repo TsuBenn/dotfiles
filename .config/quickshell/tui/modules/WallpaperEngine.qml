@@ -14,6 +14,16 @@ Item {
         "height": 1080
     }
 
+    NumberAnimation {
+        id: init_anim
+        target: screen
+        property: "opacity"
+        from: 0
+        to: 1
+        duration: 1200
+        easing.type: Easing.OutCubic
+    }
+
     property string current: WallpaperInfo.current
     property bool isLive: WallpaperInfo.isLive(WallpaperInfo.current)
     property bool live: WallpaperInfo.live && isLive
@@ -58,7 +68,9 @@ Item {
     }
 
     Component.onCompleted: {
+        still.source = root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current
         main.current = root.current
+        init_anim.start()
     }
 
     function grabBuffer() {
@@ -73,6 +85,8 @@ Item {
         id: super_buffer
 
         anchors.fill: parent
+
+        visible: false
 
         Item {
 

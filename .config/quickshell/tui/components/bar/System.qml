@@ -93,9 +93,125 @@ Cells {
 
         anchors.fill: parent
 
+        property Component hint: ColumnLayout {
+
+            spacing: 0
+
+            RowLayout {
+
+                spacing: 0
+
+                CellText {
+                    text: "CPU: "
+                    color: Colors.fgDim
+                    font: Cell.fontB
+                }
+
+                CellText {
+                    text: `${Math.round(SystemInfo.cpuusage)}%`
+                    color: {
+                        const usage = Math.round(SystemInfo.cpuusage)
+                        if (usage >= 90) {
+                            return Colors.danger
+                        } else if (usage >= 70) {
+                            return Colors.warning
+                        }
+                        return Colors.fgBase
+                    }
+                }
+
+            }
+
+            RowLayout {
+
+                spacing: 0
+
+                CellText {
+                    text: "RAM: "
+                    color: Colors.fgDim
+                    font: Cell.fontB
+                }
+                CellText {
+                    text: `${SystemInfo.ktoG(SystemInfo.memused).toFixed(1)}GB`
+                    color: {
+                        const usage = Math.round(SystemInfo.memusage)
+                        if (usage >= 90) {
+                            return Colors.danger
+                        } else if (usage >= 80) {
+                            return Colors.warning
+                        }
+                        return Colors.fgBase
+                    }
+                }
+                CellText {
+                    text: `/${SystemInfo.ktoG(SystemInfo.memtotal).toFixed(1)}GB`
+                    color: Colors.fgBase
+                }
+
+            }
+
+            RowLayout {
+
+                spacing: 0
+
+                CellText {
+                    text: "GPU: "
+                    color: Colors.fgDim
+                    font: Cell.fontB
+                }
+
+                CellText {
+                    text: `${Math.round(SystemInfo.gpuusage)}%`
+                    color: {
+                        const usage = Math.round(SystemInfo.gpuusage)
+                        if (usage >= 90) {
+                            return Colors.danger
+                        } else if (usage >= 70) {
+                            return Colors.warning
+                        }
+                        return Colors.fgBase
+                    }
+                }
+
+            }
+
+            RowLayout {
+
+                spacing: 0
+
+                CellText {
+                    text: "VRAM: "
+                    color: Colors.fgDim
+                    font: Cell.fontB
+                }
+                CellText {
+                    text: `${SystemInfo.ktoG(SystemInfo.gpumemused).toFixed(1)}GB`
+                    color: {
+                        const usage = Math.round(SystemInfo.memusage)
+                        if (usage >= 90) {
+                            return Colors.danger
+                        } else if (usage >= 80) {
+                            return Colors.warning
+                        }
+                        return Colors.fgBase
+                    }
+                }
+                CellText {
+                    text: `/${SystemInfo.ktoG(SystemInfo.gpumemtotal).toFixed(1)}GB`
+                    color: Colors.fgBase
+                }
+
+            }
+
+        }
+
         onReleased: (button) => {
+            const global = mapToGlobal(mouseX, mouseY)
             if (button == "L") {
                 PopupManager.toggle("system")
+            } else if (button == "R" && !PopupManager.isOpen("system")) {
+                HintManager.hint = hint
+                HintManager.show(global.x, global.y)
             }
         }
 

@@ -1,199 +1,366 @@
 #!/usr/bin/env python3
-import argparse
-import subprocess
+"""
+pacman_backend.py — Structured JSON backend for a pacman UI.
+Commands: fetch | list | search <query> [--fresh] | info <pkgname>
+"""
+
 import json
-import os
+import subprocess
 import sys
+import os
+import re
+from pathlib import Path
 from datetime import datetime
 
-CACHE_DIR = os.path.expanduser("~/.cache/pacman-filter")
-CACHE_FILE = os.path.join(CACHE_DIR, "packages.json")
+CACHE_DIR  = Path.home() / ".cache" / "pacman-ui"
+CACHE_FILE = CACHE_DIR / "cache.json"
 
-def ensure_cache_dir():
-    if not os.path.exists(CACHE_DIR):
-        os.makedirs(CACHE_DIR)
 
-def parse_user_input():
-    parser = argparse.ArgumentParser(description="pacman-filter: Fast unified JSON cache engine.")
-    action_group = parser.add_mutually_exclusive_group(required=True)
-    action_group.add_argument('-l', '--list', action='store_true', help="List installed packages from cache")
-    action_group.add_argument('-s', '--search', type=str, metavar='QUERY', help="Instant search across all repositories")
-    action_group.add_argument('-i', '--info', type=str, metavar='PACKAGE', help="Get detailed package information")
-    
-    parser.add_argument('-r', '--refresh', action='store_true', help="Force rebuild the master cache index")
-    return parser.parse_args()
+# ─────────────────────────────────────────────
+# Helpers
+# ─────────────────────────────────────────────
 
-def parse_pacman_qi_output(raw_text):
-    """Parses raw pacman -Qi text into structured dictionaries."""
-    packages = {}
-    current_pkg = {}
-    last_key = None 
+def run(cmd: list[str]) -> str:
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    return result.stdout
 
-    for line in raw_text.splitlines():
-        if not line.strip():
-            if current_pkg and "name" in current_pkg:
-                packages[current_pkg["name"]] = current_pkg
-                current_pkg = {}
-            last_key = None
+
+def parse_pacman_block(block: str) -> dict:
+    """
+    Parse one pacman -Qi / -Si info block into a dict.
+    Each line looks like:  Key             : value
+    Multi-line values are indented with spaces (no colon).
+    """
+    data = {}
+    current_key = None
+
+    for line in block.splitlines():
+        # A new key=value line
+        match = re.match(r'^([A-Za-z][A-Za-z0-9 ()]+?)\s*:\s*(.*)', line)
+        if match:
+            current_key = match.group(1).strip()
+            data[current_key] = match.group(2).strip()
+        elif current_key and line.startswith(" "):
+            # Continuation of the previous value
+            extra = line.strip()
+            if extra:
+                data[current_key] += " " + extra
+
+    return data
+
+
+def split_list_field(value: str) -> list[str]:
+    """'None' → []  |  'pkg1  pkg2' → ['pkg1', 'pkg2']"""
+    if not value or value.lower() == "none":
+        return []
+    return [v.strip() for v in re.split(r'\s{2,}|\n', value) if v.strip()]
+
+
+def parse_optdeps(value: str) -> list[dict]:
+    """
+    Optional deps look like:  'pkgname: reason  pkgname2: reason2'
+    Returns list of {name, reason}.
+    """
+    if not value or value.lower() == "none":
+        return []
+    items = []
+    for entry in re.split(r'\s{2,}|\n', value):
+        entry = entry.strip()
+        if not entry:
             continue
-            
-        if " : " in line:
-            key, val = line.split(" : ", 1)
-            key, val = key.strip(), val.strip()
-            last_key = key 
-            
-            if key == "Name":
-                current_pkg["name"] = val
-            elif key == "Version":
-                current_pkg["version"] = val
-            elif key == "Description":
-                current_pkg["description"] = val
-            elif key == "Depends On":
-                current_pkg["dependencies_raw"] = []
-                for d in val.split():
-                    dep = d.split('>=')[0].split('<=')[0].split('=')[0].split('>')[0].split('<')[0]
-                    if dep != "None":
-                        current_pkg["dependencies_raw"].append(dep)
-            elif key == "Optional Deps":
-                current_pkg["optional_dependencies_raw"] = []
-                if val and val != "None":
-                    current_pkg["optional_dependencies_raw"].append(val.split(":")[0].strip())
+        if ":" in entry:
+            name, _, reason = entry.partition(":")
+            items.append({"name": name.strip(), "reason": reason.strip()})
         else:
-            if last_key == "Optional Deps" and "optional_dependencies_raw" in current_pkg:
-                val = line.strip()
-                if val and ":" in val:
-                    current_pkg["optional_dependencies_raw"].append(val.split(":")[0].strip())
+            items.append({"name": entry, "reason": ""})
+    return items
 
-    if current_pkg and "name" in current_pkg:
-        packages[current_pkg["name"]] = current_pkg
-        
-    return packages
 
-def generate_and_cache_data():
-    """Builds a complete unified index of both installed and uninstalled repo packages."""
-    ensure_cache_dir()
-    
+def annotate_with_installed(pkg_list: list[str], installed_set: set[str]) -> list[dict]:
+    return [{"name": p, "installed": p in installed_set} for p in pkg_list]
+
+
+def annotate_optdeps_with_installed(optdeps: list[dict], installed_set: set[str]) -> list[dict]:
+    for dep in optdeps:
+        dep["installed"] = dep["name"] in installed_set
+    return optdeps
+
+
+def parse_last_sync_from_log(log_path: str = "/var/log/pacman.log") -> dict[str, dict]:
+    """
+    Scan pacman.log and return the most recent install/upgrade action per package.
+    Example line:
+      [2026-05-01T14:23:11+0700] [ALPM] upgraded neovim (0.9.5-1 -> 0.10.0-1)
+    """
+    last_sync = {}
+    pattern = re.compile(
+        r'^\[(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[^\]]*)\] \[ALPM\] (installed|upgraded|reinstalled|downgraded) ([^\s(]+)'
+    )
     try:
-        # 1. Get detailed profiles of everything installed locally
-        qi_result = subprocess.run(['pacman', '-Qei'], capture_output=True, text=True, check=True)
-        local_profiles = parse_pacman_qi_output(qi_result.stdout)
-        
-        # 2. Get clean checklist of all installed packages (explicit + implicit dependencies)
-        all_installed_result = subprocess.run(['pacman', '-Qq'], capture_output=True, text=True, check=True)
-        installed_set = set(all_installed_result.stdout.strip().split('\n'))
-        
-        # 3. Get master list of every single package available in online repos via pacman -Sl
-        sl_result = subprocess.run(['pacman', '-Sl'], capture_output=True, text=True, check=True)
-        
-        master_packages = []
-        seen_packages = set()
+        with open(log_path, "r", errors="replace") as f:
+            for line in f:
+                m = pattern.match(line)
+                if m:
+                    timestamp, action, name = m.group(1), m.group(2), m.group(3)
+                    # Always overwrite — log is chronological so last match = most recent
+                    last_sync[name] = {"timestamp": timestamp, "action": action}
+    except FileNotFoundError:
+        pass
+    return last_sync
 
-        # 4. First pass: Populate all installed packages with full details
-        for name, pkg in local_profiles.items():
-            resolved_deps = [{"name": d, "installed": d in installed_set} for d in pkg.get("dependencies_raw", [])]
-            resolved_opt_deps = [{"name": d, "installed": d in installed_set} for d in pkg.get("optional_dependencies_raw", [])]
-            
-            master_packages.append({
-                "name": pkg["name"],
-                "version": pkg["version"],
-                "description": pkg["description"],
-                "installed": True,
-                "dependencies": resolved_deps,
-                "optional_dependencies": resolved_opt_deps
-            })
-            seen_packages.add(pkg["name"])
 
-        # 5. Second pass: Add uninstalled repository packages cleanly using low overhead
-        for line in sl_result.stdout.splitlines():
-            parts = line.split()
-            if len(parts) >= 2:
-                pkg_name = parts[1]
-                pkg_version = parts[2] if len(parts) > 2 else ""
-                
-                # Skip if we already added it during the local profiles pass
-                if pkg_name in seen_packages:
-                    continue
-                    
-                master_packages.append({
-                    "name": pkg_name,
-                    "version": pkg_version,
-                    "description": "[Remote Package] Re-run with --refresh -i <name> for full description details.",
-                    "installed": False,
-                    "dependencies": [],
-                    "optional_dependencies": []
-                })
+def build_package_entry(raw: dict, is_installed: bool, installed_set: set[str]) -> dict:
+    """Convert a raw parsed block into our structured schema."""
+    deps     = split_list_field(raw.get("Depends On", ""))
+    optdeps  = parse_optdeps(raw.get("Optional Deps", ""))
+    makedeps = split_list_field(raw.get("Make Deps", ""))
+    checkdeps= split_list_field(raw.get("Check Deps", ""))
 
-        cache_data = {
-            "last_updated": datetime.now().isoformat(),
-            "packages": master_packages
+    entry = {
+        # Identity
+        "name":         raw.get("Name", ""),
+        "version":      raw.get("Version", ""),
+        "description":  raw.get("Description", ""),
+        "url":          raw.get("URL", ""),
+        "licenses":     split_list_field(raw.get("Licenses", "")),
+
+        # Source info
+        "repository":   raw.get("Repository", ""),
+        "groups":       split_list_field(raw.get("Groups", "")),
+        "arch":         raw.get("Architecture", ""),
+
+        # Sizes (raw strings from pacman, e.g. "12.34 MiB")
+        "download_size":  raw.get("Download Size", ""),
+        "installed_size": raw.get("Installed Size", ""),
+
+        # Maintainer
+        "packager":     raw.get("Packager", ""),
+        "build_date":   raw.get("Build Date", ""),
+
+        # Status
+        "installed":    is_installed,
+
+        # Installed-only fields (empty when not installed)
+        "install_date":     raw.get("Install Date", ""),
+        "install_reason":   raw.get("Install Reason", ""),
+        "install_script":   raw.get("Install Script", ""),
+        "validated_by":     raw.get("Validated By", ""),
+
+        # Dependencies — each annotated with whether it's currently installed
+        "depends":          annotate_with_installed(deps, installed_set),
+        "optional_deps":    annotate_optdeps_with_installed(optdeps, installed_set),
+        "make_deps":        annotate_with_installed(makedeps, installed_set),
+        "check_deps":       annotate_with_installed(checkdeps, installed_set),
+
+        # Reverse deps (installed-only)
+        "required_by":      split_list_field(raw.get("Required By", "")),
+        "optional_for":     split_list_field(raw.get("Optional For", "")),
+
+        # Conflicts / replaces / provides
+        "conflicts_with":   split_list_field(raw.get("Conflicts With", "")),
+        "replaces":         split_list_field(raw.get("Replaces", "")),
+        "provides":         split_list_field(raw.get("Provides", "")),
+    }
+    return entry
+
+
+# ─────────────────────────────────────────────
+# FETCH
+# ─────────────────────────────────────────────
+
+def cmd_fetch():
+    print("→ Getting list of installed packages...", flush=True)
+    installed_raw = run(["pacman", "-Qq"])
+    installed_set = set(installed_raw.split())
+
+    packages = {}
+
+    # ── Installed packages (pacman -Qi) ──────────────────────────────────
+    print("→ Fetching details for installed packages (pacman -Qi)...", flush=True)
+    qi_output = run(["pacman", "-Qi"])
+    qi_blocks  = re.split(r'\n(?=Name\s+:)', qi_output.strip())
+
+    for block in qi_blocks:
+        raw = parse_pacman_block(block)
+        name = raw.get("Name", "").strip()
+        if not name:
+            continue
+        packages[name] = build_package_entry(raw, is_installed=True, installed_set=installed_set)
+
+    print(f"   ✓ {len(packages)} installed packages processed.", flush=True)
+
+    # ── Repo packages (pacman -Si) ────────────────────────────────────────
+    print("→ Fetching details for all repo packages (pacman -Si)...", flush=True)
+    si_output = run(["pacman", "-Si"])
+    si_blocks  = re.split(r'\n(?=Repository\s+:)', si_output.strip())
+
+    new_count = 0
+    for block in si_blocks:
+        raw  = parse_pacman_block(block)
+        name = raw.get("Name", "").strip()
+        if not name:
+            continue
+        if name in packages:
+            # Already have full -Qi data; just add repo/size fields if missing
+            if not packages[name].get("repository"):
+                packages[name]["repository"] = raw.get("Repository", "")
+            if not packages[name].get("download_size"):
+                packages[name]["download_size"] = raw.get("Download Size", "")
+        else:
+            packages[name] = build_package_entry(raw, is_installed=False, installed_set=installed_set)
+            new_count += 1
+
+    print(f"   ✓ {new_count} additional repo packages processed.", flush=True)
+
+    # ── Last sync from pacman.log ─────────────────────────────────────────
+    print("→ Parsing pacman.log for last sync times...", flush=True)
+    last_sync_map = parse_last_sync_from_log()
+    for name, pkg in packages.items():
+        pkg["last_sync"] = last_sync_map.get(name)  # None if never touched
+
+    synced = sum(1 for p in packages.values() if p["last_sync"])
+    print(f"   ✓ {synced} packages have a recorded sync.", flush=True)
+
+    # ── Write cache ───────────────────────────────────────────────────────
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    cache = {
+        "fetched_at": datetime.now().isoformat(),
+        "packages":   packages,
+    }
+    with open(CACHE_FILE, "w") as f:
+        json.dump(cache, f, indent=2)
+
+    total = len(packages)
+    inst  = sum(1 for p in packages.values() if p["installed"])
+    print(f"✓ Cache saved → {CACHE_FILE}")
+    print(f"  Total: {total} packages  |  Installed: {inst}  |  Not installed: {total - inst}")
+
+
+# ─────────────────────────────────────────────
+# LOAD CACHE (shared by list / search / info)
+# ─────────────────────────────────────────────
+
+def load_cache() -> dict:
+    if not CACHE_FILE.exists():
+        print("✗ Cache not found. Run:  pacman_backend.py fetch", file=sys.stderr)
+        sys.exit(1)
+    with open(CACHE_FILE) as f:
+        return json.load(f)
+
+
+# ─────────────────────────────────────────────
+# LIST
+# ─────────────────────────────────────────────
+
+def cmd_list():
+    cache    = load_cache()
+    packages = cache["packages"]
+
+    result = [
+        {
+            "name":        name,
+            "real_name":   pkg["name"],
+            "description": pkg["description"],
+            "version":     pkg["version"],
+            "repository":  pkg["repository"],
+            "last_sync":   pkg["last_sync"],
         }
-        
-        with open(CACHE_FILE, 'w') as f:
-            json.dump(cache_data, f, indent=2)
-            
-        return cache_data
-    except subprocess.CalledProcessError as e:
-        print(json.dumps({"error": f"Failed running pacman backend: {e.stderr}"}))
+        for name, pkg in packages.items()
+        if pkg["installed"]
+    ]
+
+    result.sort(key=lambda p: p["name"])
+    print(json.dumps(result, indent=2))
+
+
+# ─────────────────────────────────────────────
+# SEARCH
+# ─────────────────────────────────────────────
+
+def cmd_search(query: str, fresh: bool = False):
+    if fresh:
+        print("→ --fresh requested, re-fetching cache...", flush=True)
+        cmd_fetch()
+
+    cache    = load_cache()
+    packages = cache["packages"]
+    q        = query.lower()
+
+    result = [
+        {
+            "name":        name,
+            "real_name":   pkg["name"],
+            "description": pkg["description"],
+            "version":     pkg["version"],
+            "repository":  pkg["repository"],
+            "installed":   pkg["installed"],
+            "last_sync":   pkg["last_sync"],
+        }
+        for name, pkg in packages.items()
+        if q in name.lower() or q in pkg["description"].lower()
+    ]
+
+    result.sort(key=lambda p: (not p["installed"], p["name"]))
+    print(json.dumps(result, indent=2))
+
+
+# ─────────────────────────────────────────────
+# INFO
+# ─────────────────────────────────────────────
+
+def cmd_info(pkgname: str):
+    cache    = load_cache()
+    packages = cache["packages"]
+
+    pkg = packages.get(pkgname)
+    if not pkg:
+        print(json.dumps({"error": f"Package '{pkgname}' not found in cache."}))
         sys.exit(1)
 
-def load_data(force_refresh=False):
-    if force_refresh or not os.path.exists(CACHE_FILE):
-        return generate_and_cache_data()
-    try:
-        with open(CACHE_FILE, 'r') as f:
-            return json.load(f)
-    except (json.JSONDecodeError, IOError):
-        return generate_and_cache_data()
+    print(json.dumps(pkg, indent=2))
+
+
+# ─────────────────────────────────────────────
+# Entrypoint
+# ─────────────────────────────────────────────
 
 def main():
-    args = parse_user_input()
-    
-    # Load our custom cache database instantly
-    cache_data = load_data(force_refresh=args.refresh)
-    packages = cache_data.get("packages", [])
-    
-    if args.list:
-        # Filter down to display only locally installed items
-        installed_only = [p for p in packages if p["installed"]]
-        print(json.dumps(installed_only, indent=2))
-        
-    elif args.search:
-        query = args.search.lower()
-        results = []
-        for p in packages:
-            if query in p["name"].lower() or query in p["description"].lower():
-                results.append(p)
-        print(json.dumps(results, indent=2))
-        
-    elif args.info:
-        matched = [p for p in packages if p["name"] == args.info]
-        if matched:
-            pkg = matched[0]
-            # Edge Case: If it's a remote package block, it lacks deep metadata.
-            # We fetch its real-time info using sync databases directly.
-            if not pkg["installed"] and "[Remote Package]" in pkg["description"]:
-                try:
-                    si_result = subprocess.run(['pacman', '-Si', args.info], capture_output=True, text=True)
-                    remote_profile = parse_pacman_qi_output(si_result.stdout)
-                    if args.info in remote_profile:
-                        r_pkg = remote_profile[args.info]
-                        # Track setup status loops
-                        all_installed = subprocess.run(['pacman', '-Qq'], capture_output=True, text=True)
-                        installed_set = set(all_installed.stdout.strip().split('\n'))
-                        
-                        pkg = {
-                            "name": r_pkg["name"],
-                            "version": r_pkg["version"],
-                            "description": r_pkg["description"],
-                            "installed": False,
-                            "dependencies": [{"name": d, "installed": d in installed_set} for d in r_pkg.get("dependencies_raw", [])],
-                            "optional_dependencies": [{"name": d, "installed": d in installed_set} for d in r_pkg.get("optional_dependencies_raw", [])]
-                        }
-                except:
-                    pass
-            print(json.dumps(pkg, indent=2))
-        else:
-            print(json.dumps({"error": "Package not found in cache registry."}))
+    args = sys.argv[1:]
 
-if __name__ == '__main__':
+    if not args:
+        print("Usage:")
+        print("  pacman_backend.py fetch")
+        print("  pacman_backend.py list")
+        print("  pacman_backend.py search <query> [--fresh]")
+        print("  pacman_backend.py info <pkgname>")
+        sys.exit(0)
+
+    cmd = args[0]
+
+    if cmd == "fetch":
+        cmd_fetch()
+
+    elif cmd == "list":
+        cmd_list()
+
+    elif cmd == "search":
+        if len(args) < 2:
+            print("✗ search requires a query.  e.g.  pacman_backend.py search firefox", file=sys.stderr)
+            sys.exit(1)
+        query = args[1]
+        fresh = "--fresh" in args
+        cmd_search(query, fresh=fresh)
+
+    elif cmd == "info":
+        if len(args) < 2:
+            print("✗ info requires a package name.  e.g.  pacman_backend.py info neovim", file=sys.stderr)
+            sys.exit(1)
+        cmd_info(args[1])
+
+    else:
+        print(f"✗ Unknown command: {cmd}", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
     main()

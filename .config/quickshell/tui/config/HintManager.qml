@@ -15,14 +15,12 @@ Singleton {
     property int y: 0
     property int w: 20
     property string header: ""
-    property var items: []
+    property Component hint
 
     signal opened()
     signal closed()
 
-    function show(itemList, mx, my, mw = 20, mheader = "") {
-        items = itemList
-        w = mw
+    function show(mx, my, mheader = "") {
         x = Cell.wCount(mx - HyprInfo.focusedMonitor.x, "floor")
         y = Cell.hCount(my - HyprInfo.focusedMonitor.y,"floor")
         header = mheader
@@ -32,8 +30,8 @@ Singleton {
 
     function hide() {
         visible = false
-        items = []
         header = ""
+        hint = null
         root.closed()
     }
 

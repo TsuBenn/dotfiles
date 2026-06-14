@@ -17,7 +17,7 @@ Singleton {
             active = false
         }
 
-        //console.log(`active fields: ${active_fields}`)
+        // console.log(`active fields: ${active_fields}`)
     }
 
     signal unFocusAll()

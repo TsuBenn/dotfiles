@@ -102,6 +102,8 @@ CellPopup {
 
         ColumnLayout {
 
+            layer.enabled: true
+
             id: layout
 
             spacing: 0

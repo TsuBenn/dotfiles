@@ -22,6 +22,7 @@ CellPopup {
 
     onVisibleChanged: {
         if (visible) {
+            // console.log(`${root.implicitHeight} ${root.implicitWidth}`)
             if (fullscreen) {
                 mask.visible = true
                 mouse.x1 = 0
@@ -46,16 +47,19 @@ CellPopup {
 
     Component.onCompleted: {
         ScreenshotInfo.cached.connect(() => {
+            if (!HyprInfo.isCurrentMonitor(root.monitor.name)) return
             if (root.visible) return
             cache.source = ""
             cache.source = ScreenshotInfo.cache_path
             PopupManager.open("screenshot")
         })
         SettingsInfo.screenshotCursorChanged.connect(() => {
+            if (!HyprInfo.isCurrentMonitor(root.monitor.name)) return
             cache.source = ""
             cache.source = ScreenshotInfo.cache_path
         })
         PopupManager.signalSent.connect((id, sig) => {
+            if (!HyprInfo.isCurrentMonitor(root.monitor.name)) return
             if (id == "screenshot" && sig == "full") {
                 root.fullscreen = true
             }

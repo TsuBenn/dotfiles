@@ -15,6 +15,8 @@ FloatingWindow {
 
     visible: true
 
+    title: "tsubenn_tui_qs_depcheck"
+
     onClosed: {
         SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/quit.sh"])
     }

@@ -140,6 +140,31 @@ Singleton {
         config_saver.running = true
     }
 
+    Component.onCompleted: {
+        WallpaperInfo.currentChanged.connect(() => {
+            color_from_image.running = true
+        })
+    }
+
+    Process {
+
+        id: color_from_image
+
+        command: ["python", SystemInfo.configdir + "/scripts/color_extractor.py", WallpaperInfo.getCacheLocation()]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let data = JSON.parse(text)
+                data.name = "<b><i>Let me cook</i></b>"
+                data.description = "The shell will try it's best to find the best palette from the current wallpaper you're choosing"
+                root.colors["auto"] = data
+                root.apply()
+                // console.log(JSON.stringify(data, null, 2))
+            }
+        }
+
+    }
+
     Process {
 
         id: saver

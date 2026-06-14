@@ -1,6 +1,7 @@
 pragma Singleton 
 
 import qs.config
+import qs.services
 
 import Quickshell
 import QtQuick
@@ -27,10 +28,10 @@ Singleton {
 
     function show(itemList, mx, my, mw, mh, selected = 0, padding = 1, color = Colors.bgOverlay, fg = Colors.fgBase, active = Colors.accentStrong, active_invert = Colors.onAccent) {
         items = itemList
-        w = mw
+        w = mw 
         h = mh
-        x = Cell.wCount(mx)
-        y = Cell.hCount(my,"floor")
+        x = Cell.wCount(mx - HyprInfo.focusedMonitor.x, "floor")
+        y = Cell.hCount(my - HyprInfo.focusedMonitor.y,"floor")
         root.selected = selected
         root.padding = padding
         root.color = color

@@ -31,8 +31,12 @@ Cells {
 
     onOffsetChanged: {
         if ((offset > maxOffset || offset < 0) && maxOffset > 0) {
-            offset = Math.max(Math.min(root.offset,maxOffset),0)
+            snapBack()
         }
+    }
+
+    function snapBack() {
+        offset = Math.max(Math.min(root.offset,maxOffset),0)
     }
 
     property bool keyNav: true

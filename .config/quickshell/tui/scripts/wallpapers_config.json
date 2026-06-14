@@ -9,7 +9,7 @@
     "posY": 0.5
   },
   "wallpapers": [
-    "minami.jpg"
+    "asuka_landscape.jpg"
   ],
   "config": {
     "macbook.jpg": {
@@ -112,7 +112,7 @@
     "asuka_landscape.jpg": {
       "reposition": {
         "scalar": 1.4000000000000004,
-        "verticalOffset": -0.05456349206349202,
+        "verticalOffset": 0.26122598162071853,
         "horizontalOffset": 0
       }
     }

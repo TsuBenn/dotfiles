@@ -14,18 +14,77 @@ Singleton {
 
     property var packages: []
 
+    property var installed_packages: []
+
+    property var search_results: []
+
+    property var info: []
+
+    function getInfo(pkg: string) {
+        if (info.running) info.running = false
+        info.pkg = pkg
+        info.running = true
+    }
+
+    function search(query: string) {
+        if (query == "") {
+            searcher.running = false
+            search_results = []
+            return
+        }
+        if (searcher.running) searcher.running = false
+        searcher.query = query
+        searcher.running = true
+    }
+
+    function list() {
+        if (lister.running) lister.running = false
+        lister.running = true
+    }
+
+    function fetch() {
+        if (fetcher.running) fetcher.running = false
+        fetcher.running = true
+    }
+
+    Process {
+
+        id: info
+
+        property string pkg: ""
+
+        command: ["python", root.path, "info", pkg]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    root.info = JSON.parse(text)
+                }
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    console.log("PacmanInfo (loader): " + text)
+                }
+            }
+        }
+
+    }
+
     Process {
 
         id: searcher
 
         property string query: ""
 
-        command: ["python", root.path, "-s", query]
+        command: ["python", root.path, "search", query]
 
         stdout: StdioCollector {
             onStreamFinished: {
                 if (text) {
-                    root.packages = JSON.parse(text)
+                    root.search_results = JSON.parse(text)
                 }
             }
         }
@@ -42,14 +101,16 @@ Singleton {
 
     Process {
 
-        id: loader
+        id: searcher_fresh
 
-        command: ["python", root.path, "-l"]
+        property string query: searcher.query
+
+        command: ["python", root.path, "search", query, "--fresh"]
 
         stdout: StdioCollector {
             onStreamFinished: {
                 if (text) {
-                    root.packages = JSON.parse(text)
+                    root.search_results = JSON.parse(text)
                 }
             }
         }
@@ -66,10 +127,34 @@ Singleton {
 
     Process {
 
-        id: cacher
+        id: lister
+
+        command: ["python", root.path, "list"]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    root.installed_packages = JSON.parse(text)
+                }
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    console.log("PacmanInfo (loader): " + text)
+                }
+            }
+        }
+
+    }
+
+    Process {
+
+        id: fetcher
 
         running: true
-        command: ["python", root.path, "-l", "-r"]
+        command: ["python", root.path, "fetcher"]
 
         stdout: StdioCollector {
             onStreamFinished: {

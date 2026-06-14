@@ -31,6 +31,7 @@ CellPopup {
             top_bar.implicitHeight = 0
             bottom_bar.implicitHeight = 0
         } else {
+            list.show = true
             countdown.active = false
         }
     }
@@ -191,7 +192,11 @@ CellPopup {
 
         Loader {
 
-            active: (root.visible || !root.optimizeMemory) && !countdown.active
+            id: list
+
+            property bool show: true
+
+            active: (root.visible || !root.optimizeMemory) && show
 
             sourceComponent: Cells {
 
@@ -290,6 +295,7 @@ CellPopup {
                 countdown.mode = mode
                 countdown.count = count
                 countdown.active = true
+                list.show = false
                 blacking_out.restart()
                 if (!PopupManager.isOpen("power")) {
                     PopupManager.open("power")
@@ -345,7 +351,7 @@ CellPopup {
 
             property bool active: false
 
-            visible: active
+            visible: !list.show
 
             layer.enabled: true
 

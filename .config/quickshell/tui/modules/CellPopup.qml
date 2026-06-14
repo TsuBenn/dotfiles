@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import qs.config
 import qs.modules
+import qs.services
 
 import QtQuick
 import Quickshell

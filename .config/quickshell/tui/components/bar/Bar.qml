@@ -40,12 +40,15 @@ Scope {
 
             Component.onCompleted: {
                 PopupManager.opened.connect((name) => {
+                    HintManager.hide()
                     root.shield = true
                 })
                 PopupManager.closed.connect((name) => {
+                    HintManager.hide()
                     if (name == "" || PopupManager.active_popups.length == 0) root.shield = false
                 })
                 DropdownManager.opened.connect((name) => {
+                    HintManager.hide()
                     ContextMenuManager.hide()
                     root.shield = true
                 })
@@ -57,6 +60,13 @@ Scope {
                     root.shield = true
                 })
                 ContextMenuManager.closed.connect((name) => {
+                    if (PopupManager.active_popups.length > 0) return
+                    root.shield = false
+                })
+                HintManager.opened.connect((name) => {
+                    root.shield = true
+                })
+                HintManager.closed.connect((name) => {
                     if (PopupManager.active_popups.length > 0) return
                     root.shield = false
                 })
@@ -74,6 +84,7 @@ Scope {
                             }
                             PopupManager.close()
                             DropdownManager.hide()
+                            HintManager.hide()
                             ContextMenuManager.hide()
                             break;
                         }
@@ -162,6 +173,8 @@ Scope {
                 WlrLayershell.layer: WlrLayer.Bottom
                 WlrLayershell.namespace: "qs_background"
 
+                screen: root.screen
+
                 mask: Region {
                     item: background
                 }
@@ -200,7 +213,7 @@ Scope {
 
                         id: bg
 
-                        w: Cell.wCount(root.monitor.width)
+                        w: Cell.wCount(root.monitor.width, "ceil")
                         h: Cell.hCount(root.monitor.height, "ceil")
 
                         color: "transparent"
@@ -273,9 +286,9 @@ Scope {
                                 }
                             }
 
-                            w: Cell.wCount(background.width,"floor")
-                            h: Cell.hCount(background.height/interval,"floor")
-    
+                            w: Cell.wCount(background.width,"ceil")
+                            h: Cell.hCount(background.height/interval,"ceil")
+
                             spacing: 2
                             barW: 2
 
@@ -303,6 +316,8 @@ Scope {
 
                 id: notifcations
 
+                screen: root.screen
+
                 anchors {
                     top: true
                     left: true
@@ -317,8 +332,6 @@ Scope {
 
                 implicitWidth: root.monitor.width
                 implicitHeight: root.monitor.height
-
-                visible: true
 
                 focusable: true
 
@@ -343,6 +356,9 @@ Scope {
 
                 id: popups_screen
 
+                screen: root.screen
+                visible: HyprInfo.isCurrentMonitor(root.screen.name)
+
                 anchors {
                     top: true
                     left: true
@@ -358,12 +374,10 @@ Scope {
                 implicitWidth: root.monitor.width
                 implicitHeight: root.monitor.height
 
-                visible: true
-
                 focusable: false
 
                 HyprlandFocusGrab {
-                    active: root.shield
+                    active: root.shield && popups_screen.visible
                     windows: [root, popups_screen]
                 }
 
@@ -402,9 +416,13 @@ Scope {
 
                     MouseControl {
 
-                        visible: context_menu.visible || dropdown.visible
+                        visible: context_menu.visible || dropdown.visible || hint.visible
 
                         anchors.fill: parent
+
+                        onMoved: {
+                            if (HintManager.visible) HintManager.hide()
+                        }
 
                         onPressed: {
                             ContextMenuManager.hide()
@@ -419,6 +437,11 @@ Scope {
 
                     CellContextMenu {
                         id: context_menu
+                        monitor: root.monitor
+                    }
+
+                    CellHint {
+                        id: hint
                         monitor: root.monitor
                     }
 
@@ -455,40 +478,9 @@ Scope {
 
             PanelWindow {
 
-                id: brightness
-
-                WlrLayershell.layer: popups_screen.WlrLayershell.layer == WlrLayer.Overlay ? WlrLayer.Overlay : WlrLayer.Top
-
-                WlrLayershell.namespace: "brightness"
-
-                exclusionMode: ExclusionMode.Ignore
-
-                anchors {
-                    top: true
-                    bottom: true
-                    left: true
-                    right: true
-                }
-
-                focusable: false
-
-                color: BrightnessInfo.available ? "transparent" : Qt.rgba(
-                    0,
-                    0,
-                    0,
-                    Math.max(Math.min(1-(BrightnessInfo.brightness/100),0.99),0)
-                )
-
-                mask: Region {
-                    item: null
-                }
-
-            }
-
-            PanelWindow {
-
                 id: lock_screen_background
 
+                screen: root.screen
                 visible: opacity > 0
 
                 WlrLayershell.layer: opacity > 0 ? WlrLayer.Overlay : WlrLayer.Top

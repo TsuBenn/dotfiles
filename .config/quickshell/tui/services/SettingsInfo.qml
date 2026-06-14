@@ -140,11 +140,8 @@ Singleton {
         saveConfig()
     }
 
-    signal pacman()
-
     IpcHandler {
         target: "config"
-        function boot_pacman(): void {root.pacman()}
         function open_popup(popup:   string): void {PopupManager.open(popup);}
         function close_popup(popup:  string): void {PopupManager.close(popup)}
         function toggle_popup(popup: string): void {PopupManager.toggle(popup)}

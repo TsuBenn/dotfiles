@@ -44,13 +44,6 @@ WlSessionLockSurface {
         audioOutput: AudioOutput {
             id: lock_screen_music_output
         }
-        Component.onCompleted: {
-            if (SettingsInfo.lockScreenMusic && MediaPlayerInfo.status != "playing") {
-                play()
-            } else {
-                stop()
-            }
-        }
     }
 
     WallpaperEngine {
@@ -294,7 +287,7 @@ WlSessionLockSurface {
 
         CellText {
             id: lock_status
-            property string status: "locked"
+            property string status: "unlocked"
             Layout.leftMargin: Cell.centerWCell(width, parent.width)
             text: `--${status}--`
             color: Colors.warning
@@ -447,22 +440,41 @@ WlSessionLockSurface {
         }
     }
 
-    ParallelAnimation {
+    SequentialAnimation {
         id: lock_screen_anim
+        ParallelAnimation {
+            NumberAnimation {
+                target: lock_status_buffer
+                property: "opacity"
+                from: 0
+                to: 1
+                duration: 500
+                easing.type: Easing.OutCubic
+            }
+        }
+        ScriptAction {
+            script: {
+                lock_status.status = "locked"
+                lock_screen_music_output.volume = AudioInfo.volume/100
+                if (SettingsInfo.lockScreenMusic && MediaPlayerInfo.status != "playing") {
+                    lock_screen_music.play()
+                } else {
+                    lock_screen_music.stop()
+                }
+
+            }
+        }
+        PauseAnimation {
+            duration: 500
+        }
         NumberAnimation {
             target: black_lock_screen
             property: "opacity"
             to: 0
-            duration: 500
+            duration: 1000
             easing.type: Easing.OutCubic
         }
-        NumberAnimation {
-            target: lock_screen_music_output
-            property: "volume"
-            to: AudioInfo.volume/100
-            duration: 1000
-            easing.type: Easing.InCubic
-        }
+
     }
 
     Rectangle {
@@ -470,6 +482,17 @@ WlSessionLockSurface {
         anchors.fill: parent
         color: "black"
         opacity: 1
+    }
+
+    ShaderEffectSource {
+        id: lock_status_buffer
+        width: Cell.w(lock_status.w)
+        height: Cell.h(lock_status.h)
+        x: lock_status.x + layout.x
+        y: lock_status.y + layout.y
+        live: true
+        hideSource: true
+        sourceItem: lock_status
     }
 
     PowerPopup {
@@ -513,7 +536,21 @@ WlSessionLockSurface {
                 target: lock_screen_music_output
                 property: "volume"
                 to: 0
-                duration: 500
+                duration: 1000
+                easing.type: Easing.InCubic
+            }
+        }
+        ParallelAnimation {
+            ScriptAction {
+                script: {
+                    lock_status.status = "unlocked"
+                }
+            }
+            NumberAnimation {
+                target: lock_status_buffer
+                property: "opacity"
+                to: 0
+                duration: 700
                 easing.type: Easing.InCubic
             }
         }
@@ -539,7 +576,6 @@ WlSessionLockSurface {
         stdout: SplitParser {
             onRead: (text) => {
                 if (text == "1") {
-                    lock_status.status = "unlocked"
                     unlock_anim.restart()
                 } else if (text == "0") {
                     pwd_status.text = " Error: Wrong password! "
