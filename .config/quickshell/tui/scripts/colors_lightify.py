@@ -123,11 +123,11 @@ def convert_theme_to_light(theme_dict):
         
         # Apply light mode constant baseline weights to utility lines
         if u == "warning":
-            util_palette[u] = finalize((0.69, 0.10, u_hue))
+            util_palette[u] = finalize((0.58, 0.28, u_hue))
         elif u == "danger" or u == "info":
-            util_palette[u] = finalize((0.63, 0.11, u_hue))
+            util_palette[u] = finalize((0.64, 0.30, u_hue))
         else: # success
-            util_palette[u] = finalize((0.65, 0.09, u_hue))
+            util_palette[u] = finalize((0.64, 0.14, u_hue))
 
     return {
         "name": theme_dict.get("name", "Unnamed Theme"),

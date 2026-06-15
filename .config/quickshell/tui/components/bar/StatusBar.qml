@@ -6,7 +6,7 @@ import qs.modules
 import QtQuick.Layouts
 import QtQuick
 
-Item {
+Rectangle {
 
     required property bool hideBar
     required property bool forceBar
@@ -20,11 +20,14 @@ Item {
         }
     }
 
+    color: Colors.bgSurface
+
     opacity: unfocus > 0
 
     id: root
 
     anchors.fill: parent
+    anchors.bottomMargin: 1
     //anchors.leftMargin: Cell.w(1)
     //anchors.rightMargin: Cell.w(1)
 

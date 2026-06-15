@@ -111,45 +111,27 @@ Singleton {
 
     property var colors: ({})
 
+    property bool preferedLightMode: false
+
     property var dummy: {
         "name"           : "",
         "description"    : "",
-        "light": {
-            "bgbase"         : "",
-            "bgSurface"      : "",
-            "bgOverlay"      : "",
-            "fgBase"         : "",
-            "onAccent"       : "",
-            "fgDim"          : "",
-            "fgSubtle"       : "",
-            "accentStrong"   : "",
-            "accentDim"      : "",
-            "secondary"      : "",
-            "info"           : "",
-            "success"        : "",
-            "warning"        : "",
-            "danger"         : "",
-            "borderActive"   : "",
-            "borderInactive" : "",
-        },
-        "dark": {
-            "bgbase"         : "",
-            "bgSurface"      : "",
-            "bgOverlay"      : "",
-            "fgBase"         : "",
-            "onAccent"       : "",
-            "fgDim"          : "",
-            "fgSubtle"       : "",
-            "accentStrong"   : "",
-            "accentDim"      : "",
-            "secondary"      : "",
-            "info"           : "",
-            "success"        : "",
-            "warning"        : "",
-            "danger"         : "",
-            "borderActive"   : "",
-            "borderInactive" : "",
-        }
+        "bgbase"         : "",
+        "bgSurface"      : "",
+        "bgOverlay"      : "",
+        "fgBase"         : "",
+        "onAccent"       : "",
+        "fgDim"          : "",
+        "fgSubtle"       : "",
+        "accentStrong"   : "",
+        "accentDim"      : "",
+        "secondary"      : "",
+        "info"           : "",
+        "success"        : "",
+        "warning"        : "",
+        "danger"         : "",
+        "borderActive"   : "",
+        "borderInactive" : "",
     }
 
     function save() {
@@ -162,11 +144,46 @@ Singleton {
 
     Component.onCompleted: {
         WallpaperInfo.currentChanged.connect(() => {
-            color_from_image.running = true
+            //console.log(root.preferedLightMode)
+            mode_from_image.running = true
+            //color_from_image.running = true
         })
         SettingsInfo.lightModeChanged.connect(() => {
+            color_from_image.running = true
             load.running = true
         })
+        root.preferedLightModeChanged.connect(() => {
+            //color_from_image.running = true
+            //load.running = true
+        })
+    }
+
+    Process {
+
+        id: mode_from_image
+
+        command: ["python", SystemInfo.configdir + "/scripts/light_or_dark.py", WallpaperInfo.getCacheLocation()]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    if (text.trim() == "light") {
+                        root.preferedLightMode = true
+                    } else {
+                        root.preferedLightMode = false
+                    }
+                }
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    console.log("Colors (mode_from_image): " + text)
+                }
+            }
+        }
+
     }
 
     Process {

@@ -399,7 +399,7 @@ ColumnLayout {
         padding: 1
         type: 0
         w: root.box.contentW
-        color.fg: Qt.lighter(Colors.bgOverlay,1.4)
+        color.fg: Colors.bgOverlay
         items: [
             "Audio",
             "Notifications"

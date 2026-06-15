@@ -125,11 +125,18 @@ SETTINGS = [
         "type": "menu",
         "value": [
             {
-                "label": "{lightMode} Light mode",
+                "label": "{userLightMode} Light mode",
                 "description": "Turn on light mode If you're not a vampire.",
                 "category": "settings",
                 "type": "exec",
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_light_mode"],
+            },
+            {
+                "label": "{autoLightMode} Auto light mode",
+                "description": "Choose whether your current wallpaper should be light or dark.",
+                "category": "settings",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_auto_light_mode"],
             },
             {
                 "label": "{hints} Show hints",

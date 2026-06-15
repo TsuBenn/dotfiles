@@ -8,6 +8,7 @@ import qs.services
 
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 
@@ -132,6 +133,26 @@ ShellRoot {
         active: SettingsInfo.dependenciesChecked
 
         sourceComponent: Bar {}
+
+    }
+
+
+    WlSessionLock {
+
+        Component.onCompleted: {
+            LockInfo.lock.connect(()=>{
+                this.locked = true
+            })
+            LockInfo.unlock.connect(()=>{
+                this.locked = false
+            })
+        }
+
+        LockSession {
+
+            monitor: screen != null ? HyprInfo.monitors[screen.name] : {"width": 1920, "height": 1080}
+
+        }
 
     }
 

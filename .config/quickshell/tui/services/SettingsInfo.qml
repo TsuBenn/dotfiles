@@ -27,34 +27,49 @@ Singleton {
         onTriggered: root.fps = fpsMonitor.smoothFrameTime > 0 ? Math.round(1.0 / fpsMonitor.smoothFrameTime) : 0
     }
 
-    property bool dependenciesChecked : false  // Use to initiallize the bar
+    property bool dependenciesChecked          : false // Use to initiallize the bar
 
-    property bool lightMode         : false // Light mode
+    onLightModeChanged: {
+        console.log(lightMode)
+    }
+    onUserLightModeChanged: {
+        console.log(userLightMode)
+        console.log(lightMode)
+    }
+    onAutoLightModeChanged: {
+        console.log(autoLightMode)
+        console.log(lightMode)
+    }
 
-    property bool hints             : true  // Show keyboard hints
-    property bool minimal           : false // Reduce UI elements
-    property bool textBasedVolume   : false // Bar's volume rocker do be text
-    property bool hideBar           : false // Hide status bar
-    property bool bottomBar         : false // Status bar placed on the bottom of the screen instead of top
-    property bool safeNotifications : false // Hide notifications' messages
-    property bool dnd               : false // Do not disturb
-    property bool optimizeMemory    : false // Reduce memory usage significantly, but takes more time to load UI elements
+    property bool lightMode                    : autoLightMode ? Colors.preferedLightMode : userLightMode // Light mode of system
+    property bool userLightMode                : false // Light mode of user input
+    property bool autoLightMode                : true  // Decide whether the wallpaper needs a light mode or dark mode
+
+    property bool hints                        : true  // Show keyboard hints
+    property bool minimal                      : false // Reduce UI elements
+    property bool textBasedVolume              : false // Bar's volume rocker do be text
+    property bool hideBar                      : false // Hide status bar
+    property bool bottomBar                    : false // Status bar placed on the bottom of the screen instead of top
+    property bool safeNotifications            : false // Hide notifications' messages
+    property bool dnd                          : false // Do not disturb
+    property bool optimizeMemory               : false // Reduce memory usage significantly, but takes more time to load UI elements
 
 
-    property bool hyprAnim          : false // Toggles Hyprland animations
-    property bool hyprBlur          : false // Toggles Hyprland background blur for windows
+    property bool hyprAnim                     : false // Toggles Hyprland animations
+    property bool hyprBlur                     : false // Toggles Hyprland background blur for windows
 
-    property bool bgCava            : true  // Run cava on top of the wallpaper
-    property bool bgCavaLock        : false // Run cava on top of the wallpaper (lockscreen)
+    property bool bgCava                       : true  // Run cava on top of the wallpaper
+    property bool bgCavaLock                   : false // Run cava on top of the wallpaper (lockscreen)
 
-    property bool screenshotStay    : false // Keep the screenshot buffer after screenshotting
-    property bool screenshotCursor  : true  // Capture cursor
+    property bool screenshotStay               : false // Keep the screenshot buffer after screenshotting
+    property bool screenshotCursor             : true  // Capture cursor
 
-    property bool lockScreenMusic   : false // Music playing during lock session
+    property bool lockScreenMusic              : false // Music playing during lock session
+    property bool onlyFocusedMonitorLockScreen : false // Whether the other monitor should also show the wallpaper or left black
 
-    property bool sfx               : true  // Random ahh sound effects
+    property bool sfx                          : true  // Random ahh sound effects
 
-    property bool debug             : true  // Used for random debugging
+    property bool debug                        : true  // Used for random debugging
 
     signal debugSig()
 
@@ -75,7 +90,8 @@ Singleton {
         "screenshotCursor",
         "lockScreenMusic",
         "sfx",
-        "lightMode",
+        "userLightMode",
+        "autoLightMode",
         "debug",
     ]
 
@@ -189,7 +205,8 @@ Singleton {
         function toggle_bottom_bar(): void         { root.toggle("bottomBar") }
         function toggle_text_based_volume(): void  { root.toggle("textBasedVolume") }
         function toggle_sfx(): void                { root.toggle("sfx") }
-        function toggle_light_mode(): void         { root.toggle("lightMode") }
+        function toggle_light_mode(): void         { root.toggle("userLightMode") }
+        function toggle_auto_light_mode(): void    { root.toggle("autoLightMode") }
 
         function lock_screen(): void               { SystemInfo.lock() }
 

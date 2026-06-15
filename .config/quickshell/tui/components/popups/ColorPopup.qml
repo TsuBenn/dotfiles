@@ -376,7 +376,7 @@ CellPopup {
 
                                 onReleased: (button) => {
                                     if (button == "L") {
-                                        SettingsInfo.toggle("lightMode")
+                                        SettingsInfo.toggle("userLightMode")
                                     }
                                 }
 
@@ -1981,13 +1981,19 @@ CellPopup {
                                         text: "<b>You cannot edit an auto generated palette</b>"
                                     }
                                     CellSeparator {
-                                        visible: root.result[color.selected] != "auto" && SettingsInfo.lightMode
                                         w: 41
                                         color: Colors.fgSubtle
                                     }
                                     CellText {
                                         visible: root.result[color.selected] != "auto" && SettingsInfo.lightMode
                                         text: "<i>This palette's light mode has been auto generated. Please switch back to dark mode to edit the original palette.</i>"
+                                        preferedW: 41
+                                        wrap: true
+                                        color: Colors.fgDim
+                                    }
+                                    CellText {
+                                        visible: root.result[color.selected] == "auto"
+                                        text: "<i>This palette has been auto generated base on current the wallpaper.</i>"
                                         preferedW: 41
                                         wrap: true
                                         color: Colors.fgDim

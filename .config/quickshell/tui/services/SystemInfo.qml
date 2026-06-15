@@ -132,7 +132,10 @@ Singleton {
         return usage.toFixed(2)
     }
 
+    property string lockedScreen: ""
+
     signal lockRequest()
+    signal unlockRequest()
 
     function shutdown() {power.exec(["shutdown", "-h", "now"])}
     function sleep() {power.exec(["systemctl", "suspend"])}

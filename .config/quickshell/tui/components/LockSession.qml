@@ -19,9 +19,9 @@ WlSessionLockSurface {
 
     property bool processing: false
 
-    signal unlockSession()
+    property bool focused: monitor.name == HyprInfo.focusedMonitor.name
 
-    property bool focus: mouse.hovered || password_field.text != "" || true
+    property bool onlyFocusedMonitorLockScreen: SettingsInfo.onlyFocusedMonitorLockScreen
 
     property var monitor: {
         "width": 1920,
@@ -43,6 +43,7 @@ WlSessionLockSurface {
         source: SystemInfo.configdir + "/assets/lock_screen_music.mp3"
         audioOutput: AudioOutput {
             id: lock_screen_music_output
+            muted: root.monitor.name != HyprInfo.monitors[0].name
         }
     }
 
@@ -54,7 +55,7 @@ WlSessionLockSurface {
             Behavior on radius {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
 
             cached: true
-            radius: root.focus ? 10 : 0
+            radius: root.focused ? 10 : 0
             samples: 10
             transparentBorder: false
         }
@@ -83,7 +84,7 @@ WlSessionLockSurface {
         Rectangle {
             anchors.fill: parent
             color: Qt.darker(Colors.bgBase,2)
-            opacity: root.focus ? 0.5 : 0
+            opacity: root.focused ? 0.5 : 0
             Behavior on opacity {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
         }
     }
@@ -102,6 +103,29 @@ WlSessionLockSurface {
             GradientStop { position: 0.3; color: "white"}
             GradientStop { position: 0.7; color: "white"}
             GradientStop { position: 1.0; color: "transparent" }
+        }
+
+    }
+
+    Rectangle {
+
+        visible: opacity
+
+        opacity: SettingsInfo.bgCavaLock && !root.focused
+
+        Behavior on opacity {NumberAnimation {
+            duration: 500
+            easing.type: Easing.OutCubic
+        }}
+
+        anchors.fill: parent
+
+        gradient: Gradient {
+            orientation: Gradient.Vertical
+            GradientStop { position: 0.0; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5) }
+            GradientStop { position: 0.4; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0) }
+            GradientStop { position: 0.6; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0) }
+            GradientStop { position: 1.0; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5) }
         }
 
     }
@@ -155,7 +179,7 @@ WlSessionLockSurface {
 
         id: util_bar
 
-        property bool peek: false
+        property bool peek: false && root.focused
 
         Behavior on anchors.topMargin {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
@@ -230,7 +254,6 @@ WlSessionLockSurface {
 
     }
 
-
     Timer {
 
         id: unpeek_util
@@ -243,7 +266,7 @@ WlSessionLockSurface {
 
     ColumnLayout {
 
-        opacity: root.focus ? 1 : 0.1
+        opacity: root.focused ? 1 : 0
 
         layer.enabled: true
         Behavior on opacity {NumberAnimation {duration: 500*SettingsInfo.hyprAnim; easing.type: Easing.OutCubic}}
@@ -316,7 +339,7 @@ WlSessionLockSurface {
                     x: Cell.w(1)
 
                     w: 26
-                    h: parent.h
+                    h: 1
 
                     hidden: true
 
@@ -325,6 +348,18 @@ WlSessionLockSurface {
                     escapeToUnFocus: false
 
                     placeholder: "Password"
+
+                    onTextInput: (input) => {
+                        LockInfo.password = input
+                    }
+
+                    Component.onCompleted: {
+                        LockInfo.passwordChanged.connect(()=> {
+                            if (!password_field.focus) {
+                                password_field.set(LockInfo.password)
+                            }
+                        })
+                    }
 
                     onEntered: (input) => {
                         root.processing = true
@@ -490,6 +525,7 @@ WlSessionLockSurface {
         height: Cell.h(lock_status.h)
         x: lock_status.x + layout.x
         y: lock_status.y + layout.y
+        opacity: layout.opacity
         live: true
         hideSource: true
         sourceItem: lock_status
@@ -497,28 +533,13 @@ WlSessionLockSurface {
 
     PowerPopup {
 
+        opacity: root.focused
+
         monitor: root.monitor
 
         name: "power"
 
         lock: true
-
-    }
-
-    PowerCountdownPopup {
-
-        id: power_countdown
-
-        name: "power_countdown"
-
-        cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2) - 1
-        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) + 1
-
-        onVisibleChanged: {
-            if (visible) {
-                active = true
-            }
-        }
 
     }
 
@@ -556,7 +577,7 @@ WlSessionLockSurface {
         }
         ScriptAction {
             script: {
-                root.unlockSession()
+                SystemInfo.unlockRequest()
             }
         }
     }
@@ -588,4 +609,5 @@ WlSessionLockSurface {
         }
 
     }
+
 }

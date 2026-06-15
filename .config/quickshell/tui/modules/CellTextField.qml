@@ -149,7 +149,7 @@ Item {
             forceActiveFocus()
             return
         }
-        focus = false
+        unFocus()
     }
 
     onCursorPosChanged: {

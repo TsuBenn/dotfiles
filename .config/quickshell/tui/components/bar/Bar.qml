@@ -155,9 +155,9 @@ Scope {
 
             exclusiveZone: root.implicitHeight*!root.hideBar
 
-            implicitHeight: Cell.h(1)
+            implicitHeight: Cell.h(1) + 1
 
-            color: Colors.bgSurface
+            color: "transparent"
 
             StatusBar {
 
@@ -512,6 +512,10 @@ Scope {
                     SystemInfo.lockRequest.connect(()=> {
                         lockAnimStart.restart()
                     })
+                    SystemInfo.unlockRequest.connect(()=> {
+                        lockAnimEnd.restart()
+                        LockInfo.unlock()
+                    })
                 }
 
             }
@@ -527,7 +531,7 @@ Scope {
                 }
                 ScriptAction {
                     script: {
-                        lock_session.locked = true
+                        LockInfo.lock()
                     }
                 }
             }
@@ -541,26 +545,6 @@ Scope {
                     duration: 500
                     easing.type: Easing.OutCubic
                 }
-            }
-
-            WlSessionLock {
-
-                id: lock_session
-
-                onLockedChanged: {
-                    lockAnimEnd.restart()
-                }
-
-                LockSession {
-
-                    monitor: root.monitor
-
-                    onUnlockSession: {
-                        lock_session.locked = false
-                    }
-
-                }
-
             }
 
         }

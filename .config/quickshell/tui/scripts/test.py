@@ -13,68 +13,55 @@ def srgb_to_linear(c):
     return c / 12.92 if c <= 0.04045 else math.pow((c + 0.055) / 1.055, 2.4)
 
 def rgb_to_oklab_lightness(rgb):
-    """Calculates true human-perceived lightness (0.0 - 1.0) for a color tuple."""
+    """Calculates true perceptual lightness (0.0 - 1.0) for a single pixel."""
     r = srgb_to_linear(rgb[0] / 255.0)
     g = srgb_to_linear(rgb[1] / 255.0)
     b = srgb_to_linear(rgb[2] / 255.0)
 
-    # Convert to LMS cone response space
+    # Move to LMS cone space
     l_ = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b
     m_ = 0.2119034982 * r + 0.6806995451 * g + 0.1073972632 * b
     s_ = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b
 
-    # Non-linear scaling matching human brain response
+    # Scale non-linearly for human eyes
     l_ = math.pow(max(0, l_), 1.0 / 3.0)
     m_ = math.pow(max(0, m_), 1.0 / 3.0)
     s_ = math.pow(max(0, s_), 1.0 / 3.0)
 
-    # Return pure Oklab Lightness
+    # Return final Oklab Lightness
     return 0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_
 
 # ==============================================================================
-# MEDIAN ANALYSIS ENGINE
+# THE 1-PIXEL SQUISH ENGINE
 # ==============================================================================
 
-def analyze_image_mode(image_path, threshold=0.45):
+def analyze_image_mode(image_path, threshold=0.50):
     if not os.path.exists(image_path):
         print(f"Error: Image '{image_path}' not found.", file=sys.stderr)
         sys.exit(1)
 
     with Image.open(image_path) as img:
-        img = img.convert("RGB")
-        img.thumbnail((80, 80))
+        # Force Pillow to blend the entire image into a single global average pixel
+        one_pixel_img = img.resize((1, 1), resample=Image.Resampling.BOX)
+        global_average_rgb = one_pixel_img.getpixel((0, 0))
         
-        raw_bytes = img.tobytes()
+        # Extract perceptual lightness out of that single averaged color
+        perceptual_lightness = rgb_to_oklab_lightness(global_average_rgb)
         
-        dark_pixels = 0
-        total_pixels = 0
-        
-        for i in range(0, len(raw_bytes), 3):
-            pixel = (raw_bytes[i], raw_bytes[i+1], raw_bytes[i+2])
-            lightness = rgb_to_oklab_lightness(pixel)
-            total_pixels += 1
-            
-            # Count how many pixels fall below a "comfortably dark" surface level (0.50)
-            if lightness < 0.50:
-                dark_pixels += 1
-                
-        # Calculate the actual ratio of dark space on your screen
-        dark_ratio = dark_pixels / total_pixels
-        
-        # If more than 45% of the wallpaper is dark canvas or shadow, force Dark Mode
-        if dark_ratio >= threshold:
-            return "dark"
+        # Output flag based on threshold boundary
+        if perceptual_lightness >= threshold:
+            return "--light"
         else:
-            return "light"
+            return "--dark"
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Perceptual Median Lightness Analyzer")
+    parser = argparse.ArgumentParser(description="1-Pixel Perceptual Lightness Analyzer")
     parser.add_argument("image", help="Path to the wallpaper image")
     parser.add_argument(
         "--threshold", 
         type=float, 
-        default=0.53, 
-        help="Oklab lightness threshold. Higher value values Dark Mode (default: 0.53)."
+        default=0.5, 
+        help="Oklab lightness threshold boundary (default: 0.48)"
     )
     args = parser.parse_args()
 

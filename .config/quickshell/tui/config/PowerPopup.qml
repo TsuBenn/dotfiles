@@ -57,6 +57,7 @@ CellPopup {
             script: {
                 blackout.opacity = 0
                 countdown.opacity = 1
+                countdown.active = false
                 top_bar.implicitHeight = 0
                 bottom_bar.implicitHeight = 0
                 PopupManager.close(root.name)

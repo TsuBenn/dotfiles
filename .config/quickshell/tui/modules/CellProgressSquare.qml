@@ -82,14 +82,32 @@ Item {
 
         active: root.type == 0 && (root.visible || !root.optimizeMemory)
 
-        sourceComponent: Rectangle {
+        sourceComponent: Item {
 
-            visible: root.type == 0
+            implicitWidth: Cell.w(root.w)
+            implicitHeight: Cell.h(root.h)
 
-            anchors.bottom: parent.bottom
-            implicitWidth: root.vertical ? Cell.w(root.w) : Math.min(Cell.w(Math.round(root.w*(root.raw_percent/100)*8)/8),Cell.w(root.w))
-            implicitHeight: root.vertical ? Math.min(Cell.h(Math.round(root.h*(root.raw_percent/100)*8)/8),Cell.h(root.h)) : Cell.h(root.h) 
-            color: root.fg
+            Rectangle {
+
+                visible: root.type == 0
+
+                implicitWidth: Cell.w(root.w)
+                implicitHeight: Cell.h(root.h)
+
+                color: root.color
+
+            }
+
+            Rectangle {
+
+                visible: root.type == 0
+
+                anchors.bottom: parent.bottom
+                implicitWidth: root.vertical ? Cell.w(root.w) : Math.min(Cell.w(Math.round(root.w*(root.raw_percent/100)*8)/8),Cell.w(root.w))
+                implicitHeight: root.vertical ? Math.min(Cell.h(Math.round(root.h*(root.raw_percent/100)*8)/8),Cell.h(root.h)) : Cell.h(root.h) 
+                color: root.fg
+
+            }
 
         }
 

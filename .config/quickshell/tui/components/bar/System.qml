@@ -29,7 +29,7 @@ Cells {
             color: Colors.fgBase
         }
 
-        CellProgress {
+        CellProgressSquare {
 
             w: 1
             h: 1
@@ -37,6 +37,8 @@ Cells {
             percent: stat.percent
 
             vertical: true
+
+            type: 0
 
             fg: {
                 if (percent > 90) return Colors.danger
@@ -209,9 +211,10 @@ Cells {
             const global = mapToGlobal(mouseX, mouseY)
             if (button == "L") {
                 PopupManager.toggle("system")
-            } else if (button == "R" && !PopupManager.isOpen("system")) {
+            } else if (button == "R") {
                 HintManager.hint = hint
                 HintManager.show(global.x, global.y, 4)
+                PopupManager.close("system")
             }
         }
 
