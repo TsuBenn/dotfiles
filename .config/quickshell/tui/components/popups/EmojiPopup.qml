@@ -15,8 +15,8 @@ CellPopup {
 
     id: root
 
-    w: 26
-    h: 12
+    w: 28
+    h: 14
 
     onVisibleChanged: {
         mouseLocked: true
@@ -167,8 +167,8 @@ CellPopup {
 
         id: box
 
-        w: root.w+2
-        h: root.h+2
+        w: root.w
+        h: root.h
 
         ColumnLayout {
 

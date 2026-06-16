@@ -514,16 +514,16 @@ Item {
 
                                             anchors.centerIn: parent.type == "emoji" || parent.type == "cjk" || parent.type == "braille" ? parent : undefined
 
-                                            anchors.verticalCenterOffset: parent.type == "emoji" ? Cell.cellHeight*-0.05 : 0
+                                            anchors.verticalCenterOffset: parent.type == "emoji" ? Cell.cellHeight*0.05 : 0
                                             anchors.horizontalCenterOffset: parent.type == "emoji" ? Cell.cellWidth*0.05 : 0
 
-                                            y: -(Cell.cellHeight/0.9)*0.05
+                                            y: -(1 - Cell.cellHeight/Cell.realCellHeight)/2
 
                                             textFormat: Text.RichText
                                             text: parent.text
                                             font: parent.type == "emoji" ? root.fontE : root.font
                                             color: root.color
-                                            lineHeight: Cell.cellHeight + ((Cell.realCellHeight*0.1)/2)
+                                            lineHeight: Cell.cellHeight
                                             lineHeightMode: Text.FixedHeight
 
                                         }
@@ -554,14 +554,14 @@ Item {
                         return 0
                     }
 
-                    y: -(Cell.cellHeight/0.9)*0.05
+                    y: -(1 - Cell.cellHeight/Cell.realCellHeight)/2
 
                     text: root.raw_text
                     textFormat: Text.RichText
                     horizontalAlignment: root.alignRight ? Text.AlignRight : Text.AlignLeft
                     font: root.font
                     color: root.color
-                    lineHeight: Cell.cellHeight + ((Cell.realCellHeight*0.1)/2)
+                    lineHeight: Cell.cellHeight
                     lineHeightMode: Text.FixedHeight
                 }
 

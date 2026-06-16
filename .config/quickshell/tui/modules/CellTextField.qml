@@ -167,10 +167,6 @@ Item {
         resetCursor()
     }
 
-    function fieldFocus(on = true) {
-        focus = on
-    }
-
     Component.onCompleted: {
         TextFieldManager.unFocusAll.connect(() => {
             if (root) {

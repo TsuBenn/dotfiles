@@ -29,21 +29,18 @@ Singleton {
 
     property bool dependenciesChecked          : false // Use to initiallize the bar
 
-    onLightModeChanged: {
-        console.log(lightMode)
-    }
-    onUserLightModeChanged: {
-        console.log(userLightMode)
-        console.log(lightMode)
-    }
-    onAutoLightModeChanged: {
-        console.log(autoLightMode)
-        console.log(lightMode)
-    }
-
     property bool lightMode                    : autoLightMode ? Colors.preferedLightMode : userLightMode // Light mode of system
     property bool userLightMode                : false // Light mode of user input
     property bool autoLightMode                : true  // Decide whether the wallpaper needs a light mode or dark mode
+    property string appearance                 : {     // Light mode, dark mode or auto mode?
+        if (autoLightMode) {
+            return "Auto"
+        } else if (lightMode) {
+            return "Light"
+        } else {
+            return "Dark"
+        }
+    }
 
     property bool hints                        : true  // Show keyboard hints
     property bool minimal                      : false // Reduce UI elements
@@ -98,18 +95,27 @@ Singleton {
         "debug",
     ]
 
+    property var states: [
+        "appearance"
+    ]
+
     signal showGrid()
 
     function get_state(text) {
-        let state = -1
+        let result = -1
         for (const toggle of toggles) {
             if (text == toggle) {
-                state = root[toggle]
+                result = root[toggle]
                 break
             }
         }
-        if (state != -1) {
-            return state ? "[X]" : "[ ]"
+        for (const state of states) {
+            if (text == state) {
+                return `[${root[state].toUpperCase()}]`
+            }
+        }
+        if (result != -1) {
+            return result ? "[X]" : "[ ]"
         }
         return ""
     }
@@ -130,6 +136,19 @@ Singleton {
 
         }
 
+    }
+
+    function iterateAppearance() { // Dark -> Light -> Auto -> Repeats
+        if (autoLightMode) {
+            if (userLightMode) toggle("userLightMode")
+            toggle("autoLightMode")
+        } else if (lightMode) {
+            if (!autoLightMode) toggle("autoLightMode") 
+            if (userLightMode) toggle("userLightMode")
+        } else {
+            if (autoLightMode) toggle("autoLightMode") 
+            if (!userLightMode) toggle("userLightMode")
+        }
     }
 
     function saveConfig() {
@@ -210,6 +229,7 @@ Singleton {
         function toggle_sfx(): void                { root.toggle("sfx") }
         function toggle_light_mode(): void         { root.toggle("userLightMode") }
         function toggle_auto_light_mode(): void    { root.toggle("autoLightMode") }
+        function toggle_appearance(): void         { root.iterateAppearance() }
         function toggle_shadow(): void             { root.toggle("shadow") }
 
         function lock_screen(): void               { SystemInfo.lock() }

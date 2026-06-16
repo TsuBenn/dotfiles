@@ -16,7 +16,7 @@ CellPopup {
     property bool minimal: SettingsInfo.minimal
 
     w: 80
-    h: Cell.hCount(layout.implicitHeight)
+    h: Cell.hCount(layout.implicitHeight) + 2
 
     onVisibleChanged: {
 
@@ -79,7 +79,7 @@ CellPopup {
         id: box
 
         w: root.w
-        h: root.h + 2
+        h: root.h
 
         ColumnLayout {
 

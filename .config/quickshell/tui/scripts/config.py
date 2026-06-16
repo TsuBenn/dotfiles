@@ -125,6 +125,13 @@ SETTINGS = [
         "type": "menu",
         "value": [
             {
+                "label": "{appearance} Shell appearance",
+                "description": "Light mode, dark mode or auto mode.",
+                "category": "settings",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_appearance"],
+            },
+            {
                 "label": "{userLightMode} Light mode",
                 "description": "Turn on light mode If you're not a vampire.",
                 "category": "settings",

@@ -72,7 +72,7 @@ Item {
         name: "wallpaper"
 
         cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2) - 1
-        cellY: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 ? Cell.hCount(root.monitor.height/2,"floor") - Math.floor(h/2) - 2 : Cell.hCount(root.monitor.height,"floor") - Math.floor(h) - 3
+        cellY: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 ? Cell.hCount(root.monitor.height/2,"floor") - Math.floor(h/2) : Cell.hCount(root.monitor.height,"floor") - Math.floor(h) - 1
 
     }
 
@@ -93,18 +93,7 @@ Item {
         name: "clipboard"
 
         cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2) - 1
-        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 1
-
-    }
-
-    PowerCountdownPopup {
-
-        id: power_countdown
-
-        name: "power_countdown"
-
-        cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2) - 1
-        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 1
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2)
 
     }
 
@@ -124,7 +113,7 @@ Item {
         name: "emoji"
 
         cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2) - 1
-        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 2
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2)
 
     }
 
@@ -135,7 +124,7 @@ Item {
         name: "launcher"
 
         cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2) - 1
-        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2) - 1
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2)
 
     }
 

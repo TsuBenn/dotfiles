@@ -15,8 +15,8 @@ CellPopup {
 
     property bool minimal: SettingsInfo.minimal
 
-    w: 80 - root.minimal*15
-    h: Cell.hCount(layout.implicitHeight)
+    w: 80 - root.minimal*15 + 2
+    h: Cell.hCount(layout.implicitHeight) + 2
 
     property bool edit: false
 
@@ -223,8 +223,8 @@ CellPopup {
 
         id: box
 
-        w: root.w + 2
-        h: root.h + 2
+        w: root.w
+        h: root.h
 
         ColumnLayout {
 

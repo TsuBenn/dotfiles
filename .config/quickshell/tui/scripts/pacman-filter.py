@@ -319,6 +319,30 @@ def cmd_info(pkgname: str):
 
     print(json.dumps(pkg, indent=2))
 
+# ─────────────────────────────────────────────
+# LIST ALL
+# ─────────────────────────────────────────────
+
+def cmd_list_all():
+    cache    = load_cache()
+    packages = cache["packages"]
+
+    result = [
+        {
+            "name":        name,
+            "real_name":   pkg["name"],
+            "description": pkg["description"],
+            "version":     pkg["version"],
+            "repository":  pkg["repository"],
+            "installed":   pkg["installed"],
+            "last_sync":   pkg["last_sync"],
+        }
+        for name, pkg in packages.items()
+    ]
+
+    # Sort installed first, then alphabetically
+    result.sort(key=lambda p: (p["name"]))
+    print(json.dumps(result, indent=2))
 
 # ─────────────────────────────────────────────
 # Entrypoint
@@ -331,6 +355,7 @@ def main():
         print("Usage:")
         print("  pacman_backend.py fetch")
         print("  pacman_backend.py list")
+        print("  pacman_backend.py list-all")  # Added here
         print("  pacman_backend.py search <query> [--fresh]")
         print("  pacman_backend.py info <pkgname>")
         sys.exit(0)
@@ -342,6 +367,9 @@ def main():
 
     elif cmd == "list":
         cmd_list()
+
+    elif cmd in ("list-all"):  # Added here
+        cmd_list_all()
 
     elif cmd == "search":
         if len(args) < 2:
@@ -360,7 +388,6 @@ def main():
     else:
         print(f"✗ Unknown command: {cmd}", file=sys.stderr)
         sys.exit(1)
-
 
 if __name__ == "__main__":
     main()

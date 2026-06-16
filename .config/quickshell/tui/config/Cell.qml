@@ -31,7 +31,7 @@ Singleton {
     })
 
     readonly property int cellWidth: metrics.averageCharacterWidth
-    readonly property int cellHeight: metrics.height*0.9
+    readonly property int cellHeight: cellWidth*2
     readonly property int realCellHeight: metrics.height
     readonly property real cellRatio: cellWidth/cellHeight
 

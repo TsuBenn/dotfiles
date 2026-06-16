@@ -334,7 +334,7 @@ CellPopup {
 
                                 id: textfield
 
-                                w: 26
+                                w: 31 - appearance.text.length
                                 h: 1
 
                                 placeholder: "Search themes"
@@ -369,14 +369,16 @@ CellPopup {
 
                             CellButton {
 
-                                text: "Light"
+                                id: appearance
 
-                                color: SettingsInfo.lightMode ? Colors.accentStrong : Colors.bgOverlay
-                                fg: SettingsInfo.lightMode ? Colors.onAccent : Colors.fgBase
+                                text: SettingsInfo.appearance
+
+                                color: [Colors.bgOverlay, Colors.fgBase]
+                                fg: [Colors.fgBase, Colors.bgSurface]
 
                                 onReleased: (button) => {
                                     if (button == "L") {
-                                        SettingsInfo.toggle("userLightMode")
+                                        SettingsInfo.iterateAppearance()
                                     }
                                 }
 
