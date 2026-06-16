@@ -1,80 +1,98 @@
 #!/usr/bin/env python3
-import argparse
-import math
-import os
 import sys
+import argparse
+import numpy as np
 from PIL import Image
 
-# ==============================================================================
-# COLOR SPACE MATH (sRGB -> Linear -> Oklab Lightness)
-# ==============================================================================
 
-def srgb_to_linear(c):
-    """Converts standard sRGB channel to linear light space."""
-    return c / 12.92 if c <= 0.04045 else math.pow((c + 0.055) / 1.055, 2.4)
+def to_linear(c: np.ndarray) -> np.ndarray:
+    c = c / 255.0
+    return np.where(c <= 0.04045, c / 12.92, ((c + 0.055) / 1.055) ** 2.4)
 
-def rgb_to_oklab_lightness(rgb):
-    """Returns only the Perceptual Lightness (L) channel from an RGB tuple."""
-    r = srgb_to_linear(rgb[0] / 255.0)
-    g = srgb_to_linear(rgb[1] / 255.0)
-    b = srgb_to_linear(rgb[2] / 255.0)
 
-    # Convert to cone response space (LMS)
-    l_ = 0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b
-    m_ = 0.2119034982 * r + 0.6806995451 * g + 0.1073972632 * b
-    s_ = 0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b
+def luminance(rgb: np.ndarray) -> np.ndarray:
+    lin = to_linear(rgb.astype(np.float32))
+    return 0.2126 * lin[..., 0] + 0.7152 * lin[..., 1] + 0.0722 * lin[..., 2]
 
-    # Non-linear scaling based on human perception
-    l_ = math.pow(max(0, l_), 1.0 / 3.0)
-    m_ = math.pow(max(0, m_), 1.0 / 3.0)
-    s_ = math.pow(max(0, s_), 1.0 / 3.0)
 
-    # Return final Oklab Lightness (0.0 = pure black, 1.0 = pure white)
-    L = 0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_
-    return L
+def edge_weights(h: int, w: int, fraction: float, w_bottom: float, w_top: float, w_sides: float) -> np.ndarray:
+    m = np.ones((h, w), dtype=np.float32)
+    eh = max(int(h * fraction), 16)
+    ew = max(int(w * fraction), 16)
+    m[-eh:, :] = w_bottom
+    m[:eh, :]  = w_top
+    m[:, :ew]  = np.maximum(m[:, :ew],  w_sides)
+    m[:, -ew:] = np.maximum(m[:, -ew:], w_sides)
+    return m, eh
 
-# ==============================================================================
-# IMAGE ANALYSIS ENGINE
-# ==============================================================================
 
-def analyze_image_mode(image_path, threshold=0.50):
-    if not os.path.exists(image_path):
-        print(f"Error: Image '{image_path}' not found.", file=sys.stderr)
-        sys.exit(1)
+def decide(path: str, args) -> str:
+    img = Image.open(path).convert("RGB")
+    img.thumbnail((800, 800), Image.LANCZOS)
+    w, h = img.size
+    arr = np.array(img)
+    lum = luminance(arr)
 
-    with Image.open(image_path) as img:
-        img = img.convert("RGB")
-        img.thumbnail((80, 80))
-        
-        width, height = img.size
-        lightness_values = []
-        
-        # Walk the 2D matrix directly—completely bypassing getdata()
-        for y in range(height):
-            for x in range(width):
-                pixel = img.getpixel((x, y))
-                lightness_values.append(rgb_to_oklab_lightness(pixel))
-        
-        # Sort values to calculate the median density
-        lightness_values.sort()
-        mid_index = len(lightness_values) // 2
-        median_lightness = lightness_values[mid_index]
-        
-        if median_lightness >= threshold:
-            return "light"
-        else:
-            return "dark"
+    weights_map, eh = edge_weights(
+        h, w,
+        fraction=args.edge_fraction,
+        w_bottom=args.w_bottom,
+        w_top=args.w_top,
+        w_sides=args.w_sides,
+    )
+
+    weighted_mean = float(np.average(lum, weights=weights_map))
+    median_lum    = float(np.median(lum))
+    dark_frac     = float(np.mean(lum < args.dark_cutoff))
+    bright_frac   = float(np.mean(lum > args.bright_cutoff))
+    distribution  = (bright_frac - dark_frac + 1.0) / 2.0
+    edge_zone     = np.concatenate([lum[:eh].ravel(), lum[-eh:].ravel()])
+    edge_mean     = float(np.mean(edge_zone))
+
+    sw = args.signal_weights
+    total = sum(sw)
+    score = (
+        (sw[0] / total) * weighted_mean +
+        (sw[1] / total) * median_lum    +
+        (sw[2] / total) * edge_mean     +
+        (sw[3] / total) * distribution
+    )
+
+    if args.debug:
+        print(f"[debug] weighted_mean={weighted_mean:.3f}  median={median_lum:.3f}  "
+              f"edge_mean={edge_mean:.3f}  distribution={distribution:.3f}", file=sys.stderr)
+        print(f"[debug] score={score:.3f}  threshold={args.threshold}", file=sys.stderr)
+
+    return "light" if score > args.threshold else "dark"
+
+
+def main():
+    p = argparse.ArgumentParser(description="Determine dark/light mode from wallpaper.")
+    p.add_argument("wallpaper", help="Path to the wallpaper image")
+
+    # Region weights
+    p.add_argument("--w-bottom",      type=float, default=3.0,  metavar="F", help="Weight for bottom edge (taskbar). Default: 3.0")
+    p.add_argument("--w-top",         type=float, default=2.5,  metavar="F", help="Weight for top edge. Default: 2.5")
+    p.add_argument("--w-sides",       type=float, default=1.5,  metavar="F", help="Weight for left/right edges. Default: 1.5")
+    p.add_argument("--edge-fraction", type=float, default=0.125, metavar="F", help="Fraction of image height/width counted as 'edge'. Default: 0.125 (1/8)")
+
+    # Signal weights (auto-normalized, so raw ratios are fine)
+    p.add_argument("--signal-weights", type=float, nargs=4, default=[0.30, 0.25, 0.25, 0.20],
+                   metavar=("WEDGE_MEAN", "MEDIAN", "EDGE_MEAN", "DISTRIB"),
+                   help="Weights for the 4 signals (auto-normalized). Default: 0.30 0.25 0.25 0.20")
+
+    # Pixel classification thresholds
+    p.add_argument("--dark-cutoff",   type=float, default=0.35, metavar="F", help="Luminance below this = dark pixel. Default: 0.35")
+    p.add_argument("--bright-cutoff", type=float, default=0.65, metavar="F", help="Luminance above this = bright pixel. Default: 0.65")
+
+    # Decision threshold
+    p.add_argument("--threshold",     type=float, default=0.5,  metavar="F", help="Score above this = light mode. Default: 0.5")
+
+    p.add_argument("--debug", action="store_true", help="Print signal breakdown to stderr")
+
+    args = p.parse_args()
+    print(decide(args.wallpaper, args))
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Analyze an image and return an environment theme flag.")
-    parser.add_argument("image", help="Path to the wallpaper image")
-    parser.add_argument(
-        "--threshold", 
-        type=float, 
-        default=0.48, 
-        help="Oklab lightness threshold (default: 0.48). Higher means bias towards dark mode."
-    )
-    args = parser.parse_args()
-
-    mode_flag = analyze_image_mode(args.image, threshold=args.threshold)
-    print(mode_flag)
+    main()

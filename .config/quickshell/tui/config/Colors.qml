@@ -172,6 +172,8 @@ Singleton {
                     } else {
                         root.preferedLightMode = false
                     }
+                    color_from_image.running = true
+                    load.running = true
                 }
             }
         }

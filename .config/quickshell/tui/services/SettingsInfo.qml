@@ -55,6 +55,8 @@ Singleton {
     property bool optimizeMemory               : false // Reduce memory usage significantly, but takes more time to load UI elements
 
 
+    property bool shadow                       : false // Shadows for UI elements
+
     property bool hyprAnim                     : false // Toggles Hyprland animations
     property bool hyprBlur                     : false // Toggles Hyprland background blur for windows
 
@@ -82,6 +84,7 @@ Singleton {
         "optimizeMemory",
         "safeNotifications",
         "dnd",
+        "shadow",
         "hyprAnim",
         "hyprBlur",
         "bgCava",
@@ -207,6 +210,7 @@ Singleton {
         function toggle_sfx(): void                { root.toggle("sfx") }
         function toggle_light_mode(): void         { root.toggle("userLightMode") }
         function toggle_auto_light_mode(): void    { root.toggle("autoLightMode") }
+        function toggle_shadow(): void             { root.toggle("shadow") }
 
         function lock_screen(): void               { SystemInfo.lock() }
 

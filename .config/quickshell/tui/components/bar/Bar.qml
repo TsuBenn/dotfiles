@@ -218,6 +218,40 @@ Scope {
 
                         color: "transparent"
 
+                        Rectangle {
+
+                            id: bar_shadow
+
+                            anchors.top: parent.top
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+
+                            implicitHeight: (Cell.h(1))*!(root.hideBar && !root.peekBar && !root.forceBar)
+
+                            opacity: !(root.hideBar && !root.peekBar && !root.forceBar)
+
+                            Behavior on opacity {
+                                SequentialAnimation {
+                                    PauseAnimation {duration: 200}
+                                    NumberAnimation {duration: 200; easing.type: Easing.OutCubic}
+                                }
+                            }
+
+                            color: "black"
+
+                            layer.enabled: true
+                            layer.effect: DropShadow {
+
+                                cached: true
+                                color: Colors.transparent(Colors.blend("black",Colors.bgBase,0.2),0.5*SettingsInfo.shadow)
+                                radius: 10
+                                samples: 20
+
+                                Behavior on color {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
+
+                            }
+
+                        }
 
                         Rectangle {
 
@@ -409,9 +443,30 @@ Scope {
                         }
                     }
 
-                    Popups {
-                        id: popups
-                        monitor: root.monitor
+                    Item {
+
+                        id: popups_wrapper
+
+                        anchors.fill: parent
+
+                        layer.enabled: true
+                        layer.effect: DropShadow {
+
+                            cached: true
+                            color: Colors.transparent(Colors.blend("black",Colors.bgBase,0.2),0.5*SettingsInfo.shadow)
+                            radius: 10
+                            samples: 20
+
+                            Behavior on color {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
+
+                        }
+
+                        Popups {
+
+                            id: popups
+                            monitor: root.monitor
+                        }
+
                     }
 
                     MouseControl {

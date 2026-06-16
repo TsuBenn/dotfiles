@@ -37,9 +37,9 @@ def rgb_to_oklab(rgb):
 
     L = 0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_
     a = 1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_
-    b = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_
+    b_ = 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_
 
-    return L, a, b
+    return L, a, b_
 
 def oklab_to_rgb(L, a, b):
     l_ = L + 0.3963377774 * a + 0.2158037573 * b
@@ -52,19 +52,17 @@ def oklab_to_rgb(L, a, b):
 
     r = +4.0767416621 * l_ - 3.3077115913 * m_ + 0.2309699292 * s_
     g = -1.2684380046 * l_ + 2.6097574011 * m_ - 0.3413193965 * s_
-    b = -0.0041960863 * l_ - 0.7034186147 * m_ + 1.7076147010 * s_
+    b_ = -0.0041960863 * l_ - 0.7034186147 * m_ + 1.7076147010 * s_
 
     R = int(max(0, min(255, round(linear_to_srgb(r) * 255))))
     G = int(max(0, min(255, round(linear_to_srgb(g) * 255))))
-    B = int(max(0, min(255, round(linear_to_srgb(b) * 255))))
+    B = int(max(0, min(255, round(linear_to_srgb(b_) * 255))))
 
     return R, G, B
 
 def oklab_to_lch(L, a, b):
     C = math.sqrt(a * a + b * b)
-    H = math.atan2(b, a)
-    if H < 0:
-        H += 2 * math.pi
+    H = math.atan2(b, a) % (2 * math.pi)
     return L, C, H
 
 def lch_to_oklab(L, C, H):
@@ -80,57 +78,79 @@ def clamp(val, min_val, max_val):
 def finalize(lch):
     return rgb_to_hex(oklab_to_rgb(*lch_to_oklab(*lch)))
 
+def scale_to_pastel(lch, is_light_mode):
+    """Dynamic clamping that allows grayscale to remain grayscale."""
+    L, C, H = lch
+    min_C = min(C, 0.08 if is_light_mode else 0.10)
+    max_C = 0.14 if is_light_mode else 0.16
+    
+    new_L = clamp(L, 0.55, 0.70) if is_light_mode else clamp(L, 0.45, 0.60)
+    new_C = clamp(C, min_C, max_C)
+    
+    return (new_L, new_C, H)
+
 def convert_theme_to_light(theme_dict):
-    """Processes a dark palette map and converts structural elements to light mode pastels."""
-    # Find original key hue based on accentStrong
-    accent_rgb = hex_to_rgb(theme_dict["accentStrong"])
-    _, _, base_hue = oklab_to_lch(*rgb_to_oklab(accent_rgb))
+    # 1. Extract raw data from dark mode
+    acc_rgb = hex_to_rgb(theme_dict["accentStrong"])
+    acc_raw_L, acc_raw_C, base_hue = oklab_to_lch(*rgb_to_oklab(acc_rgb))
     
-    # Grab secondary hue
-    secondary_rgb = hex_to_rgb(theme_dict["secondary"])
-    _, sec_raw_C, sec_hue = oklab_to_lch(*rgb_to_oklab(secondary_rgb))
+    sec_rgb = hex_to_rgb(theme_dict["secondary"])
+    sec_raw_L, sec_raw_C, sec_hue = oklab_to_lch(*rgb_to_oklab(sec_rgb))
 
-    # Initialize Structural Layers (Soft Tinted Pastel Paper Sheet)
-    bgBase      = (0.94, 0.015, base_hue)
-    bgSurface_L = 0.93
-    bgSurface   = (bgSurface_L, 0.020, base_hue)
-    bgOverlay   = (0.87, 0.025, base_hue)
+    # 2. Desaturation Multiplier for Grayscale Themes
+    bg_C_scale = min(1.0, acc_raw_C / 0.05)
 
-    fgBase      = (0.25, 0.030, base_hue)
-    fgDim       = (0.42, 0.025, base_hue)
-    fgSubtle    = (0.60, 0.020, base_hue)
+    # 3. Structural Layers (Matches extractor's light mode exactly)
+    bgBase    = (0.70, 0.015 * bg_C_scale, base_hue)
+    bgSurface = (0.93, 0.020 * bg_C_scale, base_hue)
+    bgOverlay = (0.87, 0.025 * bg_C_scale, base_hue)
+    fgBase    = (0.25, 0.030 * bg_C_scale, base_hue)
+    fgDim     = (0.42, 0.025 * bg_C_scale, base_hue)
+    fgSubtle  = (0.60, 0.020 * bg_C_scale, base_hue)
 
-    # Transform Accents directly into the target Light Pastel Envelope
-    accent_strong = (0.62, 0.12, base_hue)
-    secondary     = (0.66, clamp(sec_raw_C, 0.08, 0.13), sec_hue)
+    # 4. Transform Accents
+    accent_strong = scale_to_pastel((acc_raw_L, acc_raw_C, base_hue), True)
+    secondary     = scale_to_pastel((sec_raw_L, sec_raw_C, sec_hue), True)
 
-    # Maintain spacing between accent and secondary if they collide
+    # Separation offset (-0.05 L for light mode)
     if abs(secondary[0] - accent_strong[0]) < 0.04:
-        secondary = (secondary[0] + 0.05, secondary[1], secondary[2])
+        secondary = (clamp(secondary[0] - 0.05, 0.45, 0.75), secondary[1], secondary[2])
 
-    # Handle text over accent
     onAccent = (0.98, 0.005, base_hue) if accent_strong[0] < 0.65 else (0.18, 0.030, base_hue)
-    
-    accentDim = (accent_strong[0] - 0.10, accent_strong[1] * 0.9, base_hue)
+    accentDim = (
+        clamp(accent_strong[0] - 0.10, 0.30, 0.90),
+        accent_strong[1] * 0.9,
+        accent_strong[2],
+    )
     borderInactive = (0.78, 0.020, base_hue)
 
-    # Map existing utility hues into the light pastel ecosystem
-    utils = ["info", "success", "warning", "danger"]
+    # 5. Utility Colors (Extract original hue, apply fixed L/C, blend with base_hue)
+    util_L = 0.60
+    util_C = 0.20
+
+    def blend_hue_local(target, weight=0.15):
+        x = (1 - weight) * math.cos(target) + weight * math.cos(base_hue)
+        y = (1 - weight) * math.sin(target) + weight * math.sin(base_hue)
+        return math.atan2(y, x)
+
     util_palette = {}
-    for u in utils:
+    for u in ["info", "success", "warning", "danger"]:
         u_rgb = hex_to_rgb(theme_dict[u])
         _, _, u_hue = oklab_to_lch(*rgb_to_oklab(u_rgb))
         
-        # Apply light mode constant baseline weights to utility lines
-        if u == "warning":
-            util_palette[u] = finalize((0.58, 0.28, u_hue))
-        elif u == "danger" or u == "info":
-            util_palette[u] = finalize((0.64, 0.30, u_hue))
-        else: # success
-            util_palette[u] = finalize((0.64, 0.14, u_hue))
+        if u == "danger":
+            u_lch = (util_L - 0.02, util_C + 0.02, blend_hue_local(u_hue))
+        elif u == "warning":
+            u_lch = (util_L + 0.04, util_C + 0.01, blend_hue_local(u_hue))
+        elif u == "success":
+            u_lch = (util_L,        util_C - 0.05, blend_hue_local(u_hue))
+        else: # info
+            u_lch = (util_L - 0.02, util_C - 0.01, blend_hue_local(u_hue))
+            
+        util_palette[u] = finalize(u_lch)
 
     return {
-        "name": theme_dict.get("name", "Unnamed Theme"),
+        "name": theme_dict.get("name", "Unnamed Theme") + " (Light)",
         "description": theme_dict.get("description", "Converted to Pastel Light Mode."),
         "bgBase": finalize(bgBase),
         "bgSurface": finalize(bgSurface),
@@ -154,7 +174,6 @@ def main():
     parser = argparse.ArgumentParser(description="Convert colors.json layouts based on targeted modes.")
     parser.add_argument("file", help="Path to your colors.json database file")
     
-    # Force mutually exclusive required tags
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--light", action="store_true", help="Transform themes into pastel light mode")
     group.add_argument("--dark", action="store_true", help="Preserve exact original dark layout configurations")
@@ -175,10 +194,8 @@ def main():
     output = {}
     for theme_key, theme_content in data.items():
         if args.dark:
-            # Leave completely untouched as per rules
             output[theme_key] = theme_content
         elif args.light:
-            # Re-generate architectural elements to fit light pastels
             output[theme_key] = convert_theme_to_light(theme_content)
 
     print(json.dumps(output, indent=2))

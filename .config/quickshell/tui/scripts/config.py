@@ -188,6 +188,13 @@ SETTINGS = [
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_hypranim"],
             },
             {
+                "label": "{shadow} Shadows",
+                "description": "Show shadows for UI elements (Including Hyprland windows).",
+                "category": "settings",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_shadow"],
+            },
+            {
                 "label": "{hyprBlur} Hyprland background blur",
                 "description": "Toggling Hyprland's blur for window backgrounds.",
                 "category": "settings",

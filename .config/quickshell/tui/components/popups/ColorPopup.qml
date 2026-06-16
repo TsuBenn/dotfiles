@@ -2010,7 +2010,7 @@ CellPopup {
                                             color.toggleEdit()
                                         } else {
                                             HintManager.hint = hint
-                                            HintManager.show(global.x, global.y, 0, "", 1000 + (root.result[color.selected] != "auto" && SettingsInfo.lightMode)*2000)
+                                            HintManager.show(global.x, global.y, 3, "", 0)
                                         }
                                     }
                                 }

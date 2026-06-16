@@ -23,7 +23,7 @@ Singleton {
     signal closed()
 
     function show(mx, my, mg = 2, mheader = "", timer = 0) {
-        x = Cell.wCount(mx - HyprInfo.focusedMonitor.x, "floor") - 5
+        x = Cell.wCount(mx - HyprInfo.focusedMonitor.x, "floor")
         y = Cell.hCount(my - HyprInfo.focusedMonitor.y,"floor")
         root.timer = timer
         margins = mg

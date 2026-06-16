@@ -53,7 +53,7 @@ ShellRoot {
                 decoration = {
                     rounding = 0,
                     shadow  = {
-                        enabled = false
+                        enabled = ${SettingsInfo.shadow}
                     },
                     blur = {
                         enabled = ${SettingsInfo.hyprBlur},

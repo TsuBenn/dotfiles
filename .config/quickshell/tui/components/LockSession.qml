@@ -355,7 +355,7 @@ WlSessionLockSurface {
 
                     Component.onCompleted: {
                         LockInfo.passwordChanged.connect(()=> {
-                            if (!password_field.focus) {
+                            if (!password_field?.focus) {
                                 password_field.set(LockInfo.password)
                             }
                         })
