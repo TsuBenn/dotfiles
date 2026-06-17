@@ -201,7 +201,7 @@ def generate_palette(image_path, is_light_mode=False, debug=False):
     borderInactive = (0.78, 0.020, base_hue) if is_light_mode else (0.23, 0.035, base_hue)
 
     H_RED, H_YEL, H_GRN, H_BLU = 0.50, 1.50, 2.40, 4.20
-    util_L = 0.60 if is_light_mode else 0.70
+    util_L = 0.65 if is_light_mode else 0.70
     util_C = 0.20 if is_light_mode else 0.15
 
     def blend_hue(target, weight=0.15):

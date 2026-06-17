@@ -29,6 +29,8 @@ Singleton {
 
     property bool dependenciesChecked          : false // Use to initiallize the bar
 
+    property bool quickStart                   : false // Quick dependencies check. Super fast
+
     property bool lightMode                    : autoLightMode ? Colors.preferedLightMode : userLightMode // Light mode of system
     property bool userLightMode                : false // Light mode of user input
     property bool autoLightMode                : true  // Decide whether the wallpaper needs a light mode or dark mode
@@ -74,6 +76,7 @@ Singleton {
 
     property var toggles: [
         "hints",
+        "quickStart",
         "minimal",
         "textBasedVolume",
         "hideBar",
@@ -204,6 +207,9 @@ Singleton {
         function audio_check(): void {
             root.audio_check()
         }
+        function audio_restart(): void {
+            AudioInfo.restart()
+        }
         function screenshot(full: bool): void { 
             if (PopupManager.isOpen("screenshot")) {
                 PopupManager.sendSignal("screenshot", "full_now")
@@ -231,6 +237,7 @@ Singleton {
         function toggle_auto_light_mode(): void    { root.toggle("autoLightMode") }
         function toggle_appearance(): void         { root.iterateAppearance() }
         function toggle_shadow(): void             { root.toggle("shadow") }
+        function toggle_quickstart(): void         { root.toggle("quickStart") }
 
         function lock_screen(): void               { SystemInfo.lock() }
 

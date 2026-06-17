@@ -1,5 +1,7 @@
 pragma Singleton 
 
+import qs.services
+
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -21,6 +23,10 @@ Singleton {
     property string streamraw 
 
     signal statusUpdated()
+
+    function restart() {
+        SystemInfo.runDetached(["systemctl", "--user", "restart", "pipewire", "pipewire-pulse", "wireplumber"])
+    }
 
     function switchDefault(id: int) {
         setstatus.exec(["bash","-c","wpctl set-default " + id])
@@ -56,8 +62,7 @@ Singleton {
     }
 
     function playSound(file: string, vol = 1.0) {
-        playsound.command = (["bash","-c","paplay --volume="+ 65536*vol + " -d @DEFAULT_SINK@ " + SystemInfo.configdir + "/assets/sfx/" + file + ".mp3"])
-        playsound.startDetached()
+        SystemInfo.runDetached(["bash","-c","paplay --volume="+ 65536*vol + " -d @DEFAULT_SINK@ " + SystemInfo.configdir + "/assets/sfx/" + file + ".mp3"])
     }
 
     function getName(id: int): string {

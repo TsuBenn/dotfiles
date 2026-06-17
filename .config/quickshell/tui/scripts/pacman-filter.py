@@ -327,21 +327,8 @@ def cmd_list_all():
     cache    = load_cache()
     packages = cache["packages"]
 
-    result = [
-        {
-            "name":        name,
-            "real_name":   pkg["name"],
-            "description": pkg["description"],
-            "version":     pkg["version"],
-            "repository":  pkg["repository"],
-            "installed":   pkg["installed"],
-            "last_sync":   pkg["last_sync"],
-        }
-        for name, pkg in packages.items()
-    ]
-
-    # Sort installed first, then alphabetically
-    result.sort(key=lambda p: (p["name"]))
+    result = [pkg for pkg in packages.values()]
+    result.sort(key=lambda p: p["name"])
     print(json.dumps(result, indent=2))
 
 # ─────────────────────────────────────────────

@@ -141,7 +141,7 @@ Singleton {
     function sleep() {power.exec(["systemctl", "suspend"])}
     function reboot() {power.exec(["reboot"])}
     function lock() {root.lockRequest()}
-    function logout() {power.exec(["hyprctl", "dispatch", "exit"])}
+    function logout() {power.exec(["hyprctl", "dispatch", "hl.dsp.exit()"])}
 
     function formatNum(num, i) {
         const str = num.toString();

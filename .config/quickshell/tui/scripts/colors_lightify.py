@@ -125,7 +125,7 @@ def convert_theme_to_light(theme_dict):
     borderInactive = (0.78, 0.020, base_hue)
 
     # 5. Utility Colors (Extract original hue, apply fixed L/C, blend with base_hue)
-    util_L = 0.60
+    util_L = 0.65
     util_C = 0.20
 
     def blend_hue_local(target, weight=0.15):

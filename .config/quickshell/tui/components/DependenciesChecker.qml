@@ -13,7 +13,7 @@ FloatingWindow {
 
     id: root
 
-    visible: true
+    visible: !SettingsInfo.quickStart
 
     title: "tsubenn_tui_qs_depcheck"
 
@@ -35,7 +35,7 @@ FloatingWindow {
 
     Timer {
         id: init_delay
-        interval: 200
+        interval: 200*!SettingsInfo.quickStart
         onTriggered: {
             checker.running = true
         }
@@ -43,6 +43,11 @@ FloatingWindow {
 
     SequentialAnimation {
         id: success_timer
+        ScriptAction {
+            script: {
+                if (SettingsInfo.quickStart) SettingsInfo.dependenciesChecked = true
+            }
+        }
         PauseAnimation {
             duration: 800
         }
@@ -58,6 +63,25 @@ FloatingWindow {
             script: {
                 SettingsInfo.dependenciesChecked = true
                 if (SettingsInfo.sfx) AudioInfo.playSound("wow", 1)
+            }
+        }
+    }
+
+    SequentialAnimation {
+        id: unstable_timer
+        ScriptAction {
+            script: {
+                status.color = Colors.danger
+                status.font = Cell.fontBB
+                status.text = "Don't say I didn't warn ya..."
+            }
+        }
+        PauseAnimation {
+            duration: 800
+        }
+        ScriptAction {
+            script: {
+                SettingsInfo.dependenciesChecked = true
             }
         }
     }
@@ -231,6 +255,7 @@ FloatingWindow {
                 id: footer
 
                 property bool error: false
+                property bool unstable: false
 
                 spacing: 0
 
@@ -251,19 +276,22 @@ FloatingWindow {
                 }
 
                 RowLayout {
+
                     visible: parent.error
 
                     Layout.alignment: Qt.AlignRight
                     Layout.rightMargin: Cell.w(1)
 
-                    spacing: Cell.w(2)
+                    spacing: Cell.w(1)
 
                     CellButton {
 
                         text: "Retry"
 
-                        color: [Colors.accentStrong, Colors.bgOverlay]
-                        fg: [Colors.onAccent, Colors.fgBase]
+                        clickable: !footer.unstable
+
+                        color: footer.unstable ? Colors.bgOverlay : [Colors.accentStrong, Colors.bgOverlay]
+                        fg:  footer.unstable ? Colors.fgSubtle : [Colors.onAccent, Colors.fgBase]
 
                         onReleased: (button) => {
                             if (button == "L") {
@@ -275,10 +303,31 @@ FloatingWindow {
 
                     CellButton {
 
+                        text: "Continue anyway"
+
+                        clickable: !footer.unstable
+
+                        color: footer.unstable ? Colors.bgOverlay : [Colors.bgOverlay, Colors.fgBase]
+                        fg:  footer.unstable ? Colors.fgSubtle : [Colors.fgBase, Colors.bgSurface]
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                footer.unstable = true
+                                unstable_timer.start()
+                            }
+                        }
+
+                    }
+
+                    CellButton {
+
                         text: "Quit"
 
-                        color: [Colors.bgOverlay, Colors.fgBase]
-                        fg: [Colors.fgBase, Colors.bgSurface]
+                        clickable: !footer.unstable
+
+                        color: footer.unstable ? Colors.bgOverlay : [Colors.bgOverlay, Colors.fgBase]
+                        fg:  footer.unstable ? Colors.fgSubtle : [Colors.fgBase, Colors.bgSurface]
+
 
                         onReleased: (button) => {
                             if (button == "L") {
@@ -300,7 +349,7 @@ FloatingWindow {
 
         id: checker
 
-        command: [SystemInfo.configdir + "/scripts/dependencies_checker.sh"]
+        command: [SystemInfo.configdir + (SettingsInfo.quickStart ? "/scripts/quick_dependencies_checker.sh" : "/scripts/dependencies_checker.sh" )]
 
         stdout: SplitParser {
             onRead: (text) => {
@@ -322,6 +371,7 @@ FloatingWindow {
                     }
                     else {
                         footer.error = true
+                        root.visible = true
                         result += `${missing_pkg.length} package${missing_pkg.length > 1 ? "s" : ""} missing`
                         status.color = Colors.danger
                     }

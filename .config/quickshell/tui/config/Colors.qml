@@ -144,6 +144,7 @@ Singleton {
 
     Component.onCompleted: {
         WallpaperInfo.currentChanged.connect(() => {
+            if (WallpaperInfo.current == "") return
             //console.log(root.preferedLightMode)
             mode_from_image.running = true
             //color_from_image.running = true

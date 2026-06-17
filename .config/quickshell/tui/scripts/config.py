@@ -109,6 +109,13 @@ SETTINGS = [
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "audio_check"],
             },
             {
+                "label": "Audio restart",
+                "description": "Having trouble with the audio? Try restarting it.",
+                "category": "settings",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "audio_restart"],
+            },
+            {
                 "label": "Toggle grids",
                 "description": "Show terminal cells grid making sure everything is aligned properly.",
                 "category": "settings",
@@ -228,6 +235,13 @@ SETTINGS = [
                 "category": "settings",
                 "type": "exec",
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_sfx"],
+            },
+            {
+                "label": "{quickStart} Quick start",
+                "description": "Run dependencies check procedure at maximum speed.",
+                "category": "settings",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_quickstart"],
             },
         ],
     },

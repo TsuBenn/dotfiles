@@ -27,7 +27,7 @@ Singleton {
     signal cached()
 
     function clear_cache() {
-        //cache_remover.running = true
+        cache_remover.running = true
     }
 
     function requestCache() {

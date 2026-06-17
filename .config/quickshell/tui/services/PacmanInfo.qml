@@ -34,16 +34,29 @@ Singleton {
             return
         }
 
-        const q = query.toLowerCase()
+        let q = query
 
         search_results = packages.filter((item) => {
-            const matchName = item.name.toLowerCase().includes(q)
-            const matchDesc = item.description.toLowerCase().includes(q)
-            const matchRepo = item.repository.toLowerCase().includes(q)
+
+            let matchName
+            let matchDesc
+            let matchRepo
+
+            if (search_mode == 1) {
+                q = q.replace(/ /g, "").replace(/-/g, "")
+                matchName = item.name.toLowerCase().replace(/ /g, "").replace(/-/g, "").includes(q)
+                matchDesc = item.description.toLowerCase().replace(/ /g, "").replace(/-/g, "").includes(q)
+                matchRepo = item.repository.toLowerCase().replace(/ /g, "").replace(/-/g, "").includes(q)
+            } else {
+                matchName = item.name.toLowerCase().includes(q)
+                matchDesc = item.description.toLowerCase().includes(q)
+                matchRepo = item.repository.toLowerCase().includes(q)
+            }
+
 
             let matchesQuery = matchName
 
-            if (search_mode == 0) {
+            if (search_mode == 0 || search_mode == 1) {
                 matchesQuery = matchesQuery || matchDesc || matchRepo
             } else if (search_mode == 2) {
                 matchesQuery = item.name.trim() == q.trim()
@@ -64,20 +77,19 @@ Singleton {
      */
     property int search_mode: 0
 
+    property var search_modes: [
+        "Normal",
+        "Fuzzy",
+        "Name",
+        "Exact",
+    ]
+
     property var packages: []
 
     property var search_results: packages
 
-    property var info: ({})
-
-    function getInfo(pkg: string) {
-        if (!pkg) {
-            info = ({})
-            return
-        }
-        if (info.running) info.running = false
-        info.pkg = pkg
-        info.running = true
+    function isInstalled(pkg: string) {
+        return packages.some(item => item.name == pkg && item.installed)
     }
 
     function search(query: string) {
@@ -96,32 +108,6 @@ Singleton {
     function fetch() {
         if (fetcher.running) fetcher.running = false
         fetcher.running = true
-    }
-
-    Process {
-
-        id: info
-
-        property string pkg: ""
-
-        command: ["python", root.path, "info", pkg]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                if (text) {
-                    root.info = JSON.parse(text)
-                }
-            }
-        }
-
-        stderr: StdioCollector {
-            onStreamFinished: {
-                if (text) {
-                    console.log("PacmanInfo (loader): " + text)
-                }
-            }
-        }
-
     }
 
     Process {
