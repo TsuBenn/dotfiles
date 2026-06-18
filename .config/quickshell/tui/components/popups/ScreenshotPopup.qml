@@ -166,42 +166,40 @@ CellPopup {
         }
     }
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: "Ctrl+A",
-                action: () => {
-                    root.edit = true
-                    full_select.restart()
-                }
-            },
-            {
-                binds: "Return",
-                active: root.edit && !namer.visible,
-                action: () => {
-                    if (snapAndCloseAnim.running) return
-                    root.screenshot()
-                    stay.yes ? snapAnim.restart() : snapAndCloseAnim.restart()
-                }
-            },
-            {
-                binds: "C",
-                action: () => {
-                    SettingsInfo.toggle("screenshotCursor")
-                }
-            },
-            {
-                binds: "Escape",
-                action: () => {
-                    if (namer_textfield.focus) {
-                        namer.visible = false
-                    } else {
-                        root.close()
-                    }
+    shortcuts: [
+        {
+            binds: "Ctrl+A",
+            action: () => {
+                root.edit = true
+                full_select.restart()
+            }
+        },
+        {
+            binds: "Return",
+            active: root.edit && !namer.visible,
+            action: () => {
+                if (snapAndCloseAnim.running) return
+                root.screenshot()
+                stay.yes ? snapAnim.restart() : snapAndCloseAnim.restart()
+            }
+        },
+        {
+            binds: "C",
+            action: () => {
+                SettingsInfo.toggle("screenshotCursor")
+            }
+        },
+        {
+            binds: "Escape",
+            action: () => {
+                if (namer_textfield.focus) {
+                    namer.visible = false
+                } else {
+                    root.close()
                 }
             }
-        ]
-    }
+        }
+    ]
 
     SequentialAnimation {
         id: full_select

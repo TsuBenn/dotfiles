@@ -6,6 +6,8 @@ Item {
 
     id: root
 
+    property bool active: true
+
     property var shortcuts: []
 
     /*
@@ -24,11 +26,12 @@ Item {
         model: root.shortcuts
 
         delegate: Loader {
+
             id: le_shortcut
 
             required property var modelData
 
-            active: modelData.active ?? true
+            active: (modelData.active ?? true) && root.active
 
             sourceComponent: Shortcut {
                 property var modelData: le_shortcut.modelData

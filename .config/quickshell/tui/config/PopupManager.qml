@@ -1,5 +1,6 @@
 pragma Singleton
 
+import qs.config
 import qs.services
 
 import Quickshell
@@ -24,6 +25,23 @@ Singleton {
 
     function sendSignal(id = "", sig = "") {
         root.signalSent(id, sig)
+    }
+
+    function isTop(name: string): bool {
+        let n = active_popups.length
+        return n > 0 && active_popups[n-1] === name
+    }
+
+    function getTop(): string {
+        let n = active_popups.length
+        if (n == 0) return ""
+        return active_popups[n-1]
+    }
+
+    function raise(name: string): bool {
+        if (active_popups.includes(name)) {
+            active_popups = [...active_popups.filter(item => item !== name), name]
+        }
     }
 
     function open(name, isolate) {

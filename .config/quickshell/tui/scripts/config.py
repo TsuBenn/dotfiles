@@ -95,6 +95,13 @@ SETTINGS = [
         "type": "menu",
         "value": [
             {
+                "label": "Authentication check",
+                "description": "Check authentication capability.",
+                "category": "settings",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "auth_check"],
+            },
+            {
                 "label": "Notification check",
                 "description": "Send a dummy notification.",
                 "category": "settings",

@@ -70,58 +70,56 @@ CellPopup {
         PopupManager.close("quick_menu")
     }
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: ["W","1"],
-                action: () => {
-                    root.shortcut(1)
-                }
-            },
-            {
-                binds: ["E","2"],
-                action: () => {
-                    root.shortcut(2)
-                }
-            },
-            {
-                binds: ["D","3"],
-                action: () => {
-                    root.shortcut(3)
-                }
-            },
-            {
-                binds: ["C","4"],
-                action: () => {
-                    root.shortcut(4)
-                }
-            },
-            {
-                binds: ["X","S","5"],
-                action: () => {
-                    root.shortcut(5)
-                }
-            },
-            {
-                binds: ["Z","6"],
-                action: () => {
-                    root.shortcut(6)
-                }
-            },
-            {
-                binds: ["A","7"],
-                action: () => {
-                    root.shortcut(7)
-                }
-            },
-            {
-                binds: ["Q","8"],
-                action: () => {
-                    root.shortcut(8)
-                }
-            },
-        ]
-    }
+    shortcuts: [
+        {
+            binds: ["W","1"],
+            action: () => {
+                root.shortcut(1)
+            }
+        },
+        {
+            binds: ["E","2"],
+            action: () => {
+                root.shortcut(2)
+            }
+        },
+        {
+            binds: ["D","3"],
+            action: () => {
+                root.shortcut(3)
+            }
+        },
+        {
+            binds: ["C","4"],
+            action: () => {
+                root.shortcut(4)
+            }
+        },
+        {
+            binds: ["X","S","5"],
+            action: () => {
+                root.shortcut(5)
+            }
+        },
+        {
+            binds: ["Z","6"],
+            action: () => {
+                root.shortcut(6)
+            }
+        },
+        {
+            binds: ["A","7"],
+            action: () => {
+                root.shortcut(7)
+            }
+        },
+        {
+            binds: ["Q","8"],
+            action: () => {
+                root.shortcut(8)
+            }
+        },
+    ]
 
     Cells {
 

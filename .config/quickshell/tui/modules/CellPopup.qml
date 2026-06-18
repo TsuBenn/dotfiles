@@ -5,7 +5,7 @@ import qs.modules
 import qs.services
 
 import QtQuick
-import Quickshell
+import Qt5Compat.GraphicalEffects
 
 Item {
 
@@ -23,9 +23,13 @@ Item {
 
     property string name
 
+    property var shortcuts: []
+
     property int safeMargin: 2
 
     signal marginsPressed()
+
+    readonly property bool isTop: PopupManager.isTop(name)
 
     property bool escapeToClose: true
 
@@ -53,6 +57,7 @@ Item {
     focus: true
 
     ShortcutHandler {
+        active: root.isTop
         shortcuts: [
             {
                 binds: "Escape",
@@ -62,12 +67,31 @@ Item {
         ]
     }
 
+    ShortcutHandler {
+        active: root.isTop
+        shortcuts: root.shortcuts
+    }
+
     function close() {
         PopupManager.close(root.name)
     }
 
     implicitWidth: Cell.w(w)
     implicitHeight: Cell.h(h)
+
+    MouseControl {
+
+        anchors.fill: parent
+
+        anchors.leftMargin: -root.monitor?.width ?? 0
+        anchors.rightMargin: -root.monitor?.width ?? 0
+        anchors.topMargin: -root.monitor?.height ?? 0
+        anchors.bottomMargin: -root.monitor?.height ?? 0
+
+        onReleased: {
+            PopupManager.close(PopupManager.getTop())
+        }
+    }
 
     MouseControl {
         anchors.fill: parent

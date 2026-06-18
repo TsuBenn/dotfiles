@@ -21,36 +21,34 @@ CellPopup {
         list.reset()
     }
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: "Up",
-                action: () => {
-                    if (list.selected_pkg == "") {
-                        list.selected_pkg = list.datas[list.offset].name
-                        return
-                    }
-                    if (list.selected_index-1 < 0) {
-                        list.offset -= list.h
-                    }
-                    list.selected_pkg = list.datas[list.offset + (list.selected_index+list.h-1)%list.h].name
+    shortcuts: [
+        {
+            binds: "Up",
+            action: () => {
+                if (list.selected_pkg == "") {
+                    list.selected_pkg = list.datas[list.offset].name
+                    return
                 }
-            },
-            {
-                binds: "Down",
-                action: () => {
-                    if (list.selected_pkg == "") {
-                        list.selected_pkg = list.datas[list.offset+list.h-1].name
-                        return
-                    }
-                    if (list.selected_index+1 >= list.h) {
-                        list.offset += list.h
-                    }
-                    list.selected_pkg = list.datas[list.offset + (list.selected_index+list.h+1)%list.h].name
+                if (list.selected_index-1 < 0) {
+                    list.offset -= list.h
                 }
+                list.selected_pkg = list.datas[list.offset + (list.selected_index+list.h-1)%list.h].name
             }
-        ]
-    }
+        },
+        {
+            binds: "Down",
+            action: () => {
+                if (list.selected_pkg == "") {
+                    list.selected_pkg = list.datas[list.offset+list.h-1].name
+                    return
+                }
+                if (list.selected_index+1 >= list.h) {
+                    list.offset += list.h
+                }
+                list.selected_pkg = list.datas[list.offset + (list.selected_index+list.h+1)%list.h].name
+            }
+        }
+    ]
 
     Cells {
 
@@ -497,6 +495,8 @@ CellPopup {
                         property int collapseThreshold: 5
                         property int expandStep: 5
 
+                        property var shownValues: deps.values?.slice(0, deps.shownCount)
+
                         // How many rows are currently visible. Initialized to the threshold,
                         // bumped by expandStep on "+N more", set to values.length on "show all",
                         // reset to collapseThreshold on "show less" or when the package changes.
@@ -522,7 +522,7 @@ CellPopup {
 
                             Repeater {
 
-                                model: deps.values.slice(0, deps.shownCount)
+                                model: deps.shownValues
 
                                 delegate: Cells {
 
@@ -577,7 +577,7 @@ CellPopup {
                                             //   ~  = virtual / provided name      (dim, unclickable)
                                             text: dep.installed
                                             ? "*"
-                                            : (dep.isReal ? " " : "~")
+                                            : (dep.isReal ? "-" : "~")
                                             color: dep.installed
                                             ? Colors.success
                                             : Colors.fgSubtle
@@ -648,14 +648,14 @@ CellPopup {
                                 spacing: Cell.w(1)
 
                                 // Footer only renders at all when there's something to expand.
-                                visible: deps.values.length > deps.collapseThreshold
+                                visible: deps.values?.length > deps.collapseThreshold
 
                                 // ── "+N more" — progressive expansion ──
                                 // Visible whenever we haven't shown everything yet.
                                 CellButton {
                                     padding: 0
-                                    visible: deps.shownCount < deps.values.length
-                                    text: "[+ " + (deps.values.length - deps.shownCount) + " more]"
+                                    visible: deps.shownCount < deps.values?.length
+                                    text: "[+ " + (deps.values?.length - deps.shownCount) + " more]"
                                     color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
                                     fg:    Colors.info
                                     onReleased: (button) => {
@@ -675,13 +675,13 @@ CellPopup {
                                 CellButton {
                                     padding: 0
                                     visible: deps.shownCount > deps.collapseThreshold
-                                    && deps.shownCount < deps.values.length
-                                    text: "[Show all (" + deps.values.length + ")]"
+                                    && deps.shownCount < deps.values?.length
+                                    text: "[Show all (" + deps.values?.length + ")]"
                                     color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
                                     fg:    Colors.info
                                     onReleased: (button) => {
                                         if (button == "L") {
-                                            deps.shownCount = deps.values.length
+                                            deps.shownCount = deps.values?.length
                                         }
                                     }
                                 }
@@ -691,8 +691,8 @@ CellPopup {
                                 // in the first place, i.e. exceeds the threshold).
                                 CellButton {
                                     padding: 0
-                                    visible: deps.shownCount == deps.values.length
-                                    && deps.values.length > deps.collapseThreshold
+                                    visible: deps.shownCount == deps.values?.length
+                                    && deps.values?.length > deps.collapseThreshold
                                     text: "[Show less]"
                                     color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
                                     fg:    Colors.info

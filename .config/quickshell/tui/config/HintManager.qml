@@ -24,7 +24,7 @@ Singleton {
 
     function show(mx, my, mg = 2, mheader = "", timer = 0) {
         x = Cell.wCount(mx - HyprInfo.focusedMonitor.x, "floor")
-        y = Cell.hCount(my - HyprInfo.focusedMonitor.y,"floor")
+        y = Cell.hCount(my - HyprInfo.focusedMonitor.y, "floor")
         root.timer = timer
         margins = mg
         header = mheader
@@ -39,6 +39,7 @@ Singleton {
         onTriggered: {
             root.hide()
         }
+
     }
 
     function hide() {

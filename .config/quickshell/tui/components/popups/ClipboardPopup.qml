@@ -21,30 +21,28 @@ CellPopup {
         list.reset()
     }
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: ["Tab", "Down"],
-                action: () => {
-                    root.advance(1)
-                }
-            },
-            {
-                binds: ["Shift+Tab", "Up"],
-                action: () => {
-                    root.advance(-1)
-                }
-            },
-            {
-                binds: "Return",
-                action: () => {
-                    root.decode()
-                    root.close()
-                    //SystemInfo.type(ClipboardInfo.preview)
-                }
-            },
-        ]
-    }
+    shortcuts: [
+        {
+            binds: ["Tab", "Down"],
+            action: () => {
+                root.advance(1)
+            }
+        },
+        {
+            binds: ["Shift+Tab", "Up"],
+            action: () => {
+                root.advance(-1)
+            }
+        },
+        {
+            binds: "Return",
+            action: () => {
+                root.decode()
+                root.close()
+                //SystemInfo.type(ClipboardInfo.preview)
+            }
+        },
+    ]
 
     signal decode()
 

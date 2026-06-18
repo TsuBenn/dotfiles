@@ -1,45 +1,39 @@
 This file is a merged representation of the entire codebase, combined into a single document by Repomix.
 
-<file_summary>
-This section contains a summary of this file.
+# File Summary
 
-<purpose>
+## Purpose
 This file contains a packed representation of the entire repository's contents.
 It is designed to be easily consumable by AI systems for analysis, code review,
 or other automated processes.
-</purpose>
 
-<file_format>
+## File Format
 The content is organized as follows:
 1. This summary section
 2. Repository information
 3. Directory structure
 4. Repository files (if enabled)
 5. Multiple file entries, each consisting of:
-  - File path as an attribute
-  - Full contents of the file
-</file_format>
+  a. A header with the file path (## File: path/to/file)
+  b. The full contents of the file in a code block
 
-<usage_guidelines>
+## Usage Guidelines
 - This file should be treated as read-only. Any changes should be made to the
   original repository files, not this packed version.
 - When processing this file, use the file path to distinguish
   between different files in the repository.
 - Be aware that this file may contain sensitive information. Handle it with
   the same level of security as you would the original repository.
-</usage_guidelines>
 
-<notes>
+## Notes
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
 - Files matching patterns in .gitignore are excluded
 - Files matching default ignore patterns are excluded
 - Files are sorted by Git change count (files with more changes are at the bottom)
-</notes>
 
-</file_summary>
-
-<directory_structure>
+# Directory Structure
+```
 assets/
   sfx/
     hallo.mp3
@@ -68,6 +62,7 @@ components/
       Main.qml
       Notifications.qml
       Wifi.qml
+    AuthPopup.qml
     CalendarPopup.qml
     ClipboardPopup.qml
     ColorPopup.qml
@@ -176,6 +171,7 @@ scripts/
 services/
   ANSI.qml
   AudioInfo.qml
+  AuthInfo.qml
   BluetoothInfo.qml
   BrightnessInfo.qml
   CalendarInfo.qml
@@ -203,12 +199,12 @@ services/
 dependencies.txt
 plan.md
 shell.qml
-</directory_structure>
+```
 
-<files>
-This section contains the contents of the repository's files.
+# Files
 
-<file path="components/bar/Bar.qml">
+## File: components/bar/Bar.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.components
@@ -638,7 +634,7 @@ Scope {
 
                     property bool mouse_check: false
 
-                    anchors.topMargin: root.implicitHeight*(!PopupManager.isOpen("power")&&!PopupManager.isOpen("screenshot"))
+                    anchors.topMargin: (root.implicitHeight-1)*(!PopupManager.isOpen("power")&&!PopupManager.isOpen("screenshot"))
                     anchors.top: parent.top
                     anchors.right: parent.right
                     anchors.left: parent.left
@@ -817,9 +813,10 @@ Scope {
 
     }
 }
-</file>
+````
 
-<file path="components/bar/BarMediaPlayer.qml">
+## File: components/bar/BarMediaPlayer.qml
+````
 import qs.config
 import qs.services
 import qs.modules
@@ -948,9 +945,10 @@ RowLayout {
     }
 
 }
-</file>
+````
 
-<file path="components/bar/Clock.qml">
+## File: components/bar/Clock.qml
+````
 import qs.config
 import qs.modules
 import qs.services
@@ -1119,9 +1117,10 @@ RowLayout {
 
     }
 }
-</file>
+````
 
-<file path="components/bar/ControlPanel.qml">
+## File: components/bar/ControlPanel.qml
+````
 import qs.config
 import qs.modules
 import qs.services
@@ -1252,9 +1251,10 @@ Cells {
     }
 
 }
-</file>
+````
 
-<file path="components/bar/OBS.qml">
+## File: components/bar/OBS.qml
+````
 import qs.config
 import qs.modules
 import qs.services
@@ -1312,9 +1312,10 @@ CellText {
     }
 
 }
-</file>
+````
 
-<file path="components/bar/Search.qml">
+## File: components/bar/Search.qml
+````
 import qs.config
 import qs.modules
 
@@ -1335,9 +1336,10 @@ CellButton {
     }
 
 }
-</file>
+````
 
-<file path="components/bar/StatusBar.qml">
+## File: components/bar/StatusBar.qml
+````
 import qs.components.bar
 import qs.config
 import qs.services
@@ -1503,9 +1505,10 @@ Rectangle {
     }
 
 }
-</file>
+````
 
-<file path="components/bar/System.qml">
+## File: components/bar/System.qml
+````
 import qs.config
 import qs.services
 import qs.modules
@@ -1720,18 +1723,19 @@ Cells {
             if (button == "L") {
                 PopupManager.toggle("system")
             } else if (button == "R") {
+                if (PopupManager.isOpen("system")) PopupManager.close("system")
                 HintManager.hint = hint
-                HintManager.show(global.x, global.y, 4)
-                PopupManager.close("system")
+                HintManager.show(global.x, global.y, 4, "", 1000)
             }
         }
 
     }
 
 }
-</file>
+````
 
-<file path="components/bar/Volume.qml">
+## File: components/bar/Volume.qml
+````
 import qs.config
 import qs.modules
 import qs.services
@@ -1884,9 +1888,10 @@ Cells {
     }
 
 }
-</file>
+````
 
-<file path="components/bar/Workspaces.qml">
+## File: components/bar/Workspaces.qml
+````
 import qs.config
 import qs.modules
 import qs.services
@@ -1964,9 +1969,10 @@ RowLayout {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/ControlPanel/Audio.qml">
+## File: components/popups/ControlPanel/Audio.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -2302,9 +2308,10 @@ ColumnLayout {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/ControlPanel/Bluetooth.qml">
+## File: components/popups/ControlPanel/Bluetooth.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -2853,9 +2860,10 @@ ColumnLayout {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/ControlPanel/ControlPanelPopup.qml">
+## File: components/popups/ControlPanel/ControlPanelPopup.qml
+````
 import qs.components.popups.ControlPanel
 
 import qs.config
@@ -2919,9 +2927,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/ControlPanel/Main.qml">
+## File: components/popups/ControlPanel/Main.qml
+````
 import qs.config
 import qs.modules
 import qs.services
@@ -3365,9 +3374,10 @@ ColumnLayout {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/ControlPanel/Notifications.qml">
+## File: components/popups/ControlPanel/Notifications.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -4091,9 +4101,10 @@ ColumnLayout {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/ControlPanel/Wifi.qml">
+## File: components/popups/ControlPanel/Wifi.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -4628,9 +4639,99 @@ ColumnLayout {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/CalendarPopup.qml">
+## File: components/popups/AuthPopup.qml
+````
+import qs.config
+import qs.modules
+import qs.services
+
+import QtQuick.Layouts
+import QtQuick
+
+CellPopup {
+
+    id: root
+
+    property int id: 0
+    property string prompt: ""
+    property string description: ""
+    property bool return_password: false
+
+    w: 40
+    h: Cell.wCount(layout.implicitHeight) + 2
+
+    Connections {
+        target: AuthInfo
+        function onPrompted(prompt: string, description: string, return_password: bool, id: int) {
+            root.prompt = prompt
+            root.description = description
+            PopupManager.open(root.name, false)
+        }
+    }
+
+    Cells {
+
+        w: root.w
+        h: root.h
+
+        CellBox {
+
+            id: box
+
+            w: root.w
+            h: root.h
+
+            ColumnLayout {
+
+                id: layout
+
+                spacing: 0
+
+                CellText {
+
+                    id: title
+
+                    Layout.leftMargin: Cell.w(1)
+
+                    text: root.prompt
+                    preferedW: box.contentW - 2
+                    centered: true
+                    color: Colors.secondary
+
+                }
+
+                CellSeparator {
+                    w: root.w - 2
+                    color: Colors.accentStrong
+                }
+
+                CellText {
+
+                    id: context
+
+                    visible: text.length > 0
+
+                    Layout.leftMargin: Cell.w(1)
+
+                    text: root.description
+                    color: Colors.fgDim
+                    preferedW: box.contentW - 2
+
+                }
+
+            }
+
+        }
+
+    }
+
+}
+````
+
+## File: components/popups/CalendarPopup.qml
+````
 pragma ComponentBehavior: Bound 
 
 import qs.config
@@ -4662,195 +4763,193 @@ CellPopup {
 
     escapeToClose: false
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: "Escape",
-                action: () => {
-                    if (root.edit) {
-                        root.edit = false
-                    }
-                    else {
-                        root.close()
-                    }
+    shortcuts: [
+        {
+            binds: "Escape",
+            action: () => {
+                if (root.edit) {
+                    root.edit = false
                 }
-            },
-            {
-                binds: "Return",
-                action: () => {
-                    if (!root.edit) {
-                        root.edit = true
-                    }
-                    if (title_textfield.text.length > 0) {
-                        edit.apply()
-                    }
+                else {
+                    root.close()
                 }
-            },
-            {
-                binds: "Tab",
-                action: () => {
-                    if (title_textfield.focus) {
-                        body_textfield.grabFocus()
-                    } else if (body_textfield.focus) {
-                        title_textfield.grabFocus()
-                    }
-                    if (hour.focus) {
-                        minute.grabFocus()
-                    } else if (minute.focus) {
-                        hour.grabFocus()
-                    }
+            }
+        },
+        {
+            binds: "Return",
+            action: () => {
+                if (!root.edit) {
+                    root.edit = true
                 }
-            },
-            {
-                binds: "Left",
-                active: !TextFieldManager.active,
-                action: () => {
-
-                    if (calendar.selected.year != calendar.year) {
-                        calendar.year = calendar.selected.year
-                    }
-
-                    if (calendar.selected.month != calendar.month) {
-                        calendar.month = calendar.selected.month
-                    }
-
-                    const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
-                    today.setDate(today.getDate() - 1)
-
-                    if (today.getFullYear() < calendar.year) {
-                        calendar.year -= 1
-                        calendar.month = 12
-                    } else if (today.getFullYear() > calendar.year) {
-                        calendar.year += 1
-                        calendar.month = 1
-                    }
-
-                    if (today.getMonth()+1 < calendar.month) {
-                        calendar.month -= 1
-                    } else if (today.getMonth()+1 > calendar.month) {
-                        calendar.month += 1
-                    }
-
-                    calendar.selected = {
-                        day: today.getDate(),
-                        month: today.getMonth()+1,
-                        year: today.getFullYear(),
-                    }
-
+                if (title_textfield.text.length > 0) {
+                    edit.apply()
                 }
-            },
-            {
-                binds: "Right",
-                active: !TextFieldManager.active,
-                action: () => {
-
-                    if (calendar.selected.year != calendar.year) {
-                        calendar.year = calendar.selected.year
-                    }
-
-                    if (calendar.selected.month != calendar.month) {
-                        calendar.month = calendar.selected.month
-                    }
-
-                    const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
-                    today.setDate(today.getDate() + 1)
-
-                    if (today.getFullYear() < calendar.year) {
-                        calendar.year -= 1
-                        calendar.month = 12
-                    } else if (today.getFullYear() > calendar.year) {
-                        calendar.year += 1
-                        calendar.month = 1
-                    }
-
-                    if (today.getMonth()+1 < calendar.month) {
-                        calendar.month -= 1
-                    } else if (today.getMonth()+1 > calendar.month) {
-                        calendar.month += 1
-                    }
-
-                    calendar.selected = {
-                        day: today.getDate(),
-                        month: today.getMonth()+1,
-                        year: today.getFullYear(),
-                    }
+            }
+        },
+        {
+            binds: "Tab",
+            action: () => {
+                if (title_textfield.focus) {
+                    body_textfield.grabFocus()
+                } else if (body_textfield.focus) {
+                    title_textfield.grabFocus()
                 }
-            },
-            {
-                binds: "Up",
-                action: () => {
-
-                    if (calendar.selected.year != calendar.year) {
-                        calendar.year = calendar.selected.year
-                    }
-
-                    if (calendar.selected.month != calendar.month) {
-                        calendar.month = calendar.selected.month
-                    }
-
-                    const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
-                    today.setDate(today.getDate() - 7)
-
-                    if (today.getFullYear() < calendar.year) {
-                        calendar.year -= 1
-                        calendar.month = 12
-                    } else if (today.getFullYear() > calendar.year) {
-                        calendar.year += 1
-                        calendar.month = 1
-                    }
-
-                    if (today.getMonth()+1 < calendar.month) {
-                        calendar.month -= 1
-                    } else if (today.getMonth()+1 > calendar.month) {
-                        calendar.month += 1
-                    }
-
-                    calendar.selected = {
-                        day: today.getDate(),
-                        month: today.getMonth()+1,
-                        year: today.getFullYear(),
-                    }
+                if (hour.focus) {
+                    minute.grabFocus()
+                } else if (minute.focus) {
+                    hour.grabFocus()
                 }
-            },
-            {
-                binds: "Down",
-                action: () => {
+            }
+        },
+        {
+            binds: "Left",
+            active: !TextFieldManager.active,
+            action: () => {
 
-                    if (calendar.selected.year != calendar.year) {
-                        calendar.year = calendar.selected.year
-                    }
-
-                    if (calendar.selected.month != calendar.month) {
-                        calendar.month = calendar.selected.month
-                    }
-
-                    const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
-                    today.setDate(today.getDate() + 7)
-
-                    if (today.getFullYear() < calendar.year) {
-                        calendar.year -= 1
-                        calendar.month = 12
-                    } else if (today.getFullYear() > calendar.year) {
-                        calendar.year += 1
-                        calendar.month = 1
-                    }
-
-                    if (today.getMonth()+1 < calendar.month) {
-                        calendar.month -= 1
-                    } else if (today.getMonth()+1 > calendar.month) {
-                        calendar.month += 1
-                    }
-
-                    calendar.selected = {
-                        day: today.getDate(),
-                        month: today.getMonth()+1,
-                        year: today.getFullYear(),
-                    }
+                if (calendar.selected.year != calendar.year) {
+                    calendar.year = calendar.selected.year
                 }
-            },
 
-        ]
-    }
+                if (calendar.selected.month != calendar.month) {
+                    calendar.month = calendar.selected.month
+                }
+
+                const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
+                today.setDate(today.getDate() - 1)
+
+                if (today.getFullYear() < calendar.year) {
+                    calendar.year -= 1
+                    calendar.month = 12
+                } else if (today.getFullYear() > calendar.year) {
+                    calendar.year += 1
+                    calendar.month = 1
+                }
+
+                if (today.getMonth()+1 < calendar.month) {
+                    calendar.month -= 1
+                } else if (today.getMonth()+1 > calendar.month) {
+                    calendar.month += 1
+                }
+
+                calendar.selected = {
+                    day: today.getDate(),
+                    month: today.getMonth()+1,
+                    year: today.getFullYear(),
+                }
+
+            }
+        },
+        {
+            binds: "Right",
+            active: !TextFieldManager.active,
+            action: () => {
+
+                if (calendar.selected.year != calendar.year) {
+                    calendar.year = calendar.selected.year
+                }
+
+                if (calendar.selected.month != calendar.month) {
+                    calendar.month = calendar.selected.month
+                }
+
+                const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
+                today.setDate(today.getDate() + 1)
+
+                if (today.getFullYear() < calendar.year) {
+                    calendar.year -= 1
+                    calendar.month = 12
+                } else if (today.getFullYear() > calendar.year) {
+                    calendar.year += 1
+                    calendar.month = 1
+                }
+
+                if (today.getMonth()+1 < calendar.month) {
+                    calendar.month -= 1
+                } else if (today.getMonth()+1 > calendar.month) {
+                    calendar.month += 1
+                }
+
+                calendar.selected = {
+                    day: today.getDate(),
+                    month: today.getMonth()+1,
+                    year: today.getFullYear(),
+                }
+            }
+        },
+        {
+            binds: "Up",
+            action: () => {
+
+                if (calendar.selected.year != calendar.year) {
+                    calendar.year = calendar.selected.year
+                }
+
+                if (calendar.selected.month != calendar.month) {
+                    calendar.month = calendar.selected.month
+                }
+
+                const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
+                today.setDate(today.getDate() - 7)
+
+                if (today.getFullYear() < calendar.year) {
+                    calendar.year -= 1
+                    calendar.month = 12
+                } else if (today.getFullYear() > calendar.year) {
+                    calendar.year += 1
+                    calendar.month = 1
+                }
+
+                if (today.getMonth()+1 < calendar.month) {
+                    calendar.month -= 1
+                } else if (today.getMonth()+1 > calendar.month) {
+                    calendar.month += 1
+                }
+
+                calendar.selected = {
+                    day: today.getDate(),
+                    month: today.getMonth()+1,
+                    year: today.getFullYear(),
+                }
+            }
+        },
+        {
+            binds: "Down",
+            action: () => {
+
+                if (calendar.selected.year != calendar.year) {
+                    calendar.year = calendar.selected.year
+                }
+
+                if (calendar.selected.month != calendar.month) {
+                    calendar.month = calendar.selected.month
+                }
+
+                const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
+                today.setDate(today.getDate() + 7)
+
+                if (today.getFullYear() < calendar.year) {
+                    calendar.year -= 1
+                    calendar.month = 12
+                } else if (today.getFullYear() > calendar.year) {
+                    calendar.year += 1
+                    calendar.month = 1
+                }
+
+                if (today.getMonth()+1 < calendar.month) {
+                    calendar.month -= 1
+                } else if (today.getMonth()+1 > calendar.month) {
+                    calendar.month += 1
+                }
+
+                calendar.selected = {
+                    day: today.getDate(),
+                    month: today.getMonth()+1,
+                    year: today.getFullYear(),
+                }
+            }
+        },
+
+    ]
 
     CellBox {
 
@@ -5153,354 +5252,354 @@ CellPopup {
 
                                 sourceComponent: Cells {
 
-                                id: day
+                                    id: day
 
-                                property var modelData: days_loader.modelData
+                                    property var modelData: days_loader.modelData
 
-                                property string date: modelData.day
-                                property bool isToday: modelData.isToday
-                                property bool inMonth: modelData.inMonth
-                                property bool isCurrentMonth: modelData.isCurrentMonth
-                                property bool nextMonth: modelData.nextMonth ?? false
+                                    property string date: modelData.day
+                                    property bool isToday: modelData.isToday
+                                    property bool inMonth: modelData.inMonth
+                                    property bool isCurrentMonth: modelData.isCurrentMonth
+                                    property bool nextMonth: modelData.nextMonth ?? false
 
-                                property var reminders: modelData.reminders ?? []
-                                property var events: modelData.events ?? []
+                                    property var reminders: modelData.reminders ?? []
+                                    property var events: modelData.events ?? []
 
-                                property bool hasSpan: false
-                                property bool beginSpan: false
-                                property bool midSpan: false
-                                property bool endSpan: false
-                                property bool hasDeadline: false
-                                property bool hasImportant: false
+                                    property bool hasSpan: false
+                                    property bool beginSpan: false
+                                    property bool midSpan: false
+                                    property bool endSpan: false
+                                    property bool hasDeadline: false
+                                    property bool hasImportant: false
 
-                                property bool hasImportantSpan: false
-                                property bool hasDeadlineSpan: false
+                                    property bool hasImportantSpan: false
+                                    property bool hasDeadlineSpan: false
 
-                                property bool isSelected: (
-                                    calendar.selected.month == calendar.month &&
-                                    calendar.selected.day == date && inMonth &&
-                                    calendar.selected.year == calendar.year
-                                )
+                                    property bool isSelected: (
+                                        calendar.selected.month == calendar.month &&
+                                        calendar.selected.day == date && inMonth &&
+                                        calendar.selected.year == calendar.year
+                                    )
 
-                                Component.onCompleted: {
-                                    for (const event of events) {
-                                        event.isEvent = true
-                                    }
+                                    Component.onCompleted: {
+                                        for (const event of events) {
+                                            event.isEvent = true
+                                        }
 
-                                    const weekday = CalendarInfo.getDay(day.date, calendar.month + (day.inMonth ? 0 : (day.nextMonth ? 1 : -1)), calendar.year)
+                                        const weekday = CalendarInfo.getDay(day.date, calendar.month + (day.inMonth ? 0 : (day.nextMonth ? 1 : -1)), calendar.year)
 
-                                    for (const reminder of day.reminders) {
-                                        if (/^\d{2}\/\d{2}\/\d{4}$/.test(reminder.date)) {
-                                            day.hasSpan = true
-                                            if (weekday == "MO") {
-                                                day.beginSpan = true
+                                        for (const reminder of day.reminders) {
+                                            if (/^\d{2}\/\d{2}\/\d{4}$/.test(reminder.date)) {
+                                                day.hasSpan = true
+                                                if (weekday == "MO") {
+                                                    day.beginSpan = true
+                                                }
+                                                if (weekday == "SU") {
+                                                    day.endSpan = true
+                                                }
+                                                if (weekday != "MO" && weekday != "SU" ) {
+                                                    day.midSpan = true
+                                                }
+                                                if (reminder.urgency == 2) {
+                                                    day.hasDeadlineSpan = true
+                                                } else if (reminder.urgency == 1) {
+                                                    day.hasImportantSpan = true
+                                                }
                                             }
-                                            if (weekday == "SU") {
-                                                day.endSpan = true
+                                            if (reminder.urgency == 2) {
+                                                day.hasDeadline =  true
                                             }
-                                            if (weekday != "MO" && weekday != "SU" ) {
+                                            if (reminder.urgency == 1) {
+                                                day.hasImportant = true
+                                            }
+                                            if (reminder.span_idx == reminder.span) {
+                                                day.endSpan =  true
+                                            }
+                                            if (reminder.span_idx > 1 && reminder.span_idx < reminder.span) {
                                                 day.midSpan = true
                                             }
+                                            if (reminder.span_idx == 1) {
+                                                day.beginSpan =  true
+                                            }
+                                            if (reminder.span > 1) {
+                                                day.hasSpan = true
+                                                if (reminder.urgency == 2) {
+                                                    day.hasDeadlineSpan = true
+                                                } else if (reminder.urgency == 1) {
+                                                    day.hasImportantSpan = true
+                                                }
+                                            }
+                                        }
+                                        for (const reminder of day.events) {
+                                            if (/^\d{2}\/\d{2}\/\d{4}$/.test(reminder.date)) {
+                                                day.hasSpan = true
+                                                if (weekday == "MO") {
+                                                    day.beginSpan = true
+                                                }
+                                                if (weekday == "SU") {
+                                                    day.endSpan = true
+                                                }
+                                                if (weekday != "MO" && weekday != "SU" ) {
+                                                    day.midSpan = true
+                                                }
+                                                if (reminder.urgency == 2) {
+                                                    day.hasDeadlineSpan =  true
+                                                } else if (reminder.urgency == 1) {
+                                                    day.hasImportantSpan = true
+                                                }
+                                            }
                                             if (reminder.urgency == 2) {
-                                                day.hasDeadlineSpan = true
-                                            } else if (reminder.urgency == 1) {
-                                                day.hasImportantSpan = true
+                                                day.hasDeadline =  true
                                             }
-                                        }
-                                        if (reminder.urgency == 2) {
-                                            day.hasDeadline =  true
-                                        }
-                                        if (reminder.urgency == 1) {
-                                            day.hasImportant = true
-                                        }
-                                        if (reminder.span_idx == reminder.span) {
-                                            day.endSpan =  true
-                                        }
-                                        if (reminder.span_idx > 1 && reminder.span_idx < reminder.span) {
-                                            day.midSpan = true
-                                        }
-                                        if (reminder.span_idx == 1) {
-                                            day.beginSpan =  true
-                                        }
-                                        if (reminder.span > 1) {
-                                            day.hasSpan = true
-                                            if (reminder.urgency == 2) {
-                                                day.hasDeadlineSpan = true
-                                            } else if (reminder.urgency == 1) {
-                                                day.hasImportantSpan = true
+                                            if (reminder.urgency == 1) {
+                                                day.hasImportant = true
                                             }
-                                        }
-                                    }
-                                    for (const reminder of day.events) {
-                                        if (/^\d{2}\/\d{2}\/\d{4}$/.test(reminder.date)) {
-                                            day.hasSpan = true
-                                            if (weekday == "MO") {
-                                                day.beginSpan = true
+                                            if (reminder.span_idx == reminder.span) {
+                                                day.endSpan =  true
                                             }
-                                            if (weekday == "SU") {
-                                                day.endSpan = true
-                                            }
-                                            if (weekday != "MO" && weekday != "SU" ) {
+                                            if (reminder.span_idx > 1 && reminder.span_idx < reminder.span) {
                                                 day.midSpan = true
                                             }
-                                            if (reminder.urgency == 2) {
-                                                day.hasDeadlineSpan =  true
-                                            } else if (reminder.urgency == 1) {
-                                                day.hasImportantSpan = true
+                                            if (reminder.span_idx == 1) {
+                                                day.beginSpan =  true
                                             }
-                                        }
-                                        if (reminder.urgency == 2) {
-                                            day.hasDeadline =  true
-                                        }
-                                        if (reminder.urgency == 1) {
-                                            day.hasImportant = true
-                                        }
-                                        if (reminder.span_idx == reminder.span) {
-                                            day.endSpan =  true
-                                        }
-                                        if (reminder.span_idx > 1 && reminder.span_idx < reminder.span) {
-                                            day.midSpan = true
-                                        }
-                                        if (reminder.span_idx == 1) {
-                                            day.beginSpan =  true
-                                        }
-                                        if (reminder.span > 1) {
-                                            day.hasSpan = true
-                                            if (reminder.urgency == 2) {
-                                                day.hasDeadlineSpan =  true
-                                            } else if (reminder.urgency == 1) {
-                                                day.hasImportantSpan = true
+                                            if (reminder.span > 1) {
+                                                day.hasSpan = true
+                                                if (reminder.urgency == 2) {
+                                                    day.hasDeadlineSpan =  true
+                                                } else if (reminder.urgency == 1) {
+                                                    day.hasImportantSpan = true
+                                                }
                                             }
                                         }
                                     }
-                                }
 
-                                w: 4
-                                h: 1
+                                    w: 4
+                                    h: 1
 
-                                color: {
-                                    if (day.isToday) {
-                                        return Colors.accentStrong
-                                    } else if (day.isSelected) {
-                                        return Colors.secondary
-                                    } else {
-                                        return "transparent"
-                                    }
-                                }
-
-                                CellText {
-
-                                    x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
-
-                                    text: day.date
                                     color: {
-                                        if (!day.inMonth) {
-                                            if (day.hasDeadline && blinking_deadline.on) {
-                                                return Colors.blend(Colors.danger,Colors.fgSubtle,0.7)
-                                            } else if (day.hasDeadline && !blinking_deadline.on) {
-                                                return Colors.blend(Colors.warning,Colors.fgSubtle,0.7)
-                                            } else if (day.hasImportant) {
-                                                return Colors.blend(Colors.warning,Colors.fgSubtle,0.9)
-                                            } else if (day.events.length > 0) {
-                                                return Colors.blend(Colors.success,Colors.fgSubtle,0.9)
-                                            } else if (day.reminders.length > 0) {
-                                                return Colors.blend(Colors.info,Colors.fgSubtle,0.9)
-                                            }
-                                            return Colors.fgSubtle
-                                        }
                                         if (day.isToday) {
-                                            return Colors.onAccent
+                                            return Colors.accentStrong
                                         } else if (day.isSelected) {
-                                            return Colors.bgSurface
-                                        } else if (day.hasDeadline && blinking_deadline.on) {
-                                            return Colors.danger
-                                        } else if (day.hasDeadline && !blinking_deadline.on) {
-                                            return Colors.warning
-                                        } else if (day.hasImportant) {
-                                            return Colors.warning
-                                        } else if (day.events.length > 0) {
-                                            return Colors.success
-                                        } else if (day.reminders.length > 0) {
-                                            return Colors.info
-                                        } else if (day.inMonth) {
-                                            return Colors.fgBase
+                                            return Colors.secondary
                                         } else {
-                                            return Colors.fgSubtle
+                                            return "transparent"
                                         }
                                     }
-                                    font: {
-                                        if (day.hasDeadline) {
+
+                                    CellText {
+
+                                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                                        text: day.date
+                                        color: {
                                             if (!day.inMonth) {
+                                                if (day.hasDeadline && blinking_deadline.on) {
+                                                    return Colors.blend(Colors.danger,Colors.fgSubtle,0.7)
+                                                } else if (day.hasDeadline && !blinking_deadline.on) {
+                                                    return Colors.blend(Colors.warning,Colors.fgSubtle,0.7)
+                                                } else if (day.hasImportant) {
+                                                    return Colors.blend(Colors.warning,Colors.fgSubtle,0.9)
+                                                } else if (day.events.length > 0) {
+                                                    return Colors.blend(Colors.success,Colors.fgSubtle,0.9)
+                                                } else if (day.reminders.length > 0) {
+                                                    return Colors.blend(Colors.info,Colors.fgSubtle,0.9)
+                                                }
+                                                return Colors.fgSubtle
+                                            }
+                                            if (day.isToday) {
+                                                return Colors.onAccent
+                                            } else if (day.isSelected) {
+                                                return Colors.bgSurface
+                                            } else if (day.hasDeadline && blinking_deadline.on) {
+                                                return Colors.danger
+                                            } else if (day.hasDeadline && !blinking_deadline.on) {
+                                                return Colors.warning
+                                            } else if (day.hasImportant) {
+                                                return Colors.warning
+                                            } else if (day.events.length > 0) {
+                                                return Colors.success
+                                            } else if (day.reminders.length > 0) {
+                                                return Colors.info
+                                            } else if (day.inMonth) {
+                                                return Colors.fgBase
+                                            } else {
+                                                return Colors.fgSubtle
+                                            }
+                                        }
+                                        font: {
+                                            if (day.hasDeadline) {
+                                                if (!day.inMonth) {
+                                                    return Cell.fontB
+                                                }
+                                                return Cell.fontBB
+                                            }
+                                            if (day.isToday || day.isSelected || day.reminders.length > 0 || day.events.length > 0) {
                                                 return Cell.fontB
                                             }
-                                            return Cell.fontBB
+                                            return Cell.font
                                         }
-                                        if (day.isToday || day.isSelected || day.reminders.length > 0 || day.events.length > 0) {
-                                            return Cell.fontB
-                                        }
-                                        return Cell.font
+
                                     }
 
-                                }
+                                    CellText {
 
-                                CellText {
+                                        visible: (!day.isSelected || !day.hasDeadline) && day.hasSpan
 
-                                    visible: (!day.isSelected || !day.hasDeadline) && day.hasSpan
+                                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
 
-                                    x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
-
-                                    text: {
-                                        if (!day.inMonth) {
+                                        text: {
+                                            if (!day.inMonth) {
+                                                if (day.midSpan) {
+                                                    return day.date < 10 ? "╴ ╶─" : "╴  ╶"
+                                                } else if (day.beginSpan && !day.endSpan) {
+                                                    return day.date < 10 ? "  ╶─" : "   ╶"
+                                                } else if (day.endSpan && !day.beginSpan) {
+                                                    return day.date < 10 ? "╴   " : "╴   "
+                                                } else if (day.endSpan && day.beginSpan) {
+                                                    return day.date < 10 ? "╴ ╶─" : "╴  ╶"
+                                                }
+                                            }
                                             if (day.midSpan) {
-                                                return day.date < 10 ? "╴ ╶─" : "╴  ╶"
+                                                return day.date < 10 ? "╸ ╺━" : "╸  ╺"
                                             } else if (day.beginSpan && !day.endSpan) {
-                                                return day.date < 10 ? "  ╶─" : "   ╶"
+                                                return day.date < 10 ? "  ╺━" : "   ╺"
                                             } else if (day.endSpan && !day.beginSpan) {
-                                                return day.date < 10 ? "╴   " : "╴   "
+                                                return day.date < 10 ? "╸   " : "╸   "
                                             } else if (day.endSpan && day.beginSpan) {
-                                                return day.date < 10 ? "╴ ╶─" : "╴  ╶"
+                                                return day.date < 10 ? "╸ ╺━" : "╸  ╺"
                                             }
-                                        }
-                                        if (day.midSpan) {
-                                            return day.date < 10 ? "╸ ╺━" : "╸  ╺"
-                                        } else if (day.beginSpan && !day.endSpan) {
-                                            return day.date < 10 ? "  ╺━" : "   ╺"
-                                        } else if (day.endSpan && !day.beginSpan) {
-                                            return day.date < 10 ? "╸   " : "╸   "
-                                        } else if (day.endSpan && day.beginSpan) {
-                                            return day.date < 10 ? "╸ ╺━" : "╸  ╺"
-                                        }
-                                        return ""
-                                    } 
-                                    color: {
-                                        if (!day.inMonth) {
-                                            if (day.hasDeadlineSpan) {
-                                                return Colors.blend(Colors.danger,Colors.fgSubtle,0.9)
+                                            return ""
+                                        } 
+                                        color: {
+                                            if (!day.inMonth) {
+                                                if (day.hasDeadlineSpan) {
+                                                    return Colors.blend(Colors.danger,Colors.fgSubtle,0.9)
+                                                } else if (day.hasImportantSpan) {
+                                                    return Colors.blend(Colors.warning,Colors.fgSubtle,0.9)
+                                                } else if (day.hasDeadline) {
+                                                    return Colors.blend(Colors.danger,Colors.fgSubtle,0.9)
+                                                } else if (day.hasImportant) {
+                                                    return Colors.blend(Colors.warning,Colors.fgSubtle,0.9)
+                                                } else if (day.events.length > 0) {
+                                                    return Colors.blend(Colors.success,Colors.fgSubtle,0.9)
+                                                } else if (day.reminders.length > 0) {
+                                                    return Colors.blend(Colors.info,Colors.fgSubtle,0.9)
+                                                }
+                                                return Colors.fgSubtle
+                                            }
+                                            if (day.isToday) {
+                                                return Colors.onAccent
+                                            } else if (day.isSelected) {
+                                                return Colors.bgSurface
+                                            } else if (day.hasDeadlineSpan) {
+                                                return Colors.danger
                                             } else if (day.hasImportantSpan) {
-                                                return Colors.blend(Colors.warning,Colors.fgSubtle,0.9)
+                                                return Colors.warning
                                             } else if (day.hasDeadline) {
-                                                return Colors.blend(Colors.danger,Colors.fgSubtle,0.9)
+                                                return Colors.danger
                                             } else if (day.hasImportant) {
-                                                return Colors.blend(Colors.warning,Colors.fgSubtle,0.9)
+                                                return Colors.warning
                                             } else if (day.events.length > 0) {
-                                                return Colors.blend(Colors.success,Colors.fgSubtle,0.9)
+                                                return Colors.success
                                             } else if (day.reminders.length > 0) {
-                                                return Colors.blend(Colors.info,Colors.fgSubtle,0.9)
+                                                return Colors.info
+                                            } else {
+                                                return Colors.fgBase
                                             }
-                                            return Colors.fgSubtle
                                         }
-                                        if (day.isToday) {
-                                            return Colors.onAccent
-                                        } else if (day.isSelected) {
-                                            return Colors.bgSurface
-                                        } else if (day.hasDeadlineSpan) {
-                                            return Colors.danger
-                                        } else if (day.hasImportantSpan) {
-                                            return Colors.warning
-                                        } else if (day.hasDeadline) {
-                                            return Colors.danger
-                                        } else if (day.hasImportant) {
-                                            return Colors.warning
-                                        } else if (day.events.length > 0) {
-                                            return Colors.success
-                                        } else if (day.reminders.length > 0) {
-                                            return Colors.info
-                                        } else {
+
+                                        font: {
+                                            if (day.hasDeadline) {
+                                                return Cell.fontBB
+                                            }
+                                            if (day.isToday || day.isSelected || day.reminders.length > 0 || day.events.length > 0) {
+                                                return Cell.fontB
+                                            }
+                                            return Cell.font
+                                        }
+
+                                    }
+
+                                    CellText {
+
+                                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                                        text: {
+                                            if (day.hasDeadline && (day.isSelected || day.isToday) && blinking_deadline.on) {
+                                                return "!  !"
+                                            }
+                                            return ""
+                                        }
+
+                                        color: {
+                                            if (day.isToday) {
+                                                return Colors.onAccent
+                                            } else if (day.isSelected) {
+                                                return Colors.bgSurface
+                                            }
                                             return Colors.fgBase
                                         }
+                                        font: Cell.fontBB
+
                                     }
 
-                                    font: {
-                                        if (day.hasDeadline) {
-                                            return Cell.fontBB
-                                        }
-                                        if (day.isToday || day.isSelected || day.reminders.length > 0 || day.events.length > 0) {
-                                            return Cell.fontB
-                                        }
-                                        return Cell.font
-                                    }
+                                    MouseControl {
 
-                                }
+                                        anchors.fill: parent
 
-                                CellText {
-
-                                    x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
-
-                                    text: {
-                                        if (day.hasDeadline && (day.isSelected || day.isToday) && blinking_deadline.on) {
-                                            return "!  !"
-                                        }
-                                        return ""
-                                    }
-
-                                    color: {
-                                        if (day.isToday) {
-                                            return Colors.onAccent
-                                        } else if (day.isSelected) {
-                                            return Colors.bgSurface
-                                        }
-                                        return Colors.fgBase
-                                    }
-                                    font: Cell.fontBB
-
-                                }
-
-                                MouseControl {
-
-                                    anchors.fill: parent
-
-                                    onPressed: (button) => {
-                                        const global = mapToGlobal(mouseX,mouseY)
-                                        if (button == "L" && day.inMonth) {
-                                            if (!day.isSelected) {
-                                                calendar.selected = {
-                                                    "day": day.date,
-                                                    "month": calendar.month,
-                                                    "year": calendar.year,
+                                        onPressed: (button) => {
+                                            const global = mapToGlobal(mouseX,mouseY)
+                                            if (button == "L" && day.inMonth) {
+                                                if (!day.isSelected) {
+                                                    calendar.selected = {
+                                                        "day": day.date,
+                                                        "month": calendar.month,
+                                                        "year": calendar.year,
+                                                    }
+                                                } else {
+                                                    calendar.selected = calendar.today
                                                 }
-                                            } else {
-                                                calendar.selected = calendar.today
                                             }
-                                        }
-                                        if (button == "R" && day.inMonth) {
-                                            ContextMenuManager.show([
-                                                {
-                                                    label: (day.date == calendar.selected.day && calendar.month == calendar.selected.month && calendar.year == calendar.selected.year) ? "Deselect" : "Select", action: () =>
+                                            if (button == "R" && day.inMonth) {
+                                                ContextMenuManager.show([
                                                     {
-                                                        if (!day.isSelected) {
-                                                            calendar.selected = {
-                                                                "day": day.date,
-                                                                "month": calendar.month,
-                                                                "year": calendar.year,
+                                                        label: (day.date == calendar.selected.day && calendar.month == calendar.selected.month && calendar.year == calendar.selected.year) ? "Deselect" : "Select", action: () =>
+                                                        {
+                                                            if (!day.isSelected) {
+                                                                calendar.selected = {
+                                                                    "day": day.date,
+                                                                    "month": calendar.month,
+                                                                    "year": calendar.year,
+                                                                }
+                                                            } else {
+                                                                calendar.selected = calendar.today
                                                             }
-                                                        } else {
-                                                            calendar.selected = calendar.today
+                                                        },
+                                                        disabled: day.isToday && calendar.selected.day == calendar.today.day && calendar.selected.month == calendar.today.month && calendar.selected.year == calendar.today.year
+                                                    },
+                                                    {
+                                                        label: "Add reminder", action: () =>
+                                                        {
+                                                            if (!day.isSelected) {
+                                                                calendar.selected = {
+                                                                    "day": day.date,
+                                                                    "month": calendar.month,
+                                                                    "year": calendar.year,
+                                                                }
+                                                            } else {
+                                                                calendar.selected = calendar.today
+                                                            }
+                                                            root.edit = !root.edit
                                                         }
                                                     },
-                                                    disabled: day.isToday && calendar.selected.day == calendar.today.day && calendar.selected.month == calendar.today.month && calendar.selected.year == calendar.today.year
-                                                },
-                                                {
-                                                    label: "Add reminder", action: () =>
-                                                    {
-                                                        if (!day.isSelected) {
-                                                            calendar.selected = {
-                                                                "day": day.date,
-                                                                "month": calendar.month,
-                                                                "year": calendar.year,
-                                                            }
-                                                        } else {
-                                                            calendar.selected = calendar.today
-                                                        }
-                                                        root.edit = !root.edit
-                                                    }
-                                                },
-                                            ],global.x,global.y,undefined,"")
+                                                ],global.x,global.y,undefined,"")
+                                            }
                                         }
+
                                     }
 
                                 }
-
-                            }
                             }
 
                         }
@@ -6589,9 +6688,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/ClipboardPopup.qml">
+## File: components/popups/ClipboardPopup.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -6615,30 +6715,28 @@ CellPopup {
         list.reset()
     }
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: ["Tab", "Down"],
-                action: () => {
-                    root.advance(1)
-                }
-            },
-            {
-                binds: ["Shift+Tab", "Up"],
-                action: () => {
-                    root.advance(-1)
-                }
-            },
-            {
-                binds: "Return",
-                action: () => {
-                    root.decode()
-                    root.close()
-                    //SystemInfo.type(ClipboardInfo.preview)
-                }
-            },
-        ]
-    }
+    shortcuts: [
+        {
+            binds: ["Tab", "Down"],
+            action: () => {
+                root.advance(1)
+            }
+        },
+        {
+            binds: ["Shift+Tab", "Up"],
+            action: () => {
+                root.advance(-1)
+            }
+        },
+        {
+            binds: "Return",
+            action: () => {
+                root.decode()
+                root.close()
+                //SystemInfo.type(ClipboardInfo.preview)
+            }
+        },
+    ]
 
     signal decode()
 
@@ -6928,9 +7026,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/ColorPopup.qml">
+## File: components/popups/ColorPopup.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -6975,53 +7074,51 @@ CellPopup {
         return maxCounter + 1;
     }
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: "Up",
-                action: () => {
-                    color.selected = Math.max(color.selected - 1,0)
-                    if (color.selected - list.offset/2 < 0) {
-                        list.offset = Math.floor(color.selected/13)*26
-                    }
+    shortcuts: [
+        {
+            binds: "Up",
+            action: () => {
+                color.selected = Math.max(color.selected - 1,0)
+                if (color.selected - list.offset/2 < 0) {
+                    list.offset = Math.floor(color.selected/13)*26
                 }
-            },
-            {
-                binds: "Down",
-                action: () => {
-                    color.selected = Math.min(color.selected + 1,root.result.length-1)
-                    if (color.selected - list.offset/2 >= 13) {
-                        list.offset = Math.floor(color.selected/13)*26
-                    }
+            }
+        },
+        {
+            binds: "Down",
+            action: () => {
+                color.selected = Math.min(color.selected + 1,root.result.length-1)
+                if (color.selected - list.offset/2 >= 13) {
+                    list.offset = Math.floor(color.selected/13)*26
                 }
-            },
-            {
-                binds: "Tab",
-                active: !TextFieldManager.active || textfield.focus,
-                action: () => {
-                    preview_tab.selected = (preview_tab.selected + 1 + 2)%2
+            }
+        },
+        {
+            binds: "Tab",
+            active: !TextFieldManager.active || textfield.focus,
+            action: () => {
+                preview_tab.selected = (preview_tab.selected + 1 + 2)%2
+            }
+        },
+        {
+            binds: "Return",
+            active: Colors.current != root.result[color.selected],
+            action: () => {
+                Colors.current = root.result[color.selected]
+            }
+        },
+        {
+            binds: "Escape",
+            active: color.edit && !TextFieldManager.active,
+            action: () => {
+                if (color.color_picker) {
+                    color.color_picker = false
+                } else {
+                    color.toggleEdit()
                 }
-            },
-            {
-                binds: "Return",
-                active: Colors.current != root.result[color.selected],
-                action: () => {
-                    Colors.current = root.result[color.selected]
-                }
-            },
-            {
-                binds: "Escape",
-                active: color.edit && !TextFieldManager.active,
-                action: () => {
-                    if (color.color_picker) {
-                        color.color_picker = false
-                    } else {
-                        color.toggleEdit()
-                    }
-                }
-            },
-        ]
-    }
+            }
+        },
+    ]
 
     onVisibleChanged: {
         if (color.edit) {
@@ -7259,7 +7356,7 @@ CellPopup {
 
                         RowLayout {
 
-                                x: Cell.w(1)
+                            x: Cell.w(1)
 
                             spacing: Cell.w(1)
 
@@ -9052,9 +9149,10 @@ CellPopup {
 
 
 }
-</file>
+````
 
-<file path="components/popups/EmojiPopup.qml">
+## File: components/popups/EmojiPopup.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -9080,45 +9178,43 @@ CellPopup {
         emojis.result = []
     }
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: "Up",
-                action: () => {
-                    root.advance(-5)
-                    root.alignList()
-                }
-            },
-            {
-                binds: ["Left", "Shift+Tab"],
-                action: () => {
-                    root.advance(-1)
-                    root.alignList()
-                }
-            },
-            {
-                binds: "Down",
-                action: () => {
-                    root.advance(5)
-                    root.alignList()
-                }
-            },
-            {
-                binds: ["Right", "Tab"],
-                action: () => {
-                    root.advance(1)
-                    root.alignList()
-                }
-            },
-            {
-                binds: "Return",
-                action: () => {
-                    root.select()
-                    root.alignList()
-                }
-            },
-        ]
-    }
+    shortcuts: [
+        {
+            binds: "Up",
+            action: () => {
+                root.advance(-5)
+                root.alignList()
+            }
+        },
+        {
+            binds: ["Left", "Shift+Tab"],
+            action: () => {
+                root.advance(-1)
+                root.alignList()
+            }
+        },
+        {
+            binds: "Down",
+            action: () => {
+                root.advance(5)
+                root.alignList()
+            }
+        },
+        {
+            binds: ["Right", "Tab"],
+            action: () => {
+                root.advance(1)
+                root.alignList()
+            }
+        },
+        {
+            binds: "Return",
+            action: () => {
+                root.select()
+                root.alignList()
+            }
+        },
+    ]
 
     function alignList() {
         if (Math.floor(emojis.selected/5) > Math.floor(list.offset/3) + 1) {
@@ -9353,9 +9449,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/LauncherPopup.qml">
+## File: components/popups/LauncherPopup.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -9769,6 +9866,8 @@ CellPopup {
 
                             ShortcutHandler {
 
+                                active: root.isTop
+
                                 property int result_h: root.minimal ? 2 : 3
 
                                 shortcuts: [
@@ -9884,6 +9983,7 @@ CellPopup {
                                         }
                                     },
                                 ]
+
                             }
 
                             Repeater {
@@ -10166,9 +10266,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/MediaPlayerPopup.qml">
+## File: components/popups/MediaPlayerPopup.qml
+````
 import qs.config
 import qs.modules
 import qs.services
@@ -10185,28 +10286,26 @@ CellPopup {
     w: 51 - Cell.wCount(Cell.h(6),"ceil")*root.minimal
     h: Cell.hCount(layout.implicitHeight)
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: "Space",
-                action: () => {
-                    MediaPlayerInfo.playPauseMedia()
-                }
-            },
-            {
-                binds: ["D", "L","Right"],
-                action: () => {
-                    MediaPlayerInfo.nextMedia()
-                }
-            },
-            {
-                binds: ["A", "J","Left"],
-                action: () => {
-                    MediaPlayerInfo.prevMedia()
-                }
-            },
-        ]
-    }
+    shortcuts: [
+        {
+            binds: "Space",
+            action: () => {
+                MediaPlayerInfo.playPauseMedia()
+            }
+        },
+        {
+            binds: ["D", "L","Right"],
+            action: () => {
+                MediaPlayerInfo.nextMedia()
+            }
+        },
+        {
+            binds: ["A", "J","Left"],
+            action: () => {
+                MediaPlayerInfo.prevMedia()
+            }
+        },
+    ]
 
     CellBox {
 
@@ -10549,9 +10648,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/NotificationsPopup.qml">
+## File: components/popups/NotificationsPopup.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -10788,9 +10888,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/PacmanPopup.qml">
+## File: components/popups/PacmanPopup.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -10814,36 +10915,34 @@ CellPopup {
         list.reset()
     }
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: "Up",
-                action: () => {
-                    if (list.selected_pkg == "") {
-                        list.selected_pkg = list.datas[list.offset].name
-                        return
-                    }
-                    if (list.selected_index-1 < 0) {
-                        list.offset -= list.h
-                    }
-                    list.selected_pkg = list.datas[list.offset + (list.selected_index+list.h-1)%list.h].name
+    shortcuts: [
+        {
+            binds: "Up",
+            action: () => {
+                if (list.selected_pkg == "") {
+                    list.selected_pkg = list.datas[list.offset].name
+                    return
                 }
-            },
-            {
-                binds: "Down",
-                action: () => {
-                    if (list.selected_pkg == "") {
-                        list.selected_pkg = list.datas[list.offset+list.h-1].name
-                        return
-                    }
-                    if (list.selected_index+1 >= list.h) {
-                        list.offset += list.h
-                    }
-                    list.selected_pkg = list.datas[list.offset + (list.selected_index+list.h+1)%list.h].name
+                if (list.selected_index-1 < 0) {
+                    list.offset -= list.h
                 }
+                list.selected_pkg = list.datas[list.offset + (list.selected_index+list.h-1)%list.h].name
             }
-        ]
-    }
+        },
+        {
+            binds: "Down",
+            action: () => {
+                if (list.selected_pkg == "") {
+                    list.selected_pkg = list.datas[list.offset+list.h-1].name
+                    return
+                }
+                if (list.selected_index+1 >= list.h) {
+                    list.offset += list.h
+                }
+                list.selected_pkg = list.datas[list.offset + (list.selected_index+list.h+1)%list.h].name
+            }
+        }
+    ]
 
     Cells {
 
@@ -11220,6 +11319,33 @@ CellPopup {
 
                     property int magic: 22
 
+                    // ── Section visibility flags (for separator conditionals) ──
+                    property bool hasIdentity:  (datas?.description ?? "").length > 0
+                    || (datas?.url ?? "").length > 0
+                    || (datas?.version ?? "").length > 0
+                    || (datas?.licenses ?? []).length > 0
+
+                    property bool hasSource:    (datas?.repository ?? "").length > 0
+                    || (datas?.arch ?? "").length > 0
+                    || (datas?.groups ?? []).length > 0
+
+                    property bool hasFootprint: (datas?.download_size ?? "").length > 0
+                    || (datas?.installed_size ?? "").length > 0
+                    || (datas?.conflicts_with ?? []).length > 0
+                    || (datas?.replaces ?? []).length > 0
+                    || (datas?.provides ?? []).length > 0
+
+                    // "Installed" is always rendered when index != -1, so hasStatus is always
+                    // true alongside a real selection. Kept here for symmetry / future-proofing.
+                    property bool hasStatus:    index != -1
+
+                    property bool hasRelations: (datas?.required_by ?? []).length > 0
+                    || (datas?.optional_for ?? []).length > 0
+                    || (datas?.depends ?? []).length > 0
+                    || (datas?.optional_deps ?? []).length > 0
+                    || (datas?.make_deps ?? []).length > 0
+                    || (datas?.check_deps ?? []).length > 0
+
                     w: box.contentW
                     h: box.contentH - list.h - 7
 
@@ -11249,10 +11375,239 @@ CellPopup {
 
                     }
 
+                    component Deps: RowLayout {
+
+                        id: deps
+
+                        property string key: "Dependencies"
+                        property var values: info.datas?.depends ?? []
+
+                        // ── Collapse behavior ──
+                        // Initial visible rows, and step size for each "+N more" click.
+                        // 5 / 5 keeps the default footprint small (longest list takes 5 rows)
+                        // while making each expansion click cheap (~1ms for 5 new delegates).
+                        property int collapseThreshold: 5
+                        property int expandStep: 5
+
+                        property var shownValues: deps.values?.slice(0, deps.shownCount)
+
+                        // How many rows are currently visible. Initialized to the threshold,
+                        // bumped by expandStep on "+N more", set to values.length on "show all",
+                        // reset to collapseThreshold on "show less" or when the package changes.
+                        property int shownCount: collapseThreshold
+
+                        onValuesChanged: shownCount = collapseThreshold
+
+                        Layout.leftMargin: Cell.w(1)
+
+                        spacing: 0
+
+                        CellText {
+                            Layout.alignment: Qt.AlignTop
+                            text: (parent.key).padEnd(info.magic-4, " ") + ":"
+                            color: Colors.fgDim
+                        }
+
+                        ColumnLayout {
+
+                            Layout.alignment: Qt.AlignTop
+
+                            spacing: 0
+
+                            Repeater {
+
+                                model: deps.shownValues
+
+                                delegate: Cells {
+
+                                    id: dep
+
+                                    required property string name
+                                    required property bool installed
+
+                                    // A "real" package exists in the cache as its own entry.
+                                    // Virtual names (e.g. "sh" provided by bash, "java-runtime"
+                                    // provided by java-runtime-common) are NOT in the cache and
+                                    // must not be navigable — clicking them would push a
+                                    // non-existent name onto the breadcrumb and break the panel.
+                                    property bool isReal: PacmanInfo.packages.some(
+                                        item => item.name == dep.dep_name
+                                    )
+
+                                    property var dep_data: {
+                                        if (name.includes("<="))      return name.split("<=")
+                                        else if (name.includes(">=")) return name.split(">=")
+                                        else if (name.includes("="))  return name.split("=")
+                                        return [name]
+                                    }
+                                    property string version_ops: {
+                                        if (name.includes("<="))      return "<="
+                                        else if (name.includes(">=")) return ">="
+                                        else if (name.includes("="))  return ""
+                                        return ""
+                                    }
+                                    property string dep_name: dep_data[0]
+                                    property string dep_version: dep_data[1] ?? ""
+
+                                    // No hover highlight for virtual packages — reinforces
+                                    // unclickability at the visual level.
+                                    color: (dep.isReal && dep_mouse.hovered)
+                                    ? Colors.bgOverlay
+                                    : "transparent"
+
+                                    w: info.contentW - info.magic + 2
+                                    h: 1
+
+                                    RowLayout {
+
+                                        x: Cell.w(1)
+
+                                        spacing: Cell.w(1)
+
+                                        CellText {
+                                            // Star column legend:
+                                            //   *  = real package, installed      (green, clickable)
+                                            //      = real package, not installed  (default, clickable)
+                                            //   ~  = virtual / provided name      (dim, unclickable)
+                                            text: dep.installed
+                                            ? "*"
+                                            : (dep.isReal ? "-" : "~")
+                                            color: dep.installed
+                                            ? Colors.success
+                                            : Colors.fgSubtle
+                                            font: Cell.fontB
+                                        }
+
+                                        CellText {
+                                            text: dep.dep_name
+                                            preferedW: Math.min(dep.w - 3, text.length)
+                                            // Dim virtual names so they read as "informational"
+                                            // rather than "navigable".
+                                            color: dep.isReal ? Colors.fgBase : Colors.fgSubtle
+                                        }
+
+                                        CellText {
+                                            id: dep_version
+                                            text: dep.version_ops + dep.dep_version
+                                            preferedW: dep.w - dep.dep_name.length - 5
+                                            color: Colors.fgSubtle
+                                        }
+
+                                    }
+
+                                    MouseControl {
+
+                                        id: dep_mouse
+
+                                        anchors.fill: parent
+
+                                        // Disabled MouseControls don't track hover or fire
+                                        // onReleased — exactly what we want for virtuals.
+                                        enabled: dep.isReal
+
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                info.deps.push(dep.dep_name)
+                                                info.depsChanged()
+                                            }
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+
+                            // ──────────────────────────────────────────────────────────
+                            // Footer: progressive +5 / show all / show less
+                            //
+                            // State machine (for a list of 23 items, threshold=5, step=5):
+                            //
+                            //   Initial       (5 shown)   →  [ + 18 more ]
+                            //   1st click     (10 shown)  →  [ + 13 more ]  [ show all (23) ]
+                            //   2nd click     (15 shown)  →  [ + 8 more  ]  [ show all (23) ]
+                            //   "show all"    (23 shown)  →  [ show less ]
+                            //   "show less"   (5 shown)   →  [ + 18 more ]
+                            //
+                            // The "show all" button only appears after the first expansion —
+                            // progressive disclosure of the UI itself. Users who just want to
+                            // peek at 5 more rows don't see the audit-nuclear option until
+                            // they've shown they want to expand at all.
+                            //
+                            // "show less" replaces the other two when fully expanded, giving
+                            // a clean single-action way back to the collapsed state.
+                            // ──────────────────────────────────────────────────────────
+                            RowLayout {
+
+                                spacing: Cell.w(1)
+
+                                // Footer only renders at all when there's something to expand.
+                                visible: deps.values?.length > deps.collapseThreshold
+
+                                // ── "+N more" — progressive expansion ──
+                                // Visible whenever we haven't shown everything yet.
+                                CellButton {
+                                    padding: 0
+                                    visible: deps.shownCount < deps.values?.length
+                                    text: "[+ " + (deps.values?.length - deps.shownCount) + " more]"
+                                    color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
+                                    fg:    Colors.info
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            deps.shownCount = Math.min(
+                                                deps.shownCount + deps.expandStep,
+                                                deps.values.length
+                                            )
+                                        }
+                                    }
+                                }
+
+                                // ── "show all (N)" — audit escape hatch ──
+                                // Only after the first expansion, and only when there's still
+                                // more to show. Disappears once "+N more" has reached the end
+                                // (because "show less" takes over).
+                                CellButton {
+                                    padding: 0
+                                    visible: deps.shownCount > deps.collapseThreshold
+                                    && deps.shownCount < deps.values?.length
+                                    text: "[Show all (" + deps.values?.length + ")]"
+                                    color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
+                                    fg:    Colors.info
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            deps.shownCount = deps.values?.length
+                                        }
+                                    }
+                                }
+
+                                // ── "show less" — collapse back to threshold ──
+                                // Only visible when fully expanded (and the list was collapsible
+                                // in the first place, i.e. exceeds the threshold).
+                                CellButton {
+                                    padding: 0
+                                    visible: deps.shownCount == deps.values?.length
+                                    && deps.values?.length > deps.collapseThreshold
+                                    text: "[Show less]"
+                                    color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
+                                    fg:    Colors.info
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            deps.shownCount = deps.collapseThreshold
+                                        }
+                                    }
+                                }
+
+                            }
+
+                        }
+
+                    }
+
                     source: ColumnLayout {
 
                         spacing: 0
 
+                        // ── No selection placeholder ──
                         CellText {
 
                             visible: info.index == -1
@@ -11264,224 +11619,173 @@ CellPopup {
 
                         }
 
-                        Info {
-                            key: "Name"
-                            value: info.datas?.name ?? ""
-                        }
-
-                        Info {
-                            key: "Version"
-                            value: info.datas?.version ?? ""
-                        }
-
+                        // ════════════ Section 1: Identity ════════════
                         Info {
                             key: "Description"
                             value: info.datas?.description ?? ""
                         }
-
                         Info {
-                            key: "Url"
+                            key: "URL"
                             value: info.datas?.url ?? ""
                         }
-
+                        Info {
+                            key: "Version"
+                            value: info.datas?.version ?? ""
+                        }
                         Info {
                             key: "Licenses"
-                            value: info.datas?.licenses ?? ""
+                            value: (info.datas?.licenses ?? []).join(", ")
                         }
 
+                        CellSeparator {
+                            w: info.contentW
+                            visible: info.index != -1 && info.hasIdentity && info.hasSource
+                            color: Colors.bgOverlay
+                        }
+
+                        // ════════════ Section 2: Source ════════════
                         Info {
                             key: "Repository"
                             value: info.datas?.repository ?? ""
                         }
-
+                        Info {
+                            key: "Architecture"
+                            value: info.datas?.arch ?? ""
+                        }
                         Info {
                             key: "Groups"
-                            value: info.datas?.groups ?? ""
+                            value: (info.datas?.groups ?? []).join(", ")
                         }
 
+                        CellSeparator {
+                            w: info.contentW
+                            visible: info.index != -1 && info.hasSource && (info.hasFootprint || info.hasStatus || info.hasRelations)
+                            color: Colors.bgOverlay
+                        }
+
+                        // ════════════ Section 3: Footprint ════════════
                         Info {
                             key: "Download size"
                             value: info.datas?.download_size ?? ""
                         }
-
                         Info {
                             key: "Installed size"
                             value: info.datas?.installed_size ?? ""
                         }
-
-                        Info {
-                            key: "Packager"
-                            value: info.datas?.packager ?? ""
+                        Deps {
+                            visible: (info.datas?.conflicts_with ?? []).length > 0
+                            key: "Conflicts with"
+                            collapseThreshold: 10   // generous — this field is almost always short
+                            values: (info.datas?.conflicts_with ?? []).map(
+                                n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
+                            )
+                        }
+                        Deps {
+                            visible: (info.datas?.replaces ?? []).length > 0
+                            key: "Replaces"
+                            values: (info.datas?.replaces ?? []).map(
+                                n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
+                            )
+                        }
+                        Deps {
+                            visible: (info.datas?.provides ?? []).length > 0
+                            key: "Provides"
+                            values: (info.datas?.provides ?? []).map(
+                                n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
+                            )
                         }
 
+                        CellSeparator {
+                            w: info.contentW
+                            visible: info.index != -1 && info.hasFootprint && (info.hasStatus || info.hasRelations)
+                            color: Colors.bgOverlay
+                        }
+
+                        // ════════════ Section 4: Status ════════════
                         Info {
                             key: "Installed"
                             value: info.datas?.installed ? "Yes" : "Nope"
                         }
-
                         Info {
-                            key: "Installed date"
-                            value: info.datas?.install_date ?? ""
-                        }
-
-                        Info {
-                            key: "Installed reason"
+                            key: "Install reason"
                             value: info.datas?.install_reason ?? ""
                         }
-
                         Info {
-                            key: "Installed script"
-                            value: info.datas?.install_script ? "Yes" : "Nope"
+                            key: "Install date"
+                            value: info.datas?.install_date ?? ""
                         }
-
                         Info {
-                            key: "Validated by"
-                            value: info.datas?.validated_by ?? ""
+                            key: "Last sync"
+                            value: {
+                                const ls = info.datas?.last_sync
+                                if (!ls) return ""
+                                return ls.action + " on " + ls.timestamp
+                            }
+                        }
+                        Info {
+                            key: "Build date"
+                            value: info.datas?.build_date ?? ""
                         }
 
-                        component Deps: RowLayout {
-
-                            id: deps
-
-                            property string key: "Dependencies"
-                            property var values: info.datas?.depends
-
-                            Layout.leftMargin: Cell.w(1)
-
-                            spacing: 0
-
-                            CellText {
-                                Layout.alignment: Qt.AlignTop
-                                text: (parent.key).padEnd(info.magic-4, " ") + ":"
-                                color: Colors.fgDim
-                            }
-
-                            ColumnLayout {
-
-                                Layout.alignment: Qt.AlignTop
-
-                                spacing: 0
-
-                                Repeater {
-
-                                    model: deps.values
-
-                                    delegate: Cells {
-
-                                        visible: PacmanInfo.package.some(item => item.name = dep.dep_name)
-
-                                        id: dep
-
-                                        required property string name
-                                        required property bool installed
-
-                                        property var dep_data: {
-                                            if (name.includes("<=")) {
-                                                return name.split("<=")
-                                            } else if (name.includes(">=")) {
-                                                return name.split(">=")
-                                            } else if (name.includes("=")) {
-                                                return name.split("=")
-                                            } 
-                                            return [name]
-                                        }
-                                        property string version_ops: {
-                                            if (name.includes("<=")) {
-                                                return "<="
-                                            } else if (name.includes(">=")) {
-                                                return ">="
-                                            } else if (name.includes("=")) {
-                                                return ""
-                                            } 
-                                            return ""
-                                        }
-                                        property string dep_name: dep_data[0]
-                                        property string dep_version: dep_data[1] ?? ""
-
-                                        color: dep_mouse.hovered ? Colors.bgOverlay : "transparent"
-
-                                        w: info.contentW - info.magic + 2
-                                        h: 1
-
-                                        RowLayout {
-
-                                            x: Cell.w(1)
-
-                                            spacing: Cell.w(1)
-
-                                            CellText {
-
-                                                text: (dep.installed ? "*" : " ")
-                                                color: Colors.success
-                                                font: Cell.fontB
-
-                                            }
-
-                                            CellText {
-
-                                                text: dep.dep_name
-                                                preferedW: Math.min(dep.w - 3, text.length)
-
-                                            }
-
-                                            CellText {
-
-                                                id: dep_version
-
-                                                text: dep.version_ops + dep.dep_version
-                                                preferedW: dep.w - dep.dep_name.length - 5
-                                                color: Colors.fgSubtle
-
-                                            }
-
-                                        }
-
-                                        MouseControl {
-
-                                            id: dep_mouse
-
-                                            anchors.fill: parent
-
-                                            onReleased: (button) => {
-                                                info.deps.push(dep.dep_name)
-                                                info.depsChanged()
-                                            }
-
-                                        }
-
-                                    }
-
-                                }
-
-                            }
-
+                        CellSeparator {
+                            w: info.contentW
+                            visible: info.index != -1 && info.hasStatus && info.hasRelations
+                            color: Colors.bgOverlay
                         }
 
+                        // ════════════ Section 5: Relations ════════════
+                        // Reverse deps first — they answer "what breaks if I remove this?"
                         Deps {
-                            visible: info.datas?.depends.length > 0
+                            visible: (info.datas?.required_by ?? []).length > 0
+                            key: "Required by"
+                            collapseThreshold: 3    // tighter — this field gets huge for base libs
+                            values: (info.datas?.required_by ?? []).map(
+                                n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
+                            )
+                        }
+                        Deps {
+                            visible: (info.datas?.optional_for ?? []).length > 0
+                            key: "Optional for"
+                            values: (info.datas?.optional_for ?? []).map(
+                                n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
+                            )
+                        }
+                        // Forward deps — "what does this need?"
+                        Deps {
+                            visible: (info.datas?.depends ?? []).length > 0
                             key: "Dependencies"
                         }
-
                         Deps {
-                            visible: info.datas?.optional_deps.length > 0
+                            visible: (info.datas?.optional_deps ?? []).length > 0
                             key: "Optional depends"
                             values: info.datas?.optional_deps
+                        }
+                        Deps {
+                            visible: (info.datas?.make_deps ?? []).length > 0
+                            key: "Make depends"
+                            values: info.datas?.make_deps
+                        }
+                        Deps {
+                            visible: (info.datas?.check_deps ?? []).length > 0
+                            key: "Check depends"
+                            values: info.datas?.check_deps
                         }
 
                     }
 
                 }
-
             }
+
 
         }
 
     }
 
 }
-</file>
+````
 
-<file path="components/popups/Popups.qml">
+## File: components/popups/Popups.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.components.popups.ControlPanel
@@ -11643,6 +11947,19 @@ Item {
 
     }
 
+    AuthPopup {
+
+        id: auth
+
+        monitor: root.monitor
+
+        name: "auth"
+
+        cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2)
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2)
+
+    }
+
     ScreenshotPopup {
 
         id: screenshot
@@ -11654,9 +11971,10 @@ Item {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/PowerCountdownPopup.qml">
+## File: components/popups/PowerCountdownPopup.qml
+````
 import qs.config
 import qs.modules
 import qs.services
@@ -11795,9 +12113,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/QuickMenuPopup.qml">
+## File: components/popups/QuickMenuPopup.qml
+````
 pragma ComponentBehavior: Bound 
 
 import qs.config
@@ -11870,58 +12189,56 @@ CellPopup {
         PopupManager.close("quick_menu")
     }
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: ["W","1"],
-                action: () => {
-                    root.shortcut(1)
-                }
-            },
-            {
-                binds: ["E","2"],
-                action: () => {
-                    root.shortcut(2)
-                }
-            },
-            {
-                binds: ["D","3"],
-                action: () => {
-                    root.shortcut(3)
-                }
-            },
-            {
-                binds: ["C","4"],
-                action: () => {
-                    root.shortcut(4)
-                }
-            },
-            {
-                binds: ["X","S","5"],
-                action: () => {
-                    root.shortcut(5)
-                }
-            },
-            {
-                binds: ["Z","6"],
-                action: () => {
-                    root.shortcut(6)
-                }
-            },
-            {
-                binds: ["A","7"],
-                action: () => {
-                    root.shortcut(7)
-                }
-            },
-            {
-                binds: ["Q","8"],
-                action: () => {
-                    root.shortcut(8)
-                }
-            },
-        ]
-    }
+    shortcuts: [
+        {
+            binds: ["W","1"],
+            action: () => {
+                root.shortcut(1)
+            }
+        },
+        {
+            binds: ["E","2"],
+            action: () => {
+                root.shortcut(2)
+            }
+        },
+        {
+            binds: ["D","3"],
+            action: () => {
+                root.shortcut(3)
+            }
+        },
+        {
+            binds: ["C","4"],
+            action: () => {
+                root.shortcut(4)
+            }
+        },
+        {
+            binds: ["X","S","5"],
+            action: () => {
+                root.shortcut(5)
+            }
+        },
+        {
+            binds: ["Z","6"],
+            action: () => {
+                root.shortcut(6)
+            }
+        },
+        {
+            binds: ["A","7"],
+            action: () => {
+                root.shortcut(7)
+            }
+        },
+        {
+            binds: ["Q","8"],
+            action: () => {
+                root.shortcut(8)
+            }
+        },
+    ]
 
     Cells {
 
@@ -12126,9 +12443,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/ScreenshotPopup.qml">
+## File: components/popups/ScreenshotPopup.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -12297,42 +12615,40 @@ CellPopup {
         }
     }
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: "Ctrl+A",
-                action: () => {
-                    root.edit = true
-                    full_select.restart()
-                }
-            },
-            {
-                binds: "Return",
-                active: root.edit && !namer.visible,
-                action: () => {
-                    if (snapAndCloseAnim.running) return
-                    root.screenshot()
-                    stay.yes ? snapAnim.restart() : snapAndCloseAnim.restart()
-                }
-            },
-            {
-                binds: "C",
-                action: () => {
-                    SettingsInfo.toggle("screenshotCursor")
-                }
-            },
-            {
-                binds: "Escape",
-                action: () => {
-                    if (namer_textfield.focus) {
-                        namer.visible = false
-                    } else {
-                        root.close()
-                    }
+    shortcuts: [
+        {
+            binds: "Ctrl+A",
+            action: () => {
+                root.edit = true
+                full_select.restart()
+            }
+        },
+        {
+            binds: "Return",
+            active: root.edit && !namer.visible,
+            action: () => {
+                if (snapAndCloseAnim.running) return
+                root.screenshot()
+                stay.yes ? snapAnim.restart() : snapAndCloseAnim.restart()
+            }
+        },
+        {
+            binds: "C",
+            action: () => {
+                SettingsInfo.toggle("screenshotCursor")
+            }
+        },
+        {
+            binds: "Escape",
+            action: () => {
+                if (namer_textfield.focus) {
+                    namer.visible = false
+                } else {
+                    root.close()
                 }
             }
-        ]
-    }
+        }
+    ]
 
     SequentialAnimation {
         id: full_select
@@ -12802,9 +13118,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/SystemPopup.qml">
+## File: components/popups/SystemPopup.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -13956,9 +14273,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="components/popups/WallpaperPopup.qml">
+## File: components/popups/WallpaperPopup.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -13982,6 +14300,45 @@ CellPopup {
     safeMargin: 2
 
     escapeToClose: false
+
+    shortcuts: [
+        {
+            binds: "Left",
+            action: () => {
+                selection.advance(-1)
+            }
+        },
+        {
+            binds: "Right",
+            action: () => {
+                selection.advance(1)
+            }
+        },
+        {
+            binds: "Tab",
+            active: textfield.focus,
+            action: () => {
+                more.yes = !more.yes
+            }
+        },
+        {
+            binds: "Escape",
+            action: () => {
+                if (!textfield.focus) {
+                    textfield.grabFocus()
+                    return
+                }
+                PopupManager.close("wallpaper")
+            }
+        },
+        {
+            binds: "Return",
+            active: textfield.focus,
+            action: () => {
+                selection.select()
+            }
+        }
+    ]
 
     SequentialAnimation {
         id: hide
@@ -14529,47 +14886,6 @@ CellPopup {
                             }
 
                             selection.wallpapers = WallpaperInfo.search(text)
-                        }
-
-                        ShortcutHandler {
-                            shortcuts: [
-                                {
-                                    binds: "Left",
-                                    action: () => {
-                                        selection.advance(-1)
-                                    }
-                                },
-                                {
-                                    binds: "Right",
-                                    action: () => {
-                                        selection.advance(1)
-                                    }
-                                },
-                                {
-                                    binds: "Tab",
-                                    active: textfield.focus,
-                                    action: () => {
-                                        more.yes = !more.yes
-                                    }
-                                },
-                                {
-                                    binds: "Escape",
-                                    action: () => {
-                                        if (!textfield.focus) {
-                                            textfield.grabFocus()
-                                            return
-                                        }
-                                        PopupManager.close("wallpaper")
-                                    }
-                                },
-                                {
-                                    binds: "Return",
-                                    active: textfield.focus,
-                                    action: () => {
-                                        selection.select()
-                                    }
-                                }
-                            ]
                         }
 
                     }
@@ -15560,9 +15876,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="components/DependenciesChecker.qml">
+## File: components/DependenciesChecker.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -15992,9 +16309,10 @@ FloatingWindow {
     }
 
 }
-</file>
+````
 
-<file path="components/LockSession.qml">
+## File: components/LockSession.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.components.bar
@@ -16014,7 +16332,7 @@ WlSessionLockSurface {
 
     id: root
 
-    property bool processing: false
+    property bool processing: AuthInfo.authenticating
 
     property bool focused: monitor.name == HyprInfo.focusedMonitor.name
 
@@ -16027,12 +16345,11 @@ WlSessionLockSurface {
 
     onVisibleChanged: {
         password_field.focus = true
-        check_pwd.running = true
         lock_screen_anim.restart()
     }
 
     function unlock(password: string) {
-        check_pwd.write(password + "\n")
+        AuthInfo.verify(password)
     }
 
     MediaPlayer {
@@ -16579,38 +16896,25 @@ WlSessionLockSurface {
         }
     }
 
-    Process {
-
-        id: check_pwd
-
-        onRunningChanged: {
-            if (!running) {
-                running = true
-            }
+    Connections {
+        target: AuthInfo
+        function onVerified() {
+            unlock_anim.restart()
         }
-
-        command: [SystemInfo.configdir + "/scripts/password_checker"]
-
-        stdout: SplitParser {
-            onRead: (text) => {
-                if (text == "1") {
-                    unlock_anim.restart()
-                } else if (text == "0") {
-                    pwd_status.text = " Error: Wrong password! "
-                    pwd_status.color = Colors.danger
-                    reset_pwd_status.running = true
-                    password_field.set("")
-                    root.processing = false
-                }
-            }
+        function onFailed() {
+            pwd_status.text = " Error: Wrong password! "
+            pwd_status.color = Colors.danger
+            reset_pwd_status.running = true
+            password_field.set("")
+            root.processing = false
         }
-
     }
 
 }
-</file>
+````
 
-<file path="config/Cell.qml">
+## File: config/Cell.qml
+````
 pragma Singleton
 
 import Quickshell
@@ -16701,9 +17005,10 @@ Singleton {
         font: root.font
     }
 }
-</file>
+````
 
-<file path="config/Colors.qml">
+## File: config/Colors.qml
+````
 pragma Singleton
 
 import qs.services
@@ -16982,9 +17287,10 @@ Singleton {
 
     }
 }
-</file>
+````
 
-<file path="config/ContextMenuManager.qml">
+## File: config/ContextMenuManager.qml
+````
 pragma Singleton 
 
 import qs.config
@@ -17025,9 +17331,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="config/DropdownManager.qml">
+## File: config/DropdownManager.qml
+````
 pragma Singleton 
 
 import qs.config
@@ -17079,9 +17386,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="config/HintManager.qml">
+## File: config/HintManager.qml
+````
 pragma Singleton 
 
 import qs.config
@@ -17108,7 +17416,7 @@ Singleton {
 
     function show(mx, my, mg = 2, mheader = "", timer = 0) {
         x = Cell.wCount(mx - HyprInfo.focusedMonitor.x, "floor")
-        y = Cell.hCount(my - HyprInfo.focusedMonitor.y,"floor")
+        y = Cell.hCount(my - HyprInfo.focusedMonitor.y, "floor")
         root.timer = timer
         margins = mg
         header = mheader
@@ -17123,6 +17431,7 @@ Singleton {
         onTriggered: {
             root.hide()
         }
+
     }
 
     function hide() {
@@ -17133,11 +17442,13 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="config/PopupManager.qml">
+## File: config/PopupManager.qml
+````
 pragma Singleton
 
+import qs.config
 import qs.services
 
 import Quickshell
@@ -17162,6 +17473,23 @@ Singleton {
 
     function sendSignal(id = "", sig = "") {
         root.signalSent(id, sig)
+    }
+
+    function isTop(name: string): bool {
+        let n = active_popups.length
+        return n > 0 && active_popups[n-1] === name
+    }
+
+    function getTop(): string {
+        let n = active_popups.length
+        if (n == 0) return ""
+        return active_popups[n-1]
+    }
+
+    function raise(name: string): bool {
+        if (active_popups.includes(name)) {
+            active_popups = [...active_popups.filter(item => item !== name), name]
+        }
     }
 
     function open(name, isolate) {
@@ -17196,9 +17524,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="config/PowerManager.qml">
+## File: config/PowerManager.qml
+````
 pragma Singleton
 
 import Quickshell
@@ -17217,9 +17546,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="config/PowerPopup.qml">
+## File: config/PowerPopup.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -17333,47 +17663,45 @@ CellPopup {
         }
     }
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: "1",
-                action: () => {PowerManager.call("Sleep", 3)},
-            },
-            {
-                binds: "2",
-                action: () => {PowerManager.call("Reboot", 3)},
-            },
-            {
-                binds: "3",
-                action: () => {PowerManager.call("Shutdown", 3)},
-            },
-            {
-                binds: "4",
-                active: !root.lock,
-                action: () => {SystemInfo.lock()},
-            },
-            {
-                binds: root.lock ? "4" : "5",
-                action: () => {PowerManager.call("Logout", 3)},
-            },
-            {
-                binds: "0",
-                action: () => {root.close()},
-            },
-            {
-                binds: "Up",
-                action: () => {menu.selected = (menu.selected - 1 + 6)%6},
-            },
-            {
-                binds: "Down",
-                action: () => {menu.selected = (menu.selected + 1 + 6)%6},
-            },
-            {
-                binds: "Return",
-                action: () => {menu.actions[menu.selected]()},
-            },
-        ]
-    }
+    shortcuts: [
+        {
+            binds: "1",
+            action: () => {PowerManager.call("Sleep", 3)},
+        },
+        {
+            binds: "2",
+            action: () => {PowerManager.call("Reboot", 3)},
+        },
+        {
+            binds: "3",
+            action: () => {PowerManager.call("Shutdown", 3)},
+        },
+        {
+            binds: "4",
+            active: !root.lock,
+            action: () => {SystemInfo.lock()},
+        },
+        {
+            binds: root.lock ? "4" : "5",
+            action: () => {PowerManager.call("Logout", 3)},
+        },
+        {
+            binds: "0",
+            action: () => {root.close()},
+        },
+        {
+            binds: "Up",
+            action: () => {menu.selected = (menu.selected - 1 + 6)%6},
+        },
+        {
+            binds: "Down",
+            action: () => {menu.selected = (menu.selected + 1 + 6)%6},
+        },
+        {
+            binds: "Return",
+            action: () => {menu.actions[menu.selected]()},
+        },
+    ]
 
     Cells {
 
@@ -17622,9 +17950,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="config/TextFieldManager.qml">
+## File: config/TextFieldManager.qml
+````
 pragma Singleton
 
 import Quickshell
@@ -17661,9 +17990,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="modules/CellAudioVisual.qml">
+## File: modules/CellAudioVisual.qml
+````
 import qs.config
 import qs.modules
 import qs.services
@@ -17800,9 +18130,10 @@ Item {
     }
 
 }
-</file>
+````
 
-<file path="modules/CellBox.qml">
+## File: modules/CellBox.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -17980,9 +18311,10 @@ Item {
     }
 
 }
-</file>
+````
 
-<file path="modules/CellButton.qml">
+## File: modules/CellButton.qml
+````
 import qs.config
 import qs.modules
 
@@ -18123,9 +18455,10 @@ Item {
 
     }
 }
-</file>
+````
 
-<file path="modules/CellContextMenu.qml">
+## File: modules/CellContextMenu.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -18236,9 +18569,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="modules/CellDropdown.qml">
+## File: modules/CellDropdown.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -18348,9 +18682,10 @@ Item {
 
     }
 }
-</file>
+````
 
-<file path="modules/CellDropdownMenu.qml">
+## File: modules/CellDropdownMenu.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -18457,9 +18792,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="modules/CellHint.qml">
+## File: modules/CellHint.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -18518,9 +18854,10 @@ CellPopup {
     }
 
 }
-</file>
+````
 
-<file path="modules/CellIcon.qml">
+## File: modules/CellIcon.qml
+````
 pragma ComponentBehavior: Bound
 import qs.config
 import qs.modules
@@ -18584,9 +18921,10 @@ Item {
         }
     }
 }
-</file>
+````
 
-<file path="modules/CellKeyHint.qml">
+## File: modules/CellKeyHint.qml
+````
 import qs.config
 import qs.modules
 
@@ -18617,9 +18955,10 @@ RowLayout {
         color: root.disabled ? Colors.fgSubtle : Colors.fgBase
     }
 }
-</file>
+````
 
-<file path="modules/CellLoading.qml">
+## File: modules/CellLoading.qml
+````
 import qs.config
 import qs.modules
 
@@ -18704,9 +19043,10 @@ Item {
     }
 
 }
-</file>
+````
 
-<file path="modules/CellPopup.qml">
+## File: modules/CellPopup.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -18732,11 +19072,19 @@ Item {
 
     property string name
 
+    property var shortcuts: []
+
     property int safeMargin: 2
 
     signal marginsPressed()
 
+    readonly property bool isTop: PopupManager.isTop(name)
+
     property bool escapeToClose: true
+
+    opacity: isTop ? 1 : 0.9
+
+    Behavior on opacity {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
     x: {
         if (!monitor) return Cell.w(cellX)
@@ -18762,6 +19110,7 @@ Item {
     focus: true
 
     ShortcutHandler {
+        active: root.isTop
         shortcuts: [
             {
                 binds: "Escape",
@@ -18771,12 +19120,31 @@ Item {
         ]
     }
 
+    ShortcutHandler {
+        active: root.isTop
+        shortcuts: root.shortcuts
+    }
+
     function close() {
         PopupManager.close(root.name)
     }
 
     implicitWidth: Cell.w(w)
     implicitHeight: Cell.h(h)
+
+    MouseControl {
+
+        anchors.fill: parent
+
+        anchors.leftMargin: -root.monitor?.width ?? 0
+        anchors.rightMargin: -root.monitor?.width ?? 0
+        anchors.topMargin: -root.monitor?.height ?? 0
+        anchors.bottomMargin: -root.monitor?.height ?? 0
+
+        onReleased: {
+            PopupManager.close(PopupManager.getTop())
+        }
+    }
 
     MouseControl {
         anchors.fill: parent
@@ -18790,9 +19158,10 @@ Item {
     }
 
 }
-</file>
+````
 
-<file path="modules/CellProgress.qml">
+## File: modules/CellProgress.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -18925,9 +19294,10 @@ Cells {
     }
 
 }
-</file>
+````
 
-<file path="modules/CellProgressSquare.qml">
+## File: modules/CellProgressSquare.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -19251,9 +19621,10 @@ Item {
     }
 
 }
-</file>
+````
 
-<file path="modules/Cells.qml">
+## File: modules/Cells.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config 
@@ -19346,9 +19717,10 @@ Item {
 
 
 }
-</file>
+````
 
-<file path="modules/CellScrollBar.qml">
+## File: modules/CellScrollBar.qml
+````
 pragma ComponentBehavior: Bound 
 
 import qs.config
@@ -19545,9 +19917,10 @@ Item {
     }
 
 }
-</file>
+````
 
-<file path="modules/CellScrollView.qml">
+## File: modules/CellScrollView.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -19695,9 +20068,10 @@ Cells {
 
 
 }
-</file>
+````
 
-<file path="modules/CellSeparator.qml">
+## File: modules/CellSeparator.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -19813,9 +20187,10 @@ Item {
     }
 
 }
-</file>
+````
 
-<file path="modules/CellTabs.qml">
+## File: modules/CellTabs.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -20025,9 +20400,10 @@ Item {
     }
 
 }
-</file>
+````
 
-<file path="modules/CellText.qml">
+## File: modules/CellText.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -20601,9 +20977,10 @@ Item {
     }
 
 }
-</file>
+````
 
-<file path="modules/CellTextField.qml">
+## File: modules/CellTextField.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -21311,9 +21688,10 @@ Item {
     }
 
 }
-</file>
+````
 
-<file path="modules/CellTextNew.qml">
+## File: modules/CellTextNew.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -21427,9 +21805,10 @@ Item {
 
 
 }
-</file>
+````
 
-<file path="modules/MarqueeCellText.qml">
+## File: modules/MarqueeCellText.qml
+````
 import qs.config
 import qs.modules
 import qs.services
@@ -21566,9 +21945,10 @@ Cells {
         onTriggered: parent.paused = false
     }
 }
-</file>
+````
 
-<file path="modules/MouseControl.qml">
+## File: modules/MouseControl.qml
+````
 import QtQuick
 
 Item {
@@ -21687,9 +22067,10 @@ Item {
 
     }
 }
-</file>
+````
 
-<file path="modules/ShortcutHandler.qml">
+## File: modules/ShortcutHandler.qml
+````
 pragma ComponentBehavior: Bound
 
 import QtQuick
@@ -21697,6 +22078,8 @@ import QtQuick
 Item {
 
     id: root
+
+    property bool active: true
 
     property var shortcuts: []
 
@@ -21716,11 +22099,12 @@ Item {
         model: root.shortcuts
 
         delegate: Loader {
+
             id: le_shortcut
 
             required property var modelData
 
-            active: modelData.active ?? true
+            active: (modelData.active ?? true) && root.active
 
             sourceComponent: Shortcut {
                 property var modelData: le_shortcut.modelData
@@ -21738,9 +22122,10 @@ Item {
     }
 
 }
-</file>
+````
 
-<file path="modules/WallpaperEngine.qml">
+## File: modules/WallpaperEngine.qml
+````
 import qs.config
 import qs.modules
 import qs.services
@@ -22004,9 +22389,10 @@ Item {
     }
 
 }
-</file>
+````
 
-<file path="scripts/wallpaperShaders/fade.frag">
+## File: scripts/wallpaperShaders/fade.frag
+````glsl
 #version 440
 
 layout(location = 0) in vec2 qt_TexCoord0;
@@ -22033,9 +22419,10 @@ void main() {
     fragColor = imgTex * ubuf.qt_Opacity;
 
 }
-</file>
+````
 
-<file path="scripts/wallpaperShaders/grow.frag">
+## File: scripts/wallpaperShaders/grow.frag
+````glsl
 #version 440
 
 layout(location = 0) in vec2 qt_TexCoord0;
@@ -22086,9 +22473,10 @@ void main() {
 
     fragColor = imgTex * ubuf.qt_Opacity;
 }
-</file>
+````
 
-<file path="scripts/wallpaperShaders/none.frag">
+## File: scripts/wallpaperShaders/none.frag
+````glsl
 #version 440
 
 layout(location = 0) in vec2 qt_TexCoord0;
@@ -22109,9 +22497,10 @@ void main() {
     fragColor = imgTex * ubuf.qt_Opacity;
 
 }
-</file>
+````
 
-<file path="scripts/wallpaperShaders/ripple.frag">
+## File: scripts/wallpaperShaders/ripple.frag
+````glsl
 #version 440
 
 layout(location = 0) in vec2 qt_TexCoord0;
@@ -22232,9 +22621,10 @@ void main() {
     vec4 imgTex = mix(finalOld, finalNew, blendFactor);
     fragColor = imgTex * ubuf.qt_Opacity;
 }
-</file>
+````
 
-<file path="scripts/wallpaperShaders/scomp.sh">
+## File: scripts/wallpaperShaders/scomp.sh
+````bash
 if [[ -z "$1" ]]; then
     echo "Error: Please provide a target shader."
     echo "Usage: $0 <shader_name>"
@@ -22242,9 +22632,10 @@ if [[ -z "$1" ]]; then
 fi
 
 qsb --glsl "100 es,120,150" -o $1.frag.qsb $1.frag
-</file>
+````
 
-<file path="scripts/wallpaperShaders/shrink.frag">
+## File: scripts/wallpaperShaders/shrink.frag
+````glsl
 #version 440
 
 layout(location = 0) in vec2 qt_TexCoord0;
@@ -22295,9 +22686,10 @@ void main() {
 
     fragColor = imgTex * ubuf.qt_Opacity;
 }
-</file>
+````
 
-<file path="scripts/wallpaperShaders/wipe.frag">
+## File: scripts/wallpaperShaders/wipe.frag
+````glsl
 #version 440
 
 layout(location = 0) in vec2 qt_TexCoord0;
@@ -22361,9 +22753,10 @@ void main() {
     fragColor = imgTex * ubuf.qt_Opacity;
 
 }
-</file>
+````
 
-<file path="scripts/.gitignore">
+## File: scripts/.gitignore
+````
 file_cache.json
 frequency.json
 icon_cache.json
@@ -22372,9 +22765,10 @@ clipboard_cache.png
 screenshot_cache.ppm
 
 /__pycache__
-</file>
+````
 
-<file path="scripts/all_emojis.txt">
+## File: scripts/all_emojis.txt
+````
 😀	Smileys & Emotion	face-smiling	grinning face	cheerful | cheery | face | grin | grinning | happy | laugh | nice | smile | smiling | teeth
 😃	Smileys & Emotion	face-smiling	grinning face with big eyes	awesome | big | eyes | face | grin | grinning | happy | mouth | open | smile | smiling | teeth | yay
 😄	Smileys & Emotion	face-smiling	grinning face with smiling eyes	eye | eyes | face | grin | grinning | happy | laugh | lol | mouth | open | smile | smiling
@@ -27417,9 +27811,10 @@ screenshot_cache.ppm
 🏴󠁧󠁢󠁥󠁮󠁧󠁿	Flags	subdivision-flag	flag: England	flag
 🏴󠁧󠁢󠁳󠁣󠁴󠁿	Flags	subdivision-flag	flag: Scotland	flag
 🏴󠁧󠁢󠁷󠁬󠁳󠁿	Flags	subdivision-flag	flag: Wales	flag
-</file>
+````
 
-<file path="scripts/calendar_manager.py">
+## File: scripts/calendar_manager.py
+````python
 import json
 import re
 import sys
@@ -27571,9 +27966,10 @@ def main():
 
 
 main()
-</file>
+````
 
-<file path="scripts/color_extractor.py">
+## File: scripts/color_extractor.py
+````python
 #!/usr/bin/env python3
 import argparse
 import json
@@ -27821,9 +28217,10 @@ if __name__ == "__main__":
     parser.set_defaults(light=False)
     args = parser.parse_args()
     print(json.dumps(generate_palette(args.image, is_light_mode=args.light, debug=args.debug), indent=2))
-</file>
+````
 
-<file path="scripts/colors_backup.json">
+## File: scripts/colors_backup.json
+````json
 {
     "hutao":            {
         "name":         "Hu Tao",
@@ -27988,13 +28385,15 @@ if __name__ == "__main__":
         "borderActive": "#ee5396", "borderInactive": "#262626"
     }
 }
-</file>
+````
 
-<file path="scripts/colors_config.txt">
+## File: scripts/colors_config.txt
+````
 auto
-</file>
+````
 
-<file path="scripts/colors_lightify.py">
+## File: scripts/colors_lightify.py
+````python
 #!/usr/bin/env python3
 import argparse
 import json
@@ -28199,9 +28598,10 @@ def main():
 
 if __name__ == "__main__":
     main()
-</file>
+````
 
-<file path="scripts/colors.json">
+## File: scripts/colors.json
+````json
 {
   "hutao": {
     "name": "Hu Tao",
@@ -29124,13 +29524,15 @@ if __name__ == "__main__":
     "borderInactive": "#221e3c"
   }
 }
-</file>
+````
 
-<file path="scripts/config.json">
-{"hints":true,"quickStart":true,"minimal":false,"textBasedVolume":false,"hideBar":false,"bottomBar":false,"optimizeMemory":true,"safeNotifications":false,"dnd":false,"shadow":true,"hyprAnim":true,"hyprBlur":false,"bgCava":true,"bgCavaLock":false,"screenshotStay":true,"screenshotCursor":true,"lockScreenMusic":true,"sfx":false,"userLightMode":false,"autoLightMode":true,"debug":true}
-</file>
+## File: scripts/config.json
+````json
+{"hints":true,"quickStart":true,"minimal":false,"textBasedVolume":false,"hideBar":false,"bottomBar":false,"optimizeMemory":true,"safeNotifications":false,"dnd":false,"shadow":true,"hyprAnim":true,"hyprBlur":false,"bgCava":true,"bgCavaLock":false,"screenshotStay":true,"screenshotCursor":true,"lockScreenMusic":false,"sfx":false,"userLightMode":false,"autoLightMode":true,"debug":false}
+````
 
-<file path="scripts/config.py">
+## File: scripts/config.py
+````python
 import json
 import sys
 import os
@@ -29227,6 +29629,13 @@ SETTINGS = [
         "category": "settings",
         "type": "menu",
         "value": [
+            {
+                "label": "Authentication check",
+                "description": "Check authentication capability.",
+                "category": "settings",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "auth_check"],
+            },
             {
                 "label": "Notification check",
                 "description": "Send a dummy notification.",
@@ -29511,9 +29920,10 @@ def main():
             print(json.dumps(COLORS))
 
 main()
-</file>
+````
 
-<file path="scripts/convert_emojis.py">
+## File: scripts/convert_emojis.py
+````python
 import json
 
 def parse_emoji_file(input_path, output_path):
@@ -29554,9 +29964,10 @@ def parse_emoji_file(input_path, output_path):
     print(f"Done! {len(emojis)} emojis written to {output_path}")
 
 parse_emoji_file("all_emojis.txt", "emojis.json")
-</file>
+````
 
-<file path="scripts/convert_hyprconf.py">
+## File: scripts/convert_hyprconf.py
+````python
 import os
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -29565,9 +29976,10 @@ with open(os.path.join(SCRIPT_DIR, "hyprland.lua")) as f:
     data = f.read() 
     data = "SET_COLOR=\"" + data.replace("\"","\\\"") + "\""
     print(data)
-</file>
+````
 
-<file path="scripts/dependencies_checker.sh">
+## File: scripts/dependencies_checker.sh
+````bash
 #!/usr/bin/env bash
 
 # Format: "package_name|Clean Title|Description"
@@ -29634,13 +30046,15 @@ check_list() {
 check_list "pacman" "${PACMAN_DEPS[@]}"
 check_list "aur" "${AUR_DEPS[@]}"
 echo "TERMINATE"
-</file>
+````
 
-<file path="scripts/emojis_recent.json">
+## File: scripts/emojis_recent.json
+````json
 [{"category":"emoji","description":"Skull <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-negative","skull","body","dead","death","face","fairy","fairytale","i’m","lmao","monster","skull","tale","yolo"],"label":"💀","type":"exec","value":["bash","-c","sleep 0.2 && wtype 💀"]},{"category":"emoji","description":"Pensive face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-sleepy","pensive face","awful","bored","dejected","died","disappointed","face","losing","lost","pensive","sad","sucks"],"label":"😔","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😔"]},{"category":"emoji","description":"Loudly crying face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-concerned","loudly crying face","bawling","cry","crying","face","loudly","sad","sob","tear","tears","unhappy"],"label":"😭","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😭"]}]
-</file>
+````
 
-<file path="scripts/emojis.json">
+## File: scripts/emojis.json
+````json
 [
     {
         "label": "😀",
@@ -120953,9 +121367,10 @@ echo "TERMINATE"
         "type": "exec"
     }
 ]
-</file>
+````
 
-<file path="scripts/events.json">
+## File: scripts/events.json
+````json
 {
   "23-04": [
     {
@@ -121030,9 +121445,10 @@ echo "TERMINATE"
     }
   ]
 }
-</file>
+````
 
-<file path="scripts/hyprland.lua">
+## File: scripts/hyprland.lua
+````lua
 hl.config({
 
     general = {
@@ -121096,9 +121512,10 @@ hl.bind("SUPER + space", hl.dsp.exec_cmd("qs -c tui ipc call config open_popup q
 hl.bind("SUPER + space", hl.dsp.exec_cmd("qs -c tui ipc call config close_popup quick_menu"), {release = true})
 hl.bind("SUPER + escape", hl.dsp.exec_cmd("qs -c tui ipc call launcher toggle"))
 hl.bind("SUPER + P", hl.dsp.exec_cmd("qs -c tui ipc call config dummy"))
-</file>
+````
 
-<file path="scripts/init.sh">
+## File: scripts/init.sh
+````bash
 #!/bin/bash
 
 echo ""
@@ -121196,9 +121613,10 @@ hl.bind(\"SUPER + L\", hl.dsp.exec_cmd(\"qs -c tui ipc call config lock_screen\"
 hyprctl eval "$SET_COLOR"
 
 echo "Finished setting up Hyprland's config"
-</file>
+````
 
-<file path="scripts/launcher.py">
+## File: scripts/launcher.py
+````python
 #!/usr/bin/env python3
 
 from config import SETTINGS, CALC, COLORS
@@ -121812,9 +122230,10 @@ def main():
             print(f"[timer] Search finished: {time.perf_counter() - init:.4f}s", file=sys.stderr)
 
 main()
-</file>
+````
 
-<file path="scripts/light_or_dark.py">
+## File: scripts/light_or_dark.py
+````python
 #!/usr/bin/env python3
 import sys
 import argparse
@@ -121913,9 +122332,10 @@ def main():
 
 if __name__ == "__main__":
     main()
-</file>
+````
 
-<file path="scripts/obs_status.py">
+## File: scripts/obs_status.py
+````python
 #!/usr/bin/env python3
 
 import socket
@@ -122096,9 +122516,10 @@ def main():
                     pass
 
 main()
-</file>
+````
 
-<file path="scripts/pacman-filter.py">
+## File: scripts/pacman-filter.py
+````python
 #!/usr/bin/env python3
 """
 pacman_backend.py — Structured JSON backend for a pacman UI.
@@ -122479,9 +122900,10 @@ def main():
 
 if __name__ == "__main__":
     main()
-</file>
+````
 
-<file path="scripts/pamtester.py">
+## File: scripts/pamtester.py
+````python
 import subprocess
 import os
 import getpass
@@ -122519,9 +122941,10 @@ def verify_user_credentials(password_text):
 
 # Test with a bad password to make sure it rejects it!
 print(verify_user_credentials("tsubenn"))
-</file>
+````
 
-<file path="scripts/password_checker.c">
+## File: scripts/password_checker.c
+````c
 #include <security/pam_appl.h>
 #include <security/pam_misc.h>
 #include <stdio.h>
@@ -122601,9 +123024,10 @@ int main() {
 
     return 0;
 }
-</file>
+````
 
-<file path="scripts/quick_dependencies_checker.sh">
+## File: scripts/quick_dependencies_checker.sh
+````bash
 #!/usr/bin/env bash
 
 PACMAN_DEPS=(
@@ -122665,14 +123089,16 @@ check_list "pacman" "${PACMAN_DEPS[@]}"
 check_list "aur" "${AUR_DEPS[@]}"
 
 echo "TERMINATE"
-</file>
+````
 
-<file path="scripts/quit.sh">
+## File: scripts/quit.sh
+````bash
 pkill -f qs
 hyprctl reload
-</file>
+````
 
-<file path="scripts/reminders.json">
+## File: scripts/reminders.json
+````json
 {
   "MO": [
     {
@@ -122798,14 +123224,16 @@ hyprctl reload
     }
   ]
 }
-</file>
+````
 
-<file path="scripts/revive.sh">
+## File: scripts/revive.sh
+````bash
 pkill -f qs
 qs -c tui
-</file>
+````
 
-<file path="scripts/test.py">
+## File: scripts/test.py
+````python
 #!/usr/bin/env python3
 import argparse
 import math
@@ -122875,14 +123303,16 @@ if __name__ == "__main__":
 
     mode_flag = analyze_image_mode(args.image, threshold=args.threshold)
     print(mode_flag)
-</file>
+````
 
-<file path="scripts/text.txt">
+## File: scripts/text.txt
+````
 Why doesn't work
 Next line
-</file>
+````
 
-<file path="scripts/wallpapers_cacher.sh">
+## File: scripts/wallpapers_cacher.sh
+````bash
 #!/bin/bash
 
 # Ensure a directory argument was passed
@@ -122988,9 +123418,10 @@ done
 # Wait for the remaining background jobs to finish before exiting completely
 wait
 echo "Done! Check the '$TARGET_DIR/.qscache' directory."
-</file>
+````
 
-<file path="scripts/wallpapers_config.json">
+## File: scripts/wallpapers_config.json
+````json
 {
   "transition": {
     "type": "shrink",
@@ -123112,13 +123543,15 @@ echo "Done! Check the '$TARGET_DIR/.qscache' directory."
   },
   "live": true
 }
-</file>
+````
 
-<file path="scripts/why.txt">
+## File: scripts/why.txt
+````
 
-</file>
+````
 
-<file path="services/ANSI.qml">
+## File: services/ANSI.qml
+````
 pragma Singleton 
 
 import Quickshell
@@ -123747,9 +124180,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/AudioInfo.qml">
+## File: services/AudioInfo.qml
+````
 pragma Singleton 
 
 import qs.services
@@ -124019,9 +124453,136 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/BluetoothInfo.qml">
+## File: services/AuthInfo.qml
+````
+pragma Singleton
+
+import qs.services
+
+import Quickshell
+import Quickshell.Io
+import QtQuick
+
+// ─────────────────────────────────────────────────────────────────
+// AuthInfo — centralized PAM verification service.
+//
+// Owns a single long-lived `password_checker` process (the same C
+// binary that LockSession.qml uses inline). Other components ask
+// AuthInfo to verify a password and listen for the verified/failed
+// signals, instead of each spawning their own PAM process.
+//
+// API:
+//   AuthInfo.verify(password)   // non-blocking; emits verified() or failed()
+//   AuthInfo.authenticating     // true while a verification is in flight
+//
+// Signals:
+//   verified()                  // PAM returned success
+//   failed()                    // PAM returned failure (wrong password)
+//
+// Concurrency: only one verification can be in flight at a time.
+// If verify() is called while authenticating, the call is dropped and
+// a warning is logged. This is fine for our usage — auth flows are
+// modal and block user input by design.
+// ─────────────────────────────────────────────────────────────────
+
+Singleton {
+
+    id: root
+
+    // True between verify() call and the resulting verified/failed signal.
+    // UI uses this to disable the submit button + show a spinner.
+    property bool authenticating: false
+
+    property int authenticate_id: 0
+
+    signal verified(id: int)
+    signal failed()
+    
+    signal unmatch_id()
+
+    signal prompted(prompt: string, description: string, return_password: bool, id: int)
+
+    function ask(prompt = "Authenticate", description = "", return_password = false) {
+        root.prompted(prompt, description, return_password, root.authenticate_id)
+    }
+
+    // The PAM checker is a long-lived process: it reads passwords
+    // line-by-line from stdin and writes "1" (success) or "0" (failure)
+    // to stdout, one line per verification. See scripts/password_checker.c
+    // for the implementation. We keep it alive for the entire shell
+    // lifetime so verifications are instant (no process spawn latency).
+    Process {
+
+        id: check_pwd
+
+        property int id: 0
+
+        onRunningChanged: {
+            // Auto-restart on crash — the PAM process should always be
+            // available. If it dies (e.g. OOM kill), bring it back so
+            // the next verify() works instead of silently failing.
+            if (!running) {
+                running = true
+            }
+        }
+
+        running: true
+        command: [SystemInfo.configdir + "/scripts/password_checker"]
+
+        stdout: SplitParser {
+            onRead: (text) => {
+                if (text == "1") {
+                    if (check_pwd.id == root.authenticate_id) {
+                        root.authenticating = false
+                        root.verified(root.authenticate_id++)
+                    } else {
+                        root.unmatch_id()
+                        console.log("AuthInfo (check_pwd): Unmatched authentication id")
+                    }
+                } else if (text == "0") {
+                    root.authenticating = false
+                    root.failed()
+                }
+                // Any other output (debug prints, etc.) is ignored.
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    console.log("AuthInfo (check_pwd stderr): " + text)
+                }
+            }
+        }
+
+    }
+
+    // Verify a password against the local PAM stack.
+    // Non-blocking: emits verified() or failed() shortly after.
+    // The password string is written to stdin and immediately goes out
+    // of scope on the caller side — see AuthPopup.qml for the wipe pattern.
+    function verify(password: string, id: int) {
+        if (!check_pwd.running) {
+            console.warn("AuthInfo: check_pwd process not running, cannot verify")
+            root.failed()
+            return
+        }
+        if (root.authenticating) {
+            console.warn("AuthInfo: verify() called while already authenticating, dropping")
+            return
+        }
+        root.authenticating = true
+        check_pwd.id = id
+        check_pwd.write(password + "\n")
+    }
+
+}
+````
+
+## File: services/BluetoothInfo.qml
+````
 pragma Singleton
 
 import qs.services
@@ -124262,9 +124823,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/BrightnessInfo.qml">
+## File: services/BrightnessInfo.qml
+````
 pragma Singleton
 
 import Quickshell
@@ -124324,9 +124886,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/CalendarInfo.qml">
+## File: services/CalendarInfo.qml
+````
 pragma Singleton
 
 import qs.config
@@ -124836,9 +125399,10 @@ Component.onCompleted: {
 }
 
 }
-</file>
+````
 
-<file path="services/Cava.qml">
+## File: services/Cava.qml
+````
 pragma Singleton 
 
 import qs.services
@@ -124906,9 +125470,10 @@ bit_format = 16bit")`]
     }
 
 }
-</file>
+````
 
-<file path="services/ClipboardInfo.qml">
+## File: services/ClipboardInfo.qml
+````
 pragma Singleton
 
 import qs.services
@@ -125019,9 +125584,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/DateTime.qml">
+## File: services/DateTime.qml
+````
 pragma Singleton
 
 import Quickshell
@@ -125056,9 +125622,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/EmojisInfo.qml">
+## File: services/EmojisInfo.qml
+````
 pragma Singleton
 
 import qs.services
@@ -125143,9 +125710,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/GithubInfo.qml">
+## File: services/GithubInfo.qml
+````
 pragma Singleton
 
 import Quickshell
@@ -125182,9 +125750,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/HyprInfo.qml">
+## File: services/HyprInfo.qml
+````
 pragma Singleton
 
 import qs.services
@@ -125433,9 +126002,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/IconInfo.qml">
+## File: services/IconInfo.qml
+````
 pragma Singleton 
 
 import Quickshell
@@ -125485,9 +126055,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/LauncherInfo.qml">
+## File: services/LauncherInfo.qml
+````
 pragma Singleton
 
 import qs.services
@@ -125625,9 +126196,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/LockInfo.qml">
+## File: services/LockInfo.qml
+````
 pragma Singleton
 
 import Quickshell
@@ -125645,9 +126217,10 @@ Singleton {
     property string password: ""
 
 }
-</file>
+````
 
-<file path="services/MediaPlayerInfo.qml">
+## File: services/MediaPlayerInfo.qml
+````
 pragma Singleton
 
 import qs.services
@@ -125796,9 +126369,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/NotificationsInfo.qml">
+## File: services/NotificationsInfo.qml
+````
 pragma Singleton
 
 import qs.services
@@ -126363,9 +126937,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/OBSInfo.qml">
+## File: services/OBSInfo.qml
+````
 pragma Singleton
 
 import qs.services
@@ -126431,9 +127006,10 @@ Singleton {
         }
     }
 }
-</file>
+````
 
-<file path="services/PacmanInfo.qml">
+## File: services/PacmanInfo.qml
+````
 pragma Singleton
 
 import qs.services
@@ -126524,7 +127100,7 @@ Singleton {
 
     property var search_results: packages
 
-    function isInstalled(pkg: string) {
+    function isInstalled(pkg: string): bool {
         return packages.some(item => item.name == pkg && item.installed)
     }
 
@@ -126598,9 +127174,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/ScreenshotInfo.qml">
+## File: services/ScreenshotInfo.qml
+````
 pragma Singleton
 
 import qs.services
@@ -126710,9 +127287,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/SettingsInfo.qml">
+## File: services/SettingsInfo.qml
+````
 pragma Singleton
 
 import qs.config
@@ -126919,6 +127497,7 @@ Singleton {
         function notification_check(): void {
             root.notification_check()
         }
+        function auth_check(): void {AuthInfo.ask()}
         function audio_check(): void {
             root.audio_check()
         }
@@ -126976,9 +127555,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/SystemInfo.qml">
+## File: services/SystemInfo.qml
+````
 pragma Singleton 
 
 import qs.services
@@ -127525,9 +128105,10 @@ Singleton {
         }
 
     }
-</file>
+````
 
-<file path="services/Uptime.qml">
+## File: services/Uptime.qml
+````
 pragma Singleton
 
 import Quickshell
@@ -127581,9 +128162,10 @@ Singleton {
 
     }
 }
-</file>
+````
 
-<file path="services/WallpaperInfo.qml">
+## File: services/WallpaperInfo.qml
+````
 pragma Singleton
 
 import qs.config
@@ -128002,9 +128584,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/WeatherInfo.qml">
+## File: services/WeatherInfo.qml
+````
 pragma Singleton
 
 import Quickshell
@@ -128056,9 +128639,10 @@ Singleton {
     }
 
 }
-</file>
+````
 
-<file path="services/WifiInfo.qml">
+## File: services/WifiInfo.qml
+````
 pragma Singleton
 
 import qs.services
@@ -128256,9 +128840,10 @@ Singleton {
 
     }
 }
-</file>
+````
 
-<file path=".luarc.json">
+## File: .luarc.json
+````json
 {
   "workspace": {
     "library": [
@@ -128269,9 +128854,10 @@ Singleton {
     "globals": ["hl"]
   }
 }
-</file>
+````
 
-<file path="dependencies.txt">
+## File: dependencies.txt
+````
 *: AUR
 
 hyprland (duh)
@@ -128314,9 +128900,10 @@ noto-fonts-emoji
 noto-fonts-cjk
 ttf-jetbrains-mono
 ttf-jetbrains-mono-nerd
-</file>
+````
 
-<file path="plan.md">
+## File: plan.md
+````markdown
 **PROJECT STRUCTURE**
 ```
 ~/.config/quickshell/new/
@@ -128564,9 +129151,10 @@ ttf-jetbrains-mono-nerd
 **BACKLOG**
 - TUI themed file explorer with mouse + drag and drop
 - Ayano integration as chat overlay
-</file>
+````
 
-<file path="shell.qml">
+## File: shell.qml
+````
 pragma ComponentBehavior: Bound
 
 import qs.config
@@ -128752,6 +129340,4 @@ ShellRoot {
         }
     }
 }
-</file>
-
-</files>
+````

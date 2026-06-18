@@ -29,195 +29,193 @@ CellPopup {
 
     escapeToClose: false
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: "Escape",
-                action: () => {
-                    if (root.edit) {
-                        root.edit = false
-                    }
-                    else {
-                        root.close()
-                    }
+    shortcuts: [
+        {
+            binds: "Escape",
+            action: () => {
+                if (root.edit) {
+                    root.edit = false
                 }
-            },
-            {
-                binds: "Return",
-                action: () => {
-                    if (!root.edit) {
-                        root.edit = true
-                    }
-                    if (title_textfield.text.length > 0) {
-                        edit.apply()
-                    }
+                else {
+                    root.close()
                 }
-            },
-            {
-                binds: "Tab",
-                action: () => {
-                    if (title_textfield.focus) {
-                        body_textfield.grabFocus()
-                    } else if (body_textfield.focus) {
-                        title_textfield.grabFocus()
-                    }
-                    if (hour.focus) {
-                        minute.grabFocus()
-                    } else if (minute.focus) {
-                        hour.grabFocus()
-                    }
+            }
+        },
+        {
+            binds: "Return",
+            action: () => {
+                if (!root.edit) {
+                    root.edit = true
                 }
-            },
-            {
-                binds: "Left",
-                active: !TextFieldManager.active,
-                action: () => {
-
-                    if (calendar.selected.year != calendar.year) {
-                        calendar.year = calendar.selected.year
-                    }
-
-                    if (calendar.selected.month != calendar.month) {
-                        calendar.month = calendar.selected.month
-                    }
-
-                    const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
-                    today.setDate(today.getDate() - 1)
-
-                    if (today.getFullYear() < calendar.year) {
-                        calendar.year -= 1
-                        calendar.month = 12
-                    } else if (today.getFullYear() > calendar.year) {
-                        calendar.year += 1
-                        calendar.month = 1
-                    }
-
-                    if (today.getMonth()+1 < calendar.month) {
-                        calendar.month -= 1
-                    } else if (today.getMonth()+1 > calendar.month) {
-                        calendar.month += 1
-                    }
-
-                    calendar.selected = {
-                        day: today.getDate(),
-                        month: today.getMonth()+1,
-                        year: today.getFullYear(),
-                    }
-
+                if (title_textfield.text.length > 0) {
+                    edit.apply()
                 }
-            },
-            {
-                binds: "Right",
-                active: !TextFieldManager.active,
-                action: () => {
-
-                    if (calendar.selected.year != calendar.year) {
-                        calendar.year = calendar.selected.year
-                    }
-
-                    if (calendar.selected.month != calendar.month) {
-                        calendar.month = calendar.selected.month
-                    }
-
-                    const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
-                    today.setDate(today.getDate() + 1)
-
-                    if (today.getFullYear() < calendar.year) {
-                        calendar.year -= 1
-                        calendar.month = 12
-                    } else if (today.getFullYear() > calendar.year) {
-                        calendar.year += 1
-                        calendar.month = 1
-                    }
-
-                    if (today.getMonth()+1 < calendar.month) {
-                        calendar.month -= 1
-                    } else if (today.getMonth()+1 > calendar.month) {
-                        calendar.month += 1
-                    }
-
-                    calendar.selected = {
-                        day: today.getDate(),
-                        month: today.getMonth()+1,
-                        year: today.getFullYear(),
-                    }
+            }
+        },
+        {
+            binds: "Tab",
+            action: () => {
+                if (title_textfield.focus) {
+                    body_textfield.grabFocus()
+                } else if (body_textfield.focus) {
+                    title_textfield.grabFocus()
                 }
-            },
-            {
-                binds: "Up",
-                action: () => {
-
-                    if (calendar.selected.year != calendar.year) {
-                        calendar.year = calendar.selected.year
-                    }
-
-                    if (calendar.selected.month != calendar.month) {
-                        calendar.month = calendar.selected.month
-                    }
-
-                    const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
-                    today.setDate(today.getDate() - 7)
-
-                    if (today.getFullYear() < calendar.year) {
-                        calendar.year -= 1
-                        calendar.month = 12
-                    } else if (today.getFullYear() > calendar.year) {
-                        calendar.year += 1
-                        calendar.month = 1
-                    }
-
-                    if (today.getMonth()+1 < calendar.month) {
-                        calendar.month -= 1
-                    } else if (today.getMonth()+1 > calendar.month) {
-                        calendar.month += 1
-                    }
-
-                    calendar.selected = {
-                        day: today.getDate(),
-                        month: today.getMonth()+1,
-                        year: today.getFullYear(),
-                    }
+                if (hour.focus) {
+                    minute.grabFocus()
+                } else if (minute.focus) {
+                    hour.grabFocus()
                 }
-            },
-            {
-                binds: "Down",
-                action: () => {
+            }
+        },
+        {
+            binds: "Left",
+            active: !TextFieldManager.active,
+            action: () => {
 
-                    if (calendar.selected.year != calendar.year) {
-                        calendar.year = calendar.selected.year
-                    }
-
-                    if (calendar.selected.month != calendar.month) {
-                        calendar.month = calendar.selected.month
-                    }
-
-                    const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
-                    today.setDate(today.getDate() + 7)
-
-                    if (today.getFullYear() < calendar.year) {
-                        calendar.year -= 1
-                        calendar.month = 12
-                    } else if (today.getFullYear() > calendar.year) {
-                        calendar.year += 1
-                        calendar.month = 1
-                    }
-
-                    if (today.getMonth()+1 < calendar.month) {
-                        calendar.month -= 1
-                    } else if (today.getMonth()+1 > calendar.month) {
-                        calendar.month += 1
-                    }
-
-                    calendar.selected = {
-                        day: today.getDate(),
-                        month: today.getMonth()+1,
-                        year: today.getFullYear(),
-                    }
+                if (calendar.selected.year != calendar.year) {
+                    calendar.year = calendar.selected.year
                 }
-            },
 
-        ]
-    }
+                if (calendar.selected.month != calendar.month) {
+                    calendar.month = calendar.selected.month
+                }
+
+                const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
+                today.setDate(today.getDate() - 1)
+
+                if (today.getFullYear() < calendar.year) {
+                    calendar.year -= 1
+                    calendar.month = 12
+                } else if (today.getFullYear() > calendar.year) {
+                    calendar.year += 1
+                    calendar.month = 1
+                }
+
+                if (today.getMonth()+1 < calendar.month) {
+                    calendar.month -= 1
+                } else if (today.getMonth()+1 > calendar.month) {
+                    calendar.month += 1
+                }
+
+                calendar.selected = {
+                    day: today.getDate(),
+                    month: today.getMonth()+1,
+                    year: today.getFullYear(),
+                }
+
+            }
+        },
+        {
+            binds: "Right",
+            active: !TextFieldManager.active,
+            action: () => {
+
+                if (calendar.selected.year != calendar.year) {
+                    calendar.year = calendar.selected.year
+                }
+
+                if (calendar.selected.month != calendar.month) {
+                    calendar.month = calendar.selected.month
+                }
+
+                const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
+                today.setDate(today.getDate() + 1)
+
+                if (today.getFullYear() < calendar.year) {
+                    calendar.year -= 1
+                    calendar.month = 12
+                } else if (today.getFullYear() > calendar.year) {
+                    calendar.year += 1
+                    calendar.month = 1
+                }
+
+                if (today.getMonth()+1 < calendar.month) {
+                    calendar.month -= 1
+                } else if (today.getMonth()+1 > calendar.month) {
+                    calendar.month += 1
+                }
+
+                calendar.selected = {
+                    day: today.getDate(),
+                    month: today.getMonth()+1,
+                    year: today.getFullYear(),
+                }
+            }
+        },
+        {
+            binds: "Up",
+            action: () => {
+
+                if (calendar.selected.year != calendar.year) {
+                    calendar.year = calendar.selected.year
+                }
+
+                if (calendar.selected.month != calendar.month) {
+                    calendar.month = calendar.selected.month
+                }
+
+                const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
+                today.setDate(today.getDate() - 7)
+
+                if (today.getFullYear() < calendar.year) {
+                    calendar.year -= 1
+                    calendar.month = 12
+                } else if (today.getFullYear() > calendar.year) {
+                    calendar.year += 1
+                    calendar.month = 1
+                }
+
+                if (today.getMonth()+1 < calendar.month) {
+                    calendar.month -= 1
+                } else if (today.getMonth()+1 > calendar.month) {
+                    calendar.month += 1
+                }
+
+                calendar.selected = {
+                    day: today.getDate(),
+                    month: today.getMonth()+1,
+                    year: today.getFullYear(),
+                }
+            }
+        },
+        {
+            binds: "Down",
+            action: () => {
+
+                if (calendar.selected.year != calendar.year) {
+                    calendar.year = calendar.selected.year
+                }
+
+                if (calendar.selected.month != calendar.month) {
+                    calendar.month = calendar.selected.month
+                }
+
+                const today = new Date(calendar.selected.year,calendar.selected.month-1,calendar.selected.day)
+                today.setDate(today.getDate() + 7)
+
+                if (today.getFullYear() < calendar.year) {
+                    calendar.year -= 1
+                    calendar.month = 12
+                } else if (today.getFullYear() > calendar.year) {
+                    calendar.year += 1
+                    calendar.month = 1
+                }
+
+                if (today.getMonth()+1 < calendar.month) {
+                    calendar.month -= 1
+                } else if (today.getMonth()+1 > calendar.month) {
+                    calendar.month += 1
+                }
+
+                calendar.selected = {
+                    day: today.getDate(),
+                    month: today.getMonth()+1,
+                    year: today.getFullYear(),
+                }
+            }
+        },
+
+    ]
 
     CellBox {
 
@@ -520,354 +518,354 @@ CellPopup {
 
                                 sourceComponent: Cells {
 
-                                id: day
+                                    id: day
 
-                                property var modelData: days_loader.modelData
+                                    property var modelData: days_loader.modelData
 
-                                property string date: modelData.day
-                                property bool isToday: modelData.isToday
-                                property bool inMonth: modelData.inMonth
-                                property bool isCurrentMonth: modelData.isCurrentMonth
-                                property bool nextMonth: modelData.nextMonth ?? false
+                                    property string date: modelData.day
+                                    property bool isToday: modelData.isToday
+                                    property bool inMonth: modelData.inMonth
+                                    property bool isCurrentMonth: modelData.isCurrentMonth
+                                    property bool nextMonth: modelData.nextMonth ?? false
 
-                                property var reminders: modelData.reminders ?? []
-                                property var events: modelData.events ?? []
+                                    property var reminders: modelData.reminders ?? []
+                                    property var events: modelData.events ?? []
 
-                                property bool hasSpan: false
-                                property bool beginSpan: false
-                                property bool midSpan: false
-                                property bool endSpan: false
-                                property bool hasDeadline: false
-                                property bool hasImportant: false
+                                    property bool hasSpan: false
+                                    property bool beginSpan: false
+                                    property bool midSpan: false
+                                    property bool endSpan: false
+                                    property bool hasDeadline: false
+                                    property bool hasImportant: false
 
-                                property bool hasImportantSpan: false
-                                property bool hasDeadlineSpan: false
+                                    property bool hasImportantSpan: false
+                                    property bool hasDeadlineSpan: false
 
-                                property bool isSelected: (
-                                    calendar.selected.month == calendar.month &&
-                                    calendar.selected.day == date && inMonth &&
-                                    calendar.selected.year == calendar.year
-                                )
+                                    property bool isSelected: (
+                                        calendar.selected.month == calendar.month &&
+                                        calendar.selected.day == date && inMonth &&
+                                        calendar.selected.year == calendar.year
+                                    )
 
-                                Component.onCompleted: {
-                                    for (const event of events) {
-                                        event.isEvent = true
-                                    }
+                                    Component.onCompleted: {
+                                        for (const event of events) {
+                                            event.isEvent = true
+                                        }
 
-                                    const weekday = CalendarInfo.getDay(day.date, calendar.month + (day.inMonth ? 0 : (day.nextMonth ? 1 : -1)), calendar.year)
+                                        const weekday = CalendarInfo.getDay(day.date, calendar.month + (day.inMonth ? 0 : (day.nextMonth ? 1 : -1)), calendar.year)
 
-                                    for (const reminder of day.reminders) {
-                                        if (/^\d{2}\/\d{2}\/\d{4}$/.test(reminder.date)) {
-                                            day.hasSpan = true
-                                            if (weekday == "MO") {
-                                                day.beginSpan = true
+                                        for (const reminder of day.reminders) {
+                                            if (/^\d{2}\/\d{2}\/\d{4}$/.test(reminder.date)) {
+                                                day.hasSpan = true
+                                                if (weekday == "MO") {
+                                                    day.beginSpan = true
+                                                }
+                                                if (weekday == "SU") {
+                                                    day.endSpan = true
+                                                }
+                                                if (weekday != "MO" && weekday != "SU" ) {
+                                                    day.midSpan = true
+                                                }
+                                                if (reminder.urgency == 2) {
+                                                    day.hasDeadlineSpan = true
+                                                } else if (reminder.urgency == 1) {
+                                                    day.hasImportantSpan = true
+                                                }
                                             }
-                                            if (weekday == "SU") {
-                                                day.endSpan = true
+                                            if (reminder.urgency == 2) {
+                                                day.hasDeadline =  true
                                             }
-                                            if (weekday != "MO" && weekday != "SU" ) {
+                                            if (reminder.urgency == 1) {
+                                                day.hasImportant = true
+                                            }
+                                            if (reminder.span_idx == reminder.span) {
+                                                day.endSpan =  true
+                                            }
+                                            if (reminder.span_idx > 1 && reminder.span_idx < reminder.span) {
                                                 day.midSpan = true
                                             }
+                                            if (reminder.span_idx == 1) {
+                                                day.beginSpan =  true
+                                            }
+                                            if (reminder.span > 1) {
+                                                day.hasSpan = true
+                                                if (reminder.urgency == 2) {
+                                                    day.hasDeadlineSpan = true
+                                                } else if (reminder.urgency == 1) {
+                                                    day.hasImportantSpan = true
+                                                }
+                                            }
+                                        }
+                                        for (const reminder of day.events) {
+                                            if (/^\d{2}\/\d{2}\/\d{4}$/.test(reminder.date)) {
+                                                day.hasSpan = true
+                                                if (weekday == "MO") {
+                                                    day.beginSpan = true
+                                                }
+                                                if (weekday == "SU") {
+                                                    day.endSpan = true
+                                                }
+                                                if (weekday != "MO" && weekday != "SU" ) {
+                                                    day.midSpan = true
+                                                }
+                                                if (reminder.urgency == 2) {
+                                                    day.hasDeadlineSpan =  true
+                                                } else if (reminder.urgency == 1) {
+                                                    day.hasImportantSpan = true
+                                                }
+                                            }
                                             if (reminder.urgency == 2) {
-                                                day.hasDeadlineSpan = true
-                                            } else if (reminder.urgency == 1) {
-                                                day.hasImportantSpan = true
+                                                day.hasDeadline =  true
                                             }
-                                        }
-                                        if (reminder.urgency == 2) {
-                                            day.hasDeadline =  true
-                                        }
-                                        if (reminder.urgency == 1) {
-                                            day.hasImportant = true
-                                        }
-                                        if (reminder.span_idx == reminder.span) {
-                                            day.endSpan =  true
-                                        }
-                                        if (reminder.span_idx > 1 && reminder.span_idx < reminder.span) {
-                                            day.midSpan = true
-                                        }
-                                        if (reminder.span_idx == 1) {
-                                            day.beginSpan =  true
-                                        }
-                                        if (reminder.span > 1) {
-                                            day.hasSpan = true
-                                            if (reminder.urgency == 2) {
-                                                day.hasDeadlineSpan = true
-                                            } else if (reminder.urgency == 1) {
-                                                day.hasImportantSpan = true
+                                            if (reminder.urgency == 1) {
+                                                day.hasImportant = true
                                             }
-                                        }
-                                    }
-                                    for (const reminder of day.events) {
-                                        if (/^\d{2}\/\d{2}\/\d{4}$/.test(reminder.date)) {
-                                            day.hasSpan = true
-                                            if (weekday == "MO") {
-                                                day.beginSpan = true
+                                            if (reminder.span_idx == reminder.span) {
+                                                day.endSpan =  true
                                             }
-                                            if (weekday == "SU") {
-                                                day.endSpan = true
-                                            }
-                                            if (weekday != "MO" && weekday != "SU" ) {
+                                            if (reminder.span_idx > 1 && reminder.span_idx < reminder.span) {
                                                 day.midSpan = true
                                             }
-                                            if (reminder.urgency == 2) {
-                                                day.hasDeadlineSpan =  true
-                                            } else if (reminder.urgency == 1) {
-                                                day.hasImportantSpan = true
+                                            if (reminder.span_idx == 1) {
+                                                day.beginSpan =  true
                                             }
-                                        }
-                                        if (reminder.urgency == 2) {
-                                            day.hasDeadline =  true
-                                        }
-                                        if (reminder.urgency == 1) {
-                                            day.hasImportant = true
-                                        }
-                                        if (reminder.span_idx == reminder.span) {
-                                            day.endSpan =  true
-                                        }
-                                        if (reminder.span_idx > 1 && reminder.span_idx < reminder.span) {
-                                            day.midSpan = true
-                                        }
-                                        if (reminder.span_idx == 1) {
-                                            day.beginSpan =  true
-                                        }
-                                        if (reminder.span > 1) {
-                                            day.hasSpan = true
-                                            if (reminder.urgency == 2) {
-                                                day.hasDeadlineSpan =  true
-                                            } else if (reminder.urgency == 1) {
-                                                day.hasImportantSpan = true
+                                            if (reminder.span > 1) {
+                                                day.hasSpan = true
+                                                if (reminder.urgency == 2) {
+                                                    day.hasDeadlineSpan =  true
+                                                } else if (reminder.urgency == 1) {
+                                                    day.hasImportantSpan = true
+                                                }
                                             }
                                         }
                                     }
-                                }
 
-                                w: 4
-                                h: 1
+                                    w: 4
+                                    h: 1
 
-                                color: {
-                                    if (day.isToday) {
-                                        return Colors.accentStrong
-                                    } else if (day.isSelected) {
-                                        return Colors.secondary
-                                    } else {
-                                        return "transparent"
-                                    }
-                                }
-
-                                CellText {
-
-                                    x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
-
-                                    text: day.date
                                     color: {
-                                        if (!day.inMonth) {
-                                            if (day.hasDeadline && blinking_deadline.on) {
-                                                return Colors.blend(Colors.danger,Colors.fgSubtle,0.7)
-                                            } else if (day.hasDeadline && !blinking_deadline.on) {
-                                                return Colors.blend(Colors.warning,Colors.fgSubtle,0.7)
-                                            } else if (day.hasImportant) {
-                                                return Colors.blend(Colors.warning,Colors.fgSubtle,0.9)
-                                            } else if (day.events.length > 0) {
-                                                return Colors.blend(Colors.success,Colors.fgSubtle,0.9)
-                                            } else if (day.reminders.length > 0) {
-                                                return Colors.blend(Colors.info,Colors.fgSubtle,0.9)
-                                            }
-                                            return Colors.fgSubtle
-                                        }
                                         if (day.isToday) {
-                                            return Colors.onAccent
+                                            return Colors.accentStrong
                                         } else if (day.isSelected) {
-                                            return Colors.bgSurface
-                                        } else if (day.hasDeadline && blinking_deadline.on) {
-                                            return Colors.danger
-                                        } else if (day.hasDeadline && !blinking_deadline.on) {
-                                            return Colors.warning
-                                        } else if (day.hasImportant) {
-                                            return Colors.warning
-                                        } else if (day.events.length > 0) {
-                                            return Colors.success
-                                        } else if (day.reminders.length > 0) {
-                                            return Colors.info
-                                        } else if (day.inMonth) {
-                                            return Colors.fgBase
+                                            return Colors.secondary
                                         } else {
-                                            return Colors.fgSubtle
+                                            return "transparent"
                                         }
                                     }
-                                    font: {
-                                        if (day.hasDeadline) {
+
+                                    CellText {
+
+                                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                                        text: day.date
+                                        color: {
                                             if (!day.inMonth) {
+                                                if (day.hasDeadline && blinking_deadline.on) {
+                                                    return Colors.blend(Colors.danger,Colors.fgSubtle,0.7)
+                                                } else if (day.hasDeadline && !blinking_deadline.on) {
+                                                    return Colors.blend(Colors.warning,Colors.fgSubtle,0.7)
+                                                } else if (day.hasImportant) {
+                                                    return Colors.blend(Colors.warning,Colors.fgSubtle,0.9)
+                                                } else if (day.events.length > 0) {
+                                                    return Colors.blend(Colors.success,Colors.fgSubtle,0.9)
+                                                } else if (day.reminders.length > 0) {
+                                                    return Colors.blend(Colors.info,Colors.fgSubtle,0.9)
+                                                }
+                                                return Colors.fgSubtle
+                                            }
+                                            if (day.isToday) {
+                                                return Colors.onAccent
+                                            } else if (day.isSelected) {
+                                                return Colors.bgSurface
+                                            } else if (day.hasDeadline && blinking_deadline.on) {
+                                                return Colors.danger
+                                            } else if (day.hasDeadline && !blinking_deadline.on) {
+                                                return Colors.warning
+                                            } else if (day.hasImportant) {
+                                                return Colors.warning
+                                            } else if (day.events.length > 0) {
+                                                return Colors.success
+                                            } else if (day.reminders.length > 0) {
+                                                return Colors.info
+                                            } else if (day.inMonth) {
+                                                return Colors.fgBase
+                                            } else {
+                                                return Colors.fgSubtle
+                                            }
+                                        }
+                                        font: {
+                                            if (day.hasDeadline) {
+                                                if (!day.inMonth) {
+                                                    return Cell.fontB
+                                                }
+                                                return Cell.fontBB
+                                            }
+                                            if (day.isToday || day.isSelected || day.reminders.length > 0 || day.events.length > 0) {
                                                 return Cell.fontB
                                             }
-                                            return Cell.fontBB
+                                            return Cell.font
                                         }
-                                        if (day.isToday || day.isSelected || day.reminders.length > 0 || day.events.length > 0) {
-                                            return Cell.fontB
-                                        }
-                                        return Cell.font
+
                                     }
 
-                                }
+                                    CellText {
 
-                                CellText {
+                                        visible: (!day.isSelected || !day.hasDeadline) && day.hasSpan
 
-                                    visible: (!day.isSelected || !day.hasDeadline) && day.hasSpan
+                                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
 
-                                    x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
-
-                                    text: {
-                                        if (!day.inMonth) {
+                                        text: {
+                                            if (!day.inMonth) {
+                                                if (day.midSpan) {
+                                                    return day.date < 10 ? "╴ ╶─" : "╴  ╶"
+                                                } else if (day.beginSpan && !day.endSpan) {
+                                                    return day.date < 10 ? "  ╶─" : "   ╶"
+                                                } else if (day.endSpan && !day.beginSpan) {
+                                                    return day.date < 10 ? "╴   " : "╴   "
+                                                } else if (day.endSpan && day.beginSpan) {
+                                                    return day.date < 10 ? "╴ ╶─" : "╴  ╶"
+                                                }
+                                            }
                                             if (day.midSpan) {
-                                                return day.date < 10 ? "╴ ╶─" : "╴  ╶"
+                                                return day.date < 10 ? "╸ ╺━" : "╸  ╺"
                                             } else if (day.beginSpan && !day.endSpan) {
-                                                return day.date < 10 ? "  ╶─" : "   ╶"
+                                                return day.date < 10 ? "  ╺━" : "   ╺"
                                             } else if (day.endSpan && !day.beginSpan) {
-                                                return day.date < 10 ? "╴   " : "╴   "
+                                                return day.date < 10 ? "╸   " : "╸   "
                                             } else if (day.endSpan && day.beginSpan) {
-                                                return day.date < 10 ? "╴ ╶─" : "╴  ╶"
+                                                return day.date < 10 ? "╸ ╺━" : "╸  ╺"
                                             }
-                                        }
-                                        if (day.midSpan) {
-                                            return day.date < 10 ? "╸ ╺━" : "╸  ╺"
-                                        } else if (day.beginSpan && !day.endSpan) {
-                                            return day.date < 10 ? "  ╺━" : "   ╺"
-                                        } else if (day.endSpan && !day.beginSpan) {
-                                            return day.date < 10 ? "╸   " : "╸   "
-                                        } else if (day.endSpan && day.beginSpan) {
-                                            return day.date < 10 ? "╸ ╺━" : "╸  ╺"
-                                        }
-                                        return ""
-                                    } 
-                                    color: {
-                                        if (!day.inMonth) {
-                                            if (day.hasDeadlineSpan) {
-                                                return Colors.blend(Colors.danger,Colors.fgSubtle,0.9)
+                                            return ""
+                                        } 
+                                        color: {
+                                            if (!day.inMonth) {
+                                                if (day.hasDeadlineSpan) {
+                                                    return Colors.blend(Colors.danger,Colors.fgSubtle,0.9)
+                                                } else if (day.hasImportantSpan) {
+                                                    return Colors.blend(Colors.warning,Colors.fgSubtle,0.9)
+                                                } else if (day.hasDeadline) {
+                                                    return Colors.blend(Colors.danger,Colors.fgSubtle,0.9)
+                                                } else if (day.hasImportant) {
+                                                    return Colors.blend(Colors.warning,Colors.fgSubtle,0.9)
+                                                } else if (day.events.length > 0) {
+                                                    return Colors.blend(Colors.success,Colors.fgSubtle,0.9)
+                                                } else if (day.reminders.length > 0) {
+                                                    return Colors.blend(Colors.info,Colors.fgSubtle,0.9)
+                                                }
+                                                return Colors.fgSubtle
+                                            }
+                                            if (day.isToday) {
+                                                return Colors.onAccent
+                                            } else if (day.isSelected) {
+                                                return Colors.bgSurface
+                                            } else if (day.hasDeadlineSpan) {
+                                                return Colors.danger
                                             } else if (day.hasImportantSpan) {
-                                                return Colors.blend(Colors.warning,Colors.fgSubtle,0.9)
+                                                return Colors.warning
                                             } else if (day.hasDeadline) {
-                                                return Colors.blend(Colors.danger,Colors.fgSubtle,0.9)
+                                                return Colors.danger
                                             } else if (day.hasImportant) {
-                                                return Colors.blend(Colors.warning,Colors.fgSubtle,0.9)
+                                                return Colors.warning
                                             } else if (day.events.length > 0) {
-                                                return Colors.blend(Colors.success,Colors.fgSubtle,0.9)
+                                                return Colors.success
                                             } else if (day.reminders.length > 0) {
-                                                return Colors.blend(Colors.info,Colors.fgSubtle,0.9)
+                                                return Colors.info
+                                            } else {
+                                                return Colors.fgBase
                                             }
-                                            return Colors.fgSubtle
                                         }
-                                        if (day.isToday) {
-                                            return Colors.onAccent
-                                        } else if (day.isSelected) {
-                                            return Colors.bgSurface
-                                        } else if (day.hasDeadlineSpan) {
-                                            return Colors.danger
-                                        } else if (day.hasImportantSpan) {
-                                            return Colors.warning
-                                        } else if (day.hasDeadline) {
-                                            return Colors.danger
-                                        } else if (day.hasImportant) {
-                                            return Colors.warning
-                                        } else if (day.events.length > 0) {
-                                            return Colors.success
-                                        } else if (day.reminders.length > 0) {
-                                            return Colors.info
-                                        } else {
+
+                                        font: {
+                                            if (day.hasDeadline) {
+                                                return Cell.fontBB
+                                            }
+                                            if (day.isToday || day.isSelected || day.reminders.length > 0 || day.events.length > 0) {
+                                                return Cell.fontB
+                                            }
+                                            return Cell.font
+                                        }
+
+                                    }
+
+                                    CellText {
+
+                                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                                        text: {
+                                            if (day.hasDeadline && (day.isSelected || day.isToday) && blinking_deadline.on) {
+                                                return "!  !"
+                                            }
+                                            return ""
+                                        }
+
+                                        color: {
+                                            if (day.isToday) {
+                                                return Colors.onAccent
+                                            } else if (day.isSelected) {
+                                                return Colors.bgSurface
+                                            }
                                             return Colors.fgBase
                                         }
+                                        font: Cell.fontBB
+
                                     }
 
-                                    font: {
-                                        if (day.hasDeadline) {
-                                            return Cell.fontBB
-                                        }
-                                        if (day.isToday || day.isSelected || day.reminders.length > 0 || day.events.length > 0) {
-                                            return Cell.fontB
-                                        }
-                                        return Cell.font
-                                    }
+                                    MouseControl {
 
-                                }
+                                        anchors.fill: parent
 
-                                CellText {
-
-                                    x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
-
-                                    text: {
-                                        if (day.hasDeadline && (day.isSelected || day.isToday) && blinking_deadline.on) {
-                                            return "!  !"
-                                        }
-                                        return ""
-                                    }
-
-                                    color: {
-                                        if (day.isToday) {
-                                            return Colors.onAccent
-                                        } else if (day.isSelected) {
-                                            return Colors.bgSurface
-                                        }
-                                        return Colors.fgBase
-                                    }
-                                    font: Cell.fontBB
-
-                                }
-
-                                MouseControl {
-
-                                    anchors.fill: parent
-
-                                    onPressed: (button) => {
-                                        const global = mapToGlobal(mouseX,mouseY)
-                                        if (button == "L" && day.inMonth) {
-                                            if (!day.isSelected) {
-                                                calendar.selected = {
-                                                    "day": day.date,
-                                                    "month": calendar.month,
-                                                    "year": calendar.year,
+                                        onPressed: (button) => {
+                                            const global = mapToGlobal(mouseX,mouseY)
+                                            if (button == "L" && day.inMonth) {
+                                                if (!day.isSelected) {
+                                                    calendar.selected = {
+                                                        "day": day.date,
+                                                        "month": calendar.month,
+                                                        "year": calendar.year,
+                                                    }
+                                                } else {
+                                                    calendar.selected = calendar.today
                                                 }
-                                            } else {
-                                                calendar.selected = calendar.today
                                             }
-                                        }
-                                        if (button == "R" && day.inMonth) {
-                                            ContextMenuManager.show([
-                                                {
-                                                    label: (day.date == calendar.selected.day && calendar.month == calendar.selected.month && calendar.year == calendar.selected.year) ? "Deselect" : "Select", action: () =>
+                                            if (button == "R" && day.inMonth) {
+                                                ContextMenuManager.show([
                                                     {
-                                                        if (!day.isSelected) {
-                                                            calendar.selected = {
-                                                                "day": day.date,
-                                                                "month": calendar.month,
-                                                                "year": calendar.year,
+                                                        label: (day.date == calendar.selected.day && calendar.month == calendar.selected.month && calendar.year == calendar.selected.year) ? "Deselect" : "Select", action: () =>
+                                                        {
+                                                            if (!day.isSelected) {
+                                                                calendar.selected = {
+                                                                    "day": day.date,
+                                                                    "month": calendar.month,
+                                                                    "year": calendar.year,
+                                                                }
+                                                            } else {
+                                                                calendar.selected = calendar.today
                                                             }
-                                                        } else {
-                                                            calendar.selected = calendar.today
+                                                        },
+                                                        disabled: day.isToday && calendar.selected.day == calendar.today.day && calendar.selected.month == calendar.today.month && calendar.selected.year == calendar.today.year
+                                                    },
+                                                    {
+                                                        label: "Add reminder", action: () =>
+                                                        {
+                                                            if (!day.isSelected) {
+                                                                calendar.selected = {
+                                                                    "day": day.date,
+                                                                    "month": calendar.month,
+                                                                    "year": calendar.year,
+                                                                }
+                                                            } else {
+                                                                calendar.selected = calendar.today
+                                                            }
+                                                            root.edit = !root.edit
                                                         }
                                                     },
-                                                    disabled: day.isToday && calendar.selected.day == calendar.today.day && calendar.selected.month == calendar.today.month && calendar.selected.year == calendar.today.year
-                                                },
-                                                {
-                                                    label: "Add reminder", action: () =>
-                                                    {
-                                                        if (!day.isSelected) {
-                                                            calendar.selected = {
-                                                                "day": day.date,
-                                                                "month": calendar.month,
-                                                                "year": calendar.year,
-                                                            }
-                                                        } else {
-                                                            calendar.selected = calendar.today
-                                                        }
-                                                        root.edit = !root.edit
-                                                    }
-                                                },
-                                            ],global.x,global.y,undefined,"")
+                                                ],global.x,global.y,undefined,"")
+                                            }
                                         }
+
                                     }
 
                                 }
-
-                            }
                             }
 
                         }

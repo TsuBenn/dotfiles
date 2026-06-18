@@ -11,38 +11,36 @@ CellPopup {
 
     property bool minimal: SettingsInfo.minimal
 
-    w: 51 - Cell.wCount(Cell.h(6),"ceil")*root.minimal
-    h: Cell.hCount(layout.implicitHeight)
+    w: 51 - Cell.wCount(Cell.h(6),"ceil")*root.minimal + 2
+    h: Cell.hCount(layout.implicitHeight) + 2
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: "Space",
-                action: () => {
-                    MediaPlayerInfo.playPauseMedia()
-                }
-            },
-            {
-                binds: ["D", "L","Right"],
-                action: () => {
-                    MediaPlayerInfo.nextMedia()
-                }
-            },
-            {
-                binds: ["A", "J","Left"],
-                action: () => {
-                    MediaPlayerInfo.prevMedia()
-                }
-            },
-        ]
-    }
+    shortcuts: [
+        {
+            binds: "Space",
+            action: () => {
+                MediaPlayerInfo.playPauseMedia()
+            }
+        },
+        {
+            binds: ["D", "L","Right"],
+            action: () => {
+                MediaPlayerInfo.nextMedia()
+            }
+        },
+        {
+            binds: ["A", "J","Left"],
+            action: () => {
+                MediaPlayerInfo.prevMedia()
+            }
+        },
+    ]
 
     CellBox {
 
         id: box
 
-        w: root.w+2
-        h: root.h+2
+        w: root.w
+        h: root.h
 
         ColumnLayout {
 

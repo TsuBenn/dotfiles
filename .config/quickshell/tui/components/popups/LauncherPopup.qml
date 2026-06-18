@@ -411,6 +411,8 @@ CellPopup {
 
                             ShortcutHandler {
 
+                                active: root.isTop
+
                                 property int result_h: root.minimal ? 2 : 3
 
                                 shortcuts: [
@@ -526,6 +528,7 @@ CellPopup {
                                         }
                                     },
                                 ]
+
                             }
 
                             Repeater {

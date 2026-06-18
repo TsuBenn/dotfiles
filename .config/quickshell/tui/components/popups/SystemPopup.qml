@@ -15,8 +15,8 @@ CellPopup {
 
     property bool minimal: SettingsInfo.minimal
 
-    w: box.eW*3 + 3
-    h: minimal ? 21 : 27
+    w: box.eW*3 + 3 + 2
+    h: minimal ? 23 : 29
 
     function fmt(str, ...args) {
         return str.replace(/{}/g, () => args.shift());
@@ -25,7 +25,6 @@ CellPopup {
     function strip(str: string): string {
         return str.trim().replace(/<[^>]*>/g,"")
     }
-
 
     CellBox {
 
@@ -42,8 +41,8 @@ CellPopup {
         property int warning_thres: 70
         property int danger_thres: 80
 
-        w: root.w+2
-        h: root.h+2
+        w: root.w
+        h: root.h
 
         component Header: CellSeparator {
 

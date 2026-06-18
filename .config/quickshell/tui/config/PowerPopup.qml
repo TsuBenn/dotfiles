@@ -111,47 +111,45 @@ CellPopup {
         }
     }
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: "1",
-                action: () => {PowerManager.call("Sleep", 3)},
-            },
-            {
-                binds: "2",
-                action: () => {PowerManager.call("Reboot", 3)},
-            },
-            {
-                binds: "3",
-                action: () => {PowerManager.call("Shutdown", 3)},
-            },
-            {
-                binds: "4",
-                active: !root.lock,
-                action: () => {SystemInfo.lock()},
-            },
-            {
-                binds: root.lock ? "4" : "5",
-                action: () => {PowerManager.call("Logout", 3)},
-            },
-            {
-                binds: "0",
-                action: () => {root.close()},
-            },
-            {
-                binds: "Up",
-                action: () => {menu.selected = (menu.selected - 1 + 6)%6},
-            },
-            {
-                binds: "Down",
-                action: () => {menu.selected = (menu.selected + 1 + 6)%6},
-            },
-            {
-                binds: "Return",
-                action: () => {menu.actions[menu.selected]()},
-            },
-        ]
-    }
+    shortcuts: [
+        {
+            binds: "1",
+            action: () => {PowerManager.call("Sleep", 3)},
+        },
+        {
+            binds: "2",
+            action: () => {PowerManager.call("Reboot", 3)},
+        },
+        {
+            binds: "3",
+            action: () => {PowerManager.call("Shutdown", 3)},
+        },
+        {
+            binds: "4",
+            active: !root.lock,
+            action: () => {SystemInfo.lock()},
+        },
+        {
+            binds: root.lock ? "4" : "5",
+            action: () => {PowerManager.call("Logout", 3)},
+        },
+        {
+            binds: "0",
+            action: () => {root.close()},
+        },
+        {
+            binds: "Up",
+            action: () => {menu.selected = (menu.selected - 1 + 6)%6},
+        },
+        {
+            binds: "Down",
+            action: () => {menu.selected = (menu.selected + 1 + 6)%6},
+        },
+        {
+            binds: "Return",
+            action: () => {menu.actions[menu.selected]()},
+        },
+    ]
 
     Cells {
 

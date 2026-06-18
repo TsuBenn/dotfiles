@@ -23,45 +23,43 @@ CellPopup {
         emojis.result = []
     }
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: "Up",
-                action: () => {
-                    root.advance(-5)
-                    root.alignList()
-                }
-            },
-            {
-                binds: ["Left", "Shift+Tab"],
-                action: () => {
-                    root.advance(-1)
-                    root.alignList()
-                }
-            },
-            {
-                binds: "Down",
-                action: () => {
-                    root.advance(5)
-                    root.alignList()
-                }
-            },
-            {
-                binds: ["Right", "Tab"],
-                action: () => {
-                    root.advance(1)
-                    root.alignList()
-                }
-            },
-            {
-                binds: "Return",
-                action: () => {
-                    root.select()
-                    root.alignList()
-                }
-            },
-        ]
-    }
+    shortcuts: [
+        {
+            binds: "Up",
+            action: () => {
+                root.advance(-5)
+                root.alignList()
+            }
+        },
+        {
+            binds: ["Left", "Shift+Tab"],
+            action: () => {
+                root.advance(-1)
+                root.alignList()
+            }
+        },
+        {
+            binds: "Down",
+            action: () => {
+                root.advance(5)
+                root.alignList()
+            }
+        },
+        {
+            binds: ["Right", "Tab"],
+            action: () => {
+                root.advance(1)
+                root.alignList()
+            }
+        },
+        {
+            binds: "Return",
+            action: () => {
+                root.select()
+                root.alignList()
+            }
+        },
+    ]
 
     function alignList() {
         if (Math.floor(emojis.selected/5) > Math.floor(list.offset/3) + 1) {

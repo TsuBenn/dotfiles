@@ -22,6 +22,45 @@ CellPopup {
 
     escapeToClose: false
 
+    shortcuts: [
+        {
+            binds: "Left",
+            action: () => {
+                selection.advance(-1)
+            }
+        },
+        {
+            binds: "Right",
+            action: () => {
+                selection.advance(1)
+            }
+        },
+        {
+            binds: "Tab",
+            active: textfield.focus,
+            action: () => {
+                more.yes = !more.yes
+            }
+        },
+        {
+            binds: "Escape",
+            action: () => {
+                if (!textfield.focus) {
+                    textfield.grabFocus()
+                    return
+                }
+                PopupManager.close("wallpaper")
+            }
+        },
+        {
+            binds: "Return",
+            active: textfield.focus,
+            action: () => {
+                selection.select()
+            }
+        }
+    ]
+
     SequentialAnimation {
         id: hide
         NumberAnimation {
@@ -568,47 +607,6 @@ CellPopup {
                             }
 
                             selection.wallpapers = WallpaperInfo.search(text)
-                        }
-
-                        ShortcutHandler {
-                            shortcuts: [
-                                {
-                                    binds: "Left",
-                                    action: () => {
-                                        selection.advance(-1)
-                                    }
-                                },
-                                {
-                                    binds: "Right",
-                                    action: () => {
-                                        selection.advance(1)
-                                    }
-                                },
-                                {
-                                    binds: "Tab",
-                                    active: textfield.focus,
-                                    action: () => {
-                                        more.yes = !more.yes
-                                    }
-                                },
-                                {
-                                    binds: "Escape",
-                                    action: () => {
-                                        if (!textfield.focus) {
-                                            textfield.grabFocus()
-                                            return
-                                        }
-                                        PopupManager.close("wallpaper")
-                                    }
-                                },
-                                {
-                                    binds: "Return",
-                                    active: textfield.focus,
-                                    action: () => {
-                                        selection.select()
-                                    }
-                                }
-                            ]
                         }
 
                     }

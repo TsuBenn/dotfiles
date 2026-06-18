@@ -17,7 +17,7 @@ WlSessionLockSurface {
 
     id: root
 
-    property bool processing: false
+    property bool processing: AuthInfo.authenticating
 
     property bool focused: monitor.name == HyprInfo.focusedMonitor.name
 
@@ -30,12 +30,11 @@ WlSessionLockSurface {
 
     onVisibleChanged: {
         password_field.focus = true
-        check_pwd.running = true
         lock_screen_anim.restart()
     }
 
     function unlock(password: string) {
-        check_pwd.write(password + "\n")
+        AuthInfo.verify(password)
     }
 
     MediaPlayer {
@@ -582,32 +581,18 @@ WlSessionLockSurface {
         }
     }
 
-    Process {
-
-        id: check_pwd
-
-        onRunningChanged: {
-            if (!running) {
-                running = true
-            }
+    Connections {
+        target: AuthInfo
+        function onVerified() {
+            unlock_anim.restart()
         }
-
-        command: [SystemInfo.configdir + "/scripts/password_checker"]
-
-        stdout: SplitParser {
-            onRead: (text) => {
-                if (text == "1") {
-                    unlock_anim.restart()
-                } else if (text == "0") {
-                    pwd_status.text = " Error: Wrong password! "
-                    pwd_status.color = Colors.danger
-                    reset_pwd_status.running = true
-                    password_field.set("")
-                    root.processing = false
-                }
-            }
+        function onFailed() {
+            pwd_status.text = " Error: Wrong password! "
+            pwd_status.color = Colors.danger
+            reset_pwd_status.running = true
+            password_field.set("")
+            root.processing = false
         }
-
     }
 
 }

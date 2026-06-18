@@ -427,7 +427,7 @@ Scope {
 
                     property bool mouse_check: false
 
-                    anchors.topMargin: root.implicitHeight*(!PopupManager.isOpen("power")&&!PopupManager.isOpen("screenshot"))
+                    anchors.topMargin: (root.implicitHeight-1)*(!PopupManager.isOpen("power")&&!PopupManager.isOpen("screenshot"))
                     anchors.top: parent.top
                     anchors.right: parent.right
                     anchors.left: parent.left

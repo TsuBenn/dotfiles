@@ -42,53 +42,51 @@ CellPopup {
         return maxCounter + 1;
     }
 
-    ShortcutHandler {
-        shortcuts: [
-            {
-                binds: "Up",
-                action: () => {
-                    color.selected = Math.max(color.selected - 1,0)
-                    if (color.selected - list.offset/2 < 0) {
-                        list.offset = Math.floor(color.selected/13)*26
-                    }
+    shortcuts: [
+        {
+            binds: "Up",
+            action: () => {
+                color.selected = Math.max(color.selected - 1,0)
+                if (color.selected - list.offset/2 < 0) {
+                    list.offset = Math.floor(color.selected/13)*26
                 }
-            },
-            {
-                binds: "Down",
-                action: () => {
-                    color.selected = Math.min(color.selected + 1,root.result.length-1)
-                    if (color.selected - list.offset/2 >= 13) {
-                        list.offset = Math.floor(color.selected/13)*26
-                    }
+            }
+        },
+        {
+            binds: "Down",
+            action: () => {
+                color.selected = Math.min(color.selected + 1,root.result.length-1)
+                if (color.selected - list.offset/2 >= 13) {
+                    list.offset = Math.floor(color.selected/13)*26
                 }
-            },
-            {
-                binds: "Tab",
-                active: !TextFieldManager.active || textfield.focus,
-                action: () => {
-                    preview_tab.selected = (preview_tab.selected + 1 + 2)%2
+            }
+        },
+        {
+            binds: "Tab",
+            active: !TextFieldManager.active || textfield.focus,
+            action: () => {
+                preview_tab.selected = (preview_tab.selected + 1 + 2)%2
+            }
+        },
+        {
+            binds: "Return",
+            active: Colors.current != root.result[color.selected],
+            action: () => {
+                Colors.current = root.result[color.selected]
+            }
+        },
+        {
+            binds: "Escape",
+            active: color.edit && !TextFieldManager.active,
+            action: () => {
+                if (color.color_picker) {
+                    color.color_picker = false
+                } else {
+                    color.toggleEdit()
                 }
-            },
-            {
-                binds: "Return",
-                active: Colors.current != root.result[color.selected],
-                action: () => {
-                    Colors.current = root.result[color.selected]
-                }
-            },
-            {
-                binds: "Escape",
-                active: color.edit && !TextFieldManager.active,
-                action: () => {
-                    if (color.color_picker) {
-                        color.color_picker = false
-                    } else {
-                        color.toggleEdit()
-                    }
-                }
-            },
-        ]
-    }
+            }
+        },
+    ]
 
     onVisibleChanged: {
         if (color.edit) {
@@ -326,7 +324,7 @@ CellPopup {
 
                         RowLayout {
 
-                                x: Cell.w(1)
+                            x: Cell.w(1)
 
                             spacing: Cell.w(1)
 

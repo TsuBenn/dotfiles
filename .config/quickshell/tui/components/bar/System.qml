@@ -212,9 +212,9 @@ Cells {
             if (button == "L") {
                 PopupManager.toggle("system")
             } else if (button == "R") {
+                if (PopupManager.isOpen("system")) PopupManager.close("system")
                 HintManager.hint = hint
-                HintManager.show(global.x, global.y, 4)
-                PopupManager.close("system")
+                HintManager.show(global.x, global.y, 4, "", 1000)
             }
         }
 

@@ -88,7 +88,7 @@ Singleton {
 
     property var search_results: packages
 
-    function isInstalled(pkg: string) {
+    function isInstalled(pkg: string): bool {
         return packages.some(item => item.name == pkg && item.installed)
     }
 

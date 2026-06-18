@@ -159,6 +159,19 @@ Item {
 
     }
 
+    AuthPopup {
+
+        id: auth
+
+        monitor: root.monitor
+
+        name: "auth"
+
+        cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2)
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2)
+
+    }
+
     ScreenshotPopup {
 
         id: screenshot
