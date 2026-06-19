@@ -29,15 +29,30 @@ Item {
 
     signal marginsPressed()
 
+    signal promoted()
+
     readonly property bool isTop: PopupManager.isTop(name)
+
+    Connections {
+        target: PopupManager
+        function onSigClose(name) {
+            if (root.name == name) {
+                root.onSigClose()
+                PopupManager.close(root.name)
+            }
+        }
+    }
+
+    function onSigClose() {}
 
     onIsTopChanged: {
         if (isTop) {
+            root.promoted()
             ShortcutInfo.shortcuts = [
                 {
                     binds: "Escape",
                     active: root.escapeToClose,
-                    action: () => root.close()
+                    action: () => PopupManager.sigClose(root.name)
                 },
                 ...shortcuts
             ] 
@@ -70,7 +85,7 @@ Item {
     focus: true
 
     function close() {
-        PopupManager.close(root.name)
+        PopupManager.sigClose(root.name)
     }
 
     implicitWidth: Cell.w(w)
@@ -86,7 +101,7 @@ Item {
         anchors.bottomMargin: -root.monitor?.height ?? 0
 
         onReleased: {
-            PopupManager.close(PopupManager.getTop())
+            PopupManager.sigClose(PopupManager.getTop())
         }
     }
 

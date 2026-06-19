@@ -57,8 +57,8 @@ hl.env("XMODIFIERS", "@im=fcitx")
 hl.env("INPUT_METHOD", "fcitx")
 hl.env("SDL_IM_MODULE", "fcitx")
 
-hl.env("LIBVA_DRIVER_NAME", "nvidia")
-hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
+-- hl.env("LIBVA_DRIVER_NAME", "nvidia")
+-- hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
 
 hl.config({
     general = {
@@ -288,6 +288,27 @@ hl.bind(SUPER..SHIFT.."A", hl.dsp.window.fullscreen({ mode = "fullscreen", actio
 local zoom = 1
 local zoom_strength = 1.5
 
+-- Scroll through existing workspaces with SUPER + scroll
+hl.bind(SUPER .. "mouse_up", function()
+    zoom = math.max(zoom/zoom_strength, 1)
+    hl.config({
+        cursor = {
+            zoom_factor = zoom
+        }
+    })
+end
+)
+
+hl.bind(SUPER .. "mouse_down", function()
+    zoom = math.max(zoom * zoom_strength, 1)
+    hl.config({
+        cursor = {
+            zoom_factor = zoom
+        }
+    })
+end
+)
+
 hl.bind(SUPER.."tab", function()
     zoom = math.max(zoom/zoom_strength, 1)
     hl.config({
@@ -345,10 +366,6 @@ hl.bind(SUPER .. "S",         hl.dsp.workspace.toggle_special("magic"))
 hl.bind(SUPER .. "SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
 hl.bind(SUPER .. "D",         hl.dsp.workspace.toggle_special("mahou"))
 hl.bind(SUPER .. "SHIFT + D", hl.dsp.window.move({ workspace = "special:mahou" }))
-
--- Scroll through existing workspaces with SUPER + scroll
-hl.bind(SUPER .. "mouse_down", hl.dsp.focus({ workspace = "e+1" }))
-hl.bind(SUPER .. "mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
 
 -- Move/resize windows with SUPER + LMB/RMB and dragging
 hl.bind(SUPER .. "mouse:272", hl.dsp.window.drag(),   { mouse = true })

@@ -396,6 +396,9 @@ CellPopup {
 
                     id: info
 
+                    w: box.contentW
+                    h: box.contentH - list.h - 9
+
                     property int dep_index: PacmanInfo.packages.findIndex(item => item.name == deps[deps.length-1])
 
                     property int index: PacmanInfo.packages.findIndex(item => item.name == list.selected_pkg)
@@ -451,9 +454,6 @@ CellPopup {
                     || (datas?.optional_deps ?? []).length > 0
                     || (datas?.make_deps ?? []).length > 0
                     || (datas?.check_deps ?? []).length > 0
-
-                    w: box.contentW
-                    h: box.contentH - list.h - 7
 
                     component Info: RowLayout {
 
@@ -880,8 +880,33 @@ CellPopup {
                     }
 
                 }
-            }
 
+                CellSeparator {
+                    w: box.contentW
+                    color: Colors.accentStrong
+                }
+
+                RowLayout {
+
+                    Layout.alignment: Qt.AlignRight
+                    Layout.rightMargin: Cell.w(1)
+
+                    spacing: 0
+
+                    CellButton {
+
+                        text: PacmanInfo.isInstalled(list.selected_pkg) ? "Uninstall" : "Install"
+
+                        clickable: list.selected_pkg != ""
+
+                        color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                        fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+
+                    }
+
+                }
+
+            }
 
         }
 

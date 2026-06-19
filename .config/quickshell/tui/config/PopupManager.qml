@@ -65,6 +65,8 @@ Singleton {
         isOpen(name) ? close(name) : open(name,isolate)
     }
 
+    signal sigClose(name: string)
+
     function close(name = "") {
         if (name == "") active_popups = [] 
         else active_popups = active_popups.filter(p => p != name)

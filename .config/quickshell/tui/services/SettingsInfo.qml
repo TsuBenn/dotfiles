@@ -53,6 +53,7 @@ Singleton {
     property bool dnd                          : false // Do not disturb
     property bool optimizeMemory               : false // Reduce memory usage significantly, but takes more time to load UI elements
 
+    property bool wallpaperAutoAdvance         : true  // Advance selection as you scroll through the wallpaper selections
 
     property bool shadow                       : false // Shadows for UI elements
 
@@ -84,6 +85,7 @@ Singleton {
         "optimizeMemory",
         "safeNotifications",
         "dnd",
+        "wallpaperAutoAdvance",
         "shadow",
         "hyprAnim",
         "hyprBlur",
@@ -204,7 +206,10 @@ Singleton {
         function notification_check(): void {
             root.notification_check()
         }
-        function auth_check(): void {AuthInfo.ask()}
+        function auth_check(): void {AuthInfo.ask(
+            "Authenticate check",
+            "Check the authentication capability.",
+        )}
         function audio_check(): void {
             root.audio_check()
         }
@@ -219,26 +224,27 @@ Singleton {
             ScreenshotInfo.requestCache()
             if (full) PopupManager.sendSignal("screenshot", "full")
         }
-        function toggle_grids(): void              { root.showGrid() }
-        function toggle_minimal(): void            { root.toggle("minimal") }
-        function toggle_hidebar(): void            { root.toggle("hideBar") }
-        function toggle_memory_optimize(): void    { root.toggle("optimizeMemory") }
-        function toggle_safe_notifications(): void { root.toggle("safeNotifications") }
-        function toggle_hints(): void              { root.toggle("hints") }
-        function toggle_dnd(): void                { root.toggle("dnd") }
-        function toggle_hypranim(): void           { root.toggle("hyprAnim") }
-        function toggle_hyprblur(): void           { root.toggle("hyprBlur") }
-        function toggle_bgcava(): void             { root.toggle("bgCava") }
-        function toggle_bgcava_lock(): void        { root.toggle("bgCavaLock") }
-        function toggle_lock_screen_music(): void  { root.toggle("lockScreenMusic") }
-        function toggle_bottom_bar(): void         { root.toggle("bottomBar") }
-        function toggle_text_based_volume(): void  { root.toggle("textBasedVolume") }
-        function toggle_sfx(): void                { root.toggle("sfx") }
-        function toggle_light_mode(): void         { root.toggle("userLightMode") }
-        function toggle_auto_light_mode(): void    { root.toggle("autoLightMode") }
-        function toggle_appearance(): void         { root.iterateAppearance() }
-        function toggle_shadow(): void             { root.toggle("shadow") }
-        function toggle_quickstart(): void         { root.toggle("quickStart") }
+        function toggle_grids(): void                   { root.showGrid() }
+        function toggle_minimal(): void                 { root.toggle("minimal") }
+        function toggle_hidebar(): void                 { root.toggle("hideBar") }
+        function toggle_memory_optimize(): void         { root.toggle("optimizeMemory") }
+        function toggle_safe_notifications(): void      { root.toggle("safeNotifications") }
+        function toggle_hints(): void                   { root.toggle("hints") }
+        function toggle_dnd(): void                     { root.toggle("dnd") }
+        function toggle_hypranim(): void                { root.toggle("hyprAnim") }
+        function toggle_hyprblur(): void                { root.toggle("hyprBlur") }
+        function toggle_bgcava(): void                  { root.toggle("bgCava") }
+        function toggle_bgcava_lock(): void             { root.toggle("bgCavaLock") }
+        function toggle_lock_screen_music(): void       { root.toggle("lockScreenMusic") }
+        function toggle_bottom_bar(): void              { root.toggle("bottomBar") }
+        function toggle_text_based_volume(): void       { root.toggle("textBasedVolume") }
+        function toggle_sfx(): void                     { root.toggle("sfx") }
+        function toggle_light_mode(): void              { root.toggle("userLightMode") }
+        function toggle_auto_light_mode(): void         { root.toggle("autoLightMode") }
+        function toggle_appearance(): void              { root.iterateAppearance() }
+        function toggle_shadow(): void                  { root.toggle("shadow") }
+        function toggle_quickstart(): void              { root.toggle("quickStart") }
+        function toggle_wallpaper_auto_advance(): void  { root.toggle("wallpaperAutoAdvance") }
 
         function lock_screen(): void               { SystemInfo.lock() }
 

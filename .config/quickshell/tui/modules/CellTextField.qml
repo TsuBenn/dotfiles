@@ -81,6 +81,10 @@ Item {
         }
     }
 
+    function refresh() {
+        visibleChanged()
+    }
+
     onFocusChanged: {
         if (focus) {
             if (disabled) {

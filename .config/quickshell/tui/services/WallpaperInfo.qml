@@ -175,6 +175,10 @@ Singleton {
     }
 
 
+    onCurrentChanged: {
+        saveConfig()
+    }
+
     onWallpapersChanged: {
         saveConfig()
         advance(0)
@@ -377,7 +381,9 @@ Singleton {
             },
             wallpapers: root.wallpapers,
             config: filteredConfig,
-            live: root.live
+            live: root.live,
+            slideshow: root.slideshow,
+            selected: root.selected
         }
 
         SystemInfo.runDetached(["bash", "-c", "echo '" + JSON.stringify(config,null,2) + "' > " + SystemInfo.configdir + "/scripts/wallpapers_config.json"])
@@ -394,22 +400,30 @@ Singleton {
 
         onLoaded: {
 
-            const data = JSON.parse(text())
+            let data = {}
 
-            root.transition.type     = data.transition.type     ?? root.transition.type    
-            root.transition.step     = data.transition.step     ?? root.transition.step    
-            root.transition.duration = data.transition.duration ?? root.transition.duration
-            root.transition.fps      = data.transition.fps      ?? root.transition.fps     
-            root.transition.angle    = data.transition.angle    ?? root.transition.angle   
-            root.transition.posX      = data.transition.posX      ?? root.transition.posX
-            root.transition.posY      = data.transition.posY      ?? root.transition.posY
+            if (text()) {
+                data = JSON.parse(text())
+            }
+
+            root.transition.type     = data.transition?.type     ?? root.transition.type
+            root.transition.step     = data.transition?.step     ?? root.transition.step
+            root.transition.duration = data.transition?.duration ?? root.transition.duration
+            root.transition.fps      = data.transition?.fps      ?? root.transition.fps
+            root.transition.angle    = data.transition?.angle    ?? root.transition.angle
+            root.transition.posX     = data.transition?.posX     ?? root.transition.posX
+            root.transition.posY     = data.transition?.posY     ?? root.transition.posY
 
             root.wallpapers = data.wallpapers ?? []
             root.config = data.config ?? ({})
 
-            root.live = data.live
+            root.live = data.live ?? true
+            root.slideshow = data.slideshow ?? false
+            root.selected = data.selected ?? 0
 
             root.loaded = true
+
+            console.log("WallpaperInfo (loader): Loaded!")
 
         }
 

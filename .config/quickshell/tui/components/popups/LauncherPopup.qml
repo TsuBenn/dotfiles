@@ -41,6 +41,8 @@ CellPopup {
             breadcrumbs.updatePath()
         } else {
             auto_rescan.stop()
+            textfield.set("")
+            textfield.search("")
             LauncherInfo.write("-r")
         }
 
@@ -196,6 +198,9 @@ CellPopup {
                                 property var path: []
 
                                 Component.onCompleted: {
+                                    root.promoted.connect(() => {
+                                        textfield.refresh()
+                                    })
                                     LauncherInfo.pathFound.connect((id, label) => {
                                         textfield.path = [...path, {"id": id, "label": label}]
                                         textfield.search("")

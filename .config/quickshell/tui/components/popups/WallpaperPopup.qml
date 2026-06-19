@@ -754,7 +754,7 @@ CellPopup {
 
                     property bool auto: yes && !WallpaperInfo.slideshow
 
-                    property bool yes: true
+                    property bool yes: SettingsInfo.wallpaperAutoAdvance
 
                     text: "Auto advance"
 
@@ -765,7 +765,7 @@ CellPopup {
 
                     onPressed: (button) => {
                         if (button == "L") {
-                            yes = !yes
+                            SettingsInfo.wallpaperAutoAdvance = !SettingsInfo.wallpaperAutoAdvance
                         }
                     }
 

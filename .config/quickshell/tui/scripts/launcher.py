@@ -44,13 +44,29 @@ the combined (apps+settings+files) result once the file search finishes.
 If the user types a new query before the in-flight file search finishes,
 the old search is cancelled via a generation counter.
 
+Refresh behavior
+================
+
+When a refresh finishes (either from the `r` tag or the startup
+auto-refresh), the launcher re-emits the user's most recent search
+with the new data. This way the user doesn't have to retype to see
+updated results — they just wait a moment and the UI silently updates.
+
+If the user typed a new query while the refresh was running, the
+re-emit uses the NEW query (since _last_search is updated before each
+search runs). So the user always sees fresh data for whatever they're
+currently searching for.
+
 Concurrency model
 =================
 
-* Main thread: reads stdin line-by-line, dispatches to handlers,
-  writes synchronous results to stdout.
+* Stdin reader thread: reads stdin line-by-line, puts lines in a queue.
+* Main thread: drains the queue with a short timeout, processes
+  requests, writes results to stdout. Between requests, checks if a
+  refresh just finished and re-emits the last search if so.
 * Refresh thread: spawned by `r` tag (and once at startup). Runs `fd`
-  + app scan, atomically swaps the new data into place.
+  + app scan, atomically swaps the new data into place, then signals
+  the main thread to re-emit.
 * File-search thread: spawned per query that includes `h`. Each search
   has a generation id; before printing, the worker checks that its
   generation is still current — if not, it discards silently.
@@ -73,6 +89,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import queue
 import re
 import signal
 import subprocess
@@ -149,6 +166,25 @@ _file_search_generation = 0
 
 # Lock for frequency.json writes (multiple increments could race).
 _freq_lock = threading.Lock()
+
+# ─── Main-loop plumbing: queue + rerun signaling ─────────────────────────────
+#
+# The main thread can't block on sys.stdin forever, because it also needs
+# to react to "refresh finished, please re-emit the last search" signals
+# from background threads. So we split stdin reading into its own thread
+# that drops lines into a queue, and the main thread polls the queue
+# with a short timeout. Between polls, it checks _rerun_requested.
+
+_input_queue: "queue.Queue[str | None]" = queue.Queue()
+_rerun_requested = threading.Event()
+
+# Snapshot of the most recent user-issued search. Used by the rerun
+# mechanism after a refresh completes. Guarded by _last_search_lock
+# because the main thread writes it and the refresh-finished path
+# could theoretically read it (though we always read it on the main
+# thread, the lock is defensive).
+_last_search: tuple[list[str], str, list[str]] | None = None
+_last_search_lock = threading.Lock()
 
 
 # ─── Frequency tracking ───────────────────────────────────────────────────────
@@ -453,9 +489,10 @@ def search_apps(apps_list: list[dict], query: str, fuzzy: bool) -> list[dict]:
     if not query:
         return []
 
-    query_re, query, err = parse_regex_query(query)
-    if err:
-        return regex_error_result(err)
+    query_re, query, _err = parse_regex_query(query)
+    # Note: caller (handle_request) does early regex validation, so we
+    # don't return regex_error_result here — _err should never fire in
+    # practice. Defensive only.
 
     out: list[tuple[int, dict]] = []
     for app in apps_list:
@@ -633,9 +670,7 @@ def search_settings(data: list[dict], query: str, fuzzy: bool) -> list[dict]:
     if not query:
         return []
 
-    query_re, query, err = parse_regex_query(query)
-    if err:
-        return regex_error_result(err)
+    query_re, query, _err = parse_regex_query(query)
 
     results: list[tuple[int, dict]] = []
 
@@ -867,6 +902,10 @@ def parse_input(raw: str) -> tuple[list[str], str, list[str]]:
 # Builds new app list, icon index, and file path list in local variables,
 # then swaps them into the globals in one step. Readers see either the
 # old set or the new set, never a mix.
+#
+# After the swap, signals the main loop to re-emit the user's most
+# recent search so the UI picks up the new data without the user
+# needing to retype.
 
 def refresh_background(initial: bool = False) -> None:
     """Rescan apps + icons + files. Swaps into globals atomically when done."""
@@ -899,6 +938,11 @@ def refresh_background(initial: bool = False) -> None:
         file=sys.stderr,
     )
 
+    # Signal the main loop to re-emit the last search (if any) with
+    # the new data. If no search has been issued yet (e.g. startup
+    # refresh), this is a no-op.
+    _rerun_requested.set()
+
 
 def refresh_async(initial: bool = False) -> None:
     """Kick off refresh in a background thread. Non-blocking."""
@@ -919,10 +963,15 @@ def initial_load() -> None:
     refresh_async(initial=True)
 
 
-# ─── Main loop ───────────────────────────────────────────────────────────────
+# ─── Search request handling ─────────────────────────────────────────────────
 
 def handle_request(tags: list[str], query: str, paths: list[str]) -> None:
-    """Process one search request. May emit zero, one, or two JSON lines."""
+    """Process one search request. May emit zero, one, or two JSON lines.
+
+    Note: this function does NOT update _last_search. The caller is
+    responsible for snapshotting the request before calling, so that
+    the rerun mechanism can re-emit it after a refresh.
+    """
     if not tags:
         print("Error: Please add at least a tag!", file=sys.stderr)
         return
@@ -1008,11 +1057,13 @@ def handle_request(tags: list[str], query: str, paths: list[str]) -> None:
                 if item.get("label"):
                     scored_results.append((0, item))
 
+    # Sort combined apps+settings by score (descending).
     scored_results.sort(key=lambda x: x[0], reverse=True)
     base_result = [item for _, item in scored_results]
 
     # ── File search: async, non-blocking ──
     if "h" in tags:
+        # Emit base result immediately so the UI shows apps+settings now.
         print(json.dumps(base_result))
         sys.stdout.flush()
         if query and file_paths:
@@ -1021,17 +1072,81 @@ def handle_request(tags: list[str], query: str, paths: list[str]) -> None:
         print(json.dumps(base_result))
         sys.stdout.flush()
 
+
+# ─── Main loop ───────────────────────────────────────────────────────────────
+#
+# Two-thread model:
+#   - stdin reader thread: blocks on sys.stdin, puts lines in _input_queue
+#   - main thread: drains _input_queue with a 100ms timeout. When the
+#     timeout fires (no input), checks _rerun_requested — if a refresh
+#     just finished, re-emits the last search so the UI picks up new data.
+#
+# This lets the main thread react to refresh completion even when the
+# user isn't typing, without busy-polling stdin (which would burn CPU).
+
+def _stdin_reader() -> None:
+    """Background thread: reads stdin lines, puts them in the queue.
+
+    On EOF (Quickshell closed the pipe), puts None as a sentinel so
+    the main loop knows to exit cleanly.
+    """
+    for line in sys.stdin:
+        _input_queue.put(line.rstrip("\n"))
+    _input_queue.put(None)
+
+
+def _snapshot_and_handle(tags: list[str], query: str, paths: list[str]) -> None:
+    """Record the request as the most recent search, then handle it.
+
+    The snapshot is taken BEFORE handle_request runs, so by the time
+    a refresh-completion rerun fires, _last_search already reflects
+    whatever the user's most recent query was — not the stale one
+    from before the refresh.
+    """
+    with _last_search_lock:
+        _last_search = (tags, query, paths)
+    handle_request(tags, query, paths)
+
+
 def main() -> None:
+    # Start the stdin reader thread before initial_load so we don't
+    # miss any early inputs (though in practice Quickshell waits for
+    # the "launcher: ready" stderr line before sending).
+    threading.Thread(target=_stdin_reader, daemon=True).start()
+
     initial_load()
     print("launcher: ready", file=sys.stderr)
 
-    for line in sys.stdin:
-        line = line.rstrip("\n")
+    global _last_search
+    while True:
+        try:
+            # Short timeout so we can check _rerun_requested between inputs.
+            # 100ms is fast enough that refresh-rerun feels instant to the
+            # user, but slow enough that we're not burning CPU when idle.
+            line = _input_queue.get(timeout=0.1)
+        except queue.Empty:
+            # No new input this tick. Check if a refresh just finished.
+            if _rerun_requested.is_set():
+                _rerun_requested.clear()
+                with _last_search_lock:
+                    last = _last_search
+                if last:
+                    # Re-emit the most recent search with the new data.
+                    # Note: we call handle_request directly, NOT
+                    # _snapshot_and_handle, because we don't want to
+                    # update _last_search — it's already correct.
+                    handle_request(*last)
+            continue
+
+        if line is None:
+            break  # EOF — Quickshell closed stdin, time to exit
+
         if not line:
             continue
+
         try:
             tags, query, paths = parse_input(line)
-            handle_request(tags, query, paths)
+            _snapshot_and_handle(tags, query, paths)
         except Exception as e:
             print(f"launcher: error handling request: {e}", file=sys.stderr)
 

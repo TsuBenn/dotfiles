@@ -40,6 +40,7 @@ Singleton {
 
     signal verified(id: int)
     signal failed()
+    signal canceled()
     
     // signal unmatch_id()
 
@@ -47,6 +48,13 @@ Singleton {
 
     function ask(prompt = "Authenticate", description = "", return_password = false) {
         root.prompted(prompt, description, return_password, root.authenticate_id)
+    }
+
+    function cancel() {
+        check_pwd.running = false
+        root.authenticate_id++
+        console.log("AuthInfo: Canceled")
+        root.canceled()
     }
 
     // The PAM checker is a long-lived process: it reads passwords
