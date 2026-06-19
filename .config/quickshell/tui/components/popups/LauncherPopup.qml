@@ -409,13 +409,10 @@ CellPopup {
 
                             spacing: 0
 
-                            ShortcutHandler {
+                            property int result_h: root.minimal ? 2 : 3
 
-                                active: root.isTop
-
-                                property int result_h: root.minimal ? 2 : 3
-
-                                shortcuts: [
+                            Component.onCompleted: {
+                                root.shortcuts = [
                                     {
                                         binds: "Up",
                                         action: () => {
@@ -528,7 +525,6 @@ CellPopup {
                                         }
                                     },
                                 ]
-
                             }
 
                             Repeater {

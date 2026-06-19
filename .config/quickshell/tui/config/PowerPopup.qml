@@ -291,6 +291,13 @@ CellPopup {
 
         Component.onCompleted: {
             PowerManager.called.connect((mode, count) => {
+                if (root && !root.visible) {
+                    openAnim.restart()
+                    blackout.opacity = 0
+                    countdown.opacity = 1
+                    top_bar.implicitHeight = 0
+                    bottom_bar.implicitHeight = 0
+                }
                 countdown.mode = mode
                 countdown.count = count
                 countdown.active = true

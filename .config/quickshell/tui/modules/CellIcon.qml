@@ -17,9 +17,11 @@ Item {
     property int w: 5
     property int h: 2
 
+    property string ze_icon: IconInfo.fetch(icon)
+
     // success is determined at root level
     property bool imageVisible: image != ""
-    property bool iconVisible: IconInfo.fetch(icon) != ""
+    property bool iconVisible: ze_icon != ""
     property bool success: (imageVisible || iconVisible || !hideOnFail) && !SettingsInfo.minimal
 
     implicitWidth: Cell.w(success ? w : 0)
@@ -41,8 +43,9 @@ Item {
                 id: base
                 visible: root.iconVisible && !root.imageVisible
                 width: Cell.h(root.h)
+                sourceSize: Qt.size(width * 2, height * 2)
                 height: Cell.h(root.h)
-                source: IconInfo.fetch(root.icon)
+                source: root.ze_icon
                 mipmap: true
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true

@@ -31,6 +31,19 @@ Item {
 
     readonly property bool isTop: PopupManager.isTop(name)
 
+    onIsTopChanged: {
+        if (isTop) {
+            ShortcutInfo.shortcuts = [
+                {
+                    binds: "Escape",
+                    active: root.escapeToClose,
+                    action: () => root.close()
+                },
+                ...shortcuts
+            ] 
+        }
+    }
+
     property bool escapeToClose: true
 
     x: {
@@ -55,22 +68,6 @@ Item {
     }
 
     focus: true
-
-    ShortcutHandler {
-        active: root.isTop
-        shortcuts: [
-            {
-                binds: "Escape",
-                active: root.escapeToClose,
-                action: () => root.close()
-            }
-        ]
-    }
-
-    ShortcutHandler {
-        active: root.isTop
-        shortcuts: root.shortcuts
-    }
 
     function close() {
         PopupManager.close(root.name)

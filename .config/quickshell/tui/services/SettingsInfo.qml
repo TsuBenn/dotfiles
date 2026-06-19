@@ -245,7 +245,8 @@ Singleton {
         function dummy(): void {
             // Contains debugging features that can be accessed by SUPER + P
             root.toggle("debug")
-            SystemInfo.lock()
+            root.debugSig()
+            // SystemInfo.lock()
         }
     }
 

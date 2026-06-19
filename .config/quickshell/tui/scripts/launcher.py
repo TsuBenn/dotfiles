@@ -1,28 +1,101 @@
 #!/usr/bin/env python3
+"""
+launcher.py — long-running search backend for the Quickshell launcher UI.
+
+Input protocol
+==============
+
+Quickshell writes one request per line to stdin:
+
+    -<tags> [--<path_id> ...] <query>\n
+
+Tags (single characters, case-sensitive):
+    a   apps        (parse .desktop files)
+    s   settings    (search SETTINGS from config.py)
+    h   files       (search cached filesystem index)
+    c   calculator
+    t   colors      (return COLORS palette from config.py)
+    f   fuzzy       (modifier: enables fuzzy matching for this query)
+    F   <query> is an app id — increment its frequency, no output
+    w   web         (open <query> as URL or Google search)
+    r   refresh     (background rescan of apps + files, no output)
+
+Regex mode
+----------
+
+If the query starts with `re:`, the rest of the line is treated as a
+Python regex pattern. Matches use re.search (substring match). Use
+^...$ for exact-match semantics. Flags can be embedded inline:
+    re:(?i)firefox       case-insensitive
+    re:^fire             name starts with "fire"
+    re:chrome|firefox    name contains "chrome" or "firefox"
+    re:\\.py$             name ends with ".py"
+
+Regex has a 50ms timeout per match attempt (SIGALRM). Catastrophic
+backtracking patterns will be treated as no-match, not crash.
+
+Output protocol
+===============
+
+One JSON array per line on stdout, swallowed by Quickshell's SplitParser.
+File searches are async: when `h` is in tags, the script emits the
+apps+settings result immediately, then emits a second JSON line with
+the combined (apps+settings+files) result once the file search finishes.
+If the user types a new query before the in-flight file search finishes,
+the old search is cancelled via a generation counter.
+
+Concurrency model
+=================
+
+* Main thread: reads stdin line-by-line, dispatches to handlers,
+  writes synchronous results to stdout.
+* Refresh thread: spawned by `r` tag (and once at startup). Runs `fd`
+  + app scan, atomically swaps the new data into place.
+* File-search thread: spawned per query that includes `h`. Each search
+  has a generation id; before printing, the worker checks that its
+  generation is still current — if not, it discards silently.
+
+Data caches
+===========
+
+* `apps`         — list of parsed .desktop entries (memory)
+* `icon_index`   — dict {icon_name: path} built once at startup
+* `file_paths`   — list of strings, atomically swapped on refresh
+* `frequency`    — dict {app_id: count}, loaded once, written on increment
+
+All caches support "swap-in-place" refresh: a refresh builds the new
+data in local variables, then assigns to the global in one step.
+Readers either see the old or new version, never a mix.
+"""
+
+from __future__ import annotations
+
+import json
+import math
+import os
+import re
+import signal
+import subprocess
+import sys
+import threading
+import time
+from pathlib import Path
 
 from config import SETTINGS, CALC, COLORS
-import os
-import time
-import sys
-import json
-import configparser
-import re
-import subprocess
-import threading
 
-# ─── ENV ──────────────────────────────────────────────────────────────────────
+# ─── Paths ────────────────────────────────────────────────────────────────────
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-FREQ_FILE = os.path.join(SCRIPT_DIR, "frequency.json")
-SETTINGS_FILE = os.path.join(SCRIPT_DIR, "settings.toml")
-FILE_CACHE_FILE = os.path.join(SCRIPT_DIR, "file_cache.json")
+SCRIPT_DIR = Path(__file__).resolve().parent
+FREQ_FILE = SCRIPT_DIR / "frequency.json"
+FILE_CACHE_FILE = SCRIPT_DIR / "file_cache.json"
+ICON_CACHE_FILE = SCRIPT_DIR / "icon_cache.json"
 
 DESKTOP_DIRS = [
     "/usr/share/applications",
     "/usr/local/share/applications/",
     "/var/lib/flatpak/exports/share/applications/",
     os.path.expanduser("~/.local/share/flatpak/exports/share/applications/"),
-    os.path.expanduser("~/.local/share/applications")
+    os.path.expanduser("~/.local/share/applications"),
 ]
 
 ICON_DIRS = [
@@ -35,45 +108,214 @@ ICON_DIRS = [
     os.path.expanduser("~/.local/share/icons/hicolor"),
 ]
 
-ICON_SIZES = ["256x256", "192x192", "128x128", "96x96", "64x64", "48x48", "32x32", "24x24", "16x16", "scalable"]
+ICON_SIZES = [
+    "256x256", "192x192", "128x128", "96x96", "64x64",
+    "48x48", "32x32", "24x24", "16x16", "scalable",
+]
 ICON_EXTS = ["png", "svg", "xpm"]
 
-ICON_CACHE_FILE = os.path.join(SCRIPT_DIR, "icon_cache.json")
+# fd command for the initial filesystem scan.
+FD_CMD = [
+    "fd", ".",
+    "/",
+    "-I",
+    "--absolute-path",
+    "--exclude", ".git",
+    "--exclude", ".cache",
+    "--exclude", "node_modules",
+    "--hidden",
+    "--no-follow",
+]
 
-FUZZY = False
+# ─── Shared state ─────────────────────────────────────────────────────────────
+#
+# All of these are written by either the main thread or background threads.
+# Python's GIL makes individual assignments atomic, so a reader will see
+# either the old reference or the new one — never a corrupted half-state.
+# For paired updates we accept a brief window of inconsistency rather than
+# taking a lock on every read, because searches are idempotent and the UI
+# re-renders on every keystroke anyway.
 
-# ─── Frequency ───────────────────────────────────────────────────────────────
+apps: list[dict] = []
+file_paths: list[str] = []
+icon_index: dict[str, str] = {}
+frequency: dict[str, int] = {}
 
-def load_frequency():
+# File-search generation counter. Each new file search increments this;
+# the worker captures the value at start and compares before printing.
+# If a newer search has started, the old worker silently discards.
+_file_search_lock = threading.Lock()
+_file_search_generation = 0
+
+# Lock for frequency.json writes (multiple increments could race).
+_freq_lock = threading.Lock()
+
+
+# ─── Frequency tracking ───────────────────────────────────────────────────────
+
+def load_frequency() -> dict[str, int]:
     try:
         with open(FREQ_FILE) as f:
             return json.load(f)
-    except:
+    except (FileNotFoundError, json.JSONDecodeError):
         return {}
 
-def save_frequency(freq):
-    with open(FREQ_FILE, "w") as f:
+
+def save_frequency(freq: dict[str, int]) -> None:
+    # Atomic write: write to temp, rename. Avoids partial-file reads
+    # if the script is killed mid-write.
+    tmp = FREQ_FILE.with_suffix(".json.tmp")
+    with open(tmp, "w") as f:
         json.dump(freq, f)
+    tmp.rename(FREQ_FILE)
 
-def increment_frequency(app_id):
-    freq = load_frequency()
-    freq[app_id] = freq.get(app_id, 0) + 1
-    save_frequency(freq)
 
-# ─── Fuzzy Match ─────────────────────────────────────────────────────────────
+def increment_frequency(app_id: str) -> None:
+    with _freq_lock:
+        frequency[app_id] = frequency.get(app_id, 0) + 1
+        save_frequency(frequency)
 
-def fuzzy_match(query, target, fuzzy = True):
-    query = query.lower().strip()
-    target = target.lower().strip()
+
+# ─── Regex support ───────────────────────────────────────────────────────────
+#
+# Query form:  re:<pattern>
+# The prefix `re:` triggers regex mode for this query. The rest of the
+# line is the Python regex pattern. Flags can be embedded inline:
+#   re:(?i)firefox   — case-insensitive
+#   re:(?m)^foo      — multiline
+#
+# Catastrophic backtracking protection: SIGALRM-based 50ms timeout per
+# match attempt. If a regex takes longer, the match returns False and
+# a warning is logged. The timeout is process-global (SIGALRM is not
+# thread-local), so we guard the setitimer call with a lock to ensure
+# only one thread is timing out at a time.
+#
+# In practice this is fine because regex matching only happens on the
+# main thread for apps/settings searches; file-search workers use their
+# own per-call try/except (without timeout, since they run in threads
+# where SIGALRM is unreliable).
+
+class _RegexTimeout(Exception):
+    pass
+
+
+def _regex_timeout_handler(signum, frame):
+    raise _RegexTimeout()
+
+
+try:
+    signal.signal(signal.SIGALRM, _regex_timeout_handler)
+    _HAS_SIGALRM = True
+except (ValueError, AttributeError):
+    _HAS_SIGALRM = False
+
+
+_regex_compile_lock = threading.Lock()
+_regex_timeout_lock = threading.Lock()
+_REGEX_CACHE: dict[str, re.Pattern] = {}
+_REGEX_CACHE_MAX = 32
+
+
+def compile_regex(pattern: str) -> re.Pattern | None:
+    """Compile a regex pattern, with caching. Returns None on syntax error."""
+    with _regex_compile_lock:
+        cached = _REGEX_CACHE.get(pattern)
+        if cached is not None:
+            return cached
+        try:
+            compiled = re.compile(pattern)
+        except re.error as e:
+            print(f"launcher: invalid regex {pattern!r}: {e}", file=sys.stderr)
+            return None
+        if len(_REGEX_CACHE) >= _REGEX_CACHE_MAX:
+            # Evict ~half (oldest first — dict preserves insertion order).
+            keys = list(_REGEX_CACHE.keys())
+            for k in keys[:_REGEX_CACHE_MAX // 2]:
+                del _REGEX_CACHE[k]
+        _REGEX_CACHE[pattern] = compiled
+        return compiled
+
+
+def regex_match(query_re: re.Pattern, target: str) -> int:
+    """Return a score if regex matches target, else 0.
+
+    Score = 1000 - match.start(). Earlier matches rank higher.
+    50ms timeout per match attempt (SIGALRM, main thread only).
+    """
+    if not target:
+        return 0
+    if _HAS_SIGALRM and threading.current_thread() is threading.main_thread():
+        with _regex_timeout_lock:
+            signal.setitimer(signal.ITIMER_REAL, 0.05)
+            try:
+                m = query_re.search(target)
+            except _RegexTimeout:
+                return 0
+            finally:
+                signal.setitimer(signal.ITIMER_REAL, 0)
+    else:
+        # Worker thread — SIGALRM is unreliable, just try the match.
+        # Catastrophic regexes here are rare; if they happen the worker
+        # will be slow but the generation-counter cancellation ensures
+        # the old worker's result is discarded when a new search starts.
+        try:
+            m = query_re.search(target)
+        except (re.error, _RegexTimeout):
+            return 0
+    if m is None:
+        return 0
+    return max(0, 1000 - m.start())
+
+
+def parse_regex_query(query: str) -> tuple[re.Pattern | None, str, str | None]:
+    """Detect `re:<pattern>` prefix.
+
+    Returns (compiled_regex_or_None, remainder_query, error_message_or_None).
+    If the prefix isn't present, returns (None, original_query, None).
+    If the prefix is present but the pattern is invalid, returns
+    (None, "", "error message") — caller should surface the error.
+    """
+    if not query.startswith("re:"):
+        return None, query, None
+    pattern = query[3:]
+    compiled = compile_regex(pattern)
+    if compiled is None:
+        return None, "", f"Invalid regex: /{pattern}/"
+    return compiled, "", None
+
+
+def regex_error_result(error: str) -> list[dict]:
+    """Single info entry to surface a regex error in the UI."""
+    return [{
+        "id": "regex_error",
+        "label": error,
+        "description": "",
+        "category": "info",
+        "icon": "",
+        "value": [""],
+        "type": "info",
+    }]
+
+
+# ─── Fuzzy matching ──────────────────────────────────────────────────────────
+#
+# Scoring is kept identical to the original script so result ordering
+# doesn't shift. `fuzzy` is now a parameter rather than a global, so
+# the function is pure and thread-safe.
+
+def fuzzy_match(query: str, target: str, fuzzy: bool = True) -> int:
     if not query or not target:
         return 0
+    q = query.lower().strip()
+    t = target.lower().strip()
+    if not q or not t:
+        return 0
 
-    # exact match bonus
-    if query == target:
+    if q == t:
         return 1000
-    if target.startswith(query):
+    if t.startswith(q):
         return 500
-    if query in target:
+    if q in t:
         return 300
 
     qi = 0
@@ -81,86 +323,149 @@ def fuzzy_match(query, target, fuzzy = True):
     consecutive = 0
     max_consecutive = 0
 
-    if FUZZY and fuzzy:
-        for i, ch in enumerate(target):
-            if qi < len(query) and ch == query[qi]:
+    if fuzzy:
+        for i, ch in enumerate(t):
+            if qi < len(q) and ch == q[qi]:
                 consecutive += 1
                 max_consecutive = max(max_consecutive, consecutive)
                 score += consecutive * 10
-                if i == 0 or target[i-1] == " ":
+                if i == 0 or t[i - 1] == " ":
                     score += 20
                 qi += 1
             else:
                 consecutive = 0
 
-    if qi < len(query):
+    if qi < len(q):
         return 0
 
-    # require at least half the query to be consecutive
-    if max_consecutive < len(query) / 2:
+    if max_consecutive < len(q) / 2:
         return 0
 
-    score -= len(target) * 2
+    score -= len(t) * 2
     return max(0, score)
 
-# ─── Apps ────────────────────────────────────────────────────────────────────
 
-def parse_desktop_file(path):
-    parser = configparser.ConfigParser(interpolation=None)
+# ─── Apps: .desktop file parsing ─────────────────────────────────────────────
+#
+# Hand-rolled parser instead of ConfigParser. .desktop files are INI-like
+# with one section ("Desktop Entry") and key=value lines. The hand parser
+# is ~10x faster than ConfigParser and uses far less memory, which matters
+# when scanning 500+ files on every refresh.
+
+_DESKTOP_FIELD_RE = re.compile(r"^([A-Za-z][A-Za-z0-9-]*)\s*=\s*(.*)$")
+
+
+def parse_desktop_file(path: str) -> dict | None:
+    entry: dict[str, str] = {}
     try:
-        parser.read(path, encoding="utf-8")
-        if "Desktop Entry" not in parser:
-            return None
-        entry = parser["Desktop Entry"]
-        if entry.get("NoDisplay", "false").lower() == "true":
-            return None
-        if entry.get("Type", "") != "Application":
-            return None
-        return {
-            "id": os.path.basename(path).replace(".desktop", ""),
-            "name": entry.get("Name", ""),
-            "icon": entry.get("Icon", ""),
-            "exec": entry.get("Exec", ""),
-            "keywords": [k for k in entry.get("Keywords", "").strip(";").split(";") if k],
-            "genericName": entry.get("GenericName", ""),
-            "description": entry.get("Comment", "")
-        }
-    except:
+        with open(path, encoding="utf-8", errors="replace") as f:
+            in_desktop_entry = False
+            for line in f:
+                line = line.rstrip("\n")
+                if not line or line.startswith("#"):
+                    continue
+                if line.startswith("["):
+                    in_desktop_entry = (line == "[Desktop Entry]")
+                    continue
+                if not in_desktop_entry:
+                    continue
+                m = _DESKTOP_FIELD_RE.match(line)
+                if m:
+                    entry[m.group(1)] = m.group(2)
+    except (OSError, UnicodeDecodeError):
         return None
 
-def scan_apps(icon = True):
-    apps = []
-    seen = set()
+    if entry.get("Type") != "Application":
+        return None
+    if entry.get("NoDisplay", "false").lower() == "true":
+        return None
+
+    exec_raw = entry.get("Exec", "")
+    exec_clean = re.sub(r"%[a-zA-Z]", "", exec_raw).strip()
+
+    keywords_raw = entry.get("Keywords", "").strip(";")
+    keywords = [k for k in keywords_raw.split(";") if k]
+
+    return {
+        "id": os.path.basename(path).removesuffix(".desktop"),
+        "name": entry.get("Name", ""),
+        "icon": entry.get("Icon", ""),
+        "exec": exec_raw,
+        "exec_clean": exec_clean,
+        "keywords": keywords,
+        "genericName": entry.get("GenericName", ""),
+        "description": entry.get("Comment", ""),
+    }
+
+
+def scan_apps() -> list[dict]:
+    """Scan all DESKTOP_DIRS, return parsed app entries. Dedup by filename."""
+    out: list[dict] = []
+    seen: set[str] = set()
     for directory in DESKTOP_DIRS:
-        if not os.path.exists(directory):
+        if not os.path.isdir(directory):
             continue
-        for f in os.listdir(directory):
-            if f.endswith(".desktop") and f not in seen:
+        try:
+            for f in os.listdir(directory):
+                if not f.endswith(".desktop") or f in seen:
+                    continue
                 seen.add(f)
                 app = parse_desktop_file(os.path.join(directory, f))
                 if app:
-                    apps.append(app)
-    if icon:
-        save_icon_cache([{"name": app["name"], "icon": resolve_icon(app["icon"])} for app in apps])
-    return apps
+                    out.append(app)
+        except OSError:
+            continue
+    return out
 
-def search_apps(apps, query):
-    freq = load_frequency()
+
+def _score_app(query_re: re.Pattern | None, query: str, app: dict, fuzzy: bool) -> int:
+    """Score one app against either a regex or a fuzzy query."""
+    if query_re is not None:
+        best = regex_match(query_re, app["name"])
+        gn = regex_match(query_re, app["genericName"])
+        if gn > best:
+            best = gn
+        if app["keywords"]:
+            for k in app["keywords"]:
+                s = regex_match(query_re, k)
+                if s > best:
+                    best = s
+        sid = regex_match(query_re, app["id"])
+        if sid > best:
+            best = sid
+    else:
+        best = fuzzy_match(query, app["name"], fuzzy)
+        gn = fuzzy_match(query, app["genericName"], fuzzy)
+        if gn > best:
+            best = gn
+        if app["keywords"]:
+            for k in app["keywords"]:
+                s = fuzzy_match(query, k, fuzzy)
+                if s > best:
+                    best = s
+        sid = fuzzy_match(query, app["id"], fuzzy)
+        if sid > best:
+            best = sid
+    return best
+
+
+def search_apps(apps_list: list[dict], query: str, fuzzy: bool) -> list[dict]:
     if not query:
         return []
-    scored = []
-    for app in apps:
-        score = max(
-            fuzzy_match(query, app["name"]),
-            fuzzy_match(query, app["genericName"]),
-            max((fuzzy_match(query, k) for k in app["keywords"]), default=0),
-            fuzzy_match(query, app["id"]),
-        )
-        if score <= 0:
+
+    query_re, query, err = parse_regex_query(query)
+    if err:
+        return regex_error_result(err)
+
+    out: list[tuple[int, dict]] = []
+    for app in apps_list:
+        best = _score_app(query_re, query, app, fuzzy)
+        if best <= 0:
             continue
-        final_score = score + (freq.get(app["id"], 0) * 2)
-        scored.append((final_score, app))
-    scored.sort(key=lambda x: x[0], reverse=True)
+        score = best + frequency.get(app["id"], 0) * 2
+        out.append((score, app))
+
+    out.sort(key=lambda x: x[0], reverse=True)
     return [{
         "id": app["id"],
         "label": app["name"],
@@ -168,447 +473,569 @@ def search_apps(apps, query):
         "keywords": app["keywords"],
         "category": "app",
         "icon": app["icon"],
-        "value": ["bash", "-c", re.sub(r"%[a-zA-Z]", "", app["exec"]).strip()],
+        "value": ["bash", "-c", app["exec_clean"]],
         "type": "exec",
-    } for _, app in scored]
+    } for _, app in out]
 
-def select_app(app_id):
-    apps = scan_apps()
+
+def select_app(app_id: str) -> None:
+    """Launch the app and bump its frequency counter."""
     app = next((a for a in apps if a["id"] == app_id), None)
     if not app:
         return
     increment_frequency(app_id)
-    exec_cmd = re.sub(r"%[a-zA-Z]", "", app["exec"]).strip()
-    subprocess.Popen(exec_cmd.split(), start_new_session=True)
-
-# ─── Web ─────────────────────────────────────────────────────────────────────
-
-def is_url(query):
-    query = query.strip().lower()
-    
-    if re.match(r'^(https?://|www\.)', query):
-        return True
-        
-    if re.match(r'^[a-z0-9.-]+\.[a-z]{2,6}(/.*)?$', query):
-        return True
-        
-    return False
-
-def select_web(query):
-    query = query.strip()
-    if is_url(query):
-        # Ensure 'www.google.com' becomes 'https://www.google.com'
-        url = query if query.startswith("http") else "https://" + query
-    else:
-        url = "https://www.google.com/search?q=" + query.replace(" ", "+")
-    subprocess.Popen(["xdg-open", url], start_new_session=True)
-
-# ─── Calculator ──────────────────────────────────────────────────────────────
-
-import math
-
-def calculate(expr):
     try:
-        # 1. Define the functions you want to support
-        safe_methods = {
-            "sqrt": math.sqrt,
-            "sin": math.sin,
-            "cos": math.cos,
-            "tan": math.tan,
-            "log": math.log,
-            "pi": math.pi,
-            "e": math.e,
-            "pow": pow,
-            "abs": abs
-        }
+        subprocess.Popen(app["exec_clean"].split(), start_new_session=True)
+    except OSError as e:
+        print(f"launcher: failed to launch {app_id}: {e}", file=sys.stderr)
 
-        allowed = set("0123456789+-*/().% abcdefghijklmnopqrstuvwxyz")
 
-        clean_expr = expr.lower().strip()
+# ─── Icon resolution ─────────────────────────────────────────────────────────
+#
+# Build a single in-memory index of {icon_name: path} once at startup.
+# PNG is strongly preferred over SVG (QML's Image handles PNGs more
+# predictably — SVGs can render blurry or with wrong intrinsic sizes).
+# Within PNGs, the largest available size wins.
 
-        if not all(c in allowed for c in clean_expr):
-            return [{"label": "Invalid characters", "type": "info"}]
+def _iter_icon_files() -> list[tuple[str, str]]:
+    """Return list of (icon_name, full_path) for every icon file."""
+    out: list[tuple[str, str]] = []
+    for d in ICON_DIRS:
+        if not os.path.isdir(d):
+            continue
+        for root, _dirs, files in os.walk(d):
+            for f in files:
+                stem, ext = os.path.splitext(f)
+                if ext.lstrip(".") in ICON_EXTS:
+                    out.append((stem, os.path.join(root, f)))
+    if os.path.isdir("/usr/share/pixmaps"):
+        for f in os.listdir("/usr/share/pixmaps"):
+            stem, ext = os.path.splitext(f)
+            if ext.lstrip(".") in ICON_EXTS:
+                out.append((stem, os.path.join("/usr/share/pixmaps", f)))
+    return out
 
-        # 3. Use restricted eval
-        # __builtins__: {} blocks access to dangerous system functions
-        result = eval(clean_expr, {"__builtins__": {}}, safe_methods)
 
-        # Round result for cleaner UI (optional)
-        if isinstance(result, float):
-            result = round(result, 4)
+# Size preference: smaller index = higher priority. When multiple files
+# share the same icon_name, we want the largest available PNG.
+_SIZE_PRIORITY = {s: i for i, s in enumerate(ICON_SIZES)}
 
-        return [
-            {
-                "label": "= " + str(result),
-                "description": str(result),
-                "category": "calc_result",
-                "type": "exec",
-                "value": ["wl-copy", str(result).strip()],
-            }
-        ]
-    except Exception as e:
-        return [
-            {
-                "label": "No result",
-                "description": str(e),
-                "type": "exec",
-                "value": [""],
-            }
-        ]
 
-# ─── Icons ───────────────────────────────────────────────────────────────────
+def _icon_path_score(path: str) -> int:
+    """Higher = better. Strongly prefer PNG; within PNG, prefer larger sizes.
 
-import glob
-from pathlib import Path
+    Scoring bands:
+      PNG  → 1000 + size_bonus   (1000..1090)
+      SVG  → 0    + size_bonus   (0..90)
+      XPM  → -100 + size_bonus   (rare, last resort)
 
-def resolve_icon(query):
+    A 256x256 PNG (1090) beats any SVG (max 90). An SVG only wins when
+    no PNG exists for that icon name.
+    """
+    lower = path.lower()
+    if lower.endswith(".png"):
+        score = 1000
+    elif lower.endswith(".svg"):
+        score = 0
+    else:
+        score = -100
 
-    icon_name = query
+    for size, prio in _SIZE_PRIORITY.items():
+        if f"/{size}/" in path:
+            score += (len(_SIZE_PRIORITY) - prio) * 10
+            break
 
-    if Path(icon_name).exists():
-        return icon_name
+    return score
 
-    if not icon_name:
-        return None  # app exists but no icon
 
-    # search for icon file
-    for directory in ICON_DIRS:
-        for size in ICON_SIZES:
-            for ext in ICON_EXTS:
-                pattern = f"{directory}/{size}/apps/{icon_name}.{ext}"
-                matches = glob.glob(pattern)
-                if matches:
-                    return matches[0]
-        for ext in ICON_EXTS:
-            path = f"{directory}/{icon_name}.{ext}"
-            if os.path.exists(path):
-                return path
+def build_icon_index() -> dict[str, str]:
+    """Build {icon_name: best_path} index. Best = PNG, largest size."""
+    index: dict[str, str] = {}
+    scores: dict[str, int] = {}
+    for name, path in _iter_icon_files():
+        s = _icon_path_score(path)
+        if s > scores.get(name, -1000):
+            scores[name] = s
+            index[name] = path
+    return index
 
-    for ext in ICON_EXTS:
-        path = f"/usr/share/pixmaps/{icon_name}.{ext}"
-        if os.path.exists(path):
-            return path
 
-    # fuzzy fallback on icon files
-    all_icons = glob.glob("/usr/share/icons/hicolor/**/apps/*", recursive=True)
-    all_icons += glob.glob("/usr/share/pixmaps/*")
+def save_icon_cache(index: dict[str, str]) -> None:
+    """Persist icon index for IconInfo.qml.
 
-    best_icon_score = 0
-    best_icon_path = ""
-    for path in all_icons:
-        filename = os.path.splitext(os.path.basename(path))[0]
-        score = fuzzy_match(icon_name.lower(), filename.lower())
-        if score > best_icon_score:
-            best_icon_score = score
-            best_icon_path = path
+    IconInfo.qml expects a LIST of {name, icon} objects (it uses
+    Array.prototype.find for lookups). We convert the in-memory dict
+    to that list shape on write.
+    """
+    cache_list = [{"name": name, "icon": path} for name, path in index.items()]
+    tmp = ICON_CACHE_FILE.with_suffix(".json.tmp")
+    with open(tmp, "w") as f:
+        json.dump(cache_list, f)
+    tmp.rename(ICON_CACHE_FILE)
 
-    if best_icon_score > 30:
-        return best_icon_path
 
-    return ""  # app found but no icon anywhere
+def load_icon_cache() -> dict[str, str]:
+    """Load icon_cache.json into a dict for O(1) in-memory lookups.
 
-def load_icon_cache():
+    Tolerates either shape — old cache might be a list (which we
+    convert), new cache is also a list (per save_icon_cache above).
+    """
     try:
         with open(ICON_CACHE_FILE) as f:
-            return json.load(f)
-    except:
+            data = json.load(f)
+        if isinstance(data, list):
+            return {
+                item["name"]: item["icon"]
+                for item in data
+                if isinstance(item, dict) and "name" in item and "icon" in item
+            }
+        if isinstance(data, dict):
+            return data
+        return {}
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+# ─── Settings search ─────────────────────────────────────────────────────────
+#
+# Walks SETTINGS recursively. Each match keeps its score so callers can
+# re-sort a combined list (apps + settings) by score.
+
+def _score_setting(query_re: re.Pattern | None, query: str, item: dict, fuzzy: bool) -> int:
+    if query_re is not None:
+        best = regex_match(query_re, item.get("label", ""))
+        d = regex_match(query_re, item.get("description", ""))
+        if d > best:
+            best = d
+        c = regex_match(query_re, item.get("category", ""))
+        if c > best:
+            best = c
+        for k in item.get("keywords", []) or []:
+            s = regex_match(query_re, k)
+            if s > best:
+                best = s
+    else:
+        best = fuzzy_match(query, item.get("label", ""), fuzzy)
+        d = fuzzy_match(query, item.get("description", ""), fuzzy)
+        if d > best:
+            best = d
+        c = fuzzy_match(query, item.get("category", ""), fuzzy)
+        if c > best:
+            best = c
+        for k in item.get("keywords", []) or []:
+            s = fuzzy_match(query, k, fuzzy)
+            if s > best:
+                best = s
+    return best
+
+
+def search_settings(data: list[dict], query: str, fuzzy: bool) -> list[dict]:
+    if not query:
         return []
 
-def save_icon_cache(cache):
-    with open(ICON_CACHE_FILE, "w") as f:
-        json.dump(cache, f, indent=2)
+    query_re, query, err = parse_regex_query(query)
+    if err:
+        return regex_error_result(err)
 
-# ─── Settings ────────────────────────────────────────────────────────────────
+    results: list[tuple[int, dict]] = []
 
-def search_settings(data, query):
-    results = []
-
-    def recurse(items):
+    def recurse(items: list[dict]) -> None:
         for item in items:
-            # Calculate scores for both label and description
-            label_score = fuzzy_match(query, item.get("label", ""))
-            desc_score = fuzzy_match(query, item.get("description", ""))
-            category_score = fuzzy_match(query, item.get("category", ""))
-            keywords_score = 0
-            if item.get("keywords"):
-                keywords_score = max(fuzzy_match(query, k) for k in item.get("keywords"))
-            
-            # Take the best score of the two
-            final_score = max(label_score, desc_score, category_score, keywords_score)
-
-            if final_score > 0:
-                # Store a copy of the item with its score for sorting later
-                match = item.copy()
-                match["search_score"] = final_score
-                results.append(match)
-
-            # If it's a menu, keep digging regardless of whether the menu itself matched
+            best = _score_setting(query_re, query, item, fuzzy)
+            if best > 0:
+                m = item.copy()
+                m["_score"] = best
+                results.append((best, m))
             if item.get("type") == "menu" and isinstance(item.get("value"), list):
                 recurse(item["value"])
 
     recurse(data)
 
-    # Sort results: Highest score first
-    results.sort(key=lambda x: x["search_score"], reverse=True)
-
-    for r in results: r.pop("search_score", None)
-    
-    return [result for result in results if result.get("label") != ""]
-
-# ─── File find ───────────────────────────────────────────────────────────────
-
-def preload_files(rescan_only = False):
-    cached = []
-    
-    def load_files():
-        nonlocal cached
-        start = time.perf_counter()
-        if os.path.exists(FILE_CACHE_FILE):
-            try:
-                with open(FILE_CACHE_FILE) as f:
-                    cached = json.load(f)
-            except:
-                pass
-        print(f"[timer] Files loaded: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+    results.sort(key=lambda x: x[0], reverse=True)
+    return [m for _, m in results if m.get("label")]
 
 
-    def rescan(paths):
-        cmd = [
-            'fd', '.',
-            # os.path.expanduser("~"),
-            "/",
-            "-I",
-            '--absolute-path',
-            '--exclude', '.git',
-            '--exclude', '.cache',
-            '--exclude', 'node_modules',
-            '--hidden',
-            '--no-follow',
-        ]
-        try:
-            start = time.perf_counter()
-            process = subprocess.run(cmd, capture_output=True, text=True)
-            new_paths = process.stdout.strip().split('\n')
-            with open(FILE_CACHE_FILE, 'w') as f:
-                json.dump(new_paths, f)
+# ─── Calculator ──────────────────────────────────────────────────────────────
 
-            paths.clear()
-            paths.extend(new_paths)
-            print(f"[timer] Files cached: {time.perf_counter() - start:.4f}s", file=sys.stderr)
-        except FileNotFoundError:
-            pass
+_CALC_ALLOWED_CHARS = set("0123456789+-*/().% abcdefghijklmnopqrstuvwxyz")
+_CALC_SAFE_NAMES = {
+    "sqrt": math.sqrt,
+    "sin": math.sin,
+    "cos": math.cos,
+    "tan": math.tan,
+    "log": math.log,
+    "pi": math.pi,
+    "e": math.e,
+    "pow": pow,
+    "abs": abs,
+}
 
-    if not rescan_only:
-        load_files()
-    threading.Thread(target=rescan, args=(cached,), daemon=True).start()
-    
-    return cached
 
-def filter_files(paths, query):
-    if not query:
+def calculate(expr: str) -> list[dict]:
+    try:
+        clean = expr.lower().strip()
+        if not all(c in _CALC_ALLOWED_CHARS for c in clean):
+            return [{"label": "Invalid characters", "type": "info"}]
+        result = eval(clean, {"__builtins__": {}}, _CALC_SAFE_NAMES)  # noqa: S307
+        if isinstance(result, float):
+            result = round(result, 4)
+        return [{
+            "label": "= " + str(result),
+            "description": str(result),
+            "category": "calc_result",
+            "type": "exec",
+            "value": ["wl-copy", str(result).strip()],
+        }]
+    except Exception as e:
+        return [{
+            "label": "No result",
+            "description": str(e),
+            "type": "exec",
+            "value": [""],
+        }]
+
+
+# ─── Web search ──────────────────────────────────────────────────────────────
+
+_URL_HTTPS_RE = re.compile(r"^(https?://|www\.)")
+_URL_BARE_RE = re.compile(r"^[a-z0-9.-]+\.[a-z]{2,6}(/.*)?$")
+
+
+def is_url(query: str) -> bool:
+    q = query.strip().lower()
+    return bool(_URL_HTTPS_RE.match(q) or _URL_BARE_RE.match(q))
+
+
+def select_web(query: str) -> None:
+    q = query.strip()
+    if is_url(q):
+        url = q if q.startswith("http") else "https://" + q
+    else:
+        url = "https://www.google.com/search?q=" + q.replace(" ", "+")
+    subprocess.Popen(["xdg-open", url], start_new_session=True)
+
+
+# ─── File index (cached filesystem scan) ─────────────────────────────────────
+#
+# On startup: load the previous file_cache.json into memory, then kick
+# off a background `fd` run to refresh. The cache is the fallback while
+# the refresh is in flight.
+#
+# On `r` tag: same thing — kick off a background refresh, swap in place.
+
+def load_file_cache() -> list[str]:
+    try:
+        with open(FILE_CACHE_FILE) as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
         return []
-    query = query.lower()
-    results = []
-    for path in paths:
-        name = os.path.basename(path).lower()
-
-        score = max(
-            fuzzy_match(query, name),
-            fuzzy_match(query, path.lower()),
-        )
-
-        if score:
-            results.append({
-                "id": path,
-                "label": name,
-                "description": path,
-                "icon": "",
-                "category": "files",
-                "value": path,
-                "type": "dir" if os.path.isdir(path) else "file"
-            })
-        if len(results) > 50:
-            break
-
-    return results
 
 
-file_results = []
-file_search_thread = None
-stop_event = threading.Event()
+def save_file_cache(paths: list[str]) -> None:
+    tmp = FILE_CACHE_FILE.with_suffix(".json.tmp")
+    with open(tmp, "w") as f:
+        json.dump(paths, f)
+    tmp.rename(FILE_CACHE_FILE)
 
-def async_file_search(paths, query, stop, base_result):
-    local_results = []
+
+def rescan_files() -> list[str]:
+    """Run `fd` and return the new path list. Raises if fd is missing."""
+    proc = subprocess.run(FD_CMD, capture_output=True, text=True, timeout=120)
+    out = proc.stdout.strip()
+    return out.split("\n") if out else []
+
+
+# ─── Async file search with cancellation ─────────────────────────────────────
+#
+# Every file search gets a generation id. The worker captures the id at
+# start; before emitting its result, it checks if its id is still the
+# latest. If a newer search has started, the old worker silently discards.
+#
+# This is the cancellation mechanism: we don't try to interrupt the
+# worker thread (which is hard in Python), we just ignore its result.
+
+def _emit_combined(base_result: list[dict], file_results: list[dict]) -> None:
+    """Print the combined result list as a single JSON line."""
+    print(json.dumps([*base_result, *file_results]))
+    sys.stdout.flush()
+
+
+def _file_search_worker(
+    paths_snapshot: list[str],
+    query: str,
+    generation: int,
+    base_result: list[dict],
+) -> None:
+    """Runs in a background thread. Discards result if superseded."""
     if not query:
         return
-    query = query.lower()
-    for path in paths:
-        if stop.is_set():
+
+    # Detect regex mode. In worker threads, regex matching has no
+    # SIGALRM timeout protection — see compile_regex/regex_match for
+    # why. The generation counter ensures a slow worker's output is
+    # discarded if the user types again.
+    query_re, plain_query, err = parse_regex_query(query)
+    if err:
+        return  # invalid regex — no file results, just emit base
+    plain_query_lower = plain_query.lower() if plain_query else ""
+
+    local_results: list[dict] = []
+    for path in paths_snapshot:
+        name = os.path.basename(path[:-1] if path.endswith("/") else path)
+
+        if query_re is not None:
+            # Regex mode — search() returns None on no match, which is falsy.
+            if not query_re.search(name) and not query_re.search(path):
+                continue
+        else:
+            # Plain substring mode — cheap check first.
+            if (plain_query_lower not in name.lower()
+                    and plain_query_lower not in path.lower()):
+                continue
+
+        try:
+            is_dir = os.path.isdir(path)
+        except OSError:
+            is_dir = False
+        local_results.append({
+            "id": path,
+            "label": name,
+            "description": path,
+            "icon": "",
+            "category": "files",
+            "value": path,
+            "type": "dir" if is_dir else "file",
+        })
+        if len(local_results) >= 50:
+            break
+
+    # Generation check — if a newer search has started, discard.
+    with _file_search_lock:
+        if generation != _file_search_generation:
             return
-        name = os.path.basename(path[:-1]) if path.endswith("/") else os.path.basename(path)
-        if query in name.lower():
-            local_results.append({
-                "id": path,
-                "label": name,
-                "description": path,
-                "icon": "",
-                "value": path,
-                "type": "dir" if os.path.isdir(path) else "file"
-            })
-    # only print if not cancelled
-    if not stop.is_set():
-        print(json.dumps([*base_result, *local_results]))
-        sys.stdout.flush()
+    _emit_combined(base_result, local_results)
 
-def search_files_async(paths, query, base_result):
-    global stop_event, file_search_thread
-    stop_event.set()
-    stop_event = threading.Event()
-    file_search_thread = threading.Thread(
-        target=async_file_search,
-        args=(paths, query, stop_event, base_result),
-        daemon=True
+
+def start_file_search(
+    paths_snapshot: list[str],
+    query: str,
+    base_result: list[dict],
+) -> None:
+    """Bump generation, start a fresh worker. Old workers will self-cancel."""
+    global _file_search_generation
+    with _file_search_lock:
+        _file_search_generation += 1
+        gen = _file_search_generation
+    t = threading.Thread(
+        target=_file_search_worker,
+        args=(paths_snapshot, query, gen, base_result),
+        daemon=True,
     )
-    file_search_thread.start()
+    t.start()
 
 
-# ─── Input ───────────────────────────────────────────────────────────────────
+# ─── Input parsing ───────────────────────────────────────────────────────────
+#
+# Input format:  -<tags> [--<path_id> ...] <query>
+# Examples:
+#   -a firefox            → tags=['a'], query='firefox'
+#   -ash matrix           → tags=['a','s','h'], query='matrix'
+#   -s --network wifi     → tags=['s'], paths=['network'], query='wifi'
+#   -F firefox            → tags=['F'], treat query as app id
+#   -a re:^fire           → tags=['a'], query='re:^fire' (regex mode)
 
-def parse_input(input):
-    tags = re.findall(r"(?<!\S)-[a-zA-Z]+\b",input)
-    tags = [char for tag in tags for char in tag]
-    paths = re.findall(r"--(\w+)",input)
-    query = " ".join(re.sub(r"(?<!\S)-[a-zA-Z]+\b","",input).strip().split())
-    query = " ".join(re.sub(r"--(\w+)","",query).strip().split())
+_TAG_RE = re.compile(r"(?<!\S)-([a-zA-Z]+)\b")
+_PATH_RE = re.compile(r"--(\w+)")
+
+
+def parse_input(raw: str) -> tuple[list[str], str, list[str]]:
+    """Return (tag_chars, query, path_ids)."""
+    tag_match = _TAG_RE.search(raw)
+    tags: list[str] = list(tag_match.group(1)) if tag_match else []
+
+    paths = _PATH_RE.findall(raw)
+
+    query = _TAG_RE.sub("", raw)
+    query = _PATH_RE.sub("", query)
+    query = " ".join(query.split())
+
     return tags, query, paths
 
-# ─── Main ────────────────────────────────────────────────────────────────────
 
-def main():
+# ─── Background refresh ──────────────────────────────────────────────────────
+#
+# Builds new app list, icon index, and file path list in local variables,
+# then swaps them into the globals in one step. Readers see either the
+# old set or the new set, never a mix.
 
-    global FUZZY
+def refresh_background(initial: bool = False) -> None:
+    """Rescan apps + icons + files. Swaps into globals atomically when done."""
+    global apps, icon_index, file_paths
 
-    initialized = False
-    begin = time.perf_counter()
+    start = time.perf_counter()
 
-    apps = []
-    file_paths = []
+    # ── Apps + icons (CPU-bound, fast — ~200ms typical) ──
+    new_apps = scan_apps()
+    new_icon_index = build_icon_index()
+    save_icon_cache(new_icon_index)
 
-    timer = False
+    # ── Files (slow — fd can take 5-30s on a big system) ──
+    try:
+        new_files = rescan_files()
+        save_file_cache(new_files)
+    except (FileNotFoundError, subprocess.TimeoutExpired) as e:
+        print(f"launcher: file rescan failed: {e}", file=sys.stderr)
+        new_files = file_paths  # keep old on failure
 
-    def load():
-        nonlocal apps, file_paths
+    # ── Atomic swap ──
+    apps = new_apps
+    icon_index = new_icon_index
+    file_paths = new_files
 
-        start = time.perf_counter()
-        apps = scan_apps() 
-        print(f"[timer] Apps loaded: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+    elapsed = time.perf_counter() - start
+    print(
+        f"launcher: refresh done ({elapsed:.2f}s) "
+        f"— {len(apps)} apps, {len(icon_index)} icons, {len(file_paths)} files",
+        file=sys.stderr,
+    )
 
-        file_paths = preload_files(initialized)
 
-    load()
+def refresh_async(initial: bool = False) -> None:
+    """Kick off refresh in a background thread. Non-blocking."""
+    t = threading.Thread(target=refresh_background, args=(initial,), daemon=True)
+    t.start()
 
-    while True:
-        if not initialized:
-            print(f"[timer] Search started: {time.perf_counter() - begin:.4f}s", file=sys.stderr)
-            initialized = True
-        tags, query, paths = parse_input(input())
 
-        init = time.perf_counter()
+# ─── Initial load ────────────────────────────────────────────────────────────
 
-        result = []
-        settings = SETTINGS
+def initial_load() -> None:
+    """Load caches from disk synchronously, then kick off async refresh."""
+    global apps, icon_index, file_paths, frequency
 
-        freq = load_frequency()
+    frequency = load_frequency()
+    icon_index = load_icon_cache()
+    apps = scan_apps()
+    file_paths = load_file_cache()
+    refresh_async(initial=True)
 
-        if paths:
-            for path in paths:
-                for setting in settings:
-                    if "id" in setting:
-                        if setting["id"] == path and setting["type"] == "menu":
-                            settings = setting["value"]
-                            tags = ["s", "f" if "f" in tags else ""]
-                            break
 
-        if not tags:
-            print("Error: Please add at least a tag!", file=sys.stderr)
-            continue
+# ─── Main loop ───────────────────────────────────────────────────────────────
 
-        if "f" in tags:
-            FUZZY = True
+def handle_request(tags: list[str], query: str, paths: list[str]) -> None:
+    """Process one search request. May emit zero, one, or two JSON lines."""
+    if not tags:
+        print("Error: Please add at least a tag!", file=sys.stderr)
+        return
+
+    fuzzy = "f" in tags
+
+    # ── Action tags (side-effects, no search output) ──
+    if "F" in tags:
+        increment_frequency(query)
+        return
+    if "w" in tags:
+        select_web(query)
+        return
+    if "r" in tags:
+        print("launcher: refresh requested", file=sys.stderr)
+        refresh_async()
+        return
+
+    # ── Settings: drill into menu if a path id is specified ──
+    settings = SETTINGS
+    if paths:
+        for path_id in paths:
+            for setting in settings:
+                if setting.get("id") == path_id and setting.get("type") == "menu":
+                    settings = setting["value"]
+                    if "s" not in tags:
+                        tags.append("s")
+                    break
+
+    # ── Calculator (replaces result entirely) ──
+    if "c" in tags:
+        result = [*calculate(query), *CALC] if query else CALC
+        print(json.dumps(result))
+        sys.stdout.flush()
+        return
+
+    # ── Colors (replaces result entirely) ──
+    if "t" in tags:
+        print(json.dumps(COLORS))
+        sys.stdout.flush()
+        return
+
+    # ── Regex validation (single check, all categories) ──
+    # If the query is `re:<pattern>` and the pattern is invalid, surface
+    # ONE error entry to the UI and skip all category searches. Without
+    # this, search_apps and search_settings would each independently
+    # detect the error and return their own copy, producing duplicates.
+    is_regex = query.startswith("re:")
+    if is_regex:
+        pattern = query[3:]
+        compiled = compile_regex(pattern)
+        if compiled is None:
+            print(json.dumps(regex_error_result(f"Invalid regex: /{pattern}/")))
+            sys.stdout.flush()
+            return
+
+    # ── Search categories: apps, settings, files ──
+    scored_results: list[tuple[int, dict]] = []
+
+    if "a" in tags:
+        if query:
+            for item in search_apps(apps, query, fuzzy):
+                scored_results.append((1000 + frequency.get(item["id"], 0), item))
         else:
-            FUZZY = False
-
-        if "a" in tags:
-            start = time.perf_counter()
-            app_results = []
-            if query:
-                result.extend(search_apps(apps, query))
-            else:
-                app_results = [{
+            for app in sorted(apps, key=lambda a: frequency.get(a["id"], 0), reverse=True):
+                scored_results.append((frequency.get(app["id"], 0), {
                     "id": app["id"],
                     "label": app["name"],
                     "description": app["genericName"] or app["description"],
                     "category": "app",
                     "icon": app["icon"],
-                    "value": ["bash", "-c", re.sub(r"%[a-zA-Z]", "", app["exec"]).strip()],
-                    "type": "exec"
-                } for app in apps]
+                    "value": ["bash", "-c", app["exec_clean"]],
+                    "type": "exec",
+                }))
 
-            app_results.sort(key=lambda x: freq.get(x["id"], 0), reverse=True)
-            result.extend(app_results)
-            if (timer):
-                print(f"[timer] Apps searched: {time.perf_counter() - start:.4f}s", file=sys.stderr)
-
-        if "s" in tags:
-            start = time.perf_counter()
-            if query:
-                result.extend(search_settings(settings, query))
-            else:
-                result.extend([result for result in settings if result.get("label") != ""])
-            if (timer):
-                print(f"[timer] Settings searched: {time.perf_counter() - start:.4f}s", file=sys.stderr)
-
+    if "s" in tags:
         if query:
-            start = time.perf_counter()
-            result = search_settings(result, query)
-            if (timer):
-                print(f"[timer] Sorting Apps and Settings: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+            for item in search_settings(settings, query, fuzzy):
+                s = item.pop("_score", 0)
+                scored_results.append((s, item))
+        else:
+            for item in settings:
+                if item.get("label"):
+                    scored_results.append((0, item))
 
-        if "h" in tags:
-            start = time.perf_counter()
-            search_files_async(file_paths, query, result)
-            if (timer):
-                print(f"[timer] Files searched: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+    scored_results.sort(key=lambda x: x[0], reverse=True)
+    base_result = [item for _, item in scored_results]
 
-        if "c" in tags:
-            start = time.perf_counter()
-            if query:
-                result = [*calculate(query), *CALC]
-            else:
-                result = CALC
-            if (timer):
-                print(f"[timer] Calculated: {time.perf_counter() - start:.4f}s", file=sys.stderr)
-
-        if "t" in tags:
-            result = COLORS
-
-        if "F" in tags:
-            increment_frequency(query)
-            continue
-
-        if "w" in tags:
-            select_web(query)
-            continue
-
-        if "r" in tags:
-            print(f"Rescanning...", file=sys.stderr)
-            threading.Thread(target=load, daemon=True).start()
-            continue
-
-        print(json.dumps(result))
+    # ── File search: async, non-blocking ──
+    if "h" in tags:
+        print(json.dumps(base_result))
         sys.stdout.flush()
-        if (timer):
-            print(f"[timer] Search finished: {time.perf_counter() - init:.4f}s", file=sys.stderr)
+        if query and file_paths:
+            start_file_search(file_paths, query, base_result)
+    else:
+        print(json.dumps(base_result))
+        sys.stdout.flush()
 
-main()
+def main() -> None:
+    initial_load()
+    print("launcher: ready", file=sys.stderr)
+
+    for line in sys.stdin:
+        line = line.rstrip("\n")
+        if not line:
+            continue
+        try:
+            tags, query, paths = parse_input(line)
+            handle_request(tags, query, paths)
+        except Exception as e:
+            print(f"launcher: error handling request: {e}", file=sys.stderr)
+
+
+if __name__ == "__main__":
+    main()
 

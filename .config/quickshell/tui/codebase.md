@@ -190,6 +190,7 @@ services/
   PacmanInfo.qml
   ScreenshotInfo.qml
   SettingsInfo.qml
+  ShortcutInfo.qml
   SystemInfo.qml
   Uptime.qml
   WallpaperInfo.qml
@@ -6122,7 +6123,7 @@ CellPopup {
 
                 RowLayout {
 
-                    Layout.leftMargin: Cell.centerWCell(implicitWidth, root.implicitWidth)
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW))
 
                     spacing: 0
 
@@ -6229,9 +6230,8 @@ CellPopup {
 
                 }
 
-
                 CellSeparator {
-                    w: root.w
+                    w: box.contentW
                     type: 2
                     padding: 1
                     color: Colors.bgOverlay
@@ -6252,7 +6252,7 @@ CellPopup {
 
                         Cells {
 
-                            w: root.w - 9
+                            w: box.contentW - 8
                             h: 1
 
                             color: Colors.bgOverlay
@@ -6274,7 +6274,7 @@ CellPopup {
                     }
 
                     CellSeparator {
-                        w: root.w
+                        w: box.contentW
                         type: 0
                         padding: 1
                         color: Colors.bgOverlay
@@ -6291,7 +6291,7 @@ CellPopup {
 
                         Cells {
 
-                            w: root.w - 9
+                            w: box.contentW - 8
                             h: 1
 
                             color: Colors.bgOverlay
@@ -6315,7 +6315,7 @@ CellPopup {
                     }
 
                     CellSeparator {
-                        w: root.w
+                        w: box.contentW
                         type: 0
                         padding: 1
                         color: Colors.bgOverlay
@@ -6645,7 +6645,7 @@ CellPopup {
 
                 visible: SettingsInfo.hints
 
-                Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW))
 
                 spacing: Cell.w(2)
 
@@ -9864,13 +9864,10 @@ CellPopup {
 
                             spacing: 0
 
-                            ShortcutHandler {
+                            property int result_h: root.minimal ? 2 : 3
 
-                                active: root.isTop
-
-                                property int result_h: root.minimal ? 2 : 3
-
-                                shortcuts: [
+                            Component.onCompleted: {
+                                root.shortcuts = [
                                     {
                                         binds: "Up",
                                         action: () => {
@@ -9983,7 +9980,6 @@ CellPopup {
                                         }
                                     },
                                 ]
-
                             }
 
                             Repeater {
@@ -10283,8 +10279,8 @@ CellPopup {
 
     property bool minimal: SettingsInfo.minimal
 
-    w: 51 - Cell.wCount(Cell.h(6),"ceil")*root.minimal
-    h: Cell.hCount(layout.implicitHeight)
+    w: 51 - Cell.wCount(Cell.h(6),"ceil")*root.minimal + 2
+    h: Cell.hCount(layout.implicitHeight) + 2
 
     shortcuts: [
         {
@@ -10311,8 +10307,8 @@ CellPopup {
 
         id: box
 
-        w: root.w+2
-        h: root.h+2
+        w: root.w
+        h: root.h
 
         ColumnLayout {
 
@@ -11807,6 +11803,10 @@ Item {
         "height": 1080,
     }
 
+    ShortcutHandler {
+        shortcuts: ShortcutInfo.shortcuts
+    }
+
     CalendarPopup {
 
         id: calendar
@@ -13139,8 +13139,8 @@ CellPopup {
 
     property bool minimal: SettingsInfo.minimal
 
-    w: box.eW*3 + 3
-    h: minimal ? 21 : 27
+    w: box.eW*3 + 3 + 2
+    h: minimal ? 23 : 29
 
     function fmt(str, ...args) {
         return str.replace(/{}/g, () => args.shift());
@@ -13149,7 +13149,6 @@ CellPopup {
     function strip(str: string): string {
         return str.trim().replace(/<[^>]*>/g,"")
     }
-
 
     CellBox {
 
@@ -13166,8 +13165,8 @@ CellPopup {
         property int warning_thres: 70
         property int danger_thres: 80
 
-        w: root.w+2
-        h: root.h+2
+        w: root.w
+        h: root.h
 
         component Header: CellSeparator {
 
@@ -19054,7 +19053,7 @@ import qs.modules
 import qs.services
 
 import QtQuick
-import Quickshell
+import Qt5Compat.GraphicalEffects
 
 Item {
 
@@ -19080,11 +19079,25 @@ Item {
 
     readonly property bool isTop: PopupManager.isTop(name)
 
+    onIsTopChanged: {
+        if (isTop) {
+            ShortcutInfo.shortcuts = [
+                {
+                    binds: "Escape",
+                    active: root.escapeToClose,
+                    action: () => root.close()
+                },
+                ...shortcuts,
+                {
+                    binds: "P",
+                    active: root.escapeToClose,
+                    action: () => console.log("bruh")
+                }
+            ] 
+        }
+    }
+
     property bool escapeToClose: true
-
-    opacity: isTop ? 1 : 0.9
-
-    Behavior on opacity {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
     x: {
         if (!monitor) return Cell.w(cellX)
@@ -19108,22 +19121,6 @@ Item {
     }
 
     focus: true
-
-    ShortcutHandler {
-        active: root.isTop
-        shortcuts: [
-            {
-                binds: "Escape",
-                active: root.escapeToClose,
-                action: () => root.close()
-            }
-        ]
-    }
-
-    ShortcutHandler {
-        active: root.isTop
-        shortcuts: root.shortcuts
-    }
 
     function close() {
         PopupManager.close(root.name)
@@ -29528,7 +29525,7 @@ if __name__ == "__main__":
 
 ## File: scripts/config.json
 ````json
-{"hints":true,"quickStart":true,"minimal":false,"textBasedVolume":false,"hideBar":false,"bottomBar":false,"optimizeMemory":true,"safeNotifications":false,"dnd":false,"shadow":true,"hyprAnim":true,"hyprBlur":false,"bgCava":true,"bgCavaLock":false,"screenshotStay":true,"screenshotCursor":true,"lockScreenMusic":false,"sfx":false,"userLightMode":false,"autoLightMode":true,"debug":false}
+{"hints":true,"quickStart":true,"minimal":false,"textBasedVolume":false,"hideBar":false,"bottomBar":false,"optimizeMemory":true,"safeNotifications":false,"dnd":false,"shadow":true,"hyprAnim":true,"hyprBlur":false,"bgCava":true,"bgCavaLock":false,"screenshotStay":true,"screenshotCursor":true,"lockScreenMusic":false,"sfx":false,"userLightMode":false,"autoLightMode":true,"debug":true}
 ````
 
 ## File: scripts/config.py
@@ -124500,7 +124497,7 @@ Singleton {
     signal verified(id: int)
     signal failed()
     
-    signal unmatch_id()
+    // signal unmatch_id()
 
     signal prompted(prompt: string, description: string, return_password: bool, id: int)
 
@@ -124538,7 +124535,7 @@ Singleton {
                         root.authenticating = false
                         root.verified(root.authenticate_id++)
                     } else {
-                        root.unmatch_id()
+                        //root.unmatch_id()
                         console.log("AuthInfo (check_pwd): Unmatched authentication id")
                     }
                 } else if (text == "0") {
@@ -127538,7 +127535,8 @@ Singleton {
         function dummy(): void {
             // Contains debugging features that can be accessed by SUPER + P
             root.toggle("debug")
-            SystemInfo.lock()
+            root.debugSig()
+            // SystemInfo.lock()
         }
     }
 
@@ -127553,6 +127551,21 @@ Singleton {
             }
         }
     }
+
+}
+````
+
+## File: services/ShortcutInfo.qml
+````
+pragma Singleton
+
+import Quickshell
+
+Singleton {
+
+    id: root
+
+    property var shortcuts
 
 }
 ````

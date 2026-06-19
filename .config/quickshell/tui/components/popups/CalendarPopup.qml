@@ -1388,7 +1388,7 @@ CellPopup {
 
                 RowLayout {
 
-                    Layout.leftMargin: Cell.centerWCell(implicitWidth, root.implicitWidth)
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW))
 
                     spacing: 0
 
@@ -1495,9 +1495,8 @@ CellPopup {
 
                 }
 
-
                 CellSeparator {
-                    w: root.w
+                    w: box.contentW
                     type: 2
                     padding: 1
                     color: Colors.bgOverlay
@@ -1518,7 +1517,7 @@ CellPopup {
 
                         Cells {
 
-                            w: root.w - 9
+                            w: box.contentW - 8
                             h: 1
 
                             color: Colors.bgOverlay
@@ -1540,7 +1539,7 @@ CellPopup {
                     }
 
                     CellSeparator {
-                        w: root.w
+                        w: box.contentW
                         type: 0
                         padding: 1
                         color: Colors.bgOverlay
@@ -1557,7 +1556,7 @@ CellPopup {
 
                         Cells {
 
-                            w: root.w - 9
+                            w: box.contentW - 8
                             h: 1
 
                             color: Colors.bgOverlay
@@ -1581,7 +1580,7 @@ CellPopup {
                     }
 
                     CellSeparator {
-                        w: root.w
+                        w: box.contentW
                         type: 0
                         padding: 1
                         color: Colors.bgOverlay
@@ -1911,7 +1910,7 @@ CellPopup {
 
                 visible: SettingsInfo.hints
 
-                Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW))
 
                 spacing: Cell.w(2)
 

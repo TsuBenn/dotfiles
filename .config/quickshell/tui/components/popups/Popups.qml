@@ -19,6 +19,10 @@ Item {
         "height": 1080,
     }
 
+    ShortcutHandler {
+        shortcuts: ShortcutInfo.shortcuts
+    }
+
     CalendarPopup {
 
         id: calendar
