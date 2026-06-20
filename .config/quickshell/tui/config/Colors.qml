@@ -53,20 +53,20 @@ Singleton {
     property color borderActive
     property color borderInactive
 
-    // Behavior on bgBase {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on bgSurface {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on bgOverlay {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on fgBase {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on onAccent {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on fgDim {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on fgSubtle {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on accentStrong {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on accentDim {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on secondary {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on info {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on success {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on warning {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on danger {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on bgBase {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on bgSurface {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on bgOverlay {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on fgBase {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on onAccent {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on fgDim {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on fgSubtle {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on accentStrong {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on accentDim {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on secondary {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on info {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on success {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on warning {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on danger {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
     // Helpers
     function transparent(c, factor) {
@@ -110,6 +110,7 @@ Singleton {
     }
 
     property var colors: ({})
+    property var auto_colors: ({})
 
     property bool preferedLightMode: false
 
@@ -150,7 +151,7 @@ Singleton {
             //color_from_image.running = true
         })
         SettingsInfo.lightModeChanged.connect(() => {
-            color_from_image.running = true
+            // color_from_image.running = true
             load.running = true
         })
         root.preferedLightModeChanged.connect(() => {
@@ -201,6 +202,7 @@ Singleton {
                 data.name = "<b><i>Let me cook</i></b>"
                 data.description = "The shell will try it's best to find the best palette from the current wallpaper you're choosing"
                 root.colors["auto"] = data
+                root.auto_colors = data
                 root.colorsChanged()
                 root.apply()
                 // console.log(JSON.stringify(data, null, 2))
@@ -248,7 +250,9 @@ Singleton {
 
         stdout: StdioCollector {
             onStreamFinished: {
-                root.colors = JSON.parse(text)
+                let data = JSON.parse(text)
+                data["auto"] = root.auto_colors
+                root.colors = data
                 root.apply()
             }
         }

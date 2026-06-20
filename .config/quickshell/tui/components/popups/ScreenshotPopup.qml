@@ -169,6 +169,10 @@ CellPopup {
         {
             binds: "Ctrl+A",
             action: () => {
+                if (namer.visible) {
+                    namer_textfield.select_all()
+                    return
+                }
                 root.edit = true
                 full_select.restart()
             }
@@ -184,7 +188,12 @@ CellPopup {
         },
         {
             binds: "C",
+            active: !namer.visible,
             action: () => {
+                if (namer.visible) {
+                    namer_textfield.type("c")
+                    return
+                }
                 SettingsInfo.toggle("screenshotCursor")
             }
         },
