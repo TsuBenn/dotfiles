@@ -41,7 +41,6 @@ Singleton {
      */
     property string pacmanState: "idle"
     property string installTarget: ""
-    property var transactionData: []
     property var installPlan: {
         "toInstall": [], // Dependencies (install)
         "willReplace": [], // Replaces (remove)
@@ -56,6 +55,21 @@ Singleton {
     signal promptRequested(prompt: string)
     signal installCompleted(exitCode: int)
 
+    function cancelInstallation() {
+        pacmanState = "idle"
+        installTarget = ""
+        installPlan = {
+            "toInstall": [], // Dependencies (install)
+            "willReplace": [], // Replaces (remove)
+            "conflictsWith": [], // Conflicts (remove)
+            "totalDownload": "",
+            "totalInstalled": "",
+        }
+        installLog = []
+        pendingPrompt = ""
+        installer.running = false
+    }
+
     function requestInstallation(name: string) {
         if (pacmanState != "idle") return
         if (isInstalled(name)) {
@@ -68,19 +82,77 @@ Singleton {
     }
 
     function prepareInstallation() {
+        if (isInstalled(installTarget)) {
+            console.log("PacmanInfo (prepareInstallation): " + installTarget + " has already been installed. Rejecting request.")
+            cancelInstallation()
+            return
+        }
         pacmanState = "pre-flight"
+    }
+
+    function confirmInstallation() {
+        pacmanState = "authentication"
+        installer.running = true
+    }
+
+    SequentialAnimation {
+        id: succeed
+        ScriptAction {
+            script: {
+                root.pacmanState = "success"
+            }
+        }
+        PauseAnimation {
+            duration: 1000
+        }
+        ScriptAction {
+            script: {
+                root.pacmanState = "idle"
+            }
+        }
     }
 
     Process {
 
         id: installer
 
-        property string pkg: ""
+        property string pkg: root.installTarget
 
-        command: ["sudo", "-S", "-k", "-p", "", "pacman", "-S", pkg]
+        onRunningChanged: {
+            if (running) {
+                AuthInfo.verify("Installing <b>" + root.installTarget + "</b>", "Authenticate for installation.", function(s, p) {
+                    if (s) {
+                        installer.write(p+"\n")
+                        root.pacmanState = "installing"
+                    } else {
+                        root.cancelInstallation()
+                    }
+                })
+            }
+        }
+
+        command: ["sudo", "-S", "-k", "-p", "", "pacman", "-S", "--noconfirm", pkg]
 
         stdout: SplitParser {
-            splitMarker: ["\n","\r"]
+            splitMarker: ""
+            onRead: (text) => {
+                console.log(text)
+                root.installLog.push(text)
+            }
+        }
+
+        stderr: SplitParser {
+            splitMarker: ""
+            onRead: (text) => {
+                root.installLog.push(text)
+            }
+        }
+
+        onExited: (exitCode, exitStatus) => {
+            console.log("PacmanInfo (installer): exitCode: " + exitCode + ", exitStatus: " + exitStatus)
+            if (exitCode == 0) {
+                succeed.start()
+            }
         }
 
     }

@@ -244,9 +244,10 @@ CellPopup {
                 // ── Status text ──
                 CellText {
 
+                    Layout.leftMargin: Cell.w(1)
+
                     id: status
 
-                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
                     text: "Insert password for <b>" + SystemInfo.username + "</b>"
                     color: Colors.info
                     preferedW: box.contentW - 2

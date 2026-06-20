@@ -137,6 +137,16 @@ Item {
         }
 
         w = getMaxWidth(raw_text)
+
+        if (centered) {
+            const lines = raw_text.split("\n")
+            let new_lines = []
+            for (const line of lines) {
+                new_lines.push( " ".repeat( Math.max(Math.floor((w - purify(line.trim()).length)/2),0) ) + line.trim() )
+            }
+            raw_text = new_lines.join("\n")
+        }
+
         h = preferedH > 0 ? preferedH : raw_text.split("\n").length
 
         if (!pure) {
@@ -461,9 +471,7 @@ Item {
 
                 sourceComponent: ColumnLayout {
 
-                    x: if (root.centered) {
-                        return Cell.centerWCell(implicitWidth, cell_text.implicitWidth)
-                    } else if (root.alignRight) {
+                    x: if (root.alignRight) {
                         return cell_text.implicitWidth - implicitWidth
                     } else {
                         return 0
@@ -546,9 +554,7 @@ Item {
 
                 sourceComponent: Text {
 
-                    x: if (root.centered) {
-                        return Cell.centerWCell(implicitWidth, cell_text.implicitWidth)
-                    } else if (root.alignRight) {
+                    x: if (root.alignRight) {
                         return cell_text.implicitWidth - implicitWidth
                     } else {
                         return 0

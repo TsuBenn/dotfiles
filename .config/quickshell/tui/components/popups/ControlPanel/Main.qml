@@ -85,6 +85,8 @@ ColumnLayout {
 
             clickable: !SystemInfo.wifi.ethernet
 
+            centered: false
+
             onReleased: (button) => {
                 if (button == "L") {
                     WifiInfo.toggle()
@@ -212,6 +214,8 @@ ColumnLayout {
 
             padding: 0
             text: " Bluetooth "
+
+            centered: false
 
             color: ["transparent", Colors.bgOverlay, Colors.fgBase]
             fg: [SystemInfo.bluetooth.enabled ? Colors.fgBase : Colors.fgDim, Colors.bgSurface]

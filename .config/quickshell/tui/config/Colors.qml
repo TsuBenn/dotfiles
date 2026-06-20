@@ -110,7 +110,7 @@ Singleton {
     }
 
     property var colors: ({})
-    property var auto_colors: ({})
+    property var auto_colors: dummy
 
     property bool preferedLightMode: false
 

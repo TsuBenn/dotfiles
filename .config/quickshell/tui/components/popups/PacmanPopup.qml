@@ -23,6 +23,10 @@ CellPopup {
         list.reset()
     }
 
+    onPromoted: {
+        search_field.grabFocus()
+    }
+
     shortcuts: [
         {
             binds: "Up",
@@ -285,6 +289,8 @@ CellPopup {
 
                             CellTextField {
 
+                                id: search_field
+
                                 w: box.contentW - 30 - search_mode.text.length - 3*PacmanInfo.fetching
                                 h: 1
 
@@ -364,6 +370,7 @@ CellPopup {
 
                     visible: (
                         root.pacmanState == "idle"
+                        || root.pacmanState == "fetching"
                     )
 
                     Layout.leftMargin: {
@@ -463,6 +470,17 @@ CellPopup {
                         || root.pacmanState == "authentication"
                     )
                     text: "Installing <b>" + PacmanInfo.installTarget + "</b>"
+                    color: Colors.secondary
+                }
+
+                // Check updates header
+                CellText {
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth,parent.implicitWidth)
+
+                    visible: (
+                        root.pacmanState == "checking_updates"
+                    )
+                    text: "Synchronizing packages database"
                     color: Colors.secondary
                 }
 
@@ -1010,6 +1028,37 @@ CellPopup {
 
                 }
 
+                // Checking for updates
+                Cells {
+
+                    visible: (
+                        root.pacmanState == "checking_updates"
+                    )
+
+                    w: box.contentW
+                    h: box.contentH - list.h - 9
+
+                    color: "transparent"
+
+                    RowLayout {
+
+                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                        y: Cell.centerHCell(implicitHeight, parent.implicitHeight)
+
+                        spacing: 0
+
+                        CellText {
+                            text: "Checking for updates"
+                        }
+
+                        CellLoading {
+                            style: 2
+                        }
+
+                    }
+
+                }
+
                 // Pre-flight
                 ColumnLayout {
 
@@ -1374,6 +1423,13 @@ CellPopup {
 
                     RowLayout {
 
+                        visible: (
+                            root.pacmanState == "idle"
+                            || root.pacmanState == "prepare"
+                            || root.pacmanState == "fetching"
+                            || root.pacmanState == "checking_updates"
+                        )
+
                         x: Cell.w(1)
 
                         spacing: Cell.w(1)
@@ -1416,6 +1472,13 @@ CellPopup {
 
                     RowLayout {
 
+                        visible: (
+                            root.pacmanState == "idle"
+                            || root.pacmanState == "prepare"
+                            || root.pacmanState == "fetching"
+                            || root.pacmanState == "checking_updates"
+                        )
+
                         anchors.right: parent.right
                         anchors.rightMargin: Cell.w(1)
 
@@ -1433,6 +1496,49 @@ CellPopup {
                             onReleased: (button) => {
                                 if (button == "L") {
                                     PacmanInfo.requestInstallation(list.selected_pkg)
+                                }
+                            }
+
+                        }
+
+                    }
+
+                    RowLayout {
+
+                        visible: (
+                            root.pacmanState == "pre-flight"
+                        )
+
+                        anchors.right: parent.right
+                        anchors.rightMargin: Cell.w(1)
+
+                        spacing: Cell.w(1)
+
+                        CellButton {
+
+                            text: "Confirm"
+
+                            color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    PacmanInfo.confirmInstallation()
+                                }
+                            }
+
+                        }
+
+                        CellButton {
+
+                            text: "Cancel"
+
+                            color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    PacmanInfo.cancelInstallation()
                                 }
                             }
 
