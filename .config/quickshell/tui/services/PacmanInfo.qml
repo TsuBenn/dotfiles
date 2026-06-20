@@ -11,10 +11,79 @@ Singleton {
     id: root
 
     property string path: SystemInfo.configdir + "/scripts/pacman-filter.py"
+    property string preflight_path: SystemInfo.configdir + "/scripts/pacman-pre-flight.py"
 
     property bool fetching: fetcher.running
+    property bool checking_updates: updates_checker.running
+    property bool updates_checker_authorized: false
+
+    signal fetched()
 
     property string query: ""
+
+    onFetched: {
+        if (pacmanState == "prepare") {
+            preparePreFlight()
+        }
+    }
+
+    /*
+     1.   idle           (Show pacman list, search, info).
+     1.1. prepare        (Fetch the newest data possible).
+     2.   pre-flight     (Show package's requirements, conflictions, replaces before actually installing).
+     3.   authentication (Authenticate for sudo).
+     4.   running        (Pacman do its thing).
+     4.1. prompt         (Pacman ask for user input, mostly yes or no).
+     4.2. cancel         (Kill Pacman).
+     5.   success        (Show that it succeed).
+     5.1  failed         (Show that it failed).
+     6.   reset          (Go back to Idle)
+     */
+    property string pacmanState: "idle"
+    property string installTarget: ""
+    property var transactionData: []
+    property var installPlan: {
+        "toInstall": [], // Dependencies (install)
+        "willReplace": [], // Replaces (remove)
+        "conflictsWith": [], // Conflicts (remove)
+        "totalDownload": "",
+        "totalInstalled": "",
+    }
+    property var installLog: []
+    property string pendingPrompt: ""
+    property int installExitCode: 0
+
+    signal promptRequested(prompt: string)
+    signal installCompleted(exitCode: int)
+
+    function requestInstallation(name: string) {
+        if (pacmanState != "idle") return
+        if (isInstalled(name)) {
+            console.log("PacmanInfo (requestIntallation): " + name + " has already been installed. Rejecting request.")
+            return
+        }
+        installTarget = name
+        fetch()
+        pacmanState = "prepare"
+    }
+
+    function prepareInstallation() {
+        pacmanState = "pre-flight"
+    }
+
+    Process {
+
+        id: installer
+
+        property string pkg: ""
+
+        command: ["sudo", "-S", "-k", "-p", "", "pacman", "-S", pkg]
+
+        stdout: SplitParser {
+            splitMarker: ["\n","\r"]
+        }
+
+    }
 
     onInstalledChanged: {
         queryChanged()
@@ -43,10 +112,10 @@ Singleton {
             let matchRepo
 
             if (search_mode == 1) {
-                q = q.replace(/ /g, "").replace(/-/g, "")
-                matchName = item.name.toLowerCase().replace(/ /g, "").replace(/-/g, "").includes(q)
-                matchDesc = item.description.toLowerCase().replace(/ /g, "").replace(/-/g, "").includes(q)
-                matchRepo = item.repository.toLowerCase().replace(/ /g, "").replace(/-/g, "").includes(q)
+                q = q.replace(/ /g, "").replace(/-/g, "").replace(/_/g, "")
+                matchName = item.name.toLowerCase().replace(/ /g, "").replace(/-/g, "").replace(/_/g, "").includes(q)
+                matchDesc = item.description.toLowerCase().replace(/ /g, "").replace(/-/g, "").replace(/_/g, "").includes(q)
+                matchRepo = item.repository.toLowerCase().replace(/ /g, "").replace(/-/g, "").replace(/_/g, "").includes(q)
             } else {
                 matchName = item.name.toLowerCase().includes(q)
                 matchDesc = item.description.toLowerCase().includes(q)
@@ -69,6 +138,8 @@ Singleton {
     }
 
     property bool installed: false
+
+    property bool outdated: false
 
     /* search mode
      * 0 -> pretty_fuzzy
@@ -105,9 +176,62 @@ Singleton {
         lister.running = true
     }
 
+    function preparePreFlight() {
+        if (preflighter.running) preflighter.running = false
+        preflighter.running = true
+    }
+
+    function check_updates() {
+        updates_checker.running = true
+        if (pacmanState != "idle") {
+            return
+        } else {
+            pacmanState = "checking_updates"
+        }
+        AuthInfo.verify("Authenticate", "Synchronize package databases.", function(s, p) {
+            if (s) {
+                console.log("Authorize updates checker success!")
+                root.updates_checker_authorized = true
+                updates_checker.write(p+"\n")
+            } else {
+                console.log("Authorize updates checker failed!")
+                root.updates_checker_authorized = false
+                updates_checker.running = false
+            }
+        })
+    }
+
     function fetch() {
+        if (pacmanState == "idle") {
+            pacmanState = "fetching"
+        }
         if (fetcher.running) fetcher.running = false
         fetcher.running = true
+    }
+
+    Process {
+
+        id: preflighter
+
+        command: ["python", root.preflight_path, root.installTarget]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    root.installPlan = JSON.parse(text)
+                    prepareInstallation()
+                }
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    console.log("PacmanInfo (preflighter): " + text)
+                }
+            }
+        }
+
     }
 
     Process {
@@ -145,7 +269,9 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 if (text) {
+                    if (root.pacmanState == "fetching") root.pacmanState = "idle"
                     console.log(text)
+                    root.fetched()
                     lister.running = true
                 }
             }
@@ -157,6 +283,33 @@ Singleton {
                     console.log("PacmanInfo (cacher): " + text)
                 }
             }
+        }
+
+    }
+
+    Process {
+
+        id: updates_checker
+
+        command: ["sudo", "-S", "-k", "-p", "", "pacman", "-Sy"]
+
+        onRunningChanged: {
+            root.updates_checker_authorized = false
+        }
+
+        stdout: SplitParser {
+            splitMarker: ["\n", "\r"]
+            onRead: (text) => {
+                console.log("PacmanInfo (updates_checker): " + text)
+            }
+        }
+
+        onExited: (exitCode, exitStatus) => {
+            console.log("PacmanInfo (updates_checker): exitCode: " + exitCode + ", exitStatus: " + exitStatus)
+            if (exitCode == 0) {
+                root.fetch()
+            }
+            root.pacmanState = "idle"
         }
 
     }

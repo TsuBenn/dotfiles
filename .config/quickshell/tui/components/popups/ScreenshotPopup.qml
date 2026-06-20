@@ -65,13 +65,12 @@ CellPopup {
             }
             if (id == "screenshot" && sig == "full_now") {
                 if (snapAndCloseAnim.running) return
-                PopupManager.open("screenshot")
                 mask.visible = true
                 mouse.x1 = 0
                 mouse.y1 = 0
                 mouse.x2 = root.monitor.width
                 mouse.y2 = root.monitor.height
-                ScreenshotInfo.screenshot(0, 0, root.monitor.width, root.monitor.height)
+                root.screenshot()
                 snapAndCloseAnim.restart()
                 fullscreen = false
             }
@@ -176,9 +175,9 @@ CellPopup {
         },
         {
             binds: "Return",
-            active: root.edit && !namer.visible,
+            active: !namer.visible,
             action: () => {
-                if (snapAndCloseAnim.running) return
+                if (snapAndCloseAnim.running || !root.edit) return
                 root.screenshot()
                 stay.yes ? snapAnim.restart() : snapAndCloseAnim.restart()
             }

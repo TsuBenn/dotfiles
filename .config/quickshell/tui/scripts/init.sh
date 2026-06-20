@@ -20,6 +20,12 @@ SET_COLOR="hl.config({
 
     },
 
+    cursor = {
+        no_hardware_cursors = 1,
+        use_cpu_buffer = 0,
+        zoom_disable_aa = 1,
+    }
+
     decoration = {
         rounding = 0,
         shadow  = {

@@ -206,10 +206,7 @@ Singleton {
         function notification_check(): void {
             root.notification_check()
         }
-        function auth_check(): void {AuthInfo.ask(
-            "Authenticate check",
-            "Check the authentication capability.",
-        )}
+        function auth_check(): void {AuthInfo.verify("Authenticate", "Check the authentication capability", function(s) {console.log(`Authenticate Tester: ${s ? "Success" : "Canceled"}`)})}
         function audio_check(): void {
             root.audio_check()
         }

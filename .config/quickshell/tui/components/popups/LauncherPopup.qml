@@ -59,6 +59,10 @@ CellPopup {
 
     }
 
+    onPromoted: {
+        textfield.grabFocus()
+    }
+
     Timer {
 
         id: auto_refresh
@@ -198,9 +202,6 @@ CellPopup {
                                 property var path: []
 
                                 Component.onCompleted: {
-                                    root.promoted.connect(() => {
-                                        textfield.refresh()
-                                    })
                                     LauncherInfo.pathFound.connect((id, label) => {
                                         textfield.path = [...path, {"id": id, "label": label}]
                                         textfield.search("")

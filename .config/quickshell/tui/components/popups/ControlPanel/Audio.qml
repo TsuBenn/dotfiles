@@ -81,7 +81,7 @@ ColumnLayout {
                                 CellIcon {
                                     id: icon
                                     w: 5
-                                    icon: [stream.app,stream.name,stream.binary]
+                                    icon: [stream.binary,stream.app,stream.name]
                                     hideOnFail: false
                                 }
 

@@ -1,7 +1,54 @@
 #!/usr/bin/env python3
 """
-pacman_backend.py — Structured JSON backend for a pacman UI.
-Commands: fetch | list | search <query> [--fresh] | info <pkgname>
+pacman-filter.py — Structured JSON backend for a pacman UI.
+
+Commands:
+  fetch      — Build/refresh the local cache from pacman -Qi / -Si / -Qu.
+               No sudo, no network. Reads from existing sync db.
+  list       — List installed packages (from cache).
+  list-all   — List all known packages (from cache).
+  search <q> — Search packages by name/description (from cache).
+  info <pkg> — Print full info for one package (from cache).
+
+Cache location: ~/.cache/pacman-ui/cache.json
+
+Cache structure:
+  {
+    "fetched_at": "2024-01-01T12:00:00",
+    "packages": {
+      "<name>": {
+        "name":             str,
+        "version":          str,   # installed version (if installed) or repo version
+        "latest_version":   str,   # repo version if update available, else ""
+        "description":      str,
+        "url":              str,
+        "licenses":         [str],
+        "repository":       str,
+        "groups":           [str],
+        "arch":             str,
+        "download_size":    str,   # e.g. "12.34 MiB"
+        "installed_size":   str,
+        "packager":         str,
+        "build_date":       str,
+        "installed":        bool,
+        "install_date":     str,   # installed-only
+        "install_reason":   str,   # installed-only
+        "install_script":   str,   # installed-only
+        "validated_by":     str,   # installed-only
+        "depends":          [{name, installed}],
+        "optional_deps":    [{name, reason, installed}],
+        "make_deps":        [{name, installed}],
+        "check_deps":       [{name, installed}],
+        "required_by":      [str],
+        "optional_for":     [str],
+        "conflicts_with":   [str],
+        "replaces":         [str],
+        "provides":         [str],
+        "last_sync":        {timestamp, action} | null,
+      },
+      ...
+    }
+  }
 """
 
 import json
@@ -21,8 +68,12 @@ CACHE_FILE = CACHE_DIR / "cache.json"
 # ─────────────────────────────────────────────
 
 def run(cmd: list[str]) -> str:
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    return result.stdout
+    """Run a command, return stdout. Errors swallowed (return empty)."""
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+        return result.stdout
+    except (subprocess.SubprocessError, FileNotFoundError):
+        return ""
 
 
 def parse_pacman_block(block: str) -> dict:
@@ -104,9 +155,45 @@ def parse_last_sync_from_log(log_path: str = "/var/log/pacman.log") -> dict[str,
                     timestamp, action, name = m.group(1), m.group(2), m.group(3)
                     # Always overwrite — log is chronological so last match = most recent
                     last_sync[name] = {"timestamp": timestamp, "action": action}
-    except FileNotFoundError:
+    except (FileNotFoundError, PermissionError):
         pass
     return last_sync
+
+
+def get_updatable_packages() -> dict[str, str]:
+    """Run `pacman -Qu` and return {name: repo_version} for packages with updates.
+
+    `pacman -Qu` reads from the local sync db (no network, no sudo).
+    Output format per line:
+        firefox 115.0-1 -> 118.0-1
+                ^^^^^^^^^^^^^^^^^^
+                installed version -> repo version
+
+    Returns empty dict on any error. Safe to call on every fetch.
+
+    Note: pacman -Qu respects IgnorePkg / IgnoreGroup from pacman.conf,
+    so packages the user has explicitly told pacman to ignore won't
+    appear here. This is intentional — the UI should match what
+    `pacman -Syu` would actually upgrade.
+    """
+    try:
+        proc = subprocess.run(
+            ["pacman", "-Qu"],
+            capture_output=True, text=True, timeout=30,
+        )
+        # -Qu exits 0 if there are updates, 1 if no updates. Both fine.
+        if not proc.stdout.strip():
+            return {}
+        result = {}
+        for line in proc.stdout.strip().split("\n"):
+            # Format: "firefox 115.0-1 -> 118.0-1"
+            # Split on whitespace; expect [name, old_ver, "->", new_ver]
+            parts = line.split()
+            if len(parts) >= 4 and parts[2] == "->":
+                result[parts[0]] = parts[3]
+        return result
+    except (subprocess.SubprocessError, FileNotFoundError):
+        return {}
 
 
 def build_package_entry(raw: dict, is_installed: bool, installed_set: set[str]) -> dict:
@@ -120,6 +207,7 @@ def build_package_entry(raw: dict, is_installed: bool, installed_set: set[str]) 
         # Identity
         "name":         raw.get("Name", ""),
         "version":      raw.get("Version", ""),
+        "latest_version": "",   # populated by cmd_fetch after all packages are built
         "description":  raw.get("Description", ""),
         "url":          raw.get("URL", ""),
         "licenses":     split_list_field(raw.get("Licenses", "")),
@@ -169,6 +257,19 @@ def build_package_entry(raw: dict, is_installed: bool, installed_set: set[str]) 
 # ─────────────────────────────────────────────
 
 def cmd_fetch():
+    """Build/refresh the local cache.
+
+    Reads from:
+      - pacman -Qq   (list of installed package names)
+      - pacman -Qi   (info for every installed package)
+      - pacman -Si   (info for every repo package)
+      - pacman -Qu   (list of packages with available updates)
+      - /var/log/pacman.log (last install/upgrade timestamp per package)
+
+    No sudo, no network. The sync db is read as-is — if the user wants
+    truly current repo info, they need to run `pacman -Sy` first
+    (which your UI does via the check_updates flow).
+    """
     print("→ Getting list of installed packages...", flush=True)
     installed_raw = run(["pacman", "-Qq"])
     installed_set = set(installed_raw.split())
@@ -201,7 +302,10 @@ def cmd_fetch():
         if not name:
             continue
         if name in packages:
-            # Already have full -Qi data; just add repo/size fields if missing
+            # Already have full -Qi data; just add repo/size fields if missing.
+            # The version from -Qi is the INSTALLED version (kept as `version`).
+            # The repo version from -Si is not stored separately here —
+            # `latest_version` below captures it for updatable packages.
             if not packages[name].get("repository"):
                 packages[name]["repository"] = raw.get("Repository", "")
             if not packages[name].get("download_size"):
@@ -212,6 +316,20 @@ def cmd_fetch():
 
     print(f"   ✓ {new_count} additional repo packages processed.", flush=True)
 
+    # ── Updatable packages (pacman -Qu) ───────────────────────────────────
+    # For each installed package that pacman says has an update, record the
+    # repo version. Everyone else gets latest_version = "".
+    print("→ Checking for available updates (pacman -Qu)...", flush=True)
+    updatable = get_updatable_packages()
+    for name, pkg in packages.items():
+        if pkg.get("installed") and name in updatable:
+            pkg["latest_version"] = updatable[name]
+        else:
+            pkg["latest_version"] = ""
+
+    updated_count = sum(1 for p in packages.values() if p["latest_version"])
+    print(f"   ✓ {updated_count} packages have updates available.", flush=True)
+
     # ── Last sync from pacman.log ─────────────────────────────────────────
     print("→ Parsing pacman.log for last sync times...", flush=True)
     last_sync_map = parse_last_sync_from_log()
@@ -221,14 +339,19 @@ def cmd_fetch():
     synced = sum(1 for p in packages.values() if p["last_sync"])
     print(f"   ✓ {synced} packages have a recorded sync.", flush=True)
 
-    # ── Write cache ───────────────────────────────────────────────────────
+    # ── Write cache (atomic) ──────────────────────────────────────────────
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     cache = {
         "fetched_at": datetime.now().isoformat(),
         "packages":   packages,
     }
-    with open(CACHE_FILE, "w") as f:
+    # Atomic write: write to temp, then rename. Prevents partial reads
+    # if another process (e.g. pacman-preflight.py) reads the cache
+    # while we're writing it.
+    tmp_path = CACHE_FILE.with_suffix(".json.tmp")
+    with open(tmp_path, "w") as f:
         json.dump(cache, f, indent=2)
+    tmp_path.rename(CACHE_FILE)
 
     total = len(packages)
     inst  = sum(1 for p in packages.values() if p["installed"])
@@ -242,7 +365,7 @@ def cmd_fetch():
 
 def load_cache() -> dict:
     if not CACHE_FILE.exists():
-        print("✗ Cache not found. Run:  pacman_backend.py fetch", file=sys.stderr)
+        print("✗ Cache not found. Run:  pacman-filter.py fetch", file=sys.stderr)
         sys.exit(1)
     with open(CACHE_FILE) as f:
         return json.load(f)
@@ -258,12 +381,13 @@ def cmd_list():
 
     result = [
         {
-            "name":        name,
-            "real_name":   pkg["name"],
-            "description": pkg["description"],
-            "version":     pkg["version"],
-            "repository":  pkg["repository"],
-            "last_sync":   pkg["last_sync"],
+            "name":           name,
+            "real_name":      pkg["name"],
+            "description":    pkg["description"],
+            "version":        pkg["version"],
+            "latest_version": pkg.get("latest_version", ""),
+            "repository":     pkg["repository"],
+            "last_sync":      pkg["last_sync"],
         }
         for name, pkg in packages.items()
         if pkg["installed"]
@@ -288,13 +412,14 @@ def cmd_search(query: str, fresh: bool = False):
 
     result = [
         {
-            "name":        name,
-            "real_name":   pkg["name"],
-            "description": pkg["description"],
-            "version":     pkg["version"],
-            "repository":  pkg["repository"],
-            "installed":   pkg["installed"],
-            "last_sync":   pkg["last_sync"],
+            "name":           name,
+            "real_name":      pkg["name"],
+            "description":    pkg["description"],
+            "version":        pkg["version"],
+            "latest_version": pkg.get("latest_version", ""),
+            "repository":     pkg["repository"],
+            "installed":      pkg["installed"],
+            "last_sync":      pkg["last_sync"],
         }
         for name, pkg in packages.items()
         if q in name.lower() or q in pkg["description"].lower()
@@ -340,11 +465,11 @@ def main():
 
     if not args:
         print("Usage:")
-        print("  pacman_backend.py fetch")
-        print("  pacman_backend.py list")
-        print("  pacman_backend.py list-all")  # Added here
-        print("  pacman_backend.py search <query> [--fresh]")
-        print("  pacman_backend.py info <pkgname>")
+        print("  pacman-filter.py fetch")
+        print("  pacman-filter.py list")
+        print("  pacman-filter.py list-all")
+        print("  pacman-filter.py search <query> [--fresh]")
+        print("  pacman-filter.py info <pkgname>")
         sys.exit(0)
 
     cmd = args[0]
@@ -355,12 +480,12 @@ def main():
     elif cmd == "list":
         cmd_list()
 
-    elif cmd in ("list-all"):  # Added here
+    elif cmd == "list-all":
         cmd_list_all()
 
     elif cmd == "search":
         if len(args) < 2:
-            print("✗ search requires a query.  e.g.  pacman_backend.py search firefox", file=sys.stderr)
+            print("✗ search requires a query.  e.g.  pacman-filter.py search firefox", file=sys.stderr)
             sys.exit(1)
         query = args[1]
         fresh = "--fresh" in args
@@ -368,7 +493,7 @@ def main():
 
     elif cmd == "info":
         if len(args) < 2:
-            print("✗ info requires a package name.  e.g.  pacman_backend.py info neovim", file=sys.stderr)
+            print("✗ info requires a package name.  e.g.  pacman-filter.py info neovim", file=sys.stderr)
             sys.exit(1)
         cmd_info(args[1])
 
@@ -378,3 +503,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

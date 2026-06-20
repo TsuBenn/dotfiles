@@ -50,6 +50,11 @@ ShellRoot {
 
                 },
 
+                cursor = {
+                    no_hardware_cursors = 0,
+                    zoom_disable_aa = 1,
+                },
+
                 decoration = {
                     rounding = 0,
                     shadow  = {

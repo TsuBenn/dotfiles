@@ -155,6 +155,7 @@ scripts/
   light_or_dark.py
   obs_status.py
   pacman-filter.py
+  pacman-pre-flight.py
   pamtester.py
   password_checker
   password_checker.c
@@ -164,7 +165,6 @@ scripts/
   revive.sh
   test
   test.py
-  text.txt
   wallpapers_cacher.sh
   wallpapers_config.json
   why.txt
@@ -2057,7 +2057,7 @@ ColumnLayout {
                                 CellIcon {
                                     id: icon
                                     w: 5
-                                    icon: [stream.app,stream.name,stream.binary]
+                                    icon: [stream.binary,stream.app,stream.name]
                                     hideOnFail: false
                                 }
 
@@ -4661,15 +4661,68 @@ CellPopup {
     property bool return_password: false
 
     w: 40
-    h: Cell.wCount(layout.implicitHeight) + 2
+    h: Cell.hCount(layout.implicitHeight) + 2
+
 
     Connections {
         target: AuthInfo
         function onPrompted(prompt: string, description: string, return_password: bool, id: int) {
+            root.id = id
             root.prompt = prompt
             root.description = description
             PopupManager.open(root.name, false)
         }
+        function onVerified(id) {
+            if (root.id == id) {
+                root.sendStatus("Authentication succeed!", Colors.success, Cell.fontB)
+                succeed.start()
+            } else {
+                root.sendStatus("Unmatched id signal received!", Colors.danger, Cell.fontB)
+                pwd_field.set("")
+            }
+        }
+        function onFailed() {
+            root.sendStatus("Authentication failed!", Colors.danger, Cell.fontB)
+            pwd_field.set("")
+        }
+    }
+
+    function sendStatus(text: string, color = Colors.info,font = Cell.font) {
+        status.text = text
+        status.color = color
+        status.font = font
+        status_reset.restart()
+    }
+
+    SequentialAnimation {
+        id: succeed
+        PauseAnimation {
+            duration: 1000
+        }
+        ScriptAction {
+            script: {
+                pwd_field.set("")
+                root.close()
+            }
+        }
+    }
+
+    SequentialAnimation {
+        id: status_reset
+        PauseAnimation {
+            duration: 2000
+        }
+        ScriptAction {
+            script: {
+                status.text = Qt.binding(()=>(AuthInfo.authenticating ? "Processing password..." : "Insert password for <b>" + SystemInfo.username + "</b>"))
+                status.color = Colors.info
+                status.font = Cell.font
+            }
+        }
+    }
+
+    function onSigClose() {
+        AuthInfo.cancel()
     }
 
     Cells {
@@ -4719,6 +4772,110 @@ CellPopup {
                     text: root.description
                     color: Colors.fgDim
                     preferedW: box.contentW - 2
+                    wrap: true
+
+                }
+
+                Cells {
+
+                    w: box.contentW
+                    h: 3
+                    color: "transparent"
+
+                    CellBox {
+
+                        w: parent.w
+                        h: parent.h
+
+                        border.color: pwd_field.text.length > 0 ? Colors.secondary : Colors.accentStrong
+
+                        CellTextField {
+
+                            id: pwd_field
+
+                            x: Cell.w(1)
+
+                            w: box.contentW - 4
+                            h: 1
+
+                            disabled: AuthInfo.authenticating || succeed.running
+
+                            hidden: true
+
+                            placeholder: "Password"
+
+                            onEntered: (input) => {
+                                if (input.length == 0) {
+                                    root.sendStatus("Password field cannot be left empty!", Colors.warning)
+                                    return
+                                }
+                                AuthInfo.verify(input, root.id)
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                CellText {
+
+                    id: status
+
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                    text: (AuthInfo.authenticating ? "Processing password..." : "Insert password for <b>" + SystemInfo.username + "</b>")
+                    color: Colors.info
+                    preferedW: box.contentW - 2
+                    wrap: true
+                    centered: true
+
+                }
+
+                CellSeparator {
+                    w: box.contentW
+                    color: Colors.bgOverlay
+                }
+
+                RowLayout {
+
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                    spacing: Cell.w(2)
+
+                    CellButton {
+
+                        text: "Verify"
+
+                        clickable: pwd_field.text.length > 0 && !AuthInfo.authenticating
+
+                        color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                        fg:    clickable ? [Colors.onAccent, Colors.fgBase]        : Colors.fgSubtle
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                if (AuthInfo.authenticating) return
+                                pwd_field.enter()
+                            }
+                        }
+
+                    }
+
+                    CellButton {
+
+                        text: "Cancel"
+
+                        clickable: !AuthInfo.authenticating
+
+                        color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
+                        fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                root.close()
+                            }
+                        }
+
+                    }
 
                 }
 
@@ -9496,6 +9653,8 @@ CellPopup {
             breadcrumbs.updatePath()
         } else {
             auto_rescan.stop()
+            textfield.set("")
+            textfield.search("")
             LauncherInfo.write("-r")
         }
 
@@ -9510,6 +9669,10 @@ CellPopup {
             LauncherInfo.write("-r")
         }
 
+    }
+
+    onPromoted: {
+        textfield.grabFocus()
     }
 
     Timer {
@@ -10904,6 +11067,8 @@ CellPopup {
     w: 80
     h: 40
 
+    property string installState: PacmanInfo.installState
+
     onVisibleChanged: {
         list.selected_index = 0
         list.selected_pkg = ""
@@ -10994,6 +11159,13 @@ CellPopup {
 
                 CellScrollView {
 
+                    visible: (
+                        root.installState == "idle"
+                        || root.installState == "prepare"
+                        || root.installState == "pre-flight"
+                        || root.installState == "authentication"
+                    )
+
                     id: list
 
                     w: box.contentW
@@ -11002,7 +11174,7 @@ CellPopup {
                     property int selected_index: 0
                     property string selected_pkg: ""
 
-                    property var datas: PacmanInfo.installed ? PacmanInfo.search_results.filter(item => item.installed) : PacmanInfo.search_results
+                    property var datas: PacmanInfo.outdated ? PacmanInfo.search_results.filter(item => item.latest_version != "") : (PacmanInfo.installed ? PacmanInfo.search_results.filter(item => item.installed) : PacmanInfo.search_results)
 
                     property var optimized_data: datas.slice(list.offset,list.offset+list.h)
 
@@ -11028,7 +11200,9 @@ CellPopup {
                                 property string name: modelData.name
                                 property string repo: modelData.repository
                                 property string version: modelData.version
+                                property string latest_version: modelData.latest_version
                                 property bool installed: modelData.installed
+                                property bool update_available: pkg.latest_version != ""
 
                                 property bool selected: list.selected_pkg == name
 
@@ -11057,14 +11231,46 @@ CellPopup {
 
                                     CellText {
                                         text: pkg.name
-                                        preferedW: list.contentW - 5 - pkg_version.text.length
+                                        preferedW: list.contentW - 5 - pkg_version.w
                                         color: pkg.selected ? Colors.onAccent : Colors.fgBase
                                     }
 
-                                    CellText {
+                                    RowLayout {
+
                                         id: pkg_version
-                                        text: "(" + pkg.version + ")"
-                                        color: pkg.selected ? Colors.onAccent : Colors.fgDim
+
+                                        property int w: Cell.wCount(implicitWidth)
+
+
+                                        spacing: 0
+
+                                        CellText {
+                                            text: "("
+                                            color: pkg.selected ? Colors.onAccent : Colors.fgSubtle
+                                        }
+
+                                        CellText {
+                                            text: pkg.version
+                                            color: pkg.selected ? Colors.onAccent : (pkg.update_available ? Colors.blend(Colors.fgSubtle,Colors.danger,0.5) : Colors.fgSubtle)
+                                        }
+
+                                        CellText {
+                                            visible: pkg.update_available
+                                            text: " -> "
+                                            color: pkg.selected ? Colors.onAccent : Colors.fgSubtle
+                                        }
+
+                                        CellText {
+                                            visible: pkg.update_available
+                                            text: pkg.latest_version
+                                            color: pkg.selected ? Colors.onAccent : Colors.success
+                                        }
+
+                                        CellText {
+                                            text: ")"
+                                            color: pkg.selected ? Colors.onAccent : Colors.fgSubtle
+                                        }
+
                                     }
 
                                 }
@@ -11097,6 +11303,13 @@ CellPopup {
 
                 Cells {
 
+                    visible: (
+                        root.installState == "idle"
+                        || root.installState == "prepare"
+                        || root.installState == "pre-flight"
+                        || root.installState == "authentication"
+                    )
+
                     w: box.contentW
                     h: 3
 
@@ -11113,7 +11326,7 @@ CellPopup {
 
                             CellTextField {
 
-                                w: box.contentW - 29 - search_mode.text.length - 3*PacmanInfo.fetching
+                                w: box.contentW - 30 - search_mode.text.length - 3*PacmanInfo.fetching
                                 h: 1
 
                                 placeholder: "Search package"
@@ -11166,20 +11379,19 @@ CellPopup {
 
                             CellButton {
 
-                                text: "Refresh"
+                                text: "Outdated"
 
-                                clickable: !PacmanInfo.fetching
-
-                                color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                                fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
+                                color: PacmanInfo.outdated ? Colors.accentStrong : Colors.bgOverlay
+                                fg:    PacmanInfo.outdated ? Colors.onAccent : Colors.fgBase
 
                                 onReleased: (button) => {
                                     if (button == "L") {
-                                        PacmanInfo.fetch()
+                                        PacmanInfo.outdated = !PacmanInfo.outdated
                                     }
                                 }
 
                             }
+
 
                         }
 
@@ -11189,6 +11401,10 @@ CellPopup {
                 }
 
                 RowLayout {
+
+                    visible: (
+                        root.installState == "idle"
+                    )
 
                     Layout.leftMargin: {
                         let result = list.selected_pkg.length + 2
@@ -11277,14 +11493,39 @@ CellPopup {
 
                 }
 
+                CellText {
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth,parent.implicitWidth)
+
+                    visible: (
+                        root.installState == "prepare"
+                        || root.installState == "pre-flight"
+                        || root.installState == "authentication"
+                    )
+                    text: "Installing <b>" + PacmanInfo.installTarget + "</b>"
+                    color: Colors.secondary
+                }
+
                 CellSeparator {
+                    visible: (
+                        root.installState == "idle"
+                        || root.installState == "prepare"
+                        || root.installState == "pre-flight"
+                        || root.installState == "authentication"
+                    )
                     w: box.contentW
                     color: Colors.accentStrong
                 }
 
                 CellScrollView {
 
+                    visible: (
+                        root.installState == "idle"
+                    )
+
                     id: info
+
+                    w: box.contentW
+                    h: box.contentH - list.h - 9
 
                     property int dep_index: PacmanInfo.packages.findIndex(item => item.name == deps[deps.length-1])
 
@@ -11341,9 +11582,6 @@ CellPopup {
                     || (datas?.optional_deps ?? []).length > 0
                     || (datas?.make_deps ?? []).length > 0
                     || (datas?.check_deps ?? []).length > 0
-
-                    w: box.contentW
-                    h: box.contentH - list.h - 7
 
                     component Info: RowLayout {
 
@@ -11432,13 +11670,17 @@ CellPopup {
 
                                     property var dep_data: {
                                         if (name.includes("<="))      return name.split("<=")
+                                        else if (name.includes("<"))      return name.split("<")
                                         else if (name.includes(">=")) return name.split(">=")
+                                        else if (name.includes(">")) return name.split(">")
                                         else if (name.includes("="))  return name.split("=")
                                         return [name]
                                     }
                                     property string version_ops: {
                                         if (name.includes("<="))      return "<="
+                                        else if (name.includes("<"))      return "<"
                                         else if (name.includes(">=")) return ">="
+                                        else if (name.includes(">"))      return ">"
                                         else if (name.includes("="))  return ""
                                         return ""
                                     }
@@ -11770,8 +12012,450 @@ CellPopup {
                     }
 
                 }
-            }
 
+                Cells {
+
+                    visible: (
+                        root.installState == "prepare"
+                    )
+
+                    w: box.contentW
+                    h: box.contentH - list.h - 9
+
+                    color: "transparent"
+
+                    RowLayout {
+
+                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                        y: Cell.centerHCell(implicitHeight, parent.implicitHeight)
+
+                        spacing: 0
+
+                        CellText {
+                            text: "Computing transaction"
+                        }
+
+                        CellLoading {
+                            style: 2
+                        }
+
+                    }
+
+                }
+
+                ColumnLayout {
+
+                    visible: (
+                        root.installState == "pre-flight"
+                        || root.installState == "authentication"
+                    )
+
+                    spacing: 0
+
+                    CellScrollView {
+
+                        w: box.contentW
+                        h: box.contentH - list.h - 12
+
+                        source: ColumnLayout {
+
+                            id: preflight
+
+                            spacing: 0
+
+                            property var installPlan: PacmanInfo.installPlan
+                            property var installTarget: PacmanInfo.packages.find(item => item.name == PacmanInfo.installTarget)
+
+                            CellText {
+                                Layout.leftMargin: Cell.w(1)
+                                text: "To Install:"
+                                font: Cell.fontB
+                                color: Colors.info
+                            }
+
+                            component ToInstall: RowLayout {
+
+                                property string name
+                                property color  name_color: Colors.fgBase
+                                property string version
+                                property string downloadSize
+                                property string installedSize
+
+                                property string prefix: "+"
+
+                                property int maxW: box.contentW
+
+                                spacing: Cell.w(1)
+
+                                CellText {
+
+                                    text: parent.prefix
+                                    color: Colors.fgSubtle
+
+                                }
+
+                                CellText {
+
+                                    text: parent.name
+                                    preferedW: parent.maxW - 32 - parent.version.length
+                                    color: parent.name_color
+
+                                }
+
+                                CellText {
+
+                                    text: parent.version
+                                    color: Colors.fgSubtle
+
+                                }
+
+                                CellText {
+
+                                    text: parent.downloadSize
+                                    color: Colors.info
+                                    preferedW: 11
+                                    alignRight: true
+
+                                }
+
+                                CellText {
+
+                                    text: "->"
+                                    color: Colors.fgSubtle
+
+                                }
+
+                                CellText {
+
+                                    text: parent.installedSize
+                                    color: Colors.success
+                                    preferedW: 11
+                                    alignRight: true
+
+                                }
+
+                            }
+
+                            ToInstall {
+
+                                Layout.leftMargin: Cell.w(2)
+
+                                maxW: box.contentW - 2
+                                prefix: "*"
+
+                                name: parent.installTarget.name
+                                version: parent.installTarget.version
+                                downloadSize: parent.installTarget.download_size
+                                installedSize: parent.installTarget.installed_size
+
+                            }
+
+                            ColumnLayout {
+
+                                id: preflight_dep
+
+                                spacing: 0
+
+                                property int collapseThreshold: 3
+
+                                property int maxShown: collapseThreshold 
+                                property int maxItems: preflight.installPlan.toInstall.length
+                                property var shownItems: preflight.installPlan.toInstall.filter(item => !item.isTarget).slice(0, maxShown)
+
+                                Repeater {
+
+                                    model: parent.shownItems
+
+                                    delegate: ToInstall {
+
+                                        Layout.leftMargin: Cell.w(4)
+
+                                        maxW: box.contentW - 4
+
+                                        required property var modelData
+
+                                        name: modelData.name
+                                        version: modelData.version
+                                        downloadSize: modelData.downloadSize
+                                        installedSize: modelData.installedSize
+
+                                    }
+
+                                }
+
+                                RowLayout {
+
+                                    Layout.leftMargin: Cell.w(4)
+
+                                    spacing: Cell.w(1)
+
+                                    CellButton {
+
+                                        visible: preflight_dep.maxShown < preflight_dep.maxItems
+
+                                        padding: 0
+                                        text: "[+ " + (preflight_dep.maxItems - preflight_dep.maxShown) + " more]"
+                                        color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
+                                        fg: Colors.info
+
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                preflight_dep.maxShown = Math.min(preflight_dep.maxShown+5,preflight_dep.maxItems)
+                                            }
+                                        }
+
+                                    }
+
+                                    CellButton {
+
+                                        visible: preflight_dep.maxShown < preflight_dep.maxItems && preflight_dep.maxShown > preflight_dep.collapseThreshold
+
+                                        padding: 0
+                                        text: "[Show all ("+preflight_dep.maxItems+")]"
+                                        color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
+                                        fg: Colors.info
+
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                preflight_dep.maxShown = preflight_dep.maxItems
+                                            }
+                                        }
+
+                                    }
+
+                                    CellButton {
+
+                                        visible: preflight_dep.maxShown == preflight_dep.maxItems
+
+                                        padding: 0
+                                        text: "[Show less]"
+                                        color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
+                                        fg: Colors.info
+
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                preflight_dep.maxShown = preflight_dep.collapseThreshold
+                                            }
+                                        }
+
+                                    }
+
+                                }
+
+
+                            }
+
+                            CellSeparator {
+                                visible: preflight.installPlan.willReplace.length > 0
+                                w: box.contentW - 1
+                                color: Colors.bgOverlay
+                            }
+
+                            CellText {
+                                visible: preflight.installPlan.willReplace.filter(item => !item.installed).length > 0
+                                Layout.leftMargin: Cell.w(1)
+                                text: "Replaces:"
+                                font: Cell.fontB
+                                color: Colors.blend(Colors.warning,Colors.fgBase, 0.5)
+                            }
+
+                            ColumnLayout {
+
+                                visible: preflight.installPlan.willReplace.length > 0
+
+                                spacing: 0
+
+                                property var data: preflight.installPlan.willReplace.filter(item => item.installed)
+
+                                Repeater {
+
+                                    model: preflight.installPlan.willReplace
+
+                                    delegate: ToInstall {
+
+                                        Layout.leftMargin: Cell.w(2)
+
+                                        required property var modelData
+
+                                        maxW: box.contentW - 2
+
+                                        prefix: "-"
+
+                                        name: modelData.name
+                                        version: modelData.version
+                                        downloadSize: "-"
+                                        installedSize: "-"
+
+                                    }
+
+                                }
+
+                            }
+
+                            CellSeparator {
+                                visible: preflight.installPlan.conflictsWith.length > 0
+                                w: box.contentW - 1
+                                color: Colors.bgOverlay
+                            }
+
+                            CellText {
+                                visible: preflight.installPlan.conflictsWith.length > 0
+                                Layout.leftMargin: Cell.w(1)
+                                text: "Conflicts with:"
+                                font: Cell.fontB
+                                color: Colors.danger
+                            }
+
+                            ColumnLayout {
+
+                                visible: preflight.installPlan.conflictsWith.length > 0
+
+                                spacing: 0
+
+                                Repeater {
+
+                                    model: preflight.installPlan.conflictsWith
+
+                                    delegate: ToInstall {
+
+                                        Layout.leftMargin: Cell.w(2)
+
+                                        required property var modelData
+
+                                        maxW: box.contentW - 2
+
+                                        prefix: "-"
+
+                                        name: modelData.name
+                                        name_color: Colors.danger
+                                        version: modelData.version
+                                        downloadSize: "-"
+                                        installedSize: "-"
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                    CellSeparator {
+                        w: box.contentW
+                        color: Colors.accentDim
+                    }
+
+                    RowLayout {
+
+                        Layout.leftMargin: Cell.w(1)
+
+                        spacing: 0
+
+                        CellText {
+                            text: "Total download size     : "
+                            color: Colors.fgSubtle
+                        }
+
+                        CellText {
+                            text: PacmanInfo.installPlan.totalDownload
+                            color: Colors.info
+                            font: Cell.fontB
+                            alignRight: true
+                        }
+
+                    }
+
+                    RowLayout {
+
+                        Layout.leftMargin: Cell.w(1)
+
+                        spacing: 0
+
+                        CellText {
+                            text: "Total installation size : "
+                            color: Colors.fgSubtle
+                        }
+
+                        CellText {
+                            text: PacmanInfo.installPlan.totalInstalled
+                            color: Colors.success
+                            font: Cell.fontB
+                            alignRight: true
+                        }
+
+                    }
+
+
+                }
+
+                CellSeparator {
+                    w: box.contentW
+                    color: Colors.accentStrong
+                }
+
+                RowLayout {
+
+                    Layout.alignment: Qt.AlignRight
+                    Layout.rightMargin: Cell.w(1)
+
+                    spacing: Cell.w(1)
+
+                    CellButton {
+
+                        text: PacmanInfo.isInstalled(list.selected_pkg) ? "Uninstall" : "Install"
+
+                        clickable: list.selected_pkg != ""
+
+                        color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                        fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                PacmanInfo.requestInstallation(list.selected_pkg)
+                            }
+                        }
+
+                    }
+
+                    CellButton {
+
+                        text: "Refresh"
+
+                        clickable: !PacmanInfo.fetching
+
+                        color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                        fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                PacmanInfo.fetch()
+                            }
+                        }
+
+                    }
+
+                    CellButton {
+
+                        text: "Check Updates"
+
+                        clickable: !PacmanInfo.fetching && !PacmanInfo.checking_updates
+
+                        color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                        fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                PacmanInfo.check_updates()
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
 
         }
 
@@ -12503,12 +13187,12 @@ CellPopup {
             PopupManager.open("screenshot")
         })
         SettingsInfo.screenshotCursorChanged.connect(() => {
-            if (!HyprInfo.isCurrentMonitor(root.monitor.name)) return
+            if (!root.visible) return
             cache.source = ""
             cache.source = ScreenshotInfo.cache_path
         })
         PopupManager.signalSent.connect((id, sig) => {
-            if (!HyprInfo.isCurrentMonitor(root.monitor.name)) return
+            if (!root.visible) return
             if (id == "screenshot" && sig == "full") {
                 root.fullscreen = true
             }
@@ -15032,7 +15716,7 @@ CellPopup {
 
                     property bool auto: yes && !WallpaperInfo.slideshow
 
-                    property bool yes: true
+                    property bool yes: SettingsInfo.wallpaperAutoAdvance
 
                     text: "Auto advance"
 
@@ -15043,7 +15727,7 @@ CellPopup {
 
                     onPressed: (button) => {
                         if (button == "L") {
-                            yes = !yes
+                            SettingsInfo.wallpaperAutoAdvance = !SettingsInfo.wallpaperAutoAdvance
                         }
                     }
 
@@ -17063,20 +17747,20 @@ Singleton {
     property color borderActive
     property color borderInactive
 
-    Behavior on bgBase {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    Behavior on bgSurface {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    Behavior on bgOverlay {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    Behavior on fgBase {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    Behavior on onAccent {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    Behavior on fgDim {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    Behavior on fgSubtle {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    Behavior on accentStrong {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    Behavior on accentDim {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    Behavior on secondary {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    Behavior on info {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    Behavior on success {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    Behavior on warning {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    Behavior on danger {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on bgBase {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on bgSurface {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on bgOverlay {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on fgBase {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on onAccent {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on fgDim {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on fgSubtle {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on accentStrong {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on accentDim {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on secondary {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on info {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on success {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on warning {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on danger {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
     // Helpers
     function transparent(c, factor) {
@@ -17512,6 +18196,8 @@ Singleton {
         isOpen(name) ? close(name) : open(name,isolate)
     }
 
+    signal sigClose(name: string)
+
     function close(name = "") {
         if (name == "") active_popups = [] 
         else active_popups = active_popups.filter(p => p != name)
@@ -17842,6 +18528,13 @@ CellPopup {
 
         Component.onCompleted: {
             PowerManager.called.connect((mode, count) => {
+                if (root && !root.visible) {
+                    openAnim.restart()
+                    blackout.opacity = 0
+                    countdown.opacity = 1
+                    top_bar.implicitHeight = 0
+                    bottom_bar.implicitHeight = 0
+                }
                 countdown.mode = mode
                 countdown.count = count
                 countdown.active = true
@@ -18876,9 +19569,11 @@ Item {
     property int w: 5
     property int h: 2
 
+    property string ze_icon: IconInfo.fetch(icon)
+
     // success is determined at root level
     property bool imageVisible: image != ""
-    property bool iconVisible: IconInfo.fetch(icon) != ""
+    property bool iconVisible: ze_icon != ""
     property bool success: (imageVisible || iconVisible || !hideOnFail) && !SettingsInfo.minimal
 
     implicitWidth: Cell.w(success ? w : 0)
@@ -18900,8 +19595,9 @@ Item {
                 id: base
                 visible: root.iconVisible && !root.imageVisible
                 width: Cell.h(root.h)
+                sourceSize: Qt.size(width * 2, height * 2)
                 height: Cell.h(root.h)
-                source: IconInfo.fetch(root.icon)
+                source: root.ze_icon
                 mipmap: true
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
@@ -19077,22 +19773,32 @@ Item {
 
     signal marginsPressed()
 
+    signal promoted()
+
     readonly property bool isTop: PopupManager.isTop(name)
+
+    Connections {
+        target: PopupManager
+        function onSigClose(name) {
+            if (root.name == name) {
+                root.onSigClose()
+                PopupManager.close(root.name)
+            }
+        }
+    }
+
+    function onSigClose() {}
 
     onIsTopChanged: {
         if (isTop) {
+            root.promoted()
             ShortcutInfo.shortcuts = [
                 {
                     binds: "Escape",
                     active: root.escapeToClose,
-                    action: () => root.close()
+                    action: () => PopupManager.sigClose(root.name)
                 },
-                ...shortcuts,
-                {
-                    binds: "P",
-                    active: root.escapeToClose,
-                    action: () => console.log("bruh")
-                }
+                ...shortcuts
             ] 
         }
     }
@@ -19123,7 +19829,7 @@ Item {
     focus: true
 
     function close() {
-        PopupManager.close(root.name)
+        PopupManager.sigClose(root.name)
     }
 
     implicitWidth: Cell.w(w)
@@ -19139,7 +19845,7 @@ Item {
         anchors.bottomMargin: -root.monitor?.height ?? 0
 
         onReleased: {
-            PopupManager.close(PopupManager.getTop())
+            PopupManager.sigClose(PopupManager.getTop())
         }
     }
 
@@ -21056,9 +21762,13 @@ Item {
             unFocus()
             return
         }
-        if (!disabled && focusOnVisible) {
+        if (!disabled && focusOnVisible && visible) {
             grabFocus()
         }
+    }
+
+    function refresh() {
+        visibleChanged()
     }
 
     onFocusChanged: {
@@ -21122,14 +21832,14 @@ Item {
 
     onVisibleChanged: {
         clear()
+        unFocus()
         if (bindText != "") {
             text = Qt.binding(()=>bindText)
         }
         if (visible && focusOnVisible) {
-            forceActiveFocus()
+            grabFocus()
             return
         }
-        unFocus()
     }
 
     onCursorPosChanged: {
@@ -29525,7 +30235,7 @@ if __name__ == "__main__":
 
 ## File: scripts/config.json
 ````json
-{"hints":true,"quickStart":true,"minimal":false,"textBasedVolume":false,"hideBar":false,"bottomBar":false,"optimizeMemory":true,"safeNotifications":false,"dnd":false,"shadow":true,"hyprAnim":true,"hyprBlur":false,"bgCava":true,"bgCavaLock":false,"screenshotStay":true,"screenshotCursor":true,"lockScreenMusic":false,"sfx":false,"userLightMode":false,"autoLightMode":true,"debug":true}
+{"hints":true,"quickStart":true,"minimal":false,"textBasedVolume":false,"hideBar":false,"bottomBar":false,"optimizeMemory":true,"safeNotifications":false,"dnd":false,"wallpaperAutoAdvance":false,"shadow":true,"hyprAnim":true,"hyprBlur":false,"bgCava":true,"bgCavaLock":false,"screenshotStay":true,"screenshotCursor":false,"lockScreenMusic":false,"sfx":false,"userLightMode":false,"autoLightMode":false,"debug":true}
 ````
 
 ## File: scripts/config.py
@@ -30047,7 +30757,7 @@ echo "TERMINATE"
 
 ## File: scripts/emojis_recent.json
 ````json
-[{"category":"emoji","description":"Skull <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-negative","skull","body","dead","death","face","fairy","fairytale","i’m","lmao","monster","skull","tale","yolo"],"label":"💀","type":"exec","value":["bash","-c","sleep 0.2 && wtype 💀"]},{"category":"emoji","description":"Pensive face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-sleepy","pensive face","awful","bored","dejected","died","disappointed","face","losing","lost","pensive","sad","sucks"],"label":"😔","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😔"]},{"category":"emoji","description":"Loudly crying face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-concerned","loudly crying face","bawling","cry","crying","face","loudly","sad","sob","tear","tears","unhappy"],"label":"😭","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😭"]}]
+[{"category":"emoji","description":"Skull <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-negative","skull","body","dead","death","face","fairy","fairytale","i’m","lmao","monster","skull","tale","yolo"],"label":"💀","type":"exec","value":["bash","-c","sleep 0.2 && wtype 💀"]},{"category":"emoji","description":"Grinning face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-smiling","grinning face","cheerful","cheery","face","grin","grinning","happy","laugh","nice","smile","smiling","teeth"],"label":"😀","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😀"]},{"category":"emoji","description":"Pensive face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-sleepy","pensive face","awful","bored","dejected","died","disappointed","face","losing","lost","pensive","sad","sucks"],"label":"😔","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😔"]},{"category":"emoji","description":"Loudly crying face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-concerned","loudly crying face","bawling","cry","crying","face","loudly","sad","sob","tear","tears","unhappy"],"label":"😭","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😭"]}]
 ````
 
 ## File: scripts/emojis.json
@@ -121535,6 +122245,12 @@ SET_COLOR="hl.config({
 
     },
 
+    cursor = {
+        no_hardware_cursors = 1,
+        use_cpu_buffer = 0,
+        zoom_disable_aa = 1,
+    }
+
     decoration = {
         rounding = 0,
         shadow  = {
@@ -121615,30 +122331,127 @@ echo "Finished setting up Hyprland's config"
 ## File: scripts/launcher.py
 ````python
 #!/usr/bin/env python3
+"""
+launcher.py — long-running search backend for the Quickshell launcher UI.
+
+Input protocol
+==============
+
+Quickshell writes one request per line to stdin:
+
+    -<tags> [--<path_id> ...] <query>\n
+
+Tags (single characters, case-sensitive):
+    a   apps        (parse .desktop files)
+    s   settings    (search SETTINGS from config.py)
+    h   files       (search cached filesystem index)
+    c   calculator
+    t   colors      (return COLORS palette from config.py)
+    f   fuzzy       (modifier: enables fuzzy matching for this query)
+    F   <query> is an app id — increment its frequency, no output
+    w   web         (open <query> as URL or Google search)
+    r   refresh     (background rescan of apps + files, no output)
+
+Regex mode
+----------
+
+If the query starts with `re:`, the rest is treated as a Python regex.
+Use `re:^fire` for prefix match, `re:(?i)firefox` for case-insensitive,
+`re:chrome|firefox` for alternation.
+
+Output protocol
+===============
+
+One JSON array per line on stdout. File searches are async — when `h`
+is in tags, the script emits the apps+settings result immediately,
+then emits a second JSON line with the combined result once the file
+search finishes. If the user types a new query before the in-flight
+file search finishes, the old search is cancelled via a generation
+counter.
+
+Refresh behavior
+================
+
+When a refresh finishes (either from the `r` tag or the startup
+auto-refresh), the launcher re-emits the user's most recent search
+with the new data. This way the user doesn't have to retype to see
+updated results — they just wait a moment and the UI silently updates.
+
+Concurrency model
+=================
+
+* Stdin reader thread: reads stdin line-by-line, puts lines in a queue.
+* Main thread: drains the queue with a short timeout, processes
+  requests, writes results to stdout. Between requests, checks if a
+  refresh just finished and re-emits the last search if so.
+* Refresh thread: spawned by `r` tag (and once at startup). Runs `fd`
+  + app scan + icon index build, atomically swaps the new data into
+  place, then signals the main thread to re-emit.
+* File-search thread: spawned per query that includes `h`. Each search
+  has a generation id; before printing, the worker checks that its
+  generation is still current — if not, it discards silently.
+
+Icon cache
+==========
+
+The icon cache (icon_cache.json) has three layers, all built from
+.desktop files + filesystem icon files:
+
+    icons       — {icon_name: path} for every icon file on disk.
+                  Keys are file stems (e.g. "firefox", "spotify").
+
+    aliases.binary — {binary_name: icon_name} from .desktop Exec fields.
+                     Catches "google-chrome-stable" → "google-chrome",
+                     "zen-bin" → "zen", etc.
+
+    aliases.app — {lowercased_app_name: icon_name} from .desktop Name
+                  fields. Catches "Zen Browser" → "zen", etc.
+
+IconInfo.qml does layered lookup: direct → case-insensitive → alias →
+substring fallback. See IconInfo.qml for the lookup logic.
+
+Data caches
+===========
+
+* `apps`         — list of parsed .desktop entries (memory)
+* `icon_index`   — dict {icon_name: path} built once at startup
+* `file_paths`   — list of strings, atomically swapped on refresh
+* `frequency`    — dict {app_id: count}, loaded once, written on increment
+
+All caches support "swap-in-place" refresh: a refresh builds the new
+data in local variables, then assigns to the global in one step.
+Readers either see the old or new version, never a mix.
+"""
+
+from __future__ import annotations
+
+import json
+import math
+import os
+import queue
+import re
+import signal
+import subprocess
+import sys
+import threading
+import time
+from pathlib import Path
 
 from config import SETTINGS, CALC, COLORS
-import os
-import time
-import sys
-import json
-import configparser
-import re
-import subprocess
-import threading
 
-# ─── ENV ──────────────────────────────────────────────────────────────────────
+# ─── Paths ────────────────────────────────────────────────────────────────────
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-FREQ_FILE = os.path.join(SCRIPT_DIR, "frequency.json")
-SETTINGS_FILE = os.path.join(SCRIPT_DIR, "settings.toml")
-FILE_CACHE_FILE = os.path.join(SCRIPT_DIR, "file_cache.json")
+SCRIPT_DIR = Path(__file__).resolve().parent
+FREQ_FILE = SCRIPT_DIR / "frequency.json"
+FILE_CACHE_FILE = SCRIPT_DIR / "file_cache.json"
+ICON_CACHE_FILE = SCRIPT_DIR / "icon_cache.json"
 
 DESKTOP_DIRS = [
     "/usr/share/applications",
     "/usr/local/share/applications/",
     "/var/lib/flatpak/exports/share/applications/",
     os.path.expanduser("~/.local/share/flatpak/exports/share/applications/"),
-    os.path.expanduser("~/.local/share/applications")
+    os.path.expanduser("~/.local/share/applications"),
 ]
 
 ICON_DIRS = [
@@ -121651,45 +122464,233 @@ ICON_DIRS = [
     os.path.expanduser("~/.local/share/icons/hicolor"),
 ]
 
-ICON_SIZES = ["256x256", "192x192", "128x128", "96x96", "64x64", "48x48", "32x32", "24x24", "16x16", "scalable"]
+ICON_SIZES = [
+    "256x256", "192x192", "128x128", "96x96", "64x64",
+    "48x48", "32x32", "24x24", "16x16", "scalable",
+]
 ICON_EXTS = ["png", "svg", "xpm"]
 
-ICON_CACHE_FILE = os.path.join(SCRIPT_DIR, "icon_cache.json")
+# fd command for the initial filesystem scan.
+FD_CMD = [
+    "fd", ".",
+    "/",
+    "-I",
+    "--absolute-path",
+    "--exclude", ".git",
+    "--exclude", ".cache",
+    "--exclude", "node_modules",
+    "--hidden",
+    "--no-follow",
+]
 
-FUZZY = False
+# ─── Shared state ─────────────────────────────────────────────────────────────
+#
+# All of these are written by either the main thread or background threads.
+# Python's GIL makes individual assignments atomic, so a reader will see
+# either the old reference or the new one — never a corrupted half-state.
+# For paired updates we accept a brief window of inconsistency rather than
+# taking a lock on every read, because searches are idempotent and the UI
+# re-renders on every keystroke anyway.
 
-# ─── Frequency ───────────────────────────────────────────────────────────────
+apps: list[dict] = []
+file_paths: list[str] = []
+icon_index: dict[str, str] = {}
+frequency: dict[str, int] = {}
 
-def load_frequency():
+# File-search generation counter. Each new file search increments this;
+# the worker captures the value at start and compares before printing.
+# If a newer search has started, the old worker silently discards.
+_file_search_lock = threading.Lock()
+_file_search_generation = 0
+
+# Lock for frequency.json writes (multiple increments could race).
+_freq_lock = threading.Lock()
+
+# ─── Main-loop plumbing: queue + rerun signaling ─────────────────────────────
+#
+# The main thread can't block on sys.stdin forever, because it also needs
+# to react to "refresh finished, please re-emit the last search" signals
+# from background threads. So we split stdin reading into its own thread
+# that drops lines into a queue, and the main thread polls the queue
+# with a short timeout. Between polls, it checks _rerun_requested.
+
+_input_queue: "queue.Queue[str | None]" = queue.Queue()
+_rerun_requested = threading.Event()
+
+# Snapshot of the most recent user-issued search. Used by the rerun
+# mechanism after a refresh completes. Guarded by _last_search_lock
+# because the main thread writes it and the refresh-finished path
+# could theoretically read it (though we always read it on the main
+# thread, the lock is defensive).
+_last_search: tuple[list[str], str, list[str]] | None = None
+_last_search_lock = threading.Lock()
+
+
+# ─── Frequency tracking ───────────────────────────────────────────────────────
+
+def load_frequency() -> dict[str, int]:
     try:
         with open(FREQ_FILE) as f:
             return json.load(f)
-    except:
+    except (FileNotFoundError, json.JSONDecodeError):
         return {}
 
-def save_frequency(freq):
-    with open(FREQ_FILE, "w") as f:
+
+def save_frequency(freq: dict[str, int]) -> None:
+    # Atomic write: write to temp, rename. Avoids partial-file reads
+    # if the script is killed mid-write.
+    tmp = FREQ_FILE.with_suffix(".json.tmp")
+    with open(tmp, "w") as f:
         json.dump(freq, f)
+    tmp.rename(FREQ_FILE)
 
-def increment_frequency(app_id):
-    freq = load_frequency()
-    freq[app_id] = freq.get(app_id, 0) + 1
-    save_frequency(freq)
 
-# ─── Fuzzy Match ─────────────────────────────────────────────────────────────
+def increment_frequency(app_id: str) -> None:
+    with _freq_lock:
+        frequency[app_id] = frequency.get(app_id, 0) + 1
+        save_frequency(frequency)
 
-def fuzzy_match(query, target, fuzzy = True):
-    query = query.lower().strip()
-    target = target.lower().strip()
+
+# ─── Regex support ───────────────────────────────────────────────────────────
+#
+# Query form:  re:<pattern>
+# The prefix `re:` triggers regex mode for this query. The rest of the
+# line is the Python regex pattern. Flags can be embedded inline:
+#   re:(?i)firefox   — case-insensitive
+#   re:(?m)^foo      — multiline
+#
+# Catastrophic backtracking protection: SIGALRM-based 50ms timeout per
+# match attempt. If a regex takes longer, the match returns False and
+# a warning is logged. The timeout is process-global (SIGALRM is not
+# thread-local), so we guard the setitimer call with a lock to ensure
+# only one thread is timing out at a time.
+#
+# In practice this is fine because regex matching only happens on the
+# main thread for apps/settings searches; file-search workers use their
+# own per-call try/except (without timeout, since they run in threads
+# where SIGALRM is unreliable).
+
+class _RegexTimeout(Exception):
+    pass
+
+
+def _regex_timeout_handler(signum, frame):
+    raise _RegexTimeout()
+
+
+try:
+    signal.signal(signal.SIGALRM, _regex_timeout_handler)
+    _HAS_SIGALRM = True
+except (ValueError, AttributeError):
+    _HAS_SIGALRM = False
+
+
+_regex_compile_lock = threading.Lock()
+_regex_timeout_lock = threading.Lock()
+_REGEX_CACHE: dict[str, re.Pattern] = {}
+_REGEX_CACHE_MAX = 32
+
+
+def compile_regex(pattern: str) -> re.Pattern | None:
+    """Compile a regex pattern, with caching. Returns None on syntax error."""
+    with _regex_compile_lock:
+        cached = _REGEX_CACHE.get(pattern)
+        if cached is not None:
+            return cached
+        try:
+            compiled = re.compile(pattern)
+        except re.error as e:
+            print(f"launcher: invalid regex {pattern!r}: {e}", file=sys.stderr)
+            return None
+        if len(_REGEX_CACHE) >= _REGEX_CACHE_MAX:
+            # Evict ~half (oldest first — dict preserves insertion order).
+            keys = list(_REGEX_CACHE.keys())
+            for k in keys[:_REGEX_CACHE_MAX // 2]:
+                del _REGEX_CACHE[k]
+        _REGEX_CACHE[pattern] = compiled
+        return compiled
+
+
+def regex_match(query_re: re.Pattern, target: str) -> int:
+    """Return a score if regex matches target, else 0.
+
+    Score = 1000 - match.start(). Earlier matches rank higher.
+    50ms timeout per match attempt (SIGALRM, main thread only).
+    """
+    if not target:
+        return 0
+    if _HAS_SIGALRM and threading.current_thread() is threading.main_thread():
+        with _regex_timeout_lock:
+            signal.setitimer(signal.ITIMER_REAL, 0.05)
+            try:
+                m = query_re.search(target)
+            except _RegexTimeout:
+                return 0
+            finally:
+                signal.setitimer(signal.ITIMER_REAL, 0)
+    else:
+        # Worker thread — SIGALRM is unreliable, just try the match.
+        # Catastrophic regexes here are rare; if they happen the worker
+        # will be slow but the generation-counter cancellation ensures
+        # the old worker's result is discarded when a new search starts.
+        try:
+            m = query_re.search(target)
+        except (re.error, _RegexTimeout):
+            return 0
+    if m is None:
+        return 0
+    return max(0, 1000 - m.start())
+
+
+def parse_regex_query(query: str) -> tuple[re.Pattern | None, str, str | None]:
+    """Detect `re:<pattern>` prefix.
+
+    Returns (compiled_regex_or_None, remainder_query, error_message_or_None).
+    If the prefix isn't present, returns (None, original_query, None).
+    If the prefix is present but the pattern is invalid, returns
+    (None, "", "error message") — caller should surface the error.
+    """
+    if not query.startswith("re:"):
+        return None, query, None
+    pattern = query[3:]
+    compiled = compile_regex(pattern)
+    if compiled is None:
+        return None, "", f"Invalid regex: /{pattern}/"
+    return compiled, "", None
+
+
+def regex_error_result(error: str) -> list[dict]:
+    """Single info entry to surface a regex error in the UI."""
+    return [{
+        "id": "regex_error",
+        "label": error,
+        "description": "",
+        "category": "info",
+        "icon": "",
+        "value": [""],
+        "type": "info",
+    }]
+
+
+# ─── Fuzzy matching ──────────────────────────────────────────────────────────
+#
+# Scoring is kept identical to the original script so result ordering
+# doesn't shift. `fuzzy` is now a parameter rather than a global, so
+# the function is pure and thread-safe.
+
+def fuzzy_match(query: str, target: str, fuzzy: bool = True) -> int:
     if not query or not target:
         return 0
+    q = query.lower().strip()
+    t = target.lower().strip()
+    if not q or not t:
+        return 0
 
-    # exact match bonus
-    if query == target:
+    if q == t:
         return 1000
-    if target.startswith(query):
+    if t.startswith(q):
         return 500
-    if query in target:
+    if q in t:
         return 300
 
     qi = 0
@@ -121697,86 +122698,150 @@ def fuzzy_match(query, target, fuzzy = True):
     consecutive = 0
     max_consecutive = 0
 
-    if FUZZY and fuzzy:
-        for i, ch in enumerate(target):
-            if qi < len(query) and ch == query[qi]:
+    if fuzzy:
+        for i, ch in enumerate(t):
+            if qi < len(q) and ch == q[qi]:
                 consecutive += 1
                 max_consecutive = max(max_consecutive, consecutive)
                 score += consecutive * 10
-                if i == 0 or target[i-1] == " ":
+                if i == 0 or t[i - 1] == " ":
                     score += 20
                 qi += 1
             else:
                 consecutive = 0
 
-    if qi < len(query):
+    if qi < len(q):
         return 0
 
-    # require at least half the query to be consecutive
-    if max_consecutive < len(query) / 2:
+    if max_consecutive < len(q) / 2:
         return 0
 
-    score -= len(target) * 2
+    score -= len(t) * 2
     return max(0, score)
 
-# ─── Apps ────────────────────────────────────────────────────────────────────
 
-def parse_desktop_file(path):
-    parser = configparser.ConfigParser(interpolation=None)
+# ─── Apps: .desktop file parsing ─────────────────────────────────────────────
+#
+# Hand-rolled parser instead of ConfigParser. .desktop files are INI-like
+# with one section ("Desktop Entry") and key=value lines. The hand parser
+# is ~10x faster than ConfigParser and uses far less memory, which matters
+# when scanning 500+ files on every refresh.
+
+_DESKTOP_FIELD_RE = re.compile(r"^([A-Za-z][A-Za-z0-9-]*)\s*=\s*(.*)$")
+
+
+def parse_desktop_file(path: str) -> dict | None:
+    entry: dict[str, str] = {}
     try:
-        parser.read(path, encoding="utf-8")
-        if "Desktop Entry" not in parser:
-            return None
-        entry = parser["Desktop Entry"]
-        if entry.get("NoDisplay", "false").lower() == "true":
-            return None
-        if entry.get("Type", "") != "Application":
-            return None
-        return {
-            "id": os.path.basename(path).replace(".desktop", ""),
-            "name": entry.get("Name", ""),
-            "icon": entry.get("Icon", ""),
-            "exec": entry.get("Exec", ""),
-            "keywords": [k for k in entry.get("Keywords", "").strip(";").split(";") if k],
-            "genericName": entry.get("GenericName", ""),
-            "description": entry.get("Comment", "")
-        }
-    except:
+        with open(path, encoding="utf-8", errors="replace") as f:
+            in_desktop_entry = False
+            for line in f:
+                line = line.rstrip("\n")
+                if not line or line.startswith("#"):
+                    continue
+                if line.startswith("["):
+                    in_desktop_entry = (line == "[Desktop Entry]")
+                    continue
+                if not in_desktop_entry:
+                    continue
+                m = _DESKTOP_FIELD_RE.match(line)
+                if m:
+                    entry[m.group(1)] = m.group(2)
+    except (OSError, UnicodeDecodeError):
         return None
 
-def scan_apps(icon = True):
-    apps = []
-    seen = set()
+    if entry.get("Type") != "Application":
+        return None
+    if entry.get("NoDisplay", "false").lower() == "true":
+        return None
+
+    exec_raw = entry.get("Exec", "")
+    exec_clean = re.sub(r"%[a-zA-Z]", "", exec_raw).strip()
+
+    keywords_raw = entry.get("Keywords", "").strip(";")
+    keywords = [k for k in keywords_raw.split(";") if k]
+
+    return {
+        "id": os.path.basename(path).removesuffix(".desktop"),
+        "name": entry.get("Name", ""),
+        "icon": entry.get("Icon", ""),
+        "exec": exec_raw,
+        "exec_clean": exec_clean,
+        "keywords": keywords,
+        "genericName": entry.get("GenericName", ""),
+        "description": entry.get("Comment", ""),
+    }
+
+
+def scan_apps() -> list[dict]:
+    """Scan all DESKTOP_DIRS, return parsed app entries. Dedup by filename."""
+    out: list[dict] = []
+    seen: set[str] = set()
     for directory in DESKTOP_DIRS:
-        if not os.path.exists(directory):
+        if not os.path.isdir(directory):
             continue
-        for f in os.listdir(directory):
-            if f.endswith(".desktop") and f not in seen:
+        try:
+            for f in os.listdir(directory):
+                if not f.endswith(".desktop") or f in seen:
+                    continue
                 seen.add(f)
                 app = parse_desktop_file(os.path.join(directory, f))
                 if app:
-                    apps.append(app)
-    if icon:
-        save_icon_cache([{"name": app["name"], "icon": resolve_icon(app["icon"])} for app in apps])
-    return apps
+                    out.append(app)
+        except OSError:
+            continue
+    return out
 
-def search_apps(apps, query):
-    freq = load_frequency()
+
+def _score_app(query_re: re.Pattern | None, query: str, app: dict, fuzzy: bool) -> int:
+    """Score one app against either a regex or a fuzzy query."""
+    if query_re is not None:
+        best = regex_match(query_re, app["name"])
+        gn = regex_match(query_re, app["genericName"])
+        if gn > best:
+            best = gn
+        if app["keywords"]:
+            for k in app["keywords"]:
+                s = regex_match(query_re, k)
+                if s > best:
+                    best = s
+        sid = regex_match(query_re, app["id"])
+        if sid > best:
+            best = sid
+    else:
+        best = fuzzy_match(query, app["name"], fuzzy)
+        gn = fuzzy_match(query, app["genericName"], fuzzy)
+        if gn > best:
+            best = gn
+        if app["keywords"]:
+            for k in app["keywords"]:
+                s = fuzzy_match(query, k, fuzzy)
+                if s > best:
+                    best = s
+        sid = fuzzy_match(query, app["id"], fuzzy)
+        if sid > best:
+            best = sid
+    return best
+
+
+def search_apps(apps_list: list[dict], query: str, fuzzy: bool) -> list[dict]:
     if not query:
         return []
-    scored = []
-    for app in apps:
-        score = max(
-            fuzzy_match(query, app["name"]),
-            fuzzy_match(query, app["genericName"]),
-            max((fuzzy_match(query, k) for k in app["keywords"]), default=0),
-            fuzzy_match(query, app["id"]),
-        )
-        if score <= 0:
+
+    query_re, query, _err = parse_regex_query(query)
+    # Note: caller (handle_request) does early regex validation, so we
+    # don't return regex_error_result here — _err should never fire in
+    # practice. Defensive only.
+
+    out: list[tuple[int, dict]] = []
+    for app in apps_list:
+        best = _score_app(query_re, query, app, fuzzy)
+        if best <= 0:
             continue
-        final_score = score + (freq.get(app["id"], 0) * 2)
-        scored.append((final_score, app))
-    scored.sort(key=lambda x: x[0], reverse=True)
+        score = best + frequency.get(app["id"], 0) * 2
+        out.append((score, app))
+
+    out.sort(key=lambda x: x[0], reverse=True)
     return [{
         "id": app["id"],
         "label": app["name"],
@@ -121784,449 +122849,813 @@ def search_apps(apps, query):
         "keywords": app["keywords"],
         "category": "app",
         "icon": app["icon"],
-        "value": ["bash", "-c", re.sub(r"%[a-zA-Z]", "", app["exec"]).strip()],
+        "value": ["bash", "-c", app["exec_clean"]],
         "type": "exec",
-    } for _, app in scored]
+    } for _, app in out]
 
-def select_app(app_id):
-    apps = scan_apps()
+
+def select_app(app_id: str) -> None:
+    """Launch the app and bump its frequency counter."""
     app = next((a for a in apps if a["id"] == app_id), None)
     if not app:
         return
     increment_frequency(app_id)
-    exec_cmd = re.sub(r"%[a-zA-Z]", "", app["exec"]).strip()
-    subprocess.Popen(exec_cmd.split(), start_new_session=True)
-
-# ─── Web ─────────────────────────────────────────────────────────────────────
-
-def is_url(query):
-    query = query.strip().lower()
-    
-    if re.match(r'^(https?://|www\.)', query):
-        return True
-        
-    if re.match(r'^[a-z0-9.-]+\.[a-z]{2,6}(/.*)?$', query):
-        return True
-        
-    return False
-
-def select_web(query):
-    query = query.strip()
-    if is_url(query):
-        # Ensure 'www.google.com' becomes 'https://www.google.com'
-        url = query if query.startswith("http") else "https://" + query
-    else:
-        url = "https://www.google.com/search?q=" + query.replace(" ", "+")
-    subprocess.Popen(["xdg-open", url], start_new_session=True)
-
-# ─── Calculator ──────────────────────────────────────────────────────────────
-
-import math
-
-def calculate(expr):
     try:
-        # 1. Define the functions you want to support
-        safe_methods = {
-            "sqrt": math.sqrt,
-            "sin": math.sin,
-            "cos": math.cos,
-            "tan": math.tan,
-            "log": math.log,
-            "pi": math.pi,
-            "e": math.e,
-            "pow": pow,
-            "abs": abs
+        subprocess.Popen(app["exec_clean"].split(), start_new_session=True)
+    except OSError as e:
+        print(f"launcher: failed to launch {app_id}: {e}", file=sys.stderr)
+
+
+# ─── Icon resolution ─────────────────────────────────────────────────────────
+#
+# The icon cache has three layers, all built from .desktop files + the
+# filesystem icon files:
+#
+#   1. icons       — {icon_name: path} for every icon file on disk.
+#                    Keys are file stems (e.g. "firefox", "spotify").
+#
+#   2. aliases.binary — {binary_name: icon_name} from .desktop Exec fields.
+#                       Catches cases where the binary name doesn't match
+#                       the icon name (e.g. "google-chrome-stable" →
+#                       "google-chrome", "zen-bin" → "zen").
+#
+#   3. aliases.app — {lowercased_app_name: icon_name} from .desktop Name
+#                    fields. Catches queries that use the display name
+#                    (e.g. "zen browser" → "zen", "google chrome" →
+#                    "google-chrome").
+#
+# IconInfo.qml does layered lookup: direct → case-insensitive → alias →
+# substring fallback. See IconInfo.qml for the lookup logic.
+#
+# PNG is strongly preferred over SVG (QML's Image handles PNGs more
+# predictably — SVGs can render blurry or with wrong intrinsic sizes).
+# Within PNGs, the largest available size wins.
+
+def _iter_icon_files() -> list[tuple[str, str]]:
+    """Return list of (icon_name, full_path) for every icon file."""
+    out: list[tuple[str, str]] = []
+    for d in ICON_DIRS:
+        if not os.path.isdir(d):
+            continue
+        for root, _dirs, files in os.walk(d):
+            for f in files:
+                stem, ext = os.path.splitext(f)
+                if ext.lstrip(".") in ICON_EXTS:
+                    out.append((stem, os.path.join(root, f)))
+    if os.path.isdir("/usr/share/pixmaps"):
+        for f in os.listdir("/usr/share/pixmaps"):
+            stem, ext = os.path.splitext(f)
+            if ext.lstrip(".") in ICON_EXTS:
+                out.append((stem, os.path.join("/usr/share/pixmaps", f)))
+    return out
+
+
+# Size preference: smaller index = higher priority. When multiple files
+# share the same icon_name, we want the largest available PNG.
+_SIZE_PRIORITY = {s: i for i, s in enumerate(ICON_SIZES)}
+
+
+def _icon_path_score(path: str) -> int:
+    """Higher = better. Strongly prefer PNG; within PNG, prefer larger sizes.
+
+    Scoring bands:
+      PNG  → 1000 + size_bonus   (1000..1090)
+      SVG  → 0    + size_bonus   (0..90)
+      XPM  → -100 + size_bonus   (rare, last resort)
+
+    A 256x256 PNG (1090) beats any SVG (max 90). An SVG only wins when
+    no PNG exists for that icon name.
+    """
+    lower = path.lower()
+    if lower.endswith(".png"):
+        score = 1000
+    elif lower.endswith(".svg"):
+        score = 0
+    else:
+        score = -100
+
+    for size, prio in _SIZE_PRIORITY.items():
+        if f"/{size}/" in path:
+            score += (len(_SIZE_PRIORITY) - prio) * 10
+            break
+
+    return score
+
+
+def build_icon_index() -> dict[str, str]:
+    """Build {icon_name: best_path} index. Best = PNG, largest size."""
+    index: dict[str, str] = {}
+    scores: dict[str, int] = {}
+    for name, path in _iter_icon_files():
+        s = _icon_path_score(path)
+        if s > scores.get(name, -1000):
+            scores[name] = s
+            index[name] = path
+    return index
+
+
+def _extract_binary_from_exec(exec_clean: str) -> str:
+    """Extract the binary basename from a .desktop Exec field.
+
+    Examples:
+      "firefox %u"            → "firefox"
+      "/usr/bin/code"         → "code"
+      "env GDK_BACKEND=wayland zen-bin %u" → "zen-bin"  (last token before %)
+      "google-chrome-stable"  → "google-chrome-stable"
+
+    We split on whitespace and take the first token that doesn't look
+    like an env var assignment (contains `=`) or a .desktop field code
+    (starts with `%`). If the token is a path, basename it.
+    """
+    if not exec_clean:
+        return ""
+    tokens = exec_clean.split()
+    for tok in tokens:
+        if not tok or tok.startswith("%"):
+            continue
+        if "=" in tok and not tok.startswith("/") and not tok.startswith("."):
+            # env var assignment like "GDK_BACKEND=wayland"
+            continue
+        # Strip quotes if present
+        tok = tok.strip("'\"")
+        # Basename if it's a path
+        return os.path.basename(tok)
+    return ""
+
+
+def build_icon_aliases(apps: list[dict]) -> tuple[dict[str, str], dict[str, str]]:
+    """Build (binary_aliases, app_aliases) from .desktop file metadata.
+
+    binary_aliases: {binary_name: icon_name}
+        Catches cases where the binary name doesn't match the icon name.
+        Example: "google-chrome-stable" → "google-chrome"
+
+    app_aliases: {lowercased_app_name: icon_name}
+        Catches queries that use the display name from a .desktop file.
+        Example: "zen browser" → "zen"
+
+    We only add aliases where the source name DIFFERS from the icon name
+    (case-insensitive) — redundant aliases would just bloat the cache
+    without adding value (the direct lookup already handles those cases).
+    """
+    binary_aliases: dict[str, str] = {}
+    app_aliases: dict[str, str] = {}
+
+    for app in apps:
+        icon_name = app.get("icon", "")
+        if not icon_name:
+            continue
+
+        icon_lower = icon_name.lower()
+
+        # ── Binary alias ──
+        binary = _extract_binary_from_exec(app.get("exec_clean", ""))
+        if binary and binary.lower() != icon_lower:
+            binary_aliases[binary] = icon_name
+
+        # ── App name alias ──
+        # Use the display Name from the .desktop file, lowercased.
+        # We don't strip spaces or punctuation — the fetcher lowercases
+        # the query too, so "Zen Browser" → "zen browser" matches.
+        name = app.get("name", "")
+        if name and name.lower() != icon_lower:
+            app_aliases[name.lower()] = icon_name
+
+        # ── Generic name alias (optional — catches alternate names) ──
+        # Some apps have a GenericName that users might query.
+        # e.g., GenericName="Web Browser" for firefox.
+        # Only add if it doesn't collide with existing aliases.
+        generic = app.get("genericName", "")
+        if generic and generic.lower() != icon_lower:
+            gkey = generic.lower()
+            if gkey not in app_aliases:
+                app_aliases[gkey] = icon_name
+
+    return binary_aliases, app_aliases
+
+
+def save_icon_cache(
+    icons: dict[str, str],
+    binary_aliases: dict[str, str],
+    app_aliases: dict[str, str],
+) -> None:
+    """Persist icon index + aliases for IconInfo.qml.
+
+    Cache file format (JSON):
+        {
+            "icons": { "firefox": "/usr/.../firefox.png", ... },
+            "aliases": {
+                "binary": { "google-chrome-stable": "google-chrome", ... },
+                "app":    { "zen browser": "zen", ... }
+            }
         }
 
-        allowed = set("0123456789+-*/().% abcdefghijklmnopqrstuvwxyz")
+    IconInfo.qml tolerates either this format or the old list format
+    ([{name, icon}, ...]) — see load_icon_cache below.
+    """
+    cache = {
+        "icons": icons,
+        "aliases": {
+            "binary": binary_aliases,
+            "app": app_aliases,
+        },
+    }
+    tmp = ICON_CACHE_FILE.with_suffix(".json.tmp")
+    with open(tmp, "w") as f:
+        json.dump(cache, f)
+    tmp.rename(ICON_CACHE_FILE)
 
-        clean_expr = expr.lower().strip()
 
-        if not all(c in allowed for c in clean_expr):
-            return [{"label": "Invalid characters", "type": "info"}]
+def load_icon_cache() -> dict:
+    """Load icon_cache.json.
 
-        # 3. Use restricted eval
-        # __builtins__: {} blocks access to dangerous system functions
-        result = eval(clean_expr, {"__builtins__": {}}, safe_methods)
-
-        # Round result for cleaner UI (optional)
-        if isinstance(result, float):
-            result = round(result, 4)
-
-        return [
-            {
-                "label": "= " + str(result),
-                "description": str(result),
-                "category": "calc_result",
-                "type": "exec",
-                "value": ["wl-copy", str(result).strip()],
-            }
-        ]
-    except Exception as e:
-        return [
-            {
-                "label": "No result",
-                "description": str(e),
-                "type": "exec",
-                "value": [""],
-            }
-        ]
-
-# ─── Icons ───────────────────────────────────────────────────────────────────
-
-import glob
-from pathlib import Path
-
-def resolve_icon(query):
-
-    icon_name = query
-
-    if Path(icon_name).exists():
-        return icon_name
-
-    if not icon_name:
-        return None  # app exists but no icon
-
-    # search for icon file
-    for directory in ICON_DIRS:
-        for size in ICON_SIZES:
-            for ext in ICON_EXTS:
-                pattern = f"{directory}/{size}/apps/{icon_name}.{ext}"
-                matches = glob.glob(pattern)
-                if matches:
-                    return matches[0]
-        for ext in ICON_EXTS:
-            path = f"{directory}/{icon_name}.{ext}"
-            if os.path.exists(path):
-                return path
-
-    for ext in ICON_EXTS:
-        path = f"/usr/share/pixmaps/{icon_name}.{ext}"
-        if os.path.exists(path):
-            return path
-
-    # fuzzy fallback on icon files
-    all_icons = glob.glob("/usr/share/icons/hicolor/**/apps/*", recursive=True)
-    all_icons += glob.glob("/usr/share/pixmaps/*")
-
-    best_icon_score = 0
-    best_icon_path = ""
-    for path in all_icons:
-        filename = os.path.splitext(os.path.basename(path))[0]
-        score = fuzzy_match(icon_name.lower(), filename.lower())
-        if score > best_icon_score:
-            best_icon_score = score
-            best_icon_path = path
-
-    if best_icon_score > 30:
-        return best_icon_path
-
-    return ""  # app found but no icon anywhere
-
-def load_icon_cache():
+    Returns a dict with keys: "icons", "binary_aliases", "app_aliases".
+    Tolerates either the new dict format or the old list format
+    (converted to the new shape with empty aliases).
+    """
+    empty = {"icons": {}, "binary_aliases": {}, "app_aliases": {}}
     try:
         with open(ICON_CACHE_FILE) as f:
-            return json.load(f)
-    except:
+            data = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return empty
+
+    # Old format: list of {name, icon} objects
+    if isinstance(data, list):
+        icons = {
+            item["name"]: item["icon"]
+            for item in data
+            if isinstance(item, dict) and "name" in item and "icon" in item
+        }
+        return {**empty, "icons": icons}
+
+    # New format: dict with icons + aliases
+    if isinstance(data, dict):
+        icons = data.get("icons", {})
+        aliases = data.get("aliases", {}) or {}
+        binary_aliases = aliases.get("binary", {}) or {}
+        app_aliases = aliases.get("app", {}) or {}
+        # Handle the case where "icons" is itself a list (shouldn't happen
+        # with the new format, but defensive)
+        if isinstance(icons, list):
+            icons = {
+                item["name"]: item["icon"]
+                for item in icons
+                if isinstance(item, dict) and "name" in item and "icon" in item
+            }
+        return {
+            "icons": icons if isinstance(icons, dict) else {},
+            "binary_aliases": binary_aliases if isinstance(binary_aliases, dict) else {},
+            "app_aliases": app_aliases if isinstance(app_aliases, dict) else {},
+        }
+
+    return empty
+
+
+# ─── Settings search ─────────────────────────────────────────────────────────
+#
+# Walks SETTINGS recursively. Each match keeps its score so callers can
+# re-sort a combined list (apps + settings) by score.
+
+def _score_setting(query_re: re.Pattern | None, query: str, item: dict, fuzzy: bool) -> int:
+    if query_re is not None:
+        best = regex_match(query_re, item.get("label", ""))
+        d = regex_match(query_re, item.get("description", ""))
+        if d > best:
+            best = d
+        c = regex_match(query_re, item.get("category", ""))
+        if c > best:
+            best = c
+        for k in item.get("keywords", []) or []:
+            s = regex_match(query_re, k)
+            if s > best:
+                best = s
+    else:
+        best = fuzzy_match(query, item.get("label", ""), fuzzy)
+        d = fuzzy_match(query, item.get("description", ""), fuzzy)
+        if d > best:
+            best = d
+        c = fuzzy_match(query, item.get("category", ""), fuzzy)
+        if c > best:
+            best = c
+        for k in item.get("keywords", []) or []:
+            s = fuzzy_match(query, k, fuzzy)
+            if s > best:
+                best = s
+    return best
+
+
+def search_settings(data: list[dict], query: str, fuzzy: bool) -> list[dict]:
+    if not query:
         return []
 
-def save_icon_cache(cache):
-    with open(ICON_CACHE_FILE, "w") as f:
-        json.dump(cache, f, indent=2)
+    query_re, query, _err = parse_regex_query(query)
 
-# ─── Settings ────────────────────────────────────────────────────────────────
+    results: list[tuple[int, dict]] = []
 
-def search_settings(data, query):
-    results = []
-
-    def recurse(items):
+    def recurse(items: list[dict]) -> None:
         for item in items:
-            # Calculate scores for both label and description
-            label_score = fuzzy_match(query, item.get("label", ""))
-            desc_score = fuzzy_match(query, item.get("description", ""))
-            category_score = fuzzy_match(query, item.get("category", ""))
-            keywords_score = 0
-            if item.get("keywords"):
-                keywords_score = max(fuzzy_match(query, k) for k in item.get("keywords"))
-            
-            # Take the best score of the two
-            final_score = max(label_score, desc_score, category_score, keywords_score)
-
-            if final_score > 0:
-                # Store a copy of the item with its score for sorting later
-                match = item.copy()
-                match["search_score"] = final_score
-                results.append(match)
-
-            # If it's a menu, keep digging regardless of whether the menu itself matched
+            best = _score_setting(query_re, query, item, fuzzy)
+            if best > 0:
+                m = item.copy()
+                m["_score"] = best
+                results.append((best, m))
             if item.get("type") == "menu" and isinstance(item.get("value"), list):
                 recurse(item["value"])
 
     recurse(data)
 
-    # Sort results: Highest score first
-    results.sort(key=lambda x: x["search_score"], reverse=True)
-
-    for r in results: r.pop("search_score", None)
-    
-    return [result for result in results if result.get("label") != ""]
-
-# ─── File find ───────────────────────────────────────────────────────────────
-
-def preload_files(rescan_only = False):
-    cached = []
-    
-    def load_files():
-        nonlocal cached
-        start = time.perf_counter()
-        if os.path.exists(FILE_CACHE_FILE):
-            try:
-                with open(FILE_CACHE_FILE) as f:
-                    cached = json.load(f)
-            except:
-                pass
-        print(f"[timer] Files loaded: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+    results.sort(key=lambda x: x[0], reverse=True)
+    return [m for _, m in results if m.get("label")]
 
 
-    def rescan(paths):
-        cmd = [
-            'fd', '.',
-            # os.path.expanduser("~"),
-            "/",
-            "-I",
-            '--absolute-path',
-            '--exclude', '.git',
-            '--exclude', '.cache',
-            '--exclude', 'node_modules',
-            '--hidden',
-            '--no-follow',
-        ]
-        try:
-            start = time.perf_counter()
-            process = subprocess.run(cmd, capture_output=True, text=True)
-            new_paths = process.stdout.strip().split('\n')
-            with open(FILE_CACHE_FILE, 'w') as f:
-                json.dump(new_paths, f)
+# ─── Calculator ──────────────────────────────────────────────────────────────
 
-            paths.clear()
-            paths.extend(new_paths)
-            print(f"[timer] Files cached: {time.perf_counter() - start:.4f}s", file=sys.stderr)
-        except FileNotFoundError:
-            pass
+_CALC_ALLOWED_CHARS = set("0123456789+-*/().% abcdefghijklmnopqrstuvwxyz")
+_CALC_SAFE_NAMES = {
+    "sqrt": math.sqrt,
+    "sin": math.sin,
+    "cos": math.cos,
+    "tan": math.tan,
+    "log": math.log,
+    "pi": math.pi,
+    "e": math.e,
+    "pow": pow,
+    "abs": abs,
+}
 
-    if not rescan_only:
-        load_files()
-    threading.Thread(target=rescan, args=(cached,), daemon=True).start()
-    
-    return cached
 
-def filter_files(paths, query):
-    if not query:
+def calculate(expr: str) -> list[dict]:
+    try:
+        clean = expr.lower().strip()
+        if not all(c in _CALC_ALLOWED_CHARS for c in clean):
+            return [{"label": "Invalid characters", "type": "info"}]
+        result = eval(clean, {"__builtins__": {}}, _CALC_SAFE_NAMES)  # noqa: S307
+        if isinstance(result, float):
+            result = round(result, 4)
+        return [{
+            "label": "= " + str(result),
+            "description": str(result),
+            "category": "calc_result",
+            "type": "exec",
+            "value": ["wl-copy", str(result).strip()],
+        }]
+    except Exception as e:
+        return [{
+            "label": "No result",
+            "description": str(e),
+            "type": "exec",
+            "value": [""],
+        }]
+
+
+# ─── Web search ──────────────────────────────────────────────────────────────
+
+_URL_HTTPS_RE = re.compile(r"^(https?://|www\.)")
+_URL_BARE_RE = re.compile(r"^[a-z0-9.-]+\.[a-z]{2,6}(/.*)?$")
+
+
+def is_url(query: str) -> bool:
+    q = query.strip().lower()
+    return bool(_URL_HTTPS_RE.match(q) or _URL_BARE_RE.match(q))
+
+
+def select_web(query: str) -> None:
+    q = query.strip()
+    if is_url(q):
+        url = q if q.startswith("http") else "https://" + q
+    else:
+        url = "https://www.google.com/search?q=" + q.replace(" ", "+")
+    subprocess.Popen(["xdg-open", url], start_new_session=True)
+
+
+# ─── File index (cached filesystem scan) ─────────────────────────────────────
+#
+# On startup: load the previous file_cache.json into memory, then kick
+# off a background `fd` run to refresh. The cache is the fallback while
+# the refresh is in flight.
+#
+# On `r` tag: same thing — kick off a background refresh, swap in place.
+
+def load_file_cache() -> list[str]:
+    try:
+        with open(FILE_CACHE_FILE) as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
         return []
-    query = query.lower()
-    results = []
-    for path in paths:
-        name = os.path.basename(path).lower()
-
-        score = max(
-            fuzzy_match(query, name),
-            fuzzy_match(query, path.lower()),
-        )
-
-        if score:
-            results.append({
-                "id": path,
-                "label": name,
-                "description": path,
-                "icon": "",
-                "category": "files",
-                "value": path,
-                "type": "dir" if os.path.isdir(path) else "file"
-            })
-        if len(results) > 50:
-            break
-
-    return results
 
 
-file_results = []
-file_search_thread = None
-stop_event = threading.Event()
+def save_file_cache(paths: list[str]) -> None:
+    tmp = FILE_CACHE_FILE.with_suffix(".json.tmp")
+    with open(tmp, "w") as f:
+        json.dump(paths, f)
+    tmp.rename(FILE_CACHE_FILE)
 
-def async_file_search(paths, query, stop, base_result):
-    local_results = []
+
+def rescan_files() -> list[str]:
+    """Run `fd` and return the new path list. Raises if fd is missing."""
+    proc = subprocess.run(FD_CMD, capture_output=True, text=True, timeout=120)
+    out = proc.stdout.strip()
+    return out.split("\n") if out else []
+
+
+# ─── Async file search with cancellation ─────────────────────────────────────
+#
+# Every file search gets a generation id. The worker captures the id at
+# start; before emitting its result, it checks if its id is still the
+# latest. If a newer search has started, the old worker silently discards.
+#
+# This is the cancellation mechanism: we don't try to interrupt the
+# worker thread (which is hard in Python), we just ignore its result.
+
+def _emit_combined(base_result: list[dict], file_results: list[dict]) -> None:
+    """Print the combined result list as a single JSON line."""
+    print(json.dumps([*base_result, *file_results]))
+    sys.stdout.flush()
+
+
+def _file_search_worker(
+    paths_snapshot: list[str],
+    query: str,
+    generation: int,
+    base_result: list[dict],
+) -> None:
+    """Runs in a background thread. Discards result if superseded."""
     if not query:
         return
-    query = query.lower()
-    for path in paths:
-        if stop.is_set():
+
+    # Detect regex mode. In worker threads, regex matching has no
+    # SIGALRM timeout protection — see compile_regex/regex_match for
+    # why. The generation counter ensures a slow worker's output is
+    # discarded if the user types again.
+    query_re, plain_query, err = parse_regex_query(query)
+    if err:
+        return  # invalid regex — no file results, just emit base
+    plain_query_lower = plain_query.lower() if plain_query else ""
+
+    local_results: list[dict] = []
+    for path in paths_snapshot:
+        name = os.path.basename(path[:-1] if path.endswith("/") else path)
+
+        if query_re is not None:
+            # Regex mode — search() returns None on no match, which is falsy.
+            if not query_re.search(name) and not query_re.search(path):
+                continue
+        else:
+            # Plain substring mode — cheap check first.
+            if (plain_query_lower not in name.lower()
+                    and plain_query_lower not in path.lower()):
+                continue
+
+        try:
+            is_dir = os.path.isdir(path)
+        except OSError:
+            is_dir = False
+        local_results.append({
+            "id": path,
+            "label": name,
+            "description": path,
+            "icon": "",
+            "category": "files",
+            "value": path,
+            "type": "dir" if is_dir else "file",
+        })
+        if len(local_results) >= 50:
+            break
+
+    # Generation check — if a newer search has started, discard.
+    with _file_search_lock:
+        if generation != _file_search_generation:
             return
-        name = os.path.basename(path[:-1]) if path.endswith("/") else os.path.basename(path)
-        if query in name.lower():
-            local_results.append({
-                "id": path,
-                "label": name,
-                "description": path,
-                "icon": "",
-                "value": path,
-                "type": "dir" if os.path.isdir(path) else "file"
-            })
-    # only print if not cancelled
-    if not stop.is_set():
-        print(json.dumps([*base_result, *local_results]))
-        sys.stdout.flush()
+    _emit_combined(base_result, local_results)
 
-def search_files_async(paths, query, base_result):
-    global stop_event, file_search_thread
-    stop_event.set()
-    stop_event = threading.Event()
-    file_search_thread = threading.Thread(
-        target=async_file_search,
-        args=(paths, query, stop_event, base_result),
-        daemon=True
+
+def start_file_search(
+    paths_snapshot: list[str],
+    query: str,
+    base_result: list[dict],
+) -> None:
+    """Bump generation, start a fresh worker. Old workers will self-cancel."""
+    global _file_search_generation
+    with _file_search_lock:
+        _file_search_generation += 1
+        gen = _file_search_generation
+    t = threading.Thread(
+        target=_file_search_worker,
+        args=(paths_snapshot, query, gen, base_result),
+        daemon=True,
     )
-    file_search_thread.start()
+    t.start()
 
 
-# ─── Input ───────────────────────────────────────────────────────────────────
+# ─── Input parsing ───────────────────────────────────────────────────────────
+#
+# Input format:  -<tags> [--<path_id> ...] <query>
+# Examples:
+#   -a firefox            → tags=['a'], query='firefox'
+#   -ash matrix           → tags=['a','s','h'], query='matrix'
+#   -s --network wifi     → tags=['s'], paths=['network'], query='wifi'
+#   -F firefox            → tags=['F'], treat query as app id
+#   -a re:^fire           → tags=['a'], query='re:^fire' (regex mode)
 
-def parse_input(input):
-    tags = re.findall(r"(?<!\S)-[a-zA-Z]+\b",input)
-    tags = [char for tag in tags for char in tag]
-    paths = re.findall(r"--(\w+)",input)
-    query = " ".join(re.sub(r"(?<!\S)-[a-zA-Z]+\b","",input).strip().split())
-    query = " ".join(re.sub(r"--(\w+)","",query).strip().split())
+_TAG_RE = re.compile(r"(?<!\S)-([a-zA-Z]+)\b")
+_PATH_RE = re.compile(r"--(\w+)")
+
+
+def parse_input(raw: str) -> tuple[list[str], str, list[str]]:
+    """Return (tag_chars, query, path_ids)."""
+    tag_match = _TAG_RE.search(raw)
+    tags: list[str] = list(tag_match.group(1)) if tag_match else []
+
+    paths = _PATH_RE.findall(raw)
+
+    query = _TAG_RE.sub("", raw)
+    query = _PATH_RE.sub("", query)
+    query = " ".join(query.split())
+
     return tags, query, paths
 
-# ─── Main ────────────────────────────────────────────────────────────────────
 
-def main():
+# ─── Background refresh ──────────────────────────────────────────────────────
+#
+# Builds new app list, icon index (+ binary/app aliases), and file path
+# list in local variables, then swaps them into the globals in one step.
+# Readers see either the old set or the new set, never a mix.
+#
+# After the swap, signals the main loop to re-emit the user's most
+# recent search so the UI picks up the new data without the user
+# needing to retype.
 
-    global FUZZY
+def refresh_background(initial: bool = False) -> None:
+    """Rescan apps + icons + files. Swaps into globals atomically when done."""
+    global apps, icon_index, file_paths
 
-    initialized = False
-    begin = time.perf_counter()
+    start = time.perf_counter()
 
-    apps = []
-    file_paths = []
+    # ── Apps + icons (CPU-bound, fast — ~200ms typical) ──
+    new_apps = scan_apps()
+    new_icon_index = build_icon_index()
 
-    timer = False
+    # Build binary→icon and app→icon aliases from the .desktop files.
+    # This catches cases like "google-chrome-stable" → "google-chrome"
+    # and "Zen Browser" → "zen" that the icon file index alone misses.
+    new_binary_aliases, new_app_aliases = build_icon_aliases(new_apps)
 
-    def load():
-        nonlocal apps, file_paths
+    save_icon_cache(new_icon_index, new_binary_aliases, new_app_aliases)
 
-        start = time.perf_counter()
-        apps = scan_apps() 
-        print(f"[timer] Apps loaded: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+    # ── Files (slow — fd can take 5-30s on a big system) ──
+    try:
+        new_files = rescan_files()
+        save_file_cache(new_files)
+    except (FileNotFoundError, subprocess.TimeoutExpired) as e:
+        print(f"launcher: file rescan failed: {e}", file=sys.stderr)
+        new_files = file_paths  # keep old on failure
 
-        file_paths = preload_files(initialized)
+    # ── Atomic swap ──
+    apps = new_apps
+    icon_index = new_icon_index
+    file_paths = new_files
 
-    load()
+    elapsed = time.perf_counter() - start
+    print(
+        f"launcher: refresh done ({elapsed:.2f}s) "
+        f"— {len(apps)} apps, {len(icon_index)} icons, "
+        f"{len(new_binary_aliases)} binary aliases, "
+        f"{len(new_app_aliases)} app aliases, "
+        f"{len(file_paths)} files",
+        file=sys.stderr,
+    )
 
-    while True:
-        if not initialized:
-            print(f"[timer] Search started: {time.perf_counter() - begin:.4f}s", file=sys.stderr)
-            initialized = True
-        tags, query, paths = parse_input(input())
+    # Signal the main loop to re-emit the last search (if any) with
+    # the new data. If no search has been issued yet (e.g. startup
+    # refresh), this is a no-op.
+    _rerun_requested.set()
 
-        init = time.perf_counter()
 
-        result = []
-        settings = SETTINGS
+def refresh_async(initial: bool = False) -> None:
+    """Kick off refresh in a background thread. Non-blocking."""
+    t = threading.Thread(target=refresh_background, args=(initial,), daemon=True)
+    t.start()
 
-        freq = load_frequency()
 
-        if paths:
-            for path in paths:
-                for setting in settings:
-                    if "id" in setting:
-                        if setting["id"] == path and setting["type"] == "menu":
-                            settings = setting["value"]
-                            tags = ["s", "f" if "f" in tags else ""]
-                            break
+# ─── Initial load ────────────────────────────────────────────────────────────
 
-        if not tags:
-            print("Error: Please add at least a tag!", file=sys.stderr)
-            continue
+def initial_load() -> None:
+    """Load caches from disk synchronously, then kick off async refresh."""
+    global apps, icon_index, file_paths, frequency
 
-        if "f" in tags:
-            FUZZY = True
+    frequency = load_frequency()
+
+    # Load the icon cache (icons + aliases). For in-memory lookups during
+    # search, we only need the icons dict — the aliases are used by
+    # IconInfo.qml, which reads the cache file directly.
+    icon_cache_data = load_icon_cache()
+    icon_index = icon_cache_data["icons"]
+
+    apps = scan_apps()
+    file_paths = load_file_cache()
+    refresh_async(initial=True)
+
+
+# ─── Search request handling ─────────────────────────────────────────────────
+
+def handle_request(tags: list[str], query: str, paths: list[str]) -> None:
+    """Process one search request. May emit zero, one, or two JSON lines.
+
+    Note: this function does NOT update _last_search. The caller is
+    responsible for snapshotting the request before calling, so that
+    the rerun mechanism can re-emit it after a refresh.
+    """
+    if not tags:
+        print("Error: Please add at least a tag!", file=sys.stderr)
+        return
+
+    fuzzy = "f" in tags
+
+    # ── Action tags (side-effects, no search output) ──
+    if "F" in tags:
+        increment_frequency(query)
+        return
+    if "w" in tags:
+        select_web(query)
+        return
+    if "r" in tags:
+        print("launcher: refresh requested", file=sys.stderr)
+        refresh_async()
+        return
+
+    # ── Settings: drill into menu if a path id is specified ──
+    settings = SETTINGS
+    if paths:
+        for path_id in paths:
+            for setting in settings:
+                if setting.get("id") == path_id and setting.get("type") == "menu":
+                    settings = setting["value"]
+                    if "s" not in tags:
+                        tags.append("s")
+                    break
+
+    # ── Calculator (replaces result entirely) ──
+    if "c" in tags:
+        result = [*calculate(query), *CALC] if query else CALC
+        print(json.dumps(result))
+        sys.stdout.flush()
+        return
+
+    # ── Colors (replaces result entirely) ──
+    if "t" in tags:
+        print(json.dumps(COLORS))
+        sys.stdout.flush()
+        return
+
+    # ── Regex validation (single check, all categories) ──
+    # If the query is `re:<pattern>` and the pattern is invalid, surface
+    # ONE error entry to the UI and skip all category searches. Without
+    # this, search_apps and search_settings would each independently
+    # detect the error and return their own copy, producing duplicates.
+    is_regex = query.startswith("re:")
+    if is_regex:
+        pattern = query[3:]
+        compiled = compile_regex(pattern)
+        if compiled is None:
+            print(json.dumps(regex_error_result(f"Invalid regex: /{pattern}/")))
+            sys.stdout.flush()
+            return
+
+    # ── Search categories: apps, settings, files ──
+    scored_results: list[tuple[int, dict]] = []
+
+    if "a" in tags:
+        if query:
+            for item in search_apps(apps, query, fuzzy):
+                scored_results.append((1000 + frequency.get(item["id"], 0), item))
         else:
-            FUZZY = False
-
-        if "a" in tags:
-            start = time.perf_counter()
-            app_results = []
-            if query:
-                result.extend(search_apps(apps, query))
-            else:
-                app_results = [{
+            for app in sorted(apps, key=lambda a: frequency.get(a["id"], 0), reverse=True):
+                scored_results.append((frequency.get(app["id"], 0), {
                     "id": app["id"],
                     "label": app["name"],
                     "description": app["genericName"] or app["description"],
                     "category": "app",
                     "icon": app["icon"],
-                    "value": ["bash", "-c", re.sub(r"%[a-zA-Z]", "", app["exec"]).strip()],
-                    "type": "exec"
-                } for app in apps]
+                    "value": ["bash", "-c", app["exec_clean"]],
+                    "type": "exec",
+                }))
 
-            app_results.sort(key=lambda x: freq.get(x["id"], 0), reverse=True)
-            result.extend(app_results)
-            if (timer):
-                print(f"[timer] Apps searched: {time.perf_counter() - start:.4f}s", file=sys.stderr)
-
-        if "s" in tags:
-            start = time.perf_counter()
-            if query:
-                result.extend(search_settings(settings, query))
-            else:
-                result.extend([result for result in settings if result.get("label") != ""])
-            if (timer):
-                print(f"[timer] Settings searched: {time.perf_counter() - start:.4f}s", file=sys.stderr)
-
+    if "s" in tags:
         if query:
-            start = time.perf_counter()
-            result = search_settings(result, query)
-            if (timer):
-                print(f"[timer] Sorting Apps and Settings: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+            for item in search_settings(settings, query, fuzzy):
+                s = item.pop("_score", 0)
+                scored_results.append((s, item))
+        else:
+            for item in settings:
+                if item.get("label"):
+                    scored_results.append((0, item))
 
-        if "h" in tags:
-            start = time.perf_counter()
-            search_files_async(file_paths, query, result)
-            if (timer):
-                print(f"[timer] Files searched: {time.perf_counter() - start:.4f}s", file=sys.stderr)
+    # Sort combined apps+settings by score (descending).
+    scored_results.sort(key=lambda x: x[0], reverse=True)
+    base_result = [item for _, item in scored_results]
 
-        if "c" in tags:
-            start = time.perf_counter()
-            if query:
-                result = [*calculate(query), *CALC]
-            else:
-                result = CALC
-            if (timer):
-                print(f"[timer] Calculated: {time.perf_counter() - start:.4f}s", file=sys.stderr)
-
-        if "t" in tags:
-            result = COLORS
-
-        if "F" in tags:
-            increment_frequency(query)
-            continue
-
-        if "w" in tags:
-            select_web(query)
-            continue
-
-        if "r" in tags:
-            print(f"Rescanning...", file=sys.stderr)
-            threading.Thread(target=load, daemon=True).start()
-            continue
-
-        print(json.dumps(result))
+    # ── File search: async, non-blocking ──
+    if "h" in tags:
+        # Emit base result immediately so the UI shows apps+settings now.
+        print(json.dumps(base_result))
         sys.stdout.flush()
-        if (timer):
-            print(f"[timer] Search finished: {time.perf_counter() - init:.4f}s", file=sys.stderr)
+        if query and file_paths:
+            start_file_search(file_paths, query, base_result)
+    else:
+        print(json.dumps(base_result))
+        sys.stdout.flush()
 
-main()
+
+# ─── Main loop ───────────────────────────────────────────────────────────────
+#
+# Two-thread model:
+#   - stdin reader thread: blocks on sys.stdin, puts lines in _input_queue
+#   - main thread: drains _input_queue with a 100ms timeout. When the
+#     timeout fires (no input), checks _rerun_requested — if a refresh
+#     just finished, re-emits the last search so the UI picks up new data.
+#
+# This lets the main thread react to refresh completion even when the
+# user isn't typing, without busy-polling stdin (which would burn CPU).
+
+def _stdin_reader() -> None:
+    """Background thread: reads stdin lines, puts them in the queue.
+
+    On EOF (Quickshell closed the pipe), puts None as a sentinel so
+    the main loop knows to exit cleanly.
+    """
+    for line in sys.stdin:
+        _input_queue.put(line.rstrip("\n"))
+    _input_queue.put(None)
+
+
+def _snapshot_and_handle(tags: list[str], query: str, paths: list[str]) -> None:
+    """Record the request as the most recent search, then handle it.
+
+    The snapshot is taken BEFORE handle_request runs, so by the time
+    a refresh-completion rerun fires, _last_search already reflects
+    whatever the user's most recent query was — not the stale one
+    from before the refresh.
+
+    Only search-type requests (a/s/h/c/t) are snapshotted for rerun.
+    Action tags (F/w/r) have side effects and would be wrong to
+    re-execute on refresh completion.
+    """
+    is_search = (
+        any(t in "ahcst" for t in tags)
+        and not any(t in "Fwr" for t in tags)
+    )
+    if is_search:
+        with _last_search_lock:
+            _last_search = (tags, query, paths)
+    handle_request(tags, query, paths)
+
+
+def main() -> None:
+    # Start the stdin reader thread before initial_load so we don't
+    # miss any early inputs (though in practice Quickshell waits for
+    # the "launcher: ready" stderr line before sending).
+    threading.Thread(target=_stdin_reader, daemon=True).start()
+
+    initial_load()
+    print("launcher: ready", file=sys.stderr)
+
+    global _last_search
+    while True:
+        try:
+            # Short timeout so we can check _rerun_requested between inputs.
+            # 100ms is fast enough that refresh-rerun feels instant to the
+            # user, but slow enough that we're not burning CPU when idle.
+            line = _input_queue.get(timeout=0.1)
+        except queue.Empty:
+            # No new input this tick. Check if a refresh just finished.
+            if _rerun_requested.is_set():
+                _rerun_requested.clear()
+                with _last_search_lock:
+                    last = _last_search
+                if last:
+                    # Re-emit the most recent search with the new data.
+                    # Note: we call handle_request directly, NOT
+                    # _snapshot_and_handle, because we don't want to
+                    # update _last_search — it's already correct.
+                    handle_request(*last)
+            continue
+
+        if line is None:
+            break  # EOF — Quickshell closed stdin, time to exit
+
+        if not line:
+            continue
+
+        try:
+            tags, query, paths = parse_input(line)
+            _snapshot_and_handle(tags, query, paths)
+        except Exception as e:
+            print(f"launcher: error handling request: {e}", file=sys.stderr)
+
+
+if __name__ == "__main__":
+    main()
 ````
 
 ## File: scripts/light_or_dark.py
@@ -122519,8 +123948,55 @@ main()
 ````python
 #!/usr/bin/env python3
 """
-pacman_backend.py — Structured JSON backend for a pacman UI.
-Commands: fetch | list | search <query> [--fresh] | info <pkgname>
+pacman-filter.py — Structured JSON backend for a pacman UI.
+
+Commands:
+  fetch      — Build/refresh the local cache from pacman -Qi / -Si / -Qu.
+               No sudo, no network. Reads from existing sync db.
+  list       — List installed packages (from cache).
+  list-all   — List all known packages (from cache).
+  search <q> — Search packages by name/description (from cache).
+  info <pkg> — Print full info for one package (from cache).
+
+Cache location: ~/.cache/pacman-ui/cache.json
+
+Cache structure:
+  {
+    "fetched_at": "2024-01-01T12:00:00",
+    "packages": {
+      "<name>": {
+        "name":             str,
+        "version":          str,   # installed version (if installed) or repo version
+        "latest_version":   str,   # repo version if update available, else ""
+        "description":      str,
+        "url":              str,
+        "licenses":         [str],
+        "repository":       str,
+        "groups":           [str],
+        "arch":             str,
+        "download_size":    str,   # e.g. "12.34 MiB"
+        "installed_size":   str,
+        "packager":         str,
+        "build_date":       str,
+        "installed":        bool,
+        "install_date":     str,   # installed-only
+        "install_reason":   str,   # installed-only
+        "install_script":   str,   # installed-only
+        "validated_by":     str,   # installed-only
+        "depends":          [{name, installed}],
+        "optional_deps":    [{name, reason, installed}],
+        "make_deps":        [{name, installed}],
+        "check_deps":       [{name, installed}],
+        "required_by":      [str],
+        "optional_for":     [str],
+        "conflicts_with":   [str],
+        "replaces":         [str],
+        "provides":         [str],
+        "last_sync":        {timestamp, action} | null,
+      },
+      ...
+    }
+  }
 """
 
 import json
@@ -122540,8 +124016,12 @@ CACHE_FILE = CACHE_DIR / "cache.json"
 # ─────────────────────────────────────────────
 
 def run(cmd: list[str]) -> str:
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    return result.stdout
+    """Run a command, return stdout. Errors swallowed (return empty)."""
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+        return result.stdout
+    except (subprocess.SubprocessError, FileNotFoundError):
+        return ""
 
 
 def parse_pacman_block(block: str) -> dict:
@@ -122623,9 +124103,45 @@ def parse_last_sync_from_log(log_path: str = "/var/log/pacman.log") -> dict[str,
                     timestamp, action, name = m.group(1), m.group(2), m.group(3)
                     # Always overwrite — log is chronological so last match = most recent
                     last_sync[name] = {"timestamp": timestamp, "action": action}
-    except FileNotFoundError:
+    except (FileNotFoundError, PermissionError):
         pass
     return last_sync
+
+
+def get_updatable_packages() -> dict[str, str]:
+    """Run `pacman -Qu` and return {name: repo_version} for packages with updates.
+
+    `pacman -Qu` reads from the local sync db (no network, no sudo).
+    Output format per line:
+        firefox 115.0-1 -> 118.0-1
+                ^^^^^^^^^^^^^^^^^^
+                installed version -> repo version
+
+    Returns empty dict on any error. Safe to call on every fetch.
+
+    Note: pacman -Qu respects IgnorePkg / IgnoreGroup from pacman.conf,
+    so packages the user has explicitly told pacman to ignore won't
+    appear here. This is intentional — the UI should match what
+    `pacman -Syu` would actually upgrade.
+    """
+    try:
+        proc = subprocess.run(
+            ["pacman", "-Qu"],
+            capture_output=True, text=True, timeout=30,
+        )
+        # -Qu exits 0 if there are updates, 1 if no updates. Both fine.
+        if not proc.stdout.strip():
+            return {}
+        result = {}
+        for line in proc.stdout.strip().split("\n"):
+            # Format: "firefox 115.0-1 -> 118.0-1"
+            # Split on whitespace; expect [name, old_ver, "->", new_ver]
+            parts = line.split()
+            if len(parts) >= 4 and parts[2] == "->":
+                result[parts[0]] = parts[3]
+        return result
+    except (subprocess.SubprocessError, FileNotFoundError):
+        return {}
 
 
 def build_package_entry(raw: dict, is_installed: bool, installed_set: set[str]) -> dict:
@@ -122639,6 +124155,7 @@ def build_package_entry(raw: dict, is_installed: bool, installed_set: set[str]) 
         # Identity
         "name":         raw.get("Name", ""),
         "version":      raw.get("Version", ""),
+        "latest_version": "",   # populated by cmd_fetch after all packages are built
         "description":  raw.get("Description", ""),
         "url":          raw.get("URL", ""),
         "licenses":     split_list_field(raw.get("Licenses", "")),
@@ -122688,6 +124205,19 @@ def build_package_entry(raw: dict, is_installed: bool, installed_set: set[str]) 
 # ─────────────────────────────────────────────
 
 def cmd_fetch():
+    """Build/refresh the local cache.
+
+    Reads from:
+      - pacman -Qq   (list of installed package names)
+      - pacman -Qi   (info for every installed package)
+      - pacman -Si   (info for every repo package)
+      - pacman -Qu   (list of packages with available updates)
+      - /var/log/pacman.log (last install/upgrade timestamp per package)
+
+    No sudo, no network. The sync db is read as-is — if the user wants
+    truly current repo info, they need to run `pacman -Sy` first
+    (which your UI does via the check_updates flow).
+    """
     print("→ Getting list of installed packages...", flush=True)
     installed_raw = run(["pacman", "-Qq"])
     installed_set = set(installed_raw.split())
@@ -122720,7 +124250,10 @@ def cmd_fetch():
         if not name:
             continue
         if name in packages:
-            # Already have full -Qi data; just add repo/size fields if missing
+            # Already have full -Qi data; just add repo/size fields if missing.
+            # The version from -Qi is the INSTALLED version (kept as `version`).
+            # The repo version from -Si is not stored separately here —
+            # `latest_version` below captures it for updatable packages.
             if not packages[name].get("repository"):
                 packages[name]["repository"] = raw.get("Repository", "")
             if not packages[name].get("download_size"):
@@ -122731,6 +124264,20 @@ def cmd_fetch():
 
     print(f"   ✓ {new_count} additional repo packages processed.", flush=True)
 
+    # ── Updatable packages (pacman -Qu) ───────────────────────────────────
+    # For each installed package that pacman says has an update, record the
+    # repo version. Everyone else gets latest_version = "".
+    print("→ Checking for available updates (pacman -Qu)...", flush=True)
+    updatable = get_updatable_packages()
+    for name, pkg in packages.items():
+        if pkg.get("installed") and name in updatable:
+            pkg["latest_version"] = updatable[name]
+        else:
+            pkg["latest_version"] = ""
+
+    updated_count = sum(1 for p in packages.values() if p["latest_version"])
+    print(f"   ✓ {updated_count} packages have updates available.", flush=True)
+
     # ── Last sync from pacman.log ─────────────────────────────────────────
     print("→ Parsing pacman.log for last sync times...", flush=True)
     last_sync_map = parse_last_sync_from_log()
@@ -122740,14 +124287,19 @@ def cmd_fetch():
     synced = sum(1 for p in packages.values() if p["last_sync"])
     print(f"   ✓ {synced} packages have a recorded sync.", flush=True)
 
-    # ── Write cache ───────────────────────────────────────────────────────
+    # ── Write cache (atomic) ──────────────────────────────────────────────
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     cache = {
         "fetched_at": datetime.now().isoformat(),
         "packages":   packages,
     }
-    with open(CACHE_FILE, "w") as f:
+    # Atomic write: write to temp, then rename. Prevents partial reads
+    # if another process (e.g. pacman-preflight.py) reads the cache
+    # while we're writing it.
+    tmp_path = CACHE_FILE.with_suffix(".json.tmp")
+    with open(tmp_path, "w") as f:
         json.dump(cache, f, indent=2)
+    tmp_path.rename(CACHE_FILE)
 
     total = len(packages)
     inst  = sum(1 for p in packages.values() if p["installed"])
@@ -122761,7 +124313,7 @@ def cmd_fetch():
 
 def load_cache() -> dict:
     if not CACHE_FILE.exists():
-        print("✗ Cache not found. Run:  pacman_backend.py fetch", file=sys.stderr)
+        print("✗ Cache not found. Run:  pacman-filter.py fetch", file=sys.stderr)
         sys.exit(1)
     with open(CACHE_FILE) as f:
         return json.load(f)
@@ -122777,12 +124329,13 @@ def cmd_list():
 
     result = [
         {
-            "name":        name,
-            "real_name":   pkg["name"],
-            "description": pkg["description"],
-            "version":     pkg["version"],
-            "repository":  pkg["repository"],
-            "last_sync":   pkg["last_sync"],
+            "name":           name,
+            "real_name":      pkg["name"],
+            "description":    pkg["description"],
+            "version":        pkg["version"],
+            "latest_version": pkg.get("latest_version", ""),
+            "repository":     pkg["repository"],
+            "last_sync":      pkg["last_sync"],
         }
         for name, pkg in packages.items()
         if pkg["installed"]
@@ -122807,13 +124360,14 @@ def cmd_search(query: str, fresh: bool = False):
 
     result = [
         {
-            "name":        name,
-            "real_name":   pkg["name"],
-            "description": pkg["description"],
-            "version":     pkg["version"],
-            "repository":  pkg["repository"],
-            "installed":   pkg["installed"],
-            "last_sync":   pkg["last_sync"],
+            "name":           name,
+            "real_name":      pkg["name"],
+            "description":    pkg["description"],
+            "version":        pkg["version"],
+            "latest_version": pkg.get("latest_version", ""),
+            "repository":     pkg["repository"],
+            "installed":      pkg["installed"],
+            "last_sync":      pkg["last_sync"],
         }
         for name, pkg in packages.items()
         if q in name.lower() or q in pkg["description"].lower()
@@ -122859,11 +124413,11 @@ def main():
 
     if not args:
         print("Usage:")
-        print("  pacman_backend.py fetch")
-        print("  pacman_backend.py list")
-        print("  pacman_backend.py list-all")  # Added here
-        print("  pacman_backend.py search <query> [--fresh]")
-        print("  pacman_backend.py info <pkgname>")
+        print("  pacman-filter.py fetch")
+        print("  pacman-filter.py list")
+        print("  pacman-filter.py list-all")
+        print("  pacman-filter.py search <query> [--fresh]")
+        print("  pacman-filter.py info <pkgname>")
         sys.exit(0)
 
     cmd = args[0]
@@ -122874,12 +124428,12 @@ def main():
     elif cmd == "list":
         cmd_list()
 
-    elif cmd in ("list-all"):  # Added here
+    elif cmd == "list-all":
         cmd_list_all()
 
     elif cmd == "search":
         if len(args) < 2:
-            print("✗ search requires a query.  e.g.  pacman_backend.py search firefox", file=sys.stderr)
+            print("✗ search requires a query.  e.g.  pacman-filter.py search firefox", file=sys.stderr)
             sys.exit(1)
         query = args[1]
         fresh = "--fresh" in args
@@ -122887,7 +124441,7 @@ def main():
 
     elif cmd == "info":
         if len(args) < 2:
-            print("✗ info requires a package name.  e.g.  pacman_backend.py info neovim", file=sys.stderr)
+            print("✗ info requires a package name.  e.g.  pacman-filter.py info neovim", file=sys.stderr)
             sys.exit(1)
         cmd_info(args[1])
 
@@ -122896,6 +124450,254 @@ def main():
         sys.exit(1)
 
 if __name__ == "__main__":
+    main()
+````
+
+## File: scripts/pacman-pre-flight.py
+````python
+#!/usr/bin/env python3
+"""
+pacman-preflight.py — Compute the pre-flight transaction plan for a package.
+
+Input:  package name as argv[1]
+Output: one JSON line on stdout with the plan, OR an error object
+
+Usage:  python pacman-preflight.py <package_name>
+"""
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+# Optional: use pyalpm for vercmp if available, fall back to vercmp binary
+try:
+    import pyalpm
+    def vercmp(a, b):
+        return pyalpm.vercmp(a, b)
+except ImportError:
+    def vercmp(a, b):
+        result = subprocess.run(["vercmp", a, b], capture_output=True, text=True)
+        return int(result.stdout.strip() or "0")
+
+CACHE_FILE = Path.home() / ".cache" / "pacman-ui" / "cache.json"
+
+def load_cache():
+    if not CACHE_FILE.exists():
+        return {"packages": {}}
+    with open(CACHE_FILE) as f:
+        return json.load(f)
+
+def run_pacman_print(pkg):
+    """Run pacman -S --print, return list of (name, version, size_bytes) tuples."""
+    cmd = ["pacman", "-S", "--print", "--print-format", "%n|%v|%s", pkg]
+    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+    if proc.returncode != 0:
+        return None, proc.stderr.strip()
+    out = []
+    for line in proc.stdout.strip().split("\n"):
+        if not line:
+            continue
+        parts = line.split("|")
+        if len(parts) < 3:
+            continue
+        out.append({
+            "name": parts[0],
+            "version": parts[1],
+            "downloadBytes": int(parts[2]) if parts[2].isdigit() else 0,
+        })
+    return out, None
+
+def split_name_version(s):
+    """Split 'gcc-libs>=12.1.0' into ('gcc-libs', '>=', '12.1.0')."""
+    for op in ["<=", ">=", "<", ">", "="]:
+        if op in s:
+            name, _, version = s.partition(op)
+            return name, op, version
+    return s, "", ""
+
+def version_satisfies(installed_version, op, required_version):
+    """Check if installed_version satisfies the op/version constraint."""
+    if not op or not required_version:
+        return True  # no constraint
+    cmp = vercmp(installed_version, required_version)
+    if op == "=":
+        return cmp == 0
+    if op == "<=":
+        return cmp <= 0
+    if op == ">=":
+        return cmp >= 0
+    if op == "<":
+        return cmp < 0
+    if op == ">":
+        return cmp > 0
+    return False
+
+def build_preflight(target, cache_packages, print_output):
+    """Build the pre-flight plan from --print output + cache cross-reference."""
+    packages_by_name = {p["name"]: p for p in cache_packages}
+
+    # ── toInstall ──
+    to_install = []
+    total_download_bytes = 0
+    total_installed_bytes = 0
+
+    for entry in print_output:
+        name = entry["name"]
+        version = entry["version"]
+        download_bytes = entry["downloadBytes"]
+        total_download_bytes += download_bytes
+
+        cached = packages_by_name.get(name)
+        installed_bytes = 0
+        installed_size_str = ""
+        if cached:
+            installed_size_str = cached.get("installed_size", "")
+            # Parse "22.29 MiB" → bytes
+            installed_bytes = parse_size_to_bytes(installed_size_str)
+
+        total_installed_bytes += installed_bytes
+
+        to_install.append({
+            "name": name,
+            "version": version,
+            "downloadBytes": download_bytes,
+            "downloadSize": format_bytes(download_bytes),
+            "installedBytes": installed_bytes,
+            "installedSize": installed_size_str or "—",
+            "isTarget": name == target,
+        })
+
+    # ── willReplace + conflictsWith ──
+    will_replace = []
+    conflicts_with = []
+    seen_replaces = set()
+    seen_conflicts = set()
+
+    target_cached = packages_by_name.get(target)
+
+    # Direct replaces/conflicts from the target and all to-install packages
+    for entry in print_output:
+        pkg_name = entry["name"]
+        cached = packages_by_name.get(pkg_name)
+        if not cached:
+            continue
+
+        # Replaces
+        for rep in cached.get("replaces", []):
+            rep_name, _, _ = split_name_version(rep)
+            if rep_name in seen_replaces:
+                continue
+            rep_cached = packages_by_name.get(rep_name)
+            if rep_cached and rep_cached.get("installed"):
+                will_replace.append({
+                    "name": rep_name,
+                    "version": rep_cached.get("version", ""),
+                    "installed": True,
+                })
+                seen_replaces.add(rep_name)
+
+        # Conflicts
+        for con in cached.get("conflicts_with", []):
+            con_name, _, _ = split_name_version(con)
+            if con_name in seen_conflicts or con_name in seen_replaces:
+                continue
+            con_cached = packages_by_name.get(con_name)
+            if con_cached and con_cached.get("installed"):
+                conflicts_with.append({
+                    "name": con_name,
+                    "version": con_cached.get("version", ""),
+                    "installed": True,
+                })
+                seen_conflicts.add(con_name)
+
+    # Reverse conflicts: any installed package that conflicts with a to-install pkg
+    for pkg in cache_packages:
+        if not pkg.get("installed"):
+            continue
+        for con in pkg.get("conflicts_with", []):
+            con_name, _, _ = split_name_version(con)
+            # Is this conflict targeting one of our to-install packages?
+            to_install_names = {e["name"] for e in print_output}
+            if con_name in to_install_names and con_name not in seen_conflicts:
+                conflicts_with.append({
+                    "name": pkg["name"],
+                    "version": pkg.get("version", ""),
+                    "installed": True,
+                })
+                seen_conflicts.add(pkg["name"])
+
+    return {
+        "toInstall": to_install,
+        "willReplace": will_replace,
+        "conflictsWith": conflicts_with,
+        "totalDownload": format_bytes(total_download_bytes),
+        "totalInstalled": format_bytes(total_installed_bytes),
+    }
+
+def parse_size_to_bytes(s):
+    """Parse '22.29 MiB' → bytes (int)."""
+    if not s:
+        return 0
+    s = s.strip().lower()
+    try:
+        import re
+        m = re.match(r"^([\d.]+)\s*(b|kib|kb|k|mib|mb|m|gib|gb|g|tib|tb|t)?$", s)
+        if not m:
+            return 0
+        value = float(m.group(1))
+        unit = m.group(2) or "b"
+        multipliers = {
+            "b": 1,
+            "k": 1024, "kib": 1024, "kb": 1024,
+            "m": 1024**2, "mib": 1024**2, "mb": 1024**2,
+            "g": 1024**3, "gib": 1024**3, "gb": 1024**3,
+            "t": 1024**4, "tib": 1024**4, "tb": 1024**4,
+        }
+        return int(value * multipliers.get(unit, 1))
+    except (ValueError, AttributeError):
+        0
+        return 0
+
+def format_bytes(b):
+    """Format bytes → '5.4 KiB' etc."""
+    if b == 0:
+        return "0 B"
+    if b < 0:
+        return ""
+    units = ["B", "KiB", "MiB", "GiB", "TiB"]
+    k = 1024
+    i = min(int(math.log(b) / math.log(k)), len(units) - 1) if b > 0 else 0
+    if i == 0:
+        return f"{b} B"
+    return f"{b / k**i:.2f} {units[i]}"
+
+def main():
+    if len(sys.argv) < 2:
+        print(json.dumps({"error": "missing package name"}))
+        sys.exit(1)
+
+    target = sys.argv[1]
+    cache = load_cache()
+    cache_packages = cache.get("packages", [])
+    if isinstance(cache_packages, dict):
+        # Some cache formats use a dict keyed by name
+        cache_packages = list(cache_packages.values())
+
+    print_output, err = run_pacman_print(target)
+    if print_output is None:
+        print(json.dumps({"error": f"pacman -S --print failed: {err}"}))
+        sys.exit(1)
+
+    if not print_output:
+        print(json.dumps({"error": f"no transaction for {target} (already installed?)"}))
+        sys.exit(1)
+
+    plan = build_preflight(target, cache_packages, print_output)
+    print(json.dumps(plan))
+
+if __name__ == "__main__":
+    import math
     main()
 ````
 
@@ -123302,12 +125104,6 @@ if __name__ == "__main__":
     print(mode_flag)
 ````
 
-## File: scripts/text.txt
-````
-Why doesn't work
-Next line
-````
-
 ## File: scripts/wallpapers_cacher.sh
 ````bash
 #!/bin/bash
@@ -123432,113 +125228,10 @@ echo "Done! Check the '$TARGET_DIR/.qscache' directory."
   "wallpapers": [
     "asuka_landscape.jpg"
   ],
-  "config": {
-    "macbook.jpg": {
-      "transition": {
-        "type": "grow",
-        "step": 1,
-        "duration": 1,
-        "fps": 60,
-        "posX": 0.5600907029478458,
-        "posY": 0.8353174603174603
-      },
-      "reposition": {
-        "scalar": 1,
-        "verticalOffset": 1,
-        "horizontalOffset": 0
-      }
-    },
-    "live_hu_tao_forest.mp4": {
-      "transition": {
-        "type": "grow",
-        "step": 1,
-        "duration": 1,
-        "fps": 60,
-        "angle": 30,
-        "posX": 0.3673469387755102,
-        "posY": 0.057539682539682536
-      }
-    },
-    "live_hu_tao_forest_fire.mp4": {
-      "transition": {
-        "type": "grow",
-        "step": 1,
-        "duration": 1,
-        "fps": 60,
-        "angle": 30,
-        "posX": 0.6893424036281179,
-        "posY": 0.09126984126984126
-      }
-    },
-    "gura.jpg": {
-      "reposition": {
-        "scalar": 1,
-        "verticalOffset": 0.7560886950199929,
-        "horizontalOffset": 0
-      }
-    },
-    "frog.jpg": {
-      "reposition": {
-        "scalar": 1,
-        "verticalOffset": 1,
-        "horizontalOffset": 0
-      }
-    },
-    "balcony_chill.jpg": {
-      "reposition": {
-        "scalar": 1.2000000000000002,
-        "verticalOffset": -0.228174603174603,
-        "horizontalOffset": 0.2334754797441364
-      }
-    },
-    "seele_bronya.jpg": {
-      "reposition": {
-        "scalar": 1,
-        "verticalOffset": 1,
-        "horizontalOffset": 0
-      }
-    },
-    "miyabi_mindscape_0.jpg": {
-      "reposition": {
-        "scalar": 1,
-        "verticalOffset": 0,
-        "horizontalOffset": 0.33308706651442904
-      }
-    },
-    "miyabi_mindscape.jpg": {
-      "reposition": {
-        "scalar": 1,
-        "verticalOffset": -1,
-        "horizontalOffset": 0.3475856128480191
-      }
-    },
-    "kokomi.jpg": {
-      "transition": {
-        "type": "ripple",
-        "step": 100,
-        "duration": 1.5,
-        "fps": 60,
-        "angle": 30,
-        "posX": 0.5,
-        "posY": 0.5
-      }
-    },
-    "cafe_chill.jpg": {
-      "reposition": {
-        "scalar": 1.15,
-        "verticalOffset": 0,
-        "horizontalOffset": 1
-      }
-    },
-    "asuka_landscape.jpg": {
-      "reposition": {
-        "scalar": 1.4000000000000004,
-        "verticalOffset": 0.26122598162071853,
-        "horizontalOffset": 0
-      }
-    }
-  },
-  "live": true
+  "config": {},
+  "live": true,
+  "slideshow": false,
+  "selected": 0
 }
 ````
 
@@ -124442,6 +126135,8 @@ Singleton {
 
                 }
 
+                // console.log(JSON.stringify(streams,null,2))
+
                 root.streams = streams
                 root.streamraw = text
             }
@@ -124494,8 +126189,9 @@ Singleton {
 
     property int authenticate_id: 0
 
-    signal verified(id: int)
+    signal verified(id: int, password: string)
     signal failed()
+    signal canceled()
     
     // signal unmatch_id()
 
@@ -124503,6 +126199,13 @@ Singleton {
 
     function ask(prompt = "Authenticate", description = "", return_password = false) {
         root.prompted(prompt, description, return_password, root.authenticate_id)
+    }
+
+    function cancel() {
+        check_pwd.running = false
+        root.authenticate_id++
+        console.log("AuthInfo: Canceled")
+        root.canceled()
     }
 
     // The PAM checker is a long-lived process: it reads passwords
@@ -124525,6 +126228,9 @@ Singleton {
             }
         }
 
+        property bool return_password: false
+        property string password: ""
+
         running: true
         command: [SystemInfo.configdir + "/scripts/password_checker"]
 
@@ -124533,7 +126239,7 @@ Singleton {
                 if (text == "1") {
                     if (check_pwd.id == root.authenticate_id) {
                         root.authenticating = false
-                        root.verified(root.authenticate_id++)
+                        root.verified(root.authenticate_id++, check_pwd.return_password ? check_pwd.password : "")
                     } else {
                         //root.unmatch_id()
                         console.log("AuthInfo (check_pwd): Unmatched authentication id")
@@ -124542,6 +126248,8 @@ Singleton {
                     root.authenticating = false
                     root.failed()
                 }
+                check_pwd.return_password = false
+                check_pwd.password = ""
                 // Any other output (debug prints, etc.) is ignored.
             }
         }
@@ -124560,7 +126268,7 @@ Singleton {
     // Non-blocking: emits verified() or failed() shortly after.
     // The password string is written to stdin and immediately goes out
     // of scope on the caller side — see AuthPopup.qml for the wipe pattern.
-    function verify(password: string, id: int) {
+    function verify(password: string, id: int, return_password = false) {
         if (!check_pwd.running) {
             console.warn("AuthInfo: check_pwd process not running, cannot verify")
             root.failed()
@@ -124572,6 +126280,8 @@ Singleton {
         }
         root.authenticating = true
         check_pwd.id = id
+        check_pwd.return_password = return_password
+        check_pwd.password = password
         check_pwd.write(password + "\n")
     }
 
@@ -126003,42 +127713,74 @@ Singleton {
 
 ## File: services/IconInfo.qml
 ````
-pragma Singleton 
+pragma Singleton
+
+import qs.services
 
 import Quickshell
 import Quickshell.Io
 import QtQuick
 
+// ─────────────────────────────────────────────────────────────────
+// IconInfo — icon lookup service with layered resolution.
+//
+// Loads icon_cache.json (written by launcher.py) and provides fetch()
+// for the rest of the shell to look up icon paths by name.
+//
+// Cache file format (JSON):
+//   {
+//     "icons":   { "firefox": "/usr/.../firefox.png", ... },
+//     "aliases": {
+//       "binary": { "google-chrome-stable": "google-chrome", ... },
+//       "app":    { "zen browser": "zen", ... }
+//     }
+//   }
+//
+// Also tolerates the old list format:
+//   [{"name": "firefox", "icon": "/usr/.../firefox.png"}, ...]
+//
+// Lookup order in fetch():
+//   1. Direct hit on icons (case-sensitive)
+//   2. Case-insensitive hit on _index
+//   3. Binary alias (binary name → icon name → icons)
+//   4. App name alias (display name → icon name → icons)
+//   5. Bidirectional substring (last resort, longest match wins)
+//
+// A negative cache (_missCache) records queries that hit nothing in
+// layers 1-4, so subsequent calls for the same query skip straight to
+// the substring fallback (or return "" if substring is disabled).
+// ─────────────────────────────────────────────────────────────────
+
 Singleton {
 
     id: root
 
-    property var icons: []
+    // ── Raw data from cache file ──
+    // {icon_name: path} — every icon file on disk, keyed by stem.
+    property var icons: ({})
 
-    function fetch(queries) {
-        cache.reload()
-        for (let query of queries) {
-            if (!query) continue
-            const parts = query.split('.')
-            if (parts.length > 1) {
-                parts.pop()
-            }
-            query = parts.join('.')
-            const result = root.icons.find((item) => {
-                const match = item.name.toLowerCase().includes(query.toLowerCase()) ||
-                              item.icon.toLowerCase().includes(query.toLowerCase())
-                return match
-            })
-            if (result) {
-                return result.icon
-            }
-        }
-        return ""
-    }
+    // {binary_name: icon_name} — from .desktop Exec fields.
+    // Catches "google-chrome-stable" → "google-chrome" style mismatches.
+    property var binaryAliases: ({})
 
-    function reload() {
-        cache.reload()
-    }
+    // {lowercased_app_name: icon_name} — from .desktop Name fields.
+    // Catches "Zen Browser" → "zen" style display-name queries.
+    property var appAliases: ({})
+
+    // ── Indexes (built when raw data changes) ──
+    // {lowercased_icon_name: path} — for O(1) case-insensitive lookup.
+    property var _index: ({})
+
+    // {lowercased_query: icon_name} — combined binary + app aliases,
+    // lowercased for case-insensitive lookup.
+    property var _aliasIndex: ({})
+
+    // ── Negative cache ──
+    // {lowercased_query: true} — queries that missed all layers 1-4.
+    // Subsequent calls skip the lookups and go straight to substring
+    // (or return "" if substring is disabled).
+    property var _missCache: ({})
+    readonly property int _missCacheMax: 256
 
     FileView {
         id: cache
@@ -126046,9 +127788,219 @@ Singleton {
         path: SystemInfo.configdir + "/scripts/icon_cache.json"
 
         onLoaded: {
-            root.icons = JSON.parse(text())
+            try {
+                const data = JSON.parse(text())
+                _loadFromData(data)
+            } catch (e) {
+                console.warn("IconInfo: failed to parse icon_cache.json: " + e)
+                root.icons = {}
+                root.binaryAliases = {}
+                root.appAliases = {}
+                root._rebuildIndex()
+            }
+        }
+    }
+
+    function _loadFromData(data) {
+        // Old format: list of {name, icon} objects
+        if (Array.isArray(data)) {
+            const dict = {}
+            for (const item of data) {
+                if (item && item.name && item.icon) {
+                    dict[item.name] = item.icon
+                }
+            }
+            root.icons = dict
+            root.binaryAliases = {}
+            root.appAliases = {}
+        }
+        // New format: dict with icons + aliases
+        else if (data && typeof data === "object") {
+            const icons = data.icons
+            if (Array.isArray(icons)) {
+                // icons field is a list (shouldn't happen with new format,
+                // but defensive) — convert to dict
+                const dict = {}
+                for (const item of icons) {
+                    if (item && item.name && item.icon) {
+                        dict[item.name] = item.icon
+                    }
+                }
+                root.icons = dict
+            } else {
+                root.icons = icons || {}
+            }
+            const aliases = data.aliases || {}
+            root.binaryAliases = aliases.binary || {}
+            root.appAliases = aliases.app || {}
+        } else {
+            root.icons = {}
+            root.binaryAliases = {}
+            root.appAliases = {}
+        }
+        root._rebuildIndex()
+    }
+
+    function _rebuildIndex() {
+        // Case-insensitive icon name index
+        const idx = {}
+        for (const name in root.icons) {
+            idx[name.toLowerCase()] = root.icons[name]
+        }
+        root._index = idx
+
+        // Combined alias index (binary + app), lowercased keys
+        const aIdx = {}
+        for (const k in root.binaryAliases) {
+            aIdx[k.toLowerCase()] = root.binaryAliases[k]
+        }
+        for (const k in root.appAliases) {
+            const kl = k.toLowerCase()
+            if (!(kl in aIdx)) {  // don't overwrite binary aliases
+                aIdx[kl] = root.appAliases[k]
+            }
+        }
+        root._aliasIndex = aIdx
+
+        // Invalidate the negative cache — old misses might now be hits
+        // after a cache refresh.
+        root._missCache = {}
+    }
+
+    function reload() {
+        cache.reload()
+    }
+
+    // ── fetch(queries) ──
+    // Accepts a single string or an array of strings. Returns the first
+    // match's path, or "" if none found.
+    //
+    // For each query, we try the layered lookups. The first query that
+    // produces a hit wins. If no query hits, we return "".
+    //
+    // Layered lookup per query:
+    //   0. Negative cache check (skip if we already know it misses)
+    //   1. Direct hit on icons[q]
+    //   2. Case-insensitive hit on _index[q.toLowerCase()]
+    //   3. Alias lookup: _aliasIndex[q.toLowerCase()] → icon name → icons
+    //   4. Substring fallback (last resort, see _substringLookup)
+    //
+    // The substring fallback is bidirectional and uses "longest match
+    // wins" to disambiguate. It's O(N) and can return wrong icons in
+    // edge cases, but only fires when layers 1-3 all miss — rare for
+    // well-named apps with .desktop files.
+    function fetch(queries) {
+        let qs
+        if (Array.isArray(queries)) {
+            qs = queries
+        } else if (typeof queries === "string") {
+            qs = [queries]
+        } else {
+            return ""
         }
 
+        for (let q of qs) {
+            if (!q) continue
+
+            // Strip extension if present ("firefox.png" → "firefox")
+            const dot = q.lastIndexOf('.')
+            if (dot > 0) {
+                q = q.substring(0, dot)
+            }
+            if (!q) continue
+
+            const qLower = q.toLowerCase()
+
+            // 0. Negative cache check
+            if (root._missCache[qLower]) {
+                continue
+            }
+
+            // 1. Direct case-sensitive hit
+            if (root.icons[q]) {
+                return root.icons[q]
+            }
+
+            // 2. Case-insensitive hit
+            if (root._index[qLower]) {
+                return root._index[qLower]
+            }
+
+            // 3. Alias lookup (binary or app name → icon name → path)
+            const aliased = root._aliasIndex[qLower]
+            if (aliased) {
+                // Resolve the alias to an actual icon path
+                if (root.icons[aliased]) {
+                    return root.icons[aliased]
+                }
+                // The aliased name might itself need case-insensitive lookup
+                const aliasedLower = aliased.toLowerCase()
+                if (root._index[aliasedLower]) {
+                    return root._index[aliasedLower]
+                }
+            }
+
+            // 4. Substring fallback (last resort)
+            const subMatch = _substringLookup(qLower)
+            if (subMatch) {
+                return subMatch
+            }
+
+            // Record the miss so future calls skip the lookups
+            _missCacheAdd(qLower)
+        }
+        return ""
+    }
+
+    // Bidirectional substring lookup with "longest match wins".
+    //
+    // For a query q and icon name n (both lowercased):
+    //   - If n.includes(q) → n contains the query (e.g., q="firefox",
+    //     n="firefox-developer-edition")
+    //   - If q.includes(n) → query contains n (e.g., q="google-chrome-stable",
+    //     n="google-chrome")
+    //
+    // When multiple names match, the longest match wins. Rationale:
+    // longer matches are more specific and more likely to be correct.
+    // For "firefox-developer-edition" query, both "firefox" (7) and
+    // "firefox-developer-edition" (25) match via q.includes(n) — the
+    // longer one wins, which is the more specific icon.
+    //
+    // Returns the path for the best match, or "" if no match.
+    function _substringLookup(qLower) {
+        if (!qLower || qLower.length < 2) return ""
+
+        let bestName = ""
+        let bestLen = 0
+
+        for (const name in root._index) {
+            const nLower = name.toLowerCase()
+            // Skip very short names — high false-positive rate
+            if (nLower.length < 2) continue
+
+            const matches = nLower.includes(qLower) || qLower.includes(nLower)
+            if (!matches) continue
+
+            // Prefer the longest matching name (more specific)
+            if (nLower.length > bestLen) {
+                bestLen = nLower.length
+                bestName = name
+            }
+        }
+
+        return bestName ? root._index[bestName] : ""
+    }
+
+    function _missCacheAdd(key) {
+        if (Object.keys(root._missCache).length >= root._missCacheMax) {
+            // Evict half (oldest first — dict preserves insertion order)
+            const keys = Object.keys(root._missCache)
+            const evictCount = Math.floor(keys.length / 2)
+            for (let i = 0; i < evictCount; i++) {
+                delete root._missCache[keys[i]]
+            }
+        }
+        root._missCache[key] = true
     }
 
 }
@@ -127020,10 +128972,78 @@ Singleton {
     id: root
 
     property string path: SystemInfo.configdir + "/scripts/pacman-filter.py"
+    property string preflight_path: SystemInfo.configdir + "/scripts/pacman-pre-flight.py"
 
     property bool fetching: fetcher.running
+    property bool checking_updates: updates_checker.running
+
+    signal fetched()
 
     property string query: ""
+
+    onFetched: {
+        if (installState == "prepare") {
+            preparePreFlight()
+        }
+    }
+
+    /*
+     1.   idle           (Show pacman list, search, info).
+     1.1. prepare        (Fetch the newest data possible).
+     2.   pre-flight     (Show package's requirements, conflictions, replaces before actually installing).
+     3.   authentication (Authenticate for sudo).
+     4.   running        (Pacman do its thing).
+     4.1. prompt         (Pacman ask for user input, mostly yes or no).
+     4.2. cancel         (Kill Pacman).
+     5.   success        (Show that it succeed).
+     5.1  failed         (Show that it failed).
+     6.   reset          (Go back to Idle)
+     */
+    property string installState: "idle"
+    property string installTarget: ""
+    property var transactionData: []
+    property var installPlan: {
+        "toInstall": [], // Dependencies (install)
+        "willReplace": [], // Replaces (remove)
+        "conflictsWith": [], // Conflicts (remove)
+        "totalDownload": "",
+        "totalInstalled": "",
+    }
+    property var installLog: []
+    property string pendingPrompt: ""
+    property int installExitCode: 0
+
+    signal promptRequested(prompt: string)
+    signal installCompleted(exitCode: int)
+
+    function requestInstallation(name: string) {
+        if (installState != "idle") return
+        if (isInstalled(name)) {
+            console.log("PacmanInfo (requestIntallation): " + name + " has already been installed. Rejecting request.")
+            return
+        }
+        installTarget = name
+        fetch()
+        installState = "prepare"
+    }
+
+    function prepareInstallation() {
+        installState = "pre-flight"
+    }
+
+    Process {
+
+        id: installer
+
+        property string pkg: ""
+
+        command: ["sudo", "-S", "-k", "-p", "", "pacman", "-S", pkg]
+
+        stdout: SplitParser {
+            splitMarker: ["\n","\r"]
+        }
+
+    }
 
     onInstalledChanged: {
         queryChanged()
@@ -127052,10 +129072,10 @@ Singleton {
             let matchRepo
 
             if (search_mode == 1) {
-                q = q.replace(/ /g, "").replace(/-/g, "")
-                matchName = item.name.toLowerCase().replace(/ /g, "").replace(/-/g, "").includes(q)
-                matchDesc = item.description.toLowerCase().replace(/ /g, "").replace(/-/g, "").includes(q)
-                matchRepo = item.repository.toLowerCase().replace(/ /g, "").replace(/-/g, "").includes(q)
+                q = q.replace(/ /g, "").replace(/-/g, "").replace(/_/g, "")
+                matchName = item.name.toLowerCase().replace(/ /g, "").replace(/-/g, "").replace(/_/g, "").includes(q)
+                matchDesc = item.description.toLowerCase().replace(/ /g, "").replace(/-/g, "").replace(/_/g, "").includes(q)
+                matchRepo = item.repository.toLowerCase().replace(/ /g, "").replace(/-/g, "").replace(/_/g, "").includes(q)
             } else {
                 matchName = item.name.toLowerCase().includes(q)
                 matchDesc = item.description.toLowerCase().includes(q)
@@ -127078,6 +129098,8 @@ Singleton {
     }
 
     property bool installed: false
+
+    property bool outdated: false
 
     /* search mode
      * 0 -> pretty_fuzzy
@@ -127114,9 +129136,39 @@ Singleton {
         lister.running = true
     }
 
+    function preparePreFlight() {
+        if (preflighter.running) preflighter.running = false
+        preflighter.running = true
+    }
+
     function fetch() {
         if (fetcher.running) fetcher.running = false
         fetcher.running = true
+    }
+
+    Process {
+
+        id: preflighter
+
+        command: ["python", root.preflight_path, root.installTarget]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    root.installPlan = JSON.parse(text)
+                    prepareInstallation()
+                }
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text) {
+                    console.log("PacmanInfo (preflighter): " + text)
+                }
+            }
+        }
+
     }
 
     Process {
@@ -127155,6 +129207,7 @@ Singleton {
             onStreamFinished: {
                 if (text) {
                     console.log(text)
+                    root.fetched()
                     lister.running = true
                 }
             }
@@ -127166,6 +129219,25 @@ Singleton {
                     console.log("PacmanInfo (cacher): " + text)
                 }
             }
+        }
+
+    }
+
+    Process {
+
+        id: updates_checker
+
+        command: ["sudo", "-S", "-k", "-p", "", "pacman", "-Sy"]
+
+        stdout: SplitParser {
+            splitMarker: ["\n", "\r"]
+            onRead: (text) => {
+                console.log("PacmanInfo (updates_checker): " + text)
+            }
+        }
+
+        onExited: (exitCode, exitStatus) => {
+            console.log("PacmanInfo (updates_checker): exitCode: " + exitCode + ", exitStatus: " + exitStatus)
         }
 
     }
@@ -127343,6 +129415,7 @@ Singleton {
     property bool dnd                          : false // Do not disturb
     property bool optimizeMemory               : false // Reduce memory usage significantly, but takes more time to load UI elements
 
+    property bool wallpaperAutoAdvance         : true  // Advance selection as you scroll through the wallpaper selections
 
     property bool shadow                       : false // Shadows for UI elements
 
@@ -127374,6 +129447,7 @@ Singleton {
         "optimizeMemory",
         "safeNotifications",
         "dnd",
+        "wallpaperAutoAdvance",
         "shadow",
         "hyprAnim",
         "hyprBlur",
@@ -127494,7 +129568,10 @@ Singleton {
         function notification_check(): void {
             root.notification_check()
         }
-        function auth_check(): void {AuthInfo.ask()}
+        function auth_check(): void {AuthInfo.ask(
+            "Authenticate check",
+            "Check the authentication capability.",
+        )}
         function audio_check(): void {
             root.audio_check()
         }
@@ -127509,26 +129586,27 @@ Singleton {
             ScreenshotInfo.requestCache()
             if (full) PopupManager.sendSignal("screenshot", "full")
         }
-        function toggle_grids(): void              { root.showGrid() }
-        function toggle_minimal(): void            { root.toggle("minimal") }
-        function toggle_hidebar(): void            { root.toggle("hideBar") }
-        function toggle_memory_optimize(): void    { root.toggle("optimizeMemory") }
-        function toggle_safe_notifications(): void { root.toggle("safeNotifications") }
-        function toggle_hints(): void              { root.toggle("hints") }
-        function toggle_dnd(): void                { root.toggle("dnd") }
-        function toggle_hypranim(): void           { root.toggle("hyprAnim") }
-        function toggle_hyprblur(): void           { root.toggle("hyprBlur") }
-        function toggle_bgcava(): void             { root.toggle("bgCava") }
-        function toggle_bgcava_lock(): void        { root.toggle("bgCavaLock") }
-        function toggle_lock_screen_music(): void  { root.toggle("lockScreenMusic") }
-        function toggle_bottom_bar(): void         { root.toggle("bottomBar") }
-        function toggle_text_based_volume(): void  { root.toggle("textBasedVolume") }
-        function toggle_sfx(): void                { root.toggle("sfx") }
-        function toggle_light_mode(): void         { root.toggle("userLightMode") }
-        function toggle_auto_light_mode(): void    { root.toggle("autoLightMode") }
-        function toggle_appearance(): void         { root.iterateAppearance() }
-        function toggle_shadow(): void             { root.toggle("shadow") }
-        function toggle_quickstart(): void         { root.toggle("quickStart") }
+        function toggle_grids(): void                   { root.showGrid() }
+        function toggle_minimal(): void                 { root.toggle("minimal") }
+        function toggle_hidebar(): void                 { root.toggle("hideBar") }
+        function toggle_memory_optimize(): void         { root.toggle("optimizeMemory") }
+        function toggle_safe_notifications(): void      { root.toggle("safeNotifications") }
+        function toggle_hints(): void                   { root.toggle("hints") }
+        function toggle_dnd(): void                     { root.toggle("dnd") }
+        function toggle_hypranim(): void                { root.toggle("hyprAnim") }
+        function toggle_hyprblur(): void                { root.toggle("hyprBlur") }
+        function toggle_bgcava(): void                  { root.toggle("bgCava") }
+        function toggle_bgcava_lock(): void             { root.toggle("bgCavaLock") }
+        function toggle_lock_screen_music(): void       { root.toggle("lockScreenMusic") }
+        function toggle_bottom_bar(): void              { root.toggle("bottomBar") }
+        function toggle_text_based_volume(): void       { root.toggle("textBasedVolume") }
+        function toggle_sfx(): void                     { root.toggle("sfx") }
+        function toggle_light_mode(): void              { root.toggle("userLightMode") }
+        function toggle_auto_light_mode(): void         { root.toggle("autoLightMode") }
+        function toggle_appearance(): void              { root.iterateAppearance() }
+        function toggle_shadow(): void                  { root.toggle("shadow") }
+        function toggle_quickstart(): void              { root.toggle("quickStart") }
+        function toggle_wallpaper_auto_advance(): void  { root.toggle("wallpaperAutoAdvance") }
 
         function lock_screen(): void               { SystemInfo.lock() }
 
@@ -127559,14 +129637,27 @@ Singleton {
 ````
 pragma Singleton
 
+import qs.config
+
+import QtQuick
 import Quickshell
 
 Singleton {
 
     id: root
 
-    property var shortcuts
+    property var shortcuts: []
 
+    Connections {
+        target: PopupManager
+        function onClosed(name: string) {
+            // When no popup is topmost, clear shortcuts so we don't
+            // hold references to destroyed popup closures.
+            if (PopupManager.getTop() === "") {
+                root.shortcuts = []
+            }
+        }
+    }
 }
 ````
 
@@ -128356,6 +130447,10 @@ Singleton {
     }
 
 
+    onCurrentChanged: {
+        saveConfig()
+    }
+
     onWallpapersChanged: {
         saveConfig()
         advance(0)
@@ -128558,7 +130653,9 @@ Singleton {
             },
             wallpapers: root.wallpapers,
             config: filteredConfig,
-            live: root.live
+            live: root.live,
+            slideshow: root.slideshow,
+            selected: root.selected
         }
 
         SystemInfo.runDetached(["bash", "-c", "echo '" + JSON.stringify(config,null,2) + "' > " + SystemInfo.configdir + "/scripts/wallpapers_config.json"])
@@ -128575,22 +130672,30 @@ Singleton {
 
         onLoaded: {
 
-            const data = JSON.parse(text())
+            let data = {}
 
-            root.transition.type     = data.transition.type     ?? root.transition.type    
-            root.transition.step     = data.transition.step     ?? root.transition.step    
-            root.transition.duration = data.transition.duration ?? root.transition.duration
-            root.transition.fps      = data.transition.fps      ?? root.transition.fps     
-            root.transition.angle    = data.transition.angle    ?? root.transition.angle   
-            root.transition.posX      = data.transition.posX      ?? root.transition.posX
-            root.transition.posY      = data.transition.posY      ?? root.transition.posY
+            if (text()) {
+                data = JSON.parse(text())
+            }
+
+            root.transition.type     = data.transition?.type     ?? root.transition.type
+            root.transition.step     = data.transition?.step     ?? root.transition.step
+            root.transition.duration = data.transition?.duration ?? root.transition.duration
+            root.transition.fps      = data.transition?.fps      ?? root.transition.fps
+            root.transition.angle    = data.transition?.angle    ?? root.transition.angle
+            root.transition.posX     = data.transition?.posX     ?? root.transition.posX
+            root.transition.posY     = data.transition?.posY     ?? root.transition.posY
 
             root.wallpapers = data.wallpapers ?? []
             root.config = data.config ?? ({})
 
-            root.live = data.live
+            root.live = data.live ?? true
+            root.slideshow = data.slideshow ?? false
+            root.selected = data.selected ?? 0
 
             root.loaded = true
+
+            console.log("WallpaperInfo (loader): Loaded!")
 
         }
 
@@ -129218,6 +131323,11 @@ ShellRoot {
                         inactive_border = \"${inactive_border}\",
                     }
 
+                },
+
+                cursor = {
+                    no_hardware_cursors = 0,
+                    zoom_disable_aa = 1,
                 },
 
                 decoration = {

@@ -76,7 +76,7 @@ Item {
             unFocus()
             return
         }
-        if (!disabled && focusOnVisible) {
+        if (!disabled && focusOnVisible && visible) {
             grabFocus()
         }
     }
@@ -146,14 +146,14 @@ Item {
 
     onVisibleChanged: {
         clear()
+        unFocus()
         if (bindText != "") {
             text = Qt.binding(()=>bindText)
         }
         if (visible && focusOnVisible) {
-            forceActiveFocus()
+            grabFocus()
             return
         }
-        unFocus()
     }
 
     onCursorPosChanged: {

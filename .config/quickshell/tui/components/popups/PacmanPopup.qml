@@ -14,6 +14,8 @@ CellPopup {
     w: 80
     h: 40
 
+    property string pacmanState: PacmanInfo.pacmanState
+
     onVisibleChanged: {
         list.selected_index = 0
         list.selected_pkg = ""
@@ -68,6 +70,7 @@ CellPopup {
 
                 spacing: 0
 
+                // Header
                 RowLayout {
 
                     Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
@@ -75,7 +78,7 @@ CellPopup {
                     spacing: 0
 
                     CellText {
-                        text: "PACMAN"
+                        text: "PACMAN " + root.pacmanState
                         color: Colors.secondary
                         font: Cell.fontBB
                     }
@@ -97,12 +100,23 @@ CellPopup {
 
                 }
 
+                // Separator for header
                 CellSeparator {
                     w: box.contentW
                     color: Colors.accentStrong
                 }
 
+                // Package list
                 CellScrollView {
+
+                    visible: (
+                        root.pacmanState == "idle"
+                        || root.pacmanState == "prepare"
+                        || root.pacmanState == "pre-flight"
+                        || root.pacmanState == "authentication"
+                        || root.pacmanState == "checking_updates"
+                        || root.pacmanState == "fetching"
+                    )
 
                     id: list
 
@@ -112,7 +126,7 @@ CellPopup {
                     property int selected_index: 0
                     property string selected_pkg: ""
 
-                    property var datas: PacmanInfo.installed ? PacmanInfo.search_results.filter(item => item.installed) : PacmanInfo.search_results
+                    property var datas: PacmanInfo.outdated ? PacmanInfo.search_results.filter(item => item.latest_version != "") : (PacmanInfo.installed ? PacmanInfo.search_results.filter(item => item.installed) : PacmanInfo.search_results)
 
                     property var optimized_data: datas.slice(list.offset,list.offset+list.h)
 
@@ -138,14 +152,18 @@ CellPopup {
                                 property string name: modelData.name
                                 property string repo: modelData.repository
                                 property string version: modelData.version
+                                property string latest_version: modelData.latest_version
                                 property bool installed: modelData.installed
+                                property bool update_available: pkg.latest_version != ""
 
-                                property bool selected: list.selected_pkg == name
+                                property bool selected: list.selected_pkg == name && !disabled
+
+                                property bool disabled: PacmanInfo.fetching || PacmanInfo.checking_updates
 
                                 w: list.contentW
                                 h: 1
 
-                                color: selected ? Colors.accentStrong : (pkg_mouse.hovered ? Colors.bgOverlay : "transparent")
+                                color: (selected ? Colors.accentStrong : (pkg_mouse.hovered ? Colors.bgOverlay : "transparent"))
 
                                 onSelectedChanged: {
                                     if (selected) {
@@ -161,20 +179,52 @@ CellPopup {
 
                                     CellText {
                                         text: pkg.installed ? "*" : " "
-                                        color: pkg.selected ? Colors.onAccent : Colors.success
+                                        color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.success)
                                         font: Cell.fontB
                                     }
 
                                     CellText {
                                         text: pkg.name
-                                        preferedW: list.contentW - 5 - pkg_version.text.length
-                                        color: pkg.selected ? Colors.onAccent : Colors.fgBase
+                                        preferedW: list.contentW - 5 - pkg_version.w
+                                        color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgBase)
                                     }
 
-                                    CellText {
+                                    RowLayout {
+
                                         id: pkg_version
-                                        text: "(" + pkg.version + ")"
-                                        color: pkg.selected ? Colors.onAccent : Colors.fgDim
+
+                                        property int w: Cell.wCount(implicitWidth)
+
+
+                                        spacing: 0
+
+                                        CellText {
+                                            text: "("
+                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
+                                        }
+
+                                        CellText {
+                                            text: pkg.version
+                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : (pkg.update_available ? Colors.blend(Colors.fgSubtle,Colors.danger,0.5) : Colors.fgSubtle))
+                                        }
+
+                                        CellText {
+                                            visible: pkg.update_available
+                                            text: " -> "
+                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
+                                        }
+
+                                        CellText {
+                                            visible: pkg.update_available
+                                            text: pkg.latest_version
+                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.success)
+                                        }
+
+                                        CellText {
+                                            text: ")"
+                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
+                                        }
+
                                     }
 
                                 }
@@ -182,6 +232,8 @@ CellPopup {
                                 MouseControl {
 
                                     id: pkg_mouse
+
+                                    visible: !parent.disabled
 
                                     anchors.fill: parent
 
@@ -205,7 +257,17 @@ CellPopup {
 
                 }
 
+                // Search bar
                 Cells {
+
+                    visible: (
+                        root.pacmanState == "idle"
+                        || root.pacmanState == "prepare"
+                        || root.pacmanState == "pre-flight"
+                        || root.pacmanState == "authentication"
+                        || root.pacmanState == "fetching"
+                        || root.pacmanState == "checking_updates"
+                    )
 
                     w: box.contentW
                     h: 3
@@ -223,7 +285,7 @@ CellPopup {
 
                             CellTextField {
 
-                                w: box.contentW - 29 - search_mode.text.length - 3*PacmanInfo.fetching
+                                w: box.contentW - 30 - search_mode.text.length - 3*PacmanInfo.fetching
                                 h: 1
 
                                 placeholder: "Search package"
@@ -276,20 +338,19 @@ CellPopup {
 
                             CellButton {
 
-                                text: "Refresh"
+                                text: "Outdated"
 
-                                clickable: !PacmanInfo.fetching
-
-                                color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                                fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
+                                color: PacmanInfo.outdated ? Colors.accentStrong : Colors.bgOverlay
+                                fg:    PacmanInfo.outdated ? Colors.onAccent : Colors.fgBase
 
                                 onReleased: (button) => {
                                     if (button == "L") {
-                                        PacmanInfo.fetch()
+                                        PacmanInfo.outdated = !PacmanInfo.outdated
                                     }
                                 }
 
                             }
+
 
                         }
 
@@ -298,7 +359,12 @@ CellPopup {
 
                 }
 
+                // Breadcrumbs
                 RowLayout {
+
+                    visible: (
+                        root.pacmanState == "idle"
+                    )
 
                     Layout.leftMargin: {
                         let result = list.selected_pkg.length + 2
@@ -387,12 +453,40 @@ CellPopup {
 
                 }
 
+                // Installing header
+                CellText {
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth,parent.implicitWidth)
+
+                    visible: (
+                        root.pacmanState == "prepare"
+                        || root.pacmanState == "pre-flight"
+                        || root.pacmanState == "authentication"
+                    )
+                    text: "Installing <b>" + PacmanInfo.installTarget + "</b>"
+                    color: Colors.secondary
+                }
+
+                // Separator for Breadcrumbs and Installing header
                 CellSeparator {
+                    visible: (
+                        root.pacmanState == "idle"
+                        || root.pacmanState == "prepare"
+                        || root.pacmanState == "pre-flight"
+                        || root.pacmanState == "authentication"
+                        || root.pacmanState == "fetching"
+                        || root.pacmanState == "checking_updates"
+                    )
                     w: box.contentW
                     color: Colors.accentStrong
                 }
 
+                // Info
                 CellScrollView {
+
+                    visible: (
+                        root.pacmanState == "idle"
+                        || root.pacmanState == "fetching"
+                    )
 
                     id: info
 
@@ -542,13 +636,17 @@ CellPopup {
 
                                     property var dep_data: {
                                         if (name.includes("<="))      return name.split("<=")
+                                        else if (name.includes("<"))      return name.split("<")
                                         else if (name.includes(">=")) return name.split(">=")
+                                        else if (name.includes(">")) return name.split(">")
                                         else if (name.includes("="))  return name.split("=")
                                         return [name]
                                     }
                                     property string version_ops: {
                                         if (name.includes("<="))      return "<="
+                                        else if (name.includes("<"))      return "<"
                                         else if (name.includes(">=")) return ">="
+                                        else if (name.includes(">"))      return ">"
                                         else if (name.includes("="))  return ""
                                         return ""
                                     }
@@ -881,26 +979,464 @@ CellPopup {
 
                 }
 
+                // Prepare for pre-flight
+                Cells {
+
+                    visible: (
+                        root.pacmanState == "prepare"
+                    )
+
+                    w: box.contentW
+                    h: box.contentH - list.h - 9
+
+                    color: "transparent"
+
+                    RowLayout {
+
+                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                        y: Cell.centerHCell(implicitHeight, parent.implicitHeight)
+
+                        spacing: 0
+
+                        CellText {
+                            text: "Computing transaction"
+                        }
+
+                        CellLoading {
+                            style: 2
+                        }
+
+                    }
+
+                }
+
+                // Pre-flight
+                ColumnLayout {
+
+                    visible: (
+                        root.pacmanState == "pre-flight"
+                        || root.pacmanState == "authentication"
+                    )
+
+                    spacing: 0
+
+                    CellScrollView {
+
+                        w: box.contentW
+                        h: box.contentH - list.h - 12
+
+                        source: ColumnLayout {
+
+                            id: preflight
+
+                            spacing: 0
+
+                            property var installPlan: PacmanInfo.installPlan
+                            property var installTarget: PacmanInfo.packages.find(item => item.name == PacmanInfo.installTarget)
+
+                            CellText {
+                                Layout.leftMargin: Cell.w(1)
+                                text: "To Install:"
+                                font: Cell.fontB
+                                color: Colors.info
+                            }
+
+                            component ToInstall: RowLayout {
+
+                                property string name
+                                property color  name_color: Colors.fgBase
+                                property string version
+                                property string downloadSize
+                                property string installedSize
+
+                                property string prefix: "+"
+
+                                property int maxW: box.contentW
+
+                                spacing: Cell.w(1)
+
+                                CellText {
+
+                                    text: parent.prefix
+                                    color: Colors.fgSubtle
+
+                                }
+
+                                CellText {
+
+                                    text: parent.name
+                                    preferedW: parent.maxW - 32 - parent.version.length
+                                    color: parent.name_color
+
+                                }
+
+                                CellText {
+
+                                    text: parent.version
+                                    color: Colors.fgSubtle
+
+                                }
+
+                                CellText {
+
+                                    text: parent.downloadSize
+                                    color: Colors.info
+                                    preferedW: 11
+                                    alignRight: true
+
+                                }
+
+                                CellText {
+
+                                    text: "->"
+                                    color: Colors.fgSubtle
+
+                                }
+
+                                CellText {
+
+                                    text: parent.installedSize
+                                    color: Colors.success
+                                    preferedW: 11
+                                    alignRight: true
+
+                                }
+
+                            }
+
+                            ToInstall {
+
+                                Layout.leftMargin: Cell.w(2)
+
+                                maxW: box.contentW - 2
+                                prefix: "*"
+
+                                name: parent.installTarget.name
+                                version: parent.installTarget.version
+                                downloadSize: parent.installTarget.download_size
+                                installedSize: parent.installTarget.installed_size
+
+                            }
+
+                            ColumnLayout {
+
+                                id: preflight_dep
+
+                                spacing: 0
+
+                                property int collapseThreshold: 3
+
+                                property int maxShown: collapseThreshold 
+                                property int maxItems: preflight.installPlan.toInstall.length
+                                property var shownItems: preflight.installPlan.toInstall.filter(item => !item.isTarget).slice(0, maxShown)
+
+                                Repeater {
+
+                                    model: parent.shownItems
+
+                                    delegate: ToInstall {
+
+                                        Layout.leftMargin: Cell.w(4)
+
+                                        maxW: box.contentW - 4
+
+                                        required property var modelData
+
+                                        name: modelData.name
+                                        version: modelData.version
+                                        downloadSize: modelData.downloadSize
+                                        installedSize: modelData.installedSize
+
+                                    }
+
+                                }
+
+                                RowLayout {
+
+                                    Layout.leftMargin: Cell.w(4)
+
+                                    spacing: Cell.w(1)
+
+                                    CellButton {
+
+                                        visible: preflight_dep.maxShown < preflight_dep.maxItems
+
+                                        padding: 0
+                                        text: "[+ " + (preflight_dep.maxItems - preflight_dep.maxShown) + " more]"
+                                        color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
+                                        fg: Colors.info
+
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                preflight_dep.maxShown = Math.min(preflight_dep.maxShown+5,preflight_dep.maxItems)
+                                            }
+                                        }
+
+                                    }
+
+                                    CellButton {
+
+                                        visible: preflight_dep.maxShown < preflight_dep.maxItems && preflight_dep.maxShown > preflight_dep.collapseThreshold
+
+                                        padding: 0
+                                        text: "[Show all ("+preflight_dep.maxItems+")]"
+                                        color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
+                                        fg: Colors.info
+
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                preflight_dep.maxShown = preflight_dep.maxItems
+                                            }
+                                        }
+
+                                    }
+
+                                    CellButton {
+
+                                        visible: preflight_dep.maxShown == preflight_dep.maxItems
+
+                                        padding: 0
+                                        text: "[Show less]"
+                                        color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
+                                        fg: Colors.info
+
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                preflight_dep.maxShown = preflight_dep.collapseThreshold
+                                            }
+                                        }
+
+                                    }
+
+                                }
+
+
+                            }
+
+                            CellSeparator {
+                                visible: preflight.installPlan.willReplace.length > 0
+                                w: box.contentW - 1
+                                color: Colors.bgOverlay
+                            }
+
+                            CellText {
+                                visible: preflight.installPlan.willReplace.filter(item => !item.installed).length > 0
+                                Layout.leftMargin: Cell.w(1)
+                                text: "Replaces:"
+                                font: Cell.fontB
+                                color: Colors.blend(Colors.warning,Colors.fgBase, 0.5)
+                            }
+
+                            ColumnLayout {
+
+                                visible: datas.length > 0
+
+                                spacing: 0
+
+                                property var datas: preflight.installPlan.willReplace.filter(item => !item.installed)
+
+                                Repeater {
+
+                                    model: parent.datas
+
+                                    delegate: ToInstall {
+
+                                        Layout.leftMargin: Cell.w(2)
+
+                                        required property var modelData
+
+                                        maxW: box.contentW - 2
+
+                                        prefix: "-"
+
+                                        name: modelData.name
+                                        version: modelData.version
+                                        downloadSize: "-"
+                                        installedSize: "-"
+
+                                    }
+
+                                }
+
+                            }
+
+                            CellSeparator {
+                                visible: preflight.installPlan.conflictsWith.length > 0
+                                w: box.contentW - 1
+                                color: Colors.bgOverlay
+                            }
+
+                            CellText {
+                                visible: preflight.installPlan.conflictsWith.length > 0
+                                Layout.leftMargin: Cell.w(1)
+                                text: "Conflicts with:"
+                                font: Cell.fontB
+                                color: Colors.danger
+                            }
+
+                            ColumnLayout {
+
+                                visible: preflight.installPlan.conflictsWith.length > 0
+
+                                spacing: 0
+
+                                Repeater {
+
+                                    model: preflight.installPlan.conflictsWith
+
+                                    delegate: ToInstall {
+
+                                        Layout.leftMargin: Cell.w(2)
+
+                                        required property var modelData
+
+                                        maxW: box.contentW - 2
+
+                                        prefix: "-"
+
+                                        name: modelData.name
+                                        name_color: Colors.danger
+                                        version: modelData.version
+                                        downloadSize: "-"
+                                        installedSize: "-"
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                    CellSeparator {
+                        w: box.contentW
+                        color: Colors.accentDim
+                    }
+
+                    RowLayout {
+
+                        Layout.leftMargin: Cell.w(1)
+
+                        spacing: 0
+
+                        CellText {
+                            text: "Total download size     : "
+                            color: Colors.fgSubtle
+                        }
+
+                        CellText {
+                            text: PacmanInfo.installPlan.totalDownload
+                            color: Colors.info
+                            font: Cell.fontB
+                            alignRight: true
+                        }
+
+                    }
+
+                    RowLayout {
+
+                        Layout.leftMargin: Cell.w(1)
+
+                        spacing: 0
+
+                        CellText {
+                            text: "Total installation size : "
+                            color: Colors.fgSubtle
+                        }
+
+                        CellText {
+                            text: PacmanInfo.installPlan.totalInstalled
+                            color: Colors.success
+                            font: Cell.fontB
+                            alignRight: true
+                        }
+
+                    }
+
+
+                }
+
+                // Separator for footer
                 CellSeparator {
                     w: box.contentW
                     color: Colors.accentStrong
                 }
 
-                RowLayout {
+                // Footer
+                Cells {
 
-                    Layout.alignment: Qt.AlignRight
-                    Layout.rightMargin: Cell.w(1)
+                    w: box.contentW
+                    h: 1
 
-                    spacing: 0
+                    color: "transparent"
 
-                    CellButton {
+                    RowLayout {
 
-                        text: PacmanInfo.isInstalled(list.selected_pkg) ? "Uninstall" : "Install"
+                        x: Cell.w(1)
 
-                        clickable: list.selected_pkg != ""
+                        spacing: Cell.w(1)
 
-                        color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                        fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+                        CellButton {
+
+                            text: "Check Updates"
+
+                            clickable: !PacmanInfo.fetching && !PacmanInfo.checking_updates
+
+                            color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    PacmanInfo.check_updates()
+                                }
+                            }
+
+                        }
+
+                        CellButton {
+
+                            text: "Refresh"
+
+                            clickable: !PacmanInfo.fetching && !PacmanInfo.checking_updates
+
+                            color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    PacmanInfo.fetch()
+                                }
+                            }
+
+                        }
+
+                    }
+
+                    RowLayout {
+
+                        anchors.right: parent.right
+                        anchors.rightMargin: Cell.w(1)
+
+                        spacing: Cell.w(1)
+
+                        CellButton {
+
+                            text: PacmanInfo.isInstalled(list.selected_pkg) ? "Uninstall" : "Install"
+
+                            clickable: list.selected_pkg != ""
+
+                            color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    PacmanInfo.requestInstallation(list.selected_pkg)
+                                }
+                            }
+
+                        }
 
                     }
 

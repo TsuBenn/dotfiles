@@ -259,6 +259,8 @@ Singleton {
 
                 }
 
+                // console.log(JSON.stringify(streams,null,2))
+
                 root.streams = streams
                 root.streamraw = text
             }

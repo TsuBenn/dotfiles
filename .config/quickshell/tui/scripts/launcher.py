@@ -23,26 +23,19 @@ Tags (single characters, case-sensitive):
 Regex mode
 ----------
 
-If the query starts with `re:`, the rest of the line is treated as a
-Python regex pattern. Matches use re.search (substring match). Use
-^...$ for exact-match semantics. Flags can be embedded inline:
-    re:(?i)firefox       case-insensitive
-    re:^fire             name starts with "fire"
-    re:chrome|firefox    name contains "chrome" or "firefox"
-    re:\\.py$             name ends with ".py"
-
-Regex has a 50ms timeout per match attempt (SIGALRM). Catastrophic
-backtracking patterns will be treated as no-match, not crash.
+If the query starts with `re:`, the rest is treated as a Python regex.
+Use `re:^fire` for prefix match, `re:(?i)firefox` for case-insensitive,
+`re:chrome|firefox` for alternation.
 
 Output protocol
 ===============
 
-One JSON array per line on stdout, swallowed by Quickshell's SplitParser.
-File searches are async: when `h` is in tags, the script emits the
-apps+settings result immediately, then emits a second JSON line with
-the combined (apps+settings+files) result once the file search finishes.
-If the user types a new query before the in-flight file search finishes,
-the old search is cancelled via a generation counter.
+One JSON array per line on stdout. File searches are async — when `h`
+is in tags, the script emits the apps+settings result immediately,
+then emits a second JSON line with the combined result once the file
+search finishes. If the user types a new query before the in-flight
+file search finishes, the old search is cancelled via a generation
+counter.
 
 Refresh behavior
 ================
@@ -52,11 +45,6 @@ auto-refresh), the launcher re-emits the user's most recent search
 with the new data. This way the user doesn't have to retype to see
 updated results — they just wait a moment and the UI silently updates.
 
-If the user typed a new query while the refresh was running, the
-re-emit uses the NEW query (since _last_search is updated before each
-search runs). So the user always sees fresh data for whatever they're
-currently searching for.
-
 Concurrency model
 =================
 
@@ -65,11 +53,30 @@ Concurrency model
   requests, writes results to stdout. Between requests, checks if a
   refresh just finished and re-emits the last search if so.
 * Refresh thread: spawned by `r` tag (and once at startup). Runs `fd`
-  + app scan, atomically swaps the new data into place, then signals
-  the main thread to re-emit.
+  + app scan + icon index build, atomically swaps the new data into
+  place, then signals the main thread to re-emit.
 * File-search thread: spawned per query that includes `h`. Each search
   has a generation id; before printing, the worker checks that its
   generation is still current — if not, it discards silently.
+
+Icon cache
+==========
+
+The icon cache (icon_cache.json) has three layers, all built from
+.desktop files + filesystem icon files:
+
+    icons       — {icon_name: path} for every icon file on disk.
+                  Keys are file stems (e.g. "firefox", "spotify").
+
+    aliases.binary — {binary_name: icon_name} from .desktop Exec fields.
+                     Catches "google-chrome-stable" → "google-chrome",
+                     "zen-bin" → "zen", etc.
+
+    aliases.app — {lowercased_app_name: icon_name} from .desktop Name
+                  fields. Catches "Zen Browser" → "zen", etc.
+
+IconInfo.qml does layered lookup: direct → case-insensitive → alias →
+substring fallback. See IconInfo.qml for the lookup logic.
 
 Data caches
 ===========
@@ -529,7 +536,25 @@ def select_app(app_id: str) -> None:
 
 # ─── Icon resolution ─────────────────────────────────────────────────────────
 #
-# Build a single in-memory index of {icon_name: path} once at startup.
+# The icon cache has three layers, all built from .desktop files + the
+# filesystem icon files:
+#
+#   1. icons       — {icon_name: path} for every icon file on disk.
+#                    Keys are file stems (e.g. "firefox", "spotify").
+#
+#   2. aliases.binary — {binary_name: icon_name} from .desktop Exec fields.
+#                       Catches cases where the binary name doesn't match
+#                       the icon name (e.g. "google-chrome-stable" →
+#                       "google-chrome", "zen-bin" → "zen").
+#
+#   3. aliases.app — {lowercased_app_name: icon_name} from .desktop Name
+#                    fields. Catches queries that use the display name
+#                    (e.g. "zen browser" → "zen", "google chrome" →
+#                    "google-chrome").
+#
+# IconInfo.qml does layered lookup: direct → case-insensitive → alias →
+# substring fallback. See IconInfo.qml for the lookup logic.
+#
 # PNG is strongly preferred over SVG (QML's Image handles PNGs more
 # predictably — SVGs can render blurry or with wrong intrinsic sizes).
 # Within PNGs, the largest available size wins.
@@ -597,40 +622,162 @@ def build_icon_index() -> dict[str, str]:
     return index
 
 
-def save_icon_cache(index: dict[str, str]) -> None:
-    """Persist icon index for IconInfo.qml.
+def _extract_binary_from_exec(exec_clean: str) -> str:
+    """Extract the binary basename from a .desktop Exec field.
 
-    IconInfo.qml expects a LIST of {name, icon} objects (it uses
-    Array.prototype.find for lookups). We convert the in-memory dict
-    to that list shape on write.
+    Examples:
+      "firefox %u"            → "firefox"
+      "/usr/bin/code"         → "code"
+      "env GDK_BACKEND=wayland zen-bin %u" → "zen-bin"  (last token before %)
+      "google-chrome-stable"  → "google-chrome-stable"
+
+    We split on whitespace and take the first token that doesn't look
+    like an env var assignment (contains `=`) or a .desktop field code
+    (starts with `%`). If the token is a path, basename it.
     """
-    cache_list = [{"name": name, "icon": path} for name, path in index.items()]
+    if not exec_clean:
+        return ""
+    tokens = exec_clean.split()
+    for tok in tokens:
+        if not tok or tok.startswith("%"):
+            continue
+        if "=" in tok and not tok.startswith("/") and not tok.startswith("."):
+            # env var assignment like "GDK_BACKEND=wayland"
+            continue
+        # Strip quotes if present
+        tok = tok.strip("'\"")
+        # Basename if it's a path
+        return os.path.basename(tok)
+    return ""
+
+
+def build_icon_aliases(apps: list[dict]) -> tuple[dict[str, str], dict[str, str]]:
+    """Build (binary_aliases, app_aliases) from .desktop file metadata.
+
+    binary_aliases: {binary_name: icon_name}
+        Catches cases where the binary name doesn't match the icon name.
+        Example: "google-chrome-stable" → "google-chrome"
+
+    app_aliases: {lowercased_app_name: icon_name}
+        Catches queries that use the display name from a .desktop file.
+        Example: "zen browser" → "zen"
+
+    We only add aliases where the source name DIFFERS from the icon name
+    (case-insensitive) — redundant aliases would just bloat the cache
+    without adding value (the direct lookup already handles those cases).
+    """
+    binary_aliases: dict[str, str] = {}
+    app_aliases: dict[str, str] = {}
+
+    for app in apps:
+        icon_name = app.get("icon", "")
+        if not icon_name:
+            continue
+
+        icon_lower = icon_name.lower()
+
+        # ── Binary alias ──
+        binary = _extract_binary_from_exec(app.get("exec_clean", ""))
+        if binary and binary.lower() != icon_lower:
+            binary_aliases[binary] = icon_name
+
+        # ── App name alias ──
+        # Use the display Name from the .desktop file, lowercased.
+        # We don't strip spaces or punctuation — the fetcher lowercases
+        # the query too, so "Zen Browser" → "zen browser" matches.
+        name = app.get("name", "")
+        if name and name.lower() != icon_lower:
+            app_aliases[name.lower()] = icon_name
+
+        # ── Generic name alias (optional — catches alternate names) ──
+        # Some apps have a GenericName that users might query.
+        # e.g., GenericName="Web Browser" for firefox.
+        # Only add if it doesn't collide with existing aliases.
+        generic = app.get("genericName", "")
+        if generic and generic.lower() != icon_lower:
+            gkey = generic.lower()
+            if gkey not in app_aliases:
+                app_aliases[gkey] = icon_name
+
+    return binary_aliases, app_aliases
+
+
+def save_icon_cache(
+    icons: dict[str, str],
+    binary_aliases: dict[str, str],
+    app_aliases: dict[str, str],
+) -> None:
+    """Persist icon index + aliases for IconInfo.qml.
+
+    Cache file format (JSON):
+        {
+            "icons": { "firefox": "/usr/.../firefox.png", ... },
+            "aliases": {
+                "binary": { "google-chrome-stable": "google-chrome", ... },
+                "app":    { "zen browser": "zen", ... }
+            }
+        }
+
+    IconInfo.qml tolerates either this format or the old list format
+    ([{name, icon}, ...]) — see load_icon_cache below.
+    """
+    cache = {
+        "icons": icons,
+        "aliases": {
+            "binary": binary_aliases,
+            "app": app_aliases,
+        },
+    }
     tmp = ICON_CACHE_FILE.with_suffix(".json.tmp")
     with open(tmp, "w") as f:
-        json.dump(cache_list, f)
+        json.dump(cache, f)
     tmp.rename(ICON_CACHE_FILE)
 
 
-def load_icon_cache() -> dict[str, str]:
-    """Load icon_cache.json into a dict for O(1) in-memory lookups.
+def load_icon_cache() -> dict:
+    """Load icon_cache.json.
 
-    Tolerates either shape — old cache might be a list (which we
-    convert), new cache is also a list (per save_icon_cache above).
+    Returns a dict with keys: "icons", "binary_aliases", "app_aliases".
+    Tolerates either the new dict format or the old list format
+    (converted to the new shape with empty aliases).
     """
+    empty = {"icons": {}, "binary_aliases": {}, "app_aliases": {}}
     try:
         with open(ICON_CACHE_FILE) as f:
             data = json.load(f)
-        if isinstance(data, list):
-            return {
+    except (FileNotFoundError, json.JSONDecodeError):
+        return empty
+
+    # Old format: list of {name, icon} objects
+    if isinstance(data, list):
+        icons = {
+            item["name"]: item["icon"]
+            for item in data
+            if isinstance(item, dict) and "name" in item and "icon" in item
+        }
+        return {**empty, "icons": icons}
+
+    # New format: dict with icons + aliases
+    if isinstance(data, dict):
+        icons = data.get("icons", {})
+        aliases = data.get("aliases", {}) or {}
+        binary_aliases = aliases.get("binary", {}) or {}
+        app_aliases = aliases.get("app", {}) or {}
+        # Handle the case where "icons" is itself a list (shouldn't happen
+        # with the new format, but defensive)
+        if isinstance(icons, list):
+            icons = {
                 item["name"]: item["icon"]
-                for item in data
+                for item in icons
                 if isinstance(item, dict) and "name" in item and "icon" in item
             }
-        if isinstance(data, dict):
-            return data
-        return {}
-    except (FileNotFoundError, json.JSONDecodeError):
-        return {}
+        return {
+            "icons": icons if isinstance(icons, dict) else {},
+            "binary_aliases": binary_aliases if isinstance(binary_aliases, dict) else {},
+            "app_aliases": app_aliases if isinstance(app_aliases, dict) else {},
+        }
+
+    return empty
 
 
 # ─── Settings search ─────────────────────────────────────────────────────────
@@ -899,9 +1046,9 @@ def parse_input(raw: str) -> tuple[list[str], str, list[str]]:
 
 # ─── Background refresh ──────────────────────────────────────────────────────
 #
-# Builds new app list, icon index, and file path list in local variables,
-# then swaps them into the globals in one step. Readers see either the
-# old set or the new set, never a mix.
+# Builds new app list, icon index (+ binary/app aliases), and file path
+# list in local variables, then swaps them into the globals in one step.
+# Readers see either the old set or the new set, never a mix.
 #
 # After the swap, signals the main loop to re-emit the user's most
 # recent search so the UI picks up the new data without the user
@@ -916,7 +1063,13 @@ def refresh_background(initial: bool = False) -> None:
     # ── Apps + icons (CPU-bound, fast — ~200ms typical) ──
     new_apps = scan_apps()
     new_icon_index = build_icon_index()
-    save_icon_cache(new_icon_index)
+
+    # Build binary→icon and app→icon aliases from the .desktop files.
+    # This catches cases like "google-chrome-stable" → "google-chrome"
+    # and "Zen Browser" → "zen" that the icon file index alone misses.
+    new_binary_aliases, new_app_aliases = build_icon_aliases(new_apps)
+
+    save_icon_cache(new_icon_index, new_binary_aliases, new_app_aliases)
 
     # ── Files (slow — fd can take 5-30s on a big system) ──
     try:
@@ -934,7 +1087,10 @@ def refresh_background(initial: bool = False) -> None:
     elapsed = time.perf_counter() - start
     print(
         f"launcher: refresh done ({elapsed:.2f}s) "
-        f"— {len(apps)} apps, {len(icon_index)} icons, {len(file_paths)} files",
+        f"— {len(apps)} apps, {len(icon_index)} icons, "
+        f"{len(new_binary_aliases)} binary aliases, "
+        f"{len(new_app_aliases)} app aliases, "
+        f"{len(file_paths)} files",
         file=sys.stderr,
     )
 
@@ -957,7 +1113,13 @@ def initial_load() -> None:
     global apps, icon_index, file_paths, frequency
 
     frequency = load_frequency()
-    icon_index = load_icon_cache()
+
+    # Load the icon cache (icons + aliases). For in-memory lookups during
+    # search, we only need the icons dict — the aliases are used by
+    # IconInfo.qml, which reads the cache file directly.
+    icon_cache_data = load_icon_cache()
+    icon_index = icon_cache_data["icons"]
+
     apps = scan_apps()
     file_paths = load_file_cache()
     refresh_async(initial=True)
@@ -1102,9 +1264,18 @@ def _snapshot_and_handle(tags: list[str], query: str, paths: list[str]) -> None:
     a refresh-completion rerun fires, _last_search already reflects
     whatever the user's most recent query was — not the stale one
     from before the refresh.
+
+    Only search-type requests (a/s/h/c/t) are snapshotted for rerun.
+    Action tags (F/w/r) have side effects and would be wrong to
+    re-execute on refresh completion.
     """
-    with _last_search_lock:
-        _last_search = (tags, query, paths)
+    is_search = (
+        any(t in "ahcst" for t in tags)
+        and not any(t in "Fwr" for t in tags)
+    )
+    if is_search:
+        with _last_search_lock:
+            _last_search = (tags, query, paths)
     handle_request(tags, query, paths)
 
 
