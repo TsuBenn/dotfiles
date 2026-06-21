@@ -66,6 +66,7 @@ Singleton {
         // Execution trigger fix: run even if it's JUST a copy operation
         if (save || copy) {
             SystemInfo.runDetached(command);
+            /*
             NotificationsInfo.send(
                 "SCREENSHOTS", "",
                 "Screenshot " + (save ? (copy ? "saved and copied" : "saved") : "copied"),
@@ -73,6 +74,7 @@ Singleton {
                 0, false,
                 save ? "dolphin --select " + path : "echo Copied"
             )
+            */
         }
     }
 

@@ -160,6 +160,13 @@ SETTINGS = [
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_auto_light_mode"],
             },
             {
+                "label": "{screenshotNotify} Screenshot notification",
+                "description": "Send a notification when taking a screenshot.",
+                "category": "settings",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_screenshot_notify"],
+            },
+            {
                 "label": "{hints} Show hints",
                 "description": "Show key binds for navigating menus.",
                 "category": "settings",

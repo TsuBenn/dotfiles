@@ -48,7 +48,7 @@ Singleton {
         "totalDownload": "",
         "totalInstalled": "",
     }
-    property var installLog: []
+    property string installLog: ""
     property string pendingPrompt: ""
     property int installExitCode: 0
 
@@ -65,7 +65,7 @@ Singleton {
             "totalDownload": "",
             "totalInstalled": "",
         }
-        installLog = []
+        installLog = ""
         pendingPrompt = ""
         installer.running = false
     }
@@ -100,6 +100,7 @@ Singleton {
         ScriptAction {
             script: {
                 root.pacmanState = "success"
+                fetch()
             }
         }
         PauseAnimation {
@@ -137,7 +138,7 @@ Singleton {
             splitMarker: ""
             onRead: (text) => {
                 console.log(text)
-                root.installLog.push(text)
+                root.installLog += text
             }
         }
 

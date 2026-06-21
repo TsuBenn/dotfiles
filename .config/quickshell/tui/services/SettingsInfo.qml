@@ -63,6 +63,7 @@ Singleton {
     property bool bgCava                       : true  // Run cava on top of the wallpaper
     property bool bgCavaLock                   : false // Run cava on top of the wallpaper (lockscreen)
 
+    property bool screenshotNotify             : false // Send a notification when taking a screenshot
     property bool screenshotStay               : false // Keep the screenshot buffer after screenshotting
     property bool screenshotCursor             : true  // Capture cursor
 
@@ -92,6 +93,7 @@ Singleton {
         "bgCava",
         "bgCavaLock",
         "screenshotStay",
+        "screenshotNotify",
         "screenshotCursor",
         "lockScreenMusic",
         "sfx",
@@ -241,6 +243,7 @@ Singleton {
         function toggle_appearance(): void              { root.iterateAppearance() }
         function toggle_shadow(): void                  { root.toggle("shadow") }
         function toggle_quickstart(): void              { root.toggle("quickStart") }
+        function toggle_screenshot_notify(): void       { root.toggle("screenshotNotify") }
         function toggle_wallpaper_auto_advance(): void  { root.toggle("wallpaperAutoAdvance") }
 
         function lock_screen(): void               { SystemInfo.lock() }

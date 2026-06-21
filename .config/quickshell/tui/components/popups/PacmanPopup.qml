@@ -1407,6 +1407,53 @@ CellPopup {
 
                 }
 
+                // Installation screen
+                CellScrollView {
+
+                    id: install_log
+
+                    visible: (
+                        root.pacmanState == "installing"
+                        || root.pacmanState == "success"
+                        || root.pacmanState == "failed"
+                    )
+
+                    w: box.contentW
+                    h: box.contentH - 4
+
+                    source: CellText {
+
+                        preferedW: install_log.contentW
+                        preferedH: install_log.h
+
+                        text: PacmanInfo.installLog
+                        wrap: true
+                        
+                    }
+
+                    Cells {
+
+                        id: install_footer
+
+                        anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+
+                        ColumnLayout {
+
+                            spacing: 0
+
+                            CellSeparator {
+                                w: box.contentW
+                                color: Colors.accentDim
+                            }
+
+                        }
+
+                    }
+
+                }
+
                 // Separator for footer
                 CellSeparator {
                     w: box.contentW
@@ -1421,6 +1468,7 @@ CellPopup {
 
                     color: "transparent"
 
+                    // Check updates and fetching
                     RowLayout {
 
                         visible: (
@@ -1470,6 +1518,7 @@ CellPopup {
 
                     }
 
+                    // Install
                     RowLayout {
 
                         visible: (
@@ -1495,7 +1544,7 @@ CellPopup {
 
                             onReleased: (button) => {
                                 if (button == "L") {
-                                    PacmanInfo.requestInstallation(list.selected_pkg)
+                                    PacmanInfo.requestInstallation(info.deps.length > 0 ? info.deps[info.deps.length-1] : list.selected_pkg)
                                 }
                             }
 
@@ -1503,6 +1552,7 @@ CellPopup {
 
                     }
 
+                    // Installation confirmation
                     RowLayout {
 
                         visible: (
