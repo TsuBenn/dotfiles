@@ -31,16 +31,15 @@ Cells {
 
     property bool snapToMax: false
 
-    property bool snappingToMax: false
-
     onOffsetChanged: {
-        if (offset == maxOffset) {
-            snappingToMax = true
-        } else {
-            snappingToMax = false
-        }
         if ((offset > maxOffset || offset < 0) && maxOffset > 0) {
             snapBack()
+        }
+    }
+
+    onMaxOffsetChanged: {
+        if (snapToMax) {
+            maximizeScroll()
         }
     }
 
@@ -98,9 +97,6 @@ Cells {
         spacing: 0
 
         onContentHeightChanged: {
-            if (root.snapToMax && root.snappingToMax) {
-                root.offset = root.maxOffset
-            }
             root.snapBack()
         }
 

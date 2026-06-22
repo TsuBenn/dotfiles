@@ -59,6 +59,16 @@ CellPopup {
             action: () => {
                 PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%4
             }
+        },
+        {
+            binds: "Ctrl+R",
+            action: () => {
+                if (
+                    root.pacmanState == "idle"
+                ) {
+                    PacmanInfo.fetch()
+                }
+            }
         }
     ]
 
@@ -1166,10 +1176,10 @@ CellPopup {
                                 maxW: box.contentW - 2
                                 prefix: "*"
 
-                                name: parent.installTarget.name
-                                version: parent.installTarget.version
-                                downloadSize: parent.installTarget.downloadSize
-                                installedSize: parent.installTarget.installedSize
+                                name: parent.installTarget?.name ?? ""
+                                version: parent.installTarget?.version ?? ""
+                                downloadSize: parent.installTarget?.downloadSize ?? ""
+                                installedSize: parent.installTarget?.installedSize ?? ""
 
                             }
 
@@ -1437,13 +1447,31 @@ CellPopup {
 
                         source: CellText {
 
+                            id: install_log_text
+
                             preferedW: install_log.contentW - 2
 
-                            text: PacmanInfo.installLog
+                            text: ""
                             wrap: true
 
-                        }
+                            Timer {
+                                id: install_log_delay
+                                interval: SettingsInfo.frameTime
+                                onTriggered: {
+                                    install_log_text.text = PacmanInfo.installLog.replace(/^\n/,"").replace(/\n$/,"")
+                                }
+                            }
 
+                            Connections {
+                                target: PacmanInfo
+                                function onInstallLogChanged() {
+                                    if (install_log_delay.running) return
+                                    // console.log(PacmanInfo.installLog.replace(/^\n/,"").replace(/\n$/,""))
+                                    install_log_delay.restart()
+                                }
+                            }
+
+                        }
 
                     }
 

@@ -12570,13 +12570,31 @@ CellPopup {
 
                         source: CellText {
 
+                            id: install_log_text
+
                             preferedW: install_log.contentW - 2
 
-                            text: PacmanInfo.installLog
+                            text: ""
                             wrap: true
 
-                        }
+                            Timer {
+                                id: install_log_delay
+                                interval: SettingsInfo.frameTime
+                                onTriggered: {
+                                    install_log_text.text = PacmanInfo.installLog.replace(/^\n/g,"").replace(/\n$/g,"")
+                                }
+                            }
 
+                            Connections {
+                                target: PacmanInfo
+                                function onInstallLogChanged() {
+                                    if (install_log_delay.running) return
+                                    console.log(PacmanInfo.installLog)
+                                    install_log_delay.restart()
+                                }
+                            }
+
+                        }
 
                     }
 
@@ -21039,16 +21057,15 @@ Cells {
 
     property bool snapToMax: false
 
-    property bool snappingToMax: false
-
     onOffsetChanged: {
-        if (offset == maxOffset) {
-            snappingToMax = true
-        } else {
-            snappingToMax = false
-        }
         if ((offset > maxOffset || offset < 0) && maxOffset > 0) {
             snapBack()
+        }
+    }
+
+    onMaxOffsetChanged: {
+        if (snapToMax) {
+            maximizeScroll()
         }
     }
 
@@ -21106,9 +21123,6 @@ Cells {
         spacing: 0
 
         onContentHeightChanged: {
-            if (root.snapToMax && root.snappingToMax) {
-                root.offset = root.maxOffset
-            }
             root.snapBack()
         }
 
@@ -129733,7 +129747,7 @@ Singleton {
 
     function cancelInstallation() {
         if (installer.running) {
-            installer.running = false
+            installer.signal(2)
             pacmanState = "cancel"
             return
         }
@@ -129787,83 +129801,27 @@ Singleton {
         return clean;
     }
 
-    // ── Internal log state ──
-    // Line-based model instead of one giant string. Each line is built
-    // independently (O(line_length) per line, not O(total_log)).
-    property var _logLines: []            // committed lines
-    property string _logCurrentLine: ""   // line being built (for \r overwrite)
-    property int _logCursor: 0            // cursor within current line
-    property bool _logDirty: false
-
-    // Batch UI updates at 20fps. Pacman can emit hundreds of lines per
-    // second during downloads — without batching, each char triggers a
-    // property change + UI re-render, freezing the shell.
-    Timer {
-        id: _logFlushTimer
-        interval: 50
-        repeat: false
-        onTriggered: {
-            if (!_logDirty) return
-            let all = _logLines.slice()
-            if (_logCurrentLine.length > 0) all.push(_logCurrentLine)
-            // Ring buffer: cap at 200 lines, drop oldest
-            while (all.length > 200) all.shift()
-            installLog = all.join("\n")
-            _logDirty = false
-        }
-    }
-
     function appendLog(text: string) {
-        let sanitized = sanitizeTerminalOutput(text)
-
-        // Split by \r and \n, KEEPING the delimiters as separate elements.
-        // This lets us process whole text segments at once instead of
-        // character by character.
-        //
-        // Example: "abc\rXYZ\n123" → ["abc", "\r", "XYZ", "\n", "123"]
-        let segments = sanitized.split(/([\r\n])/)
-
-        for (let i = 0; i < segments.length; i++) {
-            let seg = segments[i]
-
-            if (seg === "\r") {
-                _logCursor = 0
-
-            } else if (seg === "\n") {
-                _logLines.push(_logCurrentLine)
-                _logCurrentLine = ""
-                _logCursor = 0
-
-            } else if (seg.length > 0) {
-                if (_logCursor === 0 && _logCurrentLine.length > 0) {
-                    // ── Overwrite from beginning (common after \r) ──
-                    // pacman's progress bars do \r + full line redraw.
-                    // The segment either fully replaces the line or
-                    // partially overwrites (if shorter than current line).
-                    if (seg.length >= _logCurrentLine.length) {
-                        _logCurrentLine = seg
-                    } else {
-                        _logCurrentLine = seg + _logCurrentLine.substring(seg.length)
-                    }
-                    _logCursor = seg.length
-
-                } else if (_logCursor >= _logCurrentLine.length) {
-                    // ── Simple append (most common — no \r involved) ──
-                    _logCurrentLine += seg
-                    _logCursor += seg.length
-
-                } else {
-                    // ── Overwrite from middle (rare) ──
-                    let before = _logCurrentLine.substring(0, _logCursor)
-                    let after = _logCurrentLine.substring(_logCursor + seg.length)
-                    _logCurrentLine = before + seg + after
-                    _logCursor += seg.length
-                }
+        let new_text = text
+        for (const c of new_text) {
+            if (c == "\r") {
+                installLogCursor = installLogLastNewline
+                continue
             }
+            if (c == "\n") {
+                installLogLastNewline = installLog.length + 1
+                installLogCursor = installLog.length + 1
+                installLog += c
+                continue
+            }
+            if (installLogCursor < installLog.length) {
+                installLog = installLog.slice(0, installLogCursor) + c + installLog.slice(installLogCursor+1)
+                installLogCursor++
+                continue
+            }
+            installLog += c
+            installLogCursor++
         }
-
-        _logDirty = true
-        _logFlushTimer.restart()
     }
 
     Process {
@@ -129890,8 +129848,6 @@ Singleton {
         stdout: SplitParser {
             splitMarker: ""
             onRead: (text) => {
-                //console.log("\n"+JSON.stringify(text))
-                //root.installLog += sanitizeTerminalOutput(text)
                 root.appendLog(text)
             }
         }
