@@ -57,6 +57,7 @@ Scope {
                     root.shield = false
                 })
                 ContextMenuManager.opened.connect((name) => {
+                    HintManager.hide()
                     root.shield = true
                 })
                 ContextMenuManager.closed.connect((name) => {
@@ -484,6 +485,7 @@ Scope {
                             ContextMenuManager.hide()
                             DropdownManager.hide()
                         }
+
                     }
 
                     CellDropdownMenu {

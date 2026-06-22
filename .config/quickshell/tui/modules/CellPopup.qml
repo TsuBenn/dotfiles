@@ -93,6 +93,12 @@ Item {
 
     MouseControl {
 
+        visible: (
+            !ContextMenuManager.visible
+            && !DropdownManager.visible
+            && !HintManager.visible
+        )
+
         anchors.fill: parent
 
         anchors.leftMargin: -root.monitor?.width ?? 0

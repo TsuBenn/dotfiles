@@ -200,6 +200,7 @@ services/
 dependencies.txt
 plan.md
 shell.qml
+typescript
 ```
 
 # Files
@@ -265,6 +266,7 @@ Scope {
                     root.shield = false
                 })
                 ContextMenuManager.opened.connect((name) => {
+                    HintManager.hide()
                     root.shield = true
                 })
                 ContextMenuManager.closed.connect((name) => {
@@ -692,6 +694,7 @@ Scope {
                             ContextMenuManager.hide()
                             DropdownManager.hide()
                         }
+
                     }
 
                     CellDropdownMenu {
@@ -1726,7 +1729,7 @@ Cells {
             } else if (button == "R") {
                 if (PopupManager.isOpen("system")) PopupManager.close("system")
                 HintManager.hint = hint
-                HintManager.show(global.x, global.y, 4, "", 1000)
+                HintManager.show(global.x, global.y, 4, "", 0)
             }
         }
 
@@ -3019,6 +3022,8 @@ ColumnLayout {
 
             clickable: !SystemInfo.wifi.ethernet
 
+            centered: false
+
             onReleased: (button) => {
                 if (button == "L") {
                     WifiInfo.toggle()
@@ -3146,6 +3151,8 @@ ColumnLayout {
 
             padding: 0
             text: " Bluetooth "
+
+            centered: false
 
             color: ["transparent", Colors.bgOverlay, Colors.fgBase]
             fg: [SystemInfo.bluetooth.enabled ? Colors.fgBase : Colors.fgDim, Colors.bgSurface]
@@ -4644,6 +4651,8 @@ ColumnLayout {
 
 ## File: components/popups/AuthPopup.qml
 ````
+pragma ComponentBehavior: Bound
+
 import qs.config
 import qs.modules
 import qs.services
@@ -4651,57 +4660,126 @@ import qs.services
 import QtQuick.Layouts
 import QtQuick
 
+// ─────────────────────────────────────────────────────────────────
+// AuthPopup — modal password dialog, driven by AuthInfo.
+//
+// AuthPopup is a passive UI component. It doesn't expose a public API
+// for callers — instead, it listens to signals from AuthInfo:
+//
+//   AuthInfo.prompted(prompt, description) → opens + shows prompt/desc
+//   AuthInfo.verifySucceeded()             → shows "success" briefly, closes
+//   AuthInfo.verifyFailed(reason)          → shows error, lets user retry
+//   AuthInfo.closed()                      → closes itself
+//
+// When the user submits a password, AuthPopup calls AuthInfo._check(password).
+// When the user cancels (Escape / Cancel button / click outside),
+// AuthPopup calls AuthInfo.cancel().
+//
+// Callers never touch AuthPopup directly. They call:
+//   AuthInfo.verify(prompt, description, callback)
+// and AuthInfo handles the rest.
+// ─────────────────────────────────────────────────────────────────
+
 CellPopup {
 
     id: root
 
-    property int id: 0
-    property string prompt: ""
+    // ── State driven by AuthInfo signals ──
+    property string prompt: "Authenticate"
     property string description: ""
-    property bool return_password: false
+
+    // No public API — driven entirely by AuthInfo signals.
+    // The popup opens when AuthInfo.prompted fires, closes when
+    // AuthInfo.closed fires.
 
     w: 40
     h: Cell.hCount(layout.implicitHeight) + 2
 
+    escapeToClose: true  // CellPopup binds Escape → PopupManager.sigClose → onSigClose()
 
-    Connections {
-        target: AuthInfo
-        function onPrompted(prompt: string, description: string, return_password: bool, id: int) {
-            root.id = id
-            root.prompt = prompt
-            root.description = description
-            PopupManager.open(root.name, false)
-        }
-        function onVerified(id) {
-            if (root.id == id) {
-                root.sendStatus("Authentication succeed!", Colors.success, Cell.fontB)
-                succeed.start()
-            } else {
-                root.sendStatus("Unmatched id signal received!", Colors.danger, Cell.fontB)
-                pwd_field.set("")
-            }
-        }
-        function onFailed() {
-            root.sendStatus("Authentication failed!", Colors.danger, Cell.fontB)
-            pwd_field.set("")
-        }
+    // ── Cancel paths ──
+    // Three ways the user can cancel from inside the popup:
+    //   1. Press Escape (CellPopup's built-in escapeToClose → sigClose → onSigClose)
+    //   2. Click the Cancel button
+    //   3. Click outside the popup (marginsPressed from CellPopup)
+    // All three call AuthInfo.cancel(), which fires the pending
+    // callback with (false, "") and emits closed() to close this popup.
+
+    // Override CellPopup's onSigClose function. Called when Escape is
+    // pressed (via PopupManager.sigClose). We cancel the auth flow
+    // instead of just closing — AuthInfo.cancel() will emit closed()
+    // which triggers our onClosed handler to do the actual close.
+    function onSigClose() {
+        pwd_field.set("")
+        succeed_anim.stop()
+        status_reset.stop()
+        AuthInfo.cancel()
     }
 
-    function sendStatus(text: string, color = Colors.info,font = Cell.font) {
+    onMarginsPressed: {
+        AuthInfo.cancel()
+    }
+
+    // ── Listen to AuthInfo signals ──
+    Connections {
+        target: AuthInfo
+
+        function onPrompted(p: string, d: string) {
+            root.prompt = p
+            root.description = d
+            pwd_field.set("")
+            root._setStatus("Insert password for <b>" + SystemInfo.username + "</b>",
+            Colors.info, Cell.font)
+            PopupManager.open(root.name, false)
+            // Focus after the popup is visible
+            Qt.callLater(() => { pwd_field.forceActiveFocus() })
+        }
+
+        function onVerifySucceeded() {
+            root._setStatus("Authentication succeed!", Colors.success, Cell.fontB)
+            succeed_anim.restart()
+        }
+
+        function onVerifyFailed(reason: string) {
+            root._setStatus(reason || "Authentication failed!", Colors.danger, Cell.fontB)
+            pwd_field.set("")
+            Qt.callLater(() => { pwd_field.forceActiveFocus() })
+        }
+
+        function onClosed() {
+            root.close()
+        }
+
+    }
+
+    function _setStatus(text, color, font) {
         status.text = text
         status.color = color
-        status.font = font
+        status.font = font || Cell.font
         status_reset.restart()
     }
 
-    SequentialAnimation {
-        id: succeed
-        PauseAnimation {
-            duration: 1000
+    // ── Submit handler ──
+    function _submit(password) {
+        if (password.length === 0) {
+            _setStatus("Password field cannot be left empty!", Colors.warning)
+            return
         }
+        if (AuthInfo.checking) {
+            // PAM check already in flight — wait for it
+            return
+        }
+
+        _setStatus("Processing password...", Colors.info, Cell.font)
+        AuthInfo._check(password)
+    }
+
+    // ── Animations ──
+    SequentialAnimation {
+        id: succeed_anim
+        PauseAnimation { duration: 500 }
         ScriptAction {
             script: {
-                pwd_field.set("")
                 root.close()
             }
         }
@@ -4709,20 +4787,15 @@ CellPopup {
 
     SequentialAnimation {
         id: status_reset
-        PauseAnimation {
-            duration: 2000
-        }
+        PauseAnimation { duration: 2000 }
         ScriptAction {
             script: {
-                status.text = Qt.binding(()=>(AuthInfo.authenticating ? "Processing password..." : "Insert password for <b>" + SystemInfo.username + "</b>"))
-                status.color = Colors.info
-                status.font = Cell.font
+                if (root.visible && !AuthInfo.checking) {
+                    root._setStatus("Insert password for <b>" + SystemInfo.username + "</b>",
+                    Colors.info, Cell.font)
+                }
             }
         }
-    }
-
-    function onSigClose() {
-        AuthInfo.cancel()
     }
 
     Cells {
@@ -4743,6 +4816,7 @@ CellPopup {
 
                 spacing: 0
 
+                // ── Title ──
                 CellText {
 
                     id: title
@@ -4761,6 +4835,7 @@ CellPopup {
                     color: Colors.accentStrong
                 }
 
+                // ── Description (optional) ──
                 CellText {
 
                     id: context
@@ -4772,10 +4847,12 @@ CellPopup {
                     text: root.description
                     color: Colors.fgDim
                     preferedW: box.contentW - 2
+                    centered: true
                     wrap: true
 
                 }
 
+                // ── Password field ──
                 Cells {
 
                     w: box.contentW
@@ -4798,18 +4875,17 @@ CellPopup {
                             w: box.contentW - 4
                             h: 1
 
-                            disabled: AuthInfo.authenticating || succeed.running
+                            // Disable only while PAM is actively checking a
+                            // password. NOT disabled during the rest of the auth
+                            // session (user can retype to retry on failure).
+                            disabled: AuthInfo.checking || succeed_anim.running
 
                             hidden: true
 
                             placeholder: "Password"
 
                             onEntered: (input) => {
-                                if (input.length == 0) {
-                                    root.sendStatus("Password field cannot be left empty!", Colors.warning)
-                                    return
-                                }
-                                AuthInfo.verify(input, root.id)
+                                root._submit(input)
                             }
 
                         }
@@ -4818,12 +4894,14 @@ CellPopup {
 
                 }
 
+                // ── Status text ──
                 CellText {
+
+                    Layout.leftMargin: Cell.w(1)
 
                     id: status
 
-                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
-                    text: (AuthInfo.authenticating ? "Processing password..." : "Insert password for <b>" + SystemInfo.username + "</b>")
+                    text: "Insert password for <b>" + SystemInfo.username + "</b>"
                     color: Colors.info
                     preferedW: box.contentW - 2
                     wrap: true
@@ -4836,6 +4914,7 @@ CellPopup {
                     color: Colors.bgOverlay
                 }
 
+                // ── Buttons ──
                 RowLayout {
 
                     Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
@@ -4846,15 +4925,15 @@ CellPopup {
 
                         text: "Verify"
 
-                        clickable: pwd_field.text.length > 0 && !AuthInfo.authenticating
+                        clickable: pwd_field.text.length > 0 && !AuthInfo.checking && !succeed_anim.running
 
                         color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
                         fg:    clickable ? [Colors.onAccent, Colors.fgBase]        : Colors.fgSubtle
 
                         onReleased: (button) => {
                             if (button == "L") {
-                                if (AuthInfo.authenticating) return
-                                pwd_field.enter()
+                                if (AuthInfo.checking) return
+                                pwd_field.enter()  // triggers onEntered → _submit
                             }
                         }
 
@@ -4864,10 +4943,11 @@ CellPopup {
 
                         text: "Cancel"
 
-                        clickable: !AuthInfo.authenticating
+                        // Always clickable — user can cancel even mid-verify
+                        clickable: true
 
-                        color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
-                        fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+                        color: [Colors.bgOverlay, Colors.fgBase]
+                        fg:    [Colors.fgBase, Colors.bgSurface]
 
                         onReleased: (button) => {
                             if (button == "L") {
@@ -11064,10 +11144,10 @@ CellPopup {
 
     id: root
 
-    w: 80
+    w: 90
     h: 40
 
-    property string installState: PacmanInfo.installState
+    property string pacmanState: PacmanInfo.pacmanState
 
     onVisibleChanged: {
         list.selected_index = 0
@@ -11076,9 +11156,13 @@ CellPopup {
         list.reset()
     }
 
+    onPromoted: {
+        search_field.grabFocus()
+    }
+
     shortcuts: [
         {
-            binds: "Up",
+            binds: ["Up", "Shift+Tab"],
             action: () => {
                 if (list.selected_pkg == "") {
                     list.selected_pkg = list.datas[list.offset].name
@@ -11091,16 +11175,22 @@ CellPopup {
             }
         },
         {
-            binds: "Down",
+            binds: ["Down", "Tab"],
             action: () => {
                 if (list.selected_pkg == "") {
-                    list.selected_pkg = list.datas[list.offset+list.h-1].name
+                    list.selected_pkg = list.datas[list.offset].name
                     return
                 }
                 if (list.selected_index+1 >= list.h) {
                     list.offset += list.h
                 }
                 list.selected_pkg = list.datas[list.offset + (list.selected_index+list.h+1)%list.h].name
+            }
+        },
+        {
+            binds: "Ctrl+S",
+            action: () => {
+                PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%4
             }
         }
     ]
@@ -11123,6 +11213,7 @@ CellPopup {
 
                 spacing: 0
 
+                // Header
                 RowLayout {
 
                     Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
@@ -11130,7 +11221,7 @@ CellPopup {
                     spacing: 0
 
                     CellText {
-                        text: "PACMAN"
+                        text: "PACMAN " + root.pacmanState
                         color: Colors.secondary
                         font: Cell.fontBB
                     }
@@ -11152,18 +11243,22 @@ CellPopup {
 
                 }
 
+                // Separator for header
                 CellSeparator {
                     w: box.contentW
                     color: Colors.accentStrong
                 }
 
+                // Package list
                 CellScrollView {
 
                     visible: (
-                        root.installState == "idle"
-                        || root.installState == "prepare"
-                        || root.installState == "pre-flight"
-                        || root.installState == "authentication"
+                        root.pacmanState == "idle"
+                        || root.pacmanState == "prepare"
+                        || root.pacmanState == "pre-flight"
+                        || root.pacmanState == "authentication"
+                        || root.pacmanState == "checking_updates"
+                        || root.pacmanState == "fetching"
                     )
 
                     id: list
@@ -11204,12 +11299,14 @@ CellPopup {
                                 property bool installed: modelData.installed
                                 property bool update_available: pkg.latest_version != ""
 
-                                property bool selected: list.selected_pkg == name
+                                property bool selected: list.selected_pkg == name && !disabled
+
+                                property bool disabled: PacmanInfo.fetching || PacmanInfo.checking_updates
 
                                 w: list.contentW
                                 h: 1
 
-                                color: selected ? Colors.accentStrong : (pkg_mouse.hovered ? Colors.bgOverlay : "transparent")
+                                color: (selected ? Colors.accentStrong : (pkg_mouse.hovered ? Colors.bgOverlay : "transparent"))
 
                                 onSelectedChanged: {
                                     if (selected) {
@@ -11225,14 +11322,14 @@ CellPopup {
 
                                     CellText {
                                         text: pkg.installed ? "*" : " "
-                                        color: pkg.selected ? Colors.onAccent : Colors.success
+                                        color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.success)
                                         font: Cell.fontB
                                     }
 
                                     CellText {
                                         text: pkg.name
                                         preferedW: list.contentW - 5 - pkg_version.w
-                                        color: pkg.selected ? Colors.onAccent : Colors.fgBase
+                                        color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgBase)
                                     }
 
                                     RowLayout {
@@ -11246,29 +11343,29 @@ CellPopup {
 
                                         CellText {
                                             text: "("
-                                            color: pkg.selected ? Colors.onAccent : Colors.fgSubtle
+                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
                                         }
 
                                         CellText {
                                             text: pkg.version
-                                            color: pkg.selected ? Colors.onAccent : (pkg.update_available ? Colors.blend(Colors.fgSubtle,Colors.danger,0.5) : Colors.fgSubtle)
+                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : (pkg.update_available ? Colors.blend(Colors.fgSubtle,Colors.danger,0.5) : Colors.fgSubtle))
                                         }
 
                                         CellText {
                                             visible: pkg.update_available
                                             text: " -> "
-                                            color: pkg.selected ? Colors.onAccent : Colors.fgSubtle
+                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
                                         }
 
                                         CellText {
                                             visible: pkg.update_available
                                             text: pkg.latest_version
-                                            color: pkg.selected ? Colors.onAccent : Colors.success
+                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.success)
                                         }
 
                                         CellText {
                                             text: ")"
-                                            color: pkg.selected ? Colors.onAccent : Colors.fgSubtle
+                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
                                         }
 
                                     }
@@ -11278,6 +11375,8 @@ CellPopup {
                                 MouseControl {
 
                                     id: pkg_mouse
+
+                                    visible: !parent.disabled
 
                                     anchors.fill: parent
 
@@ -11301,13 +11400,16 @@ CellPopup {
 
                 }
 
+                // Search bar
                 Cells {
 
                     visible: (
-                        root.installState == "idle"
-                        || root.installState == "prepare"
-                        || root.installState == "pre-flight"
-                        || root.installState == "authentication"
+                        root.pacmanState == "idle"
+                        || root.pacmanState == "prepare"
+                        || root.pacmanState == "pre-flight"
+                        || root.pacmanState == "authentication"
+                        || root.pacmanState == "fetching"
+                        || root.pacmanState == "checking_updates"
                     )
 
                     w: box.contentW
@@ -11325,6 +11427,8 @@ CellPopup {
                             spacing: Cell.w(1)
 
                             CellTextField {
+
+                                id: search_field
 
                                 w: box.contentW - 30 - search_mode.text.length - 3*PacmanInfo.fetching
                                 h: 1
@@ -11356,7 +11460,7 @@ CellPopup {
 
                                 onReleased: (button) => {
                                     if (button == "L") {
-                                        PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%3
+                                        PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%4
                                     }
                                 }
 
@@ -11400,10 +11504,12 @@ CellPopup {
 
                 }
 
+                // Breadcrumbs
                 RowLayout {
 
                     visible: (
-                        root.installState == "idle"
+                        root.pacmanState == "idle"
+                        || root.pacmanState == "fetching"
                     )
 
                     Layout.leftMargin: {
@@ -11493,33 +11599,50 @@ CellPopup {
 
                 }
 
+                // Installing header
                 CellText {
                     Layout.leftMargin: Cell.centerWCell(implicitWidth,parent.implicitWidth)
 
                     visible: (
-                        root.installState == "prepare"
-                        || root.installState == "pre-flight"
-                        || root.installState == "authentication"
+                        root.pacmanState == "prepare"
+                        || root.pacmanState == "pre-flight"
+                        || root.pacmanState == "authentication"
                     )
                     text: "Installing <b>" + PacmanInfo.installTarget + "</b>"
                     color: Colors.secondary
                 }
 
+                // Check updates header
+                CellText {
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth,parent.implicitWidth)
+
+                    visible: (
+                        root.pacmanState == "checking_updates"
+                    )
+                    text: "Synchronizing packages database"
+                    color: Colors.secondary
+                }
+
+                // Separator for Breadcrumbs and Installing header
                 CellSeparator {
                     visible: (
-                        root.installState == "idle"
-                        || root.installState == "prepare"
-                        || root.installState == "pre-flight"
-                        || root.installState == "authentication"
+                        root.pacmanState == "idle"
+                        || root.pacmanState == "prepare"
+                        || root.pacmanState == "pre-flight"
+                        || root.pacmanState == "authentication"
+                        || root.pacmanState == "fetching"
+                        || root.pacmanState == "checking_updates"
                     )
                     w: box.contentW
                     color: Colors.accentStrong
                 }
 
+                // Info
                 CellScrollView {
 
                     visible: (
-                        root.installState == "idle"
+                        root.pacmanState == "idle"
+                        || root.pacmanState == "fetching"
                     )
 
                     id: info
@@ -12013,10 +12136,11 @@ CellPopup {
 
                 }
 
+                // Prepare for pre-flight
                 Cells {
 
                     visible: (
-                        root.installState == "prepare"
+                        root.pacmanState == "prepare"
                     )
 
                     w: box.contentW
@@ -12043,11 +12167,43 @@ CellPopup {
 
                 }
 
+                // Checking for updates
+                Cells {
+
+                    visible: (
+                        root.pacmanState == "checking_updates"
+                    )
+
+                    w: box.contentW
+                    h: box.contentH - list.h - 9
+
+                    color: "transparent"
+
+                    RowLayout {
+
+                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                        y: Cell.centerHCell(implicitHeight, parent.implicitHeight)
+
+                        spacing: 0
+
+                        CellText {
+                            text: "Checking for updates"
+                        }
+
+                        CellLoading {
+                            style: 2
+                        }
+
+                    }
+
+                }
+
+                // Pre-flight
                 ColumnLayout {
 
                     visible: (
-                        root.installState == "pre-flight"
-                        || root.installState == "authentication"
+                        root.pacmanState == "pre-flight"
+                        || root.pacmanState == "authentication"
                     )
 
                     spacing: 0
@@ -12064,7 +12220,7 @@ CellPopup {
                             spacing: 0
 
                             property var installPlan: PacmanInfo.installPlan
-                            property var installTarget: PacmanInfo.packages.find(item => item.name == PacmanInfo.installTarget)
+                            property var installTarget: preflight.installPlan.toInstall.find(item => item.isTarget)
 
                             CellText {
                                 Layout.leftMargin: Cell.w(1)
@@ -12145,8 +12301,8 @@ CellPopup {
 
                                 name: parent.installTarget.name
                                 version: parent.installTarget.version
-                                downloadSize: parent.installTarget.download_size
-                                installedSize: parent.installTarget.installed_size
+                                downloadSize: parent.installTarget.downloadSize
+                                installedSize: parent.installTarget.installedSize
 
                             }
 
@@ -12261,15 +12417,15 @@ CellPopup {
 
                             ColumnLayout {
 
-                                visible: preflight.installPlan.willReplace.length > 0
+                                visible: datas.length > 0
 
                                 spacing: 0
 
-                                property var data: preflight.installPlan.willReplace.filter(item => item.installed)
+                                property var datas: preflight.installPlan.willReplace.filter(item => !item.installed)
 
                                 Repeater {
 
-                                    model: preflight.installPlan.willReplace
+                                    model: parent.datas
 
                                     delegate: ToInstall {
 
@@ -12390,21 +12546,179 @@ CellPopup {
 
                 }
 
+                // Installation screen
+                ColumnLayout {
+
+                    visible: (
+                        root.pacmanState == "installing"
+                        || root.pacmanState == "success"
+                        || root.pacmanState == "failed"
+                    )
+
+                    spacing: 0
+
+                    CellScrollView {
+
+                        Layout.leftMargin: Cell.w(1)
+
+                        id: install_log
+
+                        w: box.contentW - 1
+                        h: box.contentH - 4 - (install_footer.h)
+
+                        snapToMax: true
+
+                        source: CellText {
+
+                            preferedW: install_log.contentW - 2
+
+                            text: PacmanInfo.installLog
+                            wrap: true
+
+                        }
+
+
+                    }
+
+                    Cells {
+
+                        id: install_footer
+
+                        w: box.contentW
+                        h: Cell.hCount(install_footer_content.implicitHeight)
+
+                        color: Colors.bgSurface
+
+                        ColumnLayout {
+
+                            id: install_footer_content
+
+                            spacing: 0
+
+                            CellSeparator {
+                                w: box.contentW
+                                color: Colors.accentDim
+                            }
+
+                            RowLayout {
+
+                                visible: root.pacmanState == "installing"
+
+                                Layout.leftMargin: Cell.centerWCell(implicitWidth,install_footer.implicitWidth)
+
+                                spacing: 0
+
+                                CellText {
+
+                                    text: " Installing <b>" + PacmanInfo.installTarget + "</b>"
+                                    color: Colors.info
+
+                                }
+
+                                CellLoading {
+                                    style: 2
+                                }
+
+                            }
+
+                            CellText {
+
+                                visible: root.pacmanState == "success"
+
+                                text: " Installation completed successfully!"
+                                color: Colors.success
+                                font: Cell.fontB
+
+                                preferedW: box.contentW
+                                centered: true
+
+                            }
+
+
+                        }
+
+                    }
+
+                }
+
+                // Separator for footer
                 CellSeparator {
                     w: box.contentW
                     color: Colors.accentStrong
                 }
 
-                RowLayout {
+                // Footer
+                Cells {
 
-                    Layout.alignment: Qt.AlignRight
-                    Layout.rightMargin: Cell.w(1)
+                    w: box.contentW
+                    h: 1
 
-                    spacing: Cell.w(1)
+                    color: "transparent"
 
+                    // Check updates and fetching
+                    RowLayout {
+
+                        visible: (
+                            root.pacmanState == "idle"
+                            || root.pacmanState == "prepare"
+                            || root.pacmanState == "fetching"
+                            || root.pacmanState == "checking_updates"
+                        )
+
+                        x: Cell.w(1)
+
+                        spacing: Cell.w(1)
+
+                        CellButton {
+
+                            text: "Check Updates"
+
+                            clickable: !PacmanInfo.fetching && !PacmanInfo.checking_updates
+
+                            color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    PacmanInfo.check_updates()
+                                }
+                            }
+
+                        }
+
+                        CellButton {
+
+                            text: "Refresh"
+
+                            clickable: !PacmanInfo.fetching && !PacmanInfo.checking_updates
+
+                            color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    PacmanInfo.fetch()
+                                }
+                            }
+
+                        }
+
+                    }
+
+                    // Install
                     CellButton {
 
-                        text: PacmanInfo.isInstalled(list.selected_pkg) ? "Uninstall" : "Install"
+                        visible: (
+                            root.pacmanState == "idle"
+                            || root.pacmanState == "prepare"
+                            || root.pacmanState == "fetching"
+                            || root.pacmanState == "checking_updates"
+                        ) && !PacmanInfo.isInstalled(list.selected_pkg)
+
+                        anchors.right: parent.right
+                        anchors.rightMargin: Cell.w(1)
+
+                        text: "Install"
 
                         clickable: list.selected_pkg != ""
 
@@ -12413,42 +12727,92 @@ CellPopup {
 
                         onReleased: (button) => {
                             if (button == "L") {
-                                PacmanInfo.requestInstallation(list.selected_pkg)
+                                PacmanInfo.requestInstallation(info.deps.length > 0 ? info.deps[info.deps.length-1] : list.selected_pkg)
                             }
                         }
 
                     }
 
+                    // Success
                     CellButton {
 
-                        text: "Refresh"
+                        visible: root.pacmanState == "success"
 
-                        clickable: !PacmanInfo.fetching
+                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
 
-                        color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                        fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
+                        text: "Return"
+
+                        color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
+                        fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
 
                         onReleased: (button) => {
                             if (button == "L") {
-                                PacmanInfo.fetch()
+                                PacmanInfo.cancelInstallation()
                             }
                         }
 
                     }
 
+                    // Cancel mid installation
                     CellButton {
 
-                        text: "Check Updates"
+                        visible: root.pacmanState == "installing"
 
-                        clickable: !PacmanInfo.fetching && !PacmanInfo.checking_updates
+                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
 
-                        color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                        fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
+                        text: "Cancel"
+
+                        color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
+                        fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
 
                         onReleased: (button) => {
                             if (button == "L") {
-                                PacmanInfo.check_updates()
+                                PacmanInfo.cancelInstallation()
                             }
+                        }
+
+                    }
+
+                    // Installation confirmation
+                    RowLayout {
+
+                        visible: (
+                            root.pacmanState == "pre-flight"
+                        )
+
+                        anchors.right: parent.right
+                        anchors.rightMargin: Cell.w(1)
+
+                        spacing: Cell.w(1)
+
+                        CellButton {
+
+                            text: "Confirm"
+
+                            color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    PacmanInfo.confirmInstallation()
+                                }
+                            }
+
+                        }
+
+                        CellButton {
+
+                            text: "Cancel"
+
+                            color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    PacmanInfo.cancelInstallation()
+                                }
+                            }
+
                         }
 
                     }
@@ -13187,24 +13551,23 @@ CellPopup {
             PopupManager.open("screenshot")
         })
         SettingsInfo.screenshotCursorChanged.connect(() => {
-            if (!root.visible) return
+            if (!HyprInfo.isCurrentMonitor(root.monitor.name)) return
             cache.source = ""
             cache.source = ScreenshotInfo.cache_path
         })
         PopupManager.signalSent.connect((id, sig) => {
-            if (!root.visible) return
+            if (!HyprInfo.isCurrentMonitor(root.monitor.name)) return
             if (id == "screenshot" && sig == "full") {
                 root.fullscreen = true
             }
             if (id == "screenshot" && sig == "full_now") {
                 if (snapAndCloseAnim.running) return
-                PopupManager.open("screenshot")
                 mask.visible = true
                 mouse.x1 = 0
                 mouse.y1 = 0
                 mouse.x2 = root.monitor.width
                 mouse.y2 = root.monitor.height
-                ScreenshotInfo.screenshot(0, 0, root.monitor.width, root.monitor.height)
+                root.screenshot()
                 snapAndCloseAnim.restart()
                 fullscreen = false
             }
@@ -13303,22 +13666,31 @@ CellPopup {
         {
             binds: "Ctrl+A",
             action: () => {
+                if (namer.visible) {
+                    namer_textfield.select_all()
+                    return
+                }
                 root.edit = true
                 full_select.restart()
             }
         },
         {
             binds: "Return",
-            active: root.edit && !namer.visible,
+            active: !namer.visible,
             action: () => {
-                if (snapAndCloseAnim.running) return
+                if (snapAndCloseAnim.running || !root.edit) return
                 root.screenshot()
                 stay.yes ? snapAnim.restart() : snapAndCloseAnim.restart()
             }
         },
         {
             binds: "C",
+            active: !namer.visible,
             action: () => {
+                if (namer.visible) {
+                    namer_textfield.type("c")
+                    return
+                }
                 SettingsInfo.toggle("screenshotCursor")
             }
         },
@@ -17747,20 +18119,20 @@ Singleton {
     property color borderActive
     property color borderInactive
 
-    // Behavior on bgBase {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on bgSurface {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on bgOverlay {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on fgBase {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on onAccent {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on fgDim {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on fgSubtle {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on accentStrong {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on accentDim {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on secondary {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on info {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on success {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on warning {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
-    // Behavior on danger {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on bgBase {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on bgSurface {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on bgOverlay {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on fgBase {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on onAccent {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on fgDim {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on fgSubtle {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on accentStrong {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on accentDim {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on secondary {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on info {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on success {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on warning {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on danger {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
     // Helpers
     function transparent(c, factor) {
@@ -17804,6 +18176,7 @@ Singleton {
     }
 
     property var colors: ({})
+    property var auto_colors: dummy
 
     property bool preferedLightMode: false
 
@@ -17844,7 +18217,7 @@ Singleton {
             //color_from_image.running = true
         })
         SettingsInfo.lightModeChanged.connect(() => {
-            color_from_image.running = true
+            // color_from_image.running = true
             load.running = true
         })
         root.preferedLightModeChanged.connect(() => {
@@ -17895,6 +18268,7 @@ Singleton {
                 data.name = "<b><i>Let me cook</i></b>"
                 data.description = "The shell will try it's best to find the best palette from the current wallpaper you're choosing"
                 root.colors["auto"] = data
+                root.auto_colors = data
                 root.colorsChanged()
                 root.apply()
                 // console.log(JSON.stringify(data, null, 2))
@@ -17942,7 +18316,9 @@ Singleton {
 
         stdout: StdioCollector {
             onStreamFinished: {
-                root.colors = JSON.parse(text)
+                let data = JSON.parse(text)
+                data["auto"] = root.auto_colors
+                root.colors = data
                 root.apply()
             }
         }
@@ -19837,6 +20213,12 @@ Item {
 
     MouseControl {
 
+        visible: (
+            !ContextMenuManager.visible
+            && !DropdownManager.visible
+            && !HintManager.visible
+        )
+
         anchors.fill: parent
 
         anchors.leftMargin: -root.monitor?.width ?? 0
@@ -20655,7 +21037,16 @@ Cells {
 
     readonly property int maxOffset: Math.floor(root.contentH/Cell.cellHeight)-root.h
 
+    property bool snapToMax: false
+
+    property bool snappingToMax: false
+
     onOffsetChanged: {
+        if (offset == maxOffset) {
+            snappingToMax = true
+        } else {
+            snappingToMax = false
+        }
         if ((offset > maxOffset || offset < 0) && maxOffset > 0) {
             snapBack()
         }
@@ -20663,6 +21054,10 @@ Cells {
 
     function snapBack() {
         offset = Math.max(Math.min(root.offset,maxOffset),0)
+    }
+
+    function maximizeScroll() {
+        offset = maxOffset
     }
 
     property bool keyNav: true
@@ -20711,7 +21106,10 @@ Cells {
         spacing: 0
 
         onContentHeightChanged: {
-            root.offset = Math.max(Math.min(root.offset,root.maxOffset),0)
+            if (root.snapToMax && root.snappingToMax) {
+                root.offset = root.maxOffset
+            }
+            root.snapBack()
         }
 
         model: 1
@@ -21246,6 +21644,16 @@ Item {
         }
 
         w = getMaxWidth(raw_text)
+
+        if (centered) {
+            const lines = raw_text.split("\n")
+            let new_lines = []
+            for (const line of lines) {
+                new_lines.push( " ".repeat( Math.max(Math.floor((w - purify(line.trim()).length)/2),0) ) + line.trim() )
+            }
+            raw_text = new_lines.join("\n")
+        }
+
         h = preferedH > 0 ? preferedH : raw_text.split("\n").length
 
         if (!pure) {
@@ -21570,9 +21978,7 @@ Item {
 
                 sourceComponent: ColumnLayout {
 
-                    x: if (root.centered) {
-                        return Cell.centerWCell(implicitWidth, cell_text.implicitWidth)
-                    } else if (root.alignRight) {
+                    x: if (root.alignRight) {
                         return cell_text.implicitWidth - implicitWidth
                     } else {
                         return 0
@@ -21655,9 +22061,7 @@ Item {
 
                 sourceComponent: Text {
 
-                    x: if (root.centered) {
-                        return Cell.centerWCell(implicitWidth, cell_text.implicitWidth)
-                    } else if (root.alignRight) {
+                    x: if (root.alignRight) {
                         return cell_text.implicitWidth - implicitWidth
                     } else {
                         return 0
@@ -30235,7 +30639,7 @@ if __name__ == "__main__":
 
 ## File: scripts/config.json
 ````json
-{"hints":true,"quickStart":true,"minimal":false,"textBasedVolume":false,"hideBar":false,"bottomBar":false,"optimizeMemory":true,"safeNotifications":false,"dnd":false,"wallpaperAutoAdvance":false,"shadow":true,"hyprAnim":true,"hyprBlur":false,"bgCava":true,"bgCavaLock":false,"screenshotStay":true,"screenshotCursor":false,"lockScreenMusic":false,"sfx":false,"userLightMode":false,"autoLightMode":false,"debug":true}
+{"hints":true,"quickStart":true,"minimal":false,"textBasedVolume":false,"hideBar":false,"bottomBar":false,"optimizeMemory":true,"safeNotifications":false,"dnd":false,"wallpaperAutoAdvance":false,"shadow":true,"hyprAnim":true,"hyprBlur":false,"bgCava":true,"bgCavaLock":false,"screenshotStay":true,"screenshotCursor":false,"lockScreenMusic":false,"sfx":false,"userLightMode":false,"autoLightMode":true,"debug":false}
 ````
 
 ## File: scripts/config.py
@@ -30400,6 +30804,13 @@ SETTINGS = [
                 "category": "settings",
                 "type": "exec",
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_auto_light_mode"],
+            },
+            {
+                "label": "{screenshotNotify} Screenshot notification",
+                "description": "Send a notification when taking a screenshot.",
+                "category": "settings",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_screenshot_notify"],
             },
             {
                 "label": "{hints} Show hints",
@@ -124459,67 +124870,139 @@ if __name__ == "__main__":
 """
 pacman-preflight.py — Compute the pre-flight transaction plan for a package.
 
+Reads the pacman-filter.py cache, runs `pacman -S --print` for the
+authoritative to-install list, cross-references the cache for
+replaces/conflicts/installed-sizes, and uses `vercmp` for version
+constraint checking.
+
 Input:  package name as argv[1]
-Output: one JSON line on stdout with the plan, OR an error object
+Output: one indented JSON document on stdout (for easy debugging),
+        OR an error object if anything fails.
 
 Usage:  python pacman-preflight.py <package_name>
+
+Exits 0 on success, 1 on error (error details in the JSON output).
 """
+
+from __future__ import annotations
+
 import json
+import math
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
 
-# Optional: use pyalpm for vercmp if available, fall back to vercmp binary
-try:
-    import pyalpm
-    def vercmp(a, b):
-        return pyalpm.vercmp(a, b)
-except ImportError:
-    def vercmp(a, b):
-        result = subprocess.run(["vercmp", a, b], capture_output=True, text=True)
-        return int(result.stdout.strip() or "0")
+# ─── Paths ────────────────────────────────────────────────────────────────────
 
 CACHE_FILE = Path.home() / ".cache" / "pacman-ui" / "cache.json"
 
-def load_cache():
-    if not CACHE_FILE.exists():
-        return {"packages": {}}
-    with open(CACHE_FILE) as f:
-        return json.load(f)
+# ─── vercmp ───────────────────────────────────────────────────────────────────
+#
+# Use pyalpm if available (no process spawn per comparison). Fall back
+# to the `vercmp` binary that ships with pacman.
 
-def run_pacman_print(pkg):
-    """Run pacman -S --print, return list of (name, version, size_bytes) tuples."""
+try:
+    import pyalpm
+    def vercmp(a: str, b: str) -> int:
+        return pyalpm.vercmp(a, b)
+except ImportError:
+    def vercmp(a: str, b: str) -> int:
+        try:
+            r = subprocess.run(
+                ["vercmp", a, b],
+                capture_output=True, text=True, timeout=5,
+            )
+            return int(r.stdout.strip() or "0")
+        except (subprocess.SubprocessError, ValueError):
+            return 0
+
+
+# ─── Helpers ──────────────────────────────────────────────────────────────────
+
+def load_cache() -> dict:
+    """Load the pacman-filter.py cache. Returns {} on missing/corrupt."""
+    if not CACHE_FILE.exists():
+        return {"packages": []}
+    try:
+        with open(CACHE_FILE) as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return {"packages": []}
+
+
+def run_pacman_print(pkg: str) -> tuple[list[dict] | None, str]:
+    """Run `pacman -S --print --print-format "%n|%v|%s" <pkg>`.
+
+    Returns (list_of_entries, error_message). On success, error_message
+    is empty. On failure, list_of_entries is None.
+
+    Each entry: {name, version, downloadBytes}
+    """
     cmd = ["pacman", "-S", "--print", "--print-format", "%n|%v|%s", pkg]
-    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+    except subprocess.TimeoutExpired:
+        return None, "pacman -S --print timed out"
+    except FileNotFoundError:
+        return None, "pacman binary not found"
+
     if proc.returncode != 0:
-        return None, proc.stderr.strip()
-    out = []
+        return None, proc.stderr.strip() or f"pacman exited with code {proc.returncode}"
+
+    out: list[dict] = []
     for line in proc.stdout.strip().split("\n"):
         if not line:
             continue
         parts = line.split("|")
         if len(parts) < 3:
             continue
+        name, version, size_str = parts[0], parts[1], parts[2]
+        try:
+            size_bytes = int(size_str)
+        except ValueError:
+            size_bytes = 0
         out.append({
-            "name": parts[0],
-            "version": parts[1],
-            "downloadBytes": int(parts[2]) if parts[2].isdigit() else 0,
+            "name": name,
+            "version": version,
+            "downloadBytes": size_bytes,
         })
-    return out, None
+    return out, ""
 
-def split_name_version(s):
-    """Split 'gcc-libs>=12.1.0' into ('gcc-libs', '>=', '12.1.0')."""
-    for op in ["<=", ">=", "<", ">", "="]:
-        if op in s:
-            name, _, version = s.partition(op)
-            return name, op, version
+
+# ─── Version constraint parsing ───────────────────────────────────────────────
+
+_OPS_ORDERED = ["<=", ">=", "<", ">", "="]
+
+
+def split_name_version(s: str) -> tuple[str, str, str]:
+    """Split 'plasma-integration<=5.27.0' → ('plasma-integration', '<=', '5.27.0').
+
+    Operator order matters: check '<=' before '<' (since '<' is a prefix of '<='),
+    and '>=' before '>'. '=' is checked last because it's a single char and the
+    others would never match if '=' came first.
+
+    Returns (name, op, version). If no operator, returns (s, "", "").
+    """
+    for op in _OPS_ORDERED:
+        idx = s.find(op)
+        if idx >= 0:
+            return s[:idx], op, s[idx + len(op):]
     return s, "", ""
 
-def version_satisfies(installed_version, op, required_version):
-    """Check if installed_version satisfies the op/version constraint."""
+
+def version_satisfies(installed_version: str, op: str, required_version: str) -> bool:
+    """Check if installed_version satisfies the (op, required_version) constraint.
+
+    If op is empty (no constraint), always returns True.
+    If installed_version is empty (unknown), returns False — better to
+    under-report a replace/conflict than to fire it incorrectly.
+    """
     if not op or not required_version:
-        return True  # no constraint
+        return True
+    if not installed_version:
+        return False
     cmp = vercmp(installed_version, required_version)
     if op == "=":
         return cmp == 0
@@ -124533,12 +125016,96 @@ def version_satisfies(installed_version, op, required_version):
         return cmp > 0
     return False
 
-def build_preflight(target, cache_packages, print_output):
-    """Build the pre-flight plan from --print output + cache cross-reference."""
-    packages_by_name = {p["name"]: p for p in cache_packages}
 
-    # ── toInstall ──
-    to_install = []
+# ─── Size formatting ─────────────────────────────────────────────────────────
+#
+# Parse "22.29 MiB" → bytes (int), and format bytes → "22.3 MiB".
+# Uses 1024-based binary prefixes to match pacman's convention.
+#
+# IMPORTANT: We always format sizes ourselves via format_bytes() rather
+# than passing through the raw string from the cache. Pacman is
+# inconsistent about which unit it uses (KiB vs MiB vs GiB) — some
+# packages show "15675.04 KiB" when they should show "15.3 MiB".
+# By formatting from the byte count, we ensure consistent unit selection.
+
+_SIZE_RE = re.compile(r"^([\d.]+)\s*(b|kib|kb|k|mib|mb|m|gib|gb|g|tib|tb|t|pib|pb|p)?$", re.I)
+_SIZE_MULTIPLIERS = {
+    "b": 1,
+    "k": 1024, "kib": 1024, "kb": 1024,
+    "m": 1024**2, "mib": 1024**2, "mb": 1024**2,
+    "g": 1024**3, "gib": 1024**3, "gb": 1024**3,
+    "t": 1024**4, "tib": 1024**4, "tb": 1024**4,
+    "p": 1024**5, "pib": 1024**5, "pb": 1024**5,
+}
+_SIZE_UNITS = ["B", "KiB", "MiB", "GiB", "TiB", "PiB"]
+
+
+def parse_size_to_bytes(s: str) -> int:
+    """Parse '22.29 MiB' → 23343390 (int). Returns 0 on parse failure."""
+    if not s:
+        return 0
+    m = _SIZE_RE.match(s.strip())
+    if not m:
+        return 0
+    try:
+        value = float(m.group(1))
+    except ValueError:
+        return 0
+    unit = (m.group(2) or "b").lower()
+    return int(value * _SIZE_MULTIPLIERS.get(unit, 1))
+
+
+def format_bytes(b: int) -> str:
+    """Format 23343390 → '22.3 MiB'. Returns '0 B' for zero, '' for negative.
+
+    Always picks the most appropriate unit based on the byte count,
+    regardless of what unit the source data used. This ensures
+    consistent formatting — no '15675.04 KiB' when it should be '15.3 MiB'.
+    """
+    if b == 0:
+        return "0 B"
+    if b < 0:
+        return ""
+    k = 1024
+    i = min(int(math.log(b) / math.log(k)), len(_SIZE_UNITS) - 1)
+    if i == 0:
+        return f"{b} B"
+    return f"{b / k**i:.1f} {_SIZE_UNITS[i]}"
+
+
+# ─── Pre-flight plan builder ─────────────────────────────────────────────────
+
+def build_preflight(
+    target: str,
+    cache_packages: list[dict],
+    print_output: list[dict],
+) -> dict:
+    """Build the pre-flight plan.
+
+    Args:
+        target: the package the user is installing
+        cache_packages: list of package dicts from pacman-filter.py cache.
+        print_output: list of {name, version, downloadBytes} from
+                      `pacman -S --print`.
+
+    Returns:
+        {
+            toInstall:        [{name, version, downloadBytes, downloadSize,
+                                installedBytes, installedSize, isTarget}],
+            willReplace:      [{name, version, installed}],
+            conflictsWith:    [{name, version, installed, conflictsWith}],
+            totalDownload:    "10.3 MiB",
+            totalInstalled:   "43.9 MiB",
+        }
+    """
+    packages_by_name: dict[str, dict] = {
+        p["name"]: p for p in cache_packages if "name" in p
+    }
+
+    # ─────────────────────────────────────────────────────────────────
+    # toInstall — from --print (authoritative)
+    # ─────────────────────────────────────────────────────────────────
+    to_install: list[dict] = []
     total_download_bytes = 0
     total_installed_bytes = 0
 
@@ -124548,14 +125115,14 @@ def build_preflight(target, cache_packages, print_output):
         download_bytes = entry["downloadBytes"]
         total_download_bytes += download_bytes
 
+        # Look up installed size from cache. If the package isn't in the
+        # cache (brand-new, not yet cached), fall back to 0 bytes / "—".
         cached = packages_by_name.get(name)
-        installed_bytes = 0
-        installed_size_str = ""
         if cached:
             installed_size_str = cached.get("installed_size", "")
-            # Parse "22.29 MiB" → bytes
             installed_bytes = parse_size_to_bytes(installed_size_str)
-
+        else:
+            installed_bytes = 0
         total_installed_bytes += installed_bytes
 
         to_install.append({
@@ -124564,68 +125131,115 @@ def build_preflight(target, cache_packages, print_output):
             "downloadBytes": download_bytes,
             "downloadSize": format_bytes(download_bytes),
             "installedBytes": installed_bytes,
-            "installedSize": installed_size_str or "—",
+            # Format installed size ourselves — don't pass through the
+            # raw cache string. Pacman is inconsistent about units
+            # (sometimes KiB when it should be MiB), so we always
+            # format from the byte count for consistency.
+            "installedSize": format_bytes(installed_bytes) if cached else "—",
             "isTarget": name == target,
         })
 
-    # ── willReplace + conflictsWith ──
-    will_replace = []
-    conflicts_with = []
-    seen_replaces = set()
-    seen_conflicts = set()
+    # ─────────────────────────────────────────────────────────────────
+    # willReplace — from each to-install package's `replaces` field,
+    # checked against installed packages with version constraints.
+    # ─────────────────────────────────────────────────────────────────
+    will_replace: list[dict] = []
+    seen_replaces: set[str] = set()
 
-    target_cached = packages_by_name.get(target)
-
-    # Direct replaces/conflicts from the target and all to-install packages
     for entry in print_output:
         pkg_name = entry["name"]
         cached = packages_by_name.get(pkg_name)
         if not cached:
             continue
 
-        # Replaces
-        for rep in cached.get("replaces", []):
-            rep_name, _, _ = split_name_version(rep)
+        for rep in cached.get("replaces", []) or []:
+            rep_name, op, req_version = split_name_version(rep)
             if rep_name in seen_replaces:
                 continue
-            rep_cached = packages_by_name.get(rep_name)
-            if rep_cached and rep_cached.get("installed"):
-                will_replace.append({
-                    "name": rep_name,
-                    "version": rep_cached.get("version", ""),
-                    "installed": True,
-                })
-                seen_replaces.add(rep_name)
 
-        # Conflicts
-        for con in cached.get("conflicts_with", []):
-            con_name, _, _ = split_name_version(con)
+            rep_cached = packages_by_name.get(rep_name)
+            if not rep_cached or not rep_cached.get("installed"):
+                continue
+
+            # Version constraint check
+            installed_version = rep_cached.get("version", "")
+            if not version_satisfies(installed_version, op, req_version):
+                continue
+
+            will_replace.append({
+                "name": rep_name,
+                "version": installed_version,
+                "installed": True,
+            })
+            seen_replaces.add(rep_name)
+
+    # ─────────────────────────────────────────────────────────────────
+    # conflictsWith — two directions:
+    #   1. Each to-install package's `conflicts_with` against installed.
+    #   2. Each installed package's `conflicts_with` against to-install.
+    # Skip any that are already in will_replace (replaces takes precedence).
+    # ─────────────────────────────────────────────────────────────────
+    conflicts_with: list[dict] = []
+    seen_conflicts: set[str] = set()
+
+    to_install_names = {e["name"] for e in print_output}
+    to_install_versions = {e["name"]: e["version"] for e in print_output}
+
+    # Direction 1: to-install packages declare conflicts
+    for entry in print_output:
+        pkg_name = entry["name"]
+        cached = packages_by_name.get(pkg_name)
+        if not cached:
+            continue
+
+        for con in cached.get("conflicts_with", []) or []:
+            con_name, op, req_version = split_name_version(con)
             if con_name in seen_conflicts or con_name in seen_replaces:
                 continue
-            con_cached = packages_by_name.get(con_name)
-            if con_cached and con_cached.get("installed"):
-                conflicts_with.append({
-                    "name": con_name,
-                    "version": con_cached.get("version", ""),
-                    "installed": True,
-                })
-                seen_conflicts.add(con_name)
 
-    # Reverse conflicts: any installed package that conflicts with a to-install pkg
+            con_cached = packages_by_name.get(con_name)
+            if not con_cached or not con_cached.get("installed"):
+                continue
+
+            # Constraint is on the INSTALLED package's version
+            installed_version = con_cached.get("version", "")
+            if not version_satisfies(installed_version, op, req_version):
+                continue
+
+            conflicts_with.append({
+                "name": con_name,
+                "version": installed_version,
+                "installed": True,
+                "conflictsWith": pkg_name,
+            })
+            seen_conflicts.add(con_name)
+
+    # Direction 2: installed packages declare conflicts targeting our to-install set
     for pkg in cache_packages:
         if not pkg.get("installed"):
             continue
-        for con in pkg.get("conflicts_with", []):
-            con_name, _, _ = split_name_version(con)
-            # Is this conflict targeting one of our to-install packages?
-            to_install_names = {e["name"] for e in print_output}
-            if con_name in to_install_names and con_name not in seen_conflicts:
-                conflicts_with.append({
-                    "name": pkg["name"],
-                    "version": pkg.get("version", ""),
-                    "installed": True,
-                })
-                seen_conflicts.add(pkg["name"])
+        pkg_name = pkg.get("name", "")
+        if pkg_name in seen_conflicts or pkg_name in seen_replaces:
+            continue
+
+        for con in pkg.get("conflicts_with", []) or []:
+            con_name, op, req_version = split_name_version(con)
+            if con_name not in to_install_names:
+                continue
+
+            # Constraint is on the TO-INSTALL package's version
+            to_install_version = to_install_versions.get(con_name, "")
+            if not version_satisfies(to_install_version, op, req_version):
+                continue
+
+            conflicts_with.append({
+                "name": pkg_name,
+                "version": pkg.get("version", ""),
+                "installed": True,
+                "conflictsWith": con_name,
+            })
+            seen_conflicts.add(pkg_name)
+            break  # this installed package is already counted; move on
 
     return {
         "toInstall": to_install,
@@ -124635,69 +125249,52 @@ def build_preflight(target, cache_packages, print_output):
         "totalInstalled": format_bytes(total_installed_bytes),
     }
 
-def parse_size_to_bytes(s):
-    """Parse '22.29 MiB' → bytes (int)."""
-    if not s:
-        return 0
-    s = s.strip().lower()
-    try:
-        import re
-        m = re.match(r"^([\d.]+)\s*(b|kib|kb|k|mib|mb|m|gib|gb|g|tib|tb|t)?$", s)
-        if not m:
-            return 0
-        value = float(m.group(1))
-        unit = m.group(2) or "b"
-        multipliers = {
-            "b": 1,
-            "k": 1024, "kib": 1024, "kb": 1024,
-            "m": 1024**2, "mib": 1024**2, "mb": 1024**2,
-            "g": 1024**3, "gib": 1024**3, "gb": 1024**3,
-            "t": 1024**4, "tib": 1024**4, "tb": 1024**4,
-        }
-        return int(value * multipliers.get(unit, 1))
-    except (ValueError, AttributeError):
-        0
-        return 0
 
-def format_bytes(b):
-    """Format bytes → '5.4 KiB' etc."""
-    if b == 0:
-        return "0 B"
-    if b < 0:
-        return ""
-    units = ["B", "KiB", "MiB", "GiB", "TiB"]
-    k = 1024
-    i = min(int(math.log(b) / math.log(k)), len(units) - 1) if b > 0 else 0
-    if i == 0:
-        return f"{b} B"
-    return f"{b / k**i:.2f} {units[i]}"
+# ─── Main ─────────────────────────────────────────────────────────────────────
 
-def main():
+def main() -> None:
     if len(sys.argv) < 2:
-        print(json.dumps({"error": "missing package name"}))
+        print(json.dumps({"error": "missing package name argument"}, indent=2))
         sys.exit(1)
 
-    target = sys.argv[1]
+    target = sys.argv[1].strip()
+    if not target:
+        print(json.dumps({"error": "empty package name"}, indent=2))
+        sys.exit(1)
+
     cache = load_cache()
     cache_packages = cache.get("packages", [])
     if isinstance(cache_packages, dict):
-        # Some cache formats use a dict keyed by name
         cache_packages = list(cache_packages.values())
+
+    if not cache_packages:
+        print(json.dumps({
+            "error": "cache is empty — run refresh first",
+        }, indent=2))
+        sys.exit(1)
 
     print_output, err = run_pacman_print(target)
     if print_output is None:
-        print(json.dumps({"error": f"pacman -S --print failed: {err}"}))
+        print(json.dumps({
+            "error": f"pacman -S --print failed: {err}",
+            "target": target,
+        }, indent=2))
         sys.exit(1)
 
     if not print_output:
-        print(json.dumps({"error": f"no transaction for {target} (already installed?)"}))
+        print(json.dumps({
+            "error": f"no transaction for {target} (already installed or not found)",
+            "target": target,
+        }, indent=2))
         sys.exit(1)
 
     plan = build_preflight(target, cache_packages, print_output)
-    print(json.dumps(plan))
+
+    # Indented JSON for easier debugging from the command line.
+    print(json.dumps(plan, indent=2))
+
 
 if __name__ == "__main__":
-    import math
     main()
 ````
 
@@ -126160,76 +126757,124 @@ import QtQuick
 // ─────────────────────────────────────────────────────────────────
 // AuthInfo — centralized PAM verification service.
 //
-// Owns a single long-lived `password_checker` process (the same C
-// binary that LockSession.qml uses inline). Other components ask
-// AuthInfo to verify a password and listen for the verified/failed
-// signals, instead of each spawning their own PAM process.
+// Owns the entire auth flow:
+//   1. Caller calls AuthInfo.verify(prompt, description, callback)
+//   2. AuthInfo opens AuthPopup (via the prompted signal)
+//   3. User enters password in AuthPopup, which calls AuthInfo._check(password)
+//   4. AuthInfo writes the password to the PAM process
+//   5. PAM responds → AuthInfo._dispatch(success)
+//      - On success: fires the callback with (true, password) and closes AuthPopup
+//      - On failure: tells AuthPopup to show error + retry (flow continues)
+//      - On cancel (user closes AuthPopup, or AuthInfo.cancel()):
+//        fires the callback with (false, "") and closes AuthPopup
 //
 // API:
-//   AuthInfo.verify(password)   // non-blocking; emits verified() or failed()
-//   AuthInfo.authenticating     // true while a verification is in flight
+//   AuthInfo.verify(prompt, description, callback) → bool
+//     prompt:      title shown in AuthPopup (e.g., "Install firefox")
+//     description: subtext shown under the title (e.g., "Your password
+//                  will be used to run pacman as root.")
+//     callback:    (success: bool, password: string) => void
+//                  Called exactly once when the auth flow completes
+//                  (success or cancel).
+//                  On success: success=true, password=the verified password
+//                  On cancel: success=false, password=""
+//     Returns true if the flow started, false if another auth is in progress.
 //
-// Signals:
-//   verified()                  // PAM returned success
-//   failed()                    // PAM returned failure (wrong password)
+//   AuthInfo.cancel()
+//     Aborts the current auth flow. Fires the pending callback with
+//     (false, "") and closes AuthPopup.
 //
-// Concurrency: only one verification can be in flight at a time.
-// If verify() is called while authenticating, the call is dropped and
-// a warning is logged. This is fine for our usage — auth flows are
-// modal and block user input by design.
+// State properties:
+//   AuthInfo.authenticating
+//     True for the ENTIRE auth session — from verify() until the callback
+//     fires. Used by external callers to know "an auth flow is ongoing,
+//     don't start another one."
+//
+//   AuthInfo.checking
+//     True only while PAM is verifying a password — from _check() until
+//     PAM responds. Used by AuthPopup to disable the password field +
+//     Verify button while the check is in flight. Resets to false on
+//     PAM response (success or failure), allowing the user to retry
+//     immediately on failure without the field staying disabled.
+//
+// Concurrency: ONE auth flow at a time. verify() returns false if
+// another is in progress.
+//
+// PAM process: long-lived `password_checker` binary. Reads passwords
+// line-by-line from stdin, writes "1" (success) or "0" (failure) to
+// stdout per verification. Auto-restarts on crash.
+//
+// Timeout: 5 seconds per PAM verification. If PAM doesn't respond,
+// `checking` resets to false and the user sees an error + can retry.
+// The auth flow itself is NOT aborted (user can still try again or cancel).
 // ─────────────────────────────────────────────────────────────────
 
 Singleton {
 
     id: root
 
-    // True between verify() call and the resulting verified/failed signal.
-    // UI uses this to disable the submit button + show a spinner.
+    // True for the entire auth session — from verify() until the callback
+    // fires. External callers use this to avoid starting a second auth
+    // flow while one is in progress.
     property bool authenticating: false
 
-    property int authenticate_id: 0
+    // True only while PAM is verifying a password. AuthPopup binds the
+    // password field's `disabled` to this so the user can't submit a
+    // second password while the first is still being checked. Resets to
+    // false on PAM response (success or failure), so the user can retry
+    // immediately on failure.
+    property bool checking: false
 
-    signal verified(id: int, password: string)
-    signal failed()
-    signal canceled()
-    
-    // signal unmatch_id()
+    // ── Internal state ──
+    property var _callback: null
+    property string _pendingPassword: ""
+    property string _pendingPrompt: ""
+    property string _pendingDescription: ""
 
-    signal prompted(prompt: string, description: string, return_password: bool, id: int)
+    readonly property int _pamTimeoutMs: 5000
 
-    function ask(prompt = "Authenticate", description = "", return_password = false) {
-        root.prompted(prompt, description, return_password, root.authenticate_id)
-    }
+    // ── Signals (for AuthPopup to listen to) ──
 
-    function cancel() {
-        check_pwd.running = false
-        root.authenticate_id++
-        console.log("AuthInfo: Canceled")
-        root.canceled()
+    // Fired when a new auth flow starts. AuthPopup opens and shows
+    // the prompt + description.
+    signal prompted(string prompt, string description)
+
+    // Fired when the current PAM verification succeeded. AuthPopup
+    // shows "success" briefly, then AuthInfo closes it via `closed()`.
+    signal verifySucceeded()
+
+    // Fired when the current PAM verification failed (wrong password
+    // or timeout). AuthPopup shows the error and lets the user retry.
+    // The auth flow is NOT over — the user can try again or cancel.
+    signal verifyFailed(string reason)
+
+    // Fired when the auth flow is over (success or cancel).
+    // AuthPopup closes itself.
+    signal closed()
+
+    Timer {
+        id: _pam_timeout
+        interval: root._pamTimeoutMs
+        onTriggered: {
+            if (root.checking) {
+                console.warn("AuthInfo: PAM response timeout")
+                root.checking = false
+                root._pendingPassword = ""
+                root.verifyFailed("PAM timeout — please try again")
+            }
+        }
     }
 
     // The PAM checker is a long-lived process: it reads passwords
     // line-by-line from stdin and writes "1" (success) or "0" (failure)
-    // to stdout, one line per verification. See scripts/password_checker.c
-    // for the implementation. We keep it alive for the entire shell
-    // lifetime so verifications are instant (no process spawn latency).
+    // to stdout, one line per verification.
     Process {
 
         id: check_pwd
 
-        property int id: 0
-
         onRunningChanged: {
-            // Auto-restart on crash — the PAM process should always be
-            // available. If it dies (e.g. OOM kill), bring it back so
-            // the next verify() works instead of silently failing.
-            if (!running) {
-                running = true
-            }
+            if (!running) running = true  // auto-restart on crash
         }
-
-        property bool return_password: false
-        property string password: ""
 
         running: true
         command: [SystemInfo.configdir + "/scripts/password_checker"]
@@ -126237,52 +126882,120 @@ Singleton {
         stdout: SplitParser {
             onRead: (text) => {
                 if (text == "1") {
-                    if (check_pwd.id == root.authenticate_id) {
-                        root.authenticating = false
-                        root.verified(root.authenticate_id++, check_pwd.return_password ? check_pwd.password : "")
-                    } else {
-                        //root.unmatch_id()
-                        console.log("AuthInfo (check_pwd): Unmatched authentication id")
-                    }
+                    root._dispatch(true)
                 } else if (text == "0") {
-                    root.authenticating = false
-                    root.failed()
+                    root._dispatch(false)
                 }
-                check_pwd.return_password = false
-                check_pwd.password = ""
-                // Any other output (debug prints, etc.) is ignored.
             }
         }
 
         stderr: StdioCollector {
             onStreamFinished: {
-                if (text) {
-                    console.log("AuthInfo (check_pwd stderr): " + text)
-                }
+                if (text) console.log("AuthInfo (check_pwd stderr): " + text)
             }
         }
 
     }
 
-    // Verify a password against the local PAM stack.
-    // Non-blocking: emits verified() or failed() shortly after.
-    // The password string is written to stdin and immediately goes out
-    // of scope on the caller side — see AuthPopup.qml for the wipe pattern.
-    function verify(password: string, id: int, return_password = false) {
-        if (!check_pwd.running) {
-            console.warn("AuthInfo: check_pwd process not running, cannot verify")
-            root.failed()
-            return
-        }
+    // ── Public API ──
+
+    // verify(prompt, description, callback) → bool
+    //
+    // Starts an auth flow. AuthPopup opens, user enters password,
+    // PAM verifies, callback fires with the result.
+    //
+    // Returns true if the flow started, false if another is in progress.
+    function verify(prompt: string, description: string, callback: var): bool {
         if (root.authenticating) {
-            console.warn("AuthInfo: verify() called while already authenticating, dropping")
+            console.warn("AuthInfo: verify() called while another auth is in progress, rejecting")
+            return false
+        }
+
+        root._callback = callback
+        root._pendingPrompt = prompt
+        root._pendingDescription = description
+        root._pendingPassword = ""
+        root.authenticating = true
+        root.checking = false  // not checking yet — user hasn't entered password
+
+        // Tell AuthPopup to open with this prompt + description.
+        root.prompted(prompt, description)
+
+        return true
+    }
+
+    // Cancel the current auth flow. Fires the pending callback with
+    // (false, "") and closes AuthPopup.
+    function cancel() {
+        if (!root.authenticating) return
+        console.log("AuthInfo: cancelling auth flow")
+        root._finish(false, "")
+        root.closed()
+    }
+
+    // ── Called by AuthPopup when the user submits a password ──
+    // This is the bridge from AuthPopup's UI to the PAM process.
+    // Not for external callers — AuthPopup calls this when the user
+    // presses Enter or clicks Verify.
+    function _check(password: string) {
+        if (!root.authenticating) {
+            console.warn("AuthInfo._check called but no auth flow in progress")
             return
         }
-        root.authenticating = true
-        check_pwd.id = id
-        check_pwd.return_password = return_password
-        check_pwd.password = password
+        if (root.checking) {
+            console.warn("AuthInfo._check called while already checking, ignoring")
+            return
+        }
+        if (!check_pwd.running) {
+            console.warn("AuthInfo: check_pwd process not running")
+            root.verifyFailed("Auth backend unavailable")
+            return
+        }
+
+        root._pendingPassword = password
+        root.checking = true
+        _pam_timeout.restart()
         check_pwd.write(password + "\n")
+    }
+
+    // ── Internal: handle PAM response ──
+    function _dispatch(success: bool) {
+        if (!root.checking) return  // already handled (e.g., timeout or cancel)
+
+        root.checking = false
+        _pam_timeout.stop()
+
+        if (success) {
+            // PAM verified — flow is over, fire the callback with the password.
+            root.verifySucceeded()  // tell AuthPopup to show success
+            root._finish(true, root._pendingPassword)
+        } else {
+            // PAM rejected — let the user retry. Flow continues.
+            root.verifyFailed("Wrong password")
+            root._pendingPassword = ""
+        }
+    }
+
+    // ── Internal: finish the auth flow ──
+    // Fires the callback, clears state, closes AuthPopup.
+    function _finish(success: bool, password: string) {
+        if (!root._callback) return  // already finished
+
+        const cb = root._callback
+        root._callback = null
+        root._pendingPassword = ""
+        root._pendingPrompt = ""
+        root._pendingDescription = ""
+        root.authenticating = false
+        root.checking = false
+        _pam_timeout.stop()
+
+        // Fire the callback
+        try {
+            cb(success, password)
+        } catch (e) {
+            console.warn("AuthInfo: callback threw:", e)
+        }
     }
 
 }
@@ -128976,13 +129689,14 @@ Singleton {
 
     property bool fetching: fetcher.running
     property bool checking_updates: updates_checker.running
+    property bool updates_checker_authorized: false
 
     signal fetched()
 
     property string query: ""
 
     onFetched: {
-        if (installState == "prepare") {
+        if (pacmanState == "prepare") {
             preparePreFlight()
         }
     }
@@ -128999,9 +129713,8 @@ Singleton {
      5.1  failed         (Show that it failed).
      6.   reset          (Go back to Idle)
      */
-    property string installState: "idle"
+    property string pacmanState: "idle"
     property string installTarget: ""
-    property var transactionData: []
     property var installPlan: {
         "toInstall": [], // Dependencies (install)
         "willReplace": [], // Replaces (remove)
@@ -129009,38 +129722,208 @@ Singleton {
         "totalDownload": "",
         "totalInstalled": "",
     }
-    property var installLog: []
+    property string installLog: ""
+    property int installLogCursor: 0
+    property int installLogLastNewline: 0
     property string pendingPrompt: ""
     property int installExitCode: 0
 
     signal promptRequested(prompt: string)
     signal installCompleted(exitCode: int)
 
+    function cancelInstallation() {
+        if (installer.running) {
+            installer.running = false
+            pacmanState = "cancel"
+            return
+        }
+        pacmanState = "idle"
+        installTarget = ""
+        installPlan = {
+            "toInstall": [], // Dependencies (install)
+            "willReplace": [], // Replaces (remove)
+            "conflictsWith": [], // Conflicts (remove)
+            "totalDownload": "",
+            "totalInstalled": "",
+        }
+        installLog = ""
+        installLogCursor = 0
+        pendingPrompt = ""
+    }
+
     function requestInstallation(name: string) {
-        if (installState != "idle") return
+        if (pacmanState != "idle") return
         if (isInstalled(name)) {
             console.log("PacmanInfo (requestIntallation): " + name + " has already been installed. Rejecting request.")
             return
         }
         installTarget = name
-        fetch()
-        installState = "prepare"
+        //fetch()
+        pacmanState = "prepare"
+        preparePreFlight()
     }
 
     function prepareInstallation() {
-        installState = "pre-flight"
+        if (isInstalled(installTarget)) {
+            console.log("PacmanInfo (prepareInstallation): " + installTarget + " has already been installed. Rejecting request.")
+            cancelInstallation()
+            return
+        }
+        pacmanState = "pre-flight"
+    }
+
+    function confirmInstallation() {
+        pacmanState = "authentication"
+        installer.running = true
+    }
+
+    function sanitizeTerminalOutput(rawText) {
+        // 1. Strip OSC sequences (host/user context logs)
+        let noOsc = rawText.replace(/\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)/g, '');
+
+        // 2. Strip ALL standard ANSI/CSI escape codes (including those with '?')
+        let clean = noOsc.replace(/\x1b\[\??[0-9;]*[a-zA-Z]/g, '');
+
+        return clean;
+    }
+
+    // ── Internal log state ──
+    // Line-based model instead of one giant string. Each line is built
+    // independently (O(line_length) per line, not O(total_log)).
+    property var _logLines: []            // committed lines
+    property string _logCurrentLine: ""   // line being built (for \r overwrite)
+    property int _logCursor: 0            // cursor within current line
+    property bool _logDirty: false
+
+    // Batch UI updates at 20fps. Pacman can emit hundreds of lines per
+    // second during downloads — without batching, each char triggers a
+    // property change + UI re-render, freezing the shell.
+    Timer {
+        id: _logFlushTimer
+        interval: 50
+        repeat: false
+        onTriggered: {
+            if (!_logDirty) return
+            let all = _logLines.slice()
+            if (_logCurrentLine.length > 0) all.push(_logCurrentLine)
+            // Ring buffer: cap at 200 lines, drop oldest
+            while (all.length > 200) all.shift()
+            installLog = all.join("\n")
+            _logDirty = false
+        }
+    }
+
+    function appendLog(text: string) {
+        let sanitized = sanitizeTerminalOutput(text)
+
+        // Split by \r and \n, KEEPING the delimiters as separate elements.
+        // This lets us process whole text segments at once instead of
+        // character by character.
+        //
+        // Example: "abc\rXYZ\n123" → ["abc", "\r", "XYZ", "\n", "123"]
+        let segments = sanitized.split(/([\r\n])/)
+
+        for (let i = 0; i < segments.length; i++) {
+            let seg = segments[i]
+
+            if (seg === "\r") {
+                _logCursor = 0
+
+            } else if (seg === "\n") {
+                _logLines.push(_logCurrentLine)
+                _logCurrentLine = ""
+                _logCursor = 0
+
+            } else if (seg.length > 0) {
+                if (_logCursor === 0 && _logCurrentLine.length > 0) {
+                    // ── Overwrite from beginning (common after \r) ──
+                    // pacman's progress bars do \r + full line redraw.
+                    // The segment either fully replaces the line or
+                    // partially overwrites (if shorter than current line).
+                    if (seg.length >= _logCurrentLine.length) {
+                        _logCurrentLine = seg
+                    } else {
+                        _logCurrentLine = seg + _logCurrentLine.substring(seg.length)
+                    }
+                    _logCursor = seg.length
+
+                } else if (_logCursor >= _logCurrentLine.length) {
+                    // ── Simple append (most common — no \r involved) ──
+                    _logCurrentLine += seg
+                    _logCursor += seg.length
+
+                } else {
+                    // ── Overwrite from middle (rare) ──
+                    let before = _logCurrentLine.substring(0, _logCursor)
+                    let after = _logCurrentLine.substring(_logCursor + seg.length)
+                    _logCurrentLine = before + seg + after
+                    _logCursor += seg.length
+                }
+            }
+        }
+
+        _logDirty = true
+        _logFlushTimer.restart()
     }
 
     Process {
 
         id: installer
 
-        property string pkg: ""
+        property string pkg: root.installTarget
 
-        command: ["sudo", "-S", "-k", "-p", "", "pacman", "-S", pkg]
+        onRunningChanged: {
+            if (running) {
+                AuthInfo.verify("Installing <b>" + root.installTarget + "</b>", "Authenticate for installation.", function(s, p) {
+                    if (s) {
+                        installer.write(p+"\n")
+                        root.pacmanState = "installing"
+                    } else {
+                        root.cancelInstallation()
+                    }
+                })
+            }
+        }
+
+        command: ["script", "-qc", `sudo -S -k -p '' env COLUMNS=84 LINES=0 pacman -S --noconfirm ${pkg}`, "/dev/null"]
 
         stdout: SplitParser {
-            splitMarker: ["\n","\r"]
+            splitMarker: ""
+            onRead: (text) => {
+                //console.log("\n"+JSON.stringify(text))
+                //root.installLog += sanitizeTerminalOutput(text)
+                root.appendLog(text)
+            }
+        }
+
+        stderr: SplitParser {
+            splitMarker: ""
+            onRead: (text) => {
+                //console.log("\n"+JSON.stringify(text))
+                //root.appendLog(text)
+            }
+        }
+
+        onExited: (exitCode, exitStatus) => {
+            console.log("PacmanInfo (installer): exitCode: " + exitCode + ", exitStatus: " + exitStatus)
+            fetch()
+            if (root.pacmanState == "cancel") {
+                root.pacmanState = "idle"
+                root.installTarget = ""
+                root.installPlan = {
+                    "toInstall": [], // Dependencies (install)
+                    "willReplace": [], // Replaces (remove)
+                    "conflictsWith": [], // Conflicts (remove)
+                    "totalDownload": "",
+                    "totalInstalled": "",
+                }
+                root.installLog = ""
+                root.pendingPrompt = ""
+                return
+            }
+            if (exitCode == 0) {
+                root.pacmanState = "success"
+            }
         }
 
     }
@@ -129082,12 +129965,11 @@ Singleton {
                 matchRepo = item.repository.toLowerCase().includes(q)
             }
 
-
             let matchesQuery = matchName
 
             if (search_mode == 0 || search_mode == 1) {
                 matchesQuery = matchesQuery || matchDesc || matchRepo
-            } else if (search_mode == 2) {
+            } else if (search_mode == 3) {
                 matchesQuery = item.name.trim() == q.trim()
             }
 
@@ -129101,11 +129983,6 @@ Singleton {
 
     property bool outdated: false
 
-    /* search mode
-     * 0 -> pretty_fuzzy
-     * 1 -> name_only
-     * 2 -> exact_match
-     */
     property int search_mode: 0
 
     property var search_modes: [
@@ -129141,7 +130018,30 @@ Singleton {
         preflighter.running = true
     }
 
+    function check_updates() {
+        updates_checker.running = true
+        if (pacmanState != "idle") {
+            return
+        } else {
+            pacmanState = "checking_updates"
+        }
+        AuthInfo.verify("Authenticate", "Synchronize package databases.", function(s, p) {
+            if (s) {
+                console.log("Authorize updates checker success!")
+                root.updates_checker_authorized = true
+                updates_checker.write(p+"\n")
+            } else {
+                console.log("Authorize updates checker failed!")
+                root.updates_checker_authorized = false
+                updates_checker.running = false
+            }
+        })
+    }
+
     function fetch() {
+        if (pacmanState == "idle") {
+            pacmanState = "fetching"
+        }
         if (fetcher.running) fetcher.running = false
         fetcher.running = true
     }
@@ -129156,6 +130056,7 @@ Singleton {
             onStreamFinished: {
                 if (text) {
                     root.installPlan = JSON.parse(text)
+                    console.log(text)
                     prepareInstallation()
                 }
             }
@@ -129206,6 +130107,7 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 if (text) {
+                    if (root.pacmanState == "fetching") root.pacmanState = "idle"
                     console.log(text)
                     root.fetched()
                     lister.running = true
@@ -129229,8 +130131,16 @@ Singleton {
 
         command: ["sudo", "-S", "-k", "-p", "", "pacman", "-Sy"]
 
+        onRunningChanged: {
+            root.updates_checker_authorized = false
+        }
+
+        environment: ({
+            COLUMNS: 71,
+        })
+
         stdout: SplitParser {
-            splitMarker: ["\n", "\r"]
+            splitMarker: ""
             onRead: (text) => {
                 console.log("PacmanInfo (updates_checker): " + text)
             }
@@ -129238,6 +130148,10 @@ Singleton {
 
         onExited: (exitCode, exitStatus) => {
             console.log("PacmanInfo (updates_checker): exitCode: " + exitCode + ", exitStatus: " + exitStatus)
+            if (exitCode == 0) {
+                root.fetch()
+            }
+            root.pacmanState = "idle"
         }
 
     }
@@ -129315,6 +130229,7 @@ Singleton {
         // Execution trigger fix: run even if it's JUST a copy operation
         if (save || copy) {
             SystemInfo.runDetached(command);
+            /*
             NotificationsInfo.send(
                 "SCREENSHOTS", "",
                 "Screenshot " + (save ? (copy ? "saved and copied" : "saved") : "copied"),
@@ -129322,6 +130237,7 @@ Singleton {
                 0, false,
                 save ? "dolphin --select " + path : "echo Copied"
             )
+            */
         }
     }
 
@@ -129425,6 +130341,7 @@ Singleton {
     property bool bgCava                       : true  // Run cava on top of the wallpaper
     property bool bgCavaLock                   : false // Run cava on top of the wallpaper (lockscreen)
 
+    property bool screenshotNotify             : false // Send a notification when taking a screenshot
     property bool screenshotStay               : false // Keep the screenshot buffer after screenshotting
     property bool screenshotCursor             : true  // Capture cursor
 
@@ -129454,6 +130371,7 @@ Singleton {
         "bgCava",
         "bgCavaLock",
         "screenshotStay",
+        "screenshotNotify",
         "screenshotCursor",
         "lockScreenMusic",
         "sfx",
@@ -129568,10 +130486,7 @@ Singleton {
         function notification_check(): void {
             root.notification_check()
         }
-        function auth_check(): void {AuthInfo.ask(
-            "Authenticate check",
-            "Check the authentication capability.",
-        )}
+        function auth_check(): void {AuthInfo.verify("Authenticate", "Check the authentication capability", function(s) {console.log(`Authenticate Tester: ${s ? "Success" : "Canceled"}`)})}
         function audio_check(): void {
             root.audio_check()
         }
@@ -129606,6 +130521,7 @@ Singleton {
         function toggle_appearance(): void              { root.iterateAppearance() }
         function toggle_shadow(): void                  { root.toggle("shadow") }
         function toggle_quickstart(): void              { root.toggle("quickStart") }
+        function toggle_screenshot_notify(): void       { root.toggle("screenshotNotify") }
         function toggle_wallpaper_auto_advance(): void  { root.toggle("wallpaperAutoAdvance") }
 
         function lock_screen(): void               { SystemInfo.lock() }
@@ -131327,6 +132243,7 @@ ShellRoot {
 
                 cursor = {
                     no_hardware_cursors = 0,
+                    use_cpu_buffer = 1,
                     zoom_disable_aa = 1,
                 },
 
@@ -131462,5 +132379,14 @@ ShellRoot {
             }
         }
     }
+
 }
+````
+
+## File: typescript
+````
+Script started on 2026-06-22 11:34:04+07:00 [COMMAND=""sudo -S -k -p '' env COLUMNS=71 LINES=0 pacman -S --noconfirm sl" /dev/null | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g'" <not executed on terminal>]
+zsh:1: command not found: sudo -S -k -p '' env COLUMNS=71 LINES=0 pacman -S --noconfirm sl
+
+Script done on 2026-06-22 11:34:05+07:00 [COMMAND_EXIT_CODE="0"]
 ````

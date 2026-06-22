@@ -11,7 +11,7 @@ CellPopup {
 
     id: root
 
-    w: 80
+    w: 90
     h: 40
 
     property string pacmanState: PacmanInfo.pacmanState
@@ -29,7 +29,7 @@ CellPopup {
 
     shortcuts: [
         {
-            binds: "Up",
+            binds: ["Up", "Shift+Tab"],
             action: () => {
                 if (list.selected_pkg == "") {
                     list.selected_pkg = list.datas[list.offset].name
@@ -42,16 +42,22 @@ CellPopup {
             }
         },
         {
-            binds: "Down",
+            binds: ["Down", "Tab"],
             action: () => {
                 if (list.selected_pkg == "") {
-                    list.selected_pkg = list.datas[list.offset+list.h-1].name
+                    list.selected_pkg = list.datas[list.offset].name
                     return
                 }
                 if (list.selected_index+1 >= list.h) {
                     list.offset += list.h
                 }
                 list.selected_pkg = list.datas[list.offset + (list.selected_index+list.h+1)%list.h].name
+            }
+        },
+        {
+            binds: "Ctrl+S",
+            action: () => {
+                PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%4
             }
         }
     ]
@@ -321,7 +327,7 @@ CellPopup {
 
                                 onReleased: (button) => {
                                     if (button == "L") {
-                                        PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%3
+                                        PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%4
                                     }
                                 }
 
@@ -1081,7 +1087,7 @@ CellPopup {
                             spacing: 0
 
                             property var installPlan: PacmanInfo.installPlan
-                            property var installTarget: PacmanInfo.packages.find(item => item.name == PacmanInfo.installTarget)
+                            property var installTarget: preflight.installPlan.toInstall.find(item => item.isTarget)
 
                             CellText {
                                 Layout.leftMargin: Cell.w(1)
@@ -1162,8 +1168,8 @@ CellPopup {
 
                                 name: parent.installTarget.name
                                 version: parent.installTarget.version
-                                downloadSize: parent.installTarget.download_size
-                                installedSize: parent.installTarget.installed_size
+                                downloadSize: parent.installTarget.downloadSize
+                                installedSize: parent.installTarget.installedSize
 
                             }
 
@@ -1408,9 +1414,7 @@ CellPopup {
                 }
 
                 // Installation screen
-                CellScrollView {
-
-                    id: install_log
+                ColumnLayout {
 
                     visible: (
                         root.pacmanState == "installing"
@@ -1418,28 +1422,43 @@ CellPopup {
                         || root.pacmanState == "failed"
                     )
 
-                    w: box.contentW
-                    h: box.contentH - 4
+                    spacing: 0
 
-                    source: CellText {
+                    CellScrollView {
 
-                        preferedW: install_log.contentW
-                        preferedH: install_log.h
+                        Layout.leftMargin: Cell.w(1)
 
-                        text: PacmanInfo.installLog
-                        wrap: true
-                        
+                        id: install_log
+
+                        w: box.contentW - 1
+                        h: box.contentH - 4 - (install_footer.h)
+
+                        snapToMax: true
+
+                        source: CellText {
+
+                            preferedW: install_log.contentW - 2
+
+                            text: PacmanInfo.installLog
+                            wrap: true
+
+                        }
+
+
                     }
 
                     Cells {
 
                         id: install_footer
 
-                        anchors.bottom: parent.bottom
-                        anchors.left: parent.left
-                        anchors.right: parent.right
+                        w: box.contentW
+                        h: Cell.hCount(install_footer_content.implicitHeight)
+
+                        color: Colors.bgSurface
 
                         ColumnLayout {
+
+                            id: install_footer_content
 
                             spacing: 0
 
@@ -1447,6 +1466,41 @@ CellPopup {
                                 w: box.contentW
                                 color: Colors.accentDim
                             }
+
+                            RowLayout {
+
+                                visible: root.pacmanState == "installing"
+
+                                Layout.leftMargin: Cell.centerWCell(implicitWidth,install_footer.implicitWidth)
+
+                                spacing: 0
+
+                                CellText {
+
+                                    text: " Installing <b>" + PacmanInfo.installTarget + "</b>"
+                                    color: Colors.info
+
+                                }
+
+                                CellLoading {
+                                    style: 2
+                                }
+
+                            }
+
+                            CellText {
+
+                                visible: root.pacmanState == "success"
+
+                                text: " Installation completed successfully!"
+                                color: Colors.success
+                                font: Cell.fontB
+
+                                preferedW: box.contentW
+                                centered: true
+
+                            }
+
 
                         }
 
@@ -1519,35 +1573,69 @@ CellPopup {
                     }
 
                     // Install
-                    RowLayout {
+                    CellButton {
 
                         visible: (
                             root.pacmanState == "idle"
                             || root.pacmanState == "prepare"
                             || root.pacmanState == "fetching"
                             || root.pacmanState == "checking_updates"
-                        )
+                        ) && !PacmanInfo.isInstalled(list.selected_pkg)
 
                         anchors.right: parent.right
                         anchors.rightMargin: Cell.w(1)
 
-                        spacing: Cell.w(1)
+                        text: "Install"
 
-                        CellButton {
+                        clickable: list.selected_pkg != ""
 
-                            text: PacmanInfo.isInstalled(list.selected_pkg) ? "Uninstall" : "Install"
+                        color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                        fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
 
-                            clickable: list.selected_pkg != ""
-
-                            color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                            fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
-
-                            onReleased: (button) => {
-                                if (button == "L") {
-                                    PacmanInfo.requestInstallation(info.deps.length > 0 ? info.deps[info.deps.length-1] : list.selected_pkg)
-                                }
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                PacmanInfo.requestInstallation(info.deps.length > 0 ? info.deps[info.deps.length-1] : list.selected_pkg)
                             }
+                        }
 
+                    }
+
+                    // Success
+                    CellButton {
+
+                        visible: root.pacmanState == "success"
+
+                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                        text: "Return"
+
+                        color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
+                        fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                PacmanInfo.cancelInstallation()
+                            }
+                        }
+
+                    }
+
+                    // Cancel mid installation
+                    CellButton {
+
+                        visible: root.pacmanState == "installing"
+
+                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                        text: "Cancel"
+
+                        color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
+                        fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                PacmanInfo.cancelInstallation()
+                            }
                         }
 
                     }

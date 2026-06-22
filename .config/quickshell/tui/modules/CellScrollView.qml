@@ -29,7 +29,16 @@ Cells {
 
     readonly property int maxOffset: Math.floor(root.contentH/Cell.cellHeight)-root.h
 
+    property bool snapToMax: false
+
+    property bool snappingToMax: false
+
     onOffsetChanged: {
+        if (offset == maxOffset) {
+            snappingToMax = true
+        } else {
+            snappingToMax = false
+        }
         if ((offset > maxOffset || offset < 0) && maxOffset > 0) {
             snapBack()
         }
@@ -37,6 +46,10 @@ Cells {
 
     function snapBack() {
         offset = Math.max(Math.min(root.offset,maxOffset),0)
+    }
+
+    function maximizeScroll() {
+        offset = maxOffset
     }
 
     property bool keyNav: true
@@ -85,7 +98,10 @@ Cells {
         spacing: 0
 
         onContentHeightChanged: {
-            root.offset = Math.max(Math.min(root.offset,root.maxOffset),0)
+            if (root.snapToMax && root.snappingToMax) {
+                root.offset = root.maxOffset
+            }
+            root.snapBack()
         }
 
         model: 1

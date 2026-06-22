@@ -49,6 +49,8 @@ Singleton {
         "totalInstalled": "",
     }
     property string installLog: ""
+    property int installLogCursor: 0
+    property int installLogLastNewline: 0
     property string pendingPrompt: ""
     property int installExitCode: 0
 
@@ -56,6 +58,11 @@ Singleton {
     signal installCompleted(exitCode: int)
 
     function cancelInstallation() {
+        if (installer.running) {
+            installer.signal(2)
+            pacmanState = "cancel"
+            return
+        }
         pacmanState = "idle"
         installTarget = ""
         installPlan = {
@@ -66,8 +73,8 @@ Singleton {
             "totalInstalled": "",
         }
         installLog = ""
+        installLogCursor = 0
         pendingPrompt = ""
-        installer.running = false
     }
 
     function requestInstallation(name: string) {
@@ -77,8 +84,9 @@ Singleton {
             return
         }
         installTarget = name
-        fetch()
+        //fetch()
         pacmanState = "prepare"
+        preparePreFlight()
     }
 
     function prepareInstallation() {
@@ -93,24 +101,6 @@ Singleton {
     function confirmInstallation() {
         pacmanState = "authentication"
         installer.running = true
-    }
-
-    SequentialAnimation {
-        id: succeed
-        ScriptAction {
-            script: {
-                root.pacmanState = "success"
-                fetch()
-            }
-        }
-        PauseAnimation {
-            duration: 1000
-        }
-        ScriptAction {
-            script: {
-                root.pacmanState = "idle"
-            }
-        }
     }
 
     Process {
@@ -132,12 +122,11 @@ Singleton {
             }
         }
 
-        command: ["sudo", "-S", "-k", "-p", "", "pacman", "-S", "--noconfirm", pkg]
+        command: ["sudo", "-S", "-k", "-p", "", "pacman", "-S", "--confirm", pkg]
 
         stdout: SplitParser {
             splitMarker: ""
             onRead: (text) => {
-                console.log(text)
                 root.installLog += text
             }
         }
@@ -145,14 +134,30 @@ Singleton {
         stderr: SplitParser {
             splitMarker: ""
             onRead: (text) => {
-                root.installLog.push(text)
+                //console.log("\n"+JSON.stringify(text))
+                //root.appendLog(text)
             }
         }
 
         onExited: (exitCode, exitStatus) => {
             console.log("PacmanInfo (installer): exitCode: " + exitCode + ", exitStatus: " + exitStatus)
+            fetch()
+            if (root.pacmanState == "cancel") {
+                root.pacmanState = "idle"
+                root.installTarget = ""
+                root.installPlan = {
+                    "toInstall": [], // Dependencies (install)
+                    "willReplace": [], // Replaces (remove)
+                    "conflictsWith": [], // Conflicts (remove)
+                    "totalDownload": "",
+                    "totalInstalled": "",
+                }
+                root.installLog = ""
+                root.pendingPrompt = ""
+                return
+            }
             if (exitCode == 0) {
-                succeed.start()
+                root.pacmanState = "success"
             }
         }
 
@@ -195,12 +200,11 @@ Singleton {
                 matchRepo = item.repository.toLowerCase().includes(q)
             }
 
-
             let matchesQuery = matchName
 
             if (search_mode == 0 || search_mode == 1) {
                 matchesQuery = matchesQuery || matchDesc || matchRepo
-            } else if (search_mode == 2) {
+            } else if (search_mode == 3) {
                 matchesQuery = item.name.trim() == q.trim()
             }
 
@@ -214,11 +218,6 @@ Singleton {
 
     property bool outdated: false
 
-    /* search mode
-     * 0 -> pretty_fuzzy
-     * 1 -> name_only
-     * 2 -> exact_match
-     */
     property int search_mode: 0
 
     property var search_modes: [
@@ -292,6 +291,7 @@ Singleton {
             onStreamFinished: {
                 if (text) {
                     root.installPlan = JSON.parse(text)
+                    console.log(text)
                     prepareInstallation()
                 }
             }
@@ -370,8 +370,12 @@ Singleton {
             root.updates_checker_authorized = false
         }
 
+        environment: ({
+            COLUMNS: 71,
+        })
+
         stdout: SplitParser {
-            splitMarker: ["\n", "\r"]
+            splitMarker: ""
             onRead: (text) => {
                 console.log("PacmanInfo (updates_checker): " + text)
             }

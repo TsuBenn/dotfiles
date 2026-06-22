@@ -1,0 +1,4 @@
+Script started on 2026-06-22 11:34:04+07:00 [COMMAND=""sudo -S -k -p '' env COLUMNS=71 LINES=0 pacman -S --noconfirm sl" /dev/null | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g'" <not executed on terminal>]
+zsh:1: command not found: sudo -S -k -p '' env COLUMNS=71 LINES=0 pacman -S --noconfirm sl
+
+Script done on 2026-06-22 11:34:05+07:00 [COMMAND_EXIT_CODE="0"]
