@@ -48,7 +48,7 @@ Singleton {
         "totalDownload": "",
         "totalInstalled": "",
     }
-    property string installLog: processANSI(rawInstallLog)
+    property string installLog: sanitizeTerminalOutput(processANSI(rawInstallLog))
     property string rawInstallLog: ""
     property int installLogCursor: 0
     property int installLogLastNewline: 0
