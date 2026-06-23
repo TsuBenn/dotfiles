@@ -16,9 +16,13 @@ CellPopup {
 
     property string pacmanState: PacmanInfo.pacmanState
 
+    property int selected_index: 0
+    property string selected_pkg: ""
+    property var multi_selected_pkg: []
+
     onVisibleChanged: {
-        list.selected_index = 0
-        list.selected_pkg = ""
+        root.selected_index = 0
+        root.selected_pkg = ""
         PacmanInfo.query = ""
         list.reset()
     }
@@ -31,27 +35,27 @@ CellPopup {
         {
             binds: ["Up", "Shift+Tab"],
             action: () => {
-                if (list.selected_pkg == "") {
-                    list.selected_pkg = list.datas[list.offset].name
+                if (root.selected_pkg == "") {
+                    root.selected_pkg = list.datas[list.offset].name
                     return
                 }
-                if (list.selected_index-1 < 0) {
+                if (root.selected_index-1 < 0) {
                     list.offset -= list.h
                 }
-                list.selected_pkg = list.datas[list.offset + (list.selected_index+list.h-1)%list.h].name
+                root.selected_pkg = list.datas[list.offset + (root.selected_index+list.h-1)%list.h].name
             }
         },
         {
             binds: ["Down", "Tab"],
             action: () => {
-                if (list.selected_pkg == "") {
-                    list.selected_pkg = list.datas[list.offset].name
+                if (root.selected_pkg == "") {
+                    root.selected_pkg = list.datas[list.offset].name
                     return
                 }
-                if (list.selected_index+1 >= list.h) {
+                if (root.selected_index+1 >= list.h) {
                     list.offset += list.h
                 }
-                list.selected_pkg = list.datas[list.offset + (list.selected_index+list.h+1)%list.h].name
+                root.selected_pkg = list.datas[list.offset + (root.selected_index+list.h+1)%list.h].name
             }
         },
         {
@@ -143,10 +147,6 @@ CellPopup {
                     w: box.contentW
                     h: 14
 
-                    property int selected_index: 0
-                    property string selected_pkg: ""
-                    property var multi_selected_pkg: []
-
                     property var datas: PacmanInfo.outdated ? PacmanInfo.search_results.filter(item => item.latest_version != "") : (PacmanInfo.installed ? PacmanInfo.search_results.filter(item => item.installed) : PacmanInfo.search_results)
 
                     property var optimized_data: datas.slice(list.offset,list.offset+list.h)
@@ -177,7 +177,7 @@ CellPopup {
                                 property bool installed: modelData.installed
                                 property bool update_available: pkg.latest_version != ""
 
-                                property bool selected: list.selected_pkg == name && !disabled
+                                property bool selected: root.selected_pkg == name && !disabled
 
                                 property bool disabled: PacmanInfo.fetching || PacmanInfo.checking_updates
 
@@ -188,7 +188,7 @@ CellPopup {
 
                                 onSelectedChanged: {
                                     if (selected) {
-                                        list.selected_index = index
+                                        root.selected_index = index
                                     }
                                 }
 
@@ -260,11 +260,11 @@ CellPopup {
 
                                     onReleased: (button) => {
                                         if (button == "L") {
-                                            if (list.selected_pkg == pkg.name) {
-                                                list.selected_pkg = ""
+                                            if (root.selected_pkg == pkg.name) {
+                                                root.selected_pkg = ""
                                                 return
                                             }
-                                            list.selected_pkg = pkg.name
+                                            root.selected_pkg = pkg.name
                                         }
                                     }
 
@@ -391,7 +391,7 @@ CellPopup {
                     )
 
                     Layout.leftMargin: {
-                        let result = list.selected_pkg.length + 2
+                        let result = root.selected_pkg.length + 2
                         for (const dep of info.deps) {
                             result += dep.length + 2*PacmanInfo.isInstalled(dep) + 4
                         }
@@ -401,7 +401,7 @@ CellPopup {
                     spacing: Cell.w(1)
 
                     CellText {
-                        text: "* " + list.selected_pkg
+                        text: "* " + root.selected_pkg
                         color: info.deps.length > 0 ? Colors.fgSubtle : Colors.fgBase
                         font: Cell.fontB
 
@@ -529,19 +529,19 @@ CellPopup {
 
                         id: info
 
-                        w: box.contentW - (list.multi_selected_pkg.length > 0 ? install_queue.w : 0)
+                        w: box.contentW - (root.multi_selected_pkg.length > 0 ? install_queue.w : 0)
                         h: box.contentH - list.h - 9
 
                         property int dep_index: PacmanInfo.packages.findIndex(item => item.name == deps[deps.length-1])
-
-                        property int index: PacmanInfo.packages.findIndex(item => item.name == list.selected_pkg)
+                        property int index: PacmanInfo.packages.findIndex(item => item.name == root.selected_pkg)
+                        property var deps: []
 
                         onIndexChanged: {
                             deps = []
                         }
 
                         onDepsChanged: {
-                            if (deps[deps.length-1] == list.selected_pkg) {
+                            if (deps[deps.length-1] == root.selected_pkg) {
                                 deps = []
                                 depsChanged()
                                 return
@@ -556,8 +556,6 @@ CellPopup {
                         }
 
                         property var datas: PacmanInfo.packages[deps.length > 0 ? dep_index : index]
-
-                        property var deps: []
 
                         property int magic: 22
 
@@ -1020,7 +1018,7 @@ CellPopup {
 
                     Cells {
 
-                        visible: list.multi_selected_pkg.length > 0
+                        visible: root.multi_selected_pkg.length > 0
 
                         id: install_queue
 
@@ -1069,7 +1067,7 @@ CellPopup {
 
                                         Repeater {
 
-                                            model: list.multi_selected_pkg
+                                            model: root.multi_selected_pkg
 
                                             delegate: Cells {
 
@@ -1114,7 +1112,7 @@ CellPopup {
 
                                                     onReleased: (button) => {
                                                         if (button == "L") {
-                                                            list.selected_pkg = selected_pkgs.modelData
+                                                            root.selected_pkg = selected_pkgs.modelData
                                                         }
                                                     }
 
@@ -1144,8 +1142,9 @@ CellPopup {
                                         id: estimate_download
                                         text: {
                                             let result = 0
-                                            for (const pkg of list.multi_selected_pkg) {
-                                                result += PacmanInfo.convertToBytes(PacmanInfo.packages.find(item => item.name == pkg).download_size)
+                                            for (const pkg of root.multi_selected_pkg) {
+                                                let pack = PacmanInfo.packages.find(item => item.name == pkg)
+                                                result += PacmanInfo.convertToBytes(pack.download_size)
                                             }
                                             return PacmanInfo.formatBytes(result)
                                         }
@@ -1164,8 +1163,9 @@ CellPopup {
                                         id: estimate_installed
                                         text: {
                                             let result = 0
-                                            for (const pkg of list.multi_selected_pkg) {
-                                                result += PacmanInfo.convertToBytes(PacmanInfo.packages.find(item => item.name == pkg).installed_size)
+                                            for (const pkg of root.multi_selected_pkg) {
+                                                let pack = PacmanInfo.packages.find(item => item.name == pkg)
+                                                result += PacmanInfo.convertToBytes(pack.installed_size)
                                             }
                                             return PacmanInfo.formatBytes(result)
                                         }
@@ -1981,7 +1981,7 @@ CellPopup {
                                 || root.pacmanState == "prepare"
                                 || root.pacmanState == "fetching"
                                 || root.pacmanState == "checking_updates"
-                            ) && !PacmanInfo.isInstalled(list.selected_pkg) && list.multi_selected_pkg.length > 0
+                            ) && !PacmanInfo.isInstalled(root.selected_pkg) && root.multi_selected_pkg.length > 0
 
                             text: "Clear queue"
 
@@ -1992,7 +1992,7 @@ CellPopup {
 
                             onReleased: (button) => {
                                 if (button == "L") {
-                                    list.multi_selected_pkg = []
+                                    root.multi_selected_pkg = []
                                 }
                             }
 
@@ -2005,9 +2005,9 @@ CellPopup {
                                 || root.pacmanState == "prepare"
                                 || root.pacmanState == "fetching"
                                 || root.pacmanState == "checking_updates"
-                            ) && !PacmanInfo.isInstalled(list.selected_pkg)
+                            ) && !PacmanInfo.isInstalled(root.selected_pkg)
 
-                            property bool in_queue: list.multi_selected_pkg.some(item => item == list.selected_pkg)
+                            property bool in_queue: root.multi_selected_pkg.some(item => item == root.selected_pkg)
 
                             text: in_queue ? "Remove from queue" : "Add to queue"
 
@@ -2019,11 +2019,11 @@ CellPopup {
                             onReleased: (button) => {
                                 if (button == "L") {
                                     if (in_queue) {
-                                        list.multi_selected_pkg.splice(list.multi_selected_pkg.findIndex(item=>item == list.selected_pkg),1)
-                                        list.multi_selected_pkgChanged()
+                                        root.multi_selected_pkg.splice(root.multi_selected_pkg.findIndex(item=>item == root.selected_pkg),1)
+                                        root.multi_selected_pkgChanged()
                                     } else {
-                                        list.multi_selected_pkg.push(list.selected_pkg) 
-                                        list.multi_selected_pkgChanged()
+                                        root.multi_selected_pkg.push(root.selected_pkg) 
+                                        root.multi_selected_pkgChanged()
                                     }
                                 }
                             }
@@ -2037,21 +2037,21 @@ CellPopup {
                                 || root.pacmanState == "prepare"
                                 || root.pacmanState == "fetching"
                                 || root.pacmanState == "checking_updates"
-                            ) && !PacmanInfo.isInstalled(list.selected_pkg)
+                            ) && !PacmanInfo.isInstalled(root.selected_pkg)
 
-                            text: (list.multi_selected_pkg.length > 0 ? "Install all" : "Install")
+                            text: (root.multi_selected_pkg.length > 0 ? "Install all" : "Install")
 
-                            clickable: list.selected_pkg != "" || list.multi_selected_pkg.length > 0 && root.pacmanState != "prepare"
+                            clickable: root.selected_pkg != "" || root.multi_selected_pkg.length > 0 && root.pacmanState != "prepare"
 
                             color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
                             fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
 
                             onReleased: (button) => {
                                 if (button == "L") {
-                                    if (list.multi_selected_pkg.length > 0) {
-                                        PacmanInfo.requestInstallation(list.multi_selected_pkg)
+                                    if (root.multi_selected_pkg.length > 0) {
+                                        PacmanInfo.requestInstallation(root.multi_selected_pkg)
                                     } else {
-                                        PacmanInfo.requestInstallation(info.deps.length > 0 ? [info.deps[info.deps.length-1]] : [list.selected_pkg])
+                                        PacmanInfo.requestInstallation(info.deps.length > 0 ? [info.deps[info.deps.length-1]] : [root.selected_pkg])
                                     }
                                 }
                             }
