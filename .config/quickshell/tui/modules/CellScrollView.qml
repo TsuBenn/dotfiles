@@ -48,7 +48,7 @@ Cells {
     }
 
     function maximizeScroll() {
-        offset = maxOffset
+        offset = Math.max(maxOffset,0)
     }
 
     property bool keyNav: true

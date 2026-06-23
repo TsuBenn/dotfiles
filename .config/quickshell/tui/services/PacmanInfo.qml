@@ -58,12 +58,7 @@ Singleton {
     signal promptRequested(prompt: string)
     signal installCompleted(exitCode: int)
 
-    function cancelInstallation() {
-        if (installer.running) {
-            installer.signal(2)
-            pacmanState = "cancel"
-            return
-        }
+    function reset() {
         pacmanState = "idle"
         installTarget = []
         installPlan = {
@@ -76,6 +71,20 @@ Singleton {
         rawInstallLog = ""
         installLogCursor = 0
         pendingPrompt = ""
+        installState = {
+            "currentPhase": "START", // START, DOWNLOAD, CHECKS, INSTALL, HOOKS, DONE
+            "progressData": {},
+            "overallProgress": 0     // 0 to 100
+        }
+    }
+
+    function cancelInstallation() {
+        if (installer.running) {
+            installer.write("\x03")
+            pacmanState = "cancel"
+            return
+        }
+        reset()
     }
 
     function requestInstallation(pkgs: var) {
@@ -144,7 +153,7 @@ Singleton {
             let downloadSpeed = "0 B/s"
             let estimateTime = "inf"
             let percentage = 0
-            if (installPlan.toInstall.length > 1) {
+            if (installPlan.toInstall.filter(item => item.downloadBytes > 0).length > 1) {
                 data = line.match(/Total\s+\((\d+)\/(\d+)\)\s+(\d+.\d+\s+(B|MiB|KiB|GiB))\s+(\d+(.\d+)?\s+(B|MiB|KiB|GiB)\/s)\s+((\d+|--):(\d+|--))\s+\[.*?]\s+(\d+)%/)
                 if (data) {
                     currentPkg = parseInt(data[1])
@@ -155,7 +164,7 @@ Singleton {
                     percentage = parseInt(data[11])
                 }
             } else {
-                data = line.match(/.*\s+(\d+(.\d+)?\s+(B|MiB|KiB|GiB))\s+(\d+(.\d+)?\s+(B|MiB|KiB|GiB)\/s)\s+((\d+|[-]+):(\d+|[-]+))\s+\[.*?]\s+(\d+)%/)
+                data = line.match(/.*\s+(\d+(.\d+)?\s+(B|MiB|KiB|GiB))\s+(\d+(.\d+)?\s+(B|MiB|KiB|GiB)\/s)\s+((\d+|--):(\d+|--))\s+\[.*?]\s+(\d+)%/)
                 currentPkg = 1
                 totalPkg = 1
                 if (data)  {
@@ -197,7 +206,6 @@ Singleton {
         }
 
         if (installState.currentPhase == "HOOKS") {
-            console.log(line)
             let lines = line.split("\n")
             let data
             for (let i = lines.length - 1; i >= 0; i--) {
@@ -213,10 +221,11 @@ Singleton {
                 "totalStep": totalStep,
                 "percentage": Math.round((currentStep/totalStep)*100)
             }
-            installState.overallProgress = 90 + Math.round((currentStep/totalStep)*100*0.1)
+            installState.overallProgress = 90 + Math.round((currentStep/totalStep)*9)
         }
 
         //console.log(JSON.stringify(installState,null,2))
+        installStateChanged()
     }
 
     function processANSI(rawText) {
@@ -329,13 +338,10 @@ Singleton {
 
         id: installer
 
-        property string pkg: root.installTarget
-
-        property string rawLog: ""
+        property string pkg: root.installTarget.join(" ")
 
         onRunningChanged: {
             if (running) {
-                rawLog = ""
                 AuthInfo.verify("Installing <b>" + root.installTarget + "</b>", "Authenticate for installation.", function(s, p) {
                     if (s) {
                         installer.write(p+"\n")
@@ -347,11 +353,12 @@ Singleton {
             }
         }
 
-        command: ["script", "-qc", `sudo -S -k -p '' env COLUMNS=84 LINES=0 pacman -S ${pkg}`, "/dev/null"]
+        command: ["script", "-qc", `sudo -S -k -p '' env COLUMNS=94 LINES=0 pacman -S ${pkg}`, "/dev/null"]
 
         stdout: SplitParser {
             splitMarker: ""
             onRead: (text) => {
+                //console.log(text)
                 root.appendLog(text)
             }
         }
@@ -367,17 +374,7 @@ Singleton {
             console.log("PacmanInfo (installer): exitCode: " + exitCode + ", exitStatus: " + exitStatus)
             fetch()
             if (root.pacmanState == "cancel") {
-                root.pacmanState = "idle"
-                root.installTarget = ""
-                root.installPlan = {
-                    "toInstall": [], // Dependencies (install)
-                    "willReplace": [], // Replaces (remove)
-                    "conflictsWith": [], // Conflicts (remove)
-                    "totalDownload": "",
-                    "totalInstalled": "",
-                }
-                root.installLog = ""
-                root.pendingPrompt = ""
+                root.reset()
                 return
             }
             if (exitCode == 0) {
@@ -613,6 +610,57 @@ Singleton {
             root.pacmanState = "idle"
         }
 
+    }
+
+    function formatBytes(bytes, decimals = 1) {
+        if (bytes === 0) return "0 B"
+        if (!bytes || bytes < 0) return ""
+
+        const units = ["B", "KiB", "MiB", "GiB", "TiB", "PiB"]
+        const k = 1024
+
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+        const unit = units[Math.min(i, units.length - 1)]
+
+        // For B, no decimals (it's an integer). For larger units, show decimals.
+        if (i === 0) return bytes + " B"
+
+        const value = bytes / Math.pow(k, i)
+        return value.toFixed(decimals) + " " + unit
+    }
+
+    function convertToBytes(str) {
+        if (!str) return 0
+
+        const s = str.trim().toLowerCase()
+        if (!s) return 0
+
+        // Match a number (with optional decimals) followed by an optional unit.
+        // The unit can be: b, kib/kb/k, mib/mb/m, gib/gb/g, tib/tb/t, pib/pb/p
+        // We treat decimal (KB) and binary (KiB) units the same — both 1024,
+        // because pacman uses MiB but users might type MB and we want to be
+        // forgiving. The lowercase "b" by itself is bytes.
+        const match = s.match(/^([\d.]+)\s*(b|kib|kb|k|mib|mb|m|gib|gb|g|tib|tb|t|pib|pb|p)?$/)
+        if (!match) return 0
+
+        const value = parseFloat(match[1])
+        if (isNaN(value)) return 0
+
+        const unit = match[2] || "b"
+
+        const multipliers = {
+            "b": 1,
+            "k": 1024, "kib": 1024, "kb": 1024,
+            "m": 1024 * 1024, "mib": 1024 * 1024, "mb": 1024 * 1024,
+            "g": 1024 * 1024 * 1024, "gib": 1024 * 1024 * 1024, "gb": 1024 * 1024 * 1024,
+            "t": 1024 ** 4, "tib": 1024 ** 4, "tb": 1024 ** 4,
+            "p": 1024 ** 5, "pib": 1024 ** 5, "pb": 1024 ** 5,
+        }
+
+        const mult = multipliers[unit]
+        if (!mult) return 0
+
+        return Math.round(value * mult)
     }
 
 }
