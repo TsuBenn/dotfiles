@@ -12,7 +12,7 @@ CellPopup {
     id: root
 
     w: 90
-    h: 40
+    h: 44
 
     property string pacmanState: PacmanInfo.pacmanState
 
@@ -145,6 +145,7 @@ CellPopup {
 
                     property int selected_index: 0
                     property string selected_pkg: ""
+                    property var multi_selected_pkg: []
 
                     property var datas: PacmanInfo.outdated ? PacmanInfo.search_results.filter(item => item.latest_version != "") : (PacmanInfo.installed ? PacmanInfo.search_results.filter(item => item.installed) : PacmanInfo.search_results)
 
@@ -515,502 +516,507 @@ CellPopup {
                 }
 
                 // Info
-                CellScrollView {
+                RowLayout {
 
-                    visible: (
-                        root.pacmanState == "idle"
-                        || root.pacmanState == "fetching"
-                    )
+                    spacing: 0
 
-                    id: info
+                    CellScrollView {
 
-                    w: box.contentW
-                    h: box.contentH - list.h - 9
+                        visible: (
+                            root.pacmanState == "idle"
+                            || root.pacmanState == "fetching"
+                        )
 
-                    property int dep_index: PacmanInfo.packages.findIndex(item => item.name == deps[deps.length-1])
+                        id: info
 
-                    property int index: PacmanInfo.packages.findIndex(item => item.name == list.selected_pkg)
+                        w: box.contentW
+                        h: box.contentH - list.h - 9
 
-                    onIndexChanged: {
-                        deps = []
-                    }
+                        property int dep_index: PacmanInfo.packages.findIndex(item => item.name == deps[deps.length-1])
 
-                    onDepsChanged: {
-                        if (deps[deps.length-1] == list.selected_pkg) {
+                        property int index: PacmanInfo.packages.findIndex(item => item.name == list.selected_pkg)
+
+                        onIndexChanged: {
                             deps = []
-                            depsChanged()
-                            return
                         }
-                        for (let i = 0; i < deps.length-1; i++) {
-                            if (deps[deps.length-1] == deps[i]) {
-                                deps = deps.slice(0, i+1)
+
+                        onDepsChanged: {
+                            if (deps[deps.length-1] == list.selected_pkg) {
+                                deps = []
                                 depsChanged()
                                 return
                             }
-                        }
-                    }
-
-                    property var datas: PacmanInfo.packages[deps.length > 0 ? dep_index : index]
-
-                    property var deps: []
-
-                    property int magic: 22
-
-                    // ── Section visibility flags (for separator conditionals) ──
-                    property bool hasIdentity:  (datas?.description ?? "").length > 0
-                    || (datas?.url ?? "").length > 0
-                    || (datas?.version ?? "").length > 0
-                    || (datas?.licenses ?? []).length > 0
-
-                    property bool hasSource:    (datas?.repository ?? "").length > 0
-                    || (datas?.arch ?? "").length > 0
-                    || (datas?.groups ?? []).length > 0
-
-                    property bool hasFootprint: (datas?.download_size ?? "").length > 0
-                    || (datas?.installed_size ?? "").length > 0
-                    || (datas?.conflicts_with ?? []).length > 0
-                    || (datas?.replaces ?? []).length > 0
-                    || (datas?.provides ?? []).length > 0
-
-                    // "Installed" is always rendered when index != -1, so hasStatus is always
-                    // true alongside a real selection. Kept here for symmetry / future-proofing.
-                    property bool hasStatus:    index != -1
-
-                    property bool hasRelations: (datas?.required_by ?? []).length > 0
-                    || (datas?.optional_for ?? []).length > 0
-                    || (datas?.depends ?? []).length > 0
-                    || (datas?.optional_deps ?? []).length > 0
-                    || (datas?.make_deps ?? []).length > 0
-                    || (datas?.check_deps ?? []).length > 0
-
-                    component Info: RowLayout {
-
-                        visible: value.length > 0 && info.index != -1
-
-                        property string key: "Name"
-
-                        property string value: info.datas.name
-
-                        Layout.leftMargin: Cell.w(1)
-
-                        spacing: 0
-
-                        CellText {
-                            Layout.alignment: Qt.AlignTop
-                            text: (parent.key).padEnd(info.magic-4, " ") + ": "
-                            color: Colors.fgDim
+                            for (let i = 0; i < deps.length-1; i++) {
+                                if (deps[deps.length-1] == deps[i]) {
+                                    deps = deps.slice(0, i+1)
+                                    depsChanged()
+                                    return
+                                }
+                            }
                         }
 
-                        CellText {
-                            text: parent.value
-                            preferedW: info.contentW - info.magic
-                            wrap: true
-                        }
+                        property var datas: PacmanInfo.packages[deps.length > 0 ? dep_index : index]
 
-                    }
+                        property var deps: []
 
-                    component Deps: RowLayout {
+                        property int magic: 22
 
-                        id: deps
+                        // ── Section visibility flags (for separator conditionals) ──
+                        property bool hasIdentity:  (datas?.description ?? "").length > 0
+                        || (datas?.url ?? "").length > 0
+                        || (datas?.version ?? "").length > 0
+                        || (datas?.licenses ?? []).length > 0
 
-                        property string key: "Dependencies"
-                        property var values: info.datas?.depends ?? []
+                        property bool hasSource:    (datas?.repository ?? "").length > 0
+                        || (datas?.arch ?? "").length > 0
+                        || (datas?.groups ?? []).length > 0
 
-                        // ── Collapse behavior ──
-                        // Initial visible rows, and step size for each "+N more" click.
-                        // 5 / 5 keeps the default footprint small (longest list takes 5 rows)
-                        // while making each expansion click cheap (~1ms for 5 new delegates).
-                        property int collapseThreshold: 5
-                        property int expandStep: 5
+                        property bool hasFootprint: (datas?.download_size ?? "").length > 0
+                        || (datas?.installed_size ?? "").length > 0
+                        || (datas?.conflicts_with ?? []).length > 0
+                        || (datas?.replaces ?? []).length > 0
+                        || (datas?.provides ?? []).length > 0
 
-                        property var shownValues: deps.values?.slice(0, deps.shownCount)
+                        // "Installed" is always rendered when index != -1, so hasStatus is always
+                        // true alongside a real selection. Kept here for symmetry / future-proofing.
+                        property bool hasStatus:    index != -1
 
-                        // How many rows are currently visible. Initialized to the threshold,
-                        // bumped by expandStep on "+N more", set to values.length on "show all",
-                        // reset to collapseThreshold on "show less" or when the package changes.
-                        property int shownCount: collapseThreshold
+                        property bool hasRelations: (datas?.required_by ?? []).length > 0
+                        || (datas?.optional_for ?? []).length > 0
+                        || (datas?.depends ?? []).length > 0
+                        || (datas?.optional_deps ?? []).length > 0
+                        || (datas?.make_deps ?? []).length > 0
+                        || (datas?.check_deps ?? []).length > 0
 
-                        onValuesChanged: shownCount = collapseThreshold
+                        component Info: RowLayout {
 
-                        Layout.leftMargin: Cell.w(1)
+                            visible: value.length > 0 && info.index != -1
 
-                        spacing: 0
+                            property string key: "Name"
 
-                        CellText {
-                            Layout.alignment: Qt.AlignTop
-                            text: (parent.key).padEnd(info.magic-4, " ") + ":"
-                            color: Colors.fgDim
-                        }
+                            property string value: info.datas.name
 
-                        ColumnLayout {
-
-                            Layout.alignment: Qt.AlignTop
+                            Layout.leftMargin: Cell.w(1)
 
                             spacing: 0
 
-                            Repeater {
+                            CellText {
+                                Layout.alignment: Qt.AlignTop
+                                text: (parent.key).padEnd(info.magic-4, " ") + ": "
+                                color: Colors.fgDim
+                            }
 
-                                model: deps.shownValues
+                            CellText {
+                                text: parent.value
+                                preferedW: info.contentW - info.magic
+                                wrap: true
+                            }
 
-                                delegate: Cells {
+                        }
 
-                                    id: dep
+                        component Deps: RowLayout {
 
-                                    required property string name
-                                    required property bool installed
+                            id: deps
 
-                                    // A "real" package exists in the cache as its own entry.
-                                    // Virtual names (e.g. "sh" provided by bash, "java-runtime"
-                                    // provided by java-runtime-common) are NOT in the cache and
-                                    // must not be navigable — clicking them would push a
-                                    // non-existent name onto the breadcrumb and break the panel.
-                                    property bool isReal: PacmanInfo.packages.some(
-                                        item => item.name == dep.dep_name
-                                    )
+                            property string key: "Dependencies"
+                            property var values: info.datas?.depends ?? []
 
-                                    property var dep_data: {
-                                        if (name.includes("<="))      return name.split("<=")
-                                        else if (name.includes("<"))      return name.split("<")
-                                        else if (name.includes(">=")) return name.split(">=")
-                                        else if (name.includes(">")) return name.split(">")
-                                        else if (name.includes("="))  return name.split("=")
-                                        return [name]
-                                    }
-                                    property string version_ops: {
-                                        if (name.includes("<="))      return "<="
-                                        else if (name.includes("<"))      return "<"
-                                        else if (name.includes(">=")) return ">="
-                                        else if (name.includes(">"))      return ">"
-                                        else if (name.includes("="))  return ""
-                                        return ""
-                                    }
-                                    property string dep_name: dep_data[0]
-                                    property string dep_version: dep_data[1] ?? ""
+                            // ── Collapse behavior ──
+                            // Initial visible rows, and step size for each "+N more" click.
+                            // 5 / 5 keeps the default footprint small (longest list takes 5 rows)
+                            // while making each expansion click cheap (~1ms for 5 new delegates).
+                            property int collapseThreshold: 5
+                            property int expandStep: 5
 
-                                    // No hover highlight for virtual packages — reinforces
-                                    // unclickability at the visual level.
-                                    color: (dep.isReal && dep_mouse.hovered)
-                                    ? Colors.bgOverlay
-                                    : "transparent"
+                            property var shownValues: deps.values?.slice(0, deps.shownCount)
 
-                                    w: info.contentW - info.magic + 2
-                                    h: 1
+                            // How many rows are currently visible. Initialized to the threshold,
+                            // bumped by expandStep on "+N more", set to values.length on "show all",
+                            // reset to collapseThreshold on "show less" or when the package changes.
+                            property int shownCount: collapseThreshold
 
-                                    RowLayout {
+                            onValuesChanged: shownCount = collapseThreshold
 
-                                        x: Cell.w(1)
+                            Layout.leftMargin: Cell.w(1)
 
-                                        spacing: Cell.w(1)
+                            spacing: 0
 
-                                        CellText {
-                                            // Star column legend:
-                                            //   *  = real package, installed      (green, clickable)
-                                            //      = real package, not installed  (default, clickable)
-                                            //   ~  = virtual / provided name      (dim, unclickable)
-                                            text: dep.installed
-                                            ? "*"
-                                            : (dep.isReal ? "-" : "~")
-                                            color: dep.installed
-                                            ? Colors.success
-                                            : Colors.fgSubtle
-                                            font: Cell.fontB
+                            CellText {
+                                Layout.alignment: Qt.AlignTop
+                                text: (parent.key).padEnd(info.magic-4, " ") + ":"
+                                color: Colors.fgDim
+                            }
+
+                            ColumnLayout {
+
+                                Layout.alignment: Qt.AlignTop
+
+                                spacing: 0
+
+                                Repeater {
+
+                                    model: deps.shownValues
+
+                                    delegate: Cells {
+
+                                        id: dep
+
+                                        required property string name
+                                        required property bool installed
+
+                                        // A "real" package exists in the cache as its own entry.
+                                        // Virtual names (e.g. "sh" provided by bash, "java-runtime"
+                                        // provided by java-runtime-common) are NOT in the cache and
+                                        // must not be navigable — clicking them would push a
+                                        // non-existent name onto the breadcrumb and break the panel.
+                                        property bool isReal: PacmanInfo.packages.some(
+                                            item => item.name == dep.dep_name
+                                        )
+
+                                        property var dep_data: {
+                                            if (name.includes("<="))      return name.split("<=")
+                                            else if (name.includes("<"))      return name.split("<")
+                                            else if (name.includes(">=")) return name.split(">=")
+                                            else if (name.includes(">")) return name.split(">")
+                                            else if (name.includes("="))  return name.split("=")
+                                            return [name]
+                                        }
+                                        property string version_ops: {
+                                            if (name.includes("<="))      return "<="
+                                            else if (name.includes("<"))      return "<"
+                                            else if (name.includes(">=")) return ">="
+                                            else if (name.includes(">"))      return ">"
+                                            else if (name.includes("="))  return ""
+                                            return ""
+                                        }
+                                        property string dep_name: dep_data[0]
+                                        property string dep_version: dep_data[1] ?? ""
+
+                                        // No hover highlight for virtual packages — reinforces
+                                        // unclickability at the visual level.
+                                        color: (dep.isReal && dep_mouse.hovered)
+                                        ? Colors.bgOverlay
+                                        : "transparent"
+
+                                        w: info.contentW - info.magic + 2
+                                        h: 1
+
+                                        RowLayout {
+
+                                            x: Cell.w(1)
+
+                                            spacing: Cell.w(1)
+
+                                            CellText {
+                                                // Star column legend:
+                                                //   *  = real package, installed      (green, clickable)
+                                                //      = real package, not installed  (default, clickable)
+                                                //   ~  = virtual / provided name      (dim, unclickable)
+                                                text: dep.installed
+                                                ? "*"
+                                                : (dep.isReal ? "-" : "~")
+                                                color: dep.installed
+                                                ? Colors.success
+                                                : Colors.fgSubtle
+                                                font: Cell.fontB
+                                            }
+
+                                            CellText {
+                                                text: dep.dep_name
+                                                preferedW: Math.min(dep.w - 3, text.length)
+                                                // Dim virtual names so they read as "informational"
+                                                // rather than "navigable".
+                                                color: dep.isReal ? Colors.fgBase : Colors.fgSubtle
+                                            }
+
+                                            CellText {
+                                                id: dep_version
+                                                text: dep.version_ops + dep.dep_version
+                                                preferedW: dep.w - dep.dep_name.length - 5
+                                                color: Colors.fgSubtle
+                                            }
+
                                         }
 
-                                        CellText {
-                                            text: dep.dep_name
-                                            preferedW: Math.min(dep.w - 3, text.length)
-                                            // Dim virtual names so they read as "informational"
-                                            // rather than "navigable".
-                                            color: dep.isReal ? Colors.fgBase : Colors.fgSubtle
-                                        }
+                                        MouseControl {
 
-                                        CellText {
-                                            id: dep_version
-                                            text: dep.version_ops + dep.dep_version
-                                            preferedW: dep.w - dep.dep_name.length - 5
-                                            color: Colors.fgSubtle
+                                            id: dep_mouse
+
+                                            anchors.fill: parent
+
+                                            // Disabled MouseControls don't track hover or fire
+                                            // onReleased — exactly what we want for virtuals.
+                                            enabled: dep.isReal
+
+                                            onReleased: (button) => {
+                                                if (button == "L") {
+                                                    info.deps.push(dep.dep_name)
+                                                    info.depsChanged()
+                                                }
+                                            }
+
                                         }
 
                                     }
 
-                                    MouseControl {
+                                }
 
-                                        id: dep_mouse
+                                // ──────────────────────────────────────────────────────────
+                                // Footer: progressive +5 / show all / show less
+                                //
+                                // State machine (for a list of 23 items, threshold=5, step=5):
+                                //
+                                //   Initial       (5 shown)   →  [ + 18 more ]
+                                //   1st click     (10 shown)  →  [ + 13 more ]  [ show all (23) ]
+                                //   2nd click     (15 shown)  →  [ + 8 more  ]  [ show all (23) ]
+                                //   "show all"    (23 shown)  →  [ show less ]
+                                //   "show less"   (5 shown)   →  [ + 18 more ]
+                                //
+                                // The "show all" button only appears after the first expansion —
+                                // progressive disclosure of the UI itself. Users who just want to
+                                // peek at 5 more rows don't see the audit-nuclear option until
+                                // they've shown they want to expand at all.
+                                //
+                                // "show less" replaces the other two when fully expanded, giving
+                                // a clean single-action way back to the collapsed state.
+                                // ──────────────────────────────────────────────────────────
+                                RowLayout {
 
-                                        anchors.fill: parent
+                                    spacing: Cell.w(1)
 
-                                        // Disabled MouseControls don't track hover or fire
-                                        // onReleased — exactly what we want for virtuals.
-                                        enabled: dep.isReal
+                                    // Footer only renders at all when there's something to expand.
+                                    visible: deps.values?.length > deps.collapseThreshold
 
+                                    // ── "+N more" — progressive expansion ──
+                                    // Visible whenever we haven't shown everything yet.
+                                    CellButton {
+                                        padding: 0
+                                        visible: deps.shownCount < deps.values?.length
+                                        text: "[+ " + (deps.values?.length - deps.shownCount) + " more]"
+                                        color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
+                                        fg:    Colors.info
                                         onReleased: (button) => {
                                             if (button == "L") {
-                                                info.deps.push(dep.dep_name)
-                                                info.depsChanged()
+                                                deps.shownCount = Math.min(
+                                                    deps.shownCount + deps.expandStep,
+                                                    deps.values.length
+                                                )
                                             }
                                         }
+                                    }
 
+                                    // ── "show all (N)" — audit escape hatch ──
+                                    // Only after the first expansion, and only when there's still
+                                    // more to show. Disappears once "+N more" has reached the end
+                                    // (because "show less" takes over).
+                                    CellButton {
+                                        padding: 0
+                                        visible: deps.shownCount > deps.collapseThreshold
+                                        && deps.shownCount < deps.values?.length
+                                        text: "[Show all (" + deps.values?.length + ")]"
+                                        color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
+                                        fg:    Colors.info
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                deps.shownCount = deps.values?.length
+                                            }
+                                        }
+                                    }
+
+                                    // ── "show less" — collapse back to threshold ──
+                                    // Only visible when fully expanded (and the list was collapsible
+                                    // in the first place, i.e. exceeds the threshold).
+                                    CellButton {
+                                        padding: 0
+                                        visible: deps.shownCount == deps.values?.length
+                                        && deps.values?.length > deps.collapseThreshold
+                                        text: "[Show less]"
+                                        color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
+                                        fg:    Colors.info
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                deps.shownCount = deps.collapseThreshold
+                                            }
+                                        }
                                     }
 
                                 }
 
                             }
 
-                            // ──────────────────────────────────────────────────────────
-                            // Footer: progressive +5 / show all / show less
-                            //
-                            // State machine (for a list of 23 items, threshold=5, step=5):
-                            //
-                            //   Initial       (5 shown)   →  [ + 18 more ]
-                            //   1st click     (10 shown)  →  [ + 13 more ]  [ show all (23) ]
-                            //   2nd click     (15 shown)  →  [ + 8 more  ]  [ show all (23) ]
-                            //   "show all"    (23 shown)  →  [ show less ]
-                            //   "show less"   (5 shown)   →  [ + 18 more ]
-                            //
-                            // The "show all" button only appears after the first expansion —
-                            // progressive disclosure of the UI itself. Users who just want to
-                            // peek at 5 more rows don't see the audit-nuclear option until
-                            // they've shown they want to expand at all.
-                            //
-                            // "show less" replaces the other two when fully expanded, giving
-                            // a clean single-action way back to the collapsed state.
-                            // ──────────────────────────────────────────────────────────
-                            RowLayout {
+                        }
 
-                                spacing: Cell.w(1)
+                        source: ColumnLayout {
 
-                                // Footer only renders at all when there's something to expand.
-                                visible: deps.values?.length > deps.collapseThreshold
+                            spacing: 0
 
-                                // ── "+N more" — progressive expansion ──
-                                // Visible whenever we haven't shown everything yet.
-                                CellButton {
-                                    padding: 0
-                                    visible: deps.shownCount < deps.values?.length
-                                    text: "[+ " + (deps.values?.length - deps.shownCount) + " more]"
-                                    color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
-                                    fg:    Colors.info
-                                    onReleased: (button) => {
-                                        if (button == "L") {
-                                            deps.shownCount = Math.min(
-                                                deps.shownCount + deps.expandStep,
-                                                deps.values.length
-                                            )
-                                        }
-                                    }
+                            // ── No selection placeholder ──
+                            CellText {
+
+                                visible: info.index == -1
+
+                                Layout.leftMargin: Cell.centerWCell(implicitWidth, info.implicitWidth)
+
+                                text: "\nNo package selected"
+                                color: Colors.fgDim
+
+                            }
+
+                            // ════════════ Section 1: Identity ════════════
+                            Info {
+                                key: "Description"
+                                value: info.datas?.description ?? ""
+                            }
+                            Info {
+                                key: "URL"
+                                value: info.datas?.url ?? ""
+                            }
+                            Info {
+                                key: "Version"
+                                value: info.datas?.version ?? ""
+                            }
+                            Info {
+                                key: "Licenses"
+                                value: (info.datas?.licenses ?? []).join(", ")
+                            }
+
+                            CellSeparator {
+                                w: info.contentW
+                                visible: info.index != -1 && info.hasIdentity && info.hasSource
+                                color: Colors.bgOverlay
+                            }
+
+                            // ════════════ Section 2: Source ════════════
+                            Info {
+                                key: "Repository"
+                                value: info.datas?.repository ?? ""
+                            }
+                            Info {
+                                key: "Architecture"
+                                value: info.datas?.arch ?? ""
+                            }
+                            Info {
+                                key: "Groups"
+                                value: (info.datas?.groups ?? []).join(", ")
+                            }
+
+                            CellSeparator {
+                                w: info.contentW
+                                visible: info.index != -1 && info.hasSource && (info.hasFootprint || info.hasStatus || info.hasRelations)
+                                color: Colors.bgOverlay
+                            }
+
+                            // ════════════ Section 3: Footprint ════════════
+                            Info {
+                                key: "Download size"
+                                value: info.datas?.download_size ?? ""
+                            }
+                            Info {
+                                key: "Installed size"
+                                value: info.datas?.installed_size ?? ""
+                            }
+                            Deps {
+                                visible: (info.datas?.conflicts_with ?? []).length > 0
+                                key: "Conflicts with"
+                                collapseThreshold: 10   // generous — this field is almost always short
+                                values: (info.datas?.conflicts_with ?? []).map(
+                                    n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
+                                )
+                            }
+                            Deps {
+                                visible: (info.datas?.replaces ?? []).length > 0
+                                key: "Replaces"
+                                values: (info.datas?.replaces ?? []).map(
+                                    n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
+                                )
+                            }
+                            Deps {
+                                visible: (info.datas?.provides ?? []).length > 0
+                                key: "Provides"
+                                values: (info.datas?.provides ?? []).map(
+                                    n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
+                                )
+                            }
+
+                            CellSeparator {
+                                w: info.contentW
+                                visible: info.index != -1 && info.hasFootprint && (info.hasStatus || info.hasRelations)
+                                color: Colors.bgOverlay
+                            }
+
+                            // ════════════ Section 4: Status ════════════
+                            Info {
+                                key: "Installed"
+                                value: info.datas?.installed ? "Yes" : "Nope"
+                            }
+                            Info {
+                                key: "Install reason"
+                                value: info.datas?.install_reason ?? ""
+                            }
+                            Info {
+                                key: "Install date"
+                                value: info.datas?.install_date ?? ""
+                            }
+                            Info {
+                                key: "Last sync"
+                                value: {
+                                    const ls = info.datas?.last_sync
+                                    if (!ls) return ""
+                                    return ls.action + " on " + ls.timestamp
                                 }
+                            }
+                            Info {
+                                key: "Build date"
+                                value: info.datas?.build_date ?? ""
+                            }
 
-                                // ── "show all (N)" — audit escape hatch ──
-                                // Only after the first expansion, and only when there's still
-                                // more to show. Disappears once "+N more" has reached the end
-                                // (because "show less" takes over).
-                                CellButton {
-                                    padding: 0
-                                    visible: deps.shownCount > deps.collapseThreshold
-                                    && deps.shownCount < deps.values?.length
-                                    text: "[Show all (" + deps.values?.length + ")]"
-                                    color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
-                                    fg:    Colors.info
-                                    onReleased: (button) => {
-                                        if (button == "L") {
-                                            deps.shownCount = deps.values?.length
-                                        }
-                                    }
-                                }
+                            CellSeparator {
+                                w: info.contentW
+                                visible: info.index != -1 && info.hasStatus && info.hasRelations
+                                color: Colors.bgOverlay
+                            }
 
-                                // ── "show less" — collapse back to threshold ──
-                                // Only visible when fully expanded (and the list was collapsible
-                                // in the first place, i.e. exceeds the threshold).
-                                CellButton {
-                                    padding: 0
-                                    visible: deps.shownCount == deps.values?.length
-                                    && deps.values?.length > deps.collapseThreshold
-                                    text: "[Show less]"
-                                    color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
-                                    fg:    Colors.info
-                                    onReleased: (button) => {
-                                        if (button == "L") {
-                                            deps.shownCount = deps.collapseThreshold
-                                        }
-                                    }
-                                }
-
+                            // ════════════ Section 5: Relations ════════════
+                            // Reverse deps first — they answer "what breaks if I remove this?"
+                            Deps {
+                                visible: (info.datas?.required_by ?? []).length > 0
+                                key: "Required by"
+                                collapseThreshold: 3    // tighter — this field gets huge for base libs
+                                values: (info.datas?.required_by ?? []).map(
+                                    n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
+                                )
+                            }
+                            Deps {
+                                visible: (info.datas?.optional_for ?? []).length > 0
+                                key: "Optional for"
+                                values: (info.datas?.optional_for ?? []).map(
+                                    n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
+                                )
+                            }
+                            // Forward deps — "what does this need?"
+                            Deps {
+                                visible: (info.datas?.depends ?? []).length > 0
+                                key: "Dependencies"
+                            }
+                            Deps {
+                                visible: (info.datas?.optional_deps ?? []).length > 0
+                                key: "Optional depends"
+                                values: info.datas?.optional_deps
+                            }
+                            Deps {
+                                visible: (info.datas?.make_deps ?? []).length > 0
+                                key: "Make depends"
+                                values: info.datas?.make_deps
+                            }
+                            Deps {
+                                visible: (info.datas?.check_deps ?? []).length > 0
+                                key: "Check depends"
+                                values: info.datas?.check_deps
                             }
 
                         }
 
                     }
-
-                    source: ColumnLayout {
-
-                        spacing: 0
-
-                        // ── No selection placeholder ──
-                        CellText {
-
-                            visible: info.index == -1
-
-                            Layout.leftMargin: Cell.centerWCell(implicitWidth, info.implicitWidth)
-
-                            text: "\nNo package selected"
-                            color: Colors.fgDim
-
-                        }
-
-                        // ════════════ Section 1: Identity ════════════
-                        Info {
-                            key: "Description"
-                            value: info.datas?.description ?? ""
-                        }
-                        Info {
-                            key: "URL"
-                            value: info.datas?.url ?? ""
-                        }
-                        Info {
-                            key: "Version"
-                            value: info.datas?.version ?? ""
-                        }
-                        Info {
-                            key: "Licenses"
-                            value: (info.datas?.licenses ?? []).join(", ")
-                        }
-
-                        CellSeparator {
-                            w: info.contentW
-                            visible: info.index != -1 && info.hasIdentity && info.hasSource
-                            color: Colors.bgOverlay
-                        }
-
-                        // ════════════ Section 2: Source ════════════
-                        Info {
-                            key: "Repository"
-                            value: info.datas?.repository ?? ""
-                        }
-                        Info {
-                            key: "Architecture"
-                            value: info.datas?.arch ?? ""
-                        }
-                        Info {
-                            key: "Groups"
-                            value: (info.datas?.groups ?? []).join(", ")
-                        }
-
-                        CellSeparator {
-                            w: info.contentW
-                            visible: info.index != -1 && info.hasSource && (info.hasFootprint || info.hasStatus || info.hasRelations)
-                            color: Colors.bgOverlay
-                        }
-
-                        // ════════════ Section 3: Footprint ════════════
-                        Info {
-                            key: "Download size"
-                            value: info.datas?.download_size ?? ""
-                        }
-                        Info {
-                            key: "Installed size"
-                            value: info.datas?.installed_size ?? ""
-                        }
-                        Deps {
-                            visible: (info.datas?.conflicts_with ?? []).length > 0
-                            key: "Conflicts with"
-                            collapseThreshold: 10   // generous — this field is almost always short
-                            values: (info.datas?.conflicts_with ?? []).map(
-                                n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
-                            )
-                        }
-                        Deps {
-                            visible: (info.datas?.replaces ?? []).length > 0
-                            key: "Replaces"
-                            values: (info.datas?.replaces ?? []).map(
-                                n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
-                            )
-                        }
-                        Deps {
-                            visible: (info.datas?.provides ?? []).length > 0
-                            key: "Provides"
-                            values: (info.datas?.provides ?? []).map(
-                                n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
-                            )
-                        }
-
-                        CellSeparator {
-                            w: info.contentW
-                            visible: info.index != -1 && info.hasFootprint && (info.hasStatus || info.hasRelations)
-                            color: Colors.bgOverlay
-                        }
-
-                        // ════════════ Section 4: Status ════════════
-                        Info {
-                            key: "Installed"
-                            value: info.datas?.installed ? "Yes" : "Nope"
-                        }
-                        Info {
-                            key: "Install reason"
-                            value: info.datas?.install_reason ?? ""
-                        }
-                        Info {
-                            key: "Install date"
-                            value: info.datas?.install_date ?? ""
-                        }
-                        Info {
-                            key: "Last sync"
-                            value: {
-                                const ls = info.datas?.last_sync
-                                if (!ls) return ""
-                                return ls.action + " on " + ls.timestamp
-                            }
-                        }
-                        Info {
-                            key: "Build date"
-                            value: info.datas?.build_date ?? ""
-                        }
-
-                        CellSeparator {
-                            w: info.contentW
-                            visible: info.index != -1 && info.hasStatus && info.hasRelations
-                            color: Colors.bgOverlay
-                        }
-
-                        // ════════════ Section 5: Relations ════════════
-                        // Reverse deps first — they answer "what breaks if I remove this?"
-                        Deps {
-                            visible: (info.datas?.required_by ?? []).length > 0
-                            key: "Required by"
-                            collapseThreshold: 3    // tighter — this field gets huge for base libs
-                            values: (info.datas?.required_by ?? []).map(
-                                n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
-                            )
-                        }
-                        Deps {
-                            visible: (info.datas?.optional_for ?? []).length > 0
-                            key: "Optional for"
-                            values: (info.datas?.optional_for ?? []).map(
-                                n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
-                            )
-                        }
-                        // Forward deps — "what does this need?"
-                        Deps {
-                            visible: (info.datas?.depends ?? []).length > 0
-                            key: "Dependencies"
-                        }
-                        Deps {
-                            visible: (info.datas?.optional_deps ?? []).length > 0
-                            key: "Optional depends"
-                            values: info.datas?.optional_deps
-                        }
-                        Deps {
-                            visible: (info.datas?.make_deps ?? []).length > 0
-                            key: "Make depends"
-                            values: info.datas?.make_deps
-                        }
-                        Deps {
-                            visible: (info.datas?.check_deps ?? []).length > 0
-                            key: "Check depends"
-                            values: info.datas?.check_deps
-                        }
-
-                    }
-
                 }
 
                 // Prepare for pre-flight
@@ -1097,7 +1103,7 @@ CellPopup {
                             spacing: 0
 
                             property var installPlan: PacmanInfo.installPlan
-                            property var installTarget: preflight.installPlan.toInstall.find(item => item.isTarget)
+                            property var installTarget: preflight.installPlan.toInstall.filter(item => item.isTarget)
 
                             CellText {
                                 Layout.leftMargin: Cell.w(1)
@@ -1169,18 +1175,25 @@ CellPopup {
 
                             }
 
-                            ToInstall {
+                            Repeater {
 
-                                Layout.leftMargin: Cell.w(2)
+                                model: parent.installTarget
 
-                                maxW: box.contentW - 2
-                                prefix: "*"
+                                delegate: ToInstall {
 
-                                name: parent.installTarget?.name ?? ""
-                                version: parent.installTarget?.version ?? ""
-                                downloadSize: parent.installTarget?.downloadSize ?? ""
-                                installedSize: parent.installTarget?.installedSize ?? ""
+                                    required property var modelData
 
+                                    Layout.leftMargin: Cell.w(2)
+
+                                    maxW: box.contentW - 2
+                                    prefix: "*"
+
+                                    name: modelData?.name ?? ""
+                                    version: modelData?.version ?? ""
+                                    downloadSize: modelData?.downloadSize ?? ""
+                                    installedSize: modelData?.installedSize ?? ""
+
+                                }
                             }
 
                             ColumnLayout {
@@ -1208,6 +1221,7 @@ CellPopup {
                                         required property var modelData
 
                                         name: modelData.name
+                                        name_color: Colors.blend(Colors.fgSubtle,Colors.fgBase,0.5)
                                         version: modelData.version
                                         downloadSize: modelData.downloadSize
                                         installedSize: modelData.installedSize
@@ -1601,31 +1615,72 @@ CellPopup {
                     }
 
                     // Install
-                    CellButton {
-
-                        visible: (
-                            root.pacmanState == "idle"
-                            || root.pacmanState == "prepare"
-                            || root.pacmanState == "fetching"
-                            || root.pacmanState == "checking_updates"
-                        ) && !PacmanInfo.isInstalled(list.selected_pkg)
+                    RowLayout {
 
                         anchors.right: parent.right
                         anchors.rightMargin: Cell.w(1)
 
-                        text: "Install"
+                        spacing: Cell.w(1)
 
-                        clickable: list.selected_pkg != ""
+                        CellButton {
 
-                        color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                        fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+                            visible: (
+                                root.pacmanState == "idle"
+                                || root.pacmanState == "prepare"
+                                || root.pacmanState == "fetching"
+                                || root.pacmanState == "checking_updates"
+                            ) && !PacmanInfo.isInstalled(list.selected_pkg)
 
-                        onReleased: (button) => {
-                            if (button == "L") {
-                                PacmanInfo.requestInstallation(info.deps.length > 0 ? info.deps[info.deps.length-1] : list.selected_pkg)
+                            property bool in_queue: list.multi_selected_pkg.some(item => item == list.selected_pkg)
+
+                            text: in_queue ? "Remove from queue" : "Add to queue"
+
+                            clickable: list.selected_pkg != ""
+
+                            color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    if (in_queue) {
+                                        list.multi_selected_pkg.splice(list.multi_selected_pkg.findIndex(item=>item == list.selected_pkg),1)
+                                        list.multi_selected_pkgChanged()
+                                    } else {
+                                        list.multi_selected_pkg.push(list.selected_pkg) 
+                                        list.multi_selected_pkgChanged()
+                                    }
+                                }
                             }
+
                         }
 
+                        CellButton {
+
+                            visible: (
+                                root.pacmanState == "idle"
+                                || root.pacmanState == "prepare"
+                                || root.pacmanState == "fetching"
+                                || root.pacmanState == "checking_updates"
+                            ) && !PacmanInfo.isInstalled(list.selected_pkg)
+
+                            text: list.multi_selected_pkg.length > 0 ? "Install all" : "Install"
+
+                            clickable: list.selected_pkg != ""
+
+                            color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    if (list.multi_selected_pkg.length > 0) {
+                                        PacmanInfo.requestInstallation(list.multi_selected_pkg)
+                                    } else {
+                                        PacmanInfo.requestInstallation(info.deps.length > 0 ? [info.deps[info.deps.length-1]] : [list.selected_pkg])
+                                    }
+                                }
+                            }
+
+                        }
                     }
 
                     // Success

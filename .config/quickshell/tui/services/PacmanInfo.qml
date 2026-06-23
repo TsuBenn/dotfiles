@@ -40,7 +40,7 @@ Singleton {
      6.   reset          (Go back to Idle)
      */
     property string pacmanState: "idle"
-    property string installTarget: ""
+    property var installTarget: []
     property var installPlan: {
         "toInstall": [], // Dependencies (install)
         "willReplace": [], // Replaces (remove)
@@ -65,7 +65,7 @@ Singleton {
             return
         }
         pacmanState = "idle"
-        installTarget = ""
+        installTarget = []
         installPlan = {
             "toInstall": [], // Dependencies (install)
             "willReplace": [], // Replaces (remove)
@@ -78,23 +78,27 @@ Singleton {
         pendingPrompt = ""
     }
 
-    function requestInstallation(name: string) {
+    function requestInstallation(pkgs: var) {
         if (pacmanState != "idle") return
-        if (isInstalled(name)) {
-            console.log("PacmanInfo (requestIntallation): " + name + " has already been installed. Rejecting request.")
-            return
+        for (const pkg of pkgs) {
+            if (isInstalled(pkg)) {
+                console.log("PacmanInfo (requestIntallation): " + name + " has already been installed. Rejecting request.")
+                return
+            }
         }
-        installTarget = name
+        installTarget = pkgs
         //fetch()
         pacmanState = "prepare"
         preparePreFlight()
     }
 
     function prepareInstallation() {
-        if (isInstalled(installTarget)) {
-            console.log("PacmanInfo (prepareInstallation): " + installTarget + " has already been installed. Rejecting request.")
-            cancelInstallation()
-            return
+        for (const pkg of installTarget) {
+            if (isInstalled(pkg)) {
+                console.log("PacmanInfo (prepareInstallation): " + installTarget + " has already been installed. Rejecting request.")
+                cancelInstallation()
+                return
+            }
         }
         pacmanState = "pre-flight"
     }
@@ -193,6 +197,7 @@ Singleton {
         }
 
         if (installState.currentPhase == "HOOKS") {
+            console.log(line)
             let lines = line.split("\n")
             let data
             for (let i = lines.length - 1; i >= 0; i--) {
@@ -315,6 +320,9 @@ Singleton {
     function appendLog(text: string) {
         rawInstallLog += text
         trackPacmanProgress(installLog)
+        if (installLog.split("\n").slice(-1).toString().toLowerCase().includes("[y/n]")) {
+            installer.write("y\n")
+        }
     }
 
     Process {
@@ -339,7 +347,7 @@ Singleton {
             }
         }
 
-        command: ["script", "-qc", `sudo -S -k -p '' env COLUMNS=84 LINES=0 pacman -S --noconfirm ${pkg}`, "/dev/null"]
+        command: ["script", "-qc", `sudo -S -k -p '' env COLUMNS=84 LINES=0 pacman -S ${pkg}`, "/dev/null"]
 
         stdout: SplitParser {
             splitMarker: ""
@@ -351,8 +359,7 @@ Singleton {
         stderr: SplitParser {
             splitMarker: ""
             onRead: (text) => {
-                //console.log("\n"+JSON.stringify(text))
-                //root.appendLog(text)
+                console.log("PacmanInfo (installer) error: " + text)
             }
         }
 
@@ -502,7 +509,7 @@ Singleton {
 
         id: preflighter
 
-        command: ["python", root.preflight_path, root.installTarget]
+        command: ["python", root.preflight_path, ...root.installTarget]
 
         stdout: StdioCollector {
             onStreamFinished: {

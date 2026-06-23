@@ -200,7 +200,6 @@ services/
 dependencies.txt
 plan.md
 shell.qml
-typescript
 ```
 
 # Files
@@ -11192,6 +11191,16 @@ CellPopup {
             action: () => {
                 PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%4
             }
+        },
+        {
+            binds: "Ctrl+R",
+            action: () => {
+                if (
+                    root.pacmanState == "idle"
+                ) {
+                    PacmanInfo.fetch()
+                }
+            }
         }
     ]
 
@@ -12299,10 +12308,10 @@ CellPopup {
                                 maxW: box.contentW - 2
                                 prefix: "*"
 
-                                name: parent.installTarget.name
-                                version: parent.installTarget.version
-                                downloadSize: parent.installTarget.downloadSize
-                                installedSize: parent.installTarget.installedSize
+                                name: parent.installTarget?.name ?? ""
+                                version: parent.installTarget?.version ?? ""
+                                downloadSize: parent.installTarget?.downloadSize ?? ""
+                                installedSize: parent.installTarget?.installedSize ?? ""
 
                             }
 
@@ -12581,7 +12590,7 @@ CellPopup {
                                 id: install_log_delay
                                 interval: SettingsInfo.frameTime
                                 onTriggered: {
-                                    install_log_text.text = PacmanInfo.installLog.replace(/^\n/g,"").replace(/\n$/g,"")
+                                    install_log_text.text = PacmanInfo.installLog.replace(/^\n/,"").replace(/\n$/,"")
                                 }
                             }
 
@@ -12589,7 +12598,7 @@ CellPopup {
                                 target: PacmanInfo
                                 function onInstallLogChanged() {
                                     if (install_log_delay.running) return
-                                    console.log(PacmanInfo.installLog)
+                                    // console.log(PacmanInfo.installLog.replace(/^\n/,"").replace(/\n$/,""))
                                     install_log_delay.restart()
                                 }
                             }
@@ -31182,7 +31191,7 @@ echo "TERMINATE"
 
 ## File: scripts/emojis_recent.json
 ````json
-[{"category":"emoji","description":"Skull <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-negative","skull","body","dead","death","face","fairy","fairytale","i’m","lmao","monster","skull","tale","yolo"],"label":"💀","type":"exec","value":["bash","-c","sleep 0.2 && wtype 💀"]},{"category":"emoji","description":"Grinning face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-smiling","grinning face","cheerful","cheery","face","grin","grinning","happy","laugh","nice","smile","smiling","teeth"],"label":"😀","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😀"]},{"category":"emoji","description":"Pensive face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-sleepy","pensive face","awful","bored","dejected","died","disappointed","face","losing","lost","pensive","sad","sucks"],"label":"😔","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😔"]},{"category":"emoji","description":"Loudly crying face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-concerned","loudly crying face","bawling","cry","crying","face","loudly","sad","sob","tear","tears","unhappy"],"label":"😭","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😭"]}]
+[{"category":"emoji","description":"Fire <i>Travel & Places</i>","group":"Travel & Places","keywords":["sky & weather","fire","af","burn","fire","flame","hot","lit","litaf","tool"],"label":"🔥","type":"exec","value":["bash","-c","sleep 0.2 && wtype 🔥"]},{"category":"emoji","description":"Heart on fire <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["heart","heart on fire","burn","fire","heart","love","lust","sacred"],"label":"❤‍🔥","type":"exec","value":["bash","-c","sleep 0.2 && wtype ❤‍🔥"]},{"category":"emoji","description":"Skull <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-negative","skull","body","dead","death","face","fairy","fairytale","i’m","lmao","monster","skull","tale","yolo"],"label":"💀","type":"exec","value":["bash","-c","sleep 0.2 && wtype 💀"]},{"category":"emoji","description":"Grinning face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-smiling","grinning face","cheerful","cheery","face","grin","grinning","happy","laugh","nice","smile","smiling","teeth"],"label":"😀","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😀"]},{"category":"emoji","description":"Pensive face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-sleepy","pensive face","awful","bored","dejected","died","disappointed","face","losing","lost","pensive","sad","sucks"],"label":"😔","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😔"]},{"category":"emoji","description":"Loudly crying face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-concerned","loudly crying face","bawling","cry","crying","face","loudly","sad","sob","tear","tears","unhappy"],"label":"😭","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😭"]}]
 ````
 
 ## File: scripts/emojis.json
@@ -129736,7 +129745,8 @@ Singleton {
         "totalDownload": "",
         "totalInstalled": "",
     }
-    property string installLog: ""
+    property string installLog: sanitizeTerminalOutput(processANSI(rawInstallLog))
+    property string rawInstallLog: ""
     property int installLogCursor: 0
     property int installLogLastNewline: 0
     property string pendingPrompt: ""
@@ -129760,7 +129770,7 @@ Singleton {
             "totalDownload": "",
             "totalInstalled": "",
         }
-        installLog = ""
+        rawInstallLog = ""
         installLogCursor = 0
         pendingPrompt = ""
     }
@@ -129801,27 +129811,208 @@ Singleton {
         return clean;
     }
 
-    function appendLog(text: string) {
-        let new_text = text
-        for (const c of new_text) {
-            if (c == "\r") {
-                installLogCursor = installLogLastNewline
-                continue
-            }
-            if (c == "\n") {
-                installLogLastNewline = installLog.length + 1
-                installLogCursor = installLog.length + 1
-                installLog += c
-                continue
-            }
-            if (installLogCursor < installLog.length) {
-                installLog = installLog.slice(0, installLogCursor) + c + installLog.slice(installLogCursor+1)
-                installLogCursor++
-                continue
-            }
-            installLog += c
-            installLogCursor++
+    // State tracking object
+    property var installState: {
+        "currentPhase": "START", // START, DOWNLOAD, CHECKS, INSTALL, HOOKS, DONE
+        "progressData": {},
+        "overallProgress": 0     // 0 to 100
+    };
+
+    function trackPacmanProgress(line) {
+        if (line.includes(":: Running post-transaction hooks...")) {
+            installState.currentPhase = "HOOKS"
+        } else if (line.includes(":: Processing package changes...")) {
+            installState.currentPhase = "INSTALL"
+        } else if (line.includes(":: Retrieving packages...")) {
+            installState.currentPhase = "DOWNLOAD"
+        } else if (line.includes("resolving dependencies...")) {
+            installState.currentPhase = "START"
         }
+
+        if (installState.currentPhase == "DOWNLOAD") {
+            let data = []
+            let currentPkg = 1
+            let totalPkg = 1
+            let downloadedSize = "0 B"
+            let downloadSpeed = "0 B/s"
+            let estimateTime = "inf"
+            let percentage = 0
+            if (installPlan.toInstall.length > 1) {
+                data = line.match(/Total\s+\((\d+)\/(\d+)\)\s+(\d+.\d+\s+(B|MiB|KiB|GiB))\s+(\d+(.\d+)?\s+(B|MiB|KiB|GiB)\/s)\s+((\d+|--):(\d+|--))\s+\[.*?]\s+(\d+)%/)
+                if (data) {
+                    currentPkg = parseInt(data[1])
+                    totalPkg = parseInt(data[2])
+                    downloadedSize = data[3]
+                    downloadSpeed = data[5]
+                    estimateTime = data[8]
+                    percentage = parseInt(data[11])
+                }
+            } else {
+                data = line.match(/.*\s+(\d+(.\d+)?\s+(B|MiB|KiB|GiB))\s+(\d+(.\d+)?\s+(B|MiB|KiB|GiB)\/s)\s+((\d+|[-]+):(\d+|[-]+))\s+\[.*?]\s+(\d+)%/)
+                currentPkg = 1
+                totalPkg = 1
+                if (data)  {
+                    downloadedSize = data[1]
+                    downloadSpeed = data[4]
+                    estimateTime = data[7]
+                    percentage = parseInt(data[10])
+                }
+            }
+            installState.progressData = {
+                "currentPkg": currentPkg,
+                "totalPkg": totalPkg,
+                "downloadedSize": downloadedSize,
+                "downloadSpeed": downloadSpeed,
+                "estimateTime": estimateTime,
+                "percentage": parseInt(percentage),
+            }
+            installState.overallProgress = Math.round(percentage*0.7)
+        }
+
+        if (installState.currentPhase == "INSTALL") {
+            let lines = line.split("\n")
+            let data
+            for (let i = lines.length - 1; i >= 0; i--) {
+                data = lines[i].match(/\((\d+)\/(\d+)\).*\[.*\]\s+(\d+)%/)
+                if (data) {
+                    break
+                }
+            }
+            let currentPkg = parseInt(data[1])
+            let totalPkg = parseInt(data[2])
+            let percentage = parseInt(data[3])
+            installState.progressData = {
+                "currentPkg": currentPkg,
+                "totalPkg": totalPkg,
+                "percentage": Math.round(percentage*(1/(totalPkg)) + ((currentPkg-1)/totalPkg)*100),
+            }
+            installState.overallProgress = 70 + Math.round((percentage*(1/(totalPkg)) + ((currentPkg-1)/totalPkg)*100)*0.2)
+        }
+
+        if (installState.currentPhase == "HOOKS") {
+            console.log(line)
+            let lines = line.split("\n")
+            let data
+            for (let i = lines.length - 1; i >= 0; i--) {
+                data = lines[i].match(/\((\d+)\/(\d+)\).*/)
+                if (data) {
+                    break
+                }
+            }
+            let currentStep = parseInt(data[1])
+            let totalStep = parseInt(data[2])
+            installState.progressData = {
+                "currentStep": currentStep,
+                "totalStep": totalStep,
+                "percentage": Math.round((currentStep/totalStep)*100)
+            }
+            installState.overallProgress = 90 + Math.round((currentStep/totalStep)*100*0.1)
+        }
+
+        //console.log(JSON.stringify(installState,null,2))
+    }
+
+    function processANSI(rawText) {
+        let lines = [""];
+        let cursorLine = 0;
+        let cursorCol = 0;
+
+        // Updated regex: Supports optional '?' for private modes like ?25l
+        const ansiRegex = /\x1B\[(\??[0-9;]*)([A-Za-z])/g;
+        let match;
+        let lastIndex = 0;
+
+        while ((match = ansiRegex.exec(rawText)) !== null) {
+            let normalText = rawText.substring(lastIndex, match.index);
+            if (normalText.length > 0) {
+                for (let i = 0; i < normalText.length; i++) {
+                    let char = normalText[i];
+                    if (char === '\n') {
+                        cursorLine++;
+                        if (cursorLine >= lines.length) lines.push("");
+                        cursorCol = 0;
+                    } else if (char === '\r') {
+                        cursorCol = 0;
+                    } else {
+                        let currentLine = lines[cursorLine];
+                        if (cursorCol < currentLine.length) {
+                            lines[cursorLine] = currentLine.substring(0, cursorCol) + char + currentLine.substring(cursorCol + 1);
+                        } else {
+                            lines[cursorLine] += char;
+                        }
+                        cursorCol++;
+                    }
+                }
+            }
+
+            let params = match[1]; // e.g., "7" or "?25"
+            let command = match[2]; // e.g., "m" or "l"
+
+            // If it's a private mode command (starts with ?), we safely ignore it 
+            // without letting it bleed into the text.
+            if (!params.startsWith('?')) {
+                let value = params ? parseInt(params) : 1;
+                if (isNaN(value)) value = 1;
+
+                switch (command) {
+                    case 'F':
+                    cursorLine = Math.max(0, cursorLine - value);
+                    cursorCol = 0;
+                    break;
+                    case 'E':
+                    cursorLine += value;
+                    while (cursorLine >= lines.length) lines.push("");
+                    cursorCol = 0;
+                    break;
+                    case 'A':
+                    cursorLine = Math.max(0, cursorLine - value);
+                    break;
+                    case 'B':
+                    cursorLine += value;
+                    while (cursorLine >= lines.length) lines.push("");
+                    break;
+                    case 'C':
+                    cursorCol += value;
+                    break;
+                    case 'D':
+                    cursorCol = Math.max(0, cursorCol - value);
+                    break;
+                    default:
+                    break;
+                }
+            }
+
+            lastIndex = ansiRegex.lastIndex;
+        }
+
+        let remainingText = rawText.substring(lastIndex);
+        if (remainingText.length > 0) {
+            for (let i = 0; i < remainingText.length; i++) {
+                let char = remainingText[i];
+                if (char === '\n') {
+                    cursorLine++;
+                    if (cursorLine >= lines.length) lines.push("");
+                    cursorCol = 0;
+                } else if (char === '\r') {
+                    cursorCol = 0;
+                } else {
+                    let currentLine = lines[cursorLine];
+                    if (cursorCol < currentLine.length) {
+                        lines[cursorLine] = currentLine.substring(0, cursorCol) + char + currentLine.substring(cursorCol + 1);
+                    } else {
+                        lines[cursorLine] += char;
+                    }
+                    cursorCol++;
+                }
+            }
+        }
+
+        return lines.join("\n");
+    }
+
+    function appendLog(text: string) {
+        rawInstallLog += text
+        trackPacmanProgress(installLog)
     }
 
     Process {
@@ -129830,8 +130021,11 @@ Singleton {
 
         property string pkg: root.installTarget
 
+        property string rawLog: ""
+
         onRunningChanged: {
             if (running) {
+                rawLog = ""
                 AuthInfo.verify("Installing <b>" + root.installTarget + "</b>", "Authenticate for installation.", function(s, p) {
                     if (s) {
                         installer.write(p+"\n")
@@ -129855,8 +130049,7 @@ Singleton {
         stderr: SplitParser {
             splitMarker: ""
             onRead: (text) => {
-                //console.log("\n"+JSON.stringify(text))
-                //root.appendLog(text)
+                console.log("PacmanInfo (installer) error: " + text)
             }
         }
 
@@ -130012,7 +130205,7 @@ Singleton {
             onStreamFinished: {
                 if (text) {
                     root.installPlan = JSON.parse(text)
-                    console.log(text)
+                    // console.log(text)
                     prepareInstallation()
                 }
             }
@@ -132337,12 +132530,4 @@ ShellRoot {
     }
 
 }
-````
-
-## File: typescript
-````
-Script started on 2026-06-22 11:34:04+07:00 [COMMAND=""sudo -S -k -p '' env COLUMNS=71 LINES=0 pacman -S --noconfirm sl" /dev/null | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g'" <not executed on terminal>]
-zsh:1: command not found: sudo -S -k -p '' env COLUMNS=71 LINES=0 pacman -S --noconfirm sl
-
-Script done on 2026-06-22 11:34:05+07:00 [COMMAND_EXIT_CODE="0"]
 ````

@@ -70,9 +70,10 @@ CellPopup {
         },
         {
             binds: "Return",
-            active: Colors.current != root.result[color.selected],
             action: () => {
-                Colors.current = root.result[color.selected]
+                if (Colors.current != root.result[color.selected]) {
+                    Colors.current = root.result[color.selected]
+                }
             }
         },
         {
