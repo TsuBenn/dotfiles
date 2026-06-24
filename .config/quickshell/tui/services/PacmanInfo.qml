@@ -52,7 +52,6 @@ Singleton {
     property string rawInstallLog: ""
     property int installLogCursor: 0
     property int installLogLastNewline: 0
-    property string pendingPrompt: ""
     property int installExitCode: 0
 
     signal promptRequested(prompt: string)
@@ -70,7 +69,6 @@ Singleton {
         }
         rawInstallLog = ""
         installLogCursor = 0
-        pendingPrompt = ""
         installState = {
             "currentPhase": "START", // START, DOWNLOAD, CHECKS, INSTALL, HOOKS, DONE
             "progressData": {},
@@ -221,7 +219,7 @@ Singleton {
                 "totalStep": totalStep,
                 "percentage": Math.round((currentStep/totalStep)*100)
             }
-            installState.overallProgress = 90 + Math.round((currentStep/totalStep)*9)
+            installState.overallProgress = 90 + Math.round((currentStep/totalStep)*10)
         }
 
         //console.log(JSON.stringify(installState,null,2))
@@ -372,6 +370,7 @@ Singleton {
 
         onExited: (exitCode, exitStatus) => {
             console.log("PacmanInfo (installer): exitCode: " + exitCode + ", exitStatus: " + exitStatus)
+            root.installExitCode = exitCode
             fetch()
             if (root.pacmanState == "cancel") {
                 root.reset()
@@ -446,6 +445,7 @@ Singleton {
         "Fuzzy",
         "Name",
         "Exact",
+        "Auto select",
     ]
 
     property var packages: []

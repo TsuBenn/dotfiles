@@ -43,6 +43,8 @@ ShellRoot {
 
                     border_size = 2,
 
+                    allow_tearing = true,
+
                     col = {
                         active_border = \"${active_border}\",
                         inactive_border = \"${inactive_border}\",
@@ -50,10 +52,17 @@ ShellRoot {
 
                 },
 
+                xwayland = {
+                    force_zero_scaling = true
+                },
+
+                render = {
+                    direct_scanout = 2
+                },
+
                 cursor = {
                     no_hardware_cursors = 0,
                     use_cpu_buffer = 1,
-                    zoom_disable_aa = 1,
                 },
 
                 decoration = {

@@ -20,9 +20,23 @@ CellPopup {
     property string selected_pkg: ""
     property var multi_selected_pkg: []
 
+    Connections {
+        target: PacmanInfo
+        function onSearch_modeChanged() {
+            search_field.textChanged()
+        }
+    }
+
+    onPacmanStateChanged: {
+        if (pacmanState == "success") {
+            multi_selected_pkg = []
+        }
+    }
+
     onVisibleChanged: {
-        root.selected_index = 0
-        root.selected_pkg = ""
+        selected_index = 0
+        multi_selected_pkg = []
+        selected_pkg = ""
         PacmanInfo.query = ""
         list.reset()
     }
@@ -61,7 +75,7 @@ CellPopup {
         {
             binds: "Ctrl+S",
             action: () => {
-                PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%4
+                PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%PacmanInfo.search_modes.length
             }
         },
         {
@@ -73,7 +87,31 @@ CellPopup {
                     PacmanInfo.fetch()
                 }
             }
-        }
+        },
+        {
+            binds: "Ctrl+C",
+            action: () => {
+                if (
+                    root.pacmanState == "installing"
+                ) {
+                    PacmanInfo.cancelInstallation()
+                }
+            }
+        },
+        {
+            binds: "Return",
+            action: () => {
+                if (root.pacmanState == "idle") {
+                    if (root.multi_selected_pkg.length > 0) {
+                        PacmanInfo.requestInstallation(root.multi_selected_pkg)
+                    } else {
+                        PacmanInfo.requestInstallation(info.deps.length > 0 ? [info.deps[info.deps.length-1]] : [root.selected_pkg])
+                    }
+                } else if (root.pacmanState == "pre-flight") {
+                    PacmanInfo.confirmInstallation()
+                }
+            }
+        },
     ]
 
     Cells {
@@ -151,6 +189,15 @@ CellPopup {
 
                     property var optimized_data: datas.slice(list.offset,list.offset+list.h)
 
+                    onOptimized_dataChanged: {
+                        for (const pkg of optimized_data) {
+                            if (pkg.name == root.selected_pkg) {
+                                return
+                            }
+                        }
+                        root.selected_pkg = ""
+                    }
+
                     virtualH: true
 
                     contentH: Cell.h(1)*datas.length
@@ -189,6 +236,9 @@ CellPopup {
                                 onSelectedChanged: {
                                     if (selected) {
                                         root.selected_index = index
+                                        let inputs = search_field.text.split(" ")
+                                        inputs[inputs.length-1] = pkg.name
+                                        search_field.set(inputs.join(" "))
                                     }
                                 }
 
@@ -316,8 +366,29 @@ CellPopup {
                                 escapeToUnFocus: false
                                 unfocusOnEntered: false
 
+                                onTextChanged: {
+                                    if (PacmanInfo.search_mode == 4) {
+                                        let inputs = text.split(" ")
+                                        root.multi_selected_pkg = []
+                                        for (const pkg of inputs) {
+                                            let this_pkg = PacmanInfo.packages.find(item => item.name == pkg)
+                                            if (this_pkg && !this_pkg.installed) {
+                                                root.multi_selected_pkg.push(pkg)
+                                                root.multi_selected_pkgChanged()
+                                            }
+                                        }
+                                    }
+                                }
+
                                 onTextInput: (input) => {
-                                    PacmanInfo.search(input)
+                                    if (PacmanInfo.search_mode == 4) {
+                                        root.selected_pkg = ""
+                                        let inputs = input.split(" ")
+                                        let new_input = inputs[inputs.length-1]
+                                        PacmanInfo.search(new_input)
+                                    } else {
+                                        PacmanInfo.search(input)
+                                    }
                                 }
 
                             }
@@ -338,7 +409,7 @@ CellPopup {
 
                                 onReleased: (button) => {
                                     if (button == "L") {
-                                        PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%4
+                                        PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%PacmanInfo.search_modes.length
                                     }
                                 }
 
@@ -1634,7 +1705,7 @@ CellPopup {
 
                                 text: ""
                                 wrap: true
-                                color: Colors.fgDim
+                                color: Colors.fgSubtle
 
                             }
 
@@ -1717,9 +1788,9 @@ CellPopup {
                                                 case "HOOKS": header = "Running post-transaction hooks for"; break
                                             }
                                             return " " + header + " <b>" + PacmanInfo.installTarget.join(", ") + "</b>"
-                                        } 
+                                        }
                                         color: Colors.info
-                                        preferedW: box.contentW - 4
+                                        preferedW: Math.min(purify(text).length, box.contentW - 4)
 
                                     }
 
@@ -1886,8 +1957,21 @@ CellPopup {
 
                                 visible: root.pacmanState == "success"
 
-                                text: " Installation completed successfully!"
+                                text: "Installation completed successfully!"
                                 color: Colors.success
+                                font: Cell.fontB
+
+                                preferedW: box.contentW
+                                centered: true
+
+                            }
+
+                            CellText {
+
+                                visible: root.pacmanState == "failed"
+
+                                text: "Installation has failed! (Exit code: " + PacmanInfo.installExitCode + ")"
+                                color: Colors.danger
                                 font: Cell.fontB
 
                                 preferedW: box.contentW

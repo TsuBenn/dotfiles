@@ -680,6 +680,7 @@ Item {
             } else if (event.key == Qt.Key_Backspace) {
                 root.delete_word_back()
             }
+            return
         }
 
         if (event.key == Qt.Key_Return) {
