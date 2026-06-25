@@ -89,7 +89,7 @@ Singleton {
         if (pacmanState != "idle") return
         for (const pkg of pkgs) {
             if (isInstalled(pkg)) {
-                console.log("PacmanInfo (requestIntallation): " + name + " has already been installed. Rejecting request.")
+                console.log("PacmanInfo (requestInstallation): " + pkg + " has already been installed. Rejecting request.")
                 return
             }
         }
@@ -262,7 +262,7 @@ Singleton {
             let params = match[1]; // e.g., "7" or "?25"
             let command = match[2]; // e.g., "m" or "l"
 
-            // If it's a private mode command (starts with ?), we safely ignore it 
+            // If it's a private mode command (starts with ?), we safely ignore it
             // without letting it bleed into the text.
             if (!params.startsWith('?')) {
                 let value = params ? parseInt(params) : 1;
@@ -383,78 +383,85 @@ Singleton {
 
     }
 
-    onInstalledChanged: {
-        queryChanged()
-    }
-
-    onSearch_modeChanged: {
-        queryChanged()
-    }
-
-    onPackagesChanged: {
-        queryChanged()
-    }
-
-    onQueryChanged: {
-        if (!query) {
-            search_results = packages
-            return
-        }
-
-        let q = query
-
-        search_results = packages.filter((item) => {
-
-            let matchName
-            let matchDesc
-            let matchRepo
-
-            if (search_mode == 1) {
-                q = q.replace(/ /g, "").replace(/-/g, "").replace(/_/g, "")
-                matchName = item.name.toLowerCase().replace(/ /g, "").replace(/-/g, "").replace(/_/g, "").includes(q)
-                matchDesc = item.description.toLowerCase().replace(/ /g, "").replace(/-/g, "").replace(/_/g, "").includes(q)
-                matchRepo = item.repository.toLowerCase().replace(/ /g, "").replace(/-/g, "").replace(/_/g, "").includes(q)
-            } else {
-                matchName = item.name.toLowerCase().includes(q)
-                matchDesc = item.description.toLowerCase().includes(q)
-                matchRepo = item.repository.toLowerCase().includes(q)
-            }
-
-            let matchesQuery = matchName
-
-            if (search_mode == 0 || search_mode == 1) {
-                matchesQuery = matchesQuery || matchDesc || matchRepo
-            } else if (search_mode == 3) {
-                matchesQuery = item.name.trim() == q.trim()
-            }
-
-            // If filter_installed is true, it MUST be installed. 
-            // If false, return everything that matches regardless of install status.
-            return installed ? (matchesQuery && item.installed) : matchesQuery
-        })
-    }
+    // ─── Search & Filter ──────────────────────────────────────────
+    //
+    // All filtering (query + installed + outdated) happens in a single
+    // pass inside onQueryChanged.  PacmanPopup.list.datas no longer
+    // needs a secondary .filter().
 
     property bool installed: false
 
     property bool outdated: false
 
+    onInstalledChanged:  { queryChanged() }
+    onOutdatedChanged:   { queryChanged() }
+    onSearch_modeChanged: { queryChanged() }
+    onPackagesChanged:    { rebuildIndices(); queryChanged() }
+
     property int search_mode: 0
 
     property var search_modes: [
-        "Normal",
-        "Fuzzy",
-        "Name",
-        "Exact",
-        "Auto select",
+        "Normal",      // Just includes
+        "Fuzzy",       // Remove spaces and connectors ("-", "_")
+        "Name",        // Search using names only
+        "Exact",       // Exact match
+        "Auto select", // Act as pacman args for pacman -S "pkg1" "pkg2" with each pkg between space would use the search capability to act as auto complete for that specific package
     ]
 
     property var packages: []
 
     property var search_results: packages
 
-    function isInstalled(pkg: string): bool {
-        return packages.some(item => item.name == pkg && item.installed)
+    // ─── Lookup Indices ───────────────────────────────────────────
+    //
+    // Built once in rebuildIndices() whenever `packages` changes.
+    //
+    //   nameIndex   : { [pkgName]: arrayIndex }   — O(1) by name
+    //   installedSet: { [pkgName]: true }          — O(1) installed check
+    //
+    // Pre-computed search fields are also attached directly onto each
+    // package object at the same time so onQueryChanged never has to
+    // .toLowerCase() or .replace() per-item per-keystroke.
+
+    property var nameIndex: ({})
+
+    property var installedSet: ({})
+
+    function rebuildIndices() {
+        nameIndex = {}
+        installedSet = {}
+        for (let i = 0; i < packages.length; i++) {
+            let p = packages[i]
+            nameIndex[p.name] = i
+            if (p.installed) installedSet[p.name] = true
+
+            // Pre-computed search fields (one-time cost at load)
+            p.name_lower = p.name.toLowerCase()
+            p.desc_lower = p.description.toLowerCase()
+            p.repo_lower = p.repository.toLowerCase()
+            p.name_fuzzy = p.name_lower.replace(/[-_ ]/g, "")
+            p.desc_fuzzy = p.desc_lower.replace(/[-_ ]/g, "")
+            p.repo_fuzzy = p.repo_lower.replace(/[-_ ]/g, "")
+        }
     }
+
+    // ─── O(1) Lookups ─────────────────────────────────────────────
+
+    function isInstalled(pkg: string): bool {
+        return installedSet[pkg] === true
+    }
+
+    function getPackage(pkg: string): var {
+        let idx = nameIndex[pkg]
+        return idx !== undefined ? packages[idx] : null
+    }
+
+    function getPackageIndex(pkg: string): int {
+        let idx = nameIndex[pkg]
+        return idx !== undefined ? idx : -1
+    }
+
+    // ─── Search Entry Point ───────────────────────────────────────
 
     function search(query: string) {
         if (!query) {
@@ -462,6 +469,90 @@ Singleton {
             return
         }
         root.query = query.toLowerCase()
+    }
+
+    // ─── Unified Filter ───────────────────────────────────────────
+    //
+    // Single-pass: query matching + installed filter + outdated filter
+    // are all evaluated together.  No secondary .filter() needed in
+    // PacmanPopup.
+
+    onQueryChanged: {
+        // ── No query: apply only installed/outdated filters ──
+        if (!query) {
+            if (installed && outdated) {
+                search_results = packages.filter(i => i.installed && i.latest_version != "")
+            } else if (installed) {
+                search_results = packages.filter(i => i.installed)
+            } else if (outdated) {
+                search_results = packages.filter(i => i.latest_version != "")
+            } else {
+                search_results = packages
+            }
+            return
+        }
+
+        let q = query
+
+        // ── Mode 3: Exact match — O(1) lookup ──
+        if (search_mode == 3) {
+            let idx = nameIndex[q.trim()]
+            if (idx !== undefined) {
+                let item = packages[idx]
+                if (installed && !item.installed) { search_results = []; return }
+                if (outdated && !item.latest_version) { search_results = []; return }
+                search_results = [item]
+            } else {
+                search_results = []
+            }
+            return
+        }
+
+        // ── Pre-process query once (not per-item) ──
+        let qFuzzy
+        if (search_mode == 1) {
+            qFuzzy = q.replace(/[-_ ]/g, "")
+        }
+        let qTrimmed = q.trim()
+
+        // ── Single-pass filter ──
+        search_results = packages.filter((item) => {
+
+            let matchesQuery
+
+            switch (search_mode) {
+            case 0: // Normal — includes on name/desc/repo
+                matchesQuery = item.name_lower.includes(q)
+                    || item.desc_lower.includes(q)
+                    || item.repo_lower.includes(q)
+                break
+
+            case 1: // Fuzzy — stripped includes on name/desc/repo
+                matchesQuery = item.name_fuzzy.includes(qFuzzy)
+                    || item.desc_fuzzy.includes(qFuzzy)
+                    || item.repo_fuzzy.includes(qFuzzy)
+                break
+
+            case 2: // Name — includes on name only
+                matchesQuery = item.name_lower.includes(q)
+                break
+
+            case 4: // Auto select — startsWith on name
+                matchesQuery = item.name_lower.startsWith(qTrimmed)
+                break
+
+            default:
+                matchesQuery = false
+            }
+
+            if (!matchesQuery) return false
+
+            // Combined installed/outdated filter in the same pass
+            if (installed && !item.installed) return false
+            if (outdated && !item.latest_version) return false
+
+            return true
+        })
     }
 
     function list() {
@@ -489,7 +580,7 @@ Singleton {
             } else {
                 console.log("Authorize updates checker failed!")
                 root.updates_checker_authorized = false
-                updates_checker.running = false
+                cancelInstallation()
             }
         })
     }

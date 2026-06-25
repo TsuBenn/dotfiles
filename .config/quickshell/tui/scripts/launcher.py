@@ -16,6 +16,7 @@ Tags (single characters, case-sensitive):
     c   calculator
     t   colors      (return COLORS palette from config.py)
     f   fuzzy       (modifier: enables fuzzy matching for this query)
+    n   norush      (modifier: skip file-search debounce, fire immediately)
     F   <query> is an app id — increment its frequency, no output
     w   web         (open <query> as URL or Google search)
     r   refresh     (background rescan of apps + files, no output)
@@ -30,12 +31,16 @@ Use `re:^fire` for prefix match, `re:(?i)firefox` for case-insensitive,
 Output protocol
 ===============
 
-One JSON array per line on stdout. File searches are async — when `h`
-is in tags, the script emits the apps+settings result immediately,
-then emits a second JSON line with the combined result once the file
-search finishes. If the user types a new query before the in-flight
+One JSON array per line on stdout. File searches are async and
+*debounced* — when `h` is in tags, the script emits the
+apps+settings result immediately, then waits 250ms (debounce) before
+starting the file search thread. If the user types again during the
+debounce window, the old timer is cancelled and a new one starts.
+When the file search finishes, it emits a second JSON line with the
+combined result. If the user types a new query before the in-flight
 file search finishes, the old search is cancelled via a generation
-counter.
+counter. The `n` (norush) tag bypasses the debounce for immediate
+results.
 
 Refresh behavior
 ================
@@ -57,7 +62,8 @@ Concurrency model
   place, then signals the main thread to re-emit.
 * File-search thread: spawned per query that includes `h`. Each search
   has a generation id; before printing, the worker checks that its
-  generation is still current — if not, it discards silently.
+  generation is still current — if not, it discards silently. Searches
+  are debounced (250ms) unless the `n` tag is present.
 
 Icon cache
 ==========
@@ -170,6 +176,14 @@ frequency: dict[str, int] = {}
 # If a newer search has started, the old worker silently discards.
 _file_search_lock = threading.Lock()
 _file_search_generation = 0
+
+# File-search debounce. When the user types rapidly, we don't want to
+# fire a file search on every keystroke. Instead, we wait a short delay
+# after the last keystroke before actually starting the search thread.
+# The `n` (norush) tag bypasses this debounce for immediate results.
+_FILE_SEARCH_DEBOUNCE = 0.25  # seconds
+_file_search_debounce_timer: threading.Timer | None = None
+_file_search_pending: dict | None = None  # args for the deferred search
 
 # Lock for frequency.json writes (multiple increments could race).
 _freq_lock = threading.Lock()
@@ -544,15 +558,15 @@ def select_app(app_id: str) -> None:
 #
 #   2. aliases.binary — {binary_name: icon_name} from .desktop Exec fields.
 #                       Catches cases where the binary name doesn't match
-#                       the icon name (e.g. "google-chrome-stable" →
-#                       "google-chrome", "zen-bin" → "zen").
+#                       the icon name (e.g. "google-chrome-stable" ->
+#                       "google-chrome", "zen-bin" -> "zen").
 #
 #   3. aliases.app — {lowercased_app_name: icon_name} from .desktop Name
 #                    fields. Catches queries that use the display name
-#                    (e.g. "zen browser" → "zen", "google chrome" →
+#                    (e.g. "zen browser" -> "zen", "google chrome" ->
 #                    "google-chrome").
 #
-# IconInfo.qml does layered lookup: direct → case-insensitive → alias →
+# IconInfo.qml does layered lookup: direct -> case-insensitive -> alias ->
 # substring fallback. See IconInfo.qml for the lookup logic.
 #
 # PNG is strongly preferred over SVG (QML's Image handles PNGs more
@@ -587,9 +601,9 @@ def _icon_path_score(path: str) -> int:
     """Higher = better. Strongly prefer PNG; within PNG, prefer larger sizes.
 
     Scoring bands:
-      PNG  → 1000 + size_bonus   (1000..1090)
-      SVG  → 0    + size_bonus   (0..90)
-      XPM  → -100 + size_bonus   (rare, last resort)
+      PNG  -> 1000 + size_bonus   (1000..1090)
+      SVG  -> 0    + size_bonus   (0..90)
+      XPM  -> -100 + size_bonus   (rare, last resort)
 
     A 256x256 PNG (1090) beats any SVG (max 90). An SVG only wins when
     no PNG exists for that icon name.
@@ -626,10 +640,10 @@ def _extract_binary_from_exec(exec_clean: str) -> str:
     """Extract the binary basename from a .desktop Exec field.
 
     Examples:
-      "firefox %u"            → "firefox"
-      "/usr/bin/code"         → "code"
-      "env GDK_BACKEND=wayland zen-bin %u" → "zen-bin"  (last token before %)
-      "google-chrome-stable"  → "google-chrome-stable"
+      "firefox %u"            -> "firefox"
+      "/usr/bin/code"         -> "code"
+      "env GDK_BACKEND=wayland zen-bin %u" -> "zen-bin"  (last token before %)
+      "google-chrome-stable"  -> "google-chrome-stable"
 
     We split on whitespace and take the first token that doesn't look
     like an env var assignment (contains `=`) or a .desktop field code
@@ -651,16 +665,16 @@ def _extract_binary_from_exec(exec_clean: str) -> str:
     return ""
 
 
-def build_icon_aliases(apps: list[dict]) -> tuple[dict[str, str], dict[str, str]]:
+def build_icon_aliases(apps_list: list[dict]) -> tuple[dict[str, str], dict[str, str]]:
     """Build (binary_aliases, app_aliases) from .desktop file metadata.
 
     binary_aliases: {binary_name: icon_name}
         Catches cases where the binary name doesn't match the icon name.
-        Example: "google-chrome-stable" → "google-chrome"
+        Example: "google-chrome-stable" -> "google-chrome"
 
     app_aliases: {lowercased_app_name: icon_name}
         Catches queries that use the display name from a .desktop file.
-        Example: "zen browser" → "zen"
+        Example: "zen browser" -> "zen"
 
     We only add aliases where the source name DIFFERS from the icon name
     (case-insensitive) — redundant aliases would just bloat the cache
@@ -669,27 +683,27 @@ def build_icon_aliases(apps: list[dict]) -> tuple[dict[str, str], dict[str, str]
     binary_aliases: dict[str, str] = {}
     app_aliases: dict[str, str] = {}
 
-    for app in apps:
+    for app in apps_list:
         icon_name = app.get("icon", "")
         if not icon_name:
             continue
 
         icon_lower = icon_name.lower()
 
-        # ── Binary alias ──
+        # -- Binary alias --
         binary = _extract_binary_from_exec(app.get("exec_clean", ""))
         if binary and binary.lower() != icon_lower:
             binary_aliases[binary] = icon_name
 
-        # ── App name alias ──
+        # -- App name alias --
         # Use the display Name from the .desktop file, lowercased.
         # We don't strip spaces or punctuation — the fetcher lowercases
-        # the query too, so "Zen Browser" → "zen browser" matches.
+        # the query too, so "Zen Browser" -> "zen browser" matches.
         name = app.get("name", "")
         if name and name.lower() != icon_lower:
             app_aliases[name.lower()] = icon_name
 
-        # ── Generic name alias (optional — catches alternate names) ──
+        # -- Generic name alias (optional — catches alternate names) --
         # Some apps have a GenericName that users might query.
         # e.g., GenericName="Web Browser" for firefox.
         # Only add if it doesn't collide with existing aliases.
@@ -927,14 +941,20 @@ def rescan_files() -> list[str]:
     return out.split("\n") if out else []
 
 
-# ─── Async file search with cancellation ─────────────────────────────────────
+# ─── Async file search with debounce + cancellation ─────────────────────────
 #
 # Every file search gets a generation id. The worker captures the id at
 # start; before emitting its result, it checks if its id is still the
 # latest. If a newer search has started, the old worker silently discards.
 #
-# This is the cancellation mechanism: we don't try to interrupt the
-# worker thread (which is hard in Python), we just ignore its result.
+# Additionally, file searches are debounced: we wait 250ms after the
+# latest keystroke before actually starting the worker thread. If the
+# user types again during the debounce window, the old timer is
+# cancelled and a new one starts. The `n` (norush) tag bypasses this.
+#
+# When the query is cleared or a non-file-search request comes in, we
+# cancel any in-flight search by bumping the generation counter. This
+# prevents stale file search results from overwriting the current view.
 
 def _emit_combined(base_result: list[dict], file_results: list[dict]) -> None:
     """Print the combined result list as a single JSON line."""
@@ -998,12 +1018,23 @@ def _file_search_worker(
     _emit_combined(base_result, local_results)
 
 
-def start_file_search(
-    paths_snapshot: list[str],
-    query: str,
-    base_result: list[dict],
-) -> None:
-    """Bump generation, start a fresh worker. Old workers will self-cancel."""
+def _cancel_file_search() -> None:
+    """Cancel any in-flight or debounced file search.
+
+    Bumps the generation counter so any running worker discards its result,
+    and cancels any pending debounce timer so it never fires.
+    """
+    global _file_search_generation, _file_search_debounce_timer
+    with _file_search_lock:
+        _file_search_generation += 1
+    if _file_search_debounce_timer is not None:
+        _file_search_debounce_timer.cancel()
+        _file_search_debounce_timer = None
+
+
+def _fire_file_search(paths_snapshot: list[str], query: str,
+                       base_result: list[dict]) -> None:
+    """Actually start the file search worker thread."""
     global _file_search_generation
     with _file_search_lock:
         _file_search_generation += 1
@@ -1016,15 +1047,65 @@ def start_file_search(
     t.start()
 
 
+def start_file_search(
+    paths_snapshot: list[str],
+    query: str,
+    base_result: list[dict],
+    norush: bool = False,
+) -> None:
+    """Bump generation, schedule a fresh worker (with debounce).
+
+    Old workers will self-cancel via the generation counter.
+    If `norush` is True (the `n` tag), the debounce is skipped and the
+    search fires immediately.
+    """
+    global _file_search_debounce_timer, _file_search_pending
+
+    # Cancel any previous debounced search and invalidate old workers.
+    _cancel_file_search()
+
+    if norush:
+        # Immediate — no debounce.
+        _fire_file_search(paths_snapshot, query, base_result)
+    else:
+        # Debounced — wait a short delay before firing. If the user
+        # types another character before the delay, _cancel_file_search
+        # will cancel this timer and start a new one.
+        _file_search_pending = {
+            "paths_snapshot": paths_snapshot,
+            "query": query,
+            "base_result": base_result,
+        }
+
+        def _debounce_fire() -> None:
+            global _file_search_debounce_timer, _file_search_pending
+            _file_search_debounce_timer = None
+            if _file_search_pending is not None:
+                args = _file_search_pending
+                _file_search_pending = None
+                _fire_file_search(
+                    args["paths_snapshot"],
+                    args["query"],
+                    args["base_result"],
+                )
+
+        _file_search_debounce_timer = threading.Timer(
+            _FILE_SEARCH_DEBOUNCE, _debounce_fire,
+        )
+        _file_search_debounce_timer.daemon = True
+        _file_search_debounce_timer.start()
+
+
 # ─── Input parsing ───────────────────────────────────────────────────────────
 #
 # Input format:  -<tags> [--<path_id> ...] <query>
 # Examples:
-#   -a firefox            → tags=['a'], query='firefox'
-#   -ash matrix           → tags=['a','s','h'], query='matrix'
-#   -s --network wifi     → tags=['s'], paths=['network'], query='wifi'
-#   -F firefox            → tags=['F'], treat query as app id
-#   -a re:^fire           → tags=['a'], query='re:^fire' (regex mode)
+#   -a firefox            -> tags=['a'], query='firefox'
+#   -ash matrix           -> tags=['a','s','h'], query='matrix'
+#   -ashn matrix          -> tags=['a','s','h','n'], query='matrix' (norush)
+#   -s --network wifi     -> tags=['s'], paths=['network'], query='wifi'
+#   -F firefox            -> tags=['F'], treat query as app id
+#   -a re:^fire           -> tags=['a'], query='re:^fire' (regex mode)
 
 _TAG_RE = re.compile(r"(?<!\S)-([a-zA-Z]+)\b")
 _PATH_RE = re.compile(r"--(\w+)")
@@ -1060,18 +1141,18 @@ def refresh_background(initial: bool = False) -> None:
 
     start = time.perf_counter()
 
-    # ── Apps + icons (CPU-bound, fast — ~200ms typical) ──
+    # -- Apps + icons (CPU-bound, fast — ~200ms typical) --
     new_apps = scan_apps()
     new_icon_index = build_icon_index()
 
-    # Build binary→icon and app→icon aliases from the .desktop files.
-    # This catches cases like "google-chrome-stable" → "google-chrome"
-    # and "Zen Browser" → "zen" that the icon file index alone misses.
+    # Build binary->icon and app->icon aliases from the .desktop files.
+    # This catches cases like "google-chrome-stable" -> "google-chrome"
+    # and "Zen Browser" -> "zen" that the icon file index alone misses.
     new_binary_aliases, new_app_aliases = build_icon_aliases(new_apps)
 
     save_icon_cache(new_icon_index, new_binary_aliases, new_app_aliases)
 
-    # ── Files (slow — fd can take 5-30s on a big system) ──
+    # -- Files (slow — fd can take 5-30s on a big system) --
     try:
         new_files = rescan_files()
         save_file_cache(new_files)
@@ -1079,7 +1160,7 @@ def refresh_background(initial: bool = False) -> None:
         print(f"launcher: file rescan failed: {e}", file=sys.stderr)
         new_files = file_paths  # keep old on failure
 
-    # ── Atomic swap ──
+    # -- Atomic swap --
     apps = new_apps
     icon_index = new_icon_index
     file_paths = new_files
@@ -1140,7 +1221,7 @@ def handle_request(tags: list[str], query: str, paths: list[str]) -> None:
 
     fuzzy = "f" in tags
 
-    # ── Action tags (side-effects, no search output) ──
+    # -- Action tags (side-effects, no search output) --
     if "F" in tags:
         increment_frequency(query)
         return
@@ -1152,7 +1233,7 @@ def handle_request(tags: list[str], query: str, paths: list[str]) -> None:
         refresh_async()
         return
 
-    # ── Settings: drill into menu if a path id is specified ──
+    # -- Settings: drill into menu if a path id is specified --
     settings = SETTINGS
     if paths:
         for path_id in paths:
@@ -1163,20 +1244,20 @@ def handle_request(tags: list[str], query: str, paths: list[str]) -> None:
                         tags.append("s")
                     break
 
-    # ── Calculator (replaces result entirely) ──
+    # -- Calculator (replaces result entirely) --
     if "c" in tags:
         result = [*calculate(query), *CALC] if query else CALC
         print(json.dumps(result))
         sys.stdout.flush()
         return
 
-    # ── Colors (replaces result entirely) ──
+    # -- Colors (replaces result entirely) --
     if "t" in tags:
         print(json.dumps(COLORS))
         sys.stdout.flush()
         return
 
-    # ── Regex validation (single check, all categories) ──
+    # -- Regex validation (single check, all categories) --
     # If the query is `re:<pattern>` and the pattern is invalid, surface
     # ONE error entry to the UI and skip all category searches. Without
     # this, search_apps and search_settings would each independently
@@ -1190,7 +1271,7 @@ def handle_request(tags: list[str], query: str, paths: list[str]) -> None:
             sys.stdout.flush()
             return
 
-    # ── Search categories: apps, settings, files ──
+    # -- Search categories: apps, settings, files --
     scored_results: list[tuple[int, dict]] = []
 
     if "a" in tags:
@@ -1223,16 +1304,24 @@ def handle_request(tags: list[str], query: str, paths: list[str]) -> None:
     scored_results.sort(key=lambda x: x[0], reverse=True)
     base_result = [item for _, item in scored_results]
 
-    # ── File search: async, non-blocking ──
+    # -- File search: async, debounced, non-blocking --
     if "h" in tags:
         # Emit base result immediately so the UI shows apps+settings now.
         print(json.dumps(base_result))
         sys.stdout.flush()
+        norush = "n" in tags
         if query and file_paths:
-            start_file_search(file_paths, query, base_result)
+            start_file_search(file_paths, query, base_result, norush=norush)
+        else:
+            # Empty query or no file index — cancel any in-flight file
+            # search so stale results don't overwrite the current display.
+            _cancel_file_search()
     else:
         print(json.dumps(base_result))
         sys.stdout.flush()
+        # No file search for this request — cancel any in-flight one
+        # so it doesn't emit stale results into a different search context.
+        _cancel_file_search()
 
 
 # ─── Main loop ───────────────────────────────────────────────────────────────

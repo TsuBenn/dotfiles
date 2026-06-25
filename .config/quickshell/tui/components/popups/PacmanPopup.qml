@@ -101,6 +101,7 @@ CellPopup {
         {
             binds: "Return",
             action: () => {
+                if (selected_pkg == "" && multi_selected_pkg.length == 0) return
                 if (root.pacmanState == "idle") {
                     if (root.multi_selected_pkg.length > 0) {
                         PacmanInfo.requestInstallation(root.multi_selected_pkg)
@@ -185,7 +186,13 @@ CellPopup {
                     w: box.contentW
                     h: 14
 
-                    property var datas: PacmanInfo.outdated ? PacmanInfo.search_results.filter(item => item.latest_version != "") : (PacmanInfo.installed ? PacmanInfo.search_results.filter(item => item.installed) : PacmanInfo.search_results)
+                    // ── Unified data source ──────────────────────────────
+                    //
+                    // PacmanInfo.search_results already has all filters
+                    // (query + installed + outdated) applied in a single
+                    // pass.  No secondary .filter() here.
+
+                    property var datas: PacmanInfo.search_results
 
                     property var optimized_data: datas.slice(list.offset,list.offset+list.h)
 
@@ -236,9 +243,11 @@ CellPopup {
                                 onSelectedChanged: {
                                     if (selected) {
                                         root.selected_index = index
-                                        let inputs = search_field.text.split(" ")
-                                        inputs[inputs.length-1] = pkg.name
-                                        search_field.set(inputs.join(" "))
+                                        if (PacmanInfo.search_mode == 4) {
+                                            let inputs = search_field.text.split(" ")
+                                            inputs[inputs.length-1] = pkg.name
+                                            search_field.set(inputs.join(" "))
+                                        }
                                     }
                                 }
 
@@ -368,11 +377,13 @@ CellPopup {
 
                                 onTextChanged: {
                                     if (PacmanInfo.search_mode == 4) {
+                                        list.reset()
                                         let inputs = text.split(" ")
                                         root.multi_selected_pkg = []
                                         for (const pkg of inputs) {
-                                            let this_pkg = PacmanInfo.packages.find(item => item.name == pkg)
-                                            if (this_pkg && !this_pkg.installed) {
+                                            // O(1) lookup via nameIndex + installedSet
+                                            if (PacmanInfo.isInstalled(pkg)) continue
+                                            if (PacmanInfo.getPackageIndex(pkg) !== -1) {
                                                 root.multi_selected_pkg.push(pkg)
                                                 root.multi_selected_pkgChanged()
                                             }
@@ -603,8 +614,9 @@ CellPopup {
                         w: box.contentW - (root.multi_selected_pkg.length > 0 ? install_queue.w : 0)
                         h: box.contentH - list.h - 9
 
-                        property int dep_index: PacmanInfo.packages.findIndex(item => item.name == deps[deps.length-1])
-                        property int index: PacmanInfo.packages.findIndex(item => item.name == root.selected_pkg)
+                        // ── O(1) lookups via nameIndex ──────────────────
+                        property int dep_index: PacmanInfo.getPackageIndex(deps[deps.length-1])
+                        property int index: PacmanInfo.getPackageIndex(root.selected_pkg)
                         property var deps: []
 
                         onIndexChanged: {
@@ -733,14 +745,8 @@ CellPopup {
                                         required property string name
                                         required property bool installed
 
-                                        // A "real" package exists in the cache as its own entry.
-                                        // Virtual names (e.g. "sh" provided by bash, "java-runtime"
-                                        // provided by java-runtime-common) are NOT in the cache and
-                                        // must not be navigable — clicking them would push a
-                                        // non-existent name onto the breadcrumb and break the panel.
-                                        property bool isReal: PacmanInfo.packages.some(
-                                            item => item.name == dep.dep_name
-                                        )
+                                        // O(1) check via nameIndex instead of packages.some()
+                                        property bool isReal: PacmanInfo.getPackageIndex(dep.dep_name) !== -1
 
                                         property var dep_data: {
                                             if (name.includes("<="))      return name.split("<=")
@@ -892,12 +898,11 @@ CellPopup {
                                         }
                                     }
 
-                                    // ── "show less" — collapse back to threshold ──
-                                    // Only visible when fully expanded (and the list was collapsible
-                                    // in the first place, i.e. exceeds the threshold).
+                                    // ── "show less" ──
+                                    // Only when fully expanded — clean single-action way back.
                                     CellButton {
                                         padding: 0
-                                        visible: deps.shownCount == deps.values?.length
+                                        visible: deps.shownCount >= deps.values?.length
                                         && deps.values?.length > deps.collapseThreshold
                                         text: "[Show less]"
                                         color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
@@ -910,7 +915,6 @@ CellPopup {
                                     }
 
                                 }
-
                             }
 
                         }
@@ -1168,7 +1172,11 @@ CellPopup {
 
                                                         id: selected_pkgs_version
 
-                                                        text: PacmanInfo.packages.find(item => item.name == selected_pkgs.modelData).version
+                                                        // O(1) lookup via getPackage()
+                                                        text: {
+                                                            let p = PacmanInfo.getPackage(selected_pkgs.modelData)
+                                                            return p ? p.version : ""
+                                                        }
                                                         color: Colors.fgSubtle
 
                                                     }
@@ -1214,8 +1222,9 @@ CellPopup {
                                         text: {
                                             let result = 0
                                             for (const pkg of root.multi_selected_pkg) {
-                                                let pack = PacmanInfo.packages.find(item => item.name == pkg)
-                                                result += PacmanInfo.convertToBytes(pack.download_size)
+                                                // O(1) lookup via getPackage()
+                                                let p = PacmanInfo.getPackage(pkg)
+                                                if (p) result += PacmanInfo.convertToBytes(p.download_size)
                                             }
                                             return PacmanInfo.formatBytes(result)
                                         }
@@ -1235,8 +1244,9 @@ CellPopup {
                                         text: {
                                             let result = 0
                                             for (const pkg of root.multi_selected_pkg) {
-                                                let pack = PacmanInfo.packages.find(item => item.name == pkg)
-                                                result += PacmanInfo.convertToBytes(pack.installed_size)
+                                                // O(1) lookup via getPackage()
+                                                let p = PacmanInfo.getPackage(pkg)
+                                                if (p) result += PacmanInfo.convertToBytes(p.installed_size)
                                             }
                                             return PacmanInfo.formatBytes(result)
                                         }
@@ -1436,7 +1446,7 @@ CellPopup {
 
                                 property int collapseThreshold: 3
 
-                                property int maxShown: collapseThreshold 
+                                property int maxShown: collapseThreshold
                                 property var dep_pkgs: preflight.installPlan.toInstall.filter(item => !item.isTarget)
                                 property int maxItems: dep_pkgs.length
                                 property var shownItems: dep_pkgs.slice(0, maxShown)
@@ -1740,7 +1750,7 @@ CellPopup {
                             }
 
 
-                        } 
+                        }
 
                     }
 
@@ -1986,6 +1996,38 @@ CellPopup {
 
                 }
 
+                Cells {
+
+                    visible: (
+                        root.pacmanState == "cancel"
+                    )
+
+                    w: box.contentW
+                    h: box.contentH
+
+                    color: "transparent"
+
+                    RowLayout {
+
+                        spacing: 0
+
+                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                        y: Cell.centerHCell(implicitHeight, parent.implicitHeight)
+
+                        CellText {
+
+                            text: "Interrupting Pacman"
+
+                        }
+
+                        CellLoading {
+                            style: 2
+                        }
+
+                    }
+
+                }
+
                 // Separator for footer
                 CellSeparator {
                     w: box.contentW
@@ -2106,7 +2148,7 @@ CellPopup {
                                         root.multi_selected_pkg.splice(root.multi_selected_pkg.findIndex(item=>item == root.selected_pkg),1)
                                         root.multi_selected_pkgChanged()
                                     } else {
-                                        root.multi_selected_pkg.push(root.selected_pkg) 
+                                        root.multi_selected_pkg.push(root.selected_pkg)
                                         root.multi_selected_pkgChanged()
                                     }
                                 }

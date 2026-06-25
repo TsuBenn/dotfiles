@@ -7338,9 +7338,10 @@ CellPopup {
         },
         {
             binds: "Return",
-            active: Colors.current != root.result[color.selected],
             action: () => {
-                Colors.current = root.result[color.selected]
+                if (Colors.current != root.result[color.selected]) {
+                    Colors.current = root.result[color.selected]
+                }
             }
         },
         {
@@ -9702,7 +9703,7 @@ CellPopup {
 
     id: root
 
-    property bool optimizeMemory: SettingsInfo.optimizeMemory
+    property bool optimizeMemory: SettingsInfo.optimizeMemory && false
 
     property bool minimal: SettingsInfo.minimal
 
@@ -11143,14 +11144,32 @@ CellPopup {
 
     id: root
 
-    w: 90
-    h: 40
+    w: 100
+    h: 44
 
     property string pacmanState: PacmanInfo.pacmanState
 
+    property int selected_index: 0
+    property string selected_pkg: ""
+    property var multi_selected_pkg: []
+
+    Connections {
+        target: PacmanInfo
+        function onSearch_modeChanged() {
+            search_field.textChanged()
+        }
+    }
+
+    onPacmanStateChanged: {
+        if (pacmanState == "success") {
+            multi_selected_pkg = []
+        }
+    }
+
     onVisibleChanged: {
-        list.selected_index = 0
-        list.selected_pkg = ""
+        selected_index = 0
+        multi_selected_pkg = []
+        selected_pkg = ""
         PacmanInfo.query = ""
         list.reset()
     }
@@ -11163,33 +11182,33 @@ CellPopup {
         {
             binds: ["Up", "Shift+Tab"],
             action: () => {
-                if (list.selected_pkg == "") {
-                    list.selected_pkg = list.datas[list.offset].name
+                if (root.selected_pkg == "") {
+                    root.selected_pkg = list.datas[list.offset].name
                     return
                 }
-                if (list.selected_index-1 < 0) {
+                if (root.selected_index-1 < 0) {
                     list.offset -= list.h
                 }
-                list.selected_pkg = list.datas[list.offset + (list.selected_index+list.h-1)%list.h].name
+                root.selected_pkg = list.datas[list.offset + (root.selected_index+list.h-1)%list.h].name
             }
         },
         {
             binds: ["Down", "Tab"],
             action: () => {
-                if (list.selected_pkg == "") {
-                    list.selected_pkg = list.datas[list.offset].name
+                if (root.selected_pkg == "") {
+                    root.selected_pkg = list.datas[list.offset].name
                     return
                 }
-                if (list.selected_index+1 >= list.h) {
+                if (root.selected_index+1 >= list.h) {
                     list.offset += list.h
                 }
-                list.selected_pkg = list.datas[list.offset + (list.selected_index+list.h+1)%list.h].name
+                root.selected_pkg = list.datas[list.offset + (root.selected_index+list.h+1)%list.h].name
             }
         },
         {
             binds: "Ctrl+S",
             action: () => {
-                PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%4
+                PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%PacmanInfo.search_modes.length
             }
         },
         {
@@ -11201,7 +11220,32 @@ CellPopup {
                     PacmanInfo.fetch()
                 }
             }
-        }
+        },
+        {
+            binds: "Ctrl+C",
+            action: () => {
+                if (
+                    root.pacmanState == "installing"
+                ) {
+                    PacmanInfo.cancelInstallation()
+                }
+            }
+        },
+        {
+            binds: "Return",
+            action: () => {
+                if (selected_pkg == "" && multi_selected_pkg.length == 0) return
+                if (root.pacmanState == "idle") {
+                    if (root.multi_selected_pkg.length > 0) {
+                        PacmanInfo.requestInstallation(root.multi_selected_pkg)
+                    } else {
+                        PacmanInfo.requestInstallation(info.deps.length > 0 ? [info.deps[info.deps.length-1]] : [root.selected_pkg])
+                    }
+                } else if (root.pacmanState == "pre-flight") {
+                    PacmanInfo.confirmInstallation()
+                }
+            }
+        },
     ]
 
     Cells {
@@ -11275,12 +11319,24 @@ CellPopup {
                     w: box.contentW
                     h: 14
 
-                    property int selected_index: 0
-                    property string selected_pkg: ""
+                    // ── Unified data source ──────────────────────────────
+                    //
+                    // PacmanInfo.search_results already has all filters
+                    // (query + installed + outdated) applied in a single
+                    // pass.  No secondary .filter() here.
 
-                    property var datas: PacmanInfo.outdated ? PacmanInfo.search_results.filter(item => item.latest_version != "") : (PacmanInfo.installed ? PacmanInfo.search_results.filter(item => item.installed) : PacmanInfo.search_results)
+                    property var datas: PacmanInfo.search_results
 
                     property var optimized_data: datas.slice(list.offset,list.offset+list.h)
+
+                    onOptimized_dataChanged: {
+                        for (const pkg of optimized_data) {
+                            if (pkg.name == root.selected_pkg) {
+                                return
+                            }
+                        }
+                        root.selected_pkg = ""
+                    }
 
                     virtualH: true
 
@@ -11308,7 +11364,7 @@ CellPopup {
                                 property bool installed: modelData.installed
                                 property bool update_available: pkg.latest_version != ""
 
-                                property bool selected: list.selected_pkg == name && !disabled
+                                property bool selected: root.selected_pkg == name && !disabled
 
                                 property bool disabled: PacmanInfo.fetching || PacmanInfo.checking_updates
 
@@ -11319,7 +11375,12 @@ CellPopup {
 
                                 onSelectedChanged: {
                                     if (selected) {
-                                        list.selected_index = index
+                                        root.selected_index = index
+                                        if (PacmanInfo.search_mode == 4) {
+                                            let inputs = search_field.text.split(" ")
+                                            inputs[inputs.length-1] = pkg.name
+                                            search_field.set(inputs.join(" "))
+                                        }
                                     }
                                 }
 
@@ -11391,11 +11452,11 @@ CellPopup {
 
                                     onReleased: (button) => {
                                         if (button == "L") {
-                                            if (list.selected_pkg == pkg.name) {
-                                                list.selected_pkg = ""
+                                            if (root.selected_pkg == pkg.name) {
+                                                root.selected_pkg = ""
                                                 return
                                             }
-                                            list.selected_pkg = pkg.name
+                                            root.selected_pkg = pkg.name
                                         }
                                     }
 
@@ -11447,8 +11508,31 @@ CellPopup {
                                 escapeToUnFocus: false
                                 unfocusOnEntered: false
 
+                                onTextChanged: {
+                                    if (PacmanInfo.search_mode == 4) {
+                                        list.reset()
+                                        let inputs = text.split(" ")
+                                        root.multi_selected_pkg = []
+                                        for (const pkg of inputs) {
+                                            // O(1) lookup via nameIndex + installedSet
+                                            if (PacmanInfo.isInstalled(pkg)) continue
+                                            if (PacmanInfo.getPackageIndex(pkg) !== -1) {
+                                                root.multi_selected_pkg.push(pkg)
+                                                root.multi_selected_pkgChanged()
+                                            }
+                                        }
+                                    }
+                                }
+
                                 onTextInput: (input) => {
-                                    PacmanInfo.search(input)
+                                    if (PacmanInfo.search_mode == 4) {
+                                        root.selected_pkg = ""
+                                        let inputs = input.split(" ")
+                                        let new_input = inputs[inputs.length-1]
+                                        PacmanInfo.search(new_input)
+                                    } else {
+                                        PacmanInfo.search(input)
+                                    }
                                 }
 
                             }
@@ -11469,7 +11553,7 @@ CellPopup {
 
                                 onReleased: (button) => {
                                     if (button == "L") {
-                                        PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%4
+                                        PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%PacmanInfo.search_modes.length
                                     }
                                 }
 
@@ -11522,17 +11606,17 @@ CellPopup {
                     )
 
                     Layout.leftMargin: {
-                        let result = list.selected_pkg.length + 2
+                        let result = root.selected_pkg.length + 2
                         for (const dep of info.deps) {
                             result += dep.length + 2*PacmanInfo.isInstalled(dep) + 4
                         }
-                        return Cell.w(1 - Math.max(result - 76,0))
+                        return Cell.w(1 - Math.max(result - info.contentW-1,0))
                     }
 
                     spacing: Cell.w(1)
 
                     CellText {
-                        text: "* " + list.selected_pkg
+                        text: "* " + root.selected_pkg
                         color: info.deps.length > 0 ? Colors.fgSubtle : Colors.fgBase
                         font: Cell.fontB
 
@@ -11617,7 +11701,7 @@ CellPopup {
                         || root.pacmanState == "pre-flight"
                         || root.pacmanState == "authentication"
                     )
-                    text: "Installing <b>" + PacmanInfo.installTarget + "</b>"
+                    text: "Installing <b>" + PacmanInfo.installTarget.join(", ") + "</b>"
                     color: Colors.secondary
                 }
 
@@ -11647,323 +11731,659 @@ CellPopup {
                 }
 
                 // Info
-                CellScrollView {
+                RowLayout {
 
                     visible: (
                         root.pacmanState == "idle"
                         || root.pacmanState == "fetching"
                     )
 
-                    id: info
+                    spacing: 0
 
-                    w: box.contentW
-                    h: box.contentH - list.h - 9
+                    CellScrollView {
 
-                    property int dep_index: PacmanInfo.packages.findIndex(item => item.name == deps[deps.length-1])
+                        id: info
 
-                    property int index: PacmanInfo.packages.findIndex(item => item.name == list.selected_pkg)
+                        w: box.contentW - (root.multi_selected_pkg.length > 0 ? install_queue.w : 0)
+                        h: box.contentH - list.h - 9
 
-                    onIndexChanged: {
-                        deps = []
-                    }
+                        // ── O(1) lookups via nameIndex ──────────────────
+                        property int dep_index: PacmanInfo.getPackageIndex(deps[deps.length-1])
+                        property int index: PacmanInfo.getPackageIndex(root.selected_pkg)
+                        property var deps: []
 
-                    onDepsChanged: {
-                        if (deps[deps.length-1] == list.selected_pkg) {
+                        onIndexChanged: {
                             deps = []
-                            depsChanged()
-                            return
                         }
-                        for (let i = 0; i < deps.length-1; i++) {
-                            if (deps[deps.length-1] == deps[i]) {
-                                deps = deps.slice(0, i+1)
+
+                        onDepsChanged: {
+                            if (deps[deps.length-1] == root.selected_pkg) {
+                                deps = []
                                 depsChanged()
                                 return
                             }
-                        }
-                    }
-
-                    property var datas: PacmanInfo.packages[deps.length > 0 ? dep_index : index]
-
-                    property var deps: []
-
-                    property int magic: 22
-
-                    // ── Section visibility flags (for separator conditionals) ──
-                    property bool hasIdentity:  (datas?.description ?? "").length > 0
-                    || (datas?.url ?? "").length > 0
-                    || (datas?.version ?? "").length > 0
-                    || (datas?.licenses ?? []).length > 0
-
-                    property bool hasSource:    (datas?.repository ?? "").length > 0
-                    || (datas?.arch ?? "").length > 0
-                    || (datas?.groups ?? []).length > 0
-
-                    property bool hasFootprint: (datas?.download_size ?? "").length > 0
-                    || (datas?.installed_size ?? "").length > 0
-                    || (datas?.conflicts_with ?? []).length > 0
-                    || (datas?.replaces ?? []).length > 0
-                    || (datas?.provides ?? []).length > 0
-
-                    // "Installed" is always rendered when index != -1, so hasStatus is always
-                    // true alongside a real selection. Kept here for symmetry / future-proofing.
-                    property bool hasStatus:    index != -1
-
-                    property bool hasRelations: (datas?.required_by ?? []).length > 0
-                    || (datas?.optional_for ?? []).length > 0
-                    || (datas?.depends ?? []).length > 0
-                    || (datas?.optional_deps ?? []).length > 0
-                    || (datas?.make_deps ?? []).length > 0
-                    || (datas?.check_deps ?? []).length > 0
-
-                    component Info: RowLayout {
-
-                        visible: value.length > 0 && info.index != -1
-
-                        property string key: "Name"
-
-                        property string value: info.datas.name
-
-                        Layout.leftMargin: Cell.w(1)
-
-                        spacing: 0
-
-                        CellText {
-                            Layout.alignment: Qt.AlignTop
-                            text: (parent.key).padEnd(info.magic-4, " ") + ": "
-                            color: Colors.fgDim
+                            for (let i = 0; i < deps.length-1; i++) {
+                                if (deps[deps.length-1] == deps[i]) {
+                                    deps = deps.slice(0, i+1)
+                                    depsChanged()
+                                    return
+                                }
+                            }
                         }
 
-                        CellText {
-                            text: parent.value
-                            preferedW: info.contentW - info.magic
-                            wrap: true
-                        }
+                        property var datas: PacmanInfo.packages[deps.length > 0 ? dep_index : index]
 
-                    }
+                        property int magic: 22
 
-                    component Deps: RowLayout {
+                        // ── Section visibility flags (for separator conditionals) ──
+                        property bool hasIdentity:  (datas?.description ?? "").length > 0
+                        || (datas?.url ?? "").length > 0
+                        || (datas?.version ?? "").length > 0
+                        || (datas?.licenses ?? []).length > 0
 
-                        id: deps
+                        property bool hasSource:    (datas?.repository ?? "").length > 0
+                        || (datas?.arch ?? "").length > 0
+                        || (datas?.groups ?? []).length > 0
 
-                        property string key: "Dependencies"
-                        property var values: info.datas?.depends ?? []
+                        property bool hasFootprint: (datas?.download_size ?? "").length > 0
+                        || (datas?.installed_size ?? "").length > 0
+                        || (datas?.conflicts_with ?? []).length > 0
+                        || (datas?.replaces ?? []).length > 0
+                        || (datas?.provides ?? []).length > 0
 
-                        // ── Collapse behavior ──
-                        // Initial visible rows, and step size for each "+N more" click.
-                        // 5 / 5 keeps the default footprint small (longest list takes 5 rows)
-                        // while making each expansion click cheap (~1ms for 5 new delegates).
-                        property int collapseThreshold: 5
-                        property int expandStep: 5
+                        // "Installed" is always rendered when index != -1, so hasStatus is always
+                        // true alongside a real selection. Kept here for symmetry / future-proofing.
+                        property bool hasStatus:    index != -1
 
-                        property var shownValues: deps.values?.slice(0, deps.shownCount)
+                        property bool hasRelations: (datas?.required_by ?? []).length > 0
+                        || (datas?.optional_for ?? []).length > 0
+                        || (datas?.depends ?? []).length > 0
+                        || (datas?.optional_deps ?? []).length > 0
+                        || (datas?.make_deps ?? []).length > 0
+                        || (datas?.check_deps ?? []).length > 0
 
-                        // How many rows are currently visible. Initialized to the threshold,
-                        // bumped by expandStep on "+N more", set to values.length on "show all",
-                        // reset to collapseThreshold on "show less" or when the package changes.
-                        property int shownCount: collapseThreshold
+                        component Info: RowLayout {
 
-                        onValuesChanged: shownCount = collapseThreshold
+                            visible: value.length > 0 && info.index != -1
 
-                        Layout.leftMargin: Cell.w(1)
+                            property string key: "Name"
 
-                        spacing: 0
+                            property string value: info.datas.name
 
-                        CellText {
-                            Layout.alignment: Qt.AlignTop
-                            text: (parent.key).padEnd(info.magic-4, " ") + ":"
-                            color: Colors.fgDim
-                        }
-
-                        ColumnLayout {
-
-                            Layout.alignment: Qt.AlignTop
+                            Layout.leftMargin: Cell.w(1)
 
                             spacing: 0
 
-                            Repeater {
+                            CellText {
+                                Layout.alignment: Qt.AlignTop
+                                text: (parent.key).padEnd(info.magic-4, " ") + ": "
+                                color: Colors.fgDim
+                            }
 
-                                model: deps.shownValues
+                            CellText {
+                                text: parent.value
+                                preferedW: info.contentW - info.magic
+                                wrap: true
+                            }
 
-                                delegate: Cells {
+                        }
 
-                                    id: dep
+                        component Deps: RowLayout {
 
-                                    required property string name
-                                    required property bool installed
+                            id: deps
 
-                                    // A "real" package exists in the cache as its own entry.
-                                    // Virtual names (e.g. "sh" provided by bash, "java-runtime"
-                                    // provided by java-runtime-common) are NOT in the cache and
-                                    // must not be navigable — clicking them would push a
-                                    // non-existent name onto the breadcrumb and break the panel.
-                                    property bool isReal: PacmanInfo.packages.some(
-                                        item => item.name == dep.dep_name
-                                    )
+                            property string key: "Dependencies"
+                            property var values: info.datas?.depends ?? []
 
-                                    property var dep_data: {
-                                        if (name.includes("<="))      return name.split("<=")
-                                        else if (name.includes("<"))      return name.split("<")
-                                        else if (name.includes(">=")) return name.split(">=")
-                                        else if (name.includes(">")) return name.split(">")
-                                        else if (name.includes("="))  return name.split("=")
-                                        return [name]
-                                    }
-                                    property string version_ops: {
-                                        if (name.includes("<="))      return "<="
-                                        else if (name.includes("<"))      return "<"
-                                        else if (name.includes(">=")) return ">="
-                                        else if (name.includes(">"))      return ">"
-                                        else if (name.includes("="))  return ""
-                                        return ""
-                                    }
-                                    property string dep_name: dep_data[0]
-                                    property string dep_version: dep_data[1] ?? ""
+                            // ── Collapse behavior ──
+                            // Initial visible rows, and step size for each "+N more" click.
+                            // 5 / 5 keeps the default footprint small (longest list takes 5 rows)
+                            // while making each expansion click cheap (~1ms for 5 new delegates).
+                            property int collapseThreshold: 5
+                            property int expandStep: 5
 
-                                    // No hover highlight for virtual packages — reinforces
-                                    // unclickability at the visual level.
-                                    color: (dep.isReal && dep_mouse.hovered)
-                                    ? Colors.bgOverlay
-                                    : "transparent"
+                            property var shownValues: deps.values?.slice(0, deps.shownCount)
 
-                                    w: info.contentW - info.magic + 2
-                                    h: 1
+                            // How many rows are currently visible. Initialized to the threshold,
+                            // bumped by expandStep on "+N more", set to values.length on "show all",
+                            // reset to collapseThreshold on "show less" or when the package changes.
+                            property int shownCount: collapseThreshold
 
-                                    RowLayout {
+                            onValuesChanged: shownCount = collapseThreshold
 
-                                        x: Cell.w(1)
+                            Layout.leftMargin: Cell.w(1)
 
-                                        spacing: Cell.w(1)
+                            spacing: 0
 
-                                        CellText {
-                                            // Star column legend:
-                                            //   *  = real package, installed      (green, clickable)
-                                            //      = real package, not installed  (default, clickable)
-                                            //   ~  = virtual / provided name      (dim, unclickable)
-                                            text: dep.installed
-                                            ? "*"
-                                            : (dep.isReal ? "-" : "~")
-                                            color: dep.installed
-                                            ? Colors.success
-                                            : Colors.fgSubtle
-                                            font: Cell.fontB
+                            CellText {
+                                Layout.alignment: Qt.AlignTop
+                                text: (parent.key).padEnd(info.magic-4, " ") + ":"
+                                color: Colors.fgDim
+                            }
+
+                            ColumnLayout {
+
+                                Layout.alignment: Qt.AlignTop
+
+                                spacing: 0
+
+                                Repeater {
+
+                                    model: deps.shownValues
+
+                                    delegate: Cells {
+
+                                        id: dep
+
+                                        required property string name
+                                        required property bool installed
+
+                                        // O(1) check via nameIndex instead of packages.some()
+                                        property bool isReal: PacmanInfo.getPackageIndex(dep.dep_name) !== -1
+
+                                        property var dep_data: {
+                                            if (name.includes("<="))      return name.split("<=")
+                                            else if (name.includes("<"))      return name.split("<")
+                                            else if (name.includes(">=")) return name.split(">=")
+                                            else if (name.includes(">")) return name.split(">")
+                                            else if (name.includes("="))  return name.split("=")
+                                            return [name]
+                                        }
+                                        property string version_ops: {
+                                            if (name.includes("<="))      return "<="
+                                            else if (name.includes("<"))      return "<"
+                                            else if (name.includes(">=")) return ">="
+                                            else if (name.includes(">"))      return ">"
+                                            else if (name.includes("="))  return ""
+                                            return ""
+                                        }
+                                        property string dep_name: dep_data[0]
+                                        property string dep_version: dep_data[1] ?? ""
+
+                                        // No hover highlight for virtual packages — reinforces
+                                        // unclickability at the visual level.
+                                        color: (dep.isReal && dep_mouse.hovered)
+                                        ? Colors.bgOverlay
+                                        : "transparent"
+
+                                        w: info.contentW - info.magic + 2
+                                        h: 1
+
+                                        RowLayout {
+
+                                            x: Cell.w(1)
+
+                                            spacing: Cell.w(1)
+
+                                            CellText {
+                                                // Star column legend:
+                                                //   *  = real package, installed      (green, clickable)
+                                                //      = real package, not installed  (default, clickable)
+                                                //   ~  = virtual / provided name      (dim, unclickable)
+                                                text: dep.installed
+                                                ? "*"
+                                                : (dep.isReal ? "-" : "~")
+                                                color: dep.installed
+                                                ? Colors.success
+                                                : Colors.fgSubtle
+                                                font: Cell.fontB
+                                            }
+
+                                            CellText {
+                                                text: dep.dep_name
+                                                preferedW: Math.min(dep.w - 3, text.length)
+                                                // Dim virtual names so they read as "informational"
+                                                // rather than "navigable".
+                                                color: dep.isReal ? Colors.fgBase : Colors.fgSubtle
+                                            }
+
+                                            CellText {
+                                                id: dep_version
+                                                text: dep.version_ops + dep.dep_version
+                                                preferedW: dep.w - dep.dep_name.length - 5
+                                                color: Colors.fgSubtle
+                                            }
+
                                         }
 
-                                        CellText {
-                                            text: dep.dep_name
-                                            preferedW: Math.min(dep.w - 3, text.length)
-                                            // Dim virtual names so they read as "informational"
-                                            // rather than "navigable".
-                                            color: dep.isReal ? Colors.fgBase : Colors.fgSubtle
-                                        }
+                                        MouseControl {
 
-                                        CellText {
-                                            id: dep_version
-                                            text: dep.version_ops + dep.dep_version
-                                            preferedW: dep.w - dep.dep_name.length - 5
-                                            color: Colors.fgSubtle
+                                            id: dep_mouse
+
+                                            anchors.fill: parent
+
+                                            // Disabled MouseControls don't track hover or fire
+                                            // onReleased — exactly what we want for virtuals.
+                                            enabled: dep.isReal
+
+                                            onReleased: (button) => {
+                                                if (button == "L") {
+                                                    info.deps.push(dep.dep_name)
+                                                    info.depsChanged()
+                                                }
+                                            }
+
                                         }
 
                                     }
 
-                                    MouseControl {
+                                }
 
-                                        id: dep_mouse
+                                // ──────────────────────────────────────────────────────────
+                                // Footer: progressive +5 / show all / show less
+                                //
+                                // State machine (for a list of 23 items, threshold=5, step=5):
+                                //
+                                //   Initial       (5 shown)   →  [ + 18 more ]
+                                //   1st click     (10 shown)  →  [ + 13 more ]  [ show all (23) ]
+                                //   2nd click     (15 shown)  →  [ + 8 more  ]  [ show all (23) ]
+                                //   "show all"    (23 shown)  →  [ show less ]
+                                //   "show less"   (5 shown)   →  [ + 18 more ]
+                                //
+                                // The "show all" button only appears after the first expansion —
+                                // progressive disclosure of the UI itself. Users who just want to
+                                // peek at 5 more rows don't see the audit-nuclear option until
+                                // they've shown they want to expand at all.
+                                //
+                                // "show less" replaces the other two when fully expanded, giving
+                                // a clean single-action way back to the collapsed state.
+                                // ──────────────────────────────────────────────────────────
+                                RowLayout {
 
-                                        anchors.fill: parent
+                                    spacing: Cell.w(1)
 
-                                        // Disabled MouseControls don't track hover or fire
-                                        // onReleased — exactly what we want for virtuals.
-                                        enabled: dep.isReal
+                                    // Footer only renders at all when there's something to expand.
+                                    visible: deps.values?.length > deps.collapseThreshold
 
+                                    // ── "+N more" — progressive expansion ──
+                                    // Visible whenever we haven't shown everything yet.
+                                    CellButton {
+                                        padding: 0
+                                        visible: deps.shownCount < deps.values?.length
+                                        text: "[+ " + (deps.values?.length - deps.shownCount) + " more]"
+                                        color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
+                                        fg:    Colors.info
                                         onReleased: (button) => {
                                             if (button == "L") {
-                                                info.deps.push(dep.dep_name)
-                                                info.depsChanged()
+                                                deps.shownCount = Math.min(
+                                                    deps.shownCount + deps.expandStep,
+                                                    deps.values.length
+                                                )
                                             }
                                         }
+                                    }
 
+                                    // ── "show all (N)" — audit escape hatch ──
+                                    // Only after the first expansion, and only when there's still
+                                    // more to show. Disappears once "+N more" has reached the end
+                                    // (because "show less" takes over).
+                                    CellButton {
+                                        padding: 0
+                                        visible: deps.shownCount > deps.collapseThreshold
+                                        && deps.shownCount < deps.values?.length
+                                        text: "[Show all (" + deps.values?.length + ")]"
+                                        color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
+                                        fg:    Colors.info
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                deps.shownCount = deps.values?.length
+                                            }
+                                        }
+                                    }
+
+                                    // ── "show less" ──
+                                    // Only when fully expanded — clean single-action way back.
+                                    CellButton {
+                                        padding: 0
+                                        visible: deps.shownCount >= deps.values?.length
+                                        && deps.values?.length > deps.collapseThreshold
+                                        text: "[Show less]"
+                                        color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
+                                        fg:    Colors.info
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                deps.shownCount = deps.collapseThreshold
+                                            }
+                                        }
                                     }
 
                                 }
+                            }
+
+                        }
+
+                        source: ColumnLayout {
+
+                            spacing: 0
+
+                            // ── No selection placeholder ──
+                            CellText {
+
+                                visible: info.index == -1
+
+                                Layout.leftMargin: Cell.centerWCell(implicitWidth, info.implicitWidth)
+
+                                text: "\nNo package selected"
+                                color: Colors.fgDim
 
                             }
 
-                            // ──────────────────────────────────────────────────────────
-                            // Footer: progressive +5 / show all / show less
-                            //
-                            // State machine (for a list of 23 items, threshold=5, step=5):
-                            //
-                            //   Initial       (5 shown)   →  [ + 18 more ]
-                            //   1st click     (10 shown)  →  [ + 13 more ]  [ show all (23) ]
-                            //   2nd click     (15 shown)  →  [ + 8 more  ]  [ show all (23) ]
-                            //   "show all"    (23 shown)  →  [ show less ]
-                            //   "show less"   (5 shown)   →  [ + 18 more ]
-                            //
-                            // The "show all" button only appears after the first expansion —
-                            // progressive disclosure of the UI itself. Users who just want to
-                            // peek at 5 more rows don't see the audit-nuclear option until
-                            // they've shown they want to expand at all.
-                            //
-                            // "show less" replaces the other two when fully expanded, giving
-                            // a clean single-action way back to the collapsed state.
-                            // ──────────────────────────────────────────────────────────
-                            RowLayout {
+                            // ════════════ Section 1: Identity ════════════
+                            Info {
+                                key: "Description"
+                                value: info.datas?.description ?? ""
+                            }
+                            Info {
+                                key: "URL"
+                                value: info.datas?.url ?? ""
+                            }
+                            Info {
+                                key: "Version"
+                                value: info.datas?.version ?? ""
+                            }
+                            Info {
+                                key: "Licenses"
+                                value: (info.datas?.licenses ?? []).join(", ")
+                            }
 
-                                spacing: Cell.w(1)
+                            CellSeparator {
+                                w: info.contentW
+                                visible: info.index != -1 && info.hasIdentity && info.hasSource
+                                color: Colors.bgOverlay
+                            }
 
-                                // Footer only renders at all when there's something to expand.
-                                visible: deps.values?.length > deps.collapseThreshold
+                            // ════════════ Section 2: Source ════════════
+                            Info {
+                                key: "Repository"
+                                value: info.datas?.repository ?? ""
+                            }
+                            Info {
+                                key: "Architecture"
+                                value: info.datas?.arch ?? ""
+                            }
+                            Info {
+                                key: "Groups"
+                                value: (info.datas?.groups ?? []).join(", ")
+                            }
 
-                                // ── "+N more" — progressive expansion ──
-                                // Visible whenever we haven't shown everything yet.
-                                CellButton {
-                                    padding: 0
-                                    visible: deps.shownCount < deps.values?.length
-                                    text: "[+ " + (deps.values?.length - deps.shownCount) + " more]"
-                                    color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
-                                    fg:    Colors.info
-                                    onReleased: (button) => {
-                                        if (button == "L") {
-                                            deps.shownCount = Math.min(
-                                                deps.shownCount + deps.expandStep,
-                                                deps.values.length
-                                            )
+                            CellSeparator {
+                                w: info.contentW
+                                visible: info.index != -1 && info.hasSource && (info.hasFootprint || info.hasStatus || info.hasRelations)
+                                color: Colors.bgOverlay
+                            }
+
+                            // ════════════ Section 3: Footprint ════════════
+                            Info {
+                                key: "Download size"
+                                value: info.datas?.download_size ?? ""
+                            }
+                            Info {
+                                key: "Installed size"
+                                value: info.datas?.installed_size ?? ""
+                            }
+                            Deps {
+                                visible: (info.datas?.conflicts_with ?? []).length > 0
+                                key: "Conflicts with"
+                                collapseThreshold: 10   // generous — this field is almost always short
+                                values: (info.datas?.conflicts_with ?? []).map(
+                                    n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
+                                )
+                            }
+                            Deps {
+                                visible: (info.datas?.replaces ?? []).length > 0
+                                key: "Replaces"
+                                values: (info.datas?.replaces ?? []).map(
+                                    n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
+                                )
+                            }
+                            Deps {
+                                visible: (info.datas?.provides ?? []).length > 0
+                                key: "Provides"
+                                values: (info.datas?.provides ?? []).map(
+                                    n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
+                                )
+                            }
+
+                            CellSeparator {
+                                w: info.contentW
+                                visible: info.index != -1 && info.hasFootprint && (info.hasStatus || info.hasRelations)
+                                color: Colors.bgOverlay
+                            }
+
+                            // ════════════ Section 4: Status ════════════
+                            Info {
+                                key: "Installed"
+                                value: info.datas?.installed ? "Yes" : "Nope"
+                            }
+                            Info {
+                                key: "Install reason"
+                                value: info.datas?.install_reason ?? ""
+                            }
+                            Info {
+                                key: "Install date"
+                                value: info.datas?.install_date ?? ""
+                            }
+                            Info {
+                                key: "Last sync"
+                                value: {
+                                    const ls = info.datas?.last_sync
+                                    if (!ls) return ""
+                                    return ls.action + " on " + ls.timestamp
+                                }
+                            }
+                            Info {
+                                key: "Build date"
+                                value: info.datas?.build_date ?? ""
+                            }
+
+                            CellSeparator {
+                                w: info.contentW
+                                visible: info.index != -1 && info.hasStatus && info.hasRelations
+                                color: Colors.bgOverlay
+                            }
+
+                            // ════════════ Section 5: Relations ════════════
+                            // Reverse deps first — they answer "what breaks if I remove this?"
+                            Deps {
+                                visible: (info.datas?.required_by ?? []).length > 0
+                                key: "Required by"
+                                collapseThreshold: 3    // tighter — this field gets huge for base libs
+                                values: (info.datas?.required_by ?? []).map(
+                                    n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
+                                )
+                            }
+                            Deps {
+                                visible: (info.datas?.optional_for ?? []).length > 0
+                                key: "Optional for"
+                                values: (info.datas?.optional_for ?? []).map(
+                                    n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
+                                )
+                            }
+                            // Forward deps — "what does this need?"
+                            Deps {
+                                visible: (info.datas?.depends ?? []).length > 0
+                                key: "Dependencies"
+                            }
+                            Deps {
+                                visible: (info.datas?.optional_deps ?? []).length > 0
+                                key: "Optional depends"
+                                values: info.datas?.optional_deps
+                            }
+                            Deps {
+                                visible: (info.datas?.make_deps ?? []).length > 0
+                                key: "Make depends"
+                                values: info.datas?.make_deps
+                            }
+                            Deps {
+                                visible: (info.datas?.check_deps ?? []).length > 0
+                                key: "Check depends"
+                                values: info.datas?.check_deps
+                            }
+
+                        }
+
+                    }
+
+                    Cells {
+
+                        visible: root.multi_selected_pkg.length > 0
+
+                        id: install_queue
+
+                        w: 41
+                        h: box.contentH - list.h - 9
+
+                        color: Colors.bgSurface
+
+                        RowLayout {
+
+                            y: -Cell.h(2)
+
+                            spacing: 0
+
+                            CellSeparator {
+                                vertical: true
+                                h: box.contentH - list.h - 7
+                                color: Colors.accentStrong
+                            }
+
+                            ColumnLayout {
+
+                                spacing: 0
+
+                                CellText {
+                                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                                    text: "Selected packages"
+                                    color: Colors.info
+                                }
+
+                                CellSeparator {
+                                    w: install_queue.w - 1
+                                    color: Colors.accentStrong
+                                }
+
+                                CellScrollView {
+
+                                    id: selected_pkg_list
+
+                                    w: install_queue.w-1
+                                    h: box.contentH - list.h - 12
+
+                                    source: ColumnLayout {
+
+                                        spacing: 0
+
+                                        Repeater {
+
+                                            model: root.multi_selected_pkg
+
+                                            delegate: Cells {
+
+                                                id: selected_pkgs
+
+                                                required property string modelData
+
+                                                w: selected_pkg_list.contentW
+                                                h: 1
+
+                                                color: selected_pkgs_mouse.hovered ? Colors.bgOverlay : "transparent"
+
+                                                RowLayout {
+
+                                                    x: Cell.w(1)
+
+                                                    spacing: Cell.w(1)
+
+                                                    CellText {
+
+                                                        text: selected_pkgs.modelData
+                                                        preferedW: selected_pkg_list.contentW - selected_pkgs_version.text.length - 3
+
+                                                    }
+
+                                                    CellText {
+
+                                                        id: selected_pkgs_version
+
+                                                        // O(1) lookup via getPackage()
+                                                        text: {
+                                                            let p = PacmanInfo.getPackage(selected_pkgs.modelData)
+                                                            return p ? p.version : ""
+                                                        }
+                                                        color: Colors.fgSubtle
+
+                                                    }
+
+                                                }
+
+                                                MouseControl {
+
+                                                    id: selected_pkgs_mouse
+
+                                                    anchors.fill: parent
+
+                                                    onReleased: (button) => {
+                                                        if (button == "L") {
+                                                            root.selected_pkg = selected_pkgs.modelData
+                                                        }
+                                                    }
+
+                                                }
+
+                                            }
+
                                         }
+
+                                    }
+
+                                }
+
+                                CellSeparator {
+                                    w: install_queue.w - 1
+                                    color: Colors.accentDim
+                                }
+
+                                RowLayout {
+                                    spacing: 0
+                                    CellText {
+                                        text: " Estimated download size  : "
+                                        preferedW: install_queue.w - 2 - estimate_download.text.length
+                                        color: Colors.fgSubtle
+                                    }
+                                    CellText {
+                                        id: estimate_download
+                                        text: {
+                                            let result = 0
+                                            for (const pkg of root.multi_selected_pkg) {
+                                                // O(1) lookup via getPackage()
+                                                let p = PacmanInfo.getPackage(pkg)
+                                                if (p) result += PacmanInfo.convertToBytes(p.download_size)
+                                            }
+                                            return PacmanInfo.formatBytes(result)
+                                        }
+                                        color: Colors.info
                                     }
                                 }
 
-                                // ── "show all (N)" — audit escape hatch ──
-                                // Only after the first expansion, and only when there's still
-                                // more to show. Disappears once "+N more" has reached the end
-                                // (because "show less" takes over).
-                                CellButton {
-                                    padding: 0
-                                    visible: deps.shownCount > deps.collapseThreshold
-                                    && deps.shownCount < deps.values?.length
-                                    text: "[Show all (" + deps.values?.length + ")]"
-                                    color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
-                                    fg:    Colors.info
-                                    onReleased: (button) => {
-                                        if (button == "L") {
-                                            deps.shownCount = deps.values?.length
-                                        }
+                                RowLayout {
+                                    spacing: 0
+                                    CellText {
+                                        text: " Estimated installed size : "
+                                        preferedW: install_queue.w - 2 - estimate_installed.text.length
+                                        color: Colors.fgSubtle
                                     }
-                                }
-
-                                // ── "show less" — collapse back to threshold ──
-                                // Only visible when fully expanded (and the list was collapsible
-                                // in the first place, i.e. exceeds the threshold).
-                                CellButton {
-                                    padding: 0
-                                    visible: deps.shownCount == deps.values?.length
-                                    && deps.values?.length > deps.collapseThreshold
-                                    text: "[Show less]"
-                                    color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
-                                    fg:    Colors.info
-                                    onReleased: (button) => {
-                                        if (button == "L") {
-                                            deps.shownCount = deps.collapseThreshold
+                                    CellText {
+                                        id: estimate_installed
+                                        text: {
+                                            let result = 0
+                                            for (const pkg of root.multi_selected_pkg) {
+                                                // O(1) lookup via getPackage()
+                                                let p = PacmanInfo.getPackage(pkg)
+                                                if (p) result += PacmanInfo.convertToBytes(p.installed_size)
+                                            }
+                                            return PacmanInfo.formatBytes(result)
                                         }
+                                        color: Colors.success
                                     }
                                 }
 
@@ -11972,177 +12392,6 @@ CellPopup {
                         }
 
                     }
-
-                    source: ColumnLayout {
-
-                        spacing: 0
-
-                        // ── No selection placeholder ──
-                        CellText {
-
-                            visible: info.index == -1
-
-                            Layout.leftMargin: Cell.centerWCell(implicitWidth, info.implicitWidth)
-
-                            text: "\nNo package selected"
-                            color: Colors.fgDim
-
-                        }
-
-                        // ════════════ Section 1: Identity ════════════
-                        Info {
-                            key: "Description"
-                            value: info.datas?.description ?? ""
-                        }
-                        Info {
-                            key: "URL"
-                            value: info.datas?.url ?? ""
-                        }
-                        Info {
-                            key: "Version"
-                            value: info.datas?.version ?? ""
-                        }
-                        Info {
-                            key: "Licenses"
-                            value: (info.datas?.licenses ?? []).join(", ")
-                        }
-
-                        CellSeparator {
-                            w: info.contentW
-                            visible: info.index != -1 && info.hasIdentity && info.hasSource
-                            color: Colors.bgOverlay
-                        }
-
-                        // ════════════ Section 2: Source ════════════
-                        Info {
-                            key: "Repository"
-                            value: info.datas?.repository ?? ""
-                        }
-                        Info {
-                            key: "Architecture"
-                            value: info.datas?.arch ?? ""
-                        }
-                        Info {
-                            key: "Groups"
-                            value: (info.datas?.groups ?? []).join(", ")
-                        }
-
-                        CellSeparator {
-                            w: info.contentW
-                            visible: info.index != -1 && info.hasSource && (info.hasFootprint || info.hasStatus || info.hasRelations)
-                            color: Colors.bgOverlay
-                        }
-
-                        // ════════════ Section 3: Footprint ════════════
-                        Info {
-                            key: "Download size"
-                            value: info.datas?.download_size ?? ""
-                        }
-                        Info {
-                            key: "Installed size"
-                            value: info.datas?.installed_size ?? ""
-                        }
-                        Deps {
-                            visible: (info.datas?.conflicts_with ?? []).length > 0
-                            key: "Conflicts with"
-                            collapseThreshold: 10   // generous — this field is almost always short
-                            values: (info.datas?.conflicts_with ?? []).map(
-                                n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
-                            )
-                        }
-                        Deps {
-                            visible: (info.datas?.replaces ?? []).length > 0
-                            key: "Replaces"
-                            values: (info.datas?.replaces ?? []).map(
-                                n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
-                            )
-                        }
-                        Deps {
-                            visible: (info.datas?.provides ?? []).length > 0
-                            key: "Provides"
-                            values: (info.datas?.provides ?? []).map(
-                                n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
-                            )
-                        }
-
-                        CellSeparator {
-                            w: info.contentW
-                            visible: info.index != -1 && info.hasFootprint && (info.hasStatus || info.hasRelations)
-                            color: Colors.bgOverlay
-                        }
-
-                        // ════════════ Section 4: Status ════════════
-                        Info {
-                            key: "Installed"
-                            value: info.datas?.installed ? "Yes" : "Nope"
-                        }
-                        Info {
-                            key: "Install reason"
-                            value: info.datas?.install_reason ?? ""
-                        }
-                        Info {
-                            key: "Install date"
-                            value: info.datas?.install_date ?? ""
-                        }
-                        Info {
-                            key: "Last sync"
-                            value: {
-                                const ls = info.datas?.last_sync
-                                if (!ls) return ""
-                                return ls.action + " on " + ls.timestamp
-                            }
-                        }
-                        Info {
-                            key: "Build date"
-                            value: info.datas?.build_date ?? ""
-                        }
-
-                        CellSeparator {
-                            w: info.contentW
-                            visible: info.index != -1 && info.hasStatus && info.hasRelations
-                            color: Colors.bgOverlay
-                        }
-
-                        // ════════════ Section 5: Relations ════════════
-                        // Reverse deps first — they answer "what breaks if I remove this?"
-                        Deps {
-                            visible: (info.datas?.required_by ?? []).length > 0
-                            key: "Required by"
-                            collapseThreshold: 3    // tighter — this field gets huge for base libs
-                            values: (info.datas?.required_by ?? []).map(
-                                n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
-                            )
-                        }
-                        Deps {
-                            visible: (info.datas?.optional_for ?? []).length > 0
-                            key: "Optional for"
-                            values: (info.datas?.optional_for ?? []).map(
-                                n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
-                            )
-                        }
-                        // Forward deps — "what does this need?"
-                        Deps {
-                            visible: (info.datas?.depends ?? []).length > 0
-                            key: "Dependencies"
-                        }
-                        Deps {
-                            visible: (info.datas?.optional_deps ?? []).length > 0
-                            key: "Optional depends"
-                            values: info.datas?.optional_deps
-                        }
-                        Deps {
-                            visible: (info.datas?.make_deps ?? []).length > 0
-                            key: "Make depends"
-                            values: info.datas?.make_deps
-                        }
-                        Deps {
-                            visible: (info.datas?.check_deps ?? []).length > 0
-                            key: "Check depends"
-                            values: info.datas?.check_deps
-                        }
-
-                    }
-
                 }
 
                 // Prepare for pre-flight
@@ -12229,7 +12478,7 @@ CellPopup {
                             spacing: 0
 
                             property var installPlan: PacmanInfo.installPlan
-                            property var installTarget: preflight.installPlan.toInstall.find(item => item.isTarget)
+                            property var installTarget: preflight.installPlan.toInstall.filter(item => item.isTarget)
 
                             CellText {
                                 Layout.leftMargin: Cell.w(1)
@@ -12301,18 +12550,25 @@ CellPopup {
 
                             }
 
-                            ToInstall {
+                            Repeater {
 
-                                Layout.leftMargin: Cell.w(2)
+                                model: parent.installTarget
 
-                                maxW: box.contentW - 2
-                                prefix: "*"
+                                delegate: ToInstall {
 
-                                name: parent.installTarget?.name ?? ""
-                                version: parent.installTarget?.version ?? ""
-                                downloadSize: parent.installTarget?.downloadSize ?? ""
-                                installedSize: parent.installTarget?.installedSize ?? ""
+                                    required property var modelData
 
+                                    Layout.leftMargin: Cell.w(2)
+
+                                    maxW: box.contentW - 2
+                                    prefix: "*"
+
+                                    name: modelData?.name ?? ""
+                                    version: modelData?.version ?? ""
+                                    downloadSize: modelData?.downloadSize ?? ""
+                                    installedSize: modelData?.installedSize ?? ""
+
+                                }
                             }
 
                             ColumnLayout {
@@ -12323,9 +12579,10 @@ CellPopup {
 
                                 property int collapseThreshold: 3
 
-                                property int maxShown: collapseThreshold 
-                                property int maxItems: preflight.installPlan.toInstall.length
-                                property var shownItems: preflight.installPlan.toInstall.filter(item => !item.isTarget).slice(0, maxShown)
+                                property int maxShown: collapseThreshold
+                                property var dep_pkgs: preflight.installPlan.toInstall.filter(item => !item.isTarget)
+                                property int maxItems: dep_pkgs.length
+                                property var shownItems: dep_pkgs.slice(0, maxShown)
 
                                 Repeater {
 
@@ -12340,6 +12597,7 @@ CellPopup {
                                         required property var modelData
 
                                         name: modelData.name
+                                        name_color: Colors.blend(Colors.fgSubtle,Colors.fgBase,0.5)
                                         version: modelData.version
                                         downloadSize: modelData.downloadSize
                                         installedSize: modelData.installedSize
@@ -12566,6 +12824,7 @@ CellPopup {
 
                     spacing: 0
 
+                    // Installation Log
                     CellScrollView {
 
                         Layout.leftMargin: Cell.w(1)
@@ -12577,36 +12836,58 @@ CellPopup {
 
                         snapToMax: true
 
-                        source: CellText {
+                        source: ColumnLayout {
 
-                            id: install_log_text
+                            spacing: 0
 
-                            preferedW: install_log.contentW - 2
+                            CellText {
 
-                            text: ""
-                            wrap: true
+                                id: install_log_text
 
-                            Timer {
-                                id: install_log_delay
-                                interval: SettingsInfo.frameTime
-                                onTriggered: {
-                                    install_log_text.text = PacmanInfo.installLog.replace(/^\n/,"").replace(/\n$/,"")
-                                }
+                                preferedW: install_log.contentW - 2
+
+                                text: ""
+                                wrap: true
+                                color: Colors.fgSubtle
+
                             }
 
-                            Connections {
-                                target: PacmanInfo
-                                function onInstallLogChanged() {
-                                    if (install_log_delay.running) return
-                                    // console.log(PacmanInfo.installLog.replace(/^\n/,"").replace(/\n$/,""))
-                                    install_log_delay.restart()
+                            CellText {
+
+                                id: install_log_text_focus
+
+                                preferedW: install_log.contentW - 2
+
+                                text: ""
+                                wrap: true
+
+                                Timer {
+                                    id: install_log_delay
+                                    interval: SettingsInfo.frameTime
+                                    onTriggered: {
+                                        let text = PacmanInfo.installLog.replace(/^\n/,"").replace(/\n$/,"").split("\n")
+                                        install_log_text.text = text.slice(0,-1).join("\n")
+                                        install_log_text_focus.text = text.slice(-1).join("\n")
+                                    }
                                 }
+
+                                Connections {
+                                    target: PacmanInfo
+                                    function onInstallLogChanged() {
+                                        if (install_log_delay.running) return
+                                        // console.log(PacmanInfo.installLog.replace(/^\n/,"").replace(/\n$/,""))
+                                        install_log_delay.restart()
+                                    }
+                                }
+
                             }
+
 
                         }
 
                     }
 
+                    // Installation footer
                     Cells {
 
                         id: install_footer
@@ -12627,32 +12908,199 @@ CellPopup {
                                 color: Colors.accentDim
                             }
 
-                            RowLayout {
+                            ColumnLayout {
 
                                 visible: root.pacmanState == "installing"
 
-                                Layout.leftMargin: Cell.centerWCell(implicitWidth,install_footer.implicitWidth)
-
                                 spacing: 0
 
-                                CellText {
+                                RowLayout {
 
-                                    text: " Installing <b>" + PacmanInfo.installTarget + "</b>"
-                                    color: Colors.info
+                                    Layout.leftMargin: Cell.centerWCell(implicitWidth,install_footer.implicitWidth)
+
+                                    spacing: 0
+
+                                    CellText {
+
+                                        text: {
+                                            let header
+                                            switch (PacmanInfo.installState.currentPhase) {
+                                                case "START": header = "Initializing installation for"; break
+                                                case "DOWNLOAD": header = "Retrieving packages for"; break
+                                                case "INSTALL": header = "Processing package changes for"; break
+                                                case "HOOKS": header = "Running post-transaction hooks for"; break
+                                            }
+                                            return " " + header + " <b>" + PacmanInfo.installTarget.join(", ") + "</b>"
+                                        }
+                                        color: Colors.info
+                                        preferedW: Math.min(purify(text).length, box.contentW - 4)
+
+                                    }
+
+                                    CellLoading {
+                                        style: 2
+                                    }
 
                                 }
 
-                                CellLoading {
-                                    style: 2
+                                CellSeparator {
+                                    visible: (
+                                        PacmanInfo.installState.currentPhase != "HOOKS"
+                                        && PacmanInfo.installState.currentPhase != "START"
+                                    )
+                                    w: box.contentW
+                                    color: Colors.bgOverlay
+                                }
+
+                                ColumnLayout {
+
+                                    Layout.leftMargin: Cell.w(1)
+
+                                    visible: PacmanInfo.installState.currentPhase == "DOWNLOAD"
+
+                                    spacing: 0
+
+                                    RowLayout {
+
+                                        spacing: 0
+
+                                        CellText {
+
+                                            text: "Downloaded size : "
+                                            color: Colors.fgSubtle
+
+                                        }
+                                        CellText {
+
+                                            text: PacmanInfo.installState.progressData.downloadedSize ?? ""
+
+                                        }
+                                        CellText {
+
+                                            text: "/" + PacmanInfo.installPlan.totalDownload
+                                            color: Colors.fgDim
+
+                                        }
+
+                                    }
+
+                                    RowLayout {
+
+                                        spacing: 0
+
+                                        CellText {
+
+                                            text: "Download speed  : "
+                                            color: Colors.fgSubtle
+
+                                        }
+                                        CellText {
+
+                                            text: PacmanInfo.installState.progressData.downloadSpeed ?? ""
+
+                                        }
+
+                                    }
+
+                                    RowLayout {
+
+                                        spacing: 0
+
+                                        CellText {
+
+                                            text: "Time remaining  : "
+                                            color: Colors.fgSubtle
+
+                                        }
+                                        CellText {
+
+                                            text: PacmanInfo.installState.progressData.estimateTime ?? ""
+
+                                        }
+
+                                    }
+
+                                }
+
+                                ColumnLayout {
+
+                                    Layout.leftMargin: Cell.w(1)
+
+                                    visible: PacmanInfo.installState.currentPhase == "INSTALL"
+
+                                    spacing: 0
+
+                                    RowLayout {
+
+                                        spacing: 0
+
+                                        CellText {
+
+                                            text: "Processing package : "
+                                            color: Colors.fgSubtle
+
+                                        }
+                                        CellText {
+
+                                            text: PacmanInfo.installState.progressData.currentPkg ?? ""
+
+                                        }
+                                        CellText {
+
+                                            text: "/" + PacmanInfo.installState.progressData.totalPkg
+                                            color: Colors.fgDim
+
+                                        }
+
+                                    }
+
+                                }
+
+                                CellSeparator {
+                                    w: box.contentW
+                                    color: Colors.bgOverlay
+                                }
+
+                                RowLayout {
+
+                                    Layout.leftMargin: Cell.w(1)
+
+                                    spacing: 0
+
+                                    CellText {
+                                        text: "["
+                                        color: Colors.fgDim
+                                    }
+
+                                    CellProgressSquare {
+                                        w: box.contentW - 9
+                                        h: 1
+                                        percent: PacmanInfo.installState?.overallProgress ?? 0
+                                        cellInterval: 5
+                                        fg: Colors.accentStrong
+                                    }
+
+                                    CellText {
+                                        text: "] "
+                                        color: Colors.fgDim
+                                    }
+
+                                    CellText {
+                                        property int percent: PacmanInfo.installState?.overallProgress ?? 0
+                                        Behavior on percent {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
+                                        text: percent.toString().padStart(3, " ") + "%"
+                                    }
+
                                 }
 
                             }
+
 
                             CellText {
 
                                 visible: root.pacmanState == "success"
 
-                                text: " Installation completed successfully!"
+                                text: "Installation completed successfully!"
                                 color: Colors.success
                                 font: Cell.fontB
 
@@ -12661,7 +13109,52 @@ CellPopup {
 
                             }
 
+                            CellText {
 
+                                visible: root.pacmanState == "failed"
+
+                                text: "Installation has failed! (Exit code: " + PacmanInfo.installExitCode + ")"
+                                color: Colors.danger
+                                font: Cell.fontB
+
+                                preferedW: box.contentW
+                                centered: true
+
+                            }
+
+
+                        }
+
+                    }
+
+                }
+
+                Cells {
+
+                    visible: (
+                        root.pacmanState == "cancel"
+                    )
+
+                    w: box.contentW
+                    h: box.contentH
+
+                    color: "transparent"
+
+                    RowLayout {
+
+                        spacing: 0
+
+                        x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                        y: Cell.centerHCell(implicitHeight, parent.implicitHeight)
+
+                        CellText {
+
+                            text: "Interrupting Pacman"
+
+                        }
+
+                        CellLoading {
+                            style: 2
                         }
 
                     }
@@ -12700,7 +13193,7 @@ CellPopup {
 
                             text: "Check Updates"
 
-                            clickable: !PacmanInfo.fetching && !PacmanInfo.checking_updates
+                            clickable: !PacmanInfo.fetching && !PacmanInfo.checking_updates && root.pacmanState != "prepare"
 
                             color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
                             fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
@@ -12717,7 +13210,7 @@ CellPopup {
 
                             text: "Refresh"
 
-                            clickable: !PacmanInfo.fetching && !PacmanInfo.checking_updates
+                            clickable: !PacmanInfo.fetching && !PacmanInfo.checking_updates && root.pacmanState != "prepare"
 
                             color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
                             fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
@@ -12733,31 +13226,96 @@ CellPopup {
                     }
 
                     // Install
-                    CellButton {
-
-                        visible: (
-                            root.pacmanState == "idle"
-                            || root.pacmanState == "prepare"
-                            || root.pacmanState == "fetching"
-                            || root.pacmanState == "checking_updates"
-                        ) && !PacmanInfo.isInstalled(list.selected_pkg)
+                    RowLayout {
 
                         anchors.right: parent.right
                         anchors.rightMargin: Cell.w(1)
 
-                        text: "Install"
+                        spacing: Cell.w(1)
 
-                        clickable: list.selected_pkg != ""
+                        CellButton {
 
-                        color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                        fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+                            visible: (
+                                root.pacmanState == "idle"
+                                || root.pacmanState == "prepare"
+                                || root.pacmanState == "fetching"
+                                || root.pacmanState == "checking_updates"
+                            ) && !PacmanInfo.isInstalled(root.selected_pkg) && root.multi_selected_pkg.length > 0
 
-                        onReleased: (button) => {
-                            if (button == "L") {
-                                PacmanInfo.requestInstallation(info.deps.length > 0 ? info.deps[info.deps.length-1] : list.selected_pkg)
+                            text: "Clear queue"
+
+                            clickable: root.pacmanState != "prepare"
+
+                            color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    root.multi_selected_pkg = []
+                                }
                             }
+
                         }
 
+                        CellButton {
+
+                            visible: (
+                                root.pacmanState == "idle"
+                                || root.pacmanState == "prepare"
+                                || root.pacmanState == "fetching"
+                                || root.pacmanState == "checking_updates"
+                            ) && !PacmanInfo.isInstalled(root.selected_pkg)
+
+                            property bool in_queue: root.multi_selected_pkg.some(item => item == root.selected_pkg)
+
+                            text: in_queue ? "Remove from queue" : "Add to queue"
+
+                            clickable: root.pacmanState != "prepare"
+
+                            color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    if (in_queue) {
+                                        root.multi_selected_pkg.splice(root.multi_selected_pkg.findIndex(item=>item == root.selected_pkg),1)
+                                        root.multi_selected_pkgChanged()
+                                    } else {
+                                        root.multi_selected_pkg.push(root.selected_pkg)
+                                        root.multi_selected_pkgChanged()
+                                    }
+                                }
+                            }
+
+                        }
+
+                        CellButton {
+
+                            visible: (
+                                root.pacmanState == "idle"
+                                || root.pacmanState == "prepare"
+                                || root.pacmanState == "fetching"
+                                || root.pacmanState == "checking_updates"
+                            ) && !PacmanInfo.isInstalled(root.selected_pkg)
+
+                            text: (root.multi_selected_pkg.length > 0 ? "Install all" : "Install")
+
+                            clickable: root.selected_pkg != "" || root.multi_selected_pkg.length > 0 && root.pacmanState != "prepare"
+
+                            color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    if (root.multi_selected_pkg.length > 0) {
+                                        PacmanInfo.requestInstallation(root.multi_selected_pkg)
+                                    } else {
+                                        PacmanInfo.requestInstallation(info.deps.length > 0 ? [info.deps[info.deps.length-1]] : [root.selected_pkg])
+                                    }
+                                }
+                            }
+
+                        }
                     }
 
                     // Success
@@ -21083,7 +21641,7 @@ Cells {
     }
 
     function maximizeScroll() {
-        offset = maxOffset
+        offset = Math.max(maxOffset,0)
     }
 
     property bool keyNav: true
@@ -22793,6 +23351,7 @@ Item {
             } else if (event.key == Qt.Key_Backspace) {
                 root.delete_word_back()
             }
+            return
         }
 
         if (event.key == Qt.Key_Return) {
@@ -30662,7 +31221,7 @@ if __name__ == "__main__":
 
 ## File: scripts/config.json
 ````json
-{"hints":true,"quickStart":true,"minimal":false,"textBasedVolume":false,"hideBar":false,"bottomBar":false,"optimizeMemory":true,"safeNotifications":false,"dnd":false,"wallpaperAutoAdvance":false,"shadow":true,"hyprAnim":true,"hyprBlur":false,"bgCava":true,"bgCavaLock":false,"screenshotStay":true,"screenshotCursor":false,"lockScreenMusic":false,"sfx":false,"userLightMode":false,"autoLightMode":true,"debug":false}
+{"hints":true,"quickStart":true,"minimal":false,"textBasedVolume":false,"hideBar":false,"bottomBar":false,"optimizeMemory":true,"safeNotifications":false,"dnd":false,"wallpaperAutoAdvance":false,"shadow":true,"hyprAnim":true,"hyprBlur":false,"bgCava":true,"bgCavaLock":false,"screenshotStay":true,"screenshotNotify":false,"screenshotCursor":false,"lockScreenMusic":false,"sfx":false,"userLightMode":false,"autoLightMode":true,"debug":false}
 ````
 
 ## File: scripts/config.py
@@ -31191,7 +31750,7 @@ echo "TERMINATE"
 
 ## File: scripts/emojis_recent.json
 ````json
-[{"category":"emoji","description":"Fire <i>Travel & Places</i>","group":"Travel & Places","keywords":["sky & weather","fire","af","burn","fire","flame","hot","lit","litaf","tool"],"label":"🔥","type":"exec","value":["bash","-c","sleep 0.2 && wtype 🔥"]},{"category":"emoji","description":"Heart on fire <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["heart","heart on fire","burn","fire","heart","love","lust","sacred"],"label":"❤‍🔥","type":"exec","value":["bash","-c","sleep 0.2 && wtype ❤‍🔥"]},{"category":"emoji","description":"Skull <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-negative","skull","body","dead","death","face","fairy","fairytale","i’m","lmao","monster","skull","tale","yolo"],"label":"💀","type":"exec","value":["bash","-c","sleep 0.2 && wtype 💀"]},{"category":"emoji","description":"Grinning face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-smiling","grinning face","cheerful","cheery","face","grin","grinning","happy","laugh","nice","smile","smiling","teeth"],"label":"😀","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😀"]},{"category":"emoji","description":"Pensive face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-sleepy","pensive face","awful","bored","dejected","died","disappointed","face","losing","lost","pensive","sad","sucks"],"label":"😔","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😔"]},{"category":"emoji","description":"Loudly crying face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-concerned","loudly crying face","bawling","cry","crying","face","loudly","sad","sob","tear","tears","unhappy"],"label":"😭","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😭"]}]
+[{"category":"emoji","description":"Loudly crying face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-concerned","loudly crying face","bawling","cry","crying","face","loudly","sad","sob","tear","tears","unhappy"],"label":"😭","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😭"]},{"category":"emoji","description":"Fire <i>Travel & Places</i>","group":"Travel & Places","keywords":["sky & weather","fire","af","burn","fire","flame","hot","lit","litaf","tool"],"label":"🔥","type":"exec","value":["bash","-c","sleep 0.2 && wtype 🔥"]},{"category":"emoji","description":"Heart on fire <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["heart","heart on fire","burn","fire","heart","love","lust","sacred"],"label":"❤‍🔥","type":"exec","value":["bash","-c","sleep 0.2 && wtype ❤‍🔥"]},{"category":"emoji","description":"Skull <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-negative","skull","body","dead","death","face","fairy","fairytale","i’m","lmao","monster","skull","tale","yolo"],"label":"💀","type":"exec","value":["bash","-c","sleep 0.2 && wtype 💀"]},{"category":"emoji","description":"Grinning face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-smiling","grinning face","cheerful","cheery","face","grin","grinning","happy","laugh","nice","smile","smiling","teeth"],"label":"😀","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😀"]},{"category":"emoji","description":"Pensive face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-sleepy","pensive face","awful","bored","dejected","died","disappointed","face","losing","lost","pensive","sad","sucks"],"label":"😔","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😔"]}]
 ````
 
 ## File: scripts/emojis.json
@@ -124891,18 +125450,25 @@ if __name__ == "__main__":
 ````python
 #!/usr/bin/env python3
 """
-pacman-preflight.py — Compute the pre-flight transaction plan for a package.
+pacman-preflight.py — Compute the pre-flight transaction plan for one or
+more packages.
 
 Reads the pacman-filter.py cache, runs `pacman -S --print` for the
 authoritative to-install list, cross-references the cache for
 replaces/conflicts/installed-sizes, and uses `vercmp` for version
 constraint checking.
 
-Input:  package name as argv[1]
+Input:  one or more package names as argv[1:]
 Output: one indented JSON document on stdout (for easy debugging),
         OR an error object if anything fails.
 
-Usage:  python pacman-preflight.py <package_name>
+Usage:
+  python pacman-preflight.py <package1> [<package2> [<package3> ...]]
+
+Examples:
+  python pacman-preflight.py firefox
+  python pacman-preflight.py vlc firefox
+  python pacman-preflight.py base-devel gcc make
 
 Exits 0 on success, 1 on error (error details in the JSON output).
 """
@@ -124922,9 +125488,6 @@ from pathlib import Path
 CACHE_FILE = Path.home() / ".cache" / "pacman-ui" / "cache.json"
 
 # ─── vercmp ───────────────────────────────────────────────────────────────────
-#
-# Use pyalpm if available (no process spawn per comparison). Fall back
-# to the `vercmp` binary that ships with pacman.
 
 try:
     import pyalpm
@@ -124945,7 +125508,6 @@ except ImportError:
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
 def load_cache() -> dict:
-    """Load the pacman-filter.py cache. Returns {} on missing/corrupt."""
     if not CACHE_FILE.exists():
         return {"packages": []}
     try:
@@ -124955,15 +125517,20 @@ def load_cache() -> dict:
         return {"packages": []}
 
 
-def run_pacman_print(pkg: str) -> tuple[list[dict] | None, str]:
-    """Run `pacman -S --print --print-format "%n|%v|%s" <pkg>`.
+def run_pacman_print(targets: list[str]) -> tuple[list[dict] | None, str]:
+    """Run `pacman -S --print --print-format "%n|%v|%s" <targets...>`.
+
+    pacman accepts multiple package names in a single -S invocation and
+    resolves them as one combined transaction. This is the authoritative
+    to-install list — includes transitive deps, version resolution,
+    provides handling, etc.
 
     Returns (list_of_entries, error_message). On success, error_message
     is empty. On failure, list_of_entries is None.
 
     Each entry: {name, version, downloadBytes}
     """
-    cmd = ["pacman", "-S", "--print", "--print-format", "%n|%v|%s", pkg]
+    cmd = ["pacman", "-S", "--print", "--print-format", "%n|%v|%s"] + targets
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
     except subprocess.TimeoutExpired:
@@ -125000,14 +125567,6 @@ _OPS_ORDERED = ["<=", ">=", "<", ">", "="]
 
 
 def split_name_version(s: str) -> tuple[str, str, str]:
-    """Split 'plasma-integration<=5.27.0' → ('plasma-integration', '<=', '5.27.0').
-
-    Operator order matters: check '<=' before '<' (since '<' is a prefix of '<='),
-    and '>=' before '>'. '=' is checked last because it's a single char and the
-    others would never match if '=' came first.
-
-    Returns (name, op, version). If no operator, returns (s, "", "").
-    """
     for op in _OPS_ORDERED:
         idx = s.find(op)
         if idx >= 0:
@@ -125016,12 +125575,6 @@ def split_name_version(s: str) -> tuple[str, str, str]:
 
 
 def version_satisfies(installed_version: str, op: str, required_version: str) -> bool:
-    """Check if installed_version satisfies the (op, required_version) constraint.
-
-    If op is empty (no constraint), always returns True.
-    If installed_version is empty (unknown), returns False — better to
-    under-report a replace/conflict than to fire it incorrectly.
-    """
     if not op or not required_version:
         return True
     if not installed_version:
@@ -125041,15 +125594,6 @@ def version_satisfies(installed_version: str, op: str, required_version: str) ->
 
 
 # ─── Size formatting ─────────────────────────────────────────────────────────
-#
-# Parse "22.29 MiB" → bytes (int), and format bytes → "22.3 MiB".
-# Uses 1024-based binary prefixes to match pacman's convention.
-#
-# IMPORTANT: We always format sizes ourselves via format_bytes() rather
-# than passing through the raw string from the cache. Pacman is
-# inconsistent about which unit it uses (KiB vs MiB vs GiB) — some
-# packages show "15675.04 KiB" when they should show "15.3 MiB".
-# By formatting from the byte count, we ensure consistent unit selection.
 
 _SIZE_RE = re.compile(r"^([\d.]+)\s*(b|kib|kb|k|mib|mb|m|gib|gb|g|tib|tb|t|pib|pb|p)?$", re.I)
 _SIZE_MULTIPLIERS = {
@@ -125064,7 +125608,6 @@ _SIZE_UNITS = ["B", "KiB", "MiB", "GiB", "TiB", "PiB"]
 
 
 def parse_size_to_bytes(s: str) -> int:
-    """Parse '22.29 MiB' → 23343390 (int). Returns 0 on parse failure."""
     if not s:
         return 0
     m = _SIZE_RE.match(s.strip())
@@ -125079,12 +125622,6 @@ def parse_size_to_bytes(s: str) -> int:
 
 
 def format_bytes(b: int) -> str:
-    """Format 23343390 → '22.3 MiB'. Returns '0 B' for zero, '' for negative.
-
-    Always picks the most appropriate unit based on the byte count,
-    regardless of what unit the source data used. This ensures
-    consistent formatting — no '15675.04 KiB' when it should be '15.3 MiB'.
-    """
     if b == 0:
         return "0 B"
     if b < 0:
@@ -125099,14 +125636,15 @@ def format_bytes(b: int) -> str:
 # ─── Pre-flight plan builder ─────────────────────────────────────────────────
 
 def build_preflight(
-    target: str,
+    targets: set[str],
     cache_packages: list[dict],
     print_output: list[dict],
 ) -> dict:
-    """Build the pre-flight plan.
+    """Build the pre-flight plan for one or more target packages.
 
     Args:
-        target: the package the user is installing
+        targets: set of package names the user requested to install.
+                 Used to mark isTarget on the matching entries in toInstall.
         cache_packages: list of package dicts from pacman-filter.py cache.
         print_output: list of {name, version, downloadBytes} from
                       `pacman -S --print`.
@@ -125125,9 +125663,7 @@ def build_preflight(
         p["name"]: p for p in cache_packages if "name" in p
     }
 
-    # ─────────────────────────────────────────────────────────────────
-    # toInstall — from --print (authoritative)
-    # ─────────────────────────────────────────────────────────────────
+    # ── toInstall ──
     to_install: list[dict] = []
     total_download_bytes = 0
     total_installed_bytes = 0
@@ -125138,8 +125674,6 @@ def build_preflight(
         download_bytes = entry["downloadBytes"]
         total_download_bytes += download_bytes
 
-        # Look up installed size from cache. If the package isn't in the
-        # cache (brand-new, not yet cached), fall back to 0 bytes / "—".
         cached = packages_by_name.get(name)
         if cached:
             installed_size_str = cached.get("installed_size", "")
@@ -125154,18 +125688,13 @@ def build_preflight(
             "downloadBytes": download_bytes,
             "downloadSize": format_bytes(download_bytes),
             "installedBytes": installed_bytes,
-            # Format installed size ourselves — don't pass through the
-            # raw cache string. Pacman is inconsistent about units
-            # (sometimes KiB when it should be MiB), so we always
-            # format from the byte count for consistency.
             "installedSize": format_bytes(installed_bytes) if cached else "—",
-            "isTarget": name == target,
+            # isTarget is true for ANY package the user explicitly requested.
+            # Dependencies pulled in by pacman are NOT targets.
+            "isTarget": name in targets,
         })
 
-    # ─────────────────────────────────────────────────────────────────
-    # willReplace — from each to-install package's `replaces` field,
-    # checked against installed packages with version constraints.
-    # ─────────────────────────────────────────────────────────────────
+    # ── willReplace ──
     will_replace: list[dict] = []
     seen_replaces: set[str] = set()
 
@@ -125184,7 +125713,6 @@ def build_preflight(
             if not rep_cached or not rep_cached.get("installed"):
                 continue
 
-            # Version constraint check
             installed_version = rep_cached.get("version", "")
             if not version_satisfies(installed_version, op, req_version):
                 continue
@@ -125196,12 +125724,7 @@ def build_preflight(
             })
             seen_replaces.add(rep_name)
 
-    # ─────────────────────────────────────────────────────────────────
-    # conflictsWith — two directions:
-    #   1. Each to-install package's `conflicts_with` against installed.
-    #   2. Each installed package's `conflicts_with` against to-install.
-    # Skip any that are already in will_replace (replaces takes precedence).
-    # ─────────────────────────────────────────────────────────────────
+    # ── conflictsWith ──
     conflicts_with: list[dict] = []
     seen_conflicts: set[str] = set()
 
@@ -125224,7 +125747,6 @@ def build_preflight(
             if not con_cached or not con_cached.get("installed"):
                 continue
 
-            # Constraint is on the INSTALLED package's version
             installed_version = con_cached.get("version", "")
             if not version_satisfies(installed_version, op, req_version):
                 continue
@@ -125250,7 +125772,6 @@ def build_preflight(
             if con_name not in to_install_names:
                 continue
 
-            # Constraint is on the TO-INSTALL package's version
             to_install_version = to_install_versions.get(con_name, "")
             if not version_satisfies(to_install_version, op, req_version):
                 continue
@@ -125262,7 +125783,7 @@ def build_preflight(
                 "conflictsWith": con_name,
             })
             seen_conflicts.add(pkg_name)
-            break  # this installed package is already counted; move on
+            break
 
     return {
         "toInstall": to_install,
@@ -125276,14 +125797,13 @@ def build_preflight(
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 def main() -> None:
-    if len(sys.argv) < 2:
-        print(json.dumps({"error": "missing package name argument"}, indent=2))
+    targets_list = [arg.strip() for arg in sys.argv[1:] if arg.strip()]
+
+    if not targets_list:
+        print(json.dumps({"error": "missing package name(s)"}, indent=2))
         sys.exit(1)
 
-    target = sys.argv[1].strip()
-    if not target:
-        print(json.dumps({"error": "empty package name"}, indent=2))
-        sys.exit(1)
+    targets_set = set(targets_list)
 
     cache = load_cache()
     cache_packages = cache.get("packages", [])
@@ -125296,24 +125816,23 @@ def main() -> None:
         }, indent=2))
         sys.exit(1)
 
-    print_output, err = run_pacman_print(target)
+    print_output, err = run_pacman_print(targets_list)
     if print_output is None:
         print(json.dumps({
             "error": f"pacman -S --print failed: {err}",
-            "target": target,
+            "targets": targets_list,
         }, indent=2))
         sys.exit(1)
 
     if not print_output:
         print(json.dumps({
-            "error": f"no transaction for {target} (already installed or not found)",
-            "target": target,
+            "error": f"no transaction for {', '.join(targets_list)} (already installed or not found)",
+            "targets": targets_list,
         }, indent=2))
         sys.exit(1)
 
-    plan = build_preflight(target, cache_packages, print_output)
+    plan = build_preflight(targets_set, cache_packages, print_output)
 
-    # Indented JSON for easier debugging from the command line.
     print(json.dumps(plan, indent=2))
 
 
@@ -125613,15 +126132,6 @@ hyprctl reload
       "span": 1,
       "urgency": 0,
       "time": "19:30"
-    }
-  ],
-  "25-06-2026": [
-    {
-      "title": "DNG103 Final Exam",
-      "body": "",
-      "span": 1,
-      "urgency": 2,
-      "time": "07:00"
     }
   ],
   "29-06-2026": [
@@ -129737,7 +130247,7 @@ Singleton {
      6.   reset          (Go back to Idle)
      */
     property string pacmanState: "idle"
-    property string installTarget: ""
+    property var installTarget: []
     property var installPlan: {
         "toInstall": [], // Dependencies (install)
         "willReplace": [], // Replaces (remove)
@@ -129749,20 +130259,14 @@ Singleton {
     property string rawInstallLog: ""
     property int installLogCursor: 0
     property int installLogLastNewline: 0
-    property string pendingPrompt: ""
     property int installExitCode: 0
 
     signal promptRequested(prompt: string)
     signal installCompleted(exitCode: int)
 
-    function cancelInstallation() {
-        if (installer.running) {
-            installer.signal(2)
-            pacmanState = "cancel"
-            return
-        }
+    function reset() {
         pacmanState = "idle"
-        installTarget = ""
+        installTarget = []
         installPlan = {
             "toInstall": [], // Dependencies (install)
             "willReplace": [], // Replaces (remove)
@@ -129772,26 +130276,43 @@ Singleton {
         }
         rawInstallLog = ""
         installLogCursor = 0
-        pendingPrompt = ""
+        installState = {
+            "currentPhase": "START", // START, DOWNLOAD, CHECKS, INSTALL, HOOKS, DONE
+            "progressData": {},
+            "overallProgress": 0     // 0 to 100
+        }
     }
 
-    function requestInstallation(name: string) {
-        if (pacmanState != "idle") return
-        if (isInstalled(name)) {
-            console.log("PacmanInfo (requestIntallation): " + name + " has already been installed. Rejecting request.")
+    function cancelInstallation() {
+        if (installer.running) {
+            installer.write("\x03")
+            pacmanState = "cancel"
             return
         }
-        installTarget = name
+        reset()
+    }
+
+    function requestInstallation(pkgs: var) {
+        if (pacmanState != "idle") return
+        for (const pkg of pkgs) {
+            if (isInstalled(pkg)) {
+                console.log("PacmanInfo (requestInstallation): " + pkg + " has already been installed. Rejecting request.")
+                return
+            }
+        }
+        installTarget = pkgs
         //fetch()
         pacmanState = "prepare"
         preparePreFlight()
     }
 
     function prepareInstallation() {
-        if (isInstalled(installTarget)) {
-            console.log("PacmanInfo (prepareInstallation): " + installTarget + " has already been installed. Rejecting request.")
-            cancelInstallation()
-            return
+        for (const pkg of installTarget) {
+            if (isInstalled(pkg)) {
+                console.log("PacmanInfo (prepareInstallation): " + installTarget + " has already been installed. Rejecting request.")
+                cancelInstallation()
+                return
+            }
         }
         pacmanState = "pre-flight"
     }
@@ -129837,7 +130358,7 @@ Singleton {
             let downloadSpeed = "0 B/s"
             let estimateTime = "inf"
             let percentage = 0
-            if (installPlan.toInstall.length > 1) {
+            if (installPlan.toInstall.filter(item => item.downloadBytes > 0).length > 1) {
                 data = line.match(/Total\s+\((\d+)\/(\d+)\)\s+(\d+.\d+\s+(B|MiB|KiB|GiB))\s+(\d+(.\d+)?\s+(B|MiB|KiB|GiB)\/s)\s+((\d+|--):(\d+|--))\s+\[.*?]\s+(\d+)%/)
                 if (data) {
                     currentPkg = parseInt(data[1])
@@ -129848,7 +130369,7 @@ Singleton {
                     percentage = parseInt(data[11])
                 }
             } else {
-                data = line.match(/.*\s+(\d+(.\d+)?\s+(B|MiB|KiB|GiB))\s+(\d+(.\d+)?\s+(B|MiB|KiB|GiB)\/s)\s+((\d+|[-]+):(\d+|[-]+))\s+\[.*?]\s+(\d+)%/)
+                data = line.match(/.*\s+(\d+(.\d+)?\s+(B|MiB|KiB|GiB))\s+(\d+(.\d+)?\s+(B|MiB|KiB|GiB)\/s)\s+((\d+|--):(\d+|--))\s+\[.*?]\s+(\d+)%/)
                 currentPkg = 1
                 totalPkg = 1
                 if (data)  {
@@ -129890,7 +130411,6 @@ Singleton {
         }
 
         if (installState.currentPhase == "HOOKS") {
-            console.log(line)
             let lines = line.split("\n")
             let data
             for (let i = lines.length - 1; i >= 0; i--) {
@@ -129906,10 +130426,11 @@ Singleton {
                 "totalStep": totalStep,
                 "percentage": Math.round((currentStep/totalStep)*100)
             }
-            installState.overallProgress = 90 + Math.round((currentStep/totalStep)*100*0.1)
+            installState.overallProgress = 90 + Math.round((currentStep/totalStep)*10)
         }
 
         //console.log(JSON.stringify(installState,null,2))
+        installStateChanged()
     }
 
     function processANSI(rawText) {
@@ -129948,7 +130469,7 @@ Singleton {
             let params = match[1]; // e.g., "7" or "?25"
             let command = match[2]; // e.g., "m" or "l"
 
-            // If it's a private mode command (starts with ?), we safely ignore it 
+            // If it's a private mode command (starts with ?), we safely ignore it
             // without letting it bleed into the text.
             if (!params.startsWith('?')) {
                 let value = params ? parseInt(params) : 1;
@@ -130013,19 +130534,19 @@ Singleton {
     function appendLog(text: string) {
         rawInstallLog += text
         trackPacmanProgress(installLog)
+        if (installLog.split("\n").slice(-1).toString().toLowerCase().includes("[y/n]")) {
+            installer.write("y\n")
+        }
     }
 
     Process {
 
         id: installer
 
-        property string pkg: root.installTarget
-
-        property string rawLog: ""
+        property string pkg: root.installTarget.join(" ")
 
         onRunningChanged: {
             if (running) {
-                rawLog = ""
                 AuthInfo.verify("Installing <b>" + root.installTarget + "</b>", "Authenticate for installation.", function(s, p) {
                     if (s) {
                         installer.write(p+"\n")
@@ -130037,11 +130558,12 @@ Singleton {
             }
         }
 
-        command: ["script", "-qc", `sudo -S -k -p '' env COLUMNS=84 LINES=0 pacman -S --noconfirm ${pkg}`, "/dev/null"]
+        command: ["script", "-qc", `sudo -S -k -p '' env COLUMNS=94 LINES=0 pacman -S ${pkg}`, "/dev/null"]
 
         stdout: SplitParser {
             splitMarker: ""
             onRead: (text) => {
+                //console.log(text)
                 root.appendLog(text)
             }
         }
@@ -130055,19 +130577,10 @@ Singleton {
 
         onExited: (exitCode, exitStatus) => {
             console.log("PacmanInfo (installer): exitCode: " + exitCode + ", exitStatus: " + exitStatus)
+            root.installExitCode = exitCode
             fetch()
             if (root.pacmanState == "cancel") {
-                root.pacmanState = "idle"
-                root.installTarget = ""
-                root.installPlan = {
-                    "toInstall": [], // Dependencies (install)
-                    "willReplace": [], // Replaces (remove)
-                    "conflictsWith": [], // Conflicts (remove)
-                    "totalDownload": "",
-                    "totalInstalled": "",
-                }
-                root.installLog = ""
-                root.pendingPrompt = ""
+                root.reset()
                 return
             }
             if (exitCode == 0) {
@@ -130077,77 +130590,85 @@ Singleton {
 
     }
 
-    onInstalledChanged: {
-        queryChanged()
-    }
-
-    onSearch_modeChanged: {
-        queryChanged()
-    }
-
-    onPackagesChanged: {
-        queryChanged()
-    }
-
-    onQueryChanged: {
-        if (!query) {
-            search_results = packages
-            return
-        }
-
-        let q = query
-
-        search_results = packages.filter((item) => {
-
-            let matchName
-            let matchDesc
-            let matchRepo
-
-            if (search_mode == 1) {
-                q = q.replace(/ /g, "").replace(/-/g, "").replace(/_/g, "")
-                matchName = item.name.toLowerCase().replace(/ /g, "").replace(/-/g, "").replace(/_/g, "").includes(q)
-                matchDesc = item.description.toLowerCase().replace(/ /g, "").replace(/-/g, "").replace(/_/g, "").includes(q)
-                matchRepo = item.repository.toLowerCase().replace(/ /g, "").replace(/-/g, "").replace(/_/g, "").includes(q)
-            } else {
-                matchName = item.name.toLowerCase().includes(q)
-                matchDesc = item.description.toLowerCase().includes(q)
-                matchRepo = item.repository.toLowerCase().includes(q)
-            }
-
-            let matchesQuery = matchName
-
-            if (search_mode == 0 || search_mode == 1) {
-                matchesQuery = matchesQuery || matchDesc || matchRepo
-            } else if (search_mode == 3) {
-                matchesQuery = item.name.trim() == q.trim()
-            }
-
-            // If filter_installed is true, it MUST be installed. 
-            // If false, return everything that matches regardless of install status.
-            return installed ? (matchesQuery && item.installed) : matchesQuery
-        })
-    }
+    // ─── Search & Filter ──────────────────────────────────────────
+    //
+    // All filtering (query + installed + outdated) happens in a single
+    // pass inside onQueryChanged.  PacmanPopup.list.datas no longer
+    // needs a secondary .filter().
 
     property bool installed: false
 
     property bool outdated: false
 
+    onInstalledChanged:  { queryChanged() }
+    onOutdatedChanged:   { queryChanged() }
+    onSearch_modeChanged: { queryChanged() }
+    onPackagesChanged:    { rebuildIndices(); queryChanged() }
+
     property int search_mode: 0
 
     property var search_modes: [
-        "Normal",
-        "Fuzzy",
-        "Name",
-        "Exact",
+        "Normal",      // Just includes
+        "Fuzzy",       // Remove spaces and connectors ("-", "_")
+        "Name",        // Search using names only
+        "Exact",       // Exact match
+        "Auto select", // Act as pacman args for pacman -S "pkg1" "pkg2" with each pkg between space would use the search capability to act as auto complete for that specific package
     ]
 
     property var packages: []
 
     property var search_results: packages
 
-    function isInstalled(pkg: string): bool {
-        return packages.some(item => item.name == pkg && item.installed)
+    // ─── Lookup Indices ───────────────────────────────────────────
+    //
+    // Built once in rebuildIndices() whenever `packages` changes.
+    //
+    //   nameIndex   : { [pkgName]: arrayIndex }   — O(1) by name
+    //   installedSet: { [pkgName]: true }          — O(1) installed check
+    //
+    // Pre-computed search fields are also attached directly onto each
+    // package object at the same time so onQueryChanged never has to
+    // .toLowerCase() or .replace() per-item per-keystroke.
+
+    property var nameIndex: ({})
+
+    property var installedSet: ({})
+
+    function rebuildIndices() {
+        nameIndex = {}
+        installedSet = {}
+        for (let i = 0; i < packages.length; i++) {
+            let p = packages[i]
+            nameIndex[p.name] = i
+            if (p.installed) installedSet[p.name] = true
+
+            // Pre-computed search fields (one-time cost at load)
+            p.name_lower = p.name.toLowerCase()
+            p.desc_lower = p.description.toLowerCase()
+            p.repo_lower = p.repository.toLowerCase()
+            p.name_fuzzy = p.name_lower.replace(/[-_ ]/g, "")
+            p.desc_fuzzy = p.desc_lower.replace(/[-_ ]/g, "")
+            p.repo_fuzzy = p.repo_lower.replace(/[-_ ]/g, "")
+        }
     }
+
+    // ─── O(1) Lookups ─────────────────────────────────────────────
+
+    function isInstalled(pkg: string): bool {
+        return installedSet[pkg] === true
+    }
+
+    function getPackage(pkg: string): var {
+        let idx = nameIndex[pkg]
+        return idx !== undefined ? packages[idx] : null
+    }
+
+    function getPackageIndex(pkg: string): int {
+        let idx = nameIndex[pkg]
+        return idx !== undefined ? idx : -1
+    }
+
+    // ─── Search Entry Point ───────────────────────────────────────
 
     function search(query: string) {
         if (!query) {
@@ -130155,6 +130676,90 @@ Singleton {
             return
         }
         root.query = query.toLowerCase()
+    }
+
+    // ─── Unified Filter ───────────────────────────────────────────
+    //
+    // Single-pass: query matching + installed filter + outdated filter
+    // are all evaluated together.  No secondary .filter() needed in
+    // PacmanPopup.
+
+    onQueryChanged: {
+        // ── No query: apply only installed/outdated filters ──
+        if (!query) {
+            if (installed && outdated) {
+                search_results = packages.filter(i => i.installed && i.latest_version != "")
+            } else if (installed) {
+                search_results = packages.filter(i => i.installed)
+            } else if (outdated) {
+                search_results = packages.filter(i => i.latest_version != "")
+            } else {
+                search_results = packages
+            }
+            return
+        }
+
+        let q = query
+
+        // ── Mode 3: Exact match — O(1) lookup ──
+        if (search_mode == 3) {
+            let idx = nameIndex[q.trim()]
+            if (idx !== undefined) {
+                let item = packages[idx]
+                if (installed && !item.installed) { search_results = []; return }
+                if (outdated && !item.latest_version) { search_results = []; return }
+                search_results = [item]
+            } else {
+                search_results = []
+            }
+            return
+        }
+
+        // ── Pre-process query once (not per-item) ──
+        let qFuzzy
+        if (search_mode == 1) {
+            qFuzzy = q.replace(/[-_ ]/g, "")
+        }
+        let qTrimmed = q.trim()
+
+        // ── Single-pass filter ──
+        search_results = packages.filter((item) => {
+
+            let matchesQuery
+
+            switch (search_mode) {
+            case 0: // Normal — includes on name/desc/repo
+                matchesQuery = item.name_lower.includes(q)
+                    || item.desc_lower.includes(q)
+                    || item.repo_lower.includes(q)
+                break
+
+            case 1: // Fuzzy — stripped includes on name/desc/repo
+                matchesQuery = item.name_fuzzy.includes(qFuzzy)
+                    || item.desc_fuzzy.includes(qFuzzy)
+                    || item.repo_fuzzy.includes(qFuzzy)
+                break
+
+            case 2: // Name — includes on name only
+                matchesQuery = item.name_lower.includes(q)
+                break
+
+            case 4: // Auto select — startsWith on name
+                matchesQuery = item.name_lower.startsWith(qTrimmed)
+                break
+
+            default:
+                matchesQuery = false
+            }
+
+            if (!matchesQuery) return false
+
+            // Combined installed/outdated filter in the same pass
+            if (installed && !item.installed) return false
+            if (outdated && !item.latest_version) return false
+
+            return true
+        })
     }
 
     function list() {
@@ -130182,7 +130787,7 @@ Singleton {
             } else {
                 console.log("Authorize updates checker failed!")
                 root.updates_checker_authorized = false
-                updates_checker.running = false
+                cancelInstallation()
             }
         })
     }
@@ -130199,7 +130804,7 @@ Singleton {
 
         id: preflighter
 
-        command: ["python", root.preflight_path, root.installTarget]
+        command: ["python", root.preflight_path, ...root.installTarget]
 
         stdout: StdioCollector {
             onStreamFinished: {
@@ -130303,6 +130908,57 @@ Singleton {
             root.pacmanState = "idle"
         }
 
+    }
+
+    function formatBytes(bytes, decimals = 1) {
+        if (bytes === 0) return "0 B"
+        if (!bytes || bytes < 0) return ""
+
+        const units = ["B", "KiB", "MiB", "GiB", "TiB", "PiB"]
+        const k = 1024
+
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+        const unit = units[Math.min(i, units.length - 1)]
+
+        // For B, no decimals (it's an integer). For larger units, show decimals.
+        if (i === 0) return bytes + " B"
+
+        const value = bytes / Math.pow(k, i)
+        return value.toFixed(decimals) + " " + unit
+    }
+
+    function convertToBytes(str) {
+        if (!str) return 0
+
+        const s = str.trim().toLowerCase()
+        if (!s) return 0
+
+        // Match a number (with optional decimals) followed by an optional unit.
+        // The unit can be: b, kib/kb/k, mib/mb/m, gib/gb/g, tib/tb/t, pib/pb/p
+        // We treat decimal (KB) and binary (KiB) units the same — both 1024,
+        // because pacman uses MiB but users might type MB and we want to be
+        // forgiving. The lowercase "b" by itself is bytes.
+        const match = s.match(/^([\d.]+)\s*(b|kib|kb|k|mib|mb|m|gib|gb|g|tib|tb|t|pib|pb|p)?$/)
+        if (!match) return 0
+
+        const value = parseFloat(match[1])
+        if (isNaN(value)) return 0
+
+        const unit = match[2] || "b"
+
+        const multipliers = {
+            "b": 1,
+            "k": 1024, "kib": 1024, "kb": 1024,
+            "m": 1024 * 1024, "mib": 1024 * 1024, "mb": 1024 * 1024,
+            "g": 1024 * 1024 * 1024, "gib": 1024 * 1024 * 1024, "gb": 1024 * 1024 * 1024,
+            "t": 1024 ** 4, "tib": 1024 ** 4, "tb": 1024 ** 4,
+            "p": 1024 ** 5, "pib": 1024 ** 5, "pb": 1024 ** 5,
+        }
+
+        const mult = multipliers[unit]
+        if (!mult) return 0
+
+        return Math.round(value * mult)
     }
 
 }
@@ -132383,6 +133039,8 @@ ShellRoot {
 
                     border_size = 2,
 
+                    allow_tearing = true,
+
                     col = {
                         active_border = \"${active_border}\",
                         inactive_border = \"${inactive_border}\",
@@ -132390,10 +133048,17 @@ ShellRoot {
 
                 },
 
+                xwayland = {
+                    force_zero_scaling = true
+                },
+
+                render = {
+                    direct_scanout = 2
+                },
+
                 cursor = {
                     no_hardware_cursors = 0,
                     use_cpu_buffer = 1,
-                    zoom_disable_aa = 1,
                 },
 
                 decoration = {

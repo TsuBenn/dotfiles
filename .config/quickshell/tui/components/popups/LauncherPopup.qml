@@ -11,7 +11,7 @@ CellPopup {
 
     id: root
 
-    property bool optimizeMemory: SettingsInfo.optimizeMemory
+    property bool optimizeMemory: SettingsInfo.optimizeMemory && false
 
     property bool minimal: SettingsInfo.minimal
 
@@ -20,40 +20,14 @@ CellPopup {
 
     onVisibleChanged: {
 
-        /*
-         if (visible) {
-             if (!LauncherInfo.running) {
-                 LauncherInfo.start()
-             } else {
-                 auto_close.stop()
-             }
-         }
-         if (!visible && LauncherInfo.running) {
-             auto_close.restart()
-         }
-         */
-
         if (!visible) {
-            auto_rescan.restart()
             textfield.path = []
             textfield.set("")
             textfield.search("")
             breadcrumbs.updatePath()
         } else {
-            auto_rescan.stop()
             textfield.set("")
             textfield.search("")
-            LauncherInfo.write("-r")
-        }
-
-    }
-
-    Timer {
-
-        id: auto_rescan
-
-        interval: 1000
-        onTriggered: {
             LauncherInfo.write("-r")
         }
 
@@ -73,7 +47,7 @@ CellPopup {
         repeat: true
         onTriggered: {
             console.log("LauncherInfo: Occasional refresh...")
-            LauncherInfo.reset()
+            LauncherInfo.write("-r")
         }
 
     }
