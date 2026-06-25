@@ -9,6 +9,7 @@ PACMAN_DEPS=(
     "qt6-5compat|Qt6 5Compat|Compatibility layer for graphical blur and mask effects."
     "qt6-declarative|Qt6 Declarative|Engine for handling QML UIs and layouts."
     "wireplumber|WirePlumber|Session manager for PipeWire handling audio streams."
+    "pipewire-pulse|PipeWire Pulse|Provides utilities for controlling audio streams."
     "upower|UPower|System daemon providing power and battery tracking statistics."
     "bluez|Bluez|The official Linux Bluetooth protocol stack daemon."
     "bluez-utils|Bluez Utilities|Development and interface tools for managing Bluetooth."

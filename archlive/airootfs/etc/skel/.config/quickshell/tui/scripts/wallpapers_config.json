@@ -1,0 +1,18 @@
+{
+  "transition": {
+    "type": "shrink",
+    "step": 1,
+    "duration": 1,
+    "fps": 60,
+    "angle": 30,
+    "posX": 0.5,
+    "posY": 0.5
+  },
+  "wallpapers": [
+    "asuka_landscape.jpg"
+  ],
+  "config": {},
+  "live": true,
+  "slideshow": false,
+  "selected": 0
+}
