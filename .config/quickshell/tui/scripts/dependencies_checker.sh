@@ -16,6 +16,7 @@ PACMAN_DEPS=(
     "networkmanager|NetworkManager|Network connection management daemon and tools."
     "cava|CAVA|Console-based Audio Visualizer for the desktop backdrop."
     "wl-clipboard|WL Clipboard|Command-line copy/paste utilities for Wayland."
+    "clipvault|Clipvault|Mananging clipboard history."
     "wtype|WType|Wayland keystroke simulator tool used for typing emojis."
     "grim|Grim|Grab images from a Wayland compositor to take screenshots."
     "dolphin|Dolphin|The desktop graphical file manager application."

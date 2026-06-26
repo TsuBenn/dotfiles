@@ -177,7 +177,7 @@ ShellRoot {
 
         sourceComponent: DependenciesChecker {
             property var wallpaper_loader: WallpaperInfo.wallpapers // Pre-initiating WallpaperInfo
-            property var hyprinfo_loader: HyprInfo.maxRefreshRate // Pre-initiating HyprInfo
+            property var hyprinfo_loader: HyprInfo.maxRefreshRate   // Pre-initiating HyprInfo
         }
 
     }
