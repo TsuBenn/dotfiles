@@ -186,16 +186,18 @@ install_packages "Monitoring Tools" "${MONITORING[@]}"
 install_packages "Input & Language" "${INPUT_METHOD[@]}"
 install_packages "Ricing & Aesthetics" "${RICING[@]}"
 
-# ===== Install Yay (AUR Helper) =====
+rustup default stable
+
+# ===== Install Paru (AUR Helper) =====
 if ! command -v yay &> /dev/null; then
-    echo -e "${YELLOW}Installing yay AUR helper...${NC}"
-    git clone https://aur.archlinux.org/yay.git
-    cd yay
+    echo -e "${YELLOW}Installing paru AUR helper...${NC}"
+    git clone https://aur.archlinux.org/paru.git
+    cd paru
     makepkg -si --noconfirm
     cd ..
     rm -rf yay
 else
-    echo -e "${GREEN}✔ yay already installed.${NC}"
+    echo -e "${GREEN}✔ paru already installed.${NC}"
 fi
 
 # ===== Install AUR Packages =====
