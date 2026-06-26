@@ -145,7 +145,9 @@ Item {
     }
 
     onVisibleChanged: {
-        clear()
+        if (autoClear) {
+            clear()
+        }
         unFocus()
         if (bindText != "") {
             text = Qt.binding(()=>bindText)

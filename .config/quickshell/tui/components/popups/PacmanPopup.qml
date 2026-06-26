@@ -33,6 +33,7 @@ CellPopup {
         }
     }
 
+    /*
     onVisibleChanged: {
         selected_index = 0
         multi_selected_pkg = []
@@ -40,6 +41,7 @@ CellPopup {
         PacmanInfo.query = ""
         list.reset()
     }
+    */
 
     onPromoted: {
         search_field.grabFocus()
@@ -617,9 +619,21 @@ CellPopup {
                         // ── O(1) lookups via nameIndex ──────────────────
                         property int dep_index: PacmanInfo.getPackageIndex(deps[deps.length-1])
                         property int index: PacmanInfo.getPackageIndex(root.selected_pkg)
+
                         property var deps: []
 
+                        Timer {
+                            id: info_index_refresh
+                            interval: 100
+                            onTriggered: {
+                                info.indexChanged()
+                            }
+                        }
+
                         onIndexChanged: {
+                            if (index == -1 && root.selected_pkg != "" && !info_index_refresh.running) {
+                                info_index_refresh.restart()
+                            }
                             deps = []
                         }
 
@@ -1371,7 +1385,15 @@ CellPopup {
                                 CellText {
 
                                     text: parent.prefix
-                                    color: Colors.fgSubtle
+                                    color: {
+                                        if (text == "!") {
+                                            return Colors.danger
+                                        } else if (text == "=") {
+                                            return Colors.warning
+                                        } else {
+                                            return Colors.fgSubtle
+                                        }
+                                    }
 
                                 }
 
@@ -1569,7 +1591,7 @@ CellPopup {
 
                                         maxW: box.contentW - 2
 
-                                        prefix: "-"
+                                        prefix: "="
 
                                         name: modelData.name
                                         version: modelData.version
@@ -1614,7 +1636,7 @@ CellPopup {
 
                                         maxW: box.contentW - 2
 
-                                        prefix: "-"
+                                        prefix: "!"
 
                                         name: modelData.name
                                         name_color: Colors.danger
