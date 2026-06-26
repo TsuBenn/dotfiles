@@ -10,7 +10,10 @@ qt6-5compat
 qt6-declarative
 
 wireplumber
-# pulseaudio-utils
+pipewire 
+pipewire-alsa 
+pipewire-jack 
+pipewire-pulse
 
 upower 
 bluez 

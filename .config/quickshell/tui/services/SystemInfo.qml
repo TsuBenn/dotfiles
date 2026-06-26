@@ -11,8 +11,8 @@ Singleton {
 
     //OS level
     property string username: "user"
-    property string homedir: "/home/tsubenn"
-    property string configdir: homedir + "/dotfiles/.config/quickshell/tui"
+    property string homedir: "/home/user"
+    property string configdir: homedir + "/.config/quickshell/tui"
     property string hostname: "host"
     property string os: "Linux"
     property string kernel: "linux"
