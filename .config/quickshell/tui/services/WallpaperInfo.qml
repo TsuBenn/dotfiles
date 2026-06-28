@@ -44,6 +44,10 @@ Singleton {
         return SystemInfo.homedir + root.cache_path+root.current+root.cache_prefix 
     }
 
+    function getLocation() {
+        return SystemInfo.homedir + root.path + root.current
+    }
+
     function setConfig(imageName, propertyPath, value) {
         var currentConfig = root.config || {};
 
@@ -280,14 +284,6 @@ Singleton {
 
         property bool recache: false
 
-        Component.onCompleted: {
-            SystemInfo.cputhreadsChanged.connect(()=> {
-                if (SystemInfo.cputhreads > 0) {
-                    cacher.running = true
-                }
-            })
-        }
-
         command: [SystemInfo.configdir + "/scripts/wallpapers_cacher.sh", SystemInfo.homedir + root.path, SystemInfo.cputhreads, recache ? "--force" : ""]
 
         stdout: StdioCollector {
@@ -312,6 +308,10 @@ Singleton {
 
                 const data = text.split("\n").filter(item => item != "")
                 root.all = data
+
+                if (!SettingsInfo.wallpaperCached) {
+                    SettingsInfo.wallpaperCached = true
+                }
 
             }
         }
@@ -392,9 +392,16 @@ Singleton {
 
     }
 
+    function init() {
+        loader.preload = true
+        cacher.running = true
+    }
+
     FileView {
 
         id: loader
+
+        preload: false
 
         path: SystemInfo.configdir + "/scripts/wallpapers_config.json"
 

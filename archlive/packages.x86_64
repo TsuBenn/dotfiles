@@ -76,28 +76,32 @@ curl
 wget
 keyd
 fastfetch
+stow
 
 # Hyprland
-# ghostty
-# hyprland
-# quickshell
-# qt6-multimedia
-# qt6-5compat
-# qt6-declarative
-# wireplumber
-# pipewire-pulse
-# cava
-# wl-clipboard
-# clipvault
-# wtype
-# grim
-# dolphin
-# python
-# ffmpeg
-# imagemagick
-# fd
-# noto-fonts-extra
-# noto-fonts-emoji
-# noto-fonts-cjk
-# ttf-jetbrains-mono
-# ttf-jetbrains-mono-nerd
+ghostty
+hyprland
+python-numpy
+python-pillow
+xdg-desktop-portal-hyprland
+quickshell
+qt6-multimedia
+qt6-5compat
+qt6-declarative
+wireplumber
+pipewire-pulse
+cava
+wl-clipboard
+clipvault
+wtype
+grim
+dolphin
+python
+ffmpeg
+imagemagick
+fd
+noto-fonts-extra
+noto-fonts-emoji
+noto-fonts-cjk
+ttf-jetbrains-mono
+ttf-jetbrains-mono-nerd

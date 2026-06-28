@@ -23,6 +23,8 @@ Singleton {
 
     signal auth(string prompt)
 
+    signal initializedSystemInfo()
+
     //Specs
     property string cpumodel: "CPU"
     property int cpucores
@@ -526,6 +528,7 @@ Singleton {
                 onStreamFinished: {
                     if (text) {
                         root.homedir = text.trim()
+                        root.initializedSystemInfo()
                     }
                 }
             }

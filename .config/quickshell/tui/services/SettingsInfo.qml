@@ -27,11 +27,14 @@ Singleton {
         onTriggered: root.fps = fpsMonitor.smoothFrameTime > 0 ? Math.round(1.0 / fpsMonitor.smoothFrameTime) : 0
     }
 
+    property bool initialized                  : dependenciesChecked && colorsLoaded && wallpaperCached
     property bool dependenciesChecked          : false // Use to initiallize the bar
+    property bool colorsLoaded                 : false // Use to initiallize the bar
+    property bool wallpaperCached              : false // Use to initiallize the bar
 
     property bool quickStart                   : false // Quick dependencies check. Super fast
 
-    property bool lightMode                    : autoLightMode ? Colors.preferedLightMode : userLightMode // Light mode of system
+    property bool lightMode                    : autoLightMode ? Colors.preferredLightMode : userLightMode // Light mode of system
     property bool userLightMode                : false // Light mode of user input
     property bool autoLightMode                : true  // Decide whether the wallpaper needs a light mode or dark mode
     property string appearance                 : {     // Light mode, dark mode or auto mode?

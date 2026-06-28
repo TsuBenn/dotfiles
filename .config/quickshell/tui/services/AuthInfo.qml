@@ -70,6 +70,10 @@ Singleton {
     // flow while one is in progress.
     property bool authenticating: false
 
+    onAuthenticatingChanged: {
+        console.log("authenticating: " + authenticating)
+    }
+
     // True only while PAM is verifying a password. AuthPopup binds the
     // password field's `disabled` to this so the user can't submit a
     // second password while the first is still being checked. Resets to
