@@ -17,7 +17,7 @@ WlSessionLockSurface {
 
     id: root
 
-    property bool processing: AuthInfo.authenticating
+    property bool processing: AuthInfo.checking
 
     property bool focused: monitor.name == HyprInfo.focusedMonitor.name
 
@@ -29,12 +29,14 @@ WlSessionLockSurface {
     }
 
     onVisibleChanged: {
+        AuthInfo.authenticating = true
         password_field.focus = true
         lock_screen_anim.restart()
     }
 
     function unlock(password: string) {
-        AuthInfo.verify(password)
+        AuthInfo._check(password)
+        AuthInfo.authenticating = false
     }
 
     MediaPlayer {
@@ -354,8 +356,8 @@ WlSessionLockSurface {
 
                     Component.onCompleted: {
                         LockInfo.passwordChanged.connect(()=> {
-                            if (!password_field?.focus) {
-                                password_field.set(LockInfo.password)
+                            if (!root.focused) {
+                                password_field?.set(LockInfo.password)
                             }
                         })
                     }
@@ -481,7 +483,7 @@ WlSessionLockSurface {
                 target: lock_status_buffer
                 property: "opacity"
                 from: 0
-                to: 1
+                to: 1*root.focused
                 duration: 500
                 easing.type: Easing.OutCubic
             }
@@ -501,12 +503,14 @@ WlSessionLockSurface {
         PauseAnimation {
             duration: 500
         }
-        NumberAnimation {
-            target: black_lock_screen
-            property: "opacity"
-            to: 0
-            duration: 1000
-            easing.type: Easing.OutCubic
+        ParallelAnimation {
+            NumberAnimation {
+                target: black_lock_screen
+                property: "opacity"
+                to: 0
+                duration: 1000
+                easing.type: Easing.OutCubic
+            }
         }
 
     }
@@ -524,7 +528,8 @@ WlSessionLockSurface {
         height: Cell.h(lock_status.h)
         x: lock_status.x + layout.x
         y: lock_status.y + layout.y
-        opacity: layout.opacity
+        opacity: root.focused
+        Behavior on opacity {NumberAnimation {duration: 500*SettingsInfo.hyprAnim; easing.type: Easing.OutCubic}}
         live: true
         hideSource: true
         sourceItem: lock_status
@@ -583,10 +588,12 @@ WlSessionLockSurface {
 
     Connections {
         target: AuthInfo
-        function onVerified() {
+        function onVerifySucceeded() {
+            pwd_status.text = " Success: Correct password! "
+            pwd_status.color = Colors.success
             unlock_anim.restart()
         }
-        function onFailed() {
+        function onVerifyFailed() {
             pwd_status.text = " Error: Wrong password! "
             pwd_status.color = Colors.danger
             reset_pwd_status.running = true

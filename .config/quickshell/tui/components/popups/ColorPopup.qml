@@ -6,7 +6,6 @@ import qs.services
 
 import QtQuick.Layouts
 import QtQuick
-import Qt5Compat.GraphicalEffects
 
 CellPopup {
 
@@ -21,6 +20,13 @@ CellPopup {
 
     property var colors: Object.keys(Colors.colors)
 
+    Connections {
+        target: Colors
+        function onColorsChanged() {
+            root.result = root.colors
+        }
+    }
+
     escapeToClose: textfield.focus
 
     function getNextCopyNumber(array, baseString) {
@@ -30,7 +36,6 @@ CellPopup {
             if (item === baseString) {
                 maxCounter = Math.max(maxCounter, 0);
             } else if (item.startsWith(`${baseString}_`)) {
-                // Extract the number after the underscore
                 const parts = item.split("_");
                 const num = parseInt(parts[parts.length - 1], 10);
                 if (!isNaN(num)) {
@@ -93,7 +98,7 @@ CellPopup {
         if (color.edit) {
             color.toggleEdit()
         }
-        //resetList()
+        resetList()
     }
 
     function resetList() {
@@ -124,7 +129,7 @@ CellPopup {
 
                 property var buffer: Colors.dummy
 
-                property var source: Colors.colors[root.result[selected]] ?? Colors.dummy
+                property var source: Colors.colors[root.result[selected]]?.[SettingsInfo.lightMode ? "light" : "dark"] ?? Colors.dummy
 
                 property var color: source
 
@@ -135,6 +140,10 @@ CellPopup {
                 property int h: 28
 
                 signal unFocusPalette()
+
+                function setBuffer(key, value) {
+                    buffer = Object.assign({}, buffer, {[key]: value})
+                }
 
                 function openPicker(key: string) {
                     des_textfield.unFocus()
@@ -153,8 +162,7 @@ CellPopup {
                 }
 
                 function resetColor() {
-                    color.buffer[color_picker.key] = source[color_picker.key]
-                    colorChanged()
+                    color.setBuffer(color_picker.key, source[color_picker.key])
                     color_picker.buffer = Qt.color(color.color[color_picker.key])
                 }
 
@@ -221,6 +229,7 @@ CellPopup {
 
                         onMaxOffsetChanged: {
                             list.snapBack()
+                            root.resetList()
                         }
 
                         source: ColumnLayout {
@@ -247,7 +256,7 @@ CellPopup {
                                         property int index: list_loader.index
                                         property string modelData: list_loader.modelData
 
-                                        property var source: Colors.colors[modelData] ?? Colors.dummy
+                                        property var source: Colors.colors[modelData]?.[SettingsInfo.lightMode ? "light" : "dark"] ?? Colors.dummy
 
                                         property bool isCurrent: modelData == Colors.current
                                         property bool selected: color.selected == index
@@ -357,8 +366,8 @@ CellPopup {
                                         root.result = root.colors
                                     } else {
                                         root.result = root.colors.filter((item) => {
-                                            return Colors.colors[item].name.toLowerCase().includes(input.toLowerCase())
-                                            || Colors.colors[item].description.toLowerCase().includes(input.toLowerCase())
+                                            return Colors.colors[item][SettingsInfo.lightMode ? "light" : "dark"].name.toLowerCase().includes(input.toLowerCase())
+                                            || Colors.colors[item][SettingsInfo.lightMode ? "light" : "dark"].description.toLowerCase().includes(input.toLowerCase())
                                             || item.includes(input.toLowerCase())
                                         })
                                     }
@@ -410,8 +419,7 @@ CellPopup {
                             buffer.hsvHue = 0
                         }
                         sv_square.requestPaint()
-                        color.buffer[key] = buffer.toString()
-                        color.colorChanged()
+                        color.setBuffer(key, buffer.toString())
                     }
 
                     w: 36
@@ -1093,8 +1101,7 @@ CellPopup {
                                 wrap: true
 
                                 onEntered: (input) => {
-                                    color.buffer.name = input
-                                    color.colorChanged()
+                                    color.setBuffer("name", input)
                                 }
 
                             }
@@ -1148,8 +1155,7 @@ CellPopup {
                                 wrap: true
 
                                 onEntered: (input) => {
-                                    color.buffer.description = input
-                                    color.colorChanged()
+                                    color.setBuffer("description", input)
                                 }
 
                             }
@@ -1578,8 +1584,7 @@ CellPopup {
 
                                                         onEntered: (input) => {
                                                             if (/^#?([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/.test(input)) {
-                                                                color.buffer[palette.modelData] = Qt.color(input.startsWith("#") ? input : "#" + input).toString()
-                                                                color.colorChanged()
+                                                                color.setBuffer(palette.modelData, Qt.color(input.startsWith("#") ? input : "#" + input).toString())
                                                             }
                                                         }
 
@@ -1619,8 +1624,7 @@ CellPopup {
                                                         onEntered: (input) => {
                                                             input = parseInt(input)
                                                             if (input >= 0 && input <= 360) {
-                                                                color.buffer[palette.modelData] = Qt.hsva(input/360,palette_saturation.text/100,palette_value.text/100,1).toString()
-                                                                color.colorChanged()
+                                                                color.setBuffer(palette.modelData, Qt.hsva(input/360,palette_saturation.text/100,palette_value.text/100,1).toString())
                                                             }
                                                         }
 
@@ -1666,8 +1670,7 @@ CellPopup {
                                                         onEntered: (input) => {
                                                             input = parseFloat(input)
                                                             if (input >= 0 && input <= 100) {
-                                                                color.buffer[palette.modelData] = Qt.hsva(palette_hue.text/360,input/100,palette_value.text/100,1).toString()
-                                                                color.colorChanged()
+                                                                color.setBuffer(palette.modelData, Qt.hsva(palette_hue.text/360,input/100,palette_value.text/100,1).toString())
                                                             }
                                                         }
 
@@ -1713,8 +1716,7 @@ CellPopup {
                                                         onEntered: (input) => {
                                                             input = parseFloat(input)
                                                             if (input >= 0 && input <= 100) {
-                                                                color.buffer[palette.modelData] = Qt.hsva(palette_hue.text/360,palette_saturation.text/100,input/100,1).toString()
-                                                                color.colorChanged()
+                                                                color.setBuffer(palette.modelData, Qt.hsva(palette_hue.text/360,palette_saturation.text/100,input/100,1).toString())
                                                             }
                                                         }
 
@@ -1812,309 +1814,280 @@ CellPopup {
                                         name_textfield.unFocus()
                                         des_textfield.unFocus()
                                         textfield.set("")
-                                        const selected = color.selected
-                                        if (root.result[color.selected] == id_textfield.text) {
-                                            Colors.colors[root.result[color.selected]] = color.buffer
+                                        if (id_textfield.text == root.result[color.selected]) {
+                                            Colors.save(root.result[color.selected], color.buffer)
                                         } else {
-                                            const new_color = {}
-                                            Object.keys(Colors.colors).forEach(key => {
-                                                if (key == root.result[color.selected]) {
-                                                    new_color[id_textfield.text] = Colors.colors[root.result[color.selected]]; // Insert the new key name with the old value
-                                                } else {
-                                                    new_color[key] = Colors.colors[key];       // Keep everything else exactly as it was
-                                                }
-                                            })  
-                                            Colors.colors = new_color
+                                            Colors.rename(root.result[color.selected], id_textfield.text, color.buffer)
                                             Colors.current = id_textfield.text
                                         }
-                                        Colors.colorsChanged()
-                                        color.selected = selected
-                                        color.toggleEdit()
-                                        root.result = root.colors
-                                        Colors.save() // Careful now
-                                    }
+                                    }}
                                 }
 
-                            }
+                                CellButton {
 
-                            CellButton {
+                                    text: "Fork"
 
-                                visible: color.edit
+                                    clickable: root.result[color.selected] != "auto"
 
-                                text: "Fork"
+                                    color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
+                                    fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
 
-                                clickable: JSON.stringify(color.color).toLowerCase() != JSON.stringify(color.source).toLowerCase() || root.result[color.selected] != id_textfield.text
-
-                                color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
-                                fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
-
-                                onReleased: (button) => {
-                                    if (button == "L") {
-                                        textfield.set("")
-                                        if (root.result[color.selected] == id_textfield.text) {
-                                            Colors.colors[`${root.result[color.selected]}_${root.getNextCopyNumber(root.result, root.result[color.selected])}`] = color.buffer
-                                        } else {
-                                            Colors.colors[id_textfield.text] = color.buffer
-                                            Colors.current = id_textfield.text
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            id_textfield.unFocus()
+                                            name_textfield.unFocus()
+                                            des_textfield.unFocus()
+                                            textfield.set("")
+                                            Colors.fork(root.result[color.selected], color.edit ? id_textfield.text : "")
                                         }
-                                        Colors.colorsChanged()
-                                        color.toggleEdit()
-                                        root.result = root.colors
-                                        color.selected = root.result.length-1
-                                        Colors.save() // Careful now
                                     }
+
                                 }
 
-                            }
+                                CellButton {
 
-                            CellButton {
+                                    visible: color.edit && color.color_picker
 
-                                visible: color.edit && color.color_picker
+                                    text: "Reset"
 
-                                text: "Reset"
+                                    clickable: color_picker.key != "" && color.source[color_picker.key].toLowerCase() != color.color[color_picker.key].toLowerCase()
 
-                                clickable: color_picker.key != "" && color.source[color_picker.key].toLowerCase() != color.color[color_picker.key].toLowerCase()
+                                    color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
+                                    fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
 
-                                color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
-                                fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
-
-                                onReleased: (button) => {
-                                    if (button == "L") {
-                                        color.resetColor()
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            color.resetColor()
+                                        }
                                     }
+
                                 }
 
-                            }
+                                CellButton {
 
-                            CellButton {
+                                    visible: color.edit && des_textfield.focus
 
-                                visible: color.edit && des_textfield.focus
+                                    text: "Reset"
 
-                                text: "Reset"
+                                    clickable: color.source.description != color.color.description || color.source.description != des_textfield.text
 
-                                clickable: color.source.description != color.color.description || color.source.description != des_textfield.text
+                                    color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
+                                    fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
 
-                                color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
-                                fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
-
-                                onReleased: (button) => {
-                                    if (button == "L") {
-                                        des_textfield.unFocus()
-                                        color.buffer.description = color.source.description
-                                        color.colorChanged()
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            des_textfield.unFocus()
+                                            color.setBuffer("description", color.source.description)
+                                        }
                                     }
+
                                 }
 
-                            }
+                                CellButton {
 
-                            CellButton {
+                                    visible: color.edit && name_textfield.focus
 
-                                visible: color.edit && name_textfield.focus
+                                    text: "Reset"
 
-                                text: "Reset"
+                                    clickable: color.source.name != color.color.name || color.source.name != name_textfield.text
 
-                                clickable: color.source.name != color.color.name || color.source.name != name_textfield.text
+                                    color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
+                                    fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
 
-                                color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
-                                fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
-
-                                onReleased: (button) => {
-                                    if (button == "L") {
-                                        name_textfield.unFocus()
-                                        color.buffer.name = color.source.name
-                                        color.colorChanged()
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            name_textfield.unFocus()
+                                            color.setBuffer("name", color.source.name)
+                                        }
                                     }
+
                                 }
 
-                            }
+                                CellButton {
 
-                            CellButton {
+                                    visible: color.edit && id_textfield.focus
 
-                                visible: color.edit && id_textfield.focus
+                                    text: "Reset"
 
-                                text: "Reset"
+                                    clickable: root.result[color.selected] != id_textfield.text
 
-                                clickable: root.result[color.selected] != id_textfield.text
+                                    color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
+                                    fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
 
-                                color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
-                                fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
-
-                                onReleased: (button) => {
-                                    if (button == "L") {
-                                        id_textfield.set(root.result[color.selected])
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            id_textfield.set(root.result[color.selected])
+                                        }
                                     }
+
                                 }
 
-                            }
+                                CellButton {
 
-                            CellButton {
+                                    visible: color.edit
 
-                                visible: color.edit
+                                    text: "Reset all"
 
-                                text: "Reset all"
+                                    clickable: JSON.stringify(color.color).toLowerCase() != JSON.stringify(color.source).toLowerCase() || root.result[color.selected] != id_textfield.text
 
-                                clickable: JSON.stringify(color.color).toLowerCase() != JSON.stringify(color.source).toLowerCase() || root.result[color.selected] != id_textfield.text
+                                    color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
+                                    fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
 
-                                color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
-                                fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
-
-                                onReleased: (button) => {
-                                    if (button == "L") {
-                                        des_textfield.unFocus()
-                                        name_textfield.unFocus()
-                                        id_textfield.unFocus()
-                                        id_textfield.set(root.result[color.selected])
-                                        color.resetEdit()
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            des_textfield.unFocus()
+                                            name_textfield.unFocus()
+                                            id_textfield.unFocus()
+                                            id_textfield.set(root.result[color.selected])
+                                            color.resetEdit()
+                                        }
                                     }
+
                                 }
 
-                            }
+                                CellButton {
 
-                            CellButton {
+                                    text: "Edit"
 
-                                text: "Edit"
+                                    property bool available: root.result[color.selected] != "auto" && !SettingsInfo.lightMode
 
-                                property bool available: root.result[color.selected] != "auto" && !SettingsInfo.lightMode
+                                    property Component hint: ColumnLayout {
+                                        spacing: 0
+                                        CellText {
+                                            text: "<b>You cannot edit an auto generated palette</b>"
+                                        }
+                                        CellSeparator {
+                                            w: 41
+                                            color: Colors.fgSubtle
+                                        }
+                                        CellText {
+                                            visible: root.result[color.selected] != "auto" && Colors.colors[root.result[color.selected]][SettingsInfo.lightMode ? "light" : "dark"].generated
+                                            text: "<i>This palette's " + (SettingsInfo.lightMode ? "light" : "dark") + " mode has been auto generated. Please switch back to " + (SettingsInfo.lightMode ? "dark" : "light") + " mode to edit the original palette.</i>"
+                                            preferedW: 41
+                                            wrap: true
+                                            color: Colors.fgDim
+                                        }
+                                        CellText {
+                                            visible: root.result[color.selected] == "auto"
+                                            text: "<i>This palette has been auto generated base on current the wallpaper.</i>"
+                                            preferedW: 41
+                                            wrap: true
+                                            color: Colors.fgDim
+                                        }
+                                    }
 
-                                property Component hint: ColumnLayout {
-                                    spacing: 0
-                                    CellText {
-                                        text: "<b>You cannot edit an auto generated palette</b>"
+                                    color: !available ? color.color.bgOverlay : (color.edit ? color.color.accentStrong : color.color.bgOverlay)
+                                    fg:    !available ? color.color.fgSubtle : (color.edit ? color.color.onAccent : color.color.fgBase)
+
+                                    onReleased: (button) => {
+                                        const global = mapToGlobal(mouseX, mouseY)
+                                        if (button == "L") {
+                                            if (available) {
+                                                color.toggleEdit()
+                                            } else {
+                                                HintManager.hint = hint
+                                                HintManager.show(global.x, global.y, 3, "", 0)
+                                            }
+                                        }
                                     }
-                                    CellSeparator {
-                                        w: 41
-                                        color: Colors.fgSubtle
-                                    }
-                                    CellText {
-                                        visible: root.result[color.selected] != "auto" && SettingsInfo.lightMode
-                                        text: "<i>This palette's light mode has been auto generated. Please switch back to dark mode to edit the original palette.</i>"
-                                        preferedW: 41
-                                        wrap: true
-                                        color: Colors.fgDim
-                                    }
-                                    CellText {
-                                        visible: root.result[color.selected] == "auto"
-                                        text: "<i>This palette has been auto generated base on current the wallpaper.</i>"
-                                        preferedW: 41
-                                        wrap: true
-                                        color: Colors.fgDim
-                                    }
+
+
                                 }
 
-                                color: !available ? color.color.bgOverlay : (color.edit ? color.color.accentStrong : color.color.bgOverlay)
-                                fg:    !available ? color.color.fgSubtle : (color.edit ? color.color.onAccent : color.color.fgBase)
+                                CellButton {
 
-                                onReleased: (button) => {
-                                    const global = mapToGlobal(mouseX, mouseY)
-                                    if (button == "L") {
-                                        if (available) {
+                                    visible: color.edit
+
+                                    text: "Remove"
+
+                                    clickable: root.colors.length > 1
+
+                                    color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
+                                    fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
+
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            const toRemove = root.result[color.selected]
+                                            const newSelected = Math.max(color.selected - 1, 0)
+                                            textfield.set("")
                                             color.toggleEdit()
-                                        } else {
-                                            HintManager.hint = hint
-                                            HintManager.show(global.x, global.y, 3, "", 0)
+                                            color.selected = newSelected
+                                            Colors.current = root.result[newSelected]
+                                            Colors.remove(toRemove)}
                                         }
+
                                     }
-                                }
 
-
-                            }
-
-                            CellButton {
-
-                                visible: color.edit
-
-                                text: "Remove"
-
-                                clickable: root.colors.length > 1
-
-                                color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
-                                fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle
-
-                                onReleased: (button) => {
-                                    if (button == "L") {
-                                        textfield.set("")
-                                        delete Colors.colors[root.result[color.selected]]
-                                        Colors.current = root.result[Math.max(color.selected-1,1)]
-                                        Colors.colorsChanged()
-                                        color.toggleEdit()
-                                        root.result = root.colors
-                                        color.selected = Math.max(color.selected-1,0)
-                                        Colors.save() // Careful now
-                                    }
                                 }
 
                             }
 
                         }
 
+                        CellText {
+
+                            visible: root.result.length == 0
+
+                            x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                            y: Cell.centerHCell(implicitHeight, parent.implicitHeight) - Cell.h(1)
+
+                            text: "Nothing to see here"
+                            color: Colors.secondary
+                        }
+
                     }
 
                 }
 
-                CellText {
+                CellBox {
 
-                    visible: root.result.length == 0
+                    visible: SettingsInfo.hints
 
-                    x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
-                    y: Cell.centerHCell(implicitHeight, parent.implicitHeight) - Cell.h(1)
+                    Layout.leftMargin: Cell.w(2)
+                    Layout.topMargin: Cell.h(2)
 
-                    text: "Nothing to see here"
-                    color: Colors.secondary
+                    w: 38+58
+                    h: 3
+
+                    RowLayout {
+
+                        x: Cell.centerWCell(implicitWidth, root.implicitWidth)
+
+                        spacing: Cell.w(2)
+
+                        CellKeyHint {
+                            key: "↑/↓"
+                            hint: "Up/Down"
+                        }
+
+                        CellKeyHint {
+                            visible: !TextFieldManager.active || textfield.focus
+                            key: "Tab"
+                            hint: "Switch tab"
+                        }
+
+                        CellKeyHint {
+                            key: "Enter"
+                            disabled: Colors.current == root.result[color.selected]
+                            hint: "Apply selected theme"
+                        }
+
+                        CellKeyHint {
+                            key: "Esc"
+                            hint: if (color.edit && !color.color_picker && !TextFieldManager.active) {
+                                return "Exit editing mode"
+                            } else if (color.color_picker && !TextFieldManager.active) {
+                                return "Exit color picker"
+                            } else if (TextFieldManager.active && !textfield.focus) {
+                                return "Exit textfield"
+                            } else return "Exit"
+                        }
+
+                    }
+
                 }
 
             }
 
-        }
-
-        CellBox {
-
-            visible: SettingsInfo.hints
-
-            Layout.leftMargin: Cell.w(2)
-            Layout.topMargin: Cell.h(2)
-
-            w: 38+58
-            h: 3
-
-            RowLayout {
-
-                x: Cell.centerWCell(implicitWidth, root.implicitWidth)
-
-                spacing: Cell.w(2)
-
-                CellKeyHint {
-                    key: "↑/↓"
-                    hint: "Up/Down"
-                }
-
-                CellKeyHint {
-                    visible: !TextFieldManager.active || textfield.focus
-                    key: "Tab"
-                    hint: "Switch tab"
-                }
-
-                CellKeyHint {
-                    key: "Enter"
-                    disabled: Colors.current == root.result[color.selected]
-                    hint: "Apply selected theme"
-                }
-
-                CellKeyHint {
-                    key: "Esc"
-                    hint: if (color.edit && !color.color_picker && !TextFieldManager.active) {
-                        return "Exit editing mode"
-                    } else if (color.color_picker && !TextFieldManager.active) {
-                        return "Exit color picker"
-                    } else if (TextFieldManager.active && !textfield.focus) {
-                        return "Exit textfield"
-                    } else return "Exit"
-                }
-
-            }
 
         }
-
-    }
-
-
-}

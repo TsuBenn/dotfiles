@@ -1,0 +1,45 @@
+*: AUR
+
+hyprland (duh)
+quickshell (duh)
+
+fastfetch
+
+qt6-multimedia
+qt6-5compat
+qt6-declarative
+
+wireplumber
+pipewire 
+pipewire-alsa 
+pipewire-jack 
+pipewire-pulse
+
+upower 
+bluez 
+bluez-utils 
+networkmanager
+
+cava
+wl-clipboard
+wtype
+
+fastfetch
+
+grim
+
+dolphin
+
+python
+
+ffmpeg
+imagemagick
+
+fd
+
+* ttf-apple-emoji
+noto-fonts-extra
+noto-fonts-emoji
+noto-fonts-cjk
+ttf-jetbrains-mono
+ttf-jetbrains-mono-nerd

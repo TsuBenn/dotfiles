@@ -5,6 +5,8 @@ PACMAN_DEPS=(
     "hyprland|Hyprland|The core Wayland compositor and window manager."
     "quickshell|Quickshell|The flexible desktop shell framework driving this UI repo."
     "fastfetch|Fastfetch|System information fetching tool for the dashboard."
+    "python-numpy|Python Numpy|Used for calculating wallpaper theme colors."
+    "python-pillow|Python Pillow|Used for calculating wallpaper theme colors."
     "qt6-multimedia|Qt6 Multimedia|Qt module for audio and video playback features."
     "qt6-5compat|Qt6 5Compat|Compatibility layer for graphical blur and mask effects."
     "qt6-declarative|Qt6 Declarative|Engine for handling QML UIs and layouts."

@@ -765,7 +765,7 @@ CellPopup {
 
                     onPressed: (button) => {
                         if (button == "L") {
-                            SettingsInfo.wallpaperAutoAdvance = !SettingsInfo.wallpaperAutoAdvance
+                            SettingsInfo.toggle("wallpaperAutoAdvance")
                         }
                     }
 

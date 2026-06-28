@@ -14,9 +14,12 @@ import QtQuick.Layouts
 
 ShellRoot {
 
+    id: root
+
     Item {
         Component.onCompleted: {
             Colors.applied.connect(() => {
+                SettingsInfo.colorsLoaded = true
                 init()
             })
             SettingsInfo.dependenciesCheckedChanged.connect(() => {
@@ -27,6 +30,9 @@ ShellRoot {
             })
             SettingsInfo.hyprBlurChanged.connect(() => {
                 init()
+            })
+            SystemInfo.initializedSystemInfo.connect(() => {
+                wallpaper_check.active = true
             })
         }
 
@@ -145,7 +151,7 @@ ShellRoot {
 
     Loader {
 
-        active: SettingsInfo.dependenciesChecked
+        active: SettingsInfo.dependenciesChecked && SettingsInfo.colorsLoaded && SettingsInfo.wallpaperCached
 
         sourceComponent: Bar {}
 
@@ -173,12 +179,33 @@ ShellRoot {
 
     Loader {
 
-        active: !SettingsInfo.dependenciesChecked
+        id: dependencies_check
+
+        active: SettingsInfo.colorsLoaded
 
         sourceComponent: DependenciesChecker {
-            property var wallpaper_loader: WallpaperInfo.wallpapers // Pre-initiating WallpaperInfo
             property var hyprinfo_loader: HyprInfo.maxRefreshRate   // Pre-initiating HyprInfo
         }
+
+    }
+
+    Loader {
+
+        id: color_loader
+
+        active: SettingsInfo.wallpaperCached
+
+        sourceComponent: ColorsLoader {}
+
+    }
+
+    Loader {
+
+        id: wallpaper_check
+
+        active: false
+
+        sourceComponent: WallpaperCacher {}
 
     }
 

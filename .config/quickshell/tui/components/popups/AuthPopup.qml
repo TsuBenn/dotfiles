@@ -69,6 +69,7 @@ CellPopup {
 
     // ── Listen to AuthInfo signals ──
     Connections {
+
         target: AuthInfo
 
         function onPrompted(p: string, d: string) {
@@ -83,11 +84,13 @@ CellPopup {
         }
 
         function onVerifySucceeded() {
+            if (!root.visible) return
             root._setStatus("Authentication succeed!", Colors.success, Cell.fontB)
             succeed_anim.restart()
         }
 
         function onVerifyFailed(reason: string) {
+            if (!root.visible) return
             root._setStatus(reason || "Authentication failed!", Colors.danger, Cell.fontB)
             pwd_field.set("")
             Qt.callLater(() => { pwd_field.forceActiveFocus() })
