@@ -1372,10 +1372,10 @@ CellPopup {
                             spacing: 0
 
                             property var installPlan: PacmanInfo.installPlan
-                            property var installTarget: preflight.installPlan.toInstall?.filter(item => item.isTarget)
+                            property var installTarget: preflight.installPlan.toInstall.filter(item => item.isTarget)
 
                             CellText {
-                                visible: PacmanInfo.installPlan.toInstall?.length == 0
+                                visible: PacmanInfo.installPlan.toInstall.length == 0
                                 Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW))
                                 text: "\nSomething's wrong with this package, confirm the installation to check."
                                 color: Colors.warning
@@ -1383,7 +1383,7 @@ CellPopup {
 
                             CellText {
                                 Layout.leftMargin: Cell.w(1)
-                                visible: PacmanInfo.installPlan.toInstall?.length > 0
+                                visible: PacmanInfo.installPlan.toInstall.length > 0
                                 text: "To Install:"
                                 font: Cell.fontB
                                 color: Colors.info
@@ -1490,7 +1490,7 @@ CellPopup {
                                 property int collapseThreshold: 3
 
                                 property int maxShown: collapseThreshold
-                                property var dep_pkgs: preflight.installPlan.toInstall?.filter(item => !item.isTarget)
+                                property var dep_pkgs: preflight.installPlan.toInstall.filter(item => !item.isTarget)
                                 property int maxItems: dep_pkgs.length
                                 property var shownItems: dep_pkgs.slice(0, maxShown)
 
@@ -1579,13 +1579,13 @@ CellPopup {
                             }
 
                             CellSeparator {
-                                visible: preflight.installPlan.willReplace?.length > 0
+                                visible: preflight.installPlan.willReplace.length > 0
                                 w: box.contentW - 1
                                 color: Colors.bgOverlay
                             }
 
                             CellText {
-                                visible: preflight.installPlan.willReplace?.filter(item => !item.installed).length > 0
+                                visible: preflight.installPlan.willReplace.filter(item => !item.installed).length > 0
                                 Layout.leftMargin: Cell.w(1)
                                 text: "Replaces:"
                                 font: Cell.fontB
@@ -1598,7 +1598,7 @@ CellPopup {
 
                                 spacing: 0
 
-                                property var datas: preflight.installPlan.willReplace?.filter(item => !item.installed)
+                                property var datas: preflight.installPlan.willReplace.filter(item => !item.installed)
 
                                 Repeater {
 
@@ -1626,13 +1626,13 @@ CellPopup {
                             }
 
                             CellSeparator {
-                                visible: preflight.installPlan?.conflictsWith.length > 0
+                                visible: preflight.installPlan.conflictsWith.length > 0
                                 w: box.contentW - 1
                                 color: Colors.bgOverlay
                             }
 
                             CellText {
-                                visible: preflight.installPlan?.conflictsWith.length > 0
+                                visible: preflight.installPlan.conflictsWith.length > 0
                                 Layout.leftMargin: Cell.w(1)
                                 text: "Conflicts with:"
                                 font: Cell.fontB
@@ -1641,7 +1641,7 @@ CellPopup {
 
                             ColumnLayout {
 
-                                visible: preflight.installPlan.conflictsWith?.length > 0
+                                visible: preflight.installPlan.conflictsWith.length > 0
 
                                 spacing: 0
 
@@ -1692,7 +1692,7 @@ CellPopup {
                         }
 
                         CellText {
-                            text: PacmanInfo.installPlan?.totalDownload
+                            text: PacmanInfo.installPlan.totalDownload
                             color: Colors.info
                             font: Cell.fontB
                             alignRight: true
@@ -1712,7 +1712,7 @@ CellPopup {
                         }
 
                         CellText {
-                            text: PacmanInfo.installPlan?.totalInstalled
+                            text: PacmanInfo.installPlan.totalInstalled
                             color: Colors.success
                             font: Cell.fontB
                             alignRight: true
