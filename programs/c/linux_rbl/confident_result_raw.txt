@@ -1,0 +1,68 @@
+Confident Receiver started. PID: 276920
+Main thread doing heavy math. Waiting for shared memory updates...
+Thread 1 noticed the event! Delay: 10 microseconds
+Thread 2 noticed the event! Delay: 7 microseconds
+Thread 3 noticed the event! Delay: 1 microseconds
+Thread 1 noticed the event! Delay: 18 microseconds
+Thread 2 noticed the event! Delay: 13 microseconds
+Thread 3 noticed the event! Delay: 6 microseconds
+Thread 1 noticed the event! Delay: 16 microseconds
+Thread 2 noticed the event! Delay: 4 microseconds
+Thread 1 noticed the event! Delay: 4 microseconds
+Thread 1 noticed the event! Delay: 2 microseconds
+Thread 2 noticed the event! Delay: 1 microseconds
+Thread 3 noticed the event! Delay: 5 microseconds
+Thread 1 noticed the event! Delay: 11 microseconds
+Thread 2 noticed the event! Delay: 2 microseconds
+Thread 3 noticed the event! Delay: 12 microseconds
+Thread 1 noticed the event! Delay: 7 microseconds
+Thread 2 noticed the event! Delay: 6 microseconds
+Thread 4 noticed the event! Delay: 2 microseconds
+Thread 1 noticed the event! Delay: 6 microseconds
+Thread 2 noticed the event! Delay: 20 microseconds
+
+Confident Receiver started. PID: 277182
+Main thread doing heavy math. Waiting for shared memory updates...
+Thread 4 noticed the event! Delay: 17 microseconds
+Thread 2 noticed the event! Delay: 1553 microseconds
+Thread 1 noticed the event! Delay: 1 microseconds
+Thread 4 noticed the event! Delay: 8 microseconds
+Thread 2 noticed the event! Delay: 1325 microseconds
+Thread 1 noticed the event! Delay: 6 microseconds
+Thread 4 noticed the event! Delay: 14 microseconds
+Thread 2 noticed the event! Delay: 1117 microseconds
+Thread 1 noticed the event! Delay: 2 microseconds
+Thread 3 noticed the event! Delay: 14 microseconds
+Thread 2 noticed the event! Delay: 934 microseconds
+Thread 1 noticed the event! Delay: 17 microseconds
+Thread 3 noticed the event! Delay: 12 microseconds
+Thread 2 noticed the event! Delay: 755 microseconds
+Thread 1 noticed the event! Delay: 13 microseconds
+Thread 3 noticed the event! Delay: 4 microseconds
+Thread 2 noticed the event! Delay: 459 microseconds
+Thread 1 noticed the event! Delay: 7 microseconds
+Thread 3 noticed the event! Delay: 4 microseconds
+Thread 2 noticed the event! Delay: 276 microseconds
+
+Confident Receiver started. PID: 277302
+Main thread doing heavy math. Waiting for shared memory updates...
+Thread 2 noticed the event! Delay: 1319 microseconds
+Thread 3 noticed the event! Delay: 0 microseconds
+Thread 1 noticed the event! Delay: 13 microseconds
+Thread 2 noticed the event! Delay: 1100 microseconds
+Thread 3 noticed the event! Delay: 19 microseconds
+Thread 4 noticed the event! Delay: 16 microseconds
+Thread 2 noticed the event! Delay: 931 microseconds
+Thread 3 noticed the event! Delay: 10 microseconds
+Thread 4 noticed the event! Delay: 1 microseconds
+Thread 2 noticed the event! Delay: 734 microseconds
+Thread 3 noticed the event! Delay: 13 microseconds
+Thread 4 noticed the event! Delay: 3 microseconds
+Thread 2 noticed the event! Delay: 532 microseconds
+Thread 3 noticed the event! Delay: 12 microseconds
+Thread 4 noticed the event! Delay: 8 microseconds
+Thread 2 noticed the event! Delay: 333 microseconds
+Thread 3 noticed the event! Delay: 2 microseconds
+Thread 4 noticed the event! Delay: 6 microseconds
+Thread 2 noticed the event! Delay: 160 microseconds
+Thread 3 noticed the event! Delay: 10 microseconds

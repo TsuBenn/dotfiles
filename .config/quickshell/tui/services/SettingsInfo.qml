@@ -130,9 +130,18 @@ Singleton {
         return ""
     }
 
+    Connections {
+        target: SystemInfo
+        function onInitializedSystemInfo() {
+            load_config.preload = true
+        }
+    }
+
     FileView {
 
         id: load_config
+
+        preload: false
 
         path: SystemInfo.configdir + "/scripts/config.json"
 
@@ -171,7 +180,7 @@ Singleton {
 
         //console.log(JSON.stringify(config, null, 2))
 
-        exec.exec(["bash", "-c", `echo '${JSON.stringify(config)}' > ${SystemInfo.configdir + "/scripts/config.json"}`])
+        load_config.setText(JSON.stringify(config))
 
     }
 

@@ -178,7 +178,7 @@ FloatingWindow {
         stdout: SplitParser {
             onRead: (text) => {
                 if (text) {
-                    console.log(text)
+                    //console.log(text)
                     const match = text.match(/Processing\s+(.*):\s+(.*)/)
                     if (match) {
                         root.processLog.push({
