@@ -1375,9 +1375,9 @@ CellPopup {
                             property var installTarget: preflight.installPlan.toInstall.filter(item => item.isTarget)
 
                             CellText {
-                                visible: PacmanInfo.installPlan.toInstall.length == 0
+                                visible: PacmanInfo.installPlan.error
                                 Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW))
-                                text: "\nSomething's wrong with this package, confirm the installation to check."
+                                text: PacmanInfo.installPlan.error ?? ""
                                 color: Colors.warning
                             }
 
