@@ -1376,8 +1376,11 @@ CellPopup {
 
                             CellText {
                                 visible: PacmanInfo.installPlan.error
-                                Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW))
-                                text: PacmanInfo.installPlan.error ?? ""
+                                Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW-1))
+                                text: "\n" + PacmanInfo.installPlan.error ?? ""
+                                preferedW: box.contentW - 5
+                                centered: true
+                                wrap: true
                                 color: Colors.warning
                             }
 

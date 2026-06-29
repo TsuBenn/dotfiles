@@ -599,13 +599,18 @@ Singleton {
 
         command: ["python", root.preflight_path, ...root.installTarget]
 
+        function capitalize(str) {
+            if (!str) return undefined
+            return str.charAt(0).toUpperCase() + str.slice(1)
+        }
+
         stdout: StdioCollector {
             onStreamFinished: {
                 if (text) {
                     const data = JSON.parse(text)
                     if (data.error) {
                         root.installPlan = {
-                            "error": (data.error.match(/error:\s+(.*)/)[1] ?? "Something went wrong") + ", confirm the installation to see more details.",
+                            "error": preflighter.capitalize(data.error.match(/error:\s+(.*)/)[1] ?? "Something went wrong") + "\nConfirm the installation to see more details.",
                             "toInstall": [],
                             "willReplace": [],
                             "conflictsWith": [],
