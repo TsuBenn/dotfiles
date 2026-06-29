@@ -1376,8 +1376,8 @@ CellPopup {
 
                             CellText {
                                 visible: PacmanInfo.installPlan.toInstall.length == 0
-                                Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
-                                text: "\nSomethings's wrong with this package, press diagnose to check."
+                                Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW))
+                                text: "\nSomething's wrong with this package, press diagnose to check."
                                 color: Colors.warning
                             }
 
@@ -2282,9 +2282,7 @@ CellPopup {
 
                         CellButton {
 
-                            text: "Confirm"
-
-                            clickable: PacmanInfo.installPlan.toInstall.length > 0
+                            text: PacmanInfo.installPlan.toInstall.length > 0 ? "Confirm" : "Diagnose"
 
                             color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
                             fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
