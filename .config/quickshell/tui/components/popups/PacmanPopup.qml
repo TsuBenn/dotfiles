@@ -34,23 +34,28 @@ CellPopup {
     }
 
     /*
-    onVisibleChanged: {
-        selected_index = 0
-        multi_selected_pkg = []
-        selected_pkg = ""
-        PacmanInfo.query = ""
-        list.reset()
-    }
-    */
+     onVisibleChanged: {
+         selected_index = 0
+         multi_selected_pkg = []
+         selected_pkg = ""
+         PacmanInfo.query = ""
+         list.reset()
+     }
+     */
 
     onPromoted: {
         search_field.grabFocus()
     }
 
+    escapeToClose: false
+
     shortcuts: [
         {
             binds: ["Up", "Shift+Tab"],
             action: () => {
+                if (!list.optimized_data.some(item => item.name == root.selected_pkg)) {
+                    root.selected_pkg = ""
+                }
                 if (root.selected_pkg == "") {
                     root.selected_pkg = list.datas[list.offset].name
                     return
@@ -64,6 +69,9 @@ CellPopup {
         {
             binds: ["Down", "Tab"],
             action: () => {
+                if (!list.optimized_data.some(item => item.name == root.selected_pkg)) {
+                    root.selected_pkg = ""
+                }
                 if (root.selected_pkg == "") {
                     root.selected_pkg = list.datas[list.offset].name
                     return
@@ -72,6 +80,20 @@ CellPopup {
                     list.offset += list.h
                 }
                 root.selected_pkg = list.datas[list.offset + (root.selected_index+list.h+1)%list.h].name
+            }
+        },
+        {
+            binds: "Escape",
+            action: () => {
+                if (
+                    root.pacmanState == "success" 
+                    || root.pacmanState == "failed"
+                    || root.pacmanState == "pre-flight"
+                ) {
+                    PacmanInfo.cancelInstallation()
+                } else {
+                    root.close()
+                }
             }
         },
         {
@@ -197,15 +219,6 @@ CellPopup {
                     property var datas: PacmanInfo.search_results
 
                     property var optimized_data: datas.slice(list.offset,list.offset+list.h)
-
-                    onOptimized_dataChanged: {
-                        for (const pkg of optimized_data) {
-                            if (pkg.name == root.selected_pkg) {
-                                return
-                            }
-                        }
-                        root.selected_pkg = ""
-                    }
 
                     virtualH: true
 
@@ -1362,7 +1375,15 @@ CellPopup {
                             property var installTarget: preflight.installPlan.toInstall.filter(item => item.isTarget)
 
                             CellText {
+                                visible: PacmanInfo.installPlan.toInstall.length == 0
+                                Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                                text: "\nSomethings's wrong with this package, press diagnose to check."
+                                color: Colors.warning
+                            }
+
+                            CellText {
                                 Layout.leftMargin: Cell.w(1)
+                                visible: PacmanInfo.installPlan.toInstall.length > 0
                                 text: "To Install:"
                                 font: Cell.fontB
                                 color: Colors.info
@@ -2262,6 +2283,8 @@ CellPopup {
                         CellButton {
 
                             text: "Confirm"
+
+                            clickable: PacmanInfo.installPlan.toInstall.length > 0
 
                             color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
                             fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
