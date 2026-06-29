@@ -521,27 +521,27 @@ Singleton {
             let matchesQuery
 
             switch (search_mode) {
-            case 0: // Normal — includes on name/desc/repo
+                case 0: // Normal — includes on name/desc/repo
                 matchesQuery = item.name_lower.includes(q)
-                    || item.desc_lower.includes(q)
-                    || item.repo_lower.includes(q)
+                || item.desc_lower.includes(q)
+                || item.repo_lower.includes(q)
                 break
 
-            case 1: // Fuzzy — stripped includes on name/desc/repo
+                case 1: // Fuzzy — stripped includes on name/desc/repo
                 matchesQuery = item.name_fuzzy.includes(qFuzzy)
-                    || item.desc_fuzzy.includes(qFuzzy)
-                    || item.repo_fuzzy.includes(qFuzzy)
+                || item.desc_fuzzy.includes(qFuzzy)
+                || item.repo_fuzzy.includes(qFuzzy)
                 break
 
-            case 2: // Name — includes on name only
+                case 2: // Name — includes on name only
                 matchesQuery = item.name_lower.includes(q)
                 break
 
-            case 4: // Auto select — startsWith on name
+                case 4: // Auto select — startsWith on name
                 matchesQuery = item.name_lower.startsWith(qTrimmed)
                 break
 
-            default:
+                default:
                 matchesQuery = false
             }
 
@@ -602,7 +602,19 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 if (text) {
-                    root.installPlan = JSON.parse(text)
+                    const data = JSON.parse(text)
+                    if (data.error) {
+                        root.installPlan = {
+                            "error": (data.error.match(/error:\s+(.*)/)[1] ?? "Something went wrong") + ", confirm the installation to see more details.",
+                            "toInstall": [],
+                            "willReplace": [],
+                            "conflictsWith": [],
+                            "totalDownload": "",
+                            "totalInstalled": "",
+                        }
+                    } else {
+                        root.installPlan = data
+                    }
                     // console.log(text)
                     prepareInstallation()
                 }
