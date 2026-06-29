@@ -1,0 +1,25 @@
+Receiver process started. PID: 275363
+Main thread is now doing heavy math. Waiting for signals...
+Thread 4 noticed the signal! Delay: 2993 microseconds
+Thread 4 noticed the signal! Delay: 3007 microseconds
+Thread 4 noticed the signal! Delay: 3003 microseconds
+Thread 4 noticed the signal! Delay: 3015 microseconds
+Thread 4 noticed the signal! Delay: 2597 microseconds
+Thread 4 noticed the signal! Delay: 1915 microseconds
+Thread 4 noticed the signal! Delay: 1642 microseconds
+Thread 4 noticed the signal! Delay: 3019 microseconds
+Thread 4 noticed the signal! Delay: 1409 microseconds
+Thread 4 noticed the signal! Delay: 1197 microseconds
+Thread 4 noticed the signal! Delay: 552 microseconds
+Thread 4 noticed the signal! Delay: 3015 microseconds
+Thread 4 noticed the signal! Delay: 2996 microseconds
+Thread 4 noticed the signal! Delay: 3009 microseconds
+Thread 4 noticed the signal! Delay: 3010 microseconds
+Thread 4 noticed the signal! Delay: 3008 microseconds
+Thread 4 noticed the signal! Delay: 2998 microseconds
+Thread 4 noticed the signal! Delay: 2998 microseconds
+Thread 4 noticed the signal! Delay: 2997 microseconds
+Thread 4 noticed the signal! Delay: 3006 microseconds
+Thread 4 noticed the signal! Delay: 2997 microseconds
+Thread 4 noticed the signal! Delay: 3006 microseconds
+Thread 4 noticed the signal! Delay: 3002 microseconds

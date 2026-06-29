@@ -197,16 +197,17 @@ WlSessionLockSurface {
 
         Item {
 
+            System {
+                x: Cell.w(1)
+                visible: true
+                interactive: false
+            }
+
             RowLayout {
 
                 spacing: Cell.w(1)
 
                 x: Cell.toW(root.width,"floor") - width - Cell.w(1)
-
-                System {
-                    visible: false
-                    interactive: false
-                }
 
                 CellText {
                     text: ""

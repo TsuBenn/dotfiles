@@ -179,7 +179,7 @@ FloatingWindow {
         stderr: SplitParser {
             onRead: (text) => {
                 if (text) {
-                    console.log(text)
+                    //console.log(text)
                     if (text.startsWith("[prewarm]")) {
                         const log = text.match(/\[prewarm\]\s+OK:\s+(.*)\s+→\s+(dark|light)/)
                         if (log) {
