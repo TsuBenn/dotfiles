@@ -25,8 +25,7 @@ CellPopup {
         function onSearch_modeChanged() {
             search_field.textChanged()
         }
-        function onFetched() {
-            console.log("bruh")
+        function onPackagesChanged() {
             search_field.textChanged()
         }
     }
@@ -641,17 +640,9 @@ CellPopup {
 
                         property var deps: []
 
-                        Timer {
-                            id: info_index_refresh
-                            interval: 100
-                            onTriggered: {
-                                info.indexChanged()
-                            }
-                        }
-
                         onIndexChanged: {
-                            if (index == -1 && root.selected_pkg != "" && !info_index_refresh.running) {
-                                info_index_refresh.restart()
+                            if (index == -1 && root.selected_pkg != "") {
+                                indexChanged()
                             }
                             deps = []
                         }
@@ -1777,27 +1768,8 @@ CellPopup {
 
                                 preferedW: install_log.contentW - 2
 
-                                text: ""
+                                text: PacmanInfo.installLog
                                 wrap: true
-
-                                Timer {
-                                    id: install_log_delay
-                                    interval: SettingsInfo.frameTime
-                                    onTriggered: {
-                                        let text = PacmanInfo.installLog.replace(/^\n/,"").replace(/\n$/,"").split("\n")
-                                        install_log_text.text = text.slice(0,-1).join("\n")
-                                        install_log_text_focus.text = text.slice(-1).join("\n")
-                                    }
-                                }
-
-                                Connections {
-                                    target: PacmanInfo
-                                    function onInstallLogChanged() {
-                                        if (install_log_delay.running) return
-                                        // console.log(PacmanInfo.installLog.replace(/^\n/,"").replace(/\n$/,""))
-                                        install_log_delay.restart()
-                                    }
-                                }
 
                             }
 

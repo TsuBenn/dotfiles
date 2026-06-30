@@ -41,6 +41,8 @@ Item {
     property bool safeRelease: true
     property bool interactive: false
 
+    property var sections_data: root.sections(root.w, root.percent)
+
     property int cellInterval: 1
 
     property bool hovered: false
@@ -132,8 +134,6 @@ Item {
 
                     delegate: CellText {
 
-                        required property real modelData
-
                         text: "■"
 
                         color: root.color
@@ -152,15 +152,15 @@ Item {
 
                 Repeater {
 
-                    model: root.sections(root.w, root.raw_percent)
+                    model: root.w
 
                     delegate: CellText {
 
-                        required property real modelData
+                        required property int index
 
                         text: "■"
 
-                        color: Colors.transparent(root.fg, Math.round(modelData*root.cellInterval)/root.cellInterval)
+                        color: Colors.transparent(root.fg, Math.round(root.sections_data[index]*root.cellInterval)/root.cellInterval)
 
                     }
 
@@ -191,8 +191,6 @@ Item {
 
                     delegate: CellText {
 
-                        required property real modelData
-
                         text: "━"
 
                         color: root.color
@@ -211,15 +209,15 @@ Item {
 
                 Repeater {
 
-                    model: root.sections(root.w, root.raw_percent)
+                    model: root.w
 
                     delegate: CellText {
 
-                        required property real modelData
+                        required property int index
 
                         text: "━"
 
-                        color: Colors.transparent(root.fg, Math.round(modelData*root.cellInterval)/root.cellInterval)
+                        color: Colors.transparent(root.fg, Math.round(root.sections_data[index]*root.cellInterval)/root.cellInterval)
 
                     }
 

@@ -100,7 +100,7 @@ Item {
                             return "┌"
                             +(header.w > 0 ? "─".repeat(Math.max(root.header.offset,0))+" ".repeat(header.w)+"─".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.w) : "─".repeat(root.w-2))
                             +"┐\n"
-                            +("│"+" ".repeat(root.w-2)+"│\n").repeat(root.h-2)
+                            +("│"+" ".repeat(Math.max(root.w-2,0))+"│\n").repeat(root.h-2)
                             +"└"
                             +(footer.w > 0 ? "─".repeat(Math.max(root.footer.offset,0))+" ".repeat(footer.w)+"─".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.w) : "─".repeat(root.w-2))
                             +"┘";
@@ -110,7 +110,7 @@ Item {
                             return "┏"
                             +(header.w > 0 ? "━".repeat(Math.max(root.header.offset,0))+" ".repeat(header.w)+"━".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.w) : "━".repeat(root.w-2))
                             +"┓\n"
-                            +("┃"+" ".repeat(root.w-2)+"┃\n").repeat(root.h-2)
+                            +("┃"+" ".repeat(Math.max(root.w-2,0))+"┃\n").repeat(root.h-2)
                             +"┗"
                             +(footer.w > 0 ? "━".repeat(Math.max(root.footer.offset,0))+" ".repeat(footer.w)+"━".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.w) : "━".repeat(root.w-2))
                             +"┛";
@@ -120,7 +120,7 @@ Item {
                             return "╔"
                             +(header.w > 0 ? "═".repeat(Math.max(root.header.offset,0))+" ".repeat(header.w)+"═".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.w) : "═".repeat(root.w-2))
                             +"╗\n"
-                            +("║"+" ".repeat(root.w-2)+"║\n").repeat(root.h-2)
+                            +("║"+" ".repeat(Math.max(root.w-2,0))+"║\n").repeat(root.h-2)
                             +"╚"
                             +(footer.w > 0 ? "═".repeat(Math.max(root.footer.offset,0))+" ".repeat(footer.w)+"═".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.w) : "═".repeat(root.w-2))
                             +"╝";
@@ -130,7 +130,7 @@ Item {
                             return "╭"
                             +(header.w > 0 ? "─".repeat(Math.max(root.header.offset,0))+" ".repeat(header.w)+"─".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.w) : "─".repeat(root.w-2))
                             +"╮\n"
-                            +("│"+" ".repeat(root.w-2)+"│\n").repeat(root.h-2)
+                            +("│"+" ".repeat(Math.max(root.w-2,0))+"│\n").repeat(root.h-2)
                             +"╰"
                             +(footer.w > 0 ? "─".repeat(Math.max(root.footer.offset,0))+" ".repeat(footer.w)+"─".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.w) : "─".repeat(root.w-2))
                             +"╯";

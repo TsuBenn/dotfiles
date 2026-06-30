@@ -31,7 +31,7 @@ Item {
 
     Cells {
 
-        anchors.top: parent.top
+        anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
         anchors.right: parent.right

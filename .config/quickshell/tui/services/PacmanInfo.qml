@@ -48,11 +48,18 @@ Singleton {
         "totalDownload": "",
         "totalInstalled": "",
     }
-    property string installLog: sanitizeTerminalOutput(processANSI(rawInstallLog))
+    property string installLog: ""
     property string rawInstallLog: ""
     property int installLogCursor: 0
     property int installLogLastNewline: 0
     property int installExitCode: 0
+
+    onRawInstallLogChanged: {
+        if (!log_update_delay.running) {
+            log_update_delay.restart()
+        }
+        log_update_finalize.restart()
+    }
 
     signal promptRequested(prompt: string)
     signal installCompleted(exitCode: int)
@@ -131,6 +138,29 @@ Singleton {
         "progressData": {},
         "overallProgress": 0     // 0 to 100
     };
+
+    Timer {
+        id: log_update_delay
+        interval: SettingsInfo.frameTime
+        onTriggered: {
+            root.installLog = sanitizeTerminalOutput(processANSI(rawInstallLog))
+            root.trackPacmanProgress(installLog)
+            if (installLog.split("\n").slice(-1).toString().toLowerCase().includes("[y/n]")) {
+                installer.write("y\n")
+            }
+        }
+    }
+    Timer {
+        id: log_update_finalize
+        interval: 200
+        onTriggered: {
+            root.installLog = sanitizeTerminalOutput(processANSI(rawInstallLog))
+            root.trackPacmanProgress(installLog)
+            if (installLog.split("\n").slice(-1).toString().toLowerCase().includes("[y/n]")) {
+                installer.write("y\n")
+            }
+        }
+    }
 
     function trackPacmanProgress(line) {
         if (line.includes(":: Running post-transaction hooks...")) {
@@ -326,10 +356,6 @@ Singleton {
 
     function appendLog(text: string) {
         rawInstallLog += text
-        trackPacmanProgress(installLog)
-        if (installLog.split("\n").slice(-1).toString().toLowerCase().includes("[y/n]")) {
-            installer.write("y\n")
-        }
     }
 
     Process {

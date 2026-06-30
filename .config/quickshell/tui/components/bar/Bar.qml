@@ -405,8 +405,8 @@ Scope {
 
                 exclusionMode: ExclusionMode.Ignore
 
-                implicitWidth: root.monitor.width
-                implicitHeight: root.monitor.height
+                implicitWidth: Cell.toW(root.monitor.width, "floor")
+                implicitHeight: Cell.toH(root.monitor.height, "floor")
 
                 focusable: true
 
@@ -422,7 +422,7 @@ Scope {
 
                     monitor: root.monitor
 
-                    y: Cell.h(1) - Cell.h(1)*root.hideBar
+                    anchors.bottom: parent.bottom
 
                     Behavior on y {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
