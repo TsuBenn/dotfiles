@@ -22,6 +22,8 @@ Item {
     property bool safeRelease: true
     property bool clickable: true
 
+    property bool hovered: mouse.hovered
+
     property string buttonDown: mouse.buttonDown
 
     property bool holdEnabled: false

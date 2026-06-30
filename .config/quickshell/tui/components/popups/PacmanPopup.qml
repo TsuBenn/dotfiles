@@ -25,11 +25,17 @@ CellPopup {
         function onSearch_modeChanged() {
             search_field.textChanged()
         }
+        function onFetched() {
+            console.log("bruh")
+            search_field.textChanged()
+        }
     }
 
     onPacmanStateChanged: {
         if (pacmanState == "success") {
             multi_selected_pkg = []
+            selected_pkg = ""
+            search_field.set("")
         }
     }
 
@@ -133,7 +139,7 @@ CellPopup {
                         PacmanInfo.requestInstallation(info.deps.length > 0 ? [info.deps[info.deps.length-1]] : [root.selected_pkg])
                     }
                 } else if (root.pacmanState == "pre-flight") {
-                    PacmanInfo.confirmInstallation()
+                    if (confirm_install.countdown == 0) PacmanInfo.confirmInstallation()
                 }
             }
         },
@@ -1375,7 +1381,7 @@ CellPopup {
                             property var installTarget: preflight.installPlan.toInstall.filter(item => item.isTarget)
 
                             CellText {
-                                visible: PacmanInfo.installPlan.error
+                                visible: PacmanInfo.installPlan.error ?? false
                                 Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW-1))
                                 text: "\n" + PacmanInfo.installPlan.error ?? ""
                                 preferedW: box.contentW - 5
@@ -2274,9 +2280,28 @@ CellPopup {
                     // Installation confirmation
                     RowLayout {
 
+                        id: confirm_install
+
                         visible: (
                             root.pacmanState == "pre-flight"
                         )
+
+                        property int countdown: 0
+
+                        onVisibleChanged: {
+                            if (PacmanInfo.installPlan.conflictsWith.length > 0 || PacmanInfo.installPlan.willReplace.length > 0) {
+                                countdown = 3
+                            }
+                        }
+
+                        Timer {
+                            running: parent.countdown > 0
+                            interval: 1000
+                            repeat: true
+                            onTriggered: {
+                                parent.countdown -= 1
+                            }
+                        }
 
                         anchors.right: parent.right
                         anchors.rightMargin: Cell.w(1)
@@ -2285,7 +2310,9 @@ CellPopup {
 
                         CellButton {
 
-                            text: "Confirm"
+                            text: parent.countdown > 0 ? "Continue anyway (" + parent.countdown + ")" : (PacmanInfo.installPlan.conflictsWith.length > 0 || PacmanInfo.installPlan.willReplace.length > 0 ? "Continue anyway" : "Confirm")
+
+                            clickable: parent.countdown == 0
 
                             color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
                             fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle

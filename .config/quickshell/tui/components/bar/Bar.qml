@@ -389,6 +389,49 @@ Scope {
 
             PanelWindow {
 
+                id: pacman_progress
+
+                screen: root.screen
+
+                anchors {
+                    top: true
+                    left: true
+                    right: true
+                    bottom: true
+                }
+
+                WlrLayershell.layer: WlrLayer.Top
+                WlrLayershell.namespace: "notifcations"
+
+                exclusionMode: ExclusionMode.Ignore
+
+                implicitWidth: root.monitor.width
+                implicitHeight: root.monitor.height
+
+                focusable: true
+
+                color: "transparent"
+
+                mask: Region {
+                    item: pacman
+                }
+
+                PacmanProgress {
+
+                    id: pacman
+
+                    monitor: root.monitor
+
+                    y: Cell.h(1) - Cell.h(1)*root.hideBar
+
+                    Behavior on y {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+
+                }
+
+            }
+
+            PanelWindow {
+
                 id: popups_screen
 
                 screen: root.screen
