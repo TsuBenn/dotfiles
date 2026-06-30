@@ -40,6 +40,12 @@ Item {
     implicitHeight: Cell.h(h)
     implicitWidth: Cell.w(w)
 
+    onVisibleChanged: {
+        if (visible) {
+            updateText()
+        }
+    }
+
     Component.onCompleted: {
         updateText()
     }
@@ -115,6 +121,8 @@ Item {
     }
 
     function updateText() {
+
+        if (!root.visible) return
 
         raw_text = text
 
