@@ -20,6 +20,7 @@ CellPopup {
 
     onVisibleChanged: {
         mouseLocked: true
+        textfield.set("")
         emojis.result = []
     }
 

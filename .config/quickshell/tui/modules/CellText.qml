@@ -24,7 +24,9 @@ Item {
     property bool wrap: false
 
     property bool lockPure: false
-    property bool pure: onlyLatin(text)
+    // Set exclusively by updateText() — no binding, so it doesn't get
+    // re-evaluated on every text change and then immediately overwritten.
+    property bool pure: true
 
     property int offset: 0
 
@@ -58,42 +60,15 @@ Item {
         updateText()
     }
 
-    function sliceWithTags(str, start, end) {
-        let result = '';
-        let visibleCount = 0;
-        let i = 0;
-        const openTags = [];
-
-        while (i < str.length && visibleCount < end) {
-            if (str[i] === '<') {
-                const closeIdx = str.indexOf('>', i);
-                const fullTag = str.slice(i, closeIdx + 1);
-                const isClosing = str[i + 1] === '/';
-                const tagName = fullTag.replace(/<\/?([a-zA-Z0-9]+)[^>]*>/, '$1');
-
-                if (visibleCount >= start) {
-                    result += fullTag;
-                }
-
-                if (isClosing) openTags.pop();
-                else openTags.push(tagName);
-
-                i = closeIdx + 1;
-            } else {
-                if (visibleCount >= start) result += str[i];
-                visibleCount++;
-                i++;
-            }
-        }
-
-        // Close any unclosed tags in reverse order
-        while (openTags.length) result += `</${openTags.pop()}>`;
-        return result;
-    }
-
-    // Hoist leading whitespace inside tags to outside
+    // ── Text processing helpers ─────────────────────────────────────────────
+    //
+    // Hoist leading whitespace inside tags to outside:
+    //   "<b>  hello</b>"  →  "  <b>hello</b>"
+    //
+    // MUST run before richify(), because richify() converts spaces to &nbsp;
+    // (the literal text "&nbsp;", not U+00A0) and \s doesn't match that.
     function hoistWhitespace(str) {
-        return str.replace(/(<[^>]+>)(\s+)/g, '$2$1');
+        return str.replace(/(<[^>]+>)(\s+)/g, '$2$1')
     }
 
     function richify(str) {
@@ -103,12 +78,12 @@ Item {
             ">": "&gt;",
             '"': "&quot;",
             "'": "&#39;",
-        };
+        }
 
         // Split the string into an array of [raw_text, tag, raw_text, tag...]
         // The parenthesis inside the regex ensures the matched tags are kept in the split array
         return str
-        .split(/(<\/?[a-zA-Z][^>]*>)/g) 
+        .split(/(<\/?[a-zA-Z][^>]*>)/g)
         .map(part => {
             // If this part is a valid HTML tag, pass it through untouched
             if (part.startsWith("<") && part.endsWith(">")) {
@@ -127,9 +102,6 @@ Item {
         raw_text = text
 
         if (!lockPure) { pure = onlyLatin(raw_text) }
-
-        // if (debug) console.log(text)
-        // if (debug) console.log(pure)
 
         if (preferedW > 0) {
             if (wrap) {
@@ -161,15 +133,24 @@ Item {
             processed = splitUnpure(raw_text)
         }
 
-        raw_text = hoistWhitespace(richify(raw_text))
+        // Order matters: hoist first (on raw spaces), then richify (which
+        // converts spaces to &nbsp; and escapes entities).
+        raw_text = richify(hoistWhitespace(raw_text))
 
     }
+
+    // ── Width classification ────────────────────────────────────────────────
+    //
+    // Fast ASCII reject first — most TUI text is Latin, so this skips all
+    // range checks for ~99% of characters.
 
     function isFullWidth(char) {
         const code = char.codePointAt(0);
 
-        //if (debug) console.log(char + "->" + code.toString(16))
         if (!code) return false;
+
+        // Fast path: ASCII and Latin-1 are never full-width.
+        if (code < 0x1100) return false;
 
         // Code point ranges for Full-width and Wide characters:
         return (
@@ -194,136 +175,124 @@ Item {
         );
     }
 
+    // Single regex test instead of a per-character loop.
+    // Also includes Braille (U+2800–U+28FF) so Braille text routes through
+    // the unpure path and gets its 'Noto Sans Symbols 2' font wrap.
+    //
+    // NOTE: uses \u{XXXXX} (ES6 code point escape) with the /u flag for all
+    // supplementary plane code points. \u1F300 would be parsed as \u1F30 + "0",
+    // creating a bogus range "0"-\u1F5F that matches all ASCII letters.
+    // Qt 6's V8 supports \u{} syntax.
     function onlyLatin(str) {
-        for (const c of str) {
-            if (isFullWidth(c)) {
-                return false
-            }
-        }
-        return true
+        const plain = purify(str);
+        return !/[\u1100-\u115F\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE10-\uFE19\uFE30-\uFE6F\uFF00-\uFF60\uFFE0-\uFFE6\u{1F300}-\u{1F5FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{1FA70}-\u{1FAFF}\u2600-\u26FF\u{20000}-\u{3FAFF}\u2800-\u28FF]/u.test(plain);
     }
 
     function purify(str) {
         return str.replace(/<[^>]*>/g, "")
     }
 
-    function getWidth(str) {
-        let count = 0
-        str = purify(str)
-        for (const c of str) {
-            isFullWidth(c) ? count += 2 : count += 1
-        }
-        return count
-    }
-
+    // Strips tags once, then measures each line. Avoids the old path
+    // where purify ran on the whole string AND on every line via getWidth.
     function getMaxWidth(str) {
         if (preferedW > 0) return preferedW;
 
         let maxW = 0;
         const lines = purify(str).split("\n");
         for (const line of lines) {
-            let lineWidth = getWidth(line)
+            let lineWidth = 0;
+            for (const c of line) {
+                lineWidth += isFullWidth(c) ? 2 : 1;
+            }
             if (lineWidth > maxW) maxW = lineWidth;
         }
         return maxW;
     }
 
-    function wrapText(text, maxWidth) {
+    // ── Wrapping ────────────────────────────────────────────────────────────
+    //
+    // Helpers hoisted to top-level so they're not re-created on every call.
+
+    function _charWidth(char) {
+        const code = char.codePointAt(0);
+
+        if (char === '\t') return 4;
+        if (code <= 31 || (code >= 0x7f && code <= 0x9f)) return 0;
+        if (isFullWidth(char)) return 2;
+        return 1;
+    }
+
+    function _stringWidth(str) {
+        let width = 0;
+        for (const char of str) {
+            width += _charWidth(char);
+        }
+        return width;
+    }
+
+    function _tokenize(line) {
+        return line.match(/\s+|\S+/g) || [];
+    }
+
+    function _breakLongToken(token, maxW) {
+        const parts = [];
+        let current = '';
+        let width = 0;
+
+        for (const char of token) {
+            const w = _charWidth(char);
+
+            if (width + w > maxW) {
+                parts.push(current);
+                current = char;
+                width = w;
+            } else {
+                current += char;
+                width += w;
+            }
+        }
+
+        if (current) {
+            parts.push(current);
+        }
+
+        return parts;
+    }
+
+    function wrapText(text, maxW) {
         const lines = text.split('\n');
         const wrapped = [];
 
-        // Basic unicode width check
-        function charWidth(char) {
-            const code = char.codePointAt(0);
-
-            // Tabs = 4 spaces
-            if (char === '\t') return 4;
-
-            // Control chars
-            if (code <= 31 || (code >= 0x7f && code <= 0x9f)) {
-                return 0;
-            }
-
-            // Wide chars (CJK, emoji, etc.)
-            if (isFullWidth(char))
-            {
-                return 2;
-            }
-
-            return 1;
-        }
-
-        function stringWidth(str) {
-            let width = 0;
-            for (const char of str) {
-                width += charWidth(char);
-            }
-            return width;
-        }
-
-        // Split while preserving spaces
-        function tokenize(line) {
-            return line.match(/\s+|\S+/g) || [];
-        }
-
-        // Break very long tokens (paths, URLs, etc.)
-        function breakLongToken(token, maxWidth) {
-            const parts = [];
-            let current = '';
-            let width = 0;
-
-            for (const char of token) {
-                const w = charWidth(char);
-
-                if (width + w > maxWidth) {
-                    parts.push(current);
-                    current = char;
-                    width = w;
-                } else {
-                    current += char;
-                    width += w;
-                }
-            }
-
-            if (current) {
-                parts.push(current);
-            }
-
-            return parts;
-        }
-
         for (const originalLine of lines) {
-            // Preserve fully empty lines
             if (originalLine.length === 0) {
                 wrapped.push('');
                 continue;
             }
 
-            const tokens = tokenize(originalLine);
+            const tokens = _tokenize(originalLine);
 
             let current = '';
             let currentWidth = 0;
 
             for (const token of tokens) {
-                const tokenWidth = stringWidth(token);
+                const tokenWidth = _stringWidth(token);
 
                 // Handle huge token
-                if (tokenWidth > maxWidth) {
-                    // Flush current line first
+                if (tokenWidth > maxW) {
                     if (current) {
                         wrapped.push(current);
                         current = '';
                         currentWidth = 0;
                     }
 
-                    const broken = breakLongToken(token, maxWidth);
+                    const broken = _breakLongToken(token, maxW);
 
                     for (let i = 0; i < broken.length; i++) {
                         const part = broken[i];
 
                         if (i === broken.length - 1) {
                             current = part;
-                            currentWidth = stringWidth(part);
+                            currentWidth = _stringWidth(part);
                         } else {
                             wrapped.push(part);
                         }
@@ -333,12 +302,11 @@ Item {
                 }
 
                 // Normal wrapping
-                if (currentWidth + tokenWidth > maxWidth) {
+                if (currentWidth + tokenWidth > maxW) {
                     wrapped.push(current);
-
                     // Remove ONLY leading spaces caused by wrapping
                     current = token.replace(/^\s+/, '');
-                    currentWidth = stringWidth(current);
+                    currentWidth = _stringWidth(current);
                 } else {
                     current += token;
                     currentWidth += tokenWidth;
@@ -368,7 +336,9 @@ Item {
             const costs = (isNone ? 0 : (isFullWidth(c) ? 2 : 1))
             cells.push(costs)
         }
-        for (const i in cells) {
+        // Use numeric index — for-in iterates string keys, which is slow
+        // and fragile (cells[i-1] only works by accident due to coercion).
+        for (let i = 0; i < cells.length; i++) {
             count += cells[i]
             if (count > maxCells) {
                 if (count - maxCells < cells[i]) {
@@ -391,6 +361,8 @@ Item {
         return result
     }
 
+    // ── Unpure text segmentation ────────────────────────────────────────────
+
     function wrapFullWidth(str) {
         return `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Mono CJK JP';">${str}</span>`
     }
@@ -403,27 +375,25 @@ Item {
 
         for (const line of str.split("\n")) {
             let processed = [];
-            // Added inBraille state flag
             let inFullWidth = false, inEmoji = false, inBraille = false, buffer = "";
 
-            // Helper to push buffer contents and reset it
             const flush = () => {
                 if (!buffer) return;
                 if (inFullWidth) {
                     processed.push({ text: wrapFullWidth(buffer), len: buffer.length, type: "cjk" });
                 } else if (inEmoji) {
-                    processed.push({ text: `<span style="font-size:${Cell.cellHeight*1.4}px;font-family:'Apple Color Emoji';">${str}</span>`, len: buffer.length / 2, type: "emoji" });
+                    // BUG FIX: was `${str}` (entire input) — now `${buffer}` (just the emoji run).
+                    processed.push({ text: `<span style="font-size:${Cell.cellHeight*1.4}px;font-family:'Apple Color Emoji';">${buffer}</span>`, len: buffer.length / 2, type: "emoji" });
                 } else if (inBraille) {
-                    // Braille type output format
                     processed.push({ text: wrapBraille(buffer), len: buffer.length, type: "braille" });
                 } else {
-                    processed.push({ text: hoistWhitespace(richify(buffer)), len: buffer.length, type: "pure" });
+                    // Order fix: hoist first (raw spaces), then richify.
+                    processed.push({ text: richify(hoistWhitespace(buffer)), len: buffer.length, type: "pure" });
                 }
                 buffer = "";
             };
 
             for (const c of line) {
-                // Check if character belongs to the Unicode Braille Patterns block
                 const isBraille = /[\u2800-\u28FF]/.test(c);
 
                 if (c.length === 2) {
@@ -450,7 +420,7 @@ Item {
                 buffer += c;
             }
 
-            flush(); // Handle leftover characters at the end of the line
+            flush();
             result.push(processed);
         }
 
@@ -507,9 +477,9 @@ Item {
 
                                     id: cell_loader
 
-                                    required property string text 
+                                    required property string text
                                     required property int len
-                                    required property string type 
+                                    required property string type
 
                                     active: root.visible
 
@@ -585,3 +555,4 @@ Item {
     }
 
 }
+
