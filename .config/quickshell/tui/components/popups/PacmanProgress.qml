@@ -10,7 +10,7 @@ Item {
     property var monitor
 
     visible: (
-        PacmanInfo.pacmanState == "installing"
+        PacmanInfo.pacmanState == "running"
         || PacmanInfo.pacmanState == "success"
     ) && !PopupManager.isOpen("pacman") && !root.hidden
 
@@ -90,7 +90,7 @@ Item {
             }
 
             CellProgressSquare {
-                w: root.w - 45
+                w: root.w - 53
                 h: 1
                 percent: PacmanInfo.installState?.overallProgress ?? 0
                 cellInterval: 5
@@ -109,7 +109,7 @@ Item {
             }
 
             CellButton {
-                text: "More"
+                text: "[More]"
                 padding: 0
                 fg: Colors.info
                 color: "transparent"
@@ -122,7 +122,7 @@ Item {
             }
 
             CellButton {
-                text: "Show"
+                text: "[Show]"
                 padding: 0
                 fg: Colors.info
                 color: "transparent"
@@ -135,7 +135,7 @@ Item {
             }
 
             CellButton {
-                text: "Hide"
+                text: "[Hide]"
                 padding: 0
                 fg: Colors.info
                 color: "transparent"
@@ -148,14 +148,14 @@ Item {
             }
 
             CellButton {
-                text: "Cancel"
+                text: "[Cancel]"
                 padding: 0
                 fg: Colors.info
                 color: "transparent"
                 font: hovered ? Cell.fontB : Cell.font
                 onReleased: (button) => {
                     if (button == "L") {
-                        PacmanInfo.cancelInstallation()
+                        PacmanInfo.cancel()
                     }
                 }
             }
@@ -388,19 +388,6 @@ Item {
                     }
 
                     CellButton {
-                        text: "[Hide]"
-                        padding: 0
-                        fg: Colors.info
-                        color: "transparent"
-                        font: hovered ? Cell.fontB : Cell.font
-                        onReleased: (button) => {
-                            if (button == "L") {
-                                root.hidden = true
-                            }
-                        }
-                    }
-
-                    CellButton {
                         text: "[Show]"
                         padding: 0
                         fg: Colors.info
@@ -414,6 +401,19 @@ Item {
                     }
 
                     CellButton {
+                        text: "[Hide]"
+                        padding: 0
+                        fg: Colors.info
+                        color: "transparent"
+                        font: hovered ? Cell.fontB : Cell.font
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                root.hidden = true
+                            }
+                        }
+                    }
+
+                    CellButton {
                         text: "[Cancel]"
                         padding: 0
                         fg: Colors.info
@@ -421,7 +421,7 @@ Item {
                         font: hovered ? Cell.fontB : Cell.font
                         onReleased: (button) => {
                             if (button == "L") {
-                                PacmanInfo.cancelInstallation()
+                                PacmanInfo.cancel()
                             }
                         }
                     }
@@ -474,7 +474,7 @@ Item {
                 font: hovered ? Cell.fontB : Cell.font
                 onReleased: (button) => {
                     if (button == "L") {
-                        PacmanInfo.cancelInstallation()
+                        PacmanInfo.cancel()
                     }
                 }
             }

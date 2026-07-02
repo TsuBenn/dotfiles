@@ -130,7 +130,7 @@ CellPopup {
                             text: ""
                             selected: {
                                 for (const i in MediaPlayerInfo.players) {
-                                    if (MediaPlayerInfo.players[i].dbusName == MediaPlayerInfo.activePlayer.dbusName) {
+                                    if (MediaPlayerInfo.players[i]?.dbusName == MediaPlayerInfo.activePlayer?.dbusName) {
                                         return i
                                     }
                                 }
@@ -140,7 +140,7 @@ CellPopup {
                                 let items = [] 
                                 for (const i in MediaPlayerInfo.players) {
                                     items.push({
-                                        label: MediaPlayerInfo.players[i].desktopEntry.toUpperCase(),
+                                        label: MediaPlayerInfo.players[i]?.desktopEntry.toUpperCase(),
                                         action: () => {
                                             MediaPlayerInfo.pauseMedia()
                                             MediaPlayerInfo.activePlayer = MediaPlayerInfo.players[i]
