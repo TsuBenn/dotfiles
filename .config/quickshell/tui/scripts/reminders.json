@@ -1,13 +1,6 @@
 {
   "MO": [
     {
-      "title": "UNI-DNG103 (P.044)",
-      "body": "Traditional Music Instrument",
-      "span": 1,
-      "urgency": 0,
-      "time": "07:00"
-    },
-    {
       "title": "UNI-MAD101 (P.421)",
       "body": "Discrete Mathematics",
       "span": 1,
@@ -39,13 +32,6 @@
     }
   ],
   "TH": [
-    {
-      "title": "UNI-DNG103 (P.044)",
-      "body": "Traditional Music Instrument",
-      "span": 1,
-      "urgency": 0,
-      "time": "07:00"
-    },
     {
       "title": "UNI-PRO192 (P.126)",
       "body": "Object Oriented Programming",
@@ -101,6 +87,15 @@
       "body": "",
       "span": 30,
       "urgency": 1,
+      "time": ""
+    }
+  ],
+  "02-07-2026": [
+    {
+      "title": "CISCO EXAM",
+      "body": "Do the cisco netacad introduction exam.",
+      "span": 1,
+      "urgency": 2,
       "time": ""
     }
   ]

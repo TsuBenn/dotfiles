@@ -58,7 +58,9 @@ CellPopup {
         {
             binds: ["Up", "Shift+Tab"],
             action: () => {
-                if (!list.optimized_data.some(item => item.name == root.selected_pkg)) {
+                if (PacmanInfo.fetching) return
+                let index = list.datas.findIndex(item => item.name == root.selected_pkg)
+                if (index == -1 || index < list.offset || index > list.offset + list.h) {
                     root.selected_pkg = ""
                 }
                 if (root.selected_pkg == "") {
@@ -74,7 +76,9 @@ CellPopup {
         {
             binds: ["Down", "Tab"],
             action: () => {
-                if (!list.optimized_data.some(item => item.name == root.selected_pkg)) {
+                if (PacmanInfo.fetching) return
+                let index = list.datas.findIndex(item => item.name == root.selected_pkg)
+                if (index == -1 || index < list.offset || index > list.offset + list.h) {
                     root.selected_pkg = ""
                 }
                 if (root.selected_pkg == "") {
@@ -130,15 +134,19 @@ CellPopup {
         {
             binds: "Return",
             action: () => {
+                if (PacmanInfo.fetching) return
                 if (selected_pkg == "" && multi_selected_pkg.length == 0) return
                 if (root.pacmanState == "idle") {
                     if (root.multi_selected_pkg.length > 0) {
                         PacmanInfo.requestInstallation(root.multi_selected_pkg)
+                    } else if (PacmanInfo.isInstalled(root.selected_pkg)) {
+                        PacmanInfo.requestRemoval([root.selected_pkg])
                     } else {
                         PacmanInfo.requestInstallation(info.deps.length > 0 ? [info.deps[info.deps.length-1]] : [root.selected_pkg])
                     }
                 } else if (root.pacmanState == "pre-flight") {
-                    if (confirm_install.countdown == 0) PacmanInfo.confirmInstallation()
+                    if (PacmanInfo.pacmanMode == "install" && confirm_install.countdown == 0) PacmanInfo.confirmInstallation()
+                    else if (PacmanInfo.pacmanMode == "remove" && confirm_remove.countdown == 0) PacmanInfo.confirmRemoval()
                 }
             }
         },
@@ -223,8 +231,6 @@ CellPopup {
 
                     property var datas: PacmanInfo.search_results
 
-                    property var optimized_data: datas.slice(list.offset,list.offset+list.h)
-
                     virtualH: true
 
                     contentH: Cell.h(1)*datas.length
@@ -235,120 +241,130 @@ CellPopup {
 
                         Repeater {
 
-                            model: list.optimized_data
+                            model: list.h
 
-                            delegate: Cells {
+                            delegate: Loader {
 
-                                id: pkg
+                                id: pkg_loader
 
                                 required property int index
-                                required property var modelData
 
-                                property string name: modelData.name
-                                property string repo: modelData.repository
-                                property string version: modelData.version
-                                property string latest_version: modelData.latest_version
-                                property bool installed: modelData.installed
-                                property bool update_available: pkg.latest_version != ""
+                                active: list.datas[list.offset + index] ?? false
 
-                                property bool selected: root.selected_pkg == name && !disabled
+                                sourceComponent: Cells {
 
-                                property bool disabled: PacmanInfo.fetching || PacmanInfo.checking_updates
+                                    id: pkg
 
-                                w: list.contentW
-                                h: 1
+                                    property int index: pkg_loader.index
+                                    property var modelData: list.datas[list.offset + index]
 
-                                color: (selected ? Colors.accentStrong : (pkg_mouse.hovered ? Colors.bgOverlay : "transparent"))
+                                    property string name: modelData.name
+                                    property string repo: modelData.repository
+                                    property string version: modelData.version
+                                    property string latest_version: modelData.latest_version
+                                    property bool installed: modelData.installed
+                                    property bool update_available: pkg.latest_version != ""
 
-                                onSelectedChanged: {
-                                    if (selected) {
-                                        root.selected_index = index
-                                        if (PacmanInfo.search_mode == 4) {
-                                            let inputs = search_field.text.split(" ")
-                                            inputs[inputs.length-1] = pkg.name
-                                            search_field.set(inputs.join(" "))
+                                    property bool selected: root.selected_pkg == name && !disabled
+
+                                    property bool disabled: PacmanInfo.fetching || PacmanInfo.checking_updates
+
+                                    w: list.contentW
+                                    h: 1
+
+                                    color: (selected ? Colors.accentStrong : (pkg_mouse.hovered ? Colors.bgOverlay : "transparent"))
+
+                                    onSelectedChanged: {
+                                        if (selected) {
+                                            root.selected_index = index
+                                            if (PacmanInfo.search_mode == 4) {
+                                                let inputs = search_field.text.split(" ")
+                                                inputs[inputs.length-1] = pkg.name
+                                                search_field.set(inputs.join(" "))
+                                            }
                                         }
-                                    }
-                                }
-
-                                RowLayout {
-
-                                    x: Cell.w(1)
-
-                                    spacing: Cell.w(1)
-
-                                    CellText {
-                                        text: pkg.installed ? "*" : " "
-                                        color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.success)
-                                        font: Cell.fontB
-                                    }
-
-                                    CellText {
-                                        text: pkg.name
-                                        preferedW: list.contentW - 5 - pkg_version.w
-                                        color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgBase)
                                     }
 
                                     RowLayout {
 
-                                        id: pkg_version
+                                        x: Cell.w(1)
 
-                                        property int w: Cell.wCount(implicitWidth)
-
-
-                                        spacing: 0
+                                        spacing: Cell.w(1)
 
                                         CellText {
-                                            text: "("
-                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
-                                        }
-
-                                        CellText {
-                                            text: pkg.version
-                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : (pkg.update_available ? Colors.blend(Colors.fgSubtle,Colors.danger,0.5) : Colors.fgSubtle))
-                                        }
-
-                                        CellText {
-                                            visible: pkg.update_available
-                                            text: " -> "
-                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
-                                        }
-
-                                        CellText {
-                                            visible: pkg.update_available
-                                            text: pkg.latest_version
+                                            text: pkg.installed ? "*" : " "
                                             color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.success)
+                                            font: Cell.fontB
                                         }
 
                                         CellText {
-                                            text: ")"
-                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
+                                            text: pkg.name
+                                            preferedW: list.contentW - 5 - pkg_version.w
+                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgBase)
                                         }
 
-                                    }
+                                        RowLayout {
 
-                                }
+                                            id: pkg_version
 
-                                MouseControl {
+                                            property int w: Cell.wCount(implicitWidth)
 
-                                    id: pkg_mouse
 
-                                    visible: !parent.disabled
+                                            spacing: 0
 
-                                    anchors.fill: parent
-
-                                    onReleased: (button) => {
-                                        if (button == "L") {
-                                            if (root.selected_pkg == pkg.name) {
-                                                root.selected_pkg = ""
-                                                return
+                                            CellText {
+                                                text: "("
+                                                color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
                                             }
-                                            root.selected_pkg = pkg.name
+
+                                            CellText {
+                                                text: pkg.version
+                                                color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : (pkg.update_available ? Colors.blend(Colors.fgSubtle,Colors.danger,0.5) : Colors.fgSubtle))
+                                            }
+
+                                            CellText {
+                                                visible: pkg.update_available
+                                                text: " -> "
+                                                color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
+                                            }
+
+                                            CellText {
+                                                visible: pkg.update_available
+                                                text: pkg.latest_version
+                                                color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.success)
+                                            }
+
+                                            CellText {
+                                                text: ")"
+                                                color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
+                                            }
+
                                         }
+
                                     }
 
+                                    MouseControl {
+
+                                        id: pkg_mouse
+
+                                        visible: !parent.disabled
+
+                                        anchors.fill: parent
+
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                if (root.selected_pkg == pkg.name) {
+                                                    root.selected_pkg = ""
+                                                    return
+                                                }
+                                                root.selected_pkg = pkg.name
+                                            }
+                                        }
+
+                                    }
                                 }
-                            }
+
+                            } 
 
 
                         }
@@ -588,8 +604,8 @@ CellPopup {
                         || root.pacmanState == "pre-flight"
                         || root.pacmanState == "authentication"
                     )
-                    text: "Installing <b>" + PacmanInfo.installTarget.join(", ") + "</b>"
-                    color: Colors.secondary
+                    text: (PacmanInfo.pacmanMode == "install" ? "Installing" : (PacmanInfo.forceRemove ? "Force removing" : "Removing")) + " <b>" + (PacmanInfo.pacmanMode == "install" ? PacmanInfo.installTarget.join(", ") : PacmanInfo.removeTarget.join(", ")) + "</b>"
+                    color: PacmanInfo.forceRemove ? Colors.danger : Colors.secondary
                 }
 
                 // Check updates header
@@ -641,9 +657,6 @@ CellPopup {
                         property var deps: []
 
                         onIndexChanged: {
-                            if (index == -1 && root.selected_pkg != "") {
-                                indexChanged()
-                            }
                             deps = []
                         }
 
@@ -1684,7 +1697,7 @@ CellPopup {
                         visible: PacmanInfo.pacmanMode == "remove"
 
                         w: box.contentW
-                        h: box.contentH - list.h - 11
+                        h: box.contentH - list.h - 11 - (PacmanInfo.forceRemove ? 3 : 0)
 
                         source: ColumnLayout {
 
@@ -1880,13 +1893,6 @@ CellPopup {
 
                                 }
 
-
-                            }
-
-                            CellSeparator {
-                                visible: remove_preflight.removalPlan.brokenDependents.length > 0
-                                w: box.contentW - 1
-                                color: Colors.bgOverlay
                             }
 
                             CellText {
@@ -2066,7 +2072,23 @@ CellPopup {
                         color: Colors.accentDim
                     }
 
+                    CellText {
+                        visible: PacmanInfo.forceRemove
+                        text: "<i><b>Force removing</b> will remove this package along with any package that require it.\nPlease proceed with caution!</i>"
+                        centered: true
+                        color: Colors.danger
+                        preferedW: box.contentW
+                    }
+
+                    CellSeparator {
+                        visible: PacmanInfo.forceRemove
+                        w: box.contentW
+                        color: Colors.accentDim
+                    }
+
                     RowLayout {
+
+                        visible: PacmanInfo.pacmanMode == "remove"
 
                         Layout.leftMargin: Cell.w(1)
 
@@ -2085,6 +2107,51 @@ CellPopup {
                         }
 
                     }
+
+                    RowLayout {
+
+                        visible: PacmanInfo.pacmanMode == "install"
+
+                        Layout.leftMargin: Cell.w(1)
+
+                        spacing: 0
+
+                        CellText {
+                            text: "Total download size     : "
+                            color: Colors.fgSubtle
+                        }
+
+                        CellText {
+                            text: PacmanInfo.installPlan.totalDownload
+                            color: Colors.info
+                            font: Cell.fontB
+                            alignRight: true
+                        }
+
+                    }
+
+                    RowLayout {
+
+                        visible: PacmanInfo.pacmanMode == "install"
+
+                        Layout.leftMargin: Cell.w(1)
+
+                        spacing: 0
+
+                        CellText {
+                            text: "Total installation size : "
+                            color: Colors.fgSubtle
+                        }
+
+                        CellText {
+                            text: PacmanInfo.installPlan.totalInstalled
+                            color: Colors.success
+                            font: Cell.fontB
+                            alignRight: true
+                        }
+
+                    }
+
 
                 }
 
@@ -2115,13 +2182,15 @@ CellPopup {
 
                             spacing: 0
 
+                            property var lines: PacmanInfo.log.replace(/^\n/g,"").replace(/\n$/g,"").split("\n")
+
                             CellText {
 
                                 id: log_text
 
                                 preferedW: log.contentW - 2
 
-                                text: ""
+                                text: parent.lines.slice(0,parent.lines.length-1).join("\n")
                                 wrap: true
                                 color: Colors.fgSubtle
 
@@ -2133,7 +2202,7 @@ CellPopup {
 
                                 preferedW: log.contentW - 2
 
-                                text: PacmanInfo.log
+                                text: parent.lines[parent.lines.length-1]
                                 wrap: true
 
                             }
@@ -2195,7 +2264,7 @@ CellPopup {
                                                     case "HOOKS": header = "Running post-transaction hooks for"; break
                                                 }
                                             }
-                                            return " " + header + " <b>" + PacmanInfo.removeTarget.join(", ") + "</b>"
+                                            return " " + header + " <b>" + (PacmanInfo.pacmanMode == "install" ? PacmanInfo.installTarget.join(", ") : PacmanInfo.removeTarget.join(", ")) + "</b>"
                                         }
                                         color: Colors.info
                                         preferedW: Math.min(purify(text).length, box.contentW - 4)
@@ -2565,7 +2634,7 @@ CellPopup {
 
                             text: (root.multi_selected_pkg.length > 0 ? "Install all" : "Install")
 
-                            clickable: root.selected_pkg != "" || root.multi_selected_pkg.length > 0 && root.pacmanState != "prepare"
+                            clickable: (root.selected_pkg != "" || root.multi_selected_pkg.length > 0) && root.pacmanState != "prepare"
 
                             color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
                             fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
@@ -2655,6 +2724,7 @@ CellPopup {
 
                         visible: (
                             root.pacmanState == "pre-flight"
+                            && PacmanInfo.pacmanMode == "install"
                         )
 
                         property int countdown: 0
@@ -2691,6 +2761,73 @@ CellPopup {
                             onReleased: (button) => {
                                 if (button == "L") {
                                     PacmanInfo.confirmInstallation()
+                                }
+                            }
+
+                        }
+
+                        CellButton {
+
+                            text: "Cancel"
+
+                            color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    PacmanInfo.cancel()
+                                }
+                            }
+
+                        }
+
+                    }
+
+                    // Removal confirmation
+                    RowLayout {
+
+                        id: confirm_remove
+
+                        visible: (
+                            root.pacmanState == "pre-flight"
+                            && PacmanInfo.pacmanMode == "remove"
+                        )
+
+                        anchors.right: parent.right
+                        anchors.rightMargin: Cell.w(1)
+
+                        property int countdown: 0
+
+                        onVisibleChanged: {
+                            if (visible && PacmanInfo.removalPlan.brokenDependents.length > 0 ) {
+                                countdown = 3
+                            }
+                        }
+
+                        Timer {
+                            running: parent.countdown > 0
+                            interval: 1000
+                            repeat: true
+                            onTriggered: {
+                                confirm_remove.countdown -= 1
+                            }
+                        }
+
+
+                        spacing: Cell.w(1)
+
+                        CellButton {
+
+                            text: PacmanInfo.removalPlan.brokenDependents.length == 0 ? "Confirm" : "Force remove" + (confirm_remove.countdown > 0 ? " ("+confirm_remove.countdown+")" : "")
+
+                            clickable: confirm_remove.countdown == 0
+
+                            color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    PacmanInfo.confirmRemoval()
                                 }
                             }
 

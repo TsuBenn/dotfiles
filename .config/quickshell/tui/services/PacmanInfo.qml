@@ -13,7 +13,7 @@ Singleton {
     property string path: SystemInfo.configdir + "/scripts/pacman-filter.py"
     property string preflight_path: SystemInfo.configdir + "/scripts/pacman-pre-flight.py"
 
-    property bool fetching: fetcher.running
+    property bool fetching: true
     property bool checking_updates: updates_checker.running
     property bool updates_checker_authorized: false
 
@@ -43,6 +43,7 @@ Singleton {
     property string pacmanMode: "" // "install" or "remove"
     property var installTarget: []
     property var removeTarget: []
+    property bool forceRemove: false
     property var installPlan: {
         "toInstall": [], // Dependencies (install)
         "willReplace": [], // Replaces (remove)
@@ -73,7 +74,10 @@ Singleton {
 
     function reset() {
         pacmanState = "idle"
+        pacmanMode = ""
         installTarget = []
+        removeTarget = []
+        forceRemove = false
         installPlan = {
             "toInstall": [], // Dependencies (install)
             "willReplace": [], // Replaces (remove)
@@ -94,6 +98,11 @@ Singleton {
             "progressData": {},
             "overallProgress": 0     // 0 to 100
         }
+        removeState = {
+            "currentPhase": "START", // START, UNHOOKS, UNINSTALLING, HOOKS, DONE
+            "progressData": {},
+            "overallProgress": 0     // 0 to 100
+        };
     }
 
     function cancel() {
@@ -145,7 +154,7 @@ Singleton {
     }
 
     function prepareRemoval() {
-        for (const pkg of installTarget) {
+        for (const pkg of removeTarget) {
             if (!isInstalled(pkg)) {
                 console.log("PacmanInfo (prepareInstallation): " + pkg + " has not been installed. Rejecting request.")
                 cancel()
@@ -161,6 +170,10 @@ Singleton {
     }
 
     function confirmRemoval() {
+        if (removalPlan.brokenDependents?.length > 0) {
+            preparePreFlight()
+            return
+        }
         pacmanState = "authentication"
         remover.running = true
     }
@@ -193,9 +206,13 @@ Singleton {
         interval: SettingsInfo.frameTime
         onTriggered: {
             root.log = sanitizeTerminalOutput(processANSI(rawLog))
-            root.trackPacmanProgress(log)
+            root.trackPacmanProgress()
             if (log.split("\n").slice(-1).toString().toLowerCase().includes("[y/n]")) {
-                installer.write("y\n")
+                if (installer.running) {
+                    installer.write("y\n")
+                } else if (remover.running) {
+                    remover.write("y\n")
+                }
             }
         }
     }
@@ -204,14 +221,27 @@ Singleton {
         interval: 200
         onTriggered: {
             root.log = sanitizeTerminalOutput(processANSI(rawLog))
-            root.trackPacmanProgress(log)
+            root.trackPacmanProgress()
             if (log.split("\n").slice(-1).toString().toLowerCase().includes("[y/n]")) {
-                installer.write("y\n")
+                if (installer.running) {
+                    installer.write("y\n")
+                } else if (remover.running) {
+                    remover.write("y\n")
+                }
             }
         }
     }
 
-    function trackPacmanProgress(line) {
+    function trackPacmanProgress() {
+        if (pacmanMode == "install") {
+            trackInstallingProgress()
+        } else {
+            trackRemovingProgress()
+        }
+    }
+
+    function trackInstallingProgress() {
+        const line = root.log
         if (line.includes(":: Running post-transaction hooks...")) {
             installState.currentPhase = "HOOKS"
         } else if (line.includes(":: Processing package changes...")) {
@@ -303,6 +333,65 @@ Singleton {
 
         //console.log(JSON.stringify(installState,null,2))
         installStateChanged()
+    }
+
+    function trackRemovingProgress() {
+        const line = root.log
+        if (line.includes(":: Running post-transaction hooks...")) {
+            removeState.currentPhase = "HOOKS"
+        } else if (line.includes(":: Processing package changes...")) {
+            removeState.currentPhase = "UNINSTALLING"
+        } else if (line.includes(":: Running pre-transaction hooks...")) {
+            removeState.currentPhase = "UNHOOKS"
+        } else if (line.includes("checking dependencies...")) {
+            removeState.currentPhase = "START"
+        }
+
+        if (removeState.currentPhase == "UNHOOKS") {
+            let lines = line.split("\n")
+            let data
+            for (let i = lines.length - 1; i >= 0; i--) {
+                data = lines[i].match(/\((\d+)\/(\d+)\).*/)
+                if (data) {
+                    break
+                }
+            }
+            let currentStep = parseInt(data[1])
+            let totalStep = parseInt(data[2])
+            removeState.overallProgress = Math.round((currentStep/totalStep)*20)
+        }
+
+        if (removeState.currentPhase == "UNINSTALLING") {
+            let lines = line.split("\n")
+            let data
+            for (let i = lines.length - 1; i >= 0; i--) {
+                data = lines[i].match(/\((\d+)\/(\d+)\).*\[.*\]\s+(\d+)%/)
+                if (data) {
+                    break
+                }
+            }
+            let currentPkg = parseInt(data[1])
+            let totalPkg = parseInt(data[2])
+            let percentage = parseInt(data[3])
+            removeState.overallProgress = 20 + Math.round((percentage*(1/(totalPkg)) + ((currentPkg-1)/totalPkg)*100)*0.6)
+        }
+
+        if (removeState.currentPhase == "HOOKS") {
+            let lines = line.split("\n")
+            let data
+            for (let i = lines.length - 1; i >= 0; i--) {
+                data = lines[i].match(/\((\d+)\/(\d+)\).*/)
+                if (data) {
+                    break
+                }
+            }
+            let currentStep = parseInt(data[1])
+            let totalStep = parseInt(data[2])
+            removeState.overallProgress = 90 + Math.round((currentStep/totalStep)*20)
+        }
+
+        //console.log(JSON.stringify(installState,null,2))
+        removeStateChanged()
     }
 
     function processANSI(rawText) {
@@ -458,6 +547,57 @@ Singleton {
 
     }
 
+    Process {
+
+        id: remover
+
+        property string pkg: root.removeTarget.join(" ")
+
+        onRunningChanged: {
+            if (running) {
+                AuthInfo.verify("Removing <b>" + root.removeTarget + "</b>", "Authenticate for removal.", function(s, p) {
+                    if (s) {
+                        remover.write(p+"\n")
+                        root.pacmanState = "running"
+                    } else {
+                        root.cancel()
+                    }
+                })
+            }
+        }
+
+        command: ["script", "-qc", `sudo -S -k -p '' env COLUMNS=94 LINES=0 pacman -Rs ${pkg}`, "/dev/null"]
+
+        stdout: SplitParser {
+            splitMarker: ""
+            onRead: (text) => {
+                //console.log(text)
+                root.appendLog(text)
+            }
+        }
+
+        stderr: SplitParser {
+            splitMarker: ""
+            onRead: (text) => {
+                console.log("PacmanInfo (remover) error: " + text)
+            }
+        }
+
+        onExited: (exitCode, exitStatus) => {
+            console.log("PacmanInfo (remover): exitCode: " + exitCode + ", exitStatus: " + exitStatus)
+            root.logExitCode = exitCode
+            fetch()
+            if (root.pacmanState == "cancel") {
+                root.reset()
+                return
+            }
+            if (exitCode == 0) {
+                root.pacmanState = "success"
+            }
+        }
+
+    }
+
     // ─── Search & Filter ──────────────────────────────────────────
     //
     // All filtering (query + installed + outdated) happens in a single
@@ -471,7 +611,11 @@ Singleton {
     onInstalledChanged:  { queryChanged() }
     onOutdatedChanged:   { queryChanged() }
     onSearch_modeChanged: { queryChanged() }
-    onPackagesChanged:    { rebuildIndices(); queryChanged() }
+    onPackagesChanged:    { 
+        rebuildIndices()
+        root.fetching = false
+        queryChanged() 
+    }
 
     property int search_mode: 0
 
@@ -518,6 +662,8 @@ Singleton {
             p.desc_fuzzy = p.desc_lower.replace(/[-_ ]/g, "")
             p.repo_fuzzy = p.repo_lower.replace(/[-_ ]/g, "")
         }
+        if (root.pacmanState == "fetching") root.pacmanState = "idle"
+        root.fetched()
     }
 
     // ─── O(1) Lookups ─────────────────────────────────────────────
@@ -636,6 +782,12 @@ Singleton {
     }
 
     function preparePreFlight() {
+        if (pacmanState == "pre-flight" && pacmanMode == "remove") {
+            pacmanState = "prepare"
+            forceRemove = true
+            preflighter.running = true
+            return
+        }
         if (preflighter.running) preflighter.running = false
         preflighter.running = true
     }
@@ -665,6 +817,7 @@ Singleton {
             pacmanState = "fetching"
         }
         if (fetcher.running) fetcher.running = false
+        root.fetching = true
         fetcher.running = true
     }
 
@@ -672,7 +825,7 @@ Singleton {
 
         id: preflighter
 
-        command: root.pacmanMode == "install" ? ["python", root.preflight_path, ...root.installTarget] : ["python", root.preflight_path, "--remove", ...root.removeTarget]
+        command: root.pacmanMode == "install" ? ["python", root.preflight_path, ...root.installTarget] : ["python", root.preflight_path, ...(root.forceRemove ? ["--cascade", "--remove"] : ["--remove"]), ...root.removeTarget]
 
         function capitalize(str) {
             if (!str) return undefined
@@ -750,7 +903,6 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 if (text) {
-                    if (root.pacmanState == "fetching") root.pacmanState = "idle"
                     console.log(text)
                     root.fetched()
                     lister.running = true
