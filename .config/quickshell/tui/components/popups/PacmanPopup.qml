@@ -95,7 +95,7 @@ CellPopup {
                     || root.pacmanState == "failed"
                     || root.pacmanState == "pre-flight"
                 ) {
-                    PacmanInfo.cancelInstallation()
+                    PacmanInfo.cancel()
                 } else {
                     root.close()
                 }
@@ -121,9 +121,9 @@ CellPopup {
             binds: "Ctrl+C",
             action: () => {
                 if (
-                    root.pacmanState == "installing"
+                    root.pacmanState == "running"
                 ) {
-                    PacmanInfo.cancelInstallation()
+                    PacmanInfo.cancel()
                 }
             }
         },
@@ -1357,7 +1357,10 @@ CellPopup {
 
                     spacing: 0
 
+                    // Installation pre-flight
                     CellScrollView {
+
+                        visible: PacmanInfo.pacmanMode == "install"
 
                         w: box.contentW
                         h: box.contentH - list.h - 12
@@ -1675,6 +1678,389 @@ CellPopup {
 
                     }
 
+                    // Removal pre-flight
+                    CellScrollView {
+
+                        visible: PacmanInfo.pacmanMode == "remove"
+
+                        w: box.contentW
+                        h: box.contentH - list.h - 11
+
+                        source: ColumnLayout {
+
+                            id: remove_preflight
+
+                            spacing: 0
+
+                            property var removalPlan: PacmanInfo.removalPlan
+                            property var removeTarget: removalPlan.toRemove.filter(item => item.isTarget)
+
+                            CellText {
+                                visible: PacmanInfo.removalPlan.error ?? false
+                                Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW-1))
+                                text: "\n" + PacmanInfo.removalPlan.error ?? ""
+                                preferedW: box.contentW - 5
+                                centered: true
+                                wrap: true
+                                color: Colors.warning
+                            }
+
+                            CellText {
+                                Layout.leftMargin: Cell.w(1)
+                                visible: PacmanInfo.removalPlan.toRemove.length > 0
+                                text: "To Remove:"
+                                font: Cell.fontB
+                                color: Colors.info
+                            }
+
+                            component ToRemove: RowLayout {
+
+                                property string name
+                                property color  name_color: Colors.fgBase
+                                property string version
+                                property string freedSize
+
+                                property string prefix: "-"
+
+                                property int maxW: box.contentW
+
+                                spacing: Cell.w(1)
+
+                                CellText {
+
+                                    text: parent.prefix
+                                    color: {
+                                        if (text == "!") {
+                                            return Colors.danger
+                                        } else if (text == "=") {
+                                            return Colors.warning
+                                        } else {
+                                            return Colors.fgSubtle
+                                        }
+                                    }
+
+                                }
+
+                                CellText {
+
+                                    text: parent.name
+                                    preferedW: parent.maxW - 18 - parent.version.length
+                                    color: parent.name_color
+
+                                }
+
+                                CellText {
+
+                                    text: parent.version
+                                    color: Colors.fgSubtle
+
+                                }
+
+                                CellText {
+
+                                    text: "+" + parent.freedSize.toString().padStart(11, " ")
+                                    color: Colors.success
+                                    preferedW: 12
+                                    alignRight: true
+
+                                }
+
+                            }
+
+                            Repeater {
+
+                                model: parent.removeTarget
+
+                                delegate: ToRemove {
+
+                                    required property var modelData
+
+                                    Layout.leftMargin: Cell.w(2)
+
+                                    maxW: box.contentW - 2
+                                    prefix: "*"
+
+                                    name: modelData?.name ?? ""
+                                    version: modelData?.version ?? ""
+                                    freedSize: modelData?.freedSize ?? ""
+
+                                }
+                            }
+
+                            ColumnLayout {
+
+                                id: remove_preflight_dep
+
+                                spacing: 0
+
+                                property int collapseThreshold: 3
+
+                                property int maxShown: collapseThreshold
+                                property var dep_pkgs: remove_preflight.removalPlan.toRemove.filter(item => !item.isTarget)
+                                property int maxItems: dep_pkgs.length
+                                property var shownItems: dep_pkgs.slice(0, maxShown)
+
+                                Repeater {
+
+                                    model: parent.shownItems
+
+                                    delegate: ToRemove {
+
+                                        Layout.leftMargin: Cell.w(4)
+
+                                        maxW: box.contentW - 4
+
+                                        required property var modelData
+
+                                        name: modelData?.name
+                                        name_color: Colors.blend(Colors.fgSubtle,Colors.fgBase,0.5)
+                                        version: modelData?.version
+                                        freedSize: modelData?.freedSize
+
+                                    }
+
+                                }
+
+                                RowLayout {
+
+                                    Layout.leftMargin: Cell.w(4)
+
+                                    spacing: Cell.w(1)
+
+                                    CellButton {
+
+                                        visible: remove_preflight_dep.maxShown < remove_preflight_dep.maxItems
+
+                                        padding: 0
+                                        text: "[+ " + (remove_preflight_dep.maxItems - remove_preflight_dep.maxShown) + " more]"
+                                        color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
+                                        fg: Colors.info
+
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                remove_preflight_dep.maxShown = Math.min(remove_preflight_dep.maxShown+5,remove_preflight_dep.maxItems)
+                                            }
+                                        }
+
+                                    }
+
+                                    CellButton {
+
+                                        visible: remove_preflight_dep.maxShown < remove_preflight_dep.maxItems && remove_preflight_dep.maxShown > remove_preflight_dep.collapseThreshold
+
+                                        padding: 0
+                                        text: "[Show all ("+remove_preflight_dep.maxItems+")]"
+                                        color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
+                                        fg: Colors.info
+
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                remove_preflight_dep.maxShown = remove_preflight_dep.maxItems
+                                            }
+                                        }
+
+                                    }
+
+                                    CellButton {
+
+                                        visible: remove_preflight_dep.maxShown == remove_preflight_dep.maxItems
+
+                                        padding: 0
+                                        text: "[Show less]"
+                                        color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
+                                        fg: Colors.info
+
+                                        onReleased: (button) => {
+                                            if (button == "L") {
+                                                remove_preflight_dep.maxShown = remove_preflight_dep.collapseThreshold
+                                            }
+                                        }
+
+                                    }
+
+                                }
+
+
+                            }
+
+                            CellSeparator {
+                                visible: remove_preflight.removalPlan.brokenDependents.length > 0
+                                w: box.contentW - 1
+                                color: Colors.bgOverlay
+                            }
+
+                            CellText {
+                                visible: remove_preflight.removalPlan.brokenDependents.length > 0
+                                Layout.leftMargin: Cell.w(1)
+                                text: "Broken dependencies:"
+                                font: Cell.fontB
+                                color: Colors.danger
+                            }
+
+                            ColumnLayout {
+
+                                visible: remove_preflight.removalPlan.brokenDependents.length > 0
+
+                                spacing: 0
+
+                                Repeater {
+
+                                    model: remove_preflight.removalPlan.brokenDependents
+
+                                    delegate: ColumnLayout {
+
+                                        id: broken_deps
+
+                                        required property string target
+                                        required property var dependents
+
+                                        Layout.leftMargin: Cell.w(1)
+
+                                        spacing: 0
+
+                                        RowLayout {
+
+                                            spacing: 0
+
+                                            CellText {
+
+                                                text: "! "
+                                                color: Colors.danger
+                                                font: Cell.fontB
+
+                                            }
+
+                                            CellText {
+
+                                                text: broken_deps.target
+                                                color: Colors.fgBase
+
+                                            }
+
+                                            CellText {
+
+                                                text: " is required by: "
+                                                color: Colors.fgSubtle
+
+                                            }
+
+                                        }
+
+                                        ColumnLayout {
+
+                                            id: req
+
+                                            spacing: 0
+
+                                            property int collapseThreshold: 3
+
+                                            property int maxShown: collapseThreshold
+                                            property var dep_pkgs: broken_deps.dependents
+                                            property int maxItems: dep_pkgs.length
+                                            property var shownItems: dep_pkgs.slice(0, maxShown)
+
+                                            Repeater {
+
+                                                model: parent.shownItems
+
+                                                delegate: RowLayout {
+
+                                                    Layout.leftMargin: Cell.w(3)
+
+                                                    required property string modelData
+
+                                                    spacing: 0
+
+                                                    CellText {
+
+                                                        text: "~ "
+                                                        color: Colors.danger
+
+                                                    }
+
+                                                    CellText {
+
+                                                        text: parent.modelData
+                                                        color: Colors.danger
+
+                                                    }
+
+                                                }
+
+                                            }
+
+                                            RowLayout {
+
+                                                Layout.leftMargin: Cell.w(3)
+
+                                                spacing: Cell.w(1)
+
+                                                CellButton {
+
+                                                    visible: req.maxShown < req.maxItems
+
+                                                    padding: 0
+                                                    text: "[+ " + (req.maxItems - req.maxShown) + " more]"
+                                                    color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
+                                                    fg: Colors.info
+
+                                                    onReleased: (button) => {
+                                                        if (button == "L") {
+                                                            req.maxShown = Math.min(req.maxShown+5,req.maxItems)
+                                                        }
+                                                    }
+
+                                                }
+
+                                                CellButton {
+
+                                                    visible: req.maxShown < req.maxItems && req.maxShown > req.collapseThreshold
+
+                                                    padding: 0
+                                                    text: "[Show all ("+req.maxItems+")]"
+                                                    color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
+                                                    fg: Colors.info
+
+                                                    onReleased: (button) => {
+                                                        if (button == "L") {
+                                                            req.maxShown = req.maxItems
+                                                        }
+                                                    }
+
+                                                }
+
+                                                CellButton {
+
+                                                    visible: req.maxShown == req.maxItems
+
+                                                    padding: 0
+                                                    text: "[Show less]"
+                                                    color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
+                                                    fg: Colors.info
+
+                                                    onReleased: (button) => {
+                                                        if (button == "L") {
+                                                            req.maxShown = req.collapseThreshold
+                                                        }
+                                                    }
+
+                                                }
+
+                                            }
+
+
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
                     CellSeparator {
                         w: box.contentW
                         color: Colors.accentDim
@@ -1687,32 +2073,12 @@ CellPopup {
                         spacing: 0
 
                         CellText {
-                            text: "Total download size     : "
+                            text: "Total freed size : "
                             color: Colors.fgSubtle
                         }
 
                         CellText {
-                            text: PacmanInfo.installPlan.totalDownload
-                            color: Colors.info
-                            font: Cell.fontB
-                            alignRight: true
-                        }
-
-                    }
-
-                    RowLayout {
-
-                        Layout.leftMargin: Cell.w(1)
-
-                        spacing: 0
-
-                        CellText {
-                            text: "Total installation size : "
-                            color: Colors.fgSubtle
-                        }
-
-                        CellText {
-                            text: PacmanInfo.installPlan.totalInstalled
+                            text: PacmanInfo.removalPlan.freedTotal
                             color: Colors.success
                             font: Cell.fontB
                             alignRight: true
@@ -1720,26 +2086,25 @@ CellPopup {
 
                     }
 
-
                 }
 
-                // Installation screen
+                // Installation/Removing screen
                 ColumnLayout {
 
                     visible: (
-                        root.pacmanState == "installing"
+                        root.pacmanState == "running"
                         || root.pacmanState == "success"
                         || root.pacmanState == "failed"
                     )
 
                     spacing: 0
 
-                    // Installation Log
+                    // Log
                     CellScrollView {
 
                         Layout.leftMargin: Cell.w(1)
 
-                        id: install_log
+                        id: log
 
                         w: box.contentW - 1
                         h: box.contentH - 4 - (install_footer.h)
@@ -1752,9 +2117,9 @@ CellPopup {
 
                             CellText {
 
-                                id: install_log_text
+                                id: log_text
 
-                                preferedW: install_log.contentW - 2
+                                preferedW: log.contentW - 2
 
                                 text: ""
                                 wrap: true
@@ -1764,11 +2129,11 @@ CellPopup {
 
                             CellText {
 
-                                id: install_log_text_focus
+                                id: log_text_focus
 
-                                preferedW: install_log.contentW - 2
+                                preferedW: log.contentW - 2
 
-                                text: PacmanInfo.installLog
+                                text: PacmanInfo.log
                                 wrap: true
 
                             }
@@ -1778,7 +2143,7 @@ CellPopup {
 
                     }
 
-                    // Installation footer
+                    // Installation/removal footer
                     Cells {
 
                         id: install_footer
@@ -1801,7 +2166,7 @@ CellPopup {
 
                             ColumnLayout {
 
-                                visible: root.pacmanState == "installing"
+                                visible: root.pacmanState == "running"
 
                                 spacing: 0
 
@@ -1815,13 +2180,22 @@ CellPopup {
 
                                         text: {
                                             let header
-                                            switch (PacmanInfo.installState.currentPhase) {
-                                                case "START": header = "Initializing installation for"; break
-                                                case "DOWNLOAD": header = "Retrieving packages for"; break
-                                                case "INSTALL": header = "Processing package changes for"; break
-                                                case "HOOKS": header = "Running post-transaction hooks for"; break
+                                            if (PacmanInfo.pacmanMode == "install") {
+                                                switch (PacmanInfo.installState?.currentPhase) {
+                                                    case "START": header = "Initializing installation for"; break
+                                                    case "DOWNLOAD": header = "Retrieving packages for"; break
+                                                    case "INSTALL": header = "Processing package changes for"; break
+                                                    case "HOOKS": header = "Running post-transaction hooks for"; break
+                                                }
+                                            } else {
+                                                switch (PacmanInfo.removeState?.currentPhase) {
+                                                    case "START": header = "Initializing removal for"; break
+                                                    case "UNHOOKS": header = "Running pre-transaction hooks for"; break
+                                                    case "UNINSTALLING": header = "Processing package changes for"; break
+                                                    case "HOOKS": header = "Running post-transaction hooks for"; break
+                                                }
                                             }
-                                            return " " + header + " <b>" + PacmanInfo.installTarget.join(", ") + "</b>"
+                                            return " " + header + " <b>" + PacmanInfo.removeTarget.join(", ") + "</b>"
                                         }
                                         color: Colors.info
                                         preferedW: Math.min(purify(text).length, box.contentW - 4)
@@ -1838,6 +2212,7 @@ CellPopup {
                                     visible: (
                                         PacmanInfo.installState.currentPhase != "HOOKS"
                                         && PacmanInfo.installState.currentPhase != "START"
+                                        && PacmanInfo.pacmanMode == "install"
                                     )
                                     w: box.contentW
                                     color: Colors.bgOverlay
@@ -1847,7 +2222,7 @@ CellPopup {
 
                                     Layout.leftMargin: Cell.w(1)
 
-                                    visible: PacmanInfo.installState.currentPhase == "DOWNLOAD"
+                                    visible: PacmanInfo.installState.currentPhase == "DOWNLOAD" && PacmanInfo.pacmanMode == "install"
 
                                     spacing: 0
 
@@ -1917,7 +2292,7 @@ CellPopup {
 
                                     Layout.leftMargin: Cell.w(1)
 
-                                    visible: PacmanInfo.installState.currentPhase == "INSTALL"
+                                    visible: PacmanInfo.installState.currentPhase == "INSTALL" && PacmanInfo.pacmanMode == "install"
 
                                     spacing: 0
 
@@ -1966,7 +2341,7 @@ CellPopup {
                                     CellProgressSquare {
                                         w: box.contentW - 9
                                         h: 1
-                                        percent: PacmanInfo.installState?.overallProgress ?? 0
+                                        percent: PacmanInfo.pacmanMode == "install" ? (PacmanInfo.installState?.overallProgress ?? 0) : (PacmanInfo.removeState?.overallProgress ?? 0)
                                         cellInterval: 5
                                         fg: Colors.accentStrong
                                     }
@@ -1977,7 +2352,7 @@ CellPopup {
                                     }
 
                                     CellText {
-                                        property int percent: PacmanInfo.installState?.overallProgress ?? 0
+                                        property int percent: PacmanInfo.pacmanMode == "install" ? (PacmanInfo.installState?.overallProgress ?? 0) : (PacmanInfo.removeState?.overallProgress ?? 0)
                                         Behavior on percent {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
                                         text: percent.toString().padStart(3, " ") + "%"
                                     }
@@ -1986,12 +2361,11 @@ CellPopup {
 
                             }
 
-
                             CellText {
 
                                 visible: root.pacmanState == "success"
 
-                                text: "Installation completed successfully!"
+                                text: PacmanInfo.pacmanMode == "install" ? "Installation completed successfully!" : "Removal completed successfully!"
                                 color: Colors.success
                                 font: Cell.fontB
 
@@ -2004,7 +2378,7 @@ CellPopup {
 
                                 visible: root.pacmanState == "failed"
 
-                                text: "Installation has failed! (Exit code: " + PacmanInfo.installExitCode + ")"
+                                text: PacmanInfo.pacmanMode == "install" ? "Installation has failed! (Exit code: " + PacmanInfo.logExitCode + ")" : "Removal has failed! (Exit code: " + PacmanInfo.logExitCode + ")"
                                 color: Colors.danger
                                 font: Cell.fontB
 
@@ -2131,7 +2505,7 @@ CellPopup {
                                 || root.pacmanState == "prepare"
                                 || root.pacmanState == "fetching"
                                 || root.pacmanState == "checking_updates"
-                            ) && !PacmanInfo.isInstalled(root.selected_pkg) && root.multi_selected_pkg.length > 0
+                            ) && root.multi_selected_pkg.length > 0
 
                             text: "Clear queue"
 
@@ -2155,7 +2529,7 @@ CellPopup {
                                 || root.pacmanState == "prepare"
                                 || root.pacmanState == "fetching"
                                 || root.pacmanState == "checking_updates"
-                            ) && !PacmanInfo.isInstalled(root.selected_pkg)
+                            ) && !PacmanInfo.isInstalled(root.selected_pkg) && root.selected_pkg != ""
 
                             property bool in_queue: root.multi_selected_pkg.some(item => item == root.selected_pkg)
 
@@ -2207,7 +2581,32 @@ CellPopup {
                             }
 
                         }
+
+                        CellButton {
+
+                            visible: (
+                                root.pacmanState == "idle"
+                                || root.pacmanState == "prepare"
+                                || root.pacmanState == "fetching"
+                                || root.pacmanState == "checking_updates"
+                            ) && PacmanInfo.isInstalled(root.selected_pkg)
+
+                            text: "Uninstall"
+
+                            clickable: root.selected_pkg != "" && root.multi_selected_pkg.length == 0 && root.pacmanState != "prepare"
+
+                            color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+                            fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+
+                            onReleased: (button) => {
+                                if (button == "L") {
+                                    PacmanInfo.requestRemoval([root.selected_pkg])
+                                }
+                            }
+
+                        }
                     }
+
 
                     // Success
                     CellButton {
@@ -2223,7 +2622,7 @@ CellPopup {
 
                         onReleased: (button) => {
                             if (button == "L") {
-                                PacmanInfo.cancelInstallation()
+                                PacmanInfo.cancel()
                             }
                         }
 
@@ -2232,7 +2631,7 @@ CellPopup {
                     // Cancel mid installation
                     CellButton {
 
-                        visible: root.pacmanState == "installing"
+                        visible: root.pacmanState == "running"
 
                         x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
 
@@ -2243,7 +2642,7 @@ CellPopup {
 
                         onReleased: (button) => {
                             if (button == "L") {
-                                PacmanInfo.cancelInstallation()
+                                PacmanInfo.cancel()
                             }
                         }
 
@@ -2306,7 +2705,7 @@ CellPopup {
 
                             onReleased: (button) => {
                                 if (button == "L") {
-                                    PacmanInfo.cancelInstallation()
+                                    PacmanInfo.cancel()
                                 }
                             }
 

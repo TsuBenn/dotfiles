@@ -28,19 +28,21 @@ Singleton {
     }
 
     /*
-     1.   idle           (Show pacman list, search, info).
-     1.1. prepare        (Fetch the newest data possible).
-     2.   pre-flight     (Show package's requirements, conflictions, replaces before actually installing).
-     3.   authentication (Authenticate for sudo).
-     4.   running        (Pacman do its thing).
-     4.1. prompt         (Pacman ask for user input, mostly yes or no).
-     4.2. cancel         (Kill Pacman).
-     5.   success        (Show that it succeed).
-     5.1  failed         (Show that it failed).
-     6.   reset          (Go back to Idle)
+     1.    idle           (Show pacman list, search, info).
+     1.1.  prepare        (Fetch the newest data possible).
+     2.    pre-flight     (Show package's requirements, conflictions, replaces before actually installing).
+     3.    authentication (Authenticate for sudo).
+     4.    running     (Pacman do its thing).
+     4.1.  prompt         (Pacman ask for user input, mostly yes or no).
+     4.2.  cancel         (Kill Pacman).
+     5.    success        (Show that it succeed).
+     5.1   failed         (Show that it failed).
+     6.    reset          (Go back to Idle)
      */
     property string pacmanState: "idle"
+    property string pacmanMode: "" // "install" or "remove"
     property var installTarget: []
+    property var removeTarget: []
     property var installPlan: {
         "toInstall": [], // Dependencies (install)
         "willReplace": [], // Replaces (remove)
@@ -48,13 +50,18 @@ Singleton {
         "totalDownload": "",
         "totalInstalled": "",
     }
-    property string installLog: ""
-    property string rawInstallLog: ""
-    property int installLogCursor: 0
-    property int installLogLastNewline: 0
-    property int installExitCode: 0
+    property var removalPlan: {
+        "toRemove": [], // Will be removed
+        "cascadeDependents": [],
+        "brokenDependents": [], // Shows required by
+        "freedTotal": "",
+        "error": null,
+    }
+    property string log: ""
+    property string rawLog: ""
+    property int logExitCode: 0
 
-    onRawInstallLogChanged: {
+    onRawLogChanged: {
         if (!log_update_delay.running) {
             log_update_delay.restart()
         }
@@ -74,8 +81,14 @@ Singleton {
             "totalDownload": "",
             "totalInstalled": "",
         }
-        rawInstallLog = ""
-        installLogCursor = 0
+        removalPlan = {
+            "toRemove": [], 
+            "cascadeDependents": [],
+            "brokenDependents": [],
+            "freedTotal": "",
+            "error": null,
+        }
+        rawLog = ""
         installState = {
             "currentPhase": "START", // START, DOWNLOAD, CHECKS, INSTALL, HOOKS, DONE
             "progressData": {},
@@ -83,13 +96,27 @@ Singleton {
         }
     }
 
-    function cancelInstallation() {
+    function cancel() {
         if (installer.running) {
             installer.write("\x03")
             pacmanState = "cancel"
             return
         }
         reset()
+    }
+
+    function requestRemoval(pkgs: var) {
+        if (pacmanState != "idle") return
+        for (const pkg of pkgs) {
+            if (!isInstalled(pkg)) {
+                console.log("PacmanInfo (requestRemoval): " + pkg + " has not been installed. Rejecting request.")
+                return
+            }
+        }
+        pacmanMode = "remove"
+        removeTarget = pkgs
+        pacmanState = "prepare"
+        preparePreFlight()
     }
 
     function requestInstallation(pkgs: var) {
@@ -100,8 +127,8 @@ Singleton {
                 return
             }
         }
+        pacmanMode = "install"
         installTarget = pkgs
-        //fetch()
         pacmanState = "prepare"
         preparePreFlight()
     }
@@ -109,8 +136,19 @@ Singleton {
     function prepareInstallation() {
         for (const pkg of installTarget) {
             if (isInstalled(pkg)) {
-                console.log("PacmanInfo (prepareInstallation): " + installTarget + " has already been installed. Rejecting request.")
-                cancelInstallation()
+                console.log("PacmanInfo (prepareInstallation): " + pkg + " has already been installed. Rejecting request.")
+                cancel()
+                return
+            }
+        }
+        pacmanState = "pre-flight"
+    }
+
+    function prepareRemoval() {
+        for (const pkg of installTarget) {
+            if (!isInstalled(pkg)) {
+                console.log("PacmanInfo (prepareInstallation): " + pkg + " has not been installed. Rejecting request.")
+                cancel()
                 return
             }
         }
@@ -120,6 +158,11 @@ Singleton {
     function confirmInstallation() {
         pacmanState = "authentication"
         installer.running = true
+    }
+
+    function confirmRemoval() {
+        pacmanState = "authentication"
+        remover.running = true
     }
 
     function sanitizeTerminalOutput(rawText) {
@@ -134,7 +177,13 @@ Singleton {
 
     // State tracking object
     property var installState: {
-        "currentPhase": "START", // START, DOWNLOAD, CHECKS, INSTALL, HOOKS, DONE
+        "currentPhase": "START", // START, DOWNLOAD, INSTALL, HOOKS, DONE
+        "progressData": {},
+        "overallProgress": 0     // 0 to 100
+    };
+
+    property var removeState: {
+        "currentPhase": "START", // START, UNHOOKS, UNINSTALLING, HOOKS, DONE
         "progressData": {},
         "overallProgress": 0     // 0 to 100
     };
@@ -143,9 +192,9 @@ Singleton {
         id: log_update_delay
         interval: SettingsInfo.frameTime
         onTriggered: {
-            root.installLog = sanitizeTerminalOutput(processANSI(rawInstallLog))
-            root.trackPacmanProgress(installLog)
-            if (installLog.split("\n").slice(-1).toString().toLowerCase().includes("[y/n]")) {
+            root.log = sanitizeTerminalOutput(processANSI(rawLog))
+            root.trackPacmanProgress(log)
+            if (log.split("\n").slice(-1).toString().toLowerCase().includes("[y/n]")) {
                 installer.write("y\n")
             }
         }
@@ -154,9 +203,9 @@ Singleton {
         id: log_update_finalize
         interval: 200
         onTriggered: {
-            root.installLog = sanitizeTerminalOutput(processANSI(rawInstallLog))
-            root.trackPacmanProgress(installLog)
-            if (installLog.split("\n").slice(-1).toString().toLowerCase().includes("[y/n]")) {
+            root.log = sanitizeTerminalOutput(processANSI(rawLog))
+            root.trackPacmanProgress(log)
+            if (log.split("\n").slice(-1).toString().toLowerCase().includes("[y/n]")) {
                 installer.write("y\n")
             }
         }
@@ -355,7 +404,7 @@ Singleton {
     }
 
     function appendLog(text: string) {
-        rawInstallLog += text
+        rawLog += text
     }
 
     Process {
@@ -369,9 +418,9 @@ Singleton {
                 AuthInfo.verify("Installing <b>" + root.installTarget + "</b>", "Authenticate for installation.", function(s, p) {
                     if (s) {
                         installer.write(p+"\n")
-                        root.pacmanState = "installing"
+                        root.pacmanState = "running"
                     } else {
-                        root.cancelInstallation()
+                        root.cancel()
                     }
                 })
             }
@@ -396,7 +445,7 @@ Singleton {
 
         onExited: (exitCode, exitStatus) => {
             console.log("PacmanInfo (installer): exitCode: " + exitCode + ", exitStatus: " + exitStatus)
-            root.installExitCode = exitCode
+            root.logExitCode = exitCode
             fetch()
             if (root.pacmanState == "cancel") {
                 root.reset()
@@ -606,7 +655,7 @@ Singleton {
             } else {
                 console.log("Authorize updates checker failed!")
                 root.updates_checker_authorized = false
-                cancelInstallation()
+                cancel()
             }
         })
     }
@@ -623,7 +672,7 @@ Singleton {
 
         id: preflighter
 
-        command: ["python", root.preflight_path, ...root.installTarget]
+        command: root.pacmanMode == "install" ? ["python", root.preflight_path, ...root.installTarget] : ["python", root.preflight_path, "--remove", ...root.removeTarget]
 
         function capitalize(str) {
             if (!str) return undefined
@@ -634,20 +683,24 @@ Singleton {
             onStreamFinished: {
                 if (text) {
                     const data = JSON.parse(text)
-                    if (data.error) {
-                        root.installPlan = {
-                            "error": preflighter.capitalize(data.error.match(/error:\s+(.*)/)[1] ?? "Something went wrong") + "\nConfirm the installation to see more details.",
-                            "toInstall": [],
-                            "willReplace": [],
-                            "conflictsWith": [],
-                            "totalDownload": "",
-                            "totalInstalled": "",
+                    if (root.pacmanMode == "install") {
+                        if (data.error) {
+                            root.installPlan = {
+                                "error": preflighter.capitalize(data.error.match(/error:\s+(.*)/)[1] ?? "Something went wrong") + "\nConfirm the installation to see more details.",
+                                "toInstall": [],
+                                "willReplace": [],
+                                "conflictsWith": [],
+                                "totalDownload": "",
+                                "totalInstalled": "",
+                            }
+                        } else {
+                            root.installPlan = data
                         }
+                        prepareInstallation()
                     } else {
-                        root.installPlan = data
+                        root.removalPlan = data
+                        prepareRemoval()
                     }
-                    // console.log(text)
-                    prepareInstallation()
                 }
             }
         }
