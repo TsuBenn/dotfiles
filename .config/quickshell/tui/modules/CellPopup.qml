@@ -45,6 +45,10 @@ Item {
 
     function onSigClose() {}
 
+    onEscapeToCloseChanged: {
+        refreshShortcuts()
+    }
+
     onIsTopChanged: {
         if (isTop) {
             root.promoted()

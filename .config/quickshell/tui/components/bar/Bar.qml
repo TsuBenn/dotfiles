@@ -41,10 +41,14 @@ Scope {
             Component.onCompleted: {
                 PopupManager.opened.connect((name) => {
                     HintManager.hide()
+                    DropdownManager.hide()
+                    ContextMenuManager.hide()
                     root.shield = true
                 })
                 PopupManager.closed.connect((name) => {
                     HintManager.hide()
+                    DropdownManager.hide()
+                    ContextMenuManager.hide()
                     if (name == "" || PopupManager.active_popups.length == 0) root.shield = false
                 })
                 DropdownManager.opened.connect((name) => {

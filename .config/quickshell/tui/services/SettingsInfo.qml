@@ -145,6 +145,14 @@ Singleton {
 
         path: SystemInfo.configdir + "/scripts/config.json"
 
+        printErrors: false
+
+        onLoadFailed: (error) => {
+            if (error == FileViewError.FileNotFound) {
+                root.saveConfig()
+            }
+        }
+
         onLoaded: {
 
             const config = JSON.parse(text())
@@ -180,7 +188,7 @@ Singleton {
 
         //console.log(JSON.stringify(config, null, 2))
 
-        load_config.setText(JSON.stringify(config))
+        load_config.setText(JSON.stringify(config,null,2))
 
     }
 
