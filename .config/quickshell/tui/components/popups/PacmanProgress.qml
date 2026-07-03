@@ -9,10 +9,16 @@ Item {
 
     property var monitor
 
-    visible: (
+    visible: threshold > 0
+
+    property bool show: (
         PacmanInfo.pacmanState == "running"
         || PacmanInfo.pacmanState == "success"
     ) && !PopupManager.isOpen("pacman") && !root.hidden
+
+    property real threshold: show ? 1 : 0
+
+    Behavior on threshold {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
     x: root.expanded ? 0 : Cell.centerWCell(implicitWidth, monitor.width)
 
@@ -64,7 +70,7 @@ Item {
 
         RowLayout {
 
-            visible: !root.expanded && PacmanInfo.pacmanState != "success"
+            visible: !root.expanded && PacmanInfo.pacmanState != "success" && PacmanInfo.pacmanState != "idle" && PacmanInfo.pacmanState != "cancel"
 
             spacing: Cell.w(1)
 
@@ -170,7 +176,7 @@ Item {
 
         CellBox {
 
-            visible: root.expanded && PacmanInfo.pacmanState != "success"
+            visible: root.expanded && PacmanInfo.pacmanState != "success" && PacmanInfo.pacmanState != "idle" && PacmanInfo.pacmanState != "cancel"
 
             id: box
 
@@ -435,7 +441,11 @@ Item {
 
         RowLayout {
 
-            visible: PacmanInfo.pacmanState == "success"
+            visible: (
+                PacmanInfo.pacmanState == "success"
+                || PacmanInfo.pacmanState == "idle"
+                || PacmanInfo.pacmanState == "cancel"
+            )
 
             spacing: Cell.w(1)
 
@@ -446,7 +456,7 @@ Item {
             }
 
             CellText {
-                text: "Pacman successfully installed packages!"
+                text: PacmanInfo.pacmanMode == "install" ? "Pacman successfully installed " + PacmanInfo.installTarget.join(", ") : "Pacman successfully removed " + PacmanInfo.removeTarget.join(", ")
                 color: Colors.success
                 preferedW: root.w - 21
                 font: Cell.fontB

@@ -41,6 +41,7 @@ Cells {
         if (snapToMax) {
             maximizeScroll()
         }
+        snapBack()
     }
 
     function snapBack() {
@@ -95,10 +96,6 @@ Cells {
         id: content
 
         spacing: 0
-
-        onContentHeightChanged: {
-            root.snapBack()
-        }
 
         model: 1
 

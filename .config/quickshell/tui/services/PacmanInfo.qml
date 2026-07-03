@@ -201,35 +201,56 @@ Singleton {
         "overallProgress": 0     // 0 to 100
     };
 
+    // ─── Shared log-update body ───────────────────────────────────
+    //
+    // Both the debounce timer (log_update_delay) and the finalize timer
+    // (log_update_finalize) do exactly the same thing: rebuild the
+    // sanitized log, feed it to the progress tracker, and auto-answer
+    // "[y/n]" prompts.  Extracted here so the two timers stay in sync.
+
+    function applyLogUpdate() {
+        root.log = sanitizeTerminalOutput(processANSI(root.rawLog))
+        root.trackPacmanProgress()
+        const lastLine = root.log.split("\n").slice(-1).toString().toLowerCase()
+        if (lastLine.includes("[y/n]")) {
+            if (installer.running) {
+                installer.write("y\n")
+            } else if (remover.running) {
+                remover.write("y\n")
+            }
+        }
+    }
+
     Timer {
         id: log_update_delay
         interval: SettingsInfo.frameTime
-        onTriggered: {
-            root.log = sanitizeTerminalOutput(processANSI(rawLog))
-            root.trackPacmanProgress()
-            if (log.split("\n").slice(-1).toString().toLowerCase().includes("[y/n]")) {
-                if (installer.running) {
-                    installer.write("y\n")
-                } else if (remover.running) {
-                    remover.write("y\n")
-                }
-            }
-        }
+        onTriggered: root.applyLogUpdate()
     }
     Timer {
         id: log_update_finalize
         interval: 200
-        onTriggered: {
-            root.log = sanitizeTerminalOutput(processANSI(rawLog))
-            root.trackPacmanProgress()
-            if (log.split("\n").slice(-1).toString().toLowerCase().includes("[y/n]")) {
-                if (installer.running) {
-                    installer.write("y\n")
-                } else if (remover.running) {
-                    remover.write("y\n")
+        onTriggered: root.applyLogUpdate()
+    }
+
+    // ─── Shared progress-line parser ──────────────────────────────
+    //
+    // Both install and remove tracking walk the log bottom-up looking
+    // for a "(N/M)...%" or "(N/M)" line.  Extracted here so the
+    // walking logic and null-guard live in one place.
+
+    function parseProgressLine(line, regex) {
+        let lines = line.split("\n")
+        for (let i = lines.length - 1; i >= 0; i--) {
+            let data = lines[i].match(regex)
+            if (data) {
+                return {
+                    current: parseInt(data[1]),
+                    total: parseInt(data[2]),
+                    percentage: data[3] !== undefined ? parseInt(data[3]) : undefined
                 }
             }
         }
+        return null
     }
 
     function trackPacmanProgress() {
@@ -293,42 +314,32 @@ Singleton {
         }
 
         if (installState.currentPhase == "INSTALL") {
-            let lines = line.split("\n")
-            let data
-            for (let i = lines.length - 1; i >= 0; i--) {
-                data = lines[i].match(/\((\d+)\/(\d+)\).*\[.*\]\s+(\d+)%/)
-                if (data) {
-                    break
+            let parsed = parseProgressLine(line, /\((\d+)\/(\d+)\).*\[.*\]\s+(\d+)%/)
+            if (parsed) {
+                let currentPkg = parsed.current
+                let totalPkg = parsed.total
+                let percentage = parsed.percentage
+                installState.progressData = {
+                    "currentPkg": currentPkg,
+                    "totalPkg": totalPkg,
+                    "percentage": Math.round(percentage*(1/(totalPkg)) + ((currentPkg-1)/totalPkg)*100),
                 }
+                installState.overallProgress = 70 + Math.round((percentage*(1/(totalPkg)) + ((currentPkg-1)/totalPkg)*100)*0.2)
             }
-            let currentPkg = parseInt(data[1])
-            let totalPkg = parseInt(data[2])
-            let percentage = parseInt(data[3])
-            installState.progressData = {
-                "currentPkg": currentPkg,
-                "totalPkg": totalPkg,
-                "percentage": Math.round(percentage*(1/(totalPkg)) + ((currentPkg-1)/totalPkg)*100),
-            }
-            installState.overallProgress = 70 + Math.round((percentage*(1/(totalPkg)) + ((currentPkg-1)/totalPkg)*100)*0.2)
         }
 
         if (installState.currentPhase == "HOOKS") {
-            let lines = line.split("\n")
-            let data
-            for (let i = lines.length - 1; i >= 0; i--) {
-                data = lines[i].match(/\((\d+)\/(\d+)\).*/)
-                if (data) {
-                    break
+            let parsed = parseProgressLine(line, /\((\d+)\/(\d+)\).*/)
+            if (parsed) {
+                let currentStep = parsed.current
+                let totalStep = parsed.total
+                installState.progressData = {
+                    "currentStep": currentStep,
+                    "totalStep": totalStep,
+                    "percentage": Math.round((currentStep/totalStep)*100)
                 }
+                installState.overallProgress = 90 + Math.round((currentStep/totalStep)*10)
             }
-            let currentStep = parseInt(data[1])
-            let totalStep = parseInt(data[2])
-            installState.progressData = {
-                "currentStep": currentStep,
-                "totalStep": totalStep,
-                "percentage": Math.round((currentStep/totalStep)*100)
-            }
-            installState.overallProgress = 90 + Math.round((currentStep/totalStep)*10)
         }
 
         //console.log(JSON.stringify(installState,null,2))
@@ -348,46 +359,42 @@ Singleton {
         }
 
         if (removeState.currentPhase == "UNHOOKS") {
-            let lines = line.split("\n")
-            let data
-            for (let i = lines.length - 1; i >= 0; i--) {
-                data = lines[i].match(/\((\d+)\/(\d+)\).*/)
-                if (data) {
-                    break
+            let parsed = parseProgressLine(line, /\((\d+)\/(\d+)\).*/)
+            if (parsed) {
+                removeState.progressData = {
+                    "currentStep": parsed.current,
+                    "totalStep": parsed.total,
+                    "percentage": Math.round((parsed.current/parsed.total)*100)
                 }
+                removeState.overallProgress = Math.round((parsed.current/parsed.total)*20)
             }
-            let currentStep = parseInt(data[1])
-            let totalStep = parseInt(data[2])
-            removeState.overallProgress = Math.round((currentStep/totalStep)*20)
         }
 
         if (removeState.currentPhase == "UNINSTALLING") {
-            let lines = line.split("\n")
-            let data
-            for (let i = lines.length - 1; i >= 0; i--) {
-                data = lines[i].match(/\((\d+)\/(\d+)\).*\[.*\]\s+(\d+)%/)
-                if (data) {
-                    break
+            let parsed = parseProgressLine(line, /\((\d+)\/(\d+)\).*\[.*\]\s+(\d+)%/)
+            if (parsed) {
+                let currentPkg = parsed.current
+                let totalPkg = parsed.total
+                let percentage = parsed.percentage
+                removeState.progressData = {
+                    "currentPkg": currentPkg,
+                    "totalPkg": totalPkg,
+                    "percentage": Math.round(percentage*(1/(totalPkg)) + ((currentPkg-1)/totalPkg)*100),
                 }
+                removeState.overallProgress = 20 + Math.round((percentage*(1/(totalPkg)) + ((currentPkg-1)/totalPkg)*100)*0.6)
             }
-            let currentPkg = parseInt(data[1])
-            let totalPkg = parseInt(data[2])
-            let percentage = parseInt(data[3])
-            removeState.overallProgress = 20 + Math.round((percentage*(1/(totalPkg)) + ((currentPkg-1)/totalPkg)*100)*0.6)
         }
 
         if (removeState.currentPhase == "HOOKS") {
-            let lines = line.split("\n")
-            let data
-            for (let i = lines.length - 1; i >= 0; i--) {
-                data = lines[i].match(/\((\d+)\/(\d+)\).*/)
-                if (data) {
-                    break
+            let parsed = parseProgressLine(line, /\((\d+)\/(\d+)\).*/)
+            if (parsed) {
+                removeState.progressData = {
+                    "currentStep": parsed.current,
+                    "totalStep": parsed.total,
+                    "percentage": Math.round((parsed.current/parsed.total)*100)
                 }
+                removeState.overallProgress = 90 + Math.round((parsed.current/parsed.total)*20)
             }
-            let currentStep = parseInt(data[1])
-            let totalStep = parseInt(data[2])
-            removeState.overallProgress = 90 + Math.round((currentStep/totalStep)*20)
         }
 
         //console.log(JSON.stringify(installState,null,2))
@@ -566,7 +573,7 @@ Singleton {
             }
         }
 
-        command: ["script", "-qc", `sudo -S -k -p '' env COLUMNS=94 LINES=0 pacman -Rs ${pkg}`, "/dev/null"]
+        command: ["script", "-qc", `sudo -S -k -p '' env COLUMNS=94 LINES=0 pacman -Rs${root.forceRemove ? "c" : ""} ${pkg}`, "/dev/null"]
 
         stdout: SplitParser {
             splitMarker: ""
@@ -904,7 +911,6 @@ Singleton {
             onStreamFinished: {
                 if (text) {
                     console.log(text)
-                    root.fetched()
                     lister.running = true
                 }
             }
@@ -1003,3 +1009,4 @@ Singleton {
     }
 
 }
+

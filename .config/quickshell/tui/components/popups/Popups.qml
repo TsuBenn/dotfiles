@@ -149,17 +149,10 @@ Item {
 
         monitor: root.monitor
 
-        Component.onCompleted: {
-            HyprInfo.cursorPos.connect((x, y) => {
-                quick_menu.cellX = Cell.wCount(x) - w/2
-                quick_menu.cellY = Cell.hCount(y) - h/2 - 1
-            })
-        }
-
         name: "quick_menu"
 
-        cellX: 0
-        cellY: 0
+        cellX: Cell.wCount(root.monitor.width/2) - Math.round(w/2) - 1
+        cellY: Cell.hCount(root.monitor.height/2,"floor") - Math.round(h/2)
 
     }
 
