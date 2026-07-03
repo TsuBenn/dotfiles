@@ -14,6 +14,16 @@ CellPopup {
     w: 48
     h: 20
 
+    shortcuts: TextFieldManager.active ? [] : QuickMenuInfo.shortcuts
+
+    property bool custom: false
+
+    escapeToClose: !TextFieldManager.active 
+
+    onShortcutsChanged: {
+        refreshShortcuts()
+    }
+
     Cells {
 
         w: root.w
@@ -27,6 +37,8 @@ CellPopup {
             h: root.h
 
             ColumnLayout {
+
+                visible: !root.custom
 
                 spacing: 0
 
@@ -86,54 +98,92 @@ CellPopup {
 
                                 spacing: 0
 
-                                RowLayout {
+                                Cells {
 
-                                    Layout.leftMargin: Cell.w(1)
+                                    w: list.contentW
+                                    h: 1
 
-                                    spacing: Cell.w(1)
+                                    color: "transparent"
 
-                                    CellDropdown {
-                                        text: ""
-                                        w: list.w - 12 - 4
-                                        h: 10
-                                        selected: QuickMenuInfo.action_index[keybind.action]
-                                        items: {
-                                            let result = []
-                                            for (const actions of Object.keys(QuickMenuInfo.actions)) {
-                                                result.push({
-                                                    "label": QuickMenuInfo.actions[actions].label,
-                                                    "action": () => QuickMenuInfo.setAction(keybind.index, actions),
-                                                })
+                                    RowLayout {
+
+                                        x: Cell.w(1)
+
+                                        spacing: Cell.w(1)
+
+                                        CellDropdown {
+                                            text: ""
+                                            w: list.w - 12 - 4
+                                            h: 5
+                                            selected: QuickMenuInfo.action_index[keybind.action]
+                                            items: {
+                                                let result = []
+                                                for (const actions of Object.keys(QuickMenuInfo.actions)) {
+                                                    result.push({
+                                                        "label": QuickMenuInfo.actions[actions].label,
+                                                        "action": () => QuickMenuInfo.setAction(keybind.index, actions),
+                                                    })
+                                                }
+                                                return result
                                             }
-                                            return result
                                         }
+
+                                        Cells {
+
+                                            w: 12
+                                            h: 1
+
+                                            color: Colors.bgOverlay
+
+                                            CellTextField {
+
+                                                x: Cell.w(1)
+
+                                                w: parent.w - 2
+                                                h: parent.h
+
+                                                focusOnVisible: false
+                                                unfocusOnEntered: true
+                                                escapeToUnFocus: true
+                                                autoApply: true
+
+                                                bindText: keybind.binds.join(", ")
+
+                                                placeholder: "Binds"
+
+                                                onEntered: (input) => {
+                                                    let new_binds = input.split(",")
+                                                    for (const i in new_binds) {
+                                                        new_binds[i] = new_binds[i].trim()
+                                                    }
+                                                    QuickMenuInfo.setBinds(keybind.index, new_binds)
+                                                }
+
+                                                color: QuickMenuInfo.faultyIndex.includes(4) ? Colors.danger : Colors.success 
+                                                font: Cell.fontB
+
+                                            }
+
+                                        }
+
                                     }
 
-                                    Cells {
+                                    MouseControl {
 
-                                        w: 12
-                                        h: 1
+                                        anchors.fill: parent
+                                        anchors.topMargin: -Cell.h(0.4)
+                                        anchors.bottomMargin: -Cell.h(0.4)
 
-                                        color: Colors.bgOverlay
+                                        acceptedButtons: Qt.RightButton
 
-                                        CellTextField {
-
-                                            x: Cell.w(1)
-
-                                            w: parent.w - 2
-                                            h: parent.h
-
-                                            focusOnVisible: false
-
-                                            bindText: keybind.binds.join(", ")
-
-                                            placeholder: "Binds"
-
-                                            color: Colors.success
-                                            font: Cell.fontB
-
+                                        onPressed: (button) => {
+                                            if (button == "R") {
+                                                const global = mapToGlobal(mouseX, mouseY)
+                                                ContextMenuManager.show([
+                                                    {label: "Remove", action: () => QuickMenuInfo.removeBinds(keybind.index)}
+                                                ],global.x, global.y,undefined,"")
+                                            }
                                         }
-
                                     }
 
                                 }
@@ -162,9 +212,60 @@ CellPopup {
 
                 RowLayout {
 
-                    spacing: 0
+                    Layout.alignment: Qt.AlignRight
+                    Layout.rightMargin: Cell.w(1)
+
+                    spacing: Cell.w(1)
+                    
+                    CellButton {
+                        text: "Manage custom actions"
+                        color: [Colors.bgOverlay, Colors.fgBase]
+                        fg: [Colors.fgBase, Colors.bgSurface]
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                root.custom = true
+                            }
+                        }
+
+                    }
+
+                    CellButton {
+
+                        text: "Add"
+                        color: [Colors.accentStrong, Colors.bgOverlay]
+                        fg: [Colors.onAccent, Colors.fgBase]
+
+                        onReleased: (button) => {
+                            if (button == "L") {
+                                QuickMenuInfo.addBinds()
+                            }
+                        }
+
+                    }
 
                 }
+
+            }
+
+            ColumnLayout {
+
+                visible: root.custom
+
+                spacing: 0
+
+                CellText {
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                    text: "Custom actions"
+                    color: Colors.secondary
+                    font: Cell.fontB
+                }
+
+                CellSeparator {
+                    w: box.contentW
+                    color: Colors.accentStrong
+                }
+
             }
 
         }

@@ -104,10 +104,14 @@ Singleton {
     }
 
     function fork(name: string, new_name = "") {
-        if (name == "auto") return
+        // if (name == "auto") return
         const new_id = name + "_" + getNextCopyNumber(Object.keys(flat_colors), name)
         if (new_name == "" || name == new_name) {
-            flat_colors[new_id] = flat_colors[name]
+            if (name == "auto") {
+                flat_colors[new_id] = colors.auto[SettingsInfo.lightMode ? "light" : "dark"]
+            } else {
+                flat_colors[new_id] = flat_colors[name]
+            }
             root.current = new_id
         } else {
             flat_colors[new_name] = flat_colors[name]
@@ -173,7 +177,7 @@ Singleton {
     property bool preferredLightMode: false
 
     property var dummy: {
-        "name"           : "",
+        "name"           : "Basic",
         "description"    : "",
         "bgBase"         : "",
         "bgSurface"      : "",
@@ -248,6 +252,14 @@ Singleton {
 
         path: SystemInfo.configdir + "/scripts/colors.json"
 
+        printErrors: false
+
+        onLoadFailed: (error) => {
+            if (error == FileViewError.FileNotFound) {
+                setText("{}")
+            }
+        }
+
         onLoaded: {
             root.flat_colors = JSON.parse(text())
             load_config.preload = true
@@ -266,6 +278,14 @@ Singleton {
         preload: false
 
         path: SystemInfo.configdir + "/scripts/colors_config.txt"
+
+        printErrors: false
+
+        onLoadFailed: (error) => {
+            if (error == FileViewError.FileNotFound) {
+                setText("auto")
+            }
+        }
 
         onLoaded: {
             if (Object.keys(root.flat_colors).includes(text()) || text().trim() == "auto") {

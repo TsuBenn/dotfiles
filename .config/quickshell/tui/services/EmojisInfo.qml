@@ -50,7 +50,7 @@ Singleton {
     }
 
     function saveRecent() {
-        SystemInfo.runDetached(["bash", "-c", "echo '" + JSON.stringify(root.recent) + "' > " + SystemInfo.configdir + "/scripts/emojis_recent.json"])
+        recent_loader.setText(JSON.stringify(root.recent,null,2))
     }
 
     FileView {
@@ -58,6 +58,14 @@ Singleton {
         id: recent_loader
 
         path: SystemInfo.configdir + "/scripts/emojis_recent.json"
+
+        printErrors: false
+
+        onLoadFailed: (error) => {
+            if (error == FileViewError.FileNotFound) {
+                setText("[]")
+            }
+        }
 
         onLoaded: {
             if (text()) {

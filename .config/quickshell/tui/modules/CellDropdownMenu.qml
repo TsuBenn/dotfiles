@@ -70,7 +70,7 @@ CellPopup {
                         w: list.contentW
                         h: 1
 
-                        color: active ? root.active : root.color
+                        color: active ? root.active : (!mouse.hovered ? root.color : Qt.lighter(root.color,1.5))
 
                         CellText {
                             id: button_text 
@@ -81,6 +81,7 @@ CellPopup {
                         }
 
                         MouseControl {
+                            id: mouse
                             anchors.fill: parent
 
                             onReleased: (button) => {

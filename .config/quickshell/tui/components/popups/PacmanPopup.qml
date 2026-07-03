@@ -461,7 +461,7 @@ CellPopup {
                     spacing: 0
 
                     CellText {
-                        text: "PACMAN " + root.pacmanState
+                        text: "PACMAN"
                         color: Colors.secondary
                         font: Cell.fontBB
                     }

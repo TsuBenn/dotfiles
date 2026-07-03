@@ -27,7 +27,7 @@ CellPopup {
         }
     }
 
-    escapeToClose: textfield.focus
+    escapeToClose: false
 
     function getNextCopyNumber(array, baseString) {
         let maxCounter = 0;
@@ -51,6 +51,16 @@ CellPopup {
         {
             binds: ["Up", "Shift+Tab"],
             action: () => {
+                if (color.edit) {
+                    if (id_textfield.focus) {
+                        des_textfield.grabFocus()
+                    } else if (name_textfield.focus) {
+                        id_textfield.grabFocus()
+                    } else if (des_textfield.focus) {
+                        name_textfield.grabFocus()
+                    }
+                    return
+                }
                 color.selected = Math.max(color.selected - 1,0)
                 if (color.selected - list.offset/2 < 0) {
                     list.offset = Math.floor(color.selected/13)*26
@@ -60,6 +70,16 @@ CellPopup {
         {
             binds: ["Down", "Tab"],
             action: () => {
+                if (color.edit) {
+                    if (id_textfield.focus) {
+                        name_textfield.grabFocus()
+                    } else if (name_textfield.focus) {
+                        des_textfield.grabFocus()
+                    } else if (des_textfield.focus) {
+                        id_textfield.grabFocus()
+                    }
+                    return
+                }
                 color.selected = Math.min(color.selected + 1,root.result.length-1)
                 if (color.selected - list.offset/2 >= 13) {
                     list.offset = Math.floor(color.selected/13)*26
@@ -76,12 +96,17 @@ CellPopup {
         },
         {
             binds: "Escape",
-            active: color.edit && !TextFieldManager.active,
             action: () => {
                 if (color.color_picker) {
                     color.color_picker = false
+                } else if (color.edit) {
+                    if (TextFieldManager.active) {
+                        TextFieldManager.unFocusAll()
+                    } else {
+                        color.toggleEdit()
+                    }
                 } else {
-                    color.toggleEdit()
+                    root.close()
                 }
             }
         },
@@ -1027,6 +1052,7 @@ CellPopup {
 
                                     focusOnVisible: false
                                     unfocusOnEntered: true
+                                    escapeToUnFocus: true
 
                                     color: color.color.fgBase
                                     invert: color.color.bgSurface
@@ -1083,6 +1109,7 @@ CellPopup {
 
                                 focusOnVisible: false
                                 unfocusOnEntered: true
+                                escapeToUnFocus: true
 
                                 color: color.color.fgBase
                                 invert: color.color.bgSurface
@@ -1137,6 +1164,7 @@ CellPopup {
 
                                 focusOnVisible: false
                                 unfocusOnEntered: true
+                                escapeToUnFocus: true
 
                                 color: color.color.fgBase
                                 invert: color.color.bgSurface
@@ -1820,7 +1848,7 @@ CellPopup {
 
                                     text: "Fork"
 
-                                    clickable: root.result[color.selected] != "auto"
+                                    // clickable: root.result[color.selected] != "auto"
 
                                     color: clickable ? [color.color.accentStrong, color.color.bgOverlay] : color.color.bgOverlay
                                     fg:    clickable ? [color.color.onAccent, color.color.fgBase] : color.color.fgSubtle

@@ -110,23 +110,7 @@ Singleton {
         property real posY: 0
     }
 
-    property var config: {
-        "macbook.jpg": {
-            "reposition": {
-                "scalar": 1,
-                "verticalOffset": 1,
-                "horizontalOffset": 0,
-            },
-            "transition": {
-                "type": "grow",
-                "step": 1,
-                "duration": 1,
-                "fps": 60,
-                "posX": 0,
-                "posY": 0,
-            }
-        }
-    }
+    property var config: ({})
 
     function getTransition(image: string): var {
         return {
@@ -386,7 +370,7 @@ Singleton {
             selected: root.selected
         }
 
-        SystemInfo.runDetached(["bash", "-c", "echo '" + JSON.stringify(config,null,2) + "' > " + SystemInfo.configdir + "/scripts/wallpapers_config.json"])
+        loader.setText(JSON.stringify(config,null,2))
 
         //console.log("saved")
 
