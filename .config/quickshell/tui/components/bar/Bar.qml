@@ -423,8 +423,7 @@ Scope {
                     monitor: root.monitor
 
                     anchors.bottom: parent.bottom
-
-                    Behavior on y {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+                    anchors.bottomMargin: -Cell.h(1)*(1-threshold)
 
                 }
 

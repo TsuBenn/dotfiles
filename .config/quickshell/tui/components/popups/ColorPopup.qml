@@ -49,7 +49,7 @@ CellPopup {
 
     shortcuts: [
         {
-            binds: "Up",
+            binds: ["Up", "Shift+Tab"],
             action: () => {
                 color.selected = Math.max(color.selected - 1,0)
                 if (color.selected - list.offset/2 < 0) {
@@ -58,19 +58,12 @@ CellPopup {
             }
         },
         {
-            binds: "Down",
+            binds: ["Down", "Tab"],
             action: () => {
                 color.selected = Math.min(color.selected + 1,root.result.length-1)
                 if (color.selected - list.offset/2 >= 13) {
                     list.offset = Math.floor(color.selected/13)*26
                 }
-            }
-        },
-        {
-            binds: "Tab",
-            active: !TextFieldManager.active || textfield.focus,
-            action: () => {
-                preview_tab.selected = (preview_tab.selected + 1 + 2)%2
             }
         },
         {

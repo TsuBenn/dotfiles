@@ -179,6 +179,7 @@ Item {
                 root.unFocus()
             }
         })
+        root.visibleChanged()
     }
 
     Timer {

@@ -25,9 +25,14 @@ CellPopup {
         function onSearch_modeChanged() {
             search_field.textChanged()
         }
-        function onPackagesChanged() {
+        function onFetched() {
+            info.index = PacmanInfo.getPackageIndex(root.selected_pkg)
             search_field.textChanged()
         }
+    }
+
+    onSelected_pkgChanged: {
+        info.index = PacmanInfo.getPackageIndex(root.selected_pkg)
     }
 
     onPacmanStateChanged: {
@@ -59,7 +64,7 @@ CellPopup {
             binds: ["Up", "Shift+Tab"],
             action: () => {
                 if (PacmanInfo.fetching) return
-                let index = list.datas.findIndex(item => item.name == root.selected_pkg)
+                let index = PacmanInfo.search_results.findIndex(item => item.name == root.selected_pkg)
                 if (index == -1 || index < list.offset || index > list.offset + list.h) {
                     root.selected_pkg = ""
                 }
@@ -77,7 +82,7 @@ CellPopup {
             binds: ["Down", "Tab"],
             action: () => {
                 if (PacmanInfo.fetching) return
-                let index = list.datas.findIndex(item => item.name == root.selected_pkg)
+                let index = PacmanInfo.search_results.findIndex(item => item.name == root.selected_pkg)
                 if (index == -1 || index < list.offset || index > list.offset + list.h) {
                     root.selected_pkg = ""
                 }
@@ -151,6 +156,284 @@ CellPopup {
             }
         },
     ]
+
+    // ════════════════════════════════════════════════════════════════
+    // INLINE COMPONENTS (shared across install & remove pre-flight)
+    // ════════════════════════════════════════════════════════════════
+
+    // ── CollapseFooter ──────────────────────────────────────────────
+    //
+    // Owns the maxShown state for any list that uses the
+    // "+N more / Show all / Show less" progressive-disclosure pattern.
+    // The parent binds its Repeater's model to footer.maxShown and
+    // sets maxItems / collapseThreshold / expandStep.  When the
+    // underlying list changes (maxItems changes), maxShown resets
+    // to collapseThreshold automatically.
+    //
+    // Used by: Deps (info panel), preflight_dep (install),
+    //          remove_preflight_dep (remove), req (broken dependents).
+
+    component CollapseFooter: RowLayout {
+
+        id: footer
+
+        property int maxItems
+        property int collapseThreshold
+        property int expandStep: 5
+
+        property int maxShown: collapseThreshold
+
+        onMaxItemsChanged: maxShown = collapseThreshold
+
+        spacing: Cell.w(1)
+
+        visible: maxItems > collapseThreshold
+
+        CellButton {
+
+            visible: footer.maxShown < footer.maxItems
+
+            padding: 0
+            text: "[+ " + (footer.maxItems - footer.maxShown) + " more]"
+            color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
+            fg:    Colors.info
+
+            onReleased: (button) => {
+                if (button == "L") {
+                    footer.maxShown = Math.min(footer.maxShown + footer.expandStep, footer.maxItems)
+                }
+            }
+
+        }
+
+        CellButton {
+
+            visible: footer.maxShown < footer.maxItems
+            && footer.maxShown > footer.collapseThreshold
+
+            padding: 0
+            text: "[Show all (" + footer.maxItems + ")]"
+            color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
+            fg:    Colors.info
+
+            onReleased: (button) => {
+                if (button == "L") {
+                    footer.maxShown = footer.maxItems
+                }
+            }
+
+        }
+
+        CellButton {
+
+            visible: footer.maxShown >= footer.maxItems
+            && footer.maxItems > footer.collapseThreshold
+
+            padding: 0
+            text: "[Show less]"
+            color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
+            fg:    Colors.info
+
+            onReleased: (button) => {
+                if (button == "L") {
+                    footer.maxShown = footer.collapseThreshold
+                }
+            }
+
+        }
+
+    }
+
+    // ── TransactionRow ──────────────────────────────────────────────
+    //
+    // Unified row for both install and remove pre-flight lists.
+    // mode: "install"  →  prefix | name | version | downloadSize -> installedSize
+    // mode: "remove"   →  prefix | name | version | +freedSize
+    //
+    // Prefix color coding is shared:
+    //   !  → danger   (conflict)
+    //   =  → warning  (replacement)
+    //   *  → fgSubtle (explicit target)
+    //   +  → fgSubtle (install dep)
+    //   -  → fgSubtle (remove dep)
+
+    component TransactionRow: RowLayout {
+
+        id: row
+
+        property string mode: "install"
+        property string name
+        property color  name_color: Colors.fgBase
+        property string version
+        property string downloadSize
+        property string installedSize
+        property string freedSize
+        property string prefix: mode == "install" ? "+" : "-"
+
+        property int maxW: box.contentW
+
+        readonly property int _sizeCols: mode == "install" ? 32 : 18
+
+        spacing: Cell.w(1)
+
+        CellText {
+
+            text: row.prefix
+            color: {
+                if (text == "!") return Colors.danger
+                if (text == "=") return Colors.warning
+                return Colors.fgSubtle
+            }
+
+        }
+
+        CellText {
+
+            text: row.name
+            preferedW: row.maxW - row._sizeCols - row.version.length
+            color: row.name_color
+
+        }
+
+        CellText {
+
+            text: row.version
+            color: Colors.fgSubtle
+
+        }
+
+        // ── Install-only columns: download -> installed ──
+
+        CellText {
+
+            visible: row.mode == "install"
+
+            text: row.downloadSize
+            color: Colors.info
+            preferedW: 11
+            alignRight: true
+
+        }
+
+        CellText {
+
+            visible: row.mode == "install"
+
+            text: "->"
+            color: Colors.fgSubtle
+
+        }
+
+        CellText {
+
+            visible: row.mode == "install"
+
+            text: row.installedSize
+            color: Colors.success
+            preferedW: 11
+            alignRight: true
+
+        }
+
+        // ── Remove-only column: +freedSize ──
+
+        CellText {
+
+            visible: row.mode == "remove"
+
+            text: "+" + row.freedSize.toString().padStart(11, " ")
+            color: Colors.success
+            preferedW: 12
+            alignRight: true
+
+        }
+
+    }
+
+    // ── CountdownConfirm ────────────────────────────────────────────
+    //
+    // A two-button row (confirm + cancel) with an optional 3-second
+    // countdown gating the confirm button.  Used by both the install
+    // and remove pre-flight confirmation footers.
+    //
+    // requiresCountdown: when true (and the row becomes visible), a
+    //   3-second countdown starts.  The confirm button is disabled
+    //   until it reaches 0.
+    //
+    // countdownLabel: shown while countdown > 0.  Use %1 as a
+    //   placeholder for the seconds remaining, e.g. "Continue anyway (%1)".
+    // standbyLabel: shown when countdown finished but requiresCountdown
+    //   is still true (i.e. the dangerous condition still applies).
+    // confirmLabel: shown when requiresCountdown is false (safe to
+    //   proceed immediately).
+    //
+    // confirmed(): emitted when the confirm button is activated.
+
+    component CountdownConfirm: RowLayout {
+
+        id: confirm
+
+        property bool requiresCountdown: false
+
+        property string countdownLabel: "Continue anyway (%1)"
+        property string standbyLabel:   "Continue anyway"
+        property string confirmLabel:   "Confirm"
+
+        signal confirmed()
+
+        anchors.right: parent.right
+        anchors.rightMargin: Cell.w(1)
+
+        spacing: Cell.w(1)
+
+        property int countdown: 0
+
+        onVisibleChanged: {
+            if (visible && requiresCountdown) {
+                countdown = 3
+            }
+        }
+
+        Timer {
+            running: confirm.countdown > 0
+            interval: 1000
+            repeat: true
+            onTriggered: confirm.countdown -= 1
+        }
+
+        CellButton {
+
+            text: {
+                if (confirm.countdown > 0)
+                return confirm.countdownLabel.arg(confirm.countdown)
+                return confirm.requiresCountdown ? confirm.standbyLabel : confirm.confirmLabel
+            }
+
+            clickable: confirm.countdown == 0
+
+            color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
+            fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
+
+            onReleased: (button) => {
+                if (button == "L") confirm.confirmed()
+            }
+
+        }
+
+        CellButton {
+
+            text: "Cancel"
+
+            color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
+            fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+
+            onReleased: (button) => {
+                if (button == "L") PacmanInfo.cancel()
+            }
+
+        }
+
+    }
 
     Cells {
 
@@ -410,6 +693,14 @@ CellPopup {
 
                                 escapeToUnFocus: false
                                 unfocusOnEntered: false
+
+                                disabled: (
+                                    root.pacmanState == "prepare"
+                                    || root.pacmanState == "pre-flight"
+                                    || root.pacmanState == "running"
+                                    || root.pacmanState == "authentication"
+                                    || root.pacmanState == "success"
+                                )
 
                                 onTextChanged: {
                                     if (PacmanInfo.search_mode == 4) {
@@ -746,15 +1037,6 @@ CellPopup {
                             property int collapseThreshold: 5
                             property int expandStep: 5
 
-                            property var shownValues: deps.values?.slice(0, deps.shownCount)
-
-                            // How many rows are currently visible. Initialized to the threshold,
-                            // bumped by expandStep on "+N more", set to values.length on "show all",
-                            // reset to collapseThreshold on "show less" or when the package changes.
-                            property int shownCount: collapseThreshold
-
-                            onValuesChanged: shownCount = collapseThreshold
-
                             Layout.leftMargin: Cell.w(1)
 
                             spacing: 0
@@ -773,7 +1055,7 @@ CellPopup {
 
                                 Repeater {
 
-                                    model: deps.shownValues
+                                    model: deps.values?.slice(0, deps_footer.maxShown)
 
                                     delegate: Cells {
 
@@ -873,85 +1155,13 @@ CellPopup {
 
                                 }
 
-                                // ──────────────────────────────────────────────────────────
-                                // Footer: progressive +5 / show all / show less
-                                //
-                                // State machine (for a list of 23 items, threshold=5, step=5):
-                                //
-                                //   Initial       (5 shown)   →  [ + 18 more ]
-                                //   1st click     (10 shown)  →  [ + 13 more ]  [ show all (23) ]
-                                //   2nd click     (15 shown)  →  [ + 8 more  ]  [ show all (23) ]
-                                //   "show all"    (23 shown)  →  [ show less ]
-                                //   "show less"   (5 shown)   →  [ + 18 more ]
-                                //
-                                // The "show all" button only appears after the first expansion —
-                                // progressive disclosure of the UI itself. Users who just want to
-                                // peek at 5 more rows don't see the audit-nuclear option until
-                                // they've shown they want to expand at all.
-                                //
-                                // "show less" replaces the other two when fully expanded, giving
-                                // a clean single-action way back to the collapsed state.
-                                // ──────────────────────────────────────────────────────────
-                                RowLayout {
-
-                                    spacing: Cell.w(1)
-
-                                    // Footer only renders at all when there's something to expand.
-                                    visible: deps.values?.length > deps.collapseThreshold
-
-                                    // ── "+N more" — progressive expansion ──
-                                    // Visible whenever we haven't shown everything yet.
-                                    CellButton {
-                                        padding: 0
-                                        visible: deps.shownCount < deps.values?.length
-                                        text: "[+ " + (deps.values?.length - deps.shownCount) + " more]"
-                                        color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
-                                        fg:    Colors.info
-                                        onReleased: (button) => {
-                                            if (button == "L") {
-                                                deps.shownCount = Math.min(
-                                                    deps.shownCount + deps.expandStep,
-                                                    deps.values.length
-                                                )
-                                            }
-                                        }
-                                    }
-
-                                    // ── "show all (N)" — audit escape hatch ──
-                                    // Only after the first expansion, and only when there's still
-                                    // more to show. Disappears once "+N more" has reached the end
-                                    // (because "show less" takes over).
-                                    CellButton {
-                                        padding: 0
-                                        visible: deps.shownCount > deps.collapseThreshold
-                                        && deps.shownCount < deps.values?.length
-                                        text: "[Show all (" + deps.values?.length + ")]"
-                                        color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
-                                        fg:    Colors.info
-                                        onReleased: (button) => {
-                                            if (button == "L") {
-                                                deps.shownCount = deps.values?.length
-                                            }
-                                        }
-                                    }
-
-                                    // ── "show less" ──
-                                    // Only when fully expanded — clean single-action way back.
-                                    CellButton {
-                                        padding: 0
-                                        visible: deps.shownCount >= deps.values?.length
-                                        && deps.values?.length > deps.collapseThreshold
-                                        text: "[Show less]"
-                                        color: ["transparent",Colors.bgOverlay,Colors.bgOverlay]
-                                        fg:    Colors.info
-                                        onReleased: (button) => {
-                                            if (button == "L") {
-                                                deps.shownCount = deps.collapseThreshold
-                                            }
-                                        }
-                                    }
-
+                                CollapseFooter {
+                                    id: deps_footer
+                                    maxItems: deps.values?.length ?? 0
+                                    collapseThreshold: deps.collapseThreshold
+                                    expandStep: deps.expandStep
                                 }
+
                             }
 
                         }
@@ -1405,82 +1615,12 @@ CellPopup {
                                 color: Colors.info
                             }
 
-                            component ToInstall: RowLayout {
-
-                                property string name
-                                property color  name_color: Colors.fgBase
-                                property string version
-                                property string downloadSize
-                                property string installedSize
-
-                                property string prefix: "+"
-
-                                property int maxW: box.contentW
-
-                                spacing: Cell.w(1)
-
-                                CellText {
-
-                                    text: parent.prefix
-                                    color: {
-                                        if (text == "!") {
-                                            return Colors.danger
-                                        } else if (text == "=") {
-                                            return Colors.warning
-                                        } else {
-                                            return Colors.fgSubtle
-                                        }
-                                    }
-
-                                }
-
-                                CellText {
-
-                                    text: parent.name
-                                    preferedW: parent.maxW - 32 - parent.version.length
-                                    color: parent.name_color
-
-                                }
-
-                                CellText {
-
-                                    text: parent.version
-                                    color: Colors.fgSubtle
-
-                                }
-
-                                CellText {
-
-                                    text: parent.downloadSize
-                                    color: Colors.info
-                                    preferedW: 11
-                                    alignRight: true
-
-                                }
-
-                                CellText {
-
-                                    text: "->"
-                                    color: Colors.fgSubtle
-
-                                }
-
-                                CellText {
-
-                                    text: parent.installedSize
-                                    color: Colors.success
-                                    preferedW: 11
-                                    alignRight: true
-
-                                }
-
-                            }
-
                             Repeater {
 
                                 model: parent.installTarget
 
-                                delegate: ToInstall {
+                                delegate: TransactionRow {
+                                    mode: "install"
 
                                     required property var modelData
 
@@ -1503,18 +1643,15 @@ CellPopup {
 
                                 spacing: 0
 
-                                property int collapseThreshold: 3
-
-                                property int maxShown: collapseThreshold
                                 property var dep_pkgs: preflight.installPlan.toInstall.filter(item => !item.isTarget)
-                                property int maxItems: dep_pkgs.length
-                                property var shownItems: dep_pkgs.slice(0, maxShown)
 
                                 Repeater {
 
-                                    model: parent.shownItems
+                                    model: preflight_dep.dep_pkgs.slice(0, preflight_dep_footer.maxShown)
 
-                                    delegate: ToInstall {
+                                    delegate: TransactionRow {
+
+                                        mode: "install"
 
                                         Layout.leftMargin: Cell.w(4)
 
@@ -1532,65 +1669,12 @@ CellPopup {
 
                                 }
 
-                                RowLayout {
-
+                                CollapseFooter {
+                                    id: preflight_dep_footer
                                     Layout.leftMargin: Cell.w(4)
-
-                                    spacing: Cell.w(1)
-
-                                    CellButton {
-
-                                        visible: preflight_dep.maxShown < preflight_dep.maxItems
-
-                                        padding: 0
-                                        text: "[+ " + (preflight_dep.maxItems - preflight_dep.maxShown) + " more]"
-                                        color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
-                                        fg: Colors.info
-
-                                        onReleased: (button) => {
-                                            if (button == "L") {
-                                                preflight_dep.maxShown = Math.min(preflight_dep.maxShown+5,preflight_dep.maxItems)
-                                            }
-                                        }
-
-                                    }
-
-                                    CellButton {
-
-                                        visible: preflight_dep.maxShown < preflight_dep.maxItems && preflight_dep.maxShown > preflight_dep.collapseThreshold
-
-                                        padding: 0
-                                        text: "[Show all ("+preflight_dep.maxItems+")]"
-                                        color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
-                                        fg: Colors.info
-
-                                        onReleased: (button) => {
-                                            if (button == "L") {
-                                                preflight_dep.maxShown = preflight_dep.maxItems
-                                            }
-                                        }
-
-                                    }
-
-                                    CellButton {
-
-                                        visible: preflight_dep.maxShown == preflight_dep.maxItems
-
-                                        padding: 0
-                                        text: "[Show less]"
-                                        color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
-                                        fg: Colors.info
-
-                                        onReleased: (button) => {
-                                            if (button == "L") {
-                                                preflight_dep.maxShown = preflight_dep.collapseThreshold
-                                            }
-                                        }
-
-                                    }
-
+                                    maxItems: preflight_dep.dep_pkgs.length
+                                    collapseThreshold: 3
                                 }
-
 
                             }
 
@@ -1620,7 +1704,9 @@ CellPopup {
 
                                     model: parent.datas
 
-                                    delegate: ToInstall {
+                                    delegate: TransactionRow {
+
+                                        mode: "install"
 
                                         Layout.leftMargin: Cell.w(2)
 
@@ -1665,7 +1751,9 @@ CellPopup {
 
                                     model: preflight.installPlan.conflictsWith
 
-                                    delegate: ToInstall {
+                                    delegate: TransactionRow {
+
+                                        mode: "install"
 
                                         Layout.leftMargin: Cell.w(2)
 
@@ -1726,65 +1814,12 @@ CellPopup {
                                 color: Colors.info
                             }
 
-                            component ToRemove: RowLayout {
-
-                                property string name
-                                property color  name_color: Colors.fgBase
-                                property string version
-                                property string freedSize
-
-                                property string prefix: "-"
-
-                                property int maxW: box.contentW
-
-                                spacing: Cell.w(1)
-
-                                CellText {
-
-                                    text: parent.prefix
-                                    color: {
-                                        if (text == "!") {
-                                            return Colors.danger
-                                        } else if (text == "=") {
-                                            return Colors.warning
-                                        } else {
-                                            return Colors.fgSubtle
-                                        }
-                                    }
-
-                                }
-
-                                CellText {
-
-                                    text: parent.name
-                                    preferedW: parent.maxW - 18 - parent.version.length
-                                    color: parent.name_color
-
-                                }
-
-                                CellText {
-
-                                    text: parent.version
-                                    color: Colors.fgSubtle
-
-                                }
-
-                                CellText {
-
-                                    text: "+" + parent.freedSize.toString().padStart(11, " ")
-                                    color: Colors.success
-                                    preferedW: 12
-                                    alignRight: true
-
-                                }
-
-                            }
-
                             Repeater {
 
                                 model: parent.removeTarget
 
-                                delegate: ToRemove {
+                                delegate: TransactionRow {
+                                    mode: "remove"
 
                                     required property var modelData
 
@@ -1806,18 +1841,15 @@ CellPopup {
 
                                 spacing: 0
 
-                                property int collapseThreshold: 3
-
-                                property int maxShown: collapseThreshold
                                 property var dep_pkgs: remove_preflight.removalPlan.toRemove.filter(item => !item.isTarget)
-                                property int maxItems: dep_pkgs.length
-                                property var shownItems: dep_pkgs.slice(0, maxShown)
 
                                 Repeater {
 
-                                    model: parent.shownItems
+                                    model: remove_preflight_dep.dep_pkgs.slice(0, remove_preflight_dep_footer.maxShown)
 
-                                    delegate: ToRemove {
+                                    delegate: TransactionRow {
+
+                                        mode: "remove"
 
                                         Layout.leftMargin: Cell.w(4)
 
@@ -1834,63 +1866,11 @@ CellPopup {
 
                                 }
 
-                                RowLayout {
-
+                                CollapseFooter {
+                                    id: remove_preflight_dep_footer
                                     Layout.leftMargin: Cell.w(4)
-
-                                    spacing: Cell.w(1)
-
-                                    CellButton {
-
-                                        visible: remove_preflight_dep.maxShown < remove_preflight_dep.maxItems
-
-                                        padding: 0
-                                        text: "[+ " + (remove_preflight_dep.maxItems - remove_preflight_dep.maxShown) + " more]"
-                                        color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
-                                        fg: Colors.info
-
-                                        onReleased: (button) => {
-                                            if (button == "L") {
-                                                remove_preflight_dep.maxShown = Math.min(remove_preflight_dep.maxShown+5,remove_preflight_dep.maxItems)
-                                            }
-                                        }
-
-                                    }
-
-                                    CellButton {
-
-                                        visible: remove_preflight_dep.maxShown < remove_preflight_dep.maxItems && remove_preflight_dep.maxShown > remove_preflight_dep.collapseThreshold
-
-                                        padding: 0
-                                        text: "[Show all ("+remove_preflight_dep.maxItems+")]"
-                                        color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
-                                        fg: Colors.info
-
-                                        onReleased: (button) => {
-                                            if (button == "L") {
-                                                remove_preflight_dep.maxShown = remove_preflight_dep.maxItems
-                                            }
-                                        }
-
-                                    }
-
-                                    CellButton {
-
-                                        visible: remove_preflight_dep.maxShown == remove_preflight_dep.maxItems
-
-                                        padding: 0
-                                        text: "[Show less]"
-                                        color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
-                                        fg: Colors.info
-
-                                        onReleased: (button) => {
-                                            if (button == "L") {
-                                                remove_preflight_dep.maxShown = remove_preflight_dep.collapseThreshold
-                                            }
-                                        }
-
-                                    }
-
+                                    maxItems: remove_preflight_dep.dep_pkgs.length
+                                    collapseThreshold: 3
                                 }
 
                             }
@@ -1958,16 +1938,11 @@ CellPopup {
 
                                             spacing: 0
 
-                                            property int collapseThreshold: 3
-
-                                            property int maxShown: collapseThreshold
                                             property var dep_pkgs: broken_deps.dependents
-                                            property int maxItems: dep_pkgs.length
-                                            property var shownItems: dep_pkgs.slice(0, maxShown)
 
                                             Repeater {
 
-                                                model: parent.shownItems
+                                                model: req.dep_pkgs.slice(0, req_footer.maxShown)
 
                                                 delegate: RowLayout {
 
@@ -1995,65 +1970,12 @@ CellPopup {
 
                                             }
 
-                                            RowLayout {
-
+                                            CollapseFooter {
+                                                id: req_footer
                                                 Layout.leftMargin: Cell.w(3)
-
-                                                spacing: Cell.w(1)
-
-                                                CellButton {
-
-                                                    visible: req.maxShown < req.maxItems
-
-                                                    padding: 0
-                                                    text: "[+ " + (req.maxItems - req.maxShown) + " more]"
-                                                    color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
-                                                    fg: Colors.info
-
-                                                    onReleased: (button) => {
-                                                        if (button == "L") {
-                                                            req.maxShown = Math.min(req.maxShown+5,req.maxItems)
-                                                        }
-                                                    }
-
-                                                }
-
-                                                CellButton {
-
-                                                    visible: req.maxShown < req.maxItems && req.maxShown > req.collapseThreshold
-
-                                                    padding: 0
-                                                    text: "[Show all ("+req.maxItems+")]"
-                                                    color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
-                                                    fg: Colors.info
-
-                                                    onReleased: (button) => {
-                                                        if (button == "L") {
-                                                            req.maxShown = req.maxItems
-                                                        }
-                                                    }
-
-                                                }
-
-                                                CellButton {
-
-                                                    visible: req.maxShown == req.maxItems
-
-                                                    padding: 0
-                                                    text: "[Show less]"
-                                                    color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
-                                                    fg: Colors.info
-
-                                                    onReleased: (button) => {
-                                                        if (button == "L") {
-                                                            req.maxShown = req.collapseThreshold
-                                                        }
-                                                    }
-
-                                                }
-
+                                                maxItems: req.dep_pkgs.length
+                                                collapseThreshold: 3
                                             }
-
 
                                         }
 
@@ -2718,7 +2640,7 @@ CellPopup {
                     }
 
                     // Installation confirmation
-                    RowLayout {
+                    CountdownConfirm {
 
                         id: confirm_install
 
@@ -2727,64 +2649,19 @@ CellPopup {
                             && PacmanInfo.pacmanMode == "install"
                         )
 
-                        property int countdown: 0
+                        requiresCountdown: PacmanInfo.installPlan.conflictsWith.length > 0
+                        || PacmanInfo.installPlan.willReplace.length > 0
 
-                        onVisibleChanged: {
-                            if (PacmanInfo.installPlan.conflictsWith.length > 0 || PacmanInfo.installPlan.willReplace.length > 0) {
-                                countdown = 3
-                            }
-                        }
+                        countdownLabel: "Continue anyway (%1)"
+                        standbyLabel:   "Continue anyway"
+                        confirmLabel:   "Confirm"
 
-                        Timer {
-                            running: parent.countdown > 0
-                            interval: 1000
-                            repeat: true
-                            onTriggered: {
-                                parent.countdown -= 1
-                            }
-                        }
-
-                        anchors.right: parent.right
-                        anchors.rightMargin: Cell.w(1)
-
-                        spacing: Cell.w(1)
-
-                        CellButton {
-
-                            text: parent.countdown > 0 ? "Continue anyway (" + parent.countdown + ")" : (PacmanInfo.installPlan.conflictsWith.length > 0 || PacmanInfo.installPlan.willReplace.length > 0 ? "Continue anyway" : "Confirm")
-
-                            clickable: parent.countdown == 0
-
-                            color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                            fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
-
-                            onReleased: (button) => {
-                                if (button == "L") {
-                                    PacmanInfo.confirmInstallation()
-                                }
-                            }
-
-                        }
-
-                        CellButton {
-
-                            text: "Cancel"
-
-                            color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
-                            fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
-
-                            onReleased: (button) => {
-                                if (button == "L") {
-                                    PacmanInfo.cancel()
-                                }
-                            }
-
-                        }
+                        onConfirmed: PacmanInfo.confirmInstallation()
 
                     }
 
                     // Removal confirmation
-                    RowLayout {
+                    CountdownConfirm {
 
                         id: confirm_remove
 
@@ -2793,60 +2670,13 @@ CellPopup {
                             && PacmanInfo.pacmanMode == "remove"
                         )
 
-                        anchors.right: parent.right
-                        anchors.rightMargin: Cell.w(1)
+                        requiresCountdown: PacmanInfo.removalPlan.brokenDependents.length > 0 || PacmanInfo.forceRemove
 
-                        property int countdown: 0
+                        countdownLabel: PacmanInfo.forceRemove ? "Confirm cascade (%1)" : "Force remove (%1)"
+                        standbyLabel:   PacmanInfo.forceRemove ? "Confirm cascade" : "Force remove"
+                        confirmLabel:   "Confirm"
 
-                        onVisibleChanged: {
-                            if (visible && PacmanInfo.removalPlan.brokenDependents.length > 0 ) {
-                                countdown = 3
-                            }
-                        }
-
-                        Timer {
-                            running: parent.countdown > 0
-                            interval: 1000
-                            repeat: true
-                            onTriggered: {
-                                confirm_remove.countdown -= 1
-                            }
-                        }
-
-
-                        spacing: Cell.w(1)
-
-                        CellButton {
-
-                            text: PacmanInfo.removalPlan.brokenDependents.length == 0 ? "Confirm" : "Force remove" + (confirm_remove.countdown > 0 ? " ("+confirm_remove.countdown+")" : "")
-
-                            clickable: confirm_remove.countdown == 0
-
-                            color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                            fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
-
-                            onReleased: (button) => {
-                                if (button == "L") {
-                                    PacmanInfo.confirmRemoval()
-                                }
-                            }
-
-                        }
-
-                        CellButton {
-
-                            text: "Cancel"
-
-                            color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
-                            fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
-
-                            onReleased: (button) => {
-                                if (button == "L") {
-                                    PacmanInfo.cancel()
-                                }
-                            }
-
-                        }
+                        onConfirmed: PacmanInfo.confirmRemoval()
 
                     }
 
@@ -2859,3 +2689,4 @@ CellPopup {
     }
 
 }
+

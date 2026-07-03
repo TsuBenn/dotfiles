@@ -48,15 +48,19 @@ Item {
     onIsTopChanged: {
         if (isTop) {
             root.promoted()
-            ShortcutInfo.shortcuts = [
-                {
-                    binds: "Escape",
-                    active: root.escapeToClose,
-                    action: () => PopupManager.sigClose(root.name)
-                },
-                ...shortcuts
-            ] 
+            refreshShortcuts()
         }
+    }
+
+    function refreshShortcuts() {
+        ShortcutInfo.shortcuts = [
+            {
+                binds: "Escape",
+                active: root.escapeToClose,
+                action: () => PopupManager.sigClose(root.name)
+            },
+            ...shortcuts
+        ] 
     }
 
     property bool escapeToClose: true
