@@ -1,0 +1,332 @@
+theme = "gruvbox"
+
+[editor]
+bufferline = "multiple"
+cursorline = true
+indent-heuristic = "tree-sitter"
+jump-label-alphabet = "qwertyuiopasdfghjklzxcvbmn"
+end-of-line-diagnostics = "warning"
+popup-border = "popup"
+trim-trailing-whitespace = true
+idle-timeout = 5
+completion-timeout = 5
+auto-pairs = true
+auto-format = true
+
+[editor.statusline]
+mode.normal = "NORMAL"
+mode.insert = "INSERT"
+mode.select = "SELECT"
+
+[editor.lsp]
+display-inlay-hints = true
+
+[editor.cursor-shape]
+normal = "block"
+insert = "bar"
+select = "block"
+
+[editor.indent-guides]
+render = true
+
+[editor.inline-diagnostics]
+# cursor-line = "warning"
+
+[keys.normal]
+
+    # Basic movement
+    i = "move_visual_line_up"
+    j = "move_char_left"
+    k = "move_visual_line_down"
+    l = "move_char_right"
+    I = "@3i"
+    J = "move_prev_word_start"
+    K = "@3k"
+    L = "move_next_word_start"
+
+    A-l = "move_next_sub_word_start"
+    A-j = "move_prev_sub_word_start"
+
+    C-l = "move_next_long_word_start"
+    C-j = "move_prev_long_word_start"
+
+    # Insert/Append mode
+    a = ["insert_mode", "collapse_selection"]
+    d = ["append_mode", "collapse_selection"]
+    A = "insert_at_line_start"
+    D = "insert_at_line_end"
+
+    # Line selection
+    V = ["select_mode", "extend_to_line_bounds"]
+
+    # Select all
+    C-a = "select_all"
+
+    # Backspace
+    f = "delete_char_backward"
+    F = ["extend_to_line_bounds", "change_selection"]
+    "backspace" = ["delete_char_backward", "insert_mode"]
+
+    # Cut
+    x = "delete_selection"
+    X = ["extend_to_line_bounds", "delete_selection"]
+    C-x = "delete_selection"
+
+    # Copy
+    c = ["extend_to_line_bounds", "yank"]
+    A-c = ["extend_to_line_bounds", "yank_to_clipboard"]
+    C = ["extend_to_line_bounds", "yank", "paste_after", "collapse_selection"]
+
+    # Paste
+    p = "paste_after"
+    P = "paste_clipboard_after"
+
+    # Move line
+    A-i = ["extend_to_line_bounds", "delete_selection", "move_line_up", "move_line_up", "paste_after", "format_selections"]
+    A-k = ["extend_to_line_bounds", "delete_selection", "paste_after", "format_selections"]
+
+    # Save
+    C-s = [":write",":format"]
+
+    # Undo/Redo
+    C-z = ["undo", "keep_primary_selection"]
+    C-y = "redo"
+
+    # Newline
+    "ret" = "open_below"
+
+    # Increment/Decrement
+    "A-=" = "increment"
+    A-minus = "decrement"
+
+    # Change selection
+    s = "change_selection"
+    S = "@miws"
+
+    # Switch case
+    U = "switch_case"
+
+    # Split/Join lines
+    u = ["move_line_up", "goto_line_end_newline", "join_selections_space"]
+    o = "@a<ret><esc>"
+
+    # Bracket selections exclusive
+    "(" = "@vmi("
+    "{" = "@vmi{"
+    "[" = "@vmi["
+    "'" = "@vmi'"
+    '"' = '@vmi"'
+
+    "tab" = "@a<tab>"
+
+    "esc" = ["keep_primary_selection", "collapse_selection"]
+
+    # Jumplist
+    C-q = "jump_backward"
+    C-e = "jump_forward"
+
+    # Record/replay macro
+    q = "record_macro"
+    e = "replay_macro"
+
+    h = "hover"
+    ";" = ":toggle-option lsp.display-inlay-hints"
+
+[keys.normal." "]
+
+    # Big jumps
+    i = "goto_file_start"
+    l = "goto_line_end"
+    k = "goto_file_end"
+    j = "goto_first_nonwhitespace"
+
+    # Newline above
+    "ret" = "open_above"
+
+    "=" = ":format"
+
+    # Bracket selections inclusive
+    "(" = "@vma("
+    "{" = "@vma{"
+    "[" = "@vma["
+    "'" = "@vma'"
+    '"' = '@vma"'
+
+    # Match brackets
+    " " = "match_brackets"
+
+    # Surround ops
+    a = "@miwms"
+    d = "surround_delete"
+    r = "surround_replace"
+
+    # Kill to end/start line
+    q = ["kill_to_line_start", "insert_mode"]
+    e = ["kill_to_line_end", "insert_mode"]
+
+    # Go to word
+    w = "goto_word"
+
+    # Jumplist
+    J = ":buffer-previous"
+    Q = ":buffer-close"
+    L = ":buffer-next"
+
+    R = "rename_symbol"
+
+[keys.normal.w]
+
+    # Change Window
+    i = "jump_view_up"
+    j = "jump_view_left"
+    k = "jump_view_down"
+    l = "jump_view_right"
+
+    W = "wonly"
+
+    q = [":write","wclose"]
+    Q = ["wclose"]
+
+    F = "file_picker_in_current_directory"
+    f = "file_picker"
+
+    s = "global_search"
+
+    e = "file_explorer"
+
+[keys.normal.W]
+
+    # Create Windows
+    i = ["hsplit", "jump_view_up"]
+    j = ["vsplit", "jump_view_left"]
+    k = "hsplit"
+    l = "vsplit"
+
+[keys.normal.w.w]
+
+    i = "swap_view_up"
+    j = "swap_view_left"
+    k = "swap_view_down"
+    l = "swap_view_right"
+
+[keys.select]
+
+    # Basic movement
+    i = "extend_visual_line_up"
+    j = "extend_char_left"
+    k = "extend_visual_line_down"
+    l = "extend_char_right"
+    I = "@3i"
+    J = "extend_prev_word_start"
+    K = "@3k"
+    L = "extend_next_word_start"
+
+    C-l = "extend_next_long_word_start"
+    C-j = "extend_prev_long_word_start"
+
+    # Extend cursor
+    "tab" = "copy_selection_on_prev_line" # C-i is "tab" idk why ask Linux
+    C-k = "copy_selection_on_next_line"
+
+    # Surround ops
+    a = "surround_add"
+    d = "surround_delete"
+    R = "surround_replace"
+
+    # Move multiple lines
+    A-i = ["extend_to_line_bounds", "delete_selection", "move_line_up", "move_line_up", "paste_after"]
+    A-k = ["extend_to_line_bounds", "delete_selection", "paste_after"]
+
+    # Insert mode
+    A = ["ensure_selections_forward", "flip_selections", "insert_mode", "collapse_selection"]
+    D = ["ensure_selections_forward", "append_mode", "collapse_selection"]
+
+    # Copy
+    c = "yank"
+    A-c = ["extend_to_line_bounds", "yank_to_clipboard"]
+    C = ["extend_to_line_bounds", "yank", "paste_after"]
+
+    # Split/Join lines
+    u = "join_selections_space"
+    o = "flip_selections"
+
+    # Save
+    C-s = [":write",":format","normal_mode"]
+
+    # Switch case
+    U = "switch_case"
+
+    # Cut
+    x = ["delete_selection", "keep_primary_selection"]
+    X = ["extend_to_line_bounds", "delete_selection"]
+    C-x = "delete_selection"
+
+    # Change ion
+    s = "change_selection"
+
+    # Select regex
+    "/" = "select_regex"
+    "A-/" = "split_selection"
+
+    # Replace selection with yanked
+    p = "replace_with_yanked"
+    P = "replace_selections_with_clipboard"
+
+    # Escape to normal mode
+    "esc" = ["normal_mode"]
+
+    # Collapse cursors
+    "ret" = ["keep_primary_selection", "collapse_selection", "normal_mode"]
+
+    # Extend to word/line
+    v = "@miw"
+    V = ["extend_line_below"]
+
+    # Increment/Decrement
+    "A-=" = "increment"
+    A-minus = "decrement"
+
+    # Undo
+    C-z = ["undo", "collapse_selection", "keep_primary_selection"]
+
+    # Bracket select exclusive
+    "(" = "@mi("
+    "{" = "@mi{"
+    "[" = "@mi["
+    "'" = "@mi'"
+    '"' = '@mi"'
+
+[keys.select." "]
+
+    # Big movement
+    i = "goto_file_start"
+    l = "goto_line_end"
+    k = "goto_file_end"
+    j = "goto_line_start"
+
+    # Bracket select inclusive
+    "(" = "@ma("
+    "{" = "@ma{"
+    "[" = "@ma["
+    "'" = "@ma'"
+    '"' = '@ma"'
+
+[keys.insert]
+
+    # Quick movement
+    C-j = ["move_prev_word_start", "collapse_selection"]
+    C-k = ["open_below"]
+    C-l = ["move_next_word_start", "collapse_selection"]
+
+    # Kill to end/start line
+    C-q = "kill_to_line_start"
+    C-e = "kill_to_line_end"
+
+    # Escape
+    "esc" = ["normal_mode", "move_char_left"]
+
+    # Save
+    C-s = [":write",":format","normal_mode"]
+
+    # Undo
+    C-z = ["undo", "normal_mode","keep_primary_selection"]

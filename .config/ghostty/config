@@ -28,7 +28,7 @@ palette = 13=#f59b75
 palette = 14=#2fbcf0
 palette = 15=#EDE6E8
 
-window-padding-y = 10
+# window-padding-y = 10
 
 adjust-cell-width = 10%
 
@@ -51,4 +51,3 @@ keybind = ctrl+shift+n=unbind
 keybind = ctrl+shift+q=unbind
 keybind = ctrl+shift+w=unbind
 keybind = ctrl+shift+a=unbind
-

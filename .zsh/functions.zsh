@@ -1,5 +1,6 @@
 # Prompt
-PROMPT='  %F{cyan}%n %F{white}(%@): %F{white}%~ %F{yellow}$ %F{white}'
+PROMPT='
+  %F{cyan}%n %F{white}(%@): %F{white}%~ %F{yellow}$ %F{white}'
 
 #History
 HISTSIZE=5000

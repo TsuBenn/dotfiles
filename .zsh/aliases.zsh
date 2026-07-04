@@ -2,6 +2,7 @@ zmodload zsh/terminfo
 
 # ESSENTIAL
 alias vim='nvim'
+alias nvim='helix'
 
 clear() {
     print -rn $terminfo[clear]

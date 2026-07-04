@@ -3,19 +3,19 @@
     "binds": [
       "W"
     ],
-    "action": "open_power"
+    "action": "no_op"
   },
   {
     "binds": [
-      "Q"
+      "C-S-A-RET"
     ],
     "action": "open_wallpaper"
   },
   {
     "binds": [
-      "C"
+      "E"
     ],
-    "action": "open_color"
+    "action": "open_media"
   },
   {
     "binds": [
@@ -25,8 +25,8 @@
   },
   {
     "binds": [
-      "W"
+      "C"
     ],
-    "action": "open_media"
+    "action": "open_color"
   }
 ]

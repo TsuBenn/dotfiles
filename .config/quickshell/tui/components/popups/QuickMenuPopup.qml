@@ -1,4 +1,4 @@
-pragma ComponentBehavior: Bound 
+pragma ComponentBehavior: Bound
 
 import qs.config
 import qs.modules
@@ -8,7 +8,6 @@ import QtQuick
 import QtQuick.Layouts
 
 CellPopup {
-
     id: root
 
     w: 48
@@ -18,10 +17,10 @@ CellPopup {
 
     property bool custom: false
 
-    escapeToClose: !TextFieldManager.active 
+    escapeToClose: !TextFieldManager.active
 
     onShortcutsChanged: {
-        refreshShortcuts()
+        refreshShortcuts();
     }
 
     Cells {
@@ -30,7 +29,6 @@ CellPopup {
         h: root.h
 
         CellBox {
-
             id: box
 
             w: root.w
@@ -51,9 +49,8 @@ CellPopup {
                     CellText {
 
                         text: " Action"
-                        preferedW: list.w - 12 - 3
+                        preferedW: list.w - 13 - 7
                         font: Cell.fontB
-
                     }
 
                     CellText {
@@ -61,20 +58,16 @@ CellPopup {
                         text: "Keybind"
                         preferedW: 12
                         font: Cell.fontB
-
                     }
-
                 }
 
                 CellSeparator {
 
                     w: list.w
                     color: Colors.accentStrong
-
                 }
 
                 CellScrollView {
-
                     id: list
 
                     w: box.contentW
@@ -89,7 +82,6 @@ CellPopup {
                             model: QuickMenuInfo.binds
 
                             delegate: ColumnLayout {
-
                                 id: keybind
 
                                 required property int index
@@ -113,24 +105,24 @@ CellPopup {
 
                                         CellDropdown {
                                             text: ""
-                                            w: list.w - 12 - 4
+                                            w: list.w - 13 - 8
                                             h: 5
                                             selected: QuickMenuInfo.action_index[keybind.action]
                                             items: {
-                                                let result = []
+                                                let result = [];
                                                 for (const actions of Object.keys(QuickMenuInfo.actions)) {
                                                     result.push({
                                                         "label": QuickMenuInfo.actions[actions].label,
-                                                        "action": () => QuickMenuInfo.setAction(keybind.index, actions),
-                                                    })
+                                                        "action": () => QuickMenuInfo.setAction(keybind.index, actions)
+                                                    });
                                                 }
-                                                return result
+                                                return result;
                                             }
                                         }
 
                                         Cells {
 
-                                            w: 12
+                                            w: 13
                                             h: 1
 
                                             color: Colors.bgOverlay
@@ -147,67 +139,49 @@ CellPopup {
                                                 escapeToUnFocus: true
                                                 autoApply: true
 
+                                                autoClear: true
+
                                                 bindText: keybind.binds.join(", ")
 
                                                 placeholder: "Binds"
 
-                                                onEntered: (input) => {
-                                                    let new_binds = input.split(",")
+                                                onEntered: input => {
+                                                    let new_binds = input.split(",");
                                                     for (const i in new_binds) {
-                                                        new_binds[i] = new_binds[i].trim()
+                                                        new_binds[i] = new_binds[i].trim();
                                                     }
-                                                    QuickMenuInfo.setBinds(keybind.index, new_binds)
+                                                    QuickMenuInfo.setBinds(keybind.index, new_binds);
                                                 }
 
-                                                color: QuickMenuInfo.faultyIndex.includes(4) ? Colors.danger : Colors.success 
+                                                color: keybind.binds.join(", ").match(/\w!/) ? Colors.danger : Colors.success
                                                 font: Cell.fontB
-
                                             }
-
                                         }
 
-                                    }
-
-                                    MouseControl {
-
-                                        anchors.fill: parent
-                                        anchors.topMargin: -Cell.h(0.4)
-                                        anchors.bottomMargin: -Cell.h(0.4)
-
-                                        acceptedButtons: Qt.RightButton
-
-                                        onPressed: (button) => {
-                                            if (button == "R") {
-                                                const global = mapToGlobal(mouseX, mouseY)
-                                                ContextMenuManager.show([
-                                                    {label: "Remove", action: () => QuickMenuInfo.removeBinds(keybind.index)}
-                                                ],global.x, global.y,undefined,"")
+                                        CellButton {
+                                            text: "-"
+                                            fg: [Colors.fgBase, Colors.bgSurface]
+                                            color: [Colors.bgOverlay, Colors.fgBase]
+                                            onReleased: button => {
+                                                QuickMenuInfo.removeBinds(keybind.index);
                                             }
                                         }
                                     }
-
                                 }
 
                                 CellSeparator {
-
                                     w: list.contentW
                                     color: Colors.bgOverlay
-
                                 }
-
                             }
-
                         }
-
                     }
-
                 }
 
                 CellSeparator {
 
                     w: list.w
                     color: Colors.accentStrong
-
                 }
 
                 RowLayout {
@@ -216,18 +190,17 @@ CellPopup {
                     Layout.rightMargin: Cell.w(1)
 
                     spacing: Cell.w(1)
-                    
+
                     CellButton {
                         text: "Manage custom actions"
                         color: [Colors.bgOverlay, Colors.fgBase]
                         fg: [Colors.fgBase, Colors.bgSurface]
 
-                        onReleased: (button) => {
+                        onReleased: button => {
                             if (button == "L") {
-                                root.custom = true
+                                root.custom = true;
                             }
                         }
-
                     }
 
                     CellButton {
@@ -236,16 +209,13 @@ CellPopup {
                         color: [Colors.accentStrong, Colors.bgOverlay]
                         fg: [Colors.onAccent, Colors.fgBase]
 
-                        onReleased: (button) => {
+                        onReleased: button => {
                             if (button == "L") {
-                                QuickMenuInfo.addBinds()
+                                QuickMenuInfo.addBinds();
                             }
                         }
-
                     }
-
                 }
-
             }
 
             ColumnLayout {
@@ -266,10 +236,159 @@ CellPopup {
                     color: Colors.accentStrong
                 }
 
+                CellScrollView {
+                    id: custom_list
+
+                    w: box.contentW
+                    h: box.contentH - 4
+
+                    source: ColumnLayout {
+
+                        spacing: 0
+
+                        Repeater {
+
+                            model: Object.keys(QuickMenuInfo.custom_actions)
+
+                            delegate: ColumnLayout {
+                                id: custom
+
+                                required property string modelData
+
+                                property var custom_actions: QuickMenuInfo.custom_actions[modelData]
+
+                                property string label: custom_actions.label
+                                property string cmd: custom_actions.cmd
+
+                                spacing: 0
+
+                                RowLayout {
+
+                                    Layout.leftMargin: Cell.w(1)
+
+                                    spacing: Cell.w(1)
+
+                                    Cells {
+
+                                        w: custom_list.contentW - 6
+                                        h: 1
+
+                                        color: Colors.bgOverlay
+
+                                        CellTextField {
+
+                                            x: Cell.w(1)
+
+                                            w: parent.w - 2
+                                            h: parent.h
+
+                                            escapeToUnFocus: true
+                                            unfocusOnEntered: true
+                                            focusOnVisible: false
+                                            autoApply: true
+
+                                            placeholder: "Custom action label"
+
+                                            bindText: custom.label
+                                        }
+                                    }
+
+                                    CellButton {
+                                        text: "-"
+                                        fg: [Colors.onAccent, Colors.bgOverlay]
+                                        color: [Colors.accentStrong, Colors.fgBase]
+                                    }
+                                }
+
+                                CellSeparator {
+                                    w: custom_list.contentW
+                                    padding: 1
+                                    color: Colors.bgOverlay
+                                    title {
+                                        text: "Shell command"
+                                        color: Colors.fgSubtle
+                                    }
+                                }
+
+                                Cells {
+                                    id: custom_cmd
+
+                                    Layout.leftMargin: Cell.w(1)
+
+                                    w: custom_list.contentW - 2
+                                    h: 1
+                                    color: Colors.bgOverlay
+
+                                    RowLayout {
+
+                                        spacing: 0
+
+                                        CellText {
+                                            text: " > "
+                                        }
+
+                                        CellTextField {
+
+                                            w: custom_cmd.w - 4
+                                            h: custom_cmd.h
+
+                                            escapeToUnFocus: true
+                                            unfocusOnEntered: true
+                                            focusOnVisible: false
+                                            autoApply: true
+
+                                            placeholder: "Shell command to execute..."
+
+                                            bindText: custom.cmd
+                                        }
+                                    }
+                                }
+
+                                CellSeparator {
+                                    w: custom_list.contentW
+                                    color: Qt.lighter(Colors.bgOverlay, 1.5)
+                                    type: 1
+                                }
+                            }
+                        }
+                    }
+                }
+
+                CellSeparator {
+                    w: box.contentW
+                    color: Colors.accentStrong
+                }
+
+                RowLayout {
+
+                    Layout.alignment: Qt.AlignRight
+                    Layout.rightMargin: Cell.w(1)
+
+                    spacing: Cell.w(1)
+
+                    CellButton {
+                        text: "Return"
+                        fg: [Colors.fgBase, Colors.bgSurface]
+                        color: [Colors.bgOverlay, Colors.fgBase]
+                        onReleased: button => {
+                            if (button == "L") {
+                                root.custom = false;
+                            }
+                        }
+                    }
+
+                    CellButton {
+                        fg: [Colors.onAccent, Colors.fgBase]
+                        color: [Colors.accentStrong, Colors.bgOverlay]
+                        text: "Add"
+                        onReleased: button => {
+                            if (button == "L") {
+                                QuickMenuInfo.addCustom();
+                            }
+                        }
+                    }
+                }
             }
-
         }
-
     }
-
 }

@@ -21,6 +21,9 @@ Singleton {
         SystemInfo.runDetached(["bash", "-c", "clipvault get --index " + index + " | wl-copy"])
     }
 
+    function paste() {
+    }
+
     function load(object: var, index: int) {
         load.id = index
         if (object.label.startsWith("[[ binary data")) {
