@@ -3,11 +3,11 @@
     "binds": [
       "W"
     ],
-    "action": "no_op"
+    "action": "open_power"
   },
   {
     "binds": [
-      "C-S-A-RET"
+      "Q"
     ],
     "action": "open_wallpaper"
   },
