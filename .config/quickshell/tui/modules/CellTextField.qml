@@ -8,7 +8,6 @@ import QtQuick.Layouts
 import QtQuick
 
 Item {
-
     id: root
 
     property bool optimizeMemory: SettingsInfo.optimizeMemory
@@ -20,17 +19,17 @@ Item {
 
     property string placeholder: ""
 
-    property string unit: "" 
+    property string unit: ""
     property string bindText: ""
 
     property bool autoClear: false
 
-    property bool showCursor : false
-    property bool blinkCursor : true
+    property bool showCursor: false
+    property bool blinkCursor: true
 
     property bool canCopy: true
 
-    property bool escapeToUnFocus : true
+    property bool escapeToUnFocus: true
     property bool unfocusOnEntered: false
 
     property int cursorPos: 0
@@ -68,122 +67,128 @@ Item {
     clip: true
 
     onEntered: {
-        if (unfocusOnEntered) unFocus()
+        if (unfocusOnEntered)
+            unFocus();
     }
 
     onDisabledChanged: {
         if (focus && disabled) {
-            unFocus()
-            return
+            unFocus();
+            return;
         }
         if (!disabled && focusOnVisible && visible) {
-            grabFocus()
+            grabFocus();
         }
     }
 
     function refresh() {
-        visibleChanged()
+        visibleChanged();
     }
 
     onFocusChanged: {
         if (focus) {
             if (disabled) {
-                unFocus()
-                return
+                unFocus();
+                return;
+            }
+            if (bindText) {
+                text = Qt.binding(() => bindText);
+                cursorPos = bindText.length;
+                return;
             }
             if (autoClear) {
-                set("")
+                set("");
             }
-            TextFieldManager.activated()
-            resetCursor()
+            TextFieldManager.activated();
+            resetCursor();
         } else if (!focus) {
-            TextFieldManager.deactivated()
-            showCursor = false
-            visualPos = 0
+            TextFieldManager.deactivated();
+            showCursor = false;
+            visualPos = 0;
+            if (bindText) {
+                text = Qt.binding(() => bindText);
+                cursorPos = bindText.length;
+                return;
+            }
             if (autoApply) {
-                if (text != bindText) entered(text)
+                if (text != bindText)
+                    entered(text);
             }
         }
-        if (bindText) {
-            text = Qt.binding(()=>bindText)
-            cursorPos = bindText.length
-            return
-        } 
     }
 
-    onTextAdded: (text) => {
-        textInput(root.text, text, "a")
+    onTextAdded: text => {
+        textInput(root.text, text, "a");
     }
-    onTextRemoved: (text) => {
-        textInput(root.text, text, "r")
+    onTextRemoved: text => {
+        textInput(root.text, text, "r");
     }
 
     function grabFocus() {
-        forceActiveFocus()
+        forceActiveFocus();
     }
 
     function unFocus() {
-        focus = false
+        focus = false;
     }
 
     function clear() {
-        cursorPos = 0
-        visualPos = 0
-        resetCursor()
-        text = root.bindText
-        textfield.offset = 0
+        cursorPos = 0;
+        visualPos = 0;
+        resetCursor();
+        text = root.bindText;
+        textfield.offset = 0;
     }
 
     function set(new_text: string) {
-        text = new_text
-        cursorPos = text.length
+        text = new_text;
+        cursorPos = text.length;
     }
 
     function resetCursor() {
-        cursor_timer.restart()
-        root.showCursor = focus
+        cursor_timer.restart();
+        root.showCursor = focus;
     }
 
     onVisibleChanged: {
         if (autoClear) {
-            clear()
+            clear();
         }
-        unFocus()
+        unFocus();
         if (bindText != "") {
-            text = Qt.binding(()=>bindText)
+            text = Qt.binding(() => bindText);
         }
         if (visible && focusOnVisible) {
-            grabFocus()
-            return
+            grabFocus();
+            return;
         }
     }
 
     onCursorPosChanged: {
-        resetCursor()
+        resetCursor();
         if (cursorPos + textfield.offset > (root.w - (root.unit.length > 0 ? root.unit.length - 1 : 0)) - 1) {
-            textfield.offset -= 1
+            textfield.offset -= 1;
         }
         if (cursorPos + textfield.offset < 0) {
-            textfield.offset += 1
-            textfield.offset = Math.max(textfield.offset,0)
+            textfield.offset += 1;
+            textfield.offset = Math.max(textfield.offset, 0);
         }
     }
 
     onTextChanged: {
-        resetCursor()
+        resetCursor();
     }
 
     Component.onCompleted: {
         TextFieldManager.unFocusAll.connect(() => {
             if (root) {
-                root.unFocus()
+                root.unFocus();
             }
-        })
-        root.visibleChanged()
+        });
+        root.visibleChanged();
     }
 
     Timer {
-
         id: cursor_timer
 
         running: (root.blinkCursor && !root.disabled && root.focus) || root.showCursor
@@ -191,16 +196,15 @@ Item {
         repeat: true
         onTriggered: {
             if (root.focus) {
-                root.showCursor = !root.showCursor
-                return
+                root.showCursor = !root.showCursor;
+                return;
             }
-            root.showCursor = false
+            root.showCursor = false;
         }
-
     }
 
     onTextCopied: {
-        copied_anim.restart()
+        copied_anim.restart();
     }
 
     SequentialAnimation {
@@ -227,18 +231,16 @@ Item {
         }
     }
 
-
     ColumnLayout {
 
         spacing: 0
 
         Item {
-
             id: textfield
 
             property int offset: 0
 
-            Layout.leftMargin: (!root.wrap && root.scroll) ? Math.min(Cell.w(offset),0) : 0
+            Layout.leftMargin: (!root.wrap && root.scroll) ? Math.min(Cell.w(offset), 0) : 0
 
             implicitHeight: Cell.h(1)
             implicitWidth: Cell.w(root.w - (root.unit.length > 0 ? root.unit.length - 1 : 0))
@@ -248,7 +250,6 @@ Item {
                 model: root.h
 
                 delegate: Loader {
-
                     id: loader
 
                     required property int index
@@ -258,44 +259,36 @@ Item {
                     sourceComponent: Item {
 
                         y: Cell.h(loader.index)
-                        x: -Cell.w(loader.index*root.w)
+                        x: -Cell.w(loader.index * root.w)
 
                         Loader {
 
                             active: root.text.length == 0
 
                             sourceComponent: CellText {
+                                id: placeholder
 
                                 visible: root.text.length == 0
 
-                                id: placeholder
-
                                 text: root.placeholder
                                 color: root.disabled_color
-
                             }
-
                         }
-
 
                         Loader {
 
                             active: !root.hidden
 
                             sourceComponent: CellText {
+                                id: input
 
                                 visible: !root.hidden
-
-                                id: input
 
                                 text: root.text
                                 font: root.font
                                 color: root.disabled ? root.disabled_color : root.color
-
                             }
-
                         }
-
 
                         Loader {
 
@@ -303,21 +296,17 @@ Item {
 
                             sourceComponent: CellText {
 
-                                text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + "█".repeat(Math.abs(root.visualPos))
+                                text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos + root.visualPos, 0)) + "█".repeat(Math.abs(root.visualPos))
                                 font: root.font
                                 color: root.visual_color
-
                             }
-
                         }
-
 
                         Loader {
 
                             active: root.visible || !root.optimizeMemory
 
                             sourceComponent: CellText {
-
                                 id: cursor
 
                                 text: " ".repeat(root.cursorPos) + (root.showCursor && !(root.visual && root.cursorPos == root.text.length) ? "█" : "")
@@ -330,32 +319,24 @@ Item {
 
                                     text: " ".repeat(root.cursorPos) + (root.text[root.cursorPos] ?? "")
                                     color: root.invert
-
                                 }
-
                             }
-
                         }
-
 
                         Loader {
 
                             active: !root.hidden
 
                             sourceComponent: CellText {
-
                                 id: visual
 
                                 visible: !root.hidden
 
-                                text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + root.text.slice(root.visualPos > 0 ? root.cursorPos : root.cursorPos+root.visualPos, root.visualPos > 0 ? root.cursorPos+root.visualPos : root.cursorPos)
+                                text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos + root.visualPos, 0)) + root.text.slice(root.visualPos > 0 ? root.cursorPos : root.cursorPos + root.visualPos, root.visualPos > 0 ? root.cursorPos + root.visualPos : root.cursorPos)
                                 font: root.fontB
                                 color: root.disabled ? root.disabled_color : root.invert
-
                             }
-
                         }
-
 
                         Loader {
 
@@ -376,12 +357,12 @@ Item {
                                         required property int index
 
                                         property bool invert: {
-                                            if (root.visualPos > 0 && index >= root.cursorPos && index < root.cursorPos+root.visualPos) {
-                                                return true
-                                            } else if (root.visualPos < 0 && index <= root.cursorPos && index > root.cursorPos+root.visualPos) {
-                                                return true
+                                            if (root.visualPos > 0 && index >= root.cursorPos && index < root.cursorPos + root.visualPos) {
+                                                return true;
+                                            } else if (root.visualPos < 0 && index <= root.cursorPos && index > root.cursorPos + root.visualPos) {
+                                                return true;
                                             }
-                                            return false
+                                            return false;
                                         }
 
                                         text: "*"
@@ -389,40 +370,30 @@ Item {
                                         color: root.disabled ? root.disabled_color : (invert ? root.invert : root.color)
                                     }
                                 }
-
                             }
                         }
-
                     }
                 }
-
             }
-
-
-
         }
-
     }
 
     Cells {
-
         id: snap
 
         h: root.h
         w: root.w
 
         color: "transparent"
-
     }
 
     CellText {
 
         preferedW: root.w
 
-        text: " ".repeat(root.w - root.unit.length) +  root.unit
+        text: " ".repeat(root.w - root.unit.length) + root.unit
         font: root.font
         color: root.disabled ? root.disabled_color : root.color
-
     }
 
     MouseControl {
@@ -431,285 +402,297 @@ Item {
 
         anchors.fill: parent
 
-        onPressed: (button) => {
+        onPressed: button => {
             if (button == "L") {
-                root.forceActiveFocus()
+                root.forceActiveFocus();
             }
         }
     }
 
-
-
     function delete_char_back() {
         if (root.visual) {
             if (root.visualPos > 0) {
-                const removed = root.text.slice(root.cursorPos,root.cursorPos+root.visualPos)
-                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
-                root.textRemoved(removed)
+                const removed = root.text.slice(root.cursorPos, root.cursorPos + root.visualPos);
+                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + root.visualPos, root.text.length);
+                root.textRemoved(removed);
             }
             if (root.visualPos < 0) {
-                const removed = root.text.slice(root.cursorPos+root.visualPos,root.cursorPos)
-                root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
-                root.cursorPos = root.cursorPos+root.visualPos
-                root.textRemoved(removed)
+                const removed = root.text.slice(root.cursorPos + root.visualPos, root.cursorPos);
+                root.text = root.text.slice(0, root.cursorPos + root.visualPos) + root.text.slice(root.cursorPos, root.text.length);
+                root.cursorPos = root.cursorPos + root.visualPos;
+                root.textRemoved(removed);
             }
-            root.visualPos = 0
-            return
+            root.visualPos = 0;
+            return;
         }
         if (root.cursorPos == 0) {
-            root.textRemoved("")
-            return
+            root.textRemoved("");
+            return;
         }
-        const removed = root.text[root.cursorPos-1]
-        root.text = root.text.slice(0, root.cursorPos - 1) + root.text.slice(root.cursorPos)
-        root.cursorPos -= 1
-        root.textRemoved(removed)
+        const removed = root.text[root.cursorPos - 1];
+        root.text = root.text.slice(0, root.cursorPos - 1) + root.text.slice(root.cursorPos);
+        root.cursorPos -= 1;
+        root.textRemoved(removed);
     }
 
     function delete_word_back() {
         if (root.text.length > 0) {
             if (root.visual) {
                 if (root.visualPos > 0) {
-                    const removed = root.text.slice(root.cursorPos,root.cursorPos+root.visualPos)
-                    root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
-                    root.textRemoved(removed)
+                    const removed = root.text.slice(root.cursorPos, root.cursorPos + root.visualPos);
+                    root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + root.visualPos, root.text.length);
+                    root.textRemoved(removed);
                 }
                 if (root.visualPos < 0) {
-                    const removed = root.text.slice(root.cursorPos+root.visualPos,root.cursorPos)
-                    root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
-                    root.cursorPos = root.cursorPos+root.visualPos
-                    root.textRemoved(removed)
+                    const removed = root.text.slice(root.cursorPos + root.visualPos, root.cursorPos);
+                    root.text = root.text.slice(0, root.cursorPos + root.visualPos) + root.text.slice(root.cursorPos, root.text.length);
+                    root.cursorPos = root.cursorPos + root.visualPos;
+                    root.textRemoved(removed);
                 }
-                root.visualPos = 0
-                return
+                root.visualPos = 0;
+                return;
             }
 
-            const start = cursorPos
+            const start = cursorPos;
 
-            let inword = 0
+            let inword = 0;
 
             while (cursorPos > 0) {
-                cursorPos -= 1
+                cursorPos -= 1;
                 if (root.text[cursorPos] != " ") {
-                    continue
+                    continue;
                 }
-                if (root.text[cursorPos-1] == " ") {
-                    continue
+                if (root.text[cursorPos - 1] == " ") {
+                    continue;
                 }
-                break
+                break;
             }
 
-            const end = cursorPos
+            const end = cursorPos;
 
-            const removed = root.text.slice(end,start)
-            root.text = root.text.slice(0, end) + root.text.slice(start, root.text.length)
-            root.textRemoved(removed)
-
-        } else root.textRemoved("")
-
+            const removed = root.text.slice(end, start);
+            root.text = root.text.slice(0, end) + root.text.slice(start, root.text.length);
+            root.textRemoved(removed);
+        } else
+            root.textRemoved("");
     }
 
     function enter() {
-        root.visualPos = 0
-        root.entered(root.text)
+        root.visualPos = 0;
+        root.entered(root.text);
     }
 
     function delete_char_forward() {
         if (root.visual) {
             if (root.visualPos > 0) {
-                const removed = root.text.slice(root.cursorPos,root.cursorPos+root.visualPos)
-                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
-                root.textRemoved(removed)
+                const removed = root.text.slice(root.cursorPos, root.cursorPos + root.visualPos);
+                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + root.visualPos, root.text.length);
+                root.textRemoved(removed);
             }
             if (root.visualPos < 0) {
-                const removed = root.text.slice(root.cursorPos+root.visualPos,root.cursorPos)
-                root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
-                root.cursorPos = root.cursorPos+root.visualPos
-                root.textRemoved(removed)
+                const removed = root.text.slice(root.cursorPos + root.visualPos, root.cursorPos);
+                root.text = root.text.slice(0, root.cursorPos + root.visualPos) + root.text.slice(root.cursorPos, root.text.length);
+                root.cursorPos = root.cursorPos + root.visualPos;
+                root.textRemoved(removed);
             }
-            root.visualPos = 0
-            return
+            root.visualPos = 0;
+            return;
         }
-        const removed = root.text[root.cursorPos]
-        if (root.cursorPos == root.text.length) return
-        root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + 1)
-        root.textRemoved(removed)
+        const removed = root.text[root.cursorPos];
+        if (root.cursorPos == root.text.length)
+            return;
+        root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + 1);
+        root.textRemoved(removed);
     }
 
     function select_char_back() {
-        if (!root.editable) return
-        if (root.cursorPos == 0) return
-        root.cursorPos -= 1
-        root.visualPos += 1
+        if (!root.editable)
+            return;
+        if (root.cursorPos == 0)
+            return;
+        root.cursorPos -= 1;
+        root.visualPos += 1;
     }
 
     function select_char_forward() {
-        if (!root.editable) return
-        if (root.cursorPos == root.text.length) return
-        root.cursorPos += 1
-        root.visualPos -= 1
+        if (!root.editable)
+            return;
+        if (root.cursorPos == root.text.length)
+            return;
+        root.cursorPos += 1;
+        root.visualPos -= 1;
     }
 
     function select_char_forward_word() {
-        if (!root.editable) return
-        if (root.cursorPos == root.text.length) return
-        if (root.text[Math.min(root.cursorPos+1,text.length)] != " " && root.cursorPos < root.text.length ) {
-            root.cursorPos += 1
-            root.visualPos -= 1
+        if (!root.editable)
+            return;
+        if (root.cursorPos == root.text.length)
+            return;
+        if (root.text[Math.min(root.cursorPos + 1, text.length)] != " " && root.cursorPos < root.text.length) {
+            root.cursorPos += 1;
+            root.visualPos -= 1;
         }
         while (root.cursorPos < root.text.length && root.text[root.cursorPos] != " ") {
-            root.cursorPos += 1
-            root.visualPos -= 1
+            root.cursorPos += 1;
+            root.visualPos -= 1;
         }
     }
 
     function move_cursor_back() {
-        if (!root.editable) return
-        root.visualPos = 0
-        root.cursorPos -= 1
+        if (!root.editable)
+            return;
+        root.visualPos = 0;
+        root.cursorPos -= 1;
         if (root.cursorPos < 0) {
-            root.cursorPos = 0
+            root.cursorPos = 0;
         }
     }
 
     function move_cursor_back_word() {
-        if (!root.editable) return
-        root.visualPos = 0
-        if (root.text[Math.max(root.cursorPos-1,0)] != " " && root.cursorPos > 0 ) root.cursorPos -= 1
+        if (!root.editable)
+            return;
+        root.visualPos = 0;
+        if (root.text[Math.max(root.cursorPos - 1, 0)] != " " && root.cursorPos > 0)
+            root.cursorPos -= 1;
         while (root.cursorPos > 0 && root.text[root.cursorPos] != " ") {
-            root.cursorPos -= 1
+            root.cursorPos -= 1;
         }
         if (root.cursorPos < 0) {
-            root.cursorPos = 0
+            root.cursorPos = 0;
         }
     }
 
     function move_cursor_forward() {
-        if (!root.editable) return
-        root.visualPos = 0
-        root.cursorPos += 1
+        if (!root.editable)
+            return;
+        root.visualPos = 0;
+        root.cursorPos += 1;
         if (root.cursorPos > root.text.length) {
-            root.cursorPos = root.text.length
+            root.cursorPos = root.text.length;
         }
     }
 
     function move_cursor_forward_word() {
-        if (!root.editable) return
-        root.visualPos = 0
-        if (root.text[Math.min(root.cursorPos+1,text.length)] != " " && root.cursorPos < root.text.length ) root.cursorPos += 1
+        if (!root.editable)
+            return;
+        root.visualPos = 0;
+        if (root.text[Math.min(root.cursorPos + 1, text.length)] != " " && root.cursorPos < root.text.length)
+            root.cursorPos += 1;
         while (root.cursorPos < root.text.length && root.text[root.cursorPos] != " ") {
-            root.cursorPos += 1
+            root.cursorPos += 1;
         }
         if (root.cursorPos < 0) {
-            root.cursorPos = 0
+            root.cursorPos = 0;
         }
     }
 
     function select_all() {
-        root.visualPos = -root.text.length
-        root.cursorPos = root.text.length
+        root.visualPos = -root.text.length;
+        root.cursorPos = root.text.length;
     }
 
     function type(char: string) {
         if (root.visual) {
             if (root.visualPos > 0) {
-                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
+                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + root.visualPos, root.text.length);
             }
             if (root.visualPos < 0) {
-                root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
-                root.cursorPos = root.cursorPos+root.visualPos
+                root.text = root.text.slice(0, root.cursorPos + root.visualPos) + root.text.slice(root.cursorPos, root.text.length);
+                root.cursorPos = root.cursorPos + root.visualPos;
             }
-            root.visualPos = 0
+            root.visualPos = 0;
         }
-        root.text = root.text.slice(0, root.cursorPos) + char + root.text.slice(root.cursorPos)
-        root.cursorPos += 1
-        root.textAdded(char)
+        root.text = root.text.slice(0, root.cursorPos) + char + root.text.slice(root.cursorPos);
+        root.cursorPos += 1;
+        root.textAdded(char);
     }
 
     function copy_selected() {
-        if (root.visualPos == 0) return
-        if (!root.canCopy) return
-        let copy = ""
+        if (root.visualPos == 0)
+            return;
+        if (!root.canCopy)
+            return;
+        let copy = "";
         if (root.visual) {
             if (root.visualPos > 0) {
-                copy = root.text.slice(root.cursorPos, root.cursorPos+root.visualPos)
+                copy = root.text.slice(root.cursorPos, root.cursorPos + root.visualPos);
             }
             if (root.visualPos < 0) {
-                copy = root.text.slice(root.cursorPos+root.visualPos, root.cursorPos)
+                copy = root.text.slice(root.cursorPos + root.visualPos, root.cursorPos);
             }
         }
-        SystemInfo.copy_clipboard(copy)
-        root.textCopied(copy)
+        SystemInfo.copy_clipboard(copy);
+        root.textCopied(copy);
     }
 
     function cut_selected() {
-        if (root.visualPos == 0) return
-        if (!root.canCopy) return
-        let copy = ""
+        if (root.visualPos == 0)
+            return;
+        if (!root.canCopy)
+            return;
+        let copy = "";
         if (root.visual) {
             if (root.visualPos > 0) {
-                copy = root.text.slice(root.cursorPos, root.cursorPos+root.visualPos)
-                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
+                copy = root.text.slice(root.cursorPos, root.cursorPos + root.visualPos);
+                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + root.visualPos, root.text.length);
             }
             if (root.visualPos < 0) {
-                copy = root.text.slice(root.cursorPos+root.visualPos, root.cursorPos)
-                root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
-                root.cursorPos = root.cursorPos+root.visualPos
+                copy = root.text.slice(root.cursorPos + root.visualPos, root.cursorPos);
+                root.text = root.text.slice(0, root.cursorPos + root.visualPos) + root.text.slice(root.cursorPos, root.text.length);
+                root.cursorPos = root.cursorPos + root.visualPos;
             }
-            root.visualPos = 0
+            root.visualPos = 0;
         }
-        SystemInfo.copy_clipboard(copy)
-        root.textCopied(copy)
+        SystemInfo.copy_clipboard(copy);
+        root.textCopied(copy);
     }
 
-
-    Keys.onPressed: (event) => {
-        event.accepted = true
-        if (root.disabled) return
-
-        if (event.modifiers == Qt.ControlModifier) {
+    Keys.onPressed: event => {
+        event.accepted = true;
+        if (root.disabled)
+            return;
+        if (event.modifiers & Qt.ControlModifier) {
             if (event.key == Qt.Key_C) {
-                root.copy_selected()
+                root.copy_selected();
             } else if (event.key == Qt.Key_X) {
-                root.cut_selected()
+                root.cut_selected();
             } else if (event.key == Qt.Key_V) {
-                ClipboardInfo.paste()
+                ClipboardInfo.paste();
             } else if (event.key == Qt.Key_Left) {
-                root.move_cursor_back_word()
+                root.move_cursor_back_word();
             } else if (event.key == Qt.Key_Right) {
-                root.move_cursor_forward_word()
+                root.move_cursor_forward_word();
             } else if (event.key == Qt.Key_A) {
-                root.select_all()
+                root.select_all();
             } else if (event.key == Qt.Key_Backspace) {
-                root.delete_word_back()
+                root.delete_word_back();
             }
-            return
+            return;
         }
 
         if (event.key == Qt.Key_Return) {
-            root.enter()
+            root.enter();
         } else if (event.key == Qt.Key_Escape) {
-            if (root.escapeToUnFocus) root.unFocus() 
+            if (root.escapeToUnFocus)
+                root.unFocus();
         } else if (event.key == Qt.Key_Backspace) {
-            root.delete_char_back()
+            root.delete_char_back();
         } else if (event.key == Qt.Key_Delete) {
-            root.delete_char_forward()
+            root.delete_char_forward();
         } else if (event.text.length > 0 && event.text >= " ") {
-            root.type(event.text)
+            root.type(event.text);
         } else if (event.key == Qt.Key_Left) {
-            root.move_cursor_back()
+            root.move_cursor_back();
         } else if (event.key == Qt.Key_Right) {
-            root.move_cursor_forward()
+            root.move_cursor_forward();
         }
 
-        if (event.modifiers == Qt.ShiftModifier) {
+        if (event.modifiers & Qt.ShiftModifier) {
             if (event.key == Qt.Key_Left) {
-                root.select_char_back()
+                root.select_char_back();
             } else if (event.key == Qt.Key_Right) {
-                root.select_char_forward()
+                root.select_char_forward();
             }
         }
-
     }
-
 }
