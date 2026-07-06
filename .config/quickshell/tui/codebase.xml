@@ -119,12 +119,15 @@ modules/
   CellTabs.qml
   CellText.qml
   CellTextField.qml
+  CellTextFormat.qml
   CellTextNew.qml
   MarqueeCellText.qml
   MouseControl.qml
   ShortcutHandler.qml
   WallpaperEngine.qml
 scripts/
+  readme/
+    quickmenu_usage.txt
   wallpaperShaders/
     fade.frag
     fade.frag.qsb
@@ -168,11 +171,13 @@ scripts/
   pacman-filter.py
   pacman-pre-flight.py
   pamtester.py
+  parseFormattedText.js
   password_checker
   password_checker.c
   quick_dependencies_checker.sh
   quickmenu_config.json
   quit.sh
+  readme_loader.py
   reminders.json
   revive.sh
   test
@@ -201,6 +206,7 @@ services/
   OBSInfo.qml
   PacmanInfo.qml
   QuickMenuInfo.qml
+  ReadmeInfo.qml
   ScreenshotInfo.qml
   SettingsInfo.qml
   ShortcutInfo.qml
@@ -14663,7 +14669,7 @@ CellPopup {
 </file>
 
 <file path="components/popups/QuickMenuPopup.qml">
-pragma ComponentBehavior: Bound 
+pragma ComponentBehavior: Bound
 
 import qs.config
 import qs.modules
@@ -14672,21 +14678,28 @@ import qs.services
 import QtQuick
 import QtQuick.Layouts
 
-CellPopup {
+import Quickshell.Io
 
+CellPopup {
     id: root
 
     w: 48
     h: 20
 
-    shortcuts: TextFieldManager.active ? [] : QuickMenuInfo.shortcuts
+    shortcuts: TextFieldManager.active || custom ? [] : QuickMenuInfo.shortcuts
 
     property bool custom: false
+    property bool help: false
 
-    escapeToClose: !TextFieldManager.active 
+    escapeToClose: !TextFieldManager.active
 
     onShortcutsChanged: {
-        refreshShortcuts()
+        refreshShortcuts();
+    }
+
+    onVisibleChanged: {
+        custom = false;
+        help = false;
     }
 
     Cells {
@@ -14695,7 +14708,6 @@ CellPopup {
         h: root.h
 
         CellBox {
-
             id: box
 
             w: root.w
@@ -14703,7 +14715,7 @@ CellPopup {
 
             ColumnLayout {
 
-                visible: !root.custom
+                visible: !root.custom && !root.help
 
                 spacing: 0
 
@@ -14716,9 +14728,8 @@ CellPopup {
                     CellText {
 
                         text: " Action"
-                        preferedW: list.w - 12 - 3
+                        preferedW: list.w - 13 - 7
                         font: Cell.fontB
-
                     }
 
                     CellText {
@@ -14726,20 +14737,16 @@ CellPopup {
                         text: "Keybind"
                         preferedW: 12
                         font: Cell.fontB
-
                     }
-
                 }
 
                 CellSeparator {
 
                     w: list.w
                     color: Colors.accentStrong
-
                 }
 
                 CellScrollView {
-
                     id: list
 
                     w: box.contentW
@@ -14754,7 +14761,6 @@ CellPopup {
                             model: QuickMenuInfo.binds
 
                             delegate: ColumnLayout {
-
                                 id: keybind
 
                                 required property int index
@@ -14777,25 +14783,27 @@ CellPopup {
                                         spacing: Cell.w(1)
 
                                         CellDropdown {
+                                            id: action_list
                                             text: ""
-                                            w: list.w - 12 - 4
+                                            w: list.w - 13 - 8
                                             h: 5
-                                            selected: QuickMenuInfo.action_index[keybind.action]
+                                            selected: QuickMenuInfo.action_index[keybind.action] ?? 0
                                             items: {
-                                                let result = []
+                                                let result = [];
                                                 for (const actions of Object.keys(QuickMenuInfo.actions)) {
                                                     result.push({
                                                         "label": QuickMenuInfo.actions[actions].label,
-                                                        "action": () => QuickMenuInfo.setAction(keybind.index, actions),
-                                                    })
+                                                        "action": () => QuickMenuInfo.setAction(keybind.index, actions)
+                                                    });
                                                 }
-                                                return result
+                                                // console.log(JSON.stringify(result, null, 2));
+                                                return result;
                                             }
                                         }
 
                                         Cells {
 
-                                            w: 12
+                                            w: 13
                                             h: 1
 
                                             color: Colors.bgOverlay
@@ -14812,67 +14820,51 @@ CellPopup {
                                                 escapeToUnFocus: true
                                                 autoApply: true
 
+                                                autoClear: true
+
                                                 bindText: keybind.binds.join(", ")
 
                                                 placeholder: "Binds"
 
-                                                onEntered: (input) => {
-                                                    let new_binds = input.split(",")
+                                                onEntered: input => {
+                                                    if (input.trim() == "")
+                                                        return;
+                                                    let new_binds = input.split(",");
                                                     for (const i in new_binds) {
-                                                        new_binds[i] = new_binds[i].trim()
+                                                        new_binds[i] = new_binds[i].trim();
                                                     }
-                                                    QuickMenuInfo.setBinds(keybind.index, new_binds)
+                                                    QuickMenuInfo.setBinds(keybind.index, new_binds);
                                                 }
 
-                                                color: QuickMenuInfo.faultyIndex.includes(4) ? Colors.danger : Colors.success 
+                                                color: keybind.binds.join(", ").match(/\w!/) ? Colors.danger : Colors.success
                                                 font: Cell.fontB
-
                                             }
-
                                         }
 
-                                    }
-
-                                    MouseControl {
-
-                                        anchors.fill: parent
-                                        anchors.topMargin: -Cell.h(0.4)
-                                        anchors.bottomMargin: -Cell.h(0.4)
-
-                                        acceptedButtons: Qt.RightButton
-
-                                        onPressed: (button) => {
-                                            if (button == "R") {
-                                                const global = mapToGlobal(mouseX, mouseY)
-                                                ContextMenuManager.show([
-                                                    {label: "Remove", action: () => QuickMenuInfo.removeBinds(keybind.index)}
-                                                ],global.x, global.y,undefined,"")
+                                        CellButton {
+                                            text: "-"
+                                            fg: [Colors.fgBase, Colors.bgSurface]
+                                            color: [Colors.bgOverlay, Colors.fgBase]
+                                            onReleased: button => {
+                                                QuickMenuInfo.removeBinds(keybind.index);
                                             }
                                         }
                                     }
-
                                 }
 
                                 CellSeparator {
-
                                     w: list.contentW
                                     color: Colors.bgOverlay
-
                                 }
-
                             }
-
                         }
-
                     }
-
                 }
 
                 CellSeparator {
 
                     w: list.w
                     color: Colors.accentStrong
-
                 }
 
                 RowLayout {
@@ -14881,18 +14873,31 @@ CellPopup {
                     Layout.rightMargin: Cell.w(1)
 
                     spacing: Cell.w(1)
-                    
+
+                    CellButton {
+                        text: "?"
+                        color: [Colors.bgOverlay, Colors.fgBase]
+                        fg: [Colors.fgBase, Colors.bgSurface]
+
+                        onReleased: button => {
+                            if (button == "L") {
+                                root.custom = false;
+                                root.help = true;
+                            }
+                        }
+                    }
+
                     CellButton {
                         text: "Manage custom actions"
                         color: [Colors.bgOverlay, Colors.fgBase]
                         fg: [Colors.fgBase, Colors.bgSurface]
 
-                        onReleased: (button) => {
+                        onReleased: button => {
                             if (button == "L") {
-                                root.custom = true
+                                root.custom = true;
+                                root.help = false;
                             }
                         }
-
                     }
 
                     CellButton {
@@ -14901,16 +14906,13 @@ CellPopup {
                         color: [Colors.accentStrong, Colors.bgOverlay]
                         fg: [Colors.onAccent, Colors.fgBase]
 
-                        onReleased: (button) => {
+                        onReleased: button => {
                             if (button == "L") {
-                                QuickMenuInfo.addBinds()
+                                QuickMenuInfo.addBinds();
                             }
                         }
-
                     }
-
                 }
-
             }
 
             ColumnLayout {
@@ -14931,12 +14933,233 @@ CellPopup {
                     color: Colors.accentStrong
                 }
 
+                CellScrollView {
+                    id: custom_list
+
+                    w: box.contentW
+                    h: box.contentH - 4
+
+                    source: ColumnLayout {
+
+                        spacing: 0
+
+                        Repeater {
+
+                            model: Object.keys(QuickMenuInfo.custom_actions)
+
+                            delegate: ColumnLayout {
+                                id: custom
+
+                                required property string modelData
+
+                                property var custom_actions: QuickMenuInfo.custom_actions[modelData]
+
+                                property string label: custom_actions.label
+                                property string cmd: custom_actions.cmd
+
+                                spacing: 0
+
+                                RowLayout {
+
+                                    Layout.leftMargin: Cell.w(1)
+
+                                    spacing: Cell.w(1)
+
+                                    Cells {
+
+                                        w: custom_list.contentW - 6
+                                        h: 1
+
+                                        color: Colors.bgOverlay
+
+                                        CellTextField {
+
+                                            x: Cell.w(1)
+
+                                            w: parent.w - 2
+                                            h: parent.h
+
+                                            escapeToUnFocus: true
+                                            unfocusOnEntered: true
+                                            focusOnVisible: false
+                                            autoApply: true
+
+                                            placeholder: "Custom action label"
+
+                                            bindText: custom.label
+
+                                            onEntered: input => {
+                                                QuickMenuInfo.editCustom(custom.modelData, input, custom.cmd);
+                                            }
+                                        }
+                                    }
+
+                                    CellButton {
+                                        text: "-"
+
+                                        fg: [Colors.onAccent, Colors.bgOverlay]
+                                        color: [Colors.accentStrong, Colors.fgBase]
+
+                                        onReleased: button => {
+                                            if (button == "L") {
+                                                QuickMenuInfo.removeCustom(custom.modelData);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                CellSeparator {
+                                    w: custom_list.contentW
+                                    padding: 1
+                                    color: Colors.bgOverlay
+                                    title {
+                                        text: "Shell command"
+                                        color: Colors.fgSubtle
+                                    }
+                                }
+
+                                Cells {
+                                    id: custom_cmd
+
+                                    Layout.leftMargin: Cell.w(1)
+
+                                    w: custom_list.contentW - 2
+                                    h: 1
+                                    color: Colors.bgOverlay
+
+                                    RowLayout {
+
+                                        spacing: 0
+
+                                        CellText {
+                                            text: " > "
+                                        }
+
+                                        CellTextField {
+
+                                            w: custom_cmd.w - 4
+                                            h: custom_cmd.h
+
+                                            escapeToUnFocus: true
+                                            unfocusOnEntered: true
+                                            focusOnVisible: false
+                                            autoApply: true
+
+                                            placeholder: "Shell command to execute..."
+
+                                            bindText: custom.cmd
+
+                                            onEntered: input => {
+                                                QuickMenuInfo.editCustom(custom.modelData, custom.label, input);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                CellSeparator {
+                                    w: custom_list.contentW
+                                    color: Qt.lighter(Colors.bgOverlay, 1.5)
+                                    type: 1
+                                }
+                            }
+                        }
+                    }
+                }
+
+                CellSeparator {
+                    w: box.contentW
+                    color: Colors.accentStrong
+                }
+
+                RowLayout {
+
+                    Layout.alignment: Qt.AlignRight
+                    Layout.rightMargin: Cell.w(1)
+
+                    spacing: Cell.w(1)
+
+                    CellButton {
+                        text: "Return"
+                        fg: [Colors.fgBase, Colors.bgSurface]
+                        color: [Colors.bgOverlay, Colors.fgBase]
+                        onReleased: button => {
+                            if (button == "L") {
+                                root.custom = false;
+                                root.help = false;
+                            }
+                        }
+                    }
+
+                    CellButton {
+                        fg: [Colors.onAccent, Colors.fgBase]
+                        color: [Colors.accentStrong, Colors.bgOverlay]
+                        text: "Add"
+                        onReleased: button => {
+                            if (button == "L") {
+                                QuickMenuInfo.addCustom();
+                            }
+                        }
+                    }
+                }
             }
 
+            ColumnLayout {
+
+                visible: root.help
+
+                spacing: 0
+
+                CellText {
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                    text: "HOW TO USE"
+                    color: Colors.secondary
+                    font: Cell.fontB
+                }
+
+                CellSeparator {
+                    w: box.contentW
+                    color: Colors.accentStrong
+                }
+
+                CellScrollView {
+                    id: readme
+
+                    w: box.contentW
+                    h: box.contentH - 4
+
+                    source: CellTextFormat {
+                        w: readme.contentW
+                        text: ReadmeInfo.getValue("quickmenu_usage")
+                    }
+                }
+
+                CellSeparator {
+                    w: box.contentW
+                    color: Colors.accentStrong
+                }
+
+                RowLayout {
+
+                    Layout.alignment: Qt.AlignRight
+                    Layout.rightMargin: Cell.w(1)
+
+                    spacing: Cell.w(1)
+
+                    CellButton {
+                        text: "Return"
+                        fg: [Colors.fgBase, Colors.bgSurface]
+                        color: [Colors.bgOverlay, Colors.fgBase]
+                        onReleased: button => {
+                            if (button == "L") {
+                                root.custom = false;
+                                root.help = false;
+                            }
+                        }
+                    }
+                }
+            }
         }
-
     }
-
 }
 </file>
 
@@ -20901,7 +21124,6 @@ pragma Singleton
 import Quickshell
 
 Singleton {
-
     id: root
 
     property bool active: false
@@ -20910,27 +21132,26 @@ Singleton {
 
     onActive_fieldsChanged: {
         if (active_fields > 0) {
-            active = true
+            active = true;
         } else {
-            active = false
+            active = false;
         }
 
-        // console.log(`active fields: ${active_fields}`)
+        // console.log(`active fields: ${active_fields}`);
     }
 
-    signal unFocusAll()
+    signal unFocusAll
 
     function activated() {
-        active_fields += 1
+        active_fields += 1;
     }
 
     function deactivated() {
-        active_fields -= 1
+        active_fields -= 1;
         if (active_fields < 0) {
-            active_fields = 0
+            active_fields = 0;
         }
     }
-
 }
 </file>
 
@@ -23408,20 +23629,20 @@ Item {
 
     onVisibleChanged: {
         if (visible) {
-            updateText()
+            updateText();
         }
     }
 
     Component.onCompleted: {
-        updateText()
+        updateText();
     }
 
     onPreferedWChanged: {
-        updateText()
+        updateText();
     }
 
     onTextChanged: {
-        updateText()
+        updateText();
     }
 
     // ── Text processing helpers ─────────────────────────────────────────────
@@ -23432,7 +23653,7 @@ Item {
     // MUST run before richify(), because richify() converts spaces to &nbsp;
     // (the literal text "&nbsp;", not U+00A0) and \s doesn't match that.
     function hoistWhitespace(str) {
-        return str.replace(/(<[^>]+>)(\s+)/g, '$2$1')
+        return str.replace(/(<[^>]+>)(\s+)/g, '$2$1');
     }
 
     function richify(str) {
@@ -23441,66 +23662,63 @@ Item {
             "<": "&lt;",
             ">": "&gt;",
             '"': "&quot;",
-            "'": "&#39;",
-        }
+            "'": "&#39;"
+        };
 
         // Split the string into an array of [raw_text, tag, raw_text, tag...]
         // The parenthesis inside the regex ensures the matched tags are kept in the split array
-        return str
-        .split(/(<\/?[a-zA-Z][^>]*>)/g)
-        .map(part => {
+        return str.split(/(<\/?[a-zA-Z][^>]*>)/g).map(part => {
             // If this part is a valid HTML tag, pass it through untouched
             if (part.startsWith("<") && part.endsWith(">")) {
                 return part;
             }
             // Otherwise, it's raw text—safely convert the problematic characters
             return part.replace(/[&<>"']/g, char => entityMap[char]);
-        })
-        .join("").replace(/ /g, "&nbsp;").replace(/\n/g, "<br>");
+        }).join("").replace(/ /g, "&nbsp;").replace(/\n/g, "<br>");
     }
 
     function updateText() {
+        if (!root.visible)
+            return;
+        raw_text = text;
 
-        if (!root.visible) return
-
-        raw_text = text
-
-        if (!lockPure) { pure = onlyLatin(raw_text) }
+        if (!lockPure) {
+            pure = onlyLatin(raw_text);
+        }
 
         if (preferedW > 0) {
             if (wrap) {
-                raw_text = wrapText(raw_text, preferedW)
+                raw_text = wrapText(raw_text, preferedW);
             } else {
-                const lines = raw_text.split("\n")
-                let new_lines = []
+                const lines = raw_text.split("\n");
+                let new_lines = [];
                 for (const line of lines) {
-                    new_lines.push(truncate(line, preferedW))
+                    new_lines.push(truncate(line, preferedW));
                 }
-                raw_text = new_lines.join("\n")
+                raw_text = new_lines.join("\n");
             }
         }
 
-        w = getMaxWidth(raw_text)
+        w = getMaxWidth(raw_text);
 
         if (centered) {
-            const lines = raw_text.split("\n")
-            let new_lines = []
+            const lines = raw_text.split("\n");
+            let new_lines = [];
             for (const line of lines) {
-                new_lines.push( " ".repeat( Math.max(Math.floor((w - purify(line.trim()).length)/2),0) ) + line.trim() )
+                new_lines.push(" ".repeat(Math.max(Math.floor((w - purify(line.trim()).length) / 2), 0)) + line.trim());
             }
-            raw_text = new_lines.join("\n")
+            raw_text = new_lines.join("\n");
         }
 
-        h = preferedH > 0 ? preferedH : raw_text.split("\n").length
+        h = preferedH > 0 ? preferedH : raw_text.split("\n").length;
 
         if (!pure) {
-            processed = splitUnpure(raw_text)
+            processed = splitUnpure(raw_text);
         }
 
         // Order matters: hoist first (on raw spaces), then richify (which
         // converts spaces to &nbsp; and escapes entities).
-        raw_text = richify(hoistWhitespace(raw_text))
-
+        raw_text = richify(hoistWhitespace(raw_text));
     }
 
     // ── Width classification ────────────────────────────────────────────────
@@ -23511,28 +23729,27 @@ Item {
     function isFullWidth(char) {
         const code = char.codePointAt(0);
 
-        if (!code) return false;
+        if (!code)
+            return false;
 
         // Fast path: ASCII and Latin-1 are never full-width.
-        if (code < 0x1100) return false;
+        if (code < 0x1100)
+            return false;
 
         // Code point ranges for Full-width and Wide characters:
-        return (
-            (code >= 0x1100 && code <= 0x115F) || // Hangul Jamo
+        return ((code >= 0x1100 && code <= 0x115F) || // Hangul Jamo
             (code >= 0x2E80 && code <= 0xA4CF && code !== 0x303F) || // CJK Radicals, Symbols, Ideographs
             (code >= 0xAC00 && code <= 0xD7A3) || // Hangul Syllables
             (code >= 0xF900 && code <= 0xFAFF) || // CJK Compatibility Ideographs
             (code >= 0xFE10 && code <= 0xFE19) || // Vertical Presentation Forms
             (code >= 0xFE30 && code <= 0xFE6F) || // CJK Compatibility Forms
             (code >= 0xFF00 && code <= 0xFF60) || // Fullwidth Forms (Letters, Numbers, Punctuation)
-            (code >= 0xFFE0 && code <= 0xFFE6) ||
-
-            (code >= 0x1F600 && code <= 0x1F64F) || // Smileys & Emoticons
+            (code >= 0xFFE0 && code <= 0xFFE6) || (code >= 0x1F600 && code <= 0x1F64F) || // Smileys & Emoticons
             (code >= 0x1F300 && code <= 0x1F5FF) || // Misc Symbols & Pictographs
             (code >= 0x1F680 && code <= 0x1F6FF) || // Transport & Map
             (code >= 0x1F900 && code <= 0x1F9FF) || // Supplemental Symbols
             (code >= 0x1FA70 && code <= 0x1FAFF) || // Symbols Extended-A
-            (code >= 0x2600  && code <= 0x26FF)  || // Misc Symbols (e.g., ☀, ☁, ⛑)
+            (code >= 0x2600 && code <= 0x26FF) || // Misc Symbols (e.g., ☀, ☁, ⛑)
             //(code >= 0x2700  && code <= 0x27BF)  || // Dingbats (e.g., ✂, ✅)
 
             (code >= 0x20000 && code <= 0x3FAFF)  // Rare/Extension CJK Ideographs
@@ -23553,13 +23770,14 @@ Item {
     }
 
     function purify(str) {
-        return str.replace(/<[^>]*>/g, "")
+        return str.replace(/<[^>]*>/g, "");
     }
 
     // Strips tags once, then measures each line. Avoids the old path
     // where purify ran on the whole string AND on every line via getWidth.
     function getMaxWidth(str) {
-        if (preferedW > 0) return preferedW;
+        if (preferedW > 0)
+            return preferedW;
 
         let maxW = 0;
         const lines = purify(str).split("\n");
@@ -23568,7 +23786,8 @@ Item {
             for (const c of line) {
                 lineWidth += isFullWidth(c) ? 2 : 1;
             }
-            if (lineWidth > maxW) maxW = lineWidth;
+            if (lineWidth > maxW)
+                maxW = lineWidth;
         }
         return maxW;
     }
@@ -23580,9 +23799,12 @@ Item {
     function _charWidth(char) {
         const code = char.codePointAt(0);
 
-        if (char === '\t') return 4;
-        if (code <= 31 || (code >= 0x7f && code <= 0x9f)) return 0;
-        if (isFullWidth(char)) return 2;
+        if (char === '\t')
+            return 4;
+        if (code <= 31 || (code >= 0x7f && code <= 0x9f))
+            return 0;
+        if (isFullWidth(char))
+            return 2;
         return 1;
     }
 
@@ -23624,6 +23846,12 @@ Item {
     }
 
     function wrapText(text, maxW) {
+        // Helper to calculate width without HTML tags
+        const getVisualWidth = str => {
+            const stripped = str.replace(/<\/?[^>]+(>|$)/g, '');
+            return _stringWidth(stripped);
+        };
+
         const lines = text.split('\n');
         const wrapped = [];
 
@@ -23639,7 +23867,7 @@ Item {
             let currentWidth = 0;
 
             for (const token of tokens) {
-                const tokenWidth = _stringWidth(token);
+                const tokenWidth = getVisualWidth(token);
 
                 // Handle huge token
                 if (tokenWidth > maxW) {
@@ -23656,7 +23884,7 @@ Item {
 
                         if (i === broken.length - 1) {
                             current = part;
-                            currentWidth = _stringWidth(part);
+                            currentWidth = getVisualWidth(part);
                         } else {
                             wrapped.push(part);
                         }
@@ -23668,9 +23896,9 @@ Item {
                 // Normal wrapping
                 if (currentWidth + tokenWidth > maxW) {
                     wrapped.push(current);
-                    // Remove ONLY leading spaces caused by wrapping
+                    // Remove ONLY leading spaces caused by wrapping, keeping tags intact
                     current = token.replace(/^\s+/, '');
-                    currentWidth = _stringWidth(current);
+                    currentWidth = getVisualWidth(current);
                 } else {
                     current += token;
                     currentWidth += tokenWidth;
@@ -23684,54 +23912,55 @@ Item {
     }
 
     function truncate(str, maxCells) {
-        if (maxCells <= 0) return str
+        if (maxCells <= 0)
+            return str;
 
-        let placeholder = str.replace(/<[^>]*>/g, (match) => "\uffff".repeat(match.length))
+        let placeholder = str.replace(/<[^>]*>/g, match => "\uffff".repeat(match.length));
 
-        let overflowed = str.length > maxCells
-        let result = ""
-        let cells = []
-        let count = 0
-        let excess = 0
-        let ellipses = ""
+        let overflowed = str.length > maxCells;
+        let result = "";
+        let cells = [];
+        let count = 0;
+        let excess = 0;
+        let ellipses = "";
 
         for (const c of placeholder) {
-            const isNone = /[\uffff]/.test(c)
-            const costs = (isNone ? 0 : (isFullWidth(c) ? 2 : 1))
-            cells.push(costs)
+            const isNone = /[\uffff]/.test(c);
+            const costs = (isNone ? 0 : (isFullWidth(c) ? 2 : 1));
+            cells.push(costs);
         }
         // Use numeric index — for-in iterates string keys, which is slow
         // and fragile (cells[i-1] only works by accident due to coercion).
         for (let i = 0; i < cells.length; i++) {
-            count += cells[i]
+            count += cells[i];
             if (count > maxCells) {
                 if (count - maxCells < cells[i]) {
-                    result = str.slice(0, i) + "…"
-                    break
+                    result = str.slice(0, i) + "…";
+                    break;
                 }
                 if (overflowed) {
-                    for (let k = 1; k < cells[i-1]; k++) {
-                        ellipses += " "
+                    for (let k = 1; k < cells[i - 1]; k++) {
+                        ellipses += " ";
                     }
-                    result = str.slice(0, i-1) + ellipses + "…"
-                    break
+                    result = str.slice(0, i - 1) + ellipses + "…";
+                    break;
                 }
-                result = str.slice(0, i)
-                break
+                result = str.slice(0, i);
+                break;
             }
-            result = str
+            result = str;
         }
 
-        return result
+        return result;
     }
 
     // ── Unpure text segmentation ────────────────────────────────────────────
 
     function wrapFullWidth(str) {
-        return `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Mono CJK JP';">${str}</span>`
+        return `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Mono CJK JP';">${str}</span>`;
     }
     function wrapBraille(str) {
-        return `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Symbols 2';">${str}</span>`
+        return `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Symbols 2';">${str}</span>`;
     }
 
     function splitUnpure(str) {
@@ -23742,17 +23971,34 @@ Item {
             let inFullWidth = false, inEmoji = false, inBraille = false, buffer = "";
 
             const flush = () => {
-                if (!buffer) return;
+                if (!buffer)
+                    return;
                 if (inFullWidth) {
-                    processed.push({ text: wrapFullWidth(buffer), len: buffer.length, type: "cjk" });
+                    processed.push({
+                        text: wrapFullWidth(buffer),
+                        len: buffer.length,
+                        type: "cjk"
+                    });
                 } else if (inEmoji) {
                     // BUG FIX: was `${str}` (entire input) — now `${buffer}` (just the emoji run).
-                    processed.push({ text: `<span style="font-size:${Cell.cellHeight*1.4}px;font-family:'Apple Color Emoji';">${buffer}</span>`, len: buffer.length / 2, type: "emoji" });
+                    processed.push({
+                        text: `<span style="font-size:${Cell.cellHeight * 1.4}px;font-family:'Apple Color Emoji';">${buffer}</span>`,
+                        len: buffer.length / 2,
+                        type: "emoji"
+                    });
                 } else if (inBraille) {
-                    processed.push({ text: wrapBraille(buffer), len: buffer.length, type: "braille" });
+                    processed.push({
+                        text: wrapBraille(buffer),
+                        len: buffer.length,
+                        type: "braille"
+                    });
                 } else {
                     // Order fix: hoist first (raw spaces), then richify.
-                    processed.push({ text: richify(hoistWhitespace(buffer)), len: buffer.length, type: "pure" });
+                    processed.push({
+                        text: richify(hoistWhitespace(buffer)),
+                        len: buffer.length,
+                        type: "pure"
+                    });
                 }
                 buffer = "";
             };
@@ -23761,22 +24007,26 @@ Item {
                 const isBraille = /[\u2800-\u28FF]/.test(c);
 
                 if (c.length === 2) {
-                    if (inFullWidth || !inEmoji || inBraille) flush();
+                    if (inFullWidth || !inEmoji || inBraille)
+                        flush();
                     inFullWidth = false;
                     inEmoji = true;
                     inBraille = false;
                 } else if (isBraille) {
-                    if (inFullWidth || inEmoji || !inBraille) flush();
+                    if (inFullWidth || inEmoji || !inBraille)
+                        flush();
                     inFullWidth = false;
                     inEmoji = false;
                     inBraille = true;
                 } else if (isFullWidth(c)) {
-                    if (inEmoji || !inFullWidth || inBraille) flush();
+                    if (inEmoji || !inFullWidth || inBraille)
+                        flush();
                     inEmoji = false;
                     inFullWidth = true;
                     inBraille = false;
                 } else {
-                    if (inEmoji || inFullWidth || inBraille) flush();
+                    if (inEmoji || inFullWidth || inBraille)
+                        flush();
                     inEmoji = false;
                     inFullWidth = false;
                     inBraille = false;
@@ -23788,7 +24038,6 @@ Item {
             result.push(processed);
         }
 
-        if (debug) console.log(JSON.stringify(result, null, 2));
         return result;
     }
 
@@ -23799,7 +24048,6 @@ Item {
         active: root.visible || !root.optimizeMemory
 
         sourceComponent: Cells {
-
             id: cell_text
 
             w: root.w
@@ -23814,9 +24062,9 @@ Item {
                 sourceComponent: ColumnLayout {
 
                     x: if (root.alignRight) {
-                        return cell_text.implicitWidth - implicitWidth
+                        return cell_text.implicitWidth - implicitWidth;
                     } else {
-                        return 0
+                        return 0;
                     }
 
                     spacing: 0
@@ -23838,7 +24086,6 @@ Item {
                                 model: processed[parent.index]
 
                                 delegate: Loader {
-
                                     id: cell_loader
 
                                     required property string text
@@ -23849,11 +24096,11 @@ Item {
 
                                     sourceComponent: Cells {
 
-                                        property string text : cell_loader.text
-                                        property int    len  : cell_loader.len
-                                        property string type : cell_loader.type
+                                        property string text: cell_loader.text
+                                        property int len: cell_loader.len
+                                        property string type: cell_loader.type
 
-                                        w: len*( type == "emoji" || type == "cjk" ? 2 : 1)
+                                        w: len * (type == "emoji" || type == "cjk" ? 2 : 1)
                                         h: 1
 
                                         color: root.bg
@@ -23864,10 +24111,10 @@ Item {
 
                                             anchors.centerIn: parent.type == "emoji" || parent.type == "cjk" || parent.type == "braille" ? parent : undefined
 
-                                            anchors.verticalCenterOffset: parent.type == "emoji" ? Cell.cellHeight*0.05 : 0
-                                            anchors.horizontalCenterOffset: parent.type == "emoji" ? Cell.cellWidth*0.05 : 0
+                                            anchors.verticalCenterOffset: parent.type == "emoji" ? Cell.cellHeight * 0.05 : 0
+                                            anchors.horizontalCenterOffset: parent.type == "emoji" ? Cell.cellWidth * 0.05 : 0
 
-                                            y: -(1 - Cell.cellHeight/Cell.realCellHeight)/2
+                                            y: -(1 - Cell.cellHeight / Cell.realCellHeight) / 2
 
                                             textFormat: Text.RichText
                                             text: parent.text
@@ -23875,19 +24122,13 @@ Item {
                                             color: root.color
                                             lineHeight: Cell.cellHeight
                                             lineHeightMode: Text.FixedHeight
-
                                         }
-
                                     }
                                 }
-
                             }
                         }
-
                     }
-
                 }
-
             }
 
             Loader {
@@ -23897,12 +24138,12 @@ Item {
                 sourceComponent: Text {
 
                     x: if (root.alignRight) {
-                        return cell_text.implicitWidth - implicitWidth
+                        return cell_text.implicitWidth - implicitWidth;
                     } else {
-                        return 0
+                        return 0;
                     }
 
-                    y: -(1 - Cell.cellHeight/Cell.realCellHeight)/2
+                    y: -(1 - Cell.cellHeight / Cell.realCellHeight) / 2
 
                     text: root.raw_text
                     textFormat: Text.RichText
@@ -23912,12 +24153,9 @@ Item {
                     lineHeight: Cell.cellHeight
                     lineHeightMode: Text.FixedHeight
                 }
-
             }
-
         }
     }
-
 }
 </file>
 
@@ -23932,7 +24170,6 @@ import QtQuick.Layouts
 import QtQuick
 
 Item {
-
     id: root
 
     property bool optimizeMemory: SettingsInfo.optimizeMemory
@@ -23944,17 +24181,17 @@ Item {
 
     property string placeholder: ""
 
-    property string unit: "" 
+    property string unit: ""
     property string bindText: ""
 
     property bool autoClear: false
 
-    property bool showCursor : false
-    property bool blinkCursor : true
+    property bool showCursor: false
+    property bool blinkCursor: true
 
     property bool canCopy: true
 
-    property bool escapeToUnFocus : true
+    property bool escapeToUnFocus: true
     property bool unfocusOnEntered: false
 
     property int cursorPos: 0
@@ -23992,122 +24229,126 @@ Item {
     clip: true
 
     onEntered: {
-        if (unfocusOnEntered) unFocus()
+        if (unfocusOnEntered)
+            unFocus();
     }
 
     onDisabledChanged: {
         if (focus && disabled) {
-            unFocus()
-            return
+            unFocus();
+            return;
         }
         if (!disabled && focusOnVisible && visible) {
-            grabFocus()
+            grabFocus();
         }
     }
 
     function refresh() {
-        visibleChanged()
+        visibleChanged();
     }
 
     onFocusChanged: {
         if (focus) {
             if (disabled) {
-                unFocus()
-                return
+                unFocus();
+                return;
             }
             if (autoClear) {
-                set("")
+                set("");
+            } else if (bindText) {
+                text = Qt.binding(() => bindText);
+                cursorPos = bindText.length;
             }
-            TextFieldManager.activated()
-            resetCursor()
+            TextFieldManager.activated();
+            resetCursor();
         } else if (!focus) {
-            TextFieldManager.deactivated()
-            showCursor = false
-            visualPos = 0
+            TextFieldManager.deactivated();
+            showCursor = false;
+            visualPos = 0;
             if (autoApply) {
-                if (text != bindText) entered(text)
+                if (text != bindText)
+                    entered(text);
+            }
+            if (bindText) {
+                text = Qt.binding(() => bindText);
+                cursorPos = bindText.length;
+                return;
             }
         }
-        if (bindText) {
-            text = Qt.binding(()=>bindText)
-            cursorPos = bindText.length
-            return
-        } 
     }
 
-    onTextAdded: (text) => {
-        textInput(root.text, text, "a")
+    onTextAdded: text => {
+        textInput(root.text, text, "a");
     }
-    onTextRemoved: (text) => {
-        textInput(root.text, text, "r")
+    onTextRemoved: text => {
+        textInput(root.text, text, "r");
     }
 
     function grabFocus() {
-        forceActiveFocus()
+        forceActiveFocus();
     }
 
     function unFocus() {
-        focus = false
+        focus = false;
     }
 
     function clear() {
-        cursorPos = 0
-        visualPos = 0
-        resetCursor()
-        text = root.bindText
-        textfield.offset = 0
+        cursorPos = 0;
+        visualPos = 0;
+        resetCursor();
+        text = root.bindText;
+        textfield.offset = 0;
     }
 
     function set(new_text: string) {
-        text = new_text
-        cursorPos = text.length
+        text = new_text;
+        cursorPos = text.length;
     }
 
     function resetCursor() {
-        cursor_timer.restart()
-        root.showCursor = focus
+        cursor_timer.restart();
+        root.showCursor = focus;
     }
 
     onVisibleChanged: {
         if (autoClear) {
-            clear()
+            clear();
         }
-        unFocus()
+        unFocus();
         if (bindText != "") {
-            text = Qt.binding(()=>bindText)
+            text = Qt.binding(() => bindText);
         }
         if (visible && focusOnVisible) {
-            grabFocus()
-            return
+            grabFocus();
+            return;
         }
     }
 
     onCursorPosChanged: {
-        resetCursor()
+        resetCursor();
         if (cursorPos + textfield.offset > (root.w - (root.unit.length > 0 ? root.unit.length - 1 : 0)) - 1) {
-            textfield.offset -= 1
+            textfield.offset -= 1;
         }
         if (cursorPos + textfield.offset < 0) {
-            textfield.offset += 1
-            textfield.offset = Math.max(textfield.offset,0)
+            textfield.offset += 1;
+            textfield.offset = Math.max(textfield.offset, 0);
         }
     }
 
     onTextChanged: {
-        resetCursor()
+        resetCursor();
     }
 
     Component.onCompleted: {
         TextFieldManager.unFocusAll.connect(() => {
             if (root) {
-                root.unFocus()
+                root.unFocus();
             }
-        })
-        root.visibleChanged()
+        });
+        root.visibleChanged();
     }
 
     Timer {
-
         id: cursor_timer
 
         running: (root.blinkCursor && !root.disabled && root.focus) || root.showCursor
@@ -24115,16 +24356,15 @@ Item {
         repeat: true
         onTriggered: {
             if (root.focus) {
-                root.showCursor = !root.showCursor
-                return
+                root.showCursor = !root.showCursor;
+                return;
             }
-            root.showCursor = false
+            root.showCursor = false;
         }
-
     }
 
     onTextCopied: {
-        copied_anim.restart()
+        copied_anim.restart();
     }
 
     SequentialAnimation {
@@ -24151,18 +24391,16 @@ Item {
         }
     }
 
-
     ColumnLayout {
 
         spacing: 0
 
         Item {
-
             id: textfield
 
             property int offset: 0
 
-            Layout.leftMargin: (!root.wrap && root.scroll) ? Math.min(Cell.w(offset),0) : 0
+            Layout.leftMargin: (!root.wrap && root.scroll) ? Math.min(Cell.w(offset), 0) : 0
 
             implicitHeight: Cell.h(1)
             implicitWidth: Cell.w(root.w - (root.unit.length > 0 ? root.unit.length - 1 : 0))
@@ -24172,7 +24410,6 @@ Item {
                 model: root.h
 
                 delegate: Loader {
-
                     id: loader
 
                     required property int index
@@ -24182,44 +24419,36 @@ Item {
                     sourceComponent: Item {
 
                         y: Cell.h(loader.index)
-                        x: -Cell.w(loader.index*root.w)
+                        x: -Cell.w(loader.index * root.w)
 
                         Loader {
 
                             active: root.text.length == 0
 
                             sourceComponent: CellText {
+                                id: placeholder
 
                                 visible: root.text.length == 0
 
-                                id: placeholder
-
                                 text: root.placeholder
                                 color: root.disabled_color
-
                             }
-
                         }
-
 
                         Loader {
 
                             active: !root.hidden
 
                             sourceComponent: CellText {
+                                id: input
 
                                 visible: !root.hidden
-
-                                id: input
 
                                 text: root.text
                                 font: root.font
                                 color: root.disabled ? root.disabled_color : root.color
-
                             }
-
                         }
-
 
                         Loader {
 
@@ -24227,21 +24456,17 @@ Item {
 
                             sourceComponent: CellText {
 
-                                text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + "█".repeat(Math.abs(root.visualPos))
+                                text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos + root.visualPos, 0)) + "█".repeat(Math.abs(root.visualPos))
                                 font: root.font
                                 color: root.visual_color
-
                             }
-
                         }
-
 
                         Loader {
 
                             active: root.visible || !root.optimizeMemory
 
                             sourceComponent: CellText {
-
                                 id: cursor
 
                                 text: " ".repeat(root.cursorPos) + (root.showCursor && !(root.visual && root.cursorPos == root.text.length) ? "█" : "")
@@ -24254,32 +24479,24 @@ Item {
 
                                     text: " ".repeat(root.cursorPos) + (root.text[root.cursorPos] ?? "")
                                     color: root.invert
-
                                 }
-
                             }
-
                         }
-
 
                         Loader {
 
                             active: !root.hidden
 
                             sourceComponent: CellText {
-
                                 id: visual
 
                                 visible: !root.hidden
 
-                                text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos+root.visualPos,0)) + root.text.slice(root.visualPos > 0 ? root.cursorPos : root.cursorPos+root.visualPos, root.visualPos > 0 ? root.cursorPos+root.visualPos : root.cursorPos)
+                                text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos + root.visualPos, 0)) + root.text.slice(root.visualPos > 0 ? root.cursorPos : root.cursorPos + root.visualPos, root.visualPos > 0 ? root.cursorPos + root.visualPos : root.cursorPos)
                                 font: root.fontB
                                 color: root.disabled ? root.disabled_color : root.invert
-
                             }
-
                         }
-
 
                         Loader {
 
@@ -24300,12 +24517,12 @@ Item {
                                         required property int index
 
                                         property bool invert: {
-                                            if (root.visualPos > 0 && index >= root.cursorPos && index < root.cursorPos+root.visualPos) {
-                                                return true
-                                            } else if (root.visualPos < 0 && index <= root.cursorPos && index > root.cursorPos+root.visualPos) {
-                                                return true
+                                            if (root.visualPos > 0 && index >= root.cursorPos && index < root.cursorPos + root.visualPos) {
+                                                return true;
+                                            } else if (root.visualPos < 0 && index <= root.cursorPos && index > root.cursorPos + root.visualPos) {
+                                                return true;
                                             }
-                                            return false
+                                            return false;
                                         }
 
                                         text: "*"
@@ -24313,40 +24530,30 @@ Item {
                                         color: root.disabled ? root.disabled_color : (invert ? root.invert : root.color)
                                     }
                                 }
-
                             }
                         }
-
                     }
                 }
-
             }
-
-
-
         }
-
     }
 
     Cells {
-
         id: snap
 
         h: root.h
         w: root.w
 
         color: "transparent"
-
     }
 
     CellText {
 
         preferedW: root.w
 
-        text: " ".repeat(root.w - root.unit.length) +  root.unit
+        text: " ".repeat(root.w - root.unit.length) + root.unit
         font: root.font
         color: root.disabled ? root.disabled_color : root.color
-
     }
 
     MouseControl {
@@ -24355,287 +24562,694 @@ Item {
 
         anchors.fill: parent
 
-        onPressed: (button) => {
+        onPressed: button => {
             if (button == "L") {
-                root.forceActiveFocus()
+                root.forceActiveFocus();
             }
         }
     }
 
-
-
     function delete_char_back() {
         if (root.visual) {
             if (root.visualPos > 0) {
-                const removed = root.text.slice(root.cursorPos,root.cursorPos+root.visualPos)
-                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
-                root.textRemoved(removed)
+                const removed = root.text.slice(root.cursorPos, root.cursorPos + root.visualPos);
+                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + root.visualPos, root.text.length);
+                root.textRemoved(removed);
             }
             if (root.visualPos < 0) {
-                const removed = root.text.slice(root.cursorPos+root.visualPos,root.cursorPos)
-                root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
-                root.cursorPos = root.cursorPos+root.visualPos
-                root.textRemoved(removed)
+                const removed = root.text.slice(root.cursorPos + root.visualPos, root.cursorPos);
+                root.text = root.text.slice(0, root.cursorPos + root.visualPos) + root.text.slice(root.cursorPos, root.text.length);
+                root.cursorPos = root.cursorPos + root.visualPos;
+                root.textRemoved(removed);
             }
-            root.visualPos = 0
-            return
+            root.visualPos = 0;
+            return;
         }
         if (root.cursorPos == 0) {
-            root.textRemoved("")
-            return
+            root.textRemoved("");
+            return;
         }
-        const removed = root.text[root.cursorPos-1]
-        root.text = root.text.slice(0, root.cursorPos - 1) + root.text.slice(root.cursorPos)
-        root.cursorPos -= 1
-        root.textRemoved(removed)
+        const removed = root.text[root.cursorPos - 1];
+        root.text = root.text.slice(0, root.cursorPos - 1) + root.text.slice(root.cursorPos);
+        root.cursorPos -= 1;
+        root.textRemoved(removed);
     }
 
     function delete_word_back() {
         if (root.text.length > 0) {
             if (root.visual) {
                 if (root.visualPos > 0) {
-                    const removed = root.text.slice(root.cursorPos,root.cursorPos+root.visualPos)
-                    root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
-                    root.textRemoved(removed)
+                    const removed = root.text.slice(root.cursorPos, root.cursorPos + root.visualPos);
+                    root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + root.visualPos, root.text.length);
+                    root.textRemoved(removed);
                 }
                 if (root.visualPos < 0) {
-                    const removed = root.text.slice(root.cursorPos+root.visualPos,root.cursorPos)
-                    root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
-                    root.cursorPos = root.cursorPos+root.visualPos
-                    root.textRemoved(removed)
+                    const removed = root.text.slice(root.cursorPos + root.visualPos, root.cursorPos);
+                    root.text = root.text.slice(0, root.cursorPos + root.visualPos) + root.text.slice(root.cursorPos, root.text.length);
+                    root.cursorPos = root.cursorPos + root.visualPos;
+                    root.textRemoved(removed);
                 }
-                root.visualPos = 0
-                return
+                root.visualPos = 0;
+                return;
             }
 
-            const start = cursorPos
+            const start = cursorPos;
 
-            let inword = 0
+            let inword = 0;
 
             while (cursorPos > 0) {
-                cursorPos -= 1
+                cursorPos -= 1;
                 if (root.text[cursorPos] != " ") {
-                    continue
+                    continue;
                 }
-                if (root.text[cursorPos-1] == " ") {
-                    continue
+                if (root.text[cursorPos - 1] == " ") {
+                    continue;
                 }
-                break
+                break;
             }
 
-            const end = cursorPos
+            const end = cursorPos;
 
-            const removed = root.text.slice(end,start)
-            root.text = root.text.slice(0, end) + root.text.slice(start, root.text.length)
-            root.textRemoved(removed)
-
-        } else root.textRemoved("")
-
+            const removed = root.text.slice(end, start);
+            root.text = root.text.slice(0, end) + root.text.slice(start, root.text.length);
+            root.textRemoved(removed);
+        } else
+            root.textRemoved("");
     }
 
     function enter() {
-        root.visualPos = 0
-        root.entered(root.text)
+        root.visualPos = 0;
+        root.entered(root.text);
     }
 
     function delete_char_forward() {
         if (root.visual) {
             if (root.visualPos > 0) {
-                const removed = root.text.slice(root.cursorPos,root.cursorPos+root.visualPos)
-                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
-                root.textRemoved(removed)
+                const removed = root.text.slice(root.cursorPos, root.cursorPos + root.visualPos);
+                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + root.visualPos, root.text.length);
+                root.textRemoved(removed);
             }
             if (root.visualPos < 0) {
-                const removed = root.text.slice(root.cursorPos+root.visualPos,root.cursorPos)
-                root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
-                root.cursorPos = root.cursorPos+root.visualPos
-                root.textRemoved(removed)
+                const removed = root.text.slice(root.cursorPos + root.visualPos, root.cursorPos);
+                root.text = root.text.slice(0, root.cursorPos + root.visualPos) + root.text.slice(root.cursorPos, root.text.length);
+                root.cursorPos = root.cursorPos + root.visualPos;
+                root.textRemoved(removed);
             }
-            root.visualPos = 0
-            return
+            root.visualPos = 0;
+            return;
         }
-        const removed = root.text[root.cursorPos]
-        if (root.cursorPos == root.text.length) return
-        root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + 1)
-        root.textRemoved(removed)
+        const removed = root.text[root.cursorPos];
+        if (root.cursorPos == root.text.length)
+            return;
+        root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + 1);
+        root.textRemoved(removed);
     }
 
     function select_char_back() {
-        if (!root.editable) return
-        if (root.cursorPos == 0) return
-        root.cursorPos -= 1
-        root.visualPos += 1
+        if (!root.editable)
+            return;
+        if (root.cursorPos == 0)
+            return;
+        root.cursorPos -= 1;
+        root.visualPos += 1;
     }
 
     function select_char_forward() {
-        if (!root.editable) return
-        if (root.cursorPos == root.text.length) return
-        root.cursorPos += 1
-        root.visualPos -= 1
+        if (!root.editable)
+            return;
+        if (root.cursorPos == root.text.length)
+            return;
+        root.cursorPos += 1;
+        root.visualPos -= 1;
     }
 
     function select_char_forward_word() {
-        if (!root.editable) return
-        if (root.cursorPos == root.text.length) return
-        if (root.text[Math.min(root.cursorPos+1,text.length)] != " " && root.cursorPos < root.text.length ) {
-            root.cursorPos += 1
-            root.visualPos -= 1
+        if (!root.editable)
+            return;
+        if (root.cursorPos == root.text.length)
+            return;
+        if (root.text[Math.min(root.cursorPos + 1, text.length)] != " " && root.cursorPos < root.text.length) {
+            root.cursorPos += 1;
+            root.visualPos -= 1;
         }
         while (root.cursorPos < root.text.length && root.text[root.cursorPos] != " ") {
-            root.cursorPos += 1
-            root.visualPos -= 1
+            root.cursorPos += 1;
+            root.visualPos -= 1;
         }
     }
 
     function move_cursor_back() {
-        if (!root.editable) return
-        root.visualPos = 0
-        root.cursorPos -= 1
+        if (!root.editable)
+            return;
+        root.visualPos = 0;
+        root.cursorPos -= 1;
         if (root.cursorPos < 0) {
-            root.cursorPos = 0
+            root.cursorPos = 0;
         }
     }
 
     function move_cursor_back_word() {
-        if (!root.editable) return
-        root.visualPos = 0
-        if (root.text[Math.max(root.cursorPos-1,0)] != " " && root.cursorPos > 0 ) root.cursorPos -= 1
+        if (!root.editable)
+            return;
+        root.visualPos = 0;
+        if (root.text[Math.max(root.cursorPos - 1, 0)] != " " && root.cursorPos > 0)
+            root.cursorPos -= 1;
         while (root.cursorPos > 0 && root.text[root.cursorPos] != " ") {
-            root.cursorPos -= 1
+            root.cursorPos -= 1;
         }
         if (root.cursorPos < 0) {
-            root.cursorPos = 0
+            root.cursorPos = 0;
         }
     }
 
     function move_cursor_forward() {
-        if (!root.editable) return
-        root.visualPos = 0
-        root.cursorPos += 1
+        if (!root.editable)
+            return;
+        root.visualPos = 0;
+        root.cursorPos += 1;
         if (root.cursorPos > root.text.length) {
-            root.cursorPos = root.text.length
+            root.cursorPos = root.text.length;
         }
     }
 
     function move_cursor_forward_word() {
-        if (!root.editable) return
-        root.visualPos = 0
-        if (root.text[Math.min(root.cursorPos+1,text.length)] != " " && root.cursorPos < root.text.length ) root.cursorPos += 1
+        if (!root.editable)
+            return;
+        root.visualPos = 0;
+        if (root.text[Math.min(root.cursorPos + 1, text.length)] != " " && root.cursorPos < root.text.length)
+            root.cursorPos += 1;
         while (root.cursorPos < root.text.length && root.text[root.cursorPos] != " ") {
-            root.cursorPos += 1
+            root.cursorPos += 1;
         }
         if (root.cursorPos < 0) {
-            root.cursorPos = 0
+            root.cursorPos = 0;
         }
     }
 
     function select_all() {
-        root.visualPos = -root.text.length
-        root.cursorPos = root.text.length
+        root.visualPos = -root.text.length;
+        root.cursorPos = root.text.length;
     }
 
     function type(char: string) {
         if (root.visual) {
             if (root.visualPos > 0) {
-                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
+                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + root.visualPos, root.text.length);
             }
             if (root.visualPos < 0) {
-                root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
-                root.cursorPos = root.cursorPos+root.visualPos
+                root.text = root.text.slice(0, root.cursorPos + root.visualPos) + root.text.slice(root.cursorPos, root.text.length);
+                root.cursorPos = root.cursorPos + root.visualPos;
             }
-            root.visualPos = 0
+            root.visualPos = 0;
         }
-        root.text = root.text.slice(0, root.cursorPos) + char + root.text.slice(root.cursorPos)
-        root.cursorPos += 1
-        root.textAdded(char)
+        root.text = root.text.slice(0, root.cursorPos) + char + root.text.slice(root.cursorPos);
+        root.cursorPos += 1;
+        root.textAdded(char);
     }
 
     function copy_selected() {
-        if (root.visualPos == 0) return
-        if (!root.canCopy) return
-        let copy = ""
+        if (root.visualPos == 0)
+            return;
+        if (!root.canCopy)
+            return;
+        let copy = "";
         if (root.visual) {
             if (root.visualPos > 0) {
-                copy = root.text.slice(root.cursorPos, root.cursorPos+root.visualPos)
+                copy = root.text.slice(root.cursorPos, root.cursorPos + root.visualPos);
             }
             if (root.visualPos < 0) {
-                copy = root.text.slice(root.cursorPos+root.visualPos, root.cursorPos)
+                copy = root.text.slice(root.cursorPos + root.visualPos, root.cursorPos);
             }
         }
-        SystemInfo.copy_clipboard(copy)
-        root.textCopied(copy)
+        SystemInfo.copy_clipboard(copy);
+        root.textCopied(copy);
     }
 
     function cut_selected() {
-        if (root.visualPos == 0) return
-        if (!root.canCopy) return
-        let copy = ""
+        if (root.visualPos == 0)
+            return;
+        if (!root.canCopy)
+            return;
+        let copy = "";
         if (root.visual) {
             if (root.visualPos > 0) {
-                copy = root.text.slice(root.cursorPos, root.cursorPos+root.visualPos)
-                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos+root.visualPos, root.text.length)
+                copy = root.text.slice(root.cursorPos, root.cursorPos + root.visualPos);
+                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + root.visualPos, root.text.length);
             }
             if (root.visualPos < 0) {
-                copy = root.text.slice(root.cursorPos+root.visualPos, root.cursorPos)
-                root.text = root.text.slice(0, root.cursorPos+root.visualPos) + root.text.slice(root.cursorPos, root.text.length)
-                root.cursorPos = root.cursorPos+root.visualPos
+                copy = root.text.slice(root.cursorPos + root.visualPos, root.cursorPos);
+                root.text = root.text.slice(0, root.cursorPos + root.visualPos) + root.text.slice(root.cursorPos, root.text.length);
+                root.cursorPos = root.cursorPos + root.visualPos;
             }
-            root.visualPos = 0
+            root.visualPos = 0;
         }
-        SystemInfo.copy_clipboard(copy)
-        root.textCopied(copy)
+        SystemInfo.copy_clipboard(copy);
+        root.textCopied(copy);
     }
 
-
-    Keys.onPressed: (event) => {
-        event.accepted = true
-        if (root.disabled) return
-
-        if (event.modifiers == Qt.ControlModifier) {
+    Keys.onPressed: event => {
+        event.accepted = true;
+        if (root.disabled)
+            return;
+        if (event.modifiers & Qt.ControlModifier) {
             if (event.key == Qt.Key_C) {
-                root.copy_selected()
+                root.copy_selected();
             } else if (event.key == Qt.Key_X) {
-                root.cut_selected()
+                root.cut_selected();
             } else if (event.key == Qt.Key_V) {
-                ClipboardInfo.paste()
+                ClipboardInfo.paste();
             } else if (event.key == Qt.Key_Left) {
-                root.move_cursor_back_word()
+                root.move_cursor_back_word();
             } else if (event.key == Qt.Key_Right) {
-                root.move_cursor_forward_word()
+                root.move_cursor_forward_word();
             } else if (event.key == Qt.Key_A) {
-                root.select_all()
+                root.select_all();
             } else if (event.key == Qt.Key_Backspace) {
-                root.delete_word_back()
+                root.delete_word_back();
             }
-            return
+            return;
         }
 
         if (event.key == Qt.Key_Return) {
-            root.enter()
+            root.enter();
         } else if (event.key == Qt.Key_Escape) {
-            if (root.escapeToUnFocus) root.unFocus() 
+            if (root.escapeToUnFocus)
+                root.unFocus();
         } else if (event.key == Qt.Key_Backspace) {
-            root.delete_char_back()
+            root.delete_char_back();
         } else if (event.key == Qt.Key_Delete) {
-            root.delete_char_forward()
+            root.delete_char_forward();
         } else if (event.text.length > 0 && event.text >= " ") {
-            root.type(event.text)
+            root.type(event.text);
         } else if (event.key == Qt.Key_Left) {
-            root.move_cursor_back()
+            root.move_cursor_back();
         } else if (event.key == Qt.Key_Right) {
-            root.move_cursor_forward()
+            root.move_cursor_forward();
         }
 
-        if (event.modifiers == Qt.ShiftModifier) {
+        if (event.modifiers & Qt.ShiftModifier) {
             if (event.key == Qt.Key_Left) {
-                root.select_char_back()
+                root.select_char_back();
             } else if (event.key == Qt.Key_Right) {
-                root.select_char_forward()
+                root.select_char_forward();
             }
         }
+    }
+}
+</file>
 
+<file path="modules/CellTextFormat.qml">
+pragma ComponentBehavior: Bound
+
+import qs.config
+import qs.modules
+
+import QtQuick
+import QtQuick.Layouts
+
+Item {
+    id: root
+
+    property string text: "Sample"
+
+    implicitHeight: layout.implicitHeight
+    implicitWidth: Cell.w(w)
+
+    property int w: 40
+
+    ColumnLayout {
+        id: layout
+
+        spacing: 0
+
+        Repeater {
+
+            model: root.parseFormattedText(root.text)
+
+            delegate: Component {
+
+                Loader {
+                    id: l
+
+                    required property var modelData
+
+                    property Component paragraph: Component {
+
+                        ColumnLayout {
+                            id: p
+
+                            spacing: 0
+
+                            property var value: l.modelData?.value ?? ""
+
+                            property var lines: root.splitInlineCode(value)
+
+                            Repeater {
+
+                                model: p.lines
+
+                                delegate: RowLayout {
+
+                                    spacing: 0
+
+                                    Layout.leftMargin: Cell.w(1)
+
+                                    required property var modelData
+
+                                    Repeater {
+
+                                        model: parent.modelData
+
+                                        delegate: CellText {
+
+                                            required property int index
+                                            required property string modelData
+
+                                            text: modelData
+                                            bg: index % 2 == 0 ? "transparent" : Colors.bgOverlay
+                                            color: index % 2 == 0 ? Colors.fgBase : Colors.secondary
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    property Component blank: Component {
+                        CellText {
+                            text: ""
+                        }
+                    }
+
+                    sourceComponent: {
+                        switch (modelData.type) {
+                        case "paragraph":
+                            return paragraph;
+                        }
+                        return blank;
+                    }
+                }
+            }
+        }
     }
 
+    onTextChanged: {
+        // console.log(JSON.stringify(parseFormattedText(root.text), null, 2));
+    }
+
+    // Inline code will always be in the odd index
+    // Example: This is an `inline` code
+    //             [0]       [1]    [2]
+
+    function splitInlineCode(text): var {
+        let lines = helper.wrapText(text, w - 2).split("\n");
+        let processed_lines = [];
+        let bleeding = false;
+        for (let line of lines) {
+            if (bleeding) {
+                line = "`" + line;
+                bleeding = false;
+            }
+            let sections = line.split("`");
+            if (sections.length % 2 == 0) {
+                sections.push("");
+                bleeding = true;
+            }
+            processed_lines.push(sections);
+        }
+        return processed_lines;
+    }
+
+    // forked from CellText.qml
+    CellText {
+        id: helper
+        visible: false
+        text: ""
+    }
+
+    function parseFormattedText(input) {
+        if (input == null)
+            return [];
+        const src = String(input);
+        if (src.length === 0)
+            return [];
+
+        const lines = src.split("\n");
+        const out = [];
+
+        let i = 0;
+        while (i < lines.length) {
+            const raw = lines[i];
+            const line = raw.replace(/\s+$/, "");   // trim trailing whitespace (preserves hard-break detection if we add it later)
+
+            // ── Blank line → blank spacer entry ──
+            if (line.trim() === "") {
+                out.push({
+                    type: "blank",
+                    value: ""
+                });
+                i++;
+                continue;
+            }
+
+            // ── Code fence: ```lang ... ``` ──
+            const fenceMatch = line.match(/^```(\w*)\s*$/);
+            if (fenceMatch) {
+                const lang = fenceMatch[1] || "";
+                const codeLines = [];
+                i++;
+                while (i < lines.length && !/^```\s*$/.test(lines[i])) {
+                    codeLines.push(lines[i]);
+                    i++;
+                }
+                // Skip closing fence (if present — graceful on EOF)
+                if (i < lines.length)
+                    i++;
+                out.push({
+                    type: "code_block",
+                    value: {
+                        lang,
+                        code: codeLines.join("\n")
+                    }
+                });
+                continue;
+            }
+
+            // ── Separator: --- or *** (3+ same chars, alone on line) ──
+            if (/^(-{3,}|\*{3,}|_{3,})\s*$/.test(line)) {
+                out.push({
+                    type: "separator",
+                    value: ""
+                });
+                i++;
+                continue;
+            }
+
+            // ── Heading: # / ## / ### (cap at 3 levels) ──
+            const headingMatch = line.match(/^(#{1,3})\s+(.*)$/);
+            if (headingMatch) {
+                const level = headingMatch[1].length;
+                const text = headingMatch[2].trim();
+                out.push({
+                    type: "heading" + level,
+                    value: parseInline(text)
+                });
+                i++;
+                continue;
+            }
+
+            // ── List item (ordered or unordered, with indentation nesting) ──
+            const listMatch = line.match(/^(\s*)(\d+\.|-|\*|\+)\s+(.*)$/);
+            if (listMatch) {
+                const indent = listMatch[1].replace(/\t/g, "    ").length;
+                const level = Math.floor(indent / 2);  // 2-space indent = 1 level
+                const marker = listMatch[2];
+                const text = listMatch[3];
+                const isOrdered = /^\d+\.$/.test(marker);
+                out.push({
+                    type: isOrdered ? "list_item_ordered" : "list_item_unordered",
+                    value: {
+                        marker,
+                        level,
+                        text: parseInline(text)
+                    }
+                });
+                i++;
+                continue;
+            }
+
+            // ── Standalone image: ![alt](src) on its own line ──
+            const imageMatch = line.match(/^!\[([^\]]*)\]\(([^)\s]+)\)\s*$/);
+            if (imageMatch) {
+                out.push({
+                    type: "image",
+                    value: {
+                        alt: imageMatch[1],
+                        src: imageMatch[2]
+                    }
+                });
+                i++;
+                continue;
+            }
+
+            // ── Blockquote: > text (treat as paragraph with a marker) ──
+            // Strip up to 3 leading spaces (CommonMark indent limit), then count >'s
+            const quoteMatch = line.match(/^( {0,3})(>+)\s?(.*)$/);
+            if (quoteMatch) {
+                out.push({
+                    type: "quote",
+                    value: parseInline(quoteMatch[3]),
+                    level: quoteMatch[2].length
+                });
+                i++;
+                continue;
+            }
+
+            // ── Default: paragraph ──
+            // Collect consecutive non-blank, non-special lines into one paragraph.
+            const paraLines = [line];
+            i++;
+            while (i < lines.length) {
+                const next = lines[i].replace(/\s+$/, "");
+                if (next.trim() === "")
+                    break;
+                if (/^```/.test(next))
+                    break;
+                if (/^(-{3,}|\*{3,}|_{3,})\s*$/.test(next))
+                    break;
+                if (/^(#{1,3})\s+/.test(next))
+                    break;
+                if (/^(\s*)(\d+\.|-|\*|\+)\s+/.test(next))
+                    break;
+                if (/^!\[([^\]]*)\]\(([^)\s]+)\)\s*$/.test(next))
+                    break;
+                if (/^>\s?/.test(next))
+                    break;
+                paraLines.push(next);
+                i++;
+            }
+            out.push({
+                type: "paragraph",
+                value: parseInline(paraLines.join("\n"))
+            });
+        }
+
+        return out;
+    }
+
+    // ─── Inline parser ─────────────────────────────────────────────────────
+    //
+    // Walks the input string with a single combined regex that matches any of:
+    //   **bold**       __bold__
+    //   *italic*       _italic_
+    //   ~~strike~~
+    //   `code`
+    //   ![alt](url)    [label](url)
+    //
+    // Anything between matches is escaped (entities) and emitted as plain text.
+    // Inline images inside paragraphs become <img> tags (the QML layer can
+    // decide whether to render them or strip them).
+    //
+    // Hard line breaks within a paragraph (\n inside the value) become <br>.
+
+    function parseInline(str) {
+        if (!str)
+            return "";
+
+        // Combined regex — alternation order matters:
+        //   1. Image  ![…]  (must come before link)
+        //   2. Link    […]
+        //   3. Bold+Italic  ***…***  (3 stars — must come before plain bold)
+        //   4. Bold    **…** or __…__  (must come before italic — ** beats *)
+        //   5. Italic  *…*   or _…_    (non-greedy, must not match across **)
+        //   6. Strike  ~~…~~
+        //   7. Code    `…`   (must be last — code content is verbatim)
+        //
+        // Italic regex uses (?!\s) and (?!\*) lookarounds so that:
+        //   - `*italic*`                → matches
+        //   - `**bold**`                → already eaten by bold branch above
+        //   - `a * b * c`               → not italic (space after opening *)
+        //
+        // Note on ambiguous nesting: `**bold *both***` (2 opening, 3 closing)
+        // is not handled as nested bold+italic — like CommonMark, we close bold
+        // at the first `**`, leaving a trailing literal `*`. Users wanting
+        // bold+italic should use the unambiguous `***both***` form, which
+        // branch #3 handles cleanly.
+        const re = /!\[([^\]]*)\]\(([^)\s]+)\)|\[([^\]]+)\]\(([^)\s]+)\)|\*\*\*([\s\S]+?)\*\*\*|\*\*([\s\S]+?)\*\*|__([\s\S]+?)__|\*(?!\s)([\s\S]+?)\*(?!\*)|_(?!\s)([\s\S]+?)_(?!_)|~~([\s\S]+?)~~|`([^`]+)`/g;
+
+        let result = "";
+        let lastIndex = 0;
+        let m;
+
+        while ((m = re.exec(str)) !== null) {
+            // Emit plain text before this match
+            if (m.index > lastIndex) {
+                result += escapeHtml(str.substring(lastIndex, m.index));
+            }
+
+            if (m[1] !== undefined) {
+                // Image
+                result += `<img src="${escapeAttr(m[2])}" alt="${escapeAttr(m[1])}">`;
+            } else if (m[3] !== undefined) {
+                // Link
+                result += `<a href="${escapeAttr(m[4])}">${parseInline(m[3])}</a>`;
+            } else if (m[5] !== undefined) {
+                // Bold+Italic ***…***
+                result += `<b><i>${parseInline(m[5])}</i></b>`;
+            } else if (m[6] !== undefined) {
+                // Bold **…**
+                result += `<b>${parseInline(m[6])}</b>`;
+            } else if (m[7] !== undefined) {
+                // Bold __…__
+                result += `<b>${parseInline(m[7])}</b>`;
+            } else if (m[8] !== undefined) {
+                // Italic *…*
+                result += `<i>${parseInline(m[8])}</i>`;
+            } else if (m[9] !== undefined) {
+                // Italic _…_
+                result += `<i>${parseInline(m[9])}</i>`;
+            } else if (m[10] !== undefined) {
+                // Strike
+                result += `<s>${parseInline(m[10])}</s>`;
+            } else if (m[11] !== undefined) {
+                // Inline code — NO recursive parse (content is verbatim)
+                result += `\`${escapeHtml(m[11])}\``;
+            }
+
+            lastIndex = re.lastIndex;
+        }
+
+        // Tail
+        if (lastIndex < str.length) {
+            result += escapeHtml(str.substring(lastIndex));
+        }
+
+        // Newlines → <br> (CellText.richify already does this, but we may
+        // have introduced them via multi-line paragraph collection).
+        return result.replace(/\n/g, "<br>");
+    }
+
+    function escapeHtml(s) {
+        if (s == null)
+            return "";
+        return String(s).replace(/[&<>"']/g, ch => ({
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;"
+                // '"': "&quot;",
+                // "'": "&#39;"
+                })[ch]);
+    }
+
+    function escapeAttr(s) {
+        if (s == null)
+            return "";
+        // For use inside attribute values: escape quotes + ampersand.
+        return String(s).replace(/[&"]/g, ch => ({
+                    "&": "&amp;",
+                    '"': "&quot;"
+                })[ch]);
+    }
 }
 </file>
 
@@ -25531,6 +26145,177 @@ Item {
     }
 
 }
+</file>
+
+<file path="scripts/readme/quickmenu_usage.txt">
+Welcome to **Quick Menu**! This utility allows you to instantly trigger actions using custom keybinds.
+
+When activated, a popup appears that disables almost every desktop keyboard bind, giving you total control over every possible key mapped to *any action*.
+
+---
+
+## Interface Overview
+
+The popup displays a list of mapped actions. Each item includes:
+* An action **dropdown menu**
+* A **text field** to type your keybind
+
+Below the list, you will find:
+* An `Add` button to create new mappings
+* A `Manage custom actions` button
+
+---
+
+## Keybind Rules
+
+When typing binds into the text field, please follow these formatting rules:
+
+### 1. Modifiers & Syntax
+* Modifiers can be written as the first letter, an abbreviation, or the full word.
+  * *Example:* `c`, `ctrl`, or `control`
+* Modifiers must join the final key using either a `+` or a `-`.
+  * *Example:* `Control+C` or `C-c`
+
+### 2. Forbidden Keys
+* The `Meta` / `Super` key and `Escape` are strictly forbidden.
+* These are desktop-exclusive keys.
+
+### 3. Duplicates
+* Duplicate binds are not allowed.
+* The *first* bind is kept.
+* The duplicate is ignored and marked with an exclamation mark (`!`).
+
+### 4. Supported Keys
+* **Letters:** `a` - `z`
+* **Numbers:** `0` - `9`
+* **Functions:** `f1` - `f35`
+* **Navigation:** `up`, `down`, `left`, `right`
+* **Special:** `ret`, `return`, `tab`, `pup`, `pageup`, `pdown`, `pagedown`, `backspace`, `bs`, `end`
+* **Brackets:** Any type, open or closed
+* **Symbols:**
+  * `tick` (`)
+  * `plus` (+)
+  * `minus` (-)
+  * `equal` (=)
+  * `slash` (/)
+  * `backslash` (\)
+  * `quote` (")
+  * `singlequote` (')
+  * `pipe` (|)
+  * `dot` / `period` (.)
+  * `comma` (,)
+  * `exclamation` (!)
+  * `at` (@)
+  * `hashtag` / `tag` (#)
+  * `dollar` ($)
+  * `percent` / `percentage` (%)
+  * `caret` / `hat` (^)
+  * `ampersand` / `amp` / `and` (&)
+  * `asterisk` / `multiply` / `star` (*)
+  * `tilde` (~)
+
+### 5. Unsupported Keys
+* Unrecognized keys will trigger an error.
+* They will be colored **red**, marked with `!`, or simply ignored.
+
+---
+
+## Actions & Customization
+
+The action dropdown defaults to built-in desktop actions. You can expand this by adding your own.
+
+### Managing Custom Actions
+* Click `Manage custom actions` to begin.
+* Each custom action requires:
+  * A **label**
+  * A **shell command**
+* Commands execute in a single line. For complex tasks, call a script or binary:
+  > `sh -c path/to/your/script`
+* Custom actions can be added or removed at any time.
+
+### Overriding & Orphaned Binds
+* Custom labels **override** default actions if they share a similar name.
+* Labels are converted to `snake_case` as their ID for internal lookup.
+* If a keybind is mapped to an action that gets removed, it automatically defaults to `No operation`.
+
+1. test
+2. test2
+
+
+Here's a test document that exercises every feature the parser supports. Save it as `test.md` (or paste it into whatever consumer you're testing):
+
+```markdown
+# Quick Menu Help
+
+Welcome to the **Quick Menu**. This screen demonstrates every block and inline feature the parser understands.
+
+Use `keybinds` to navigate. Press *Esc* to close the menu at any time. For the full reference, see the [official docs](https://example.com/docs).
+
+## Getting Started
+
+1. Open the menu with `Ctrl+Space`
+2. Type a bind shorthand like `C-A` for **Ctrl+A**
+3. Press `Enter` to confirm
+
+### Bind Shorthand Syntax
+
+The shorthand uses single-letter modifier prefixes separated by `-`:
+
+- `C-` means **Ctrl**
+- `S-` means **Shift**
+- `M-` means **Meta**
+- `A-` means **Alt**
+- `C-S-A` means ***Ctrl+Shift+A***
+
+> Blacklisted keys are highlighted in red. Duplicates are also flagged — only the first matching bind actually dispatches.
+
+## Tips and Tricks
+
+You can combine modifiers freely. For example, `C-M-S-A` is a valid four-modifier combo.
+
+- Nested lists work too
+  - This is one level deep
+    - And this is two levels deep
+- Back to the top level
+
+```
+
+Now let me show you a code block:
+
+```js
+function greet(name) {
+    // **not bold** — this is verbatim code
+    return "hello " + name;
+}
+```
+
+![screenshot](https://example.com/screenshot.png)
+
+Some inline emphasis mix: **bold with *italic* inside**, ~~struck through~~, and a `code span` for good measure.
+
+---
+
+That's everything. For more info, visit [the project page](https://example.com) or read the [changelog](https://example.com/changelog).
+
+## Credits
+
+Built with Quickshell + QML. Special thanks to ~~nobody~~ everyone.
+```
+
+This covers:
+- **All 3 heading levels** (`#`, `##`, `###`)
+- **Paragraphs** (single-line and multi-line collected)
+- **Ordered + unordered lists**, including nested (2-level deep)
+- **Inline code** `` `Ctrl+Space` ``
+- **Bold** `**...**`, **italic** `*...*`, **bold+italic** `***...***`, **strike** `~~...~~`
+- **Links** `[label](url)` — both standalone and inline within emphasis
+- **Standalone image** `![alt](url)`
+- **Blockquote** `>`
+- **Code block** with language tag (and contains `**not bold**` to prove it stays verbatim)
+- **Separator** `---`
+- **Blank lines** between sections
+
+When you feed this through `parseFormattedText`, you should get back an array with ~30+ entries spanning every `type` value in the parser. Good test corpus for both the parser and your eventual QML renderer.
 </file>
 
 <file path="scripts/wallpaperShaders/fade.frag">
@@ -34372,7 +35157,31 @@ if __name__ == "__main__":
 </file>
 
 <file path="scripts/config.json">
-{"hints":true,"quickStart":true,"minimal":false,"textBasedVolume":false,"hideBar":false,"bottomBar":false,"optimizeMemory":true,"safeNotifications":false,"dnd":false,"wallpaperAutoAdvance":true,"shadow":true,"hyprAnim":true,"hyprBlur":false,"bgCava":false,"bgCavaLock":false,"screenshotStay":true,"screenshotNotify":false,"screenshotCursor":false,"lockScreenMusic":false,"sfx":false,"userLightMode":false,"autoLightMode":true,"debug":false}
+{
+  "hints": true,
+  "quickStart": true,
+  "minimal": false,
+  "textBasedVolume": false,
+  "hideBar": false,
+  "bottomBar": false,
+  "optimizeMemory": true,
+  "safeNotifications": false,
+  "dnd": false,
+  "wallpaperAutoAdvance": true,
+  "shadow": true,
+  "hyprAnim": true,
+  "hyprBlur": true,
+  "bgCava": false,
+  "bgCavaLock": false,
+  "screenshotStay": true,
+  "screenshotNotify": false,
+  "screenshotCursor": false,
+  "lockScreenMusic": false,
+  "sfx": false,
+  "userLightMode": false,
+  "autoLightMode": true,
+  "debug": false
+}
 </file>
 
 <file path="scripts/config.py">
@@ -34900,7 +35709,209 @@ echo "TERMINATE"
 </file>
 
 <file path="scripts/emojis_recent.json">
-[{"category":"emoji","description":"Skull <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-negative","skull","body","dead","death","face","fairy","fairytale","i’m","lmao","monster","skull","tale","yolo"],"label":"💀","type":"exec","value":["bash","-c","sleep 0.2 && wtype 💀"]},{"category":"emoji","description":"Clown face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-costume","clown face","clown","face"],"label":"🤡","type":"exec","value":["bash","-c","sleep 0.2 && wtype 🤡"]},{"category":"emoji","description":"Loudly crying face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-concerned","loudly crying face","bawling","cry","crying","face","loudly","sad","sob","tear","tears","unhappy"],"label":"😭","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😭"]},{"category":"emoji","description":"Person shrugging <i>People & Body</i>","group":"People & Body","keywords":["person-gesture","person shrugging","doubt","dunno","guess","idk","ignorance","indifference","knows","maybe","person","shrug","shrugging","whatever","who"],"label":"🤷","type":"exec","value":["bash","-c","sleep 0.2 && wtype 🤷"]},{"category":"emoji","description":"Fire <i>Travel & Places</i>","group":"Travel & Places","keywords":["sky & weather","fire","af","burn","fire","flame","hot","lit","litaf","tool"],"label":"🔥","type":"exec","value":["bash","-c","sleep 0.2 && wtype 🔥"]},{"category":"emoji","description":"Heart on fire <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["heart","heart on fire","burn","fire","heart","love","lust","sacred"],"label":"❤‍🔥","type":"exec","value":["bash","-c","sleep 0.2 && wtype ❤‍🔥"]},{"category":"emoji","description":"Grinning face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-smiling","grinning face","cheerful","cheery","face","grin","grinning","happy","laugh","nice","smile","smiling","teeth"],"label":"😀","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😀"]},{"category":"emoji","description":"Pensive face <i>Smileys & Emotion</i>","group":"Smileys & Emotion","keywords":["face-sleepy","pensive face","awful","bored","dejected","died","disappointed","face","losing","lost","pensive","sad","sucks"],"label":"😔","type":"exec","value":["bash","-c","sleep 0.2 && wtype 😔"]}]
+[
+  {
+    "category": "emoji",
+    "description": "Loudly crying face <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-concerned",
+      "loudly crying face",
+      "bawling",
+      "cry",
+      "crying",
+      "face",
+      "loudly",
+      "sad",
+      "sob",
+      "tear",
+      "tears",
+      "unhappy"
+    ],
+    "label": "😭",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 😭"
+    ]
+  },
+  {
+    "category": "emoji",
+    "description": "Skull <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-negative",
+      "skull",
+      "body",
+      "dead",
+      "death",
+      "face",
+      "fairy",
+      "fairytale",
+      "i’m",
+      "lmao",
+      "monster",
+      "skull",
+      "tale",
+      "yolo"
+    ],
+    "label": "💀",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 💀"
+    ]
+  },
+  {
+    "category": "emoji",
+    "description": "Clown face <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-costume",
+      "clown face",
+      "clown",
+      "face"
+    ],
+    "label": "🤡",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 🤡"
+    ]
+  },
+  {
+    "category": "emoji",
+    "description": "Person shrugging <i>People & Body</i>",
+    "group": "People & Body",
+    "keywords": [
+      "person-gesture",
+      "person shrugging",
+      "doubt",
+      "dunno",
+      "guess",
+      "idk",
+      "ignorance",
+      "indifference",
+      "knows",
+      "maybe",
+      "person",
+      "shrug",
+      "shrugging",
+      "whatever",
+      "who"
+    ],
+    "label": "🤷",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 🤷"
+    ]
+  },
+  {
+    "category": "emoji",
+    "description": "Fire <i>Travel & Places</i>",
+    "group": "Travel & Places",
+    "keywords": [
+      "sky & weather",
+      "fire",
+      "af",
+      "burn",
+      "fire",
+      "flame",
+      "hot",
+      "lit",
+      "litaf",
+      "tool"
+    ],
+    "label": "🔥",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 🔥"
+    ]
+  },
+  {
+    "category": "emoji",
+    "description": "Heart on fire <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "heart",
+      "heart on fire",
+      "burn",
+      "fire",
+      "heart",
+      "love",
+      "lust",
+      "sacred"
+    ],
+    "label": "❤‍🔥",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype ❤‍🔥"
+    ]
+  },
+  {
+    "category": "emoji",
+    "description": "Grinning face <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-smiling",
+      "grinning face",
+      "cheerful",
+      "cheery",
+      "face",
+      "grin",
+      "grinning",
+      "happy",
+      "laugh",
+      "nice",
+      "smile",
+      "smiling",
+      "teeth"
+    ],
+    "label": "😀",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 😀"
+    ]
+  },
+  {
+    "category": "emoji",
+    "description": "Pensive face <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-sleepy",
+      "pensive face",
+      "awful",
+      "bored",
+      "dejected",
+      "died",
+      "disappointed",
+      "face",
+      "losing",
+      "lost",
+      "pensive",
+      "sad",
+      "sucks"
+    ],
+    "label": "😔",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 😔"
+    ]
+  }
+]
 </file>
 
 <file path="scripts/emojis.json">
@@ -129537,6 +130548,283 @@ def verify_user_credentials(password_text):
 print(verify_user_credentials("tsubenn"))
 </file>
 
+<file path="scripts/parseFormattedText.js">
+// ─── CellTextFormat parser ─────────────────────────────────────────────
+//
+// Converts a Markdown-like string into a flat list of {value, type} objects
+// that a future CellTextFormat.qml component will render.
+//
+// Block-level types (one per output entry):
+//   heading1 / heading2 / heading3      → "# H1", "## H2", "### H3"
+//   paragraph                           → plain text line (may contain inline markup)
+//   list_item_ordered                   → "1. item"  (value: { marker, text, level })
+//   list_item_unordered                 → "- item"   (value: { marker, text, level })
+//   code_block                          → fenced ``` block (value: { lang, code })
+//   separator                           → "--- or ***
+//   image                               → ![alt](src) on its own line (value: { alt, src })
+//   blank                               → empty line (vertical spacer)
+//
+// Inline markup (carried inside the .value string of paragraph / list / heading entries):
+//   <b>…</b>   bold         from **…** or __…__
+//   <i>…</i>   italic       from *…* or _…_
+//   <s>…</s>   strike       from ~~…~~
+//   <code>…</code>          from `…`
+//   <a href="url">label</a> from [label](url)
+//   <img src="url" alt="…"> from ![alt](url) inside a paragraph
+//   <br>                    from a hard line break (two trailing spaces + \n)
+//
+// These tags are exactly what CellText.richify() already understands, so
+// the future QML component can pass `value` straight through to CellText.text.
+//
+// Design choices:
+//   - Single-pass tokenizer, line-oriented for blocks.
+//   - Inline parser uses a scanning regex with alternation rather than
+//     nested replace() calls — keeps O(n) and avoids double-escaping bugs.
+//   - Malformed input never throws: unclosed emphasis falls through as
+//     literal text, unclosed link as literal `[label](url`.
+//   - Indentation under a list line is tracked as `level` (0,1,2,...) so
+//     the QML layer can indent nested lists.
+
+function parseFormattedText(input) {
+    if (input == null) return []
+    const src = String(input)
+    if (src.length === 0) return []
+
+    const lines = src.split("\n")
+    const out = []
+
+    let i = 0
+    while (i < lines.length) {
+        const raw = lines[i]
+        const line = raw.replace(/\s+$/, "")   // trim trailing whitespace (preserves hard-break detection if we add it later)
+
+        // ── Blank line → blank spacer entry ──
+        if (line.trim() === "") {
+            out.push({ type: "blank", value: "" })
+            i++
+            continue
+        }
+
+        // ── Code fence: ```lang ... ``` ──
+        const fenceMatch = line.match(/^```(\w*)\s*$/)
+        if (fenceMatch) {
+            const lang = fenceMatch[1] || ""
+            const codeLines = []
+            i++
+            while (i < lines.length && !/^```\s*$/.test(lines[i])) {
+                codeLines.push(lines[i])
+                i++
+            }
+            // Skip closing fence (if present — graceful on EOF)
+            if (i < lines.length) i++
+            out.push({
+                type: "code_block",
+                value: { lang, code: codeLines.join("\n") }
+            })
+            continue
+        }
+
+        // ── Separator: --- or *** (3+ same chars, alone on line) ──
+        if (/^(-{3,}|\*{3,}|_{3,})\s*$/.test(line)) {
+            out.push({ type: "separator", value: "" })
+            i++
+            continue
+        }
+
+        // ── Heading: # / ## / ### (cap at 3 levels) ──
+        const headingMatch = line.match(/^(#{1,3})\s+(.*)$/)
+        if (headingMatch) {
+            const level = headingMatch[1].length
+            const text = headingMatch[2].trim()
+            out.push({
+                type: "heading" + level,
+                value: parseInline(text)
+            })
+            i++
+            continue
+        }
+
+        // ── List item (ordered or unordered, with indentation nesting) ──
+        const listMatch = line.match(/^(\s*)(\d+\.|-|\*|\+)\s+(.*)$/)
+        if (listMatch) {
+            const indent = listMatch[1].replace(/\t/g, "    ").length
+            const level = Math.floor(indent / 2)  // 2-space indent = 1 level
+            const marker = listMatch[2]
+            const text = listMatch[3]
+            const isOrdered = /^\d+\.$/.test(marker)
+            out.push({
+                type: isOrdered ? "list_item_ordered" : "list_item_unordered",
+                value: {
+                    marker,
+                    level,
+                    text: parseInline(text)
+                }
+            })
+            i++
+            continue
+        }
+
+        // ── Standalone image: ![alt](src) on its own line ──
+        const imageMatch = line.match(/^!\[([^\]]*)\]\(([^)\s]+)\)\s*$/)
+        if (imageMatch) {
+            out.push({
+                type: "image",
+                value: { alt: imageMatch[1], src: imageMatch[2] }
+            })
+            i++
+            continue
+        }
+
+        // ── Blockquote: > text (treat as paragraph with a marker) ──
+        const quoteMatch = line.match(/^>\s?(.*)$/)
+        if (quoteMatch) {
+            out.push({
+                type: "quote",
+                value: parseInline(quoteMatch[1])
+            })
+            i++
+            continue
+        }
+
+        // ── Default: paragraph ──
+        // Collect consecutive non-blank, non-special lines into one paragraph.
+        const paraLines = [line]
+        i++
+        while (i < lines.length) {
+            const next = lines[i].replace(/\s+$/, "")
+            if (next.trim() === "") break
+            if (/^```/.test(next)) break
+            if (/^(-{3,}|\*{3,}|_{3,})\s*$/.test(next)) break
+            if (/^(#{1,3})\s+/.test(next)) break
+            if (/^(\s*)(\d+\.|-|\*|\+)\s+/.test(next)) break
+            if (/^!\[([^\]]*)\]\(([^)\s]+)\)\s*$/.test(next)) break
+            if (/^>\s?/.test(next)) break
+            paraLines.push(next)
+            i++
+        }
+        out.push({
+            type: "paragraph",
+            value: parseInline(paraLines.join("\n"))
+        })
+    }
+
+    return out
+}
+
+// ─── Inline parser ─────────────────────────────────────────────────────
+//
+// Walks the input string with a single combined regex that matches any of:
+//   **bold**       __bold__
+//   *italic*       _italic_
+//   ~~strike~~
+//   `code`
+//   ![alt](url)    [label](url)
+//
+// Anything between matches is escaped (entities) and emitted as plain text.
+// Inline images inside paragraphs become <img> tags (the QML layer can
+// decide whether to render them or strip them).
+//
+// Hard line breaks within a paragraph (\n inside the value) become <br>.
+
+function parseInline(str) {
+    if (!str) return ""
+
+    // Combined regex — alternation order matters:
+    //   1. Image  ![…]  (must come before link)
+    //   2. Link    […]
+    //   3. Bold+Italic  ***…***  (3 stars — must come before plain bold)
+    //   4. Bold    **…** or __…__  (must come before italic — ** beats *)
+    //   5. Italic  *…*   or _…_    (non-greedy, must not match across **)
+    //   6. Strike  ~~…~~
+    //   7. Code    `…`   (must be last — code content is verbatim)
+    //
+    // Italic regex uses (?!\s) and (?!\*) lookarounds so that:
+    //   - `*italic*`                → matches
+    //   - `**bold**`                → already eaten by bold branch above
+    //   - `a * b * c`               → not italic (space after opening *)
+    //
+    // Note on ambiguous nesting: `**bold *both***` (2 opening, 3 closing)
+    // is not handled as nested bold+italic — like CommonMark, we close bold
+    // at the first `**`, leaving a trailing literal `*`. Users wanting
+    // bold+italic should use the unambiguous `***both***` form, which
+    // branch #3 handles cleanly.
+    const re = /!\[([^\]]*)\]\(([^)\s]+)\)|\[([^\]]+)\]\(([^)\s]+)\)|\*\*\*([\s\S]+?)\*\*\*|\*\*([\s\S]+?)\*\*|__([\s\S]+?)__|\*(?!\s)([\s\S]+?)\*(?!\*)|_(?!\s)([\s\S]+?)_(?!_)|~~([\s\S]+?)~~|`([^`]+)`/g
+
+    let result = ""
+    let lastIndex = 0
+    let m
+
+    while ((m = re.exec(str)) !== null) {
+        // Emit plain text before this match
+        if (m.index > lastIndex) {
+            result += escapeHtml(str.substring(lastIndex, m.index))
+        }
+
+        if (m[1] !== undefined) {
+            // Image
+            result += `<img src="${escapeAttr(m[2])}" alt="${escapeAttr(m[1])}">`
+        } else if (m[3] !== undefined) {
+            // Link
+            result += `<a href="${escapeAttr(m[4])}">${parseInline(m[3])}</a>`
+        } else if (m[5] !== undefined) {
+            // Bold+Italic ***…***
+            result += `<b><i>${parseInline(m[5])}</i></b>`
+        } else if (m[6] !== undefined) {
+            // Bold **…**
+            result += `<b>${parseInline(m[6])}</b>`
+        } else if (m[7] !== undefined) {
+            // Bold __…__
+            result += `<b>${parseInline(m[7])}</b>`
+        } else if (m[8] !== undefined) {
+            // Italic *…*
+            result += `<i>${parseInline(m[8])}</i>`
+        } else if (m[9] !== undefined) {
+            // Italic _…_
+            result += `<i>${parseInline(m[9])}</i>`
+        } else if (m[10] !== undefined) {
+            // Strike
+            result += `<s>${parseInline(m[10])}</s>`
+        } else if (m[11] !== undefined) {
+            // Inline code — NO recursive parse (content is verbatim)
+            result += `<code>${escapeHtml(m[11])}</code>`
+        }
+
+        lastIndex = re.lastIndex
+    }
+
+    // Tail
+    if (lastIndex < str.length) {
+        result += escapeHtml(str.substring(lastIndex))
+    }
+
+    // Newlines → <br> (CellText.richify already does this, but we may
+    // have introduced them via multi-line paragraph collection).
+    return result.replace(/\n/g, "<br>")
+}
+
+function escapeHtml(s) {
+    if (s == null) return ""
+    return String(s).replace(/[&<>"']/g, ch => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[ch])
+}
+
+function escapeAttr(s) {
+    if (s == null) return ""
+    // For use inside attribute values: escape quotes + ampersand.
+    return String(s).replace(/[&"]/g, ch => ({
+        "&": "&amp;",
+        '"': "&quot;"
+    })[ch])
+}
+
+console.log(parseFormattedText("hello"))
+</file>
+
 <file path="scripts/password_checker.c">
 #include <security/pam_appl.h>
 #include <security/pam_misc.h>
@@ -129688,43 +130976,92 @@ echo "TERMINATE"
 </file>
 
 <file path="scripts/quickmenu_config.json">
-[
-  {
-    "binds": [
-      "W"
-    ],
-    "action": "open_power"
-  },
-  {
-    "binds": [
-      "Q"
-    ],
-    "action": "open_wallpaper"
-  },
-  {
-    "binds": [
-      "C"
-    ],
-    "action": "open_color"
-  },
-  {
-    "binds": [
-      "P"
-    ],
-    "action": "open_pacman"
-  },
-  {
-    "binds": [
-      "W"
-    ],
-    "action": "open_media"
+{
+  "binds": [
+    {
+      "binds": [
+        "W"
+      ],
+      "action": "open_power_menu"
+    },
+    {
+      "binds": [
+        "Q"
+      ],
+      "action": "open_wallpaper_menu"
+    },
+    {
+      "binds": [
+        "E"
+      ],
+      "action": "open_media_player"
+    },
+    {
+      "binds": [
+        "P"
+      ],
+      "action": "open_pacman"
+    }
+  ],
+  "custom_actions": {
+    "open_ghostty": {
+      "label": "Open Ghostty",
+      "cmd": "ghostty"
+    }
   }
-]
+}
 </file>
 
 <file path="scripts/quit.sh">
 pkill -f qs
 hyprctl reload
+</file>
+
+<file path="scripts/readme_loader.py">
+#!/usr/bin/env python3
+import os
+import sys
+import json
+
+def main():
+    # 1. Check if a directory argument was provided
+    if len(sys.argv) < 2:
+        print("Usage: python script.py <directory_path>")
+        sys.exit(1)
+
+    target_dir = sys.argv[1]
+
+    # 2. Check if the provided path is actually a directory
+    if not os.path.isdir(target_dir):
+        print(f"Error: '{target_dir}' is not a valid directory.")
+        sys.exit(1)
+
+    result_dict = {}
+
+    # 3. Loop through all files in the target directory
+    for filename in os.listdir(target_dir):
+        # Filter for files ending with .txt
+        if filename.endswith('.txt'):
+            file_path = os.path.join(target_dir, filename)
+
+            # Check if it's a file (and not a directory named 'something.txt')
+            if os.path.isfile(file_path):
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        # Split the extension and grab just the name part
+                        file_name_without_ext = os.path.splitext(filename)[0]
+
+                        # Store it in the dictionary
+                        result_dict[file_name_without_ext] = f.read()
+                except Exception as e:
+                    print(f"Warning: Could not read {filename}. Error: {e}", file=sys.stderr)
+
+    # 4. Convert the dictionary to a valid JSON string and print it
+    json_output = json.dumps(result_dict, indent=2)
+    print(json_output)
+
+if __name__ == "__main__":
+    main()
 </file>
 
 <file path="scripts/reminders.json">
@@ -129817,15 +131154,6 @@ hyprctl reload
       "body": "",
       "span": 30,
       "urgency": 1,
-      "time": ""
-    }
-  ],
-  "02-07-2026": [
-    {
-      "title": "CISCO EXAM",
-      "body": "Do the cisco netacad introduction exam.",
-      "span": 1,
-      "urgency": 2,
       "time": ""
     }
   ]
@@ -130029,7 +131357,7 @@ echo "Done! Check the '$TARGET_DIR/.qscache' directory."
     "posY": 0.5
   },
   "wallpapers": [
-    "minami.jpg"
+    "asuka_landscape.jpg"
   ],
   "config": {},
   "live": true,
@@ -132116,6 +133444,9 @@ Singleton {
 
     function decode(index: int) {
         SystemInfo.runDetached(["bash", "-c", "clipvault get --index " + index + " | wl-copy"])
+    }
+
+    function paste() {
     }
 
     function load(object: var, index: int) {
@@ -134892,9 +136223,7 @@ import Quickshell
 import Quickshell.Io
 
 Singleton {
-
     id: root
-
 
     /*
 
@@ -134926,53 +136255,228 @@ Singleton {
 
     property string path: SystemInfo.configdir + "/scripts/quickmenu_config.json"
 
-    property var blacklist: [
-        "esc",
-        "meta",
-        "print",
+    property string custom_path: SystemInfo.configdir + "/scripts/custom_actions.json"
+
+    property var blacklist: ["esc", "print",]
+
+    property var binds: [
+        {
+            binds: ["W"],
+            action: "open_power_menu"
+        },
+        {
+            binds: ["Q"],
+            action: "open_wallpaper_menu"
+        }
     ]
 
-    property var faultyIndex: []
+    property var custom_actions: ({
+            "open_ghostty": {
+                "label": "Open ghostty",
+                "cmd": "ghostty"
+            }
+        })
 
     onBindsChanged: {
-        evalShortcuts()
-        let fixed = false
-        for (const i in binds) {
-            if (!actions[binds[i].action]) {
-                binds[i].action = "no_op"
-                fixed = true
-            }
-        }
-        if (fixed) {
-            bindsChanged()
-            return
+        if (!evalShortcuts()) {
+            bindsChanged();
+            return;
         }
         if (loader.preload) {
-            saveConfig()
+            saveConfig();
         } else {
-            loader.preload = true
+            loader.preload = true;
         }
     }
 
     function saveConfig() {
-        loader.setText(JSON.stringify(binds,null,2))
+        let config = {
+            "binds": root.binds,
+            "custom_actions": root.custom_actions
+        };
+        loader.setText(JSON.stringify(config, null, 2));
     }
 
-    function evalShortcuts() {
-        let result = []
-        for (const i in binds) {
-            let eval_binds = binds[i].binds
-            let eval_action = actions[binds[i].action].action
-            result.push({
-                "binds": eval_binds,
-                "action": eval_action,
-            })
+    function decodeBinds(binds: var): var {
+        let usage = [];
+        let display = [];
+        let abbriviate = {
+            "pageup": "pup",
+            "pagedown": "pdown",
+            "return": "ret",
+            "backspace": "bs",
+            "delete": "del",
+            "up": "↑",
+            "left": "←",
+            "down": "↓",
+            "right": "→",
+            "plus": "+",
+            "minus": "-",
+            "equal": "=",
+            "semicolon": ";",
+            "colon": ":",
+            "comma": ",",
+            "period": ".",
+            "slash": "/",
+            "pipe": "|",
+            "backslash": "\\",
+            "singlequote": "'",
+            "quote": '"',
+            "tick": '`',
+            "dot": ".",
+            "doublequote": '"',
+            "grave": "`",
+            "tilde": "~",
+            "exclamation": "!",
+            "at": "@",
+            "hashtag": "#",
+            "tag": "#",
+            "dollar": "$",
+            "money": "$",
+            "percent": "%",
+            "percentage": "%",
+            "caret": "^",
+            "ampersand": "&",
+            "amp": "&",
+            "and": "&",
+            "asterisk": "*",
+            "multiply": "*",
+            "star": "*"
+        };
+        let special = {
+            "print": "print",
+            "ret": "return",
+            "bs": "backspace",
+            "pup": "pgup",
+            "pdwn": "pgdown",
+            "end": "end",
+            "tab": "tab",
+            "del": "delete",
+            "f1": "f1",
+            "f2": "f2",
+            "f3": "f3",
+            "f4": "f4",
+            "f5": "f5",
+            "f6": "f6",
+            "f7": "f7",
+            "f8": "f8",
+            "f9": "f9",
+            "f10": "f10",
+            "f11": "f11",
+            "f12": "f12",
+            "f13": "f13",
+            "f14": "f14",
+            "f15": "f15",
+            "f16": "f16",
+            "f17": "f17",
+            "f18": "f18",
+            "f19": "f19",
+            "f20": "f20",
+            "f21": "f21",
+            "f22": "f22",
+            "f23": "f23",
+            "f24": "f24",
+            "f25": "f25",
+            "f26": "f26",
+            "f27": "f27",
+            "f28": "f28",
+            "f29": "f29",
+            "f30": "f30",
+            "f31": "f31",
+            "f32": "f32",
+            "f33": "f33",
+            "f34": "f34",
+            "f35": "f35",
+            "↑": "up",
+            "←": "left",
+            "↓": "down",
+            "→": "right"
+        };
+        for (const bind of binds) {
+            const regex = /^((c|ctrl|control)[-+])?((s|shift)[-+])?((a|alt)[-+])?(\S+)(!)?$/i;
+            let match = bind.match(regex);
+            let combo = "";
+            let revised = "";
+            if (match) {
+                if (match[2]) {
+                    combo += "ctrl+";
+                    revised += "C-";
+                }
+                if (match[4]) {
+                    combo += "shift+";
+                    revised += "S-";
+                }
+                if (match[6]) {
+                    combo += "alt+";
+                    revised += "A-";
+                }
+                if (match[7]) {
+                    let key = match[7].toLowerCase();
+                    let abb = abbriviate[key];
+                    key = abb ?? key;
+                    if (key.length > 1) {
+                        if (!key.endsWith("!")) {
+                            if (Object.keys(special).includes(key)) {
+                                key = special[key];
+                            } else {
+                                key = "";
+                            }
+                        }
+                    } else {
+                        key = match[7];
+                    }
+                    if (key) {
+                        combo += key.toLowerCase();
+                        revised += abb?.toUpperCase() ?? match[7].toUpperCase();
+                    } else {
+                        combo = "";
+                        revised += match[7].toUpperCase() + "!";
+                    }
+                }
+                if (match[8]) {
+                    combo = "";
+                    revised += "!";
+                }
+            }
+            usage.push(combo);
+            display.push(revised);
         }
-        root.shortcuts = result
+        return {
+            usage: usage,
+            display: display
+        };
+    }
+
+    function evalShortcuts(): bool {
+        let success = true;
+        let result = [];
+        let dup = [];
+        for (const i in binds) {
+            if (!actions[binds[i].action]) {
+                binds[i].action = "no_operation";
+                success = false;
+            }
+            let eval_binds = decodeBinds(binds[i].binds);
+            let eval_action = actions[binds[i].action].action;
+            for (const j in eval_binds.display) {
+                if (dup.includes(eval_binds.display[j])) {
+                    eval_binds.display[j] += "!";
+                    success = false;
+                } else {
+                    dup.push(eval_binds.display[j]);
+                }
+            }
+            binds[i].binds = eval_binds.display;
+            result.push({
+                "binds": eval_binds.usage,
+                "action": eval_action
+            });
+        }
+        root.shortcuts = result;
+        return success;
     }
 
     FileView {
-
         id: loader
 
         path: root.path
@@ -134980,136 +136484,278 @@ Singleton {
         preload: false
 
         onLoaded: {
-            root.binds = JSON.parse(text())
+            const data = JSON.parse(text());
+            const keys = Object.keys(data);
+            if (!keys.includes("binds"))
+                data.binds = root.binds;
+            if (!keys.includes("custom_actions"))
+                data.custom_actions = root.custom_actions;
+            root.binds = data.binds;
+            root.custom_actions = data.custom_actions;
         }
 
         printErrors: false
-        onLoadFailed: (error) => {
+        onLoadFailed: error => {
             if (error == FileViewError.FileNotFound) {
-                setText(JSON.stringify(root.binds,null,2))
+                root.saveConfig();
             }
         }
-
     }
 
-    property var binds: [
-        {
-            binds: ["W"],
-            action: "open_power"
-        },
-        {
-            binds: ["Q"],
-            action: "open_wallpaper"
-        }
-    ]
-
     function setAction(index: int, new_action: string) {
-        binds[index].action = new_action
-        bindsChanged()
+        binds[index].action = new_action;
+        bindsChanged();
     }
 
     function setBinds(index: int, new_binds: var) {
-        binds[index].binds = new_binds
-        bindsChanged()
+        binds[index].binds = new_binds;
+        bindsChanged();
     }
 
     function removeBinds(index: int) {
-        binds.splice(index,1)
-        bindsChanged()
+        binds.splice(index, 1);
+        bindsChanged();
     }
 
     function addBinds() {
         binds.push({
             binds: [""],
-            action: "no_op",
-        })
-        bindsChanged()
+            action: "no_operation"
+        });
+        bindsChanged();
+    }
+
+    function identify(label: string): string {
+        return label.trim().toLowerCase().split(" ").join("_").trim();
+    }
+
+    function editCustom(id: string, label: string, cmd: string) {
+        let identity = identify(label);
+        if (identity == id) {
+            custom_actions[id] = {
+                "label": label.trim(),
+                "cmd": cmd
+            };
+        } else {
+            delete custom_actions[id];
+            custom_actions[identity] = {
+                "label": label.trim(),
+                "cmd": cmd.trim()
+            };
+        }
+        custom_actionsChanged();
+    }
+
+    function addCustom() {
+        let customs = Object.keys(custom_actions);
+        if (customs.length > 1) {
+            customs = customs[customs.length - 1];
+            editCustom(customs + "_copy", custom_actions[customs].label + " copy", custom_actions[customs].cmd);
+        } else {
+            editCustom("custom_action", "Custom action", "echo \"Custom action\"");
+        }
+    }
+
+    function removeCustom(id: string) {
+        if (Object.keys(custom_actions).includes(id)) {
+            delete custom_actions[id];
+            custom_actionsChanged();
+        }
     }
 
     property var action_index: {
-        let result = {}
-        let keys = Object.keys(actions)
+        let result = {};
+        let keys = Object.keys(actions);
         for (let i = 0; i < keys.length; i++) {
-            result[keys[i]] = i
+            result[keys[i]] = i;
         }
-        return result
+        return result;
     }
 
-    property var actions: Object.assign(default_actions,custom_actions)
+    property var actions: {
+        let custom = custom_actions;
+        let actions = Object.assign({}, default_actions);
+        for (const i in custom) {
+            actions[i] = {
+                "label": custom[i].label,
+                "action": function () {
+                    SystemInfo.runDetached(["sh", "-c", custom[i].cmd]);
+                }
+            };
+        }
+        return actions;
+    }
 
-    property var custom_actions: ({
-    })
+    /*
+
+    {
+        "label": "Open ghostty",
+        "cmd": "ghostty"
+    }
+
+    */
+
+    function refresh() {
+        let custom = custom_actions;
+        let actions = Object.assign({}, default_actions);
+        for (const i in custom) {
+            actions[i] = {
+                "label": custom[i].label,
+                "action": function () {
+                    SystemInfo.runDetached(["sh", "-c", custom[i].cmd]);
+                }
+            };
+        }
+        root.actions = actions;
+        root.actionsChanged();
+    }
+
+    onCustom_actionsChanged: {
+        if (loader.preload) {
+            refresh();
+            bindsChanged();
+            saveConfig();
+        }
+    }
 
     property var default_actions: {
-        "no_op": {
-            "label": "No operation",
-            "action": function() {
-            },
+        "no_operation": {
+            "label": "No Operation",
+            "action": function () {}
         },
-        "open_power": {
-            "label": "Open power menu",
-            "action": function() {
-                PopupManager.open("power")
-            },
+        "open_power_menu": {
+            "label": "Open Power Menu",
+            "action": function () {
+                PopupManager.open("power");
+            }
         },
-        "open_wallpaper": {
-            "label": "Open wallpaper menu",
-            "action": function() {
-                PopupManager.open("wallpaper")
-            },
+        "open_wallpaper_menu": {
+            "label": "Open Wallpaper Menu",
+            "action": function () {
+                PopupManager.open("wallpaper");
+            }
         },
         "open_calendar": {
-            "label": "Open calendar",
-            "action": function() {
-                PopupManager.open("calendar")
-            },
+            "label": "Open Calendar",
+            "action": function () {
+                PopupManager.open("calendar");
+            }
         },
-        "open_media": {
-            "label": "Open media player",
-            "action": function() {
-                PopupManager.open("media_player")
-            },
+        "open_media_player": {
+            "label": "Open Media Player",
+            "action": function () {
+                PopupManager.open("media_player");
+            }
         },
         "open_notification": {
-            "label": "Open notification",
-            "action": function() {
-                PopupManager.signalSent("control_panel", "notif")
-                PopupManager.open("control_panel")
-            },
+            "label": "Open Notification",
+            "action": function () {
+                PopupManager.signalSent("control_panel", "notif");
+                PopupManager.open("control_panel");
+            }
         },
-        "open_mixer": {
-            "label": "Open audio mixer",
-            "action": function() {
-                PopupManager.signalSent("control_panel", "mixer")
-                PopupManager.open("control_panel")
-            },
+        "open_audio_mixer": {
+            "label": "Open Audio Mixer",
+            "action": function () {
+                PopupManager.signalSent("control_panel", "mixer");
+                PopupManager.open("control_panel");
+            }
         },
-        "open_system": {
-            "label": "Open system info",
-            "action": function() {
-                PopupManager.open("system")
-            },
+        "open_system_info": {
+            "label": "Open System info",
+            "action": function () {
+                PopupManager.open("system");
+            }
         },
         "open_pacman": {
-            "label": "Open pacman",
-            "action": function() {
-                PopupManager.open("pacman")
-            },
+            "label": "Open Pacman",
+            "action": function () {
+                PopupManager.open("pacman");
+            }
         },
-        "open_color": {
-            "label": "Open color menu",
-            "action": function() {
-                PopupManager.open("color")
-            },
+        "open_color_menu": {
+            "label": "Open Color Menu",
+            "action": function () {
+                PopupManager.open("color");
+            }
         },
-        "open_launcher": {
-            "label": "Open app launcher",
-            "action": function() {
-                PopupManager.open("launcher")
-            },
+        "open_app_launcher": {
+            "label": "Open App Launcher",
+            "action": function () {
+                PopupManager.open("launcher");
+            }
         }
     }
+}
 
+/*
+
+I want you to write a document/guide of a utility I'm currently building.
+It's called a Quick Menu.
+My goal of this utility is for the user to quickly do certain things using keybinds.
+When they activate this utility, a popup shows up and disable almost every keyboard binds of the desktop, giving the user every possible keybinds mapped to a certain action, *any action*.
+The UI of this popup includes a list of actions that the user can add or remove. Each items includes a drop down menu including the action and a text field including the keybinds that the user can type in which activate the action selected by the drop down menu.
+For the text field, there are rules to how you type in the keybinds.
+
+* No duplicate binds, if opening the app launcher was mapped to W above and below has opening the calendar mapped to also W, it will ignore the latter and throw an exclamation marks on the duplicated one and only keep the first one with the bind.
+* No Meta/Super key nor Escape, this is the desktop exclusive key so it's forbidden to use it.
+* Modifiers should be properly or the first char with those modifiers (e.g control can be written as "c", "ctrl" or "control") written and joined with final key using either a "-" or a "+" (e.g control + C can be written as "C-c").
+* The key can be of the following value:
+   * ret, return: Return
+   * tab: Tab
+   * pup, pageup: Page up
+   * pdown, pagedown: Page down
+   * backspace, bs: Backspace
+   * end: End
+   * f1 - f35: F1-F35
+   * up/down/left/right: Up/Down/Left/Right
+   * a-z: A-Z
+   * 0-9: 0-9
+   * Any sorts of brackets, open or closed
+   * tick, `, plus, +, minus, -, equal, =, slash, /, backslash, \, quote, ", singlequote, ', pipe, |, dot, period, ".", comma, ",", exclamation,!, at, @, hashtag, tag, #, dollar, $, percent, percentage, %, caret, hat, ^, ampersand, amp, and, &, asterisk, multiply, star, *, tilde,~.
+* Which ever key that is not supported would be thrown an error indicated by a exlamation mark next to the bind and be colored red or simply be ignored.
+
+For the actions provided in the drop down menu, by default will include things that the desktop can do, but you can add your custom action by pressing the "Manage custom actions" and it will lead you to a menu of custom actions.
+Each custom actions needs a label and a shell command, yes the custom actions can only execute 1 line of command, so if you wanna have a more complex command please call your custom script from here via "sh -c path/to/your/script" or as a binary if available.
+Custom actions shall not be labeled similar to the default as it will override the default actions if it has similar label. The label will be converted into snake case as its id for look up.
+Custom actions can be added or removed.
+If a keybinds is being mapped to a non-existence action (maybe it's because you'be removed it), it will be set back to "No operation" by default.
+
+Please write the document in plain text with some uses of tags like <b></b> or <i></i>. Try not to use tables, just bullet points and pure lists. Try your best to make it pleasing to read and not too cramped
+This text will be rendered inside of a small TUI window with a size of 46 by 18 will scroll view on the vertical and not horizontal. Also the renderer has its own way of handling wrapping so no needs wrapping it yourself.
+
+*/
+</file>
+
+<file path="services/ReadmeInfo.qml">
+pragma Singleton
+
+import qs.services
+
+import Quickshell
+import Quickshell.Io
+
+Singleton {
+    id: root
+
+    property var files: ({})
+
+    function getValue(filename: string): string {
+        return files[filename] ?? "File not found";
+    }
+
+    Process {
+
+        command: ["python", SystemInfo.configdir + "/scripts/readme_loader.py", SystemInfo.configdir + "/scripts/readme"]
+
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: {
+                // console.log(text);
+                root.files = JSON.parse(text);
+            }
+        }
+    }
 }
 </file>
 

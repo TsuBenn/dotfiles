@@ -7,20 +7,30 @@ import qs.services
 import QtQuick
 import QtQuick.Layouts
 
+import Quickshell.Io
+
 CellPopup {
     id: root
 
     w: 48
     h: 20
 
-    shortcuts: TextFieldManager.active ? [] : QuickMenuInfo.shortcuts
+    shortcuts: TextFieldManager.active || custom ? [] : QuickMenuInfo.shortcuts
 
     property bool custom: false
+    property bool help: false
 
     escapeToClose: !TextFieldManager.active
 
     onShortcutsChanged: {
-        refreshShortcuts();
+        if (visible) {
+            refreshShortcuts();
+        }
+    }
+
+    onVisibleChanged: {
+        custom = false;
+        help = false;
     }
 
     Cells {
@@ -36,7 +46,7 @@ CellPopup {
 
             ColumnLayout {
 
-                visible: !root.custom
+                visible: !root.custom && !root.help
 
                 spacing: 0
 
@@ -104,10 +114,11 @@ CellPopup {
                                         spacing: Cell.w(1)
 
                                         CellDropdown {
+                                            id: action_list
                                             text: ""
                                             w: list.w - 13 - 8
                                             h: 5
-                                            selected: QuickMenuInfo.action_index[keybind.action]
+                                            selected: QuickMenuInfo.action_index[keybind.action] ?? 0
                                             items: {
                                                 let result = [];
                                                 for (const actions of Object.keys(QuickMenuInfo.actions)) {
@@ -116,6 +127,7 @@ CellPopup {
                                                         "action": () => QuickMenuInfo.setAction(keybind.index, actions)
                                                     });
                                                 }
+                                                // console.log(JSON.stringify(result, null, 2));
                                                 return result;
                                             }
                                         }
@@ -146,6 +158,8 @@ CellPopup {
                                                 placeholder: "Binds"
 
                                                 onEntered: input => {
+                                                    if (input.trim() == "")
+                                                        return;
                                                     let new_binds = input.split(",");
                                                     for (const i in new_binds) {
                                                         new_binds[i] = new_binds[i].trim();
@@ -192,6 +206,19 @@ CellPopup {
                     spacing: Cell.w(1)
 
                     CellButton {
+                        text: "?"
+                        color: [Colors.bgOverlay, Colors.fgBase]
+                        fg: [Colors.fgBase, Colors.bgSurface]
+
+                        onReleased: button => {
+                            if (button == "L") {
+                                root.custom = false;
+                                root.help = true;
+                            }
+                        }
+                    }
+
+                    CellButton {
                         text: "Manage custom actions"
                         color: [Colors.bgOverlay, Colors.fgBase]
                         fg: [Colors.fgBase, Colors.bgSurface]
@@ -199,6 +226,7 @@ CellPopup {
                         onReleased: button => {
                             if (button == "L") {
                                 root.custom = true;
+                                root.help = false;
                             }
                         }
                     }
@@ -290,13 +318,24 @@ CellPopup {
                                             placeholder: "Custom action label"
 
                                             bindText: custom.label
+
+                                            onEntered: input => {
+                                                QuickMenuInfo.editCustom(custom.modelData, input, custom.cmd);
+                                            }
                                         }
                                     }
 
                                     CellButton {
                                         text: "-"
+
                                         fg: [Colors.onAccent, Colors.bgOverlay]
                                         color: [Colors.accentStrong, Colors.fgBase]
+
+                                        onReleased: button => {
+                                            if (button == "L") {
+                                                QuickMenuInfo.removeCustom(custom.modelData);
+                                            }
+                                        }
                                     }
                                 }
 
@@ -340,6 +379,10 @@ CellPopup {
                                             placeholder: "Shell command to execute..."
 
                                             bindText: custom.cmd
+
+                                            onEntered: input => {
+                                                QuickMenuInfo.editCustom(custom.modelData, custom.label, input);
+                                            }
                                         }
                                     }
                                 }
@@ -373,6 +416,7 @@ CellPopup {
                         onReleased: button => {
                             if (button == "L") {
                                 root.custom = false;
+                                root.help = false;
                             }
                         }
                     }
@@ -384,6 +428,62 @@ CellPopup {
                         onReleased: button => {
                             if (button == "L") {
                                 QuickMenuInfo.addCustom();
+                            }
+                        }
+                    }
+                }
+            }
+
+            ColumnLayout {
+
+                visible: root.help
+
+                spacing: 0
+
+                CellText {
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                    text: "HOW TO USE"
+                    color: Colors.secondary
+                    font: Cell.fontB
+                }
+
+                CellSeparator {
+                    w: box.contentW
+                    color: Colors.accentStrong
+                }
+
+                CellScrollView {
+                    id: readme
+
+                    w: box.contentW
+                    h: box.contentH - 4
+
+                    source: CellTextFormat {
+                        w: readme.contentW
+                        text: ReadmeInfo.getValue("quickmenu_usage")
+                    }
+                }
+
+                CellSeparator {
+                    w: box.contentW
+                    color: Colors.accentStrong
+                }
+
+                RowLayout {
+
+                    Layout.alignment: Qt.AlignRight
+                    Layout.rightMargin: Cell.w(1)
+
+                    spacing: Cell.w(1)
+
+                    CellButton {
+                        text: "Return"
+                        fg: [Colors.fgBase, Colors.bgSurface]
+                        color: [Colors.bgOverlay, Colors.fgBase]
+                        onReleased: button => {
+                            if (button == "L") {
+                                root.custom = false;
+                                root.help = false;
                             }
                         }
                     }

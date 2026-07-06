@@ -8,7 +8,6 @@ import QtQuick
 import Qt5Compat.GraphicalEffects
 
 Item {
-
     id: root
 
     property var monitor
@@ -27,9 +26,9 @@ Item {
 
     property int safeMargin: 2
 
-    signal marginsPressed()
+    signal marginsPressed
 
-    signal promoted()
+    signal promoted
 
     readonly property bool isTop: PopupManager.isTop(name)
 
@@ -37,63 +36,69 @@ Item {
         target: PopupManager
         function onSigClose(name) {
             if (root.name == name) {
-                root.onSigClose()
-                PopupManager.close(root.name)
+                root.onSigClose();
+                PopupManager.close(root.name);
             }
         }
     }
 
-    function onSigClose() {}
+    function onSigClose() {
+    }
 
     onEscapeToCloseChanged: {
-        refreshShortcuts()
+        if (isTop) {
+            refreshShortcuts();
+        }
     }
 
     onIsTopChanged: {
         if (isTop) {
-            root.promoted()
-            refreshShortcuts()
+            console.log(root.name);
+            root.promoted();
+            refreshShortcuts();
         }
     }
 
     function refreshShortcuts() {
+        console.log("bruh");
         ShortcutInfo.shortcuts = [
             {
                 binds: "Escape",
                 active: root.escapeToClose,
                 action: () => PopupManager.sigClose(root.name)
             },
-            ...shortcuts
-        ] 
+            ...shortcuts];
     }
 
     property bool escapeToClose: true
 
     x: {
-        if (!monitor) return Cell.w(cellX)
+        if (!monitor)
+            return Cell.w(cellX);
         if (cellX <= 0) {
-            return 0
+            return 0;
         }
-        if (cellX + w <= Cell.wCount(monitor.width,"floor")) {
-            return Cell.w(cellX)
+        if (cellX + w <= Cell.wCount(monitor.width, "floor")) {
+            return Cell.w(cellX);
         }
-        return Cell.w(Cell.wCount(monitor.width,"floor") - w)
+        return Cell.w(Cell.wCount(monitor.width, "floor") - w);
     }
     y: {
-        if (!monitor) return Cell.h(cellY)
+        if (!monitor)
+            return Cell.h(cellY);
         if (cellY <= -1) {
-            return Cell.h(-1)
+            return Cell.h(-1);
         }
-        if (cellY + h <= Cell.hCount(monitor.height,"floor")) {
-            return Cell.h(cellY)
+        if (cellY + h <= Cell.hCount(monitor.height, "floor")) {
+            return Cell.h(cellY);
         }
-        return Cell.h(Cell.hCount(monitor.height,"floor") - h)
+        return Cell.h(Cell.hCount(monitor.height, "floor") - h);
     }
 
     focus: true
 
     function close() {
-        PopupManager.sigClose(root.name)
+        PopupManager.sigClose(root.name);
     }
 
     implicitWidth: Cell.w(w)
@@ -101,11 +106,7 @@ Item {
 
     MouseControl {
 
-        visible: (
-            !ContextMenuManager.visible
-            && !DropdownManager.visible
-            && !HintManager.visible
-        )
+        visible: (!ContextMenuManager.visible && !DropdownManager.visible && !HintManager.visible)
 
         anchors.fill: parent
 
@@ -115,19 +116,18 @@ Item {
         anchors.bottomMargin: -root.monitor?.height ?? 0
 
         onReleased: {
-            PopupManager.sigClose(PopupManager.getTop())
+            PopupManager.sigClose(PopupManager.getTop());
         }
     }
 
     MouseControl {
         anchors.fill: parent
-        anchors.leftMargin: -Cell.w(root.safeMargin)*2
-        anchors.rightMargin: -Cell.w(root.safeMargin)*2
+        anchors.leftMargin: -Cell.w(root.safeMargin) * 2
+        anchors.rightMargin: -Cell.w(root.safeMargin) * 2
         anchors.topMargin: -Cell.h(root.safeMargin)
         anchors.bottomMargin: -Cell.h(root.safeMargin)
         onReleased: {
-            root.marginsPressed()
+            root.marginsPressed();
         }
     }
-
 }

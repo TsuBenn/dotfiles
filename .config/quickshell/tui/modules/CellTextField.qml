@@ -91,13 +91,11 @@ Item {
                 unFocus();
                 return;
             }
-            if (bindText) {
-                text = Qt.binding(() => bindText);
-                cursorPos = bindText.length;
-                return;
-            }
             if (autoClear) {
                 set("");
+            } else if (bindText) {
+                text = Qt.binding(() => bindText);
+                cursorPos = bindText.length;
             }
             TextFieldManager.activated();
             resetCursor();
@@ -105,14 +103,14 @@ Item {
             TextFieldManager.deactivated();
             showCursor = false;
             visualPos = 0;
+            if (autoApply) {
+                if (text != bindText)
+                    entered(text);
+            }
             if (bindText) {
                 text = Qt.binding(() => bindText);
                 cursorPos = bindText.length;
                 return;
-            }
-            if (autoApply) {
-                if (text != bindText)
-                    entered(text);
             }
         }
     }

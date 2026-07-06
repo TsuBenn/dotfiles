@@ -1,32 +1,50 @@
-[
-  {
-    "binds": [
-      "W"
-    ],
-    "action": "open_power"
-  },
-  {
-    "binds": [
-      "Q"
-    ],
-    "action": "open_wallpaper"
-  },
-  {
-    "binds": [
-      "E"
-    ],
-    "action": "open_media"
-  },
-  {
-    "binds": [
-      "P"
-    ],
-    "action": "open_pacman"
-  },
-  {
-    "binds": [
-      "C"
-    ],
-    "action": "open_color"
+{
+  "binds": [
+    {
+      "binds": [
+        "W"
+      ],
+      "action": "open_power_menu"
+    },
+    {
+      "binds": [
+        "Q"
+      ],
+      "action": "open_wallpaper_menu"
+    },
+    {
+      "binds": [
+        "E"
+      ],
+      "action": "open_media_player"
+    },
+    {
+      "binds": [
+        "P"
+      ],
+      "action": "open_pacman"
+    },
+    {
+      "binds": [
+        "C"
+      ],
+      "action": "open_color_menu"
+    },
+    {
+      "binds": [
+        "O"
+      ],
+      "action": "open_obs"
+    }
+  ],
+  "custom_actions": {
+    "open_ghostty": {
+      "label": "Open Ghostty",
+      "cmd": "ghostty"
+    },
+    "open_obs": {
+      "label": "Open OBS",
+      "cmd": "obs"
+    }
   }
-]
+}

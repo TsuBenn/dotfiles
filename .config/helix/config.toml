@@ -3,9 +3,9 @@ theme = "gruvbox"
 [editor]
 bufferline = "multiple"
 cursorline = true
-indent-heuristic = "tree-sitter"
+indent-heuristic = "hybrid"
 jump-label-alphabet = "qwertyuiopasdfghjklzxcvbmn"
-end-of-line-diagnostics = "warning"
+end-of-line-diagnostics = "info"
 popup-border = "popup"
 trim-trailing-whitespace = true
 idle-timeout = 5
@@ -21,6 +21,9 @@ mode.select = "SELECT"
 [editor.lsp]
 display-inlay-hints = true
 
+[editor.soft-wrap]
+enable = true
+
 [editor.cursor-shape]
 normal = "block"
 insert = "bar"
@@ -30,7 +33,7 @@ select = "block"
 render = true
 
 [editor.inline-diagnostics]
-# cursor-line = "warning"
+cursor-line = "warning"
 
 [keys.normal]
 
@@ -85,12 +88,14 @@ render = true
     A-i = ["extend_to_line_bounds", "delete_selection", "move_line_up", "move_line_up", "paste_after", "format_selections"]
     A-k = ["extend_to_line_bounds", "delete_selection", "paste_after", "format_selections"]
 
-    # Save
-    C-s = [":write",":format"]
+    # Format and Save
+    C-s = [":format", ":write"]
 
     # Undo/Redo
     C-z = ["undo", "keep_primary_selection"]
     C-y = "redo"
+
+    C-f = "align_view_center"
 
     # Newline
     "ret" = "open_below"
@@ -151,9 +156,6 @@ render = true
     "[" = "@vma["
     "'" = "@vma'"
     '"' = '@vma"'
-
-    # Match brackets
-    " " = "match_brackets"
 
     # Surround ops
     a = "@miwms"
@@ -251,7 +253,7 @@ render = true
     o = "flip_selections"
 
     # Save
-    C-s = [":write",":format","normal_mode"]
+    C-s = [":format", ":write", "normal_mode"]
 
     # Switch case
     U = "switch_case"
@@ -280,7 +282,7 @@ render = true
 
     # Extend to word/line
     v = "@miw"
-    V = ["extend_line_below"]
+    V = ["extend_to_line_bounds"]
 
     # Increment/Decrement
     "A-=" = "increment"
@@ -299,10 +301,10 @@ render = true
 [keys.select." "]
 
     # Big movement
-    i = "goto_file_start"
-    l = "goto_line_end"
-    k = "goto_file_end"
-    j = "goto_line_start"
+    i = "extend_to_file_start"
+    l = "extend_to_line_end"
+    k = "extend_to_file_end"
+    j = "extend_to_line_start"
 
     # Bracket select inclusive
     "(" = "@ma("
@@ -326,7 +328,7 @@ render = true
     "esc" = ["normal_mode", "move_char_left"]
 
     # Save
-    C-s = [":write",":format","normal_mode"]
+    C-s = [":format", ":write", "normal_mode"]
 
     # Undo
     C-z = ["undo", "normal_mode","keep_primary_selection"]

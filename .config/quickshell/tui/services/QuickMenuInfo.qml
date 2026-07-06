@@ -39,7 +39,27 @@ Singleton {
 
     property string path: SystemInfo.configdir + "/scripts/quickmenu_config.json"
 
+    property string custom_path: SystemInfo.configdir + "/scripts/custom_actions.json"
+
     property var blacklist: ["esc", "print",]
+
+    property var binds: [
+        {
+            binds: ["W"],
+            action: "open_power_menu"
+        },
+        {
+            binds: ["Q"],
+            action: "open_wallpaper_menu"
+        }
+    ]
+
+    property var custom_actions: ({
+            "open_ghostty": {
+                "label": "Open ghostty",
+                "cmd": "ghostty"
+            }
+        })
 
     onBindsChanged: {
         if (!evalShortcuts()) {
@@ -54,20 +74,68 @@ Singleton {
     }
 
     function saveConfig() {
-        loader.setText(JSON.stringify(binds, null, 2));
+        let config = {
+            "binds": root.binds,
+            "custom_actions": root.custom_actions
+        };
+        loader.setText(JSON.stringify(config, null, 2));
     }
 
     function decodeBinds(binds: var): var {
         let usage = [];
         let display = [];
+        let abbriviate = {
+            "pageup": "pup",
+            "pagedown": "pdown",
+            "return": "ret",
+            "backspace": "bs",
+            "delete": "del",
+            "up": "↑",
+            "left": "←",
+            "down": "↓",
+            "right": "→",
+            "plus": "+",
+            "minus": "-",
+            "equal": "=",
+            "semicolon": ";",
+            "colon": ":",
+            "comma": ",",
+            "period": ".",
+            "slash": "/",
+            "pipe": "|",
+            "backslash": "\\",
+            "singlequote": "'",
+            "quote": '"',
+            "tick": '`',
+            "dot": ".",
+            "doublequote": '"',
+            "grave": "`",
+            "tilde": "~",
+            "exclamation": "!",
+            "at": "@",
+            "hashtag": "#",
+            "tag": "#",
+            "dollar": "$",
+            "money": "$",
+            "percent": "%",
+            "percentage": "%",
+            "caret": "^",
+            "ampersand": "&",
+            "amp": "&",
+            "and": "&",
+            "asterisk": "*",
+            "multiply": "*",
+            "star": "*"
+        };
         let special = {
             "print": "print",
             "ret": "return",
             "bs": "backspace",
             "pup": "pgup",
-            "pdown": "pgdown",
+            "pdwn": "pgdown",
             "end": "end",
             "tab": "tab",
+            "del": "delete",
             "f1": "f1",
             "f2": "f2",
             "f3": "f3",
@@ -103,10 +171,10 @@ Singleton {
             "f33": "f33",
             "f34": "f34",
             "f35": "f35",
-            "up": "up",
-            "left": "left",
-            "right": "right",
-            "down": "down"
+            "↑": "up",
+            "←": "left",
+            "↓": "down",
+            "→": "right"
         };
         for (const bind of binds) {
             const regex = /^((c|ctrl|control)[-+])?((s|shift)[-+])?((a|alt)[-+])?(\S+)(!)?$/i;
@@ -128,6 +196,8 @@ Singleton {
                 }
                 if (match[7]) {
                     let key = match[7].toLowerCase();
+                    let abb = abbriviate[key];
+                    key = abb ?? key;
                     if (key.length > 1) {
                         if (!key.endsWith("!")) {
                             if (Object.keys(special).includes(key)) {
@@ -141,7 +211,7 @@ Singleton {
                     }
                     if (key) {
                         combo += key.toLowerCase();
-                        revised += match[7].toUpperCase();
+                        revised += abb?.toUpperCase() ?? match[7].toUpperCase();
                     } else {
                         combo = "";
                         revised += match[7].toUpperCase() + "!";
@@ -167,7 +237,7 @@ Singleton {
         let dup = [];
         for (const i in binds) {
             if (!actions[binds[i].action]) {
-                binds[i].action = "no_op";
+                binds[i].action = "no_operation";
                 success = false;
             }
             let eval_binds = decodeBinds(binds[i].binds);
@@ -198,27 +268,23 @@ Singleton {
         preload: false
 
         onLoaded: {
-            root.binds = JSON.parse(text());
+            const data = JSON.parse(text());
+            const keys = Object.keys(data);
+            if (!keys.includes("binds"))
+                data.binds = root.binds;
+            if (!keys.includes("custom_actions"))
+                data.custom_actions = root.custom_actions;
+            root.binds = data.binds;
+            root.custom_actions = data.custom_actions;
         }
 
         printErrors: false
         onLoadFailed: error => {
             if (error == FileViewError.FileNotFound) {
-                setText(JSON.stringify(root.binds, null, 2));
+                root.saveConfig();
             }
         }
     }
-
-    property var binds: [
-        {
-            binds: ["W"],
-            action: "open_power"
-        },
-        {
-            binds: ["Q"],
-            action: "open_wallpaper"
-        }
-    ]
 
     function setAction(index: int, new_action: string) {
         binds[index].action = new_action;
@@ -238,7 +304,7 @@ Singleton {
     function addBinds() {
         binds.push({
             binds: [""],
-            action: "no_op"
+            action: "no_operation"
         });
         bindsChanged();
     }
@@ -266,9 +332,19 @@ Singleton {
 
     function addCustom() {
         let customs = Object.keys(custom_actions);
-        customs = customs[customs.length - 1];
-        console.log(customs);
-        editCustom(customs + "_copy", custom_actions[customs].label + " copy", custom_actions[customs].cmd);
+        if (customs.length > 1) {
+            customs = customs[customs.length - 1];
+            editCustom(customs + "_copy", custom_actions[customs].label + " copy", custom_actions[customs].cmd);
+        } else {
+            editCustom("custom_action", "Custom action", "echo \"Custom action\"");
+        }
+    }
+
+    function removeCustom(id: string) {
+        if (Object.keys(custom_actions).includes(id)) {
+            delete custom_actions[id];
+            custom_actionsChanged();
+        }
     }
 
     property var action_index: {
@@ -282,7 +358,7 @@ Singleton {
 
     property var actions: {
         let custom = custom_actions;
-        let actions = default_actions;
+        let actions = Object.assign({}, default_actions);
         for (const i in custom) {
             actions[i] = {
                 "label": custom[i].label,
@@ -303,79 +379,133 @@ Singleton {
 
     */
 
-    property var custom_actions: ({
-            "open_ghostty": {
-                "label": "Open ghostty",
-                "cmd": "ghostty"
-            }
-        })
+    function refresh() {
+        let custom = custom_actions;
+        let actions = Object.assign({}, default_actions);
+        for (const i in custom) {
+            actions[i] = {
+                "label": custom[i].label,
+                "action": function () {
+                    SystemInfo.runDetached(["sh", "-c", custom[i].cmd]);
+                }
+            };
+        }
+        root.actions = actions;
+        root.actionsChanged();
+    }
+
+    onCustom_actionsChanged: {
+        if (loader.preload) {
+            refresh();
+            bindsChanged();
+            saveConfig();
+        }
+    }
 
     property var default_actions: {
-        "no_op": {
-            "label": "No operation",
+        "no_operation": {
+            "label": "No Operation",
             "action": function () {}
         },
-        "open_power": {
-            "label": "Open power menu",
+        "open_power_menu": {
+            "label": "Open Power Menu",
             "action": function () {
                 PopupManager.open("power");
             }
         },
-        "open_wallpaper": {
-            "label": "Open wallpaper menu",
+        "open_wallpaper_menu": {
+            "label": "Open Wallpaper Menu",
             "action": function () {
                 PopupManager.open("wallpaper");
             }
         },
         "open_calendar": {
-            "label": "Open calendar",
+            "label": "Open Calendar",
             "action": function () {
                 PopupManager.open("calendar");
             }
         },
-        "open_media": {
-            "label": "Open media player",
+        "open_media_player": {
+            "label": "Open Media Player",
             "action": function () {
                 PopupManager.open("media_player");
             }
         },
         "open_notification": {
-            "label": "Open notification",
+            "label": "Open Notification",
             "action": function () {
                 PopupManager.signalSent("control_panel", "notif");
                 PopupManager.open("control_panel");
             }
         },
-        "open_mixer": {
-            "label": "Open audio mixer",
+        "open_audio_mixer": {
+            "label": "Open Audio Mixer",
             "action": function () {
                 PopupManager.signalSent("control_panel", "mixer");
                 PopupManager.open("control_panel");
             }
         },
-        "open_system": {
-            "label": "Open system info",
+        "open_system_info": {
+            "label": "Open System info",
             "action": function () {
                 PopupManager.open("system");
             }
         },
         "open_pacman": {
-            "label": "Open pacman",
+            "label": "Open Pacman",
             "action": function () {
                 PopupManager.open("pacman");
             }
         },
-        "open_color": {
-            "label": "Open color menu",
+        "open_color_menu": {
+            "label": "Open Color Menu",
             "action": function () {
                 PopupManager.open("color");
             }
         },
-        "open_launcher": {
-            "label": "Open app launcher",
+        "open_app_launcher": {
+            "label": "Open App Launcher",
             "action": function () {
                 PopupManager.open("launcher");
             }
         }
     }
 }
+
+/*
+
+I want you to write a document/guide of a utility I'm currently building.
+It's called a Quick Menu.
+My goal of this utility is for the user to quickly do certain things using keybinds.
+When they activate this utility, a popup shows up and disable almost every keyboard binds of the desktop, giving the user every possible keybinds mapped to a certain action, *any action*.
+The UI of this popup includes a list of actions that the user can add or remove. Each items includes a drop down menu including the action and a text field including the keybinds that the user can type in which activate the action selected by the drop down menu.
+For the text field, there are rules to how you type in the keybinds.
+
+* No duplicate binds, if opening the app launcher was mapped to W above and below has opening the calendar mapped to also W, it will ignore the latter and throw an exclamation marks on the duplicated one and only keep the first one with the bind.
+* No Meta/Super key nor Escape, this is the desktop exclusive key so it's forbidden to use it.
+* Modifiers should be properly or the first char with those modifiers (e.g control can be written as "c", "ctrl" or "control") written and joined with final key using either a "-" or a "+" (e.g control + C can be written as "C-c").
+* The key can be of the following value:
+   * ret, return: Return
+   * tab: Tab
+   * pup, pageup: Page up
+   * pdown, pagedown: Page down
+   * backspace, bs: Backspace
+   * end: End
+   * f1 - f35: F1-F35
+   * up/down/left/right: Up/Down/Left/Right
+   * a-z: A-Z
+   * 0-9: 0-9
+   * Any sorts of brackets, open or closed
+   * tick, `, plus, +, minus, -, equal, =, slash, /, backslash, \, quote, ", singlequote, ', pipe, |, dot, period, ".", comma, ",", exclamation,!, at, @, hashtag, tag, #, dollar, $, percent, percentage, %, caret, hat, ^, ampersand, amp, and, &, asterisk, multiply, star, *, tilde,~.
+* Which ever key that is not supported would be thrown an error indicated by a exlamation mark next to the bind and be colored red or simply be ignored.
+
+For the actions provided in the drop down menu, by default will include things that the desktop can do, but you can add your custom action by pressing the "Manage custom actions" and it will lead you to a menu of custom actions.
+Each custom actions needs a label and a shell command, yes the custom actions can only execute 1 line of command, so if you wanna have a more complex command please call your custom script from here via "sh -c path/to/your/script" or as a binary if available.
+Custom actions shall not be labeled similar to the default as it will override the default actions if it has similar label. The label will be converted into snake case as its id for look up.
+Custom actions can be added or removed.
+If a keybinds is being mapped to a non-existence action (maybe it's because you'be removed it), it will be set back to "No operation" by default.
+
+Please write the document in plain text with some uses of tags like <b></b> or <i></i>. Try not to use tables, just bullet points and pure lists. Try your best to make it pleasing to read and not too cramped
+This text will be rendered inside of a small TUI window with a size of 46 by 18 will scroll view on the vertical and not horizontal. Also the renderer has its own way of handling wrapping so no needs wrapping it yourself.
+
+*/
