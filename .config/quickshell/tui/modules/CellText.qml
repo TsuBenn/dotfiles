@@ -44,20 +44,20 @@ Item {
 
     onVisibleChanged: {
         if (visible) {
-            updateText()
+            updateText();
         }
     }
 
     Component.onCompleted: {
-        updateText()
+        updateText();
     }
 
     onPreferedWChanged: {
-        updateText()
+        updateText();
     }
 
     onTextChanged: {
-        updateText()
+        updateText();
     }
 
     // ── Text processing helpers ─────────────────────────────────────────────
@@ -68,7 +68,7 @@ Item {
     // MUST run before richify(), because richify() converts spaces to &nbsp;
     // (the literal text "&nbsp;", not U+00A0) and \s doesn't match that.
     function hoistWhitespace(str) {
-        return str.replace(/(<[^>]+>)(\s+)/g, '$2$1')
+        return str.replace(/(<[^>]+>)(\s+)/g, '$2$1');
     }
 
     function richify(str) {
@@ -77,66 +77,63 @@ Item {
             "<": "&lt;",
             ">": "&gt;",
             '"': "&quot;",
-            "'": "&#39;",
-        }
+            "'": "&#39;"
+        };
 
         // Split the string into an array of [raw_text, tag, raw_text, tag...]
         // The parenthesis inside the regex ensures the matched tags are kept in the split array
-        return str
-        .split(/(<\/?[a-zA-Z][^>]*>)/g)
-        .map(part => {
+        return str.split(/(<\/?[a-zA-Z][^>]*>)/g).map(part => {
             // If this part is a valid HTML tag, pass it through untouched
             if (part.startsWith("<") && part.endsWith(">")) {
                 return part;
             }
             // Otherwise, it's raw text—safely convert the problematic characters
             return part.replace(/[&<>"']/g, char => entityMap[char]);
-        })
-        .join("").replace(/ /g, "&nbsp;").replace(/\n/g, "<br>");
+        }).join("").replace(/ /g, "&nbsp;").replace(/\n/g, "<br>");
     }
 
     function updateText() {
+        if (!root.visible)
+            return;
+        raw_text = text;
 
-        if (!root.visible) return
-
-        raw_text = text
-
-        if (!lockPure) { pure = onlyLatin(raw_text) }
+        if (!lockPure) {
+            pure = onlyLatin(raw_text);
+        }
 
         if (preferedW > 0) {
             if (wrap) {
-                raw_text = wrapText(raw_text, preferedW)
+                raw_text = wrapText(raw_text, preferedW);
             } else {
-                const lines = raw_text.split("\n")
-                let new_lines = []
+                const lines = raw_text.split("\n");
+                let new_lines = [];
                 for (const line of lines) {
-                    new_lines.push(truncate(line, preferedW))
+                    new_lines.push(truncate(line, preferedW));
                 }
-                raw_text = new_lines.join("\n")
+                raw_text = new_lines.join("\n");
             }
         }
 
-        w = getMaxWidth(raw_text)
+        w = getMaxWidth(raw_text);
 
         if (centered) {
-            const lines = raw_text.split("\n")
-            let new_lines = []
+            const lines = raw_text.split("\n");
+            let new_lines = [];
             for (const line of lines) {
-                new_lines.push( " ".repeat( Math.max(Math.floor((w - purify(line.trim()).length)/2),0) ) + line.trim() )
+                new_lines.push(" ".repeat(Math.max(Math.floor((w - purify(line.trim()).length) / 2), 0)) + line.trim());
             }
-            raw_text = new_lines.join("\n")
+            raw_text = new_lines.join("\n");
         }
 
-        h = preferedH > 0 ? preferedH : raw_text.split("\n").length
+        h = preferedH > 0 ? preferedH : raw_text.split("\n").length;
 
         if (!pure) {
-            processed = splitUnpure(raw_text)
+            processed = splitUnpure(raw_text);
         }
 
         // Order matters: hoist first (on raw spaces), then richify (which
         // converts spaces to &nbsp; and escapes entities).
-        raw_text = richify(hoistWhitespace(raw_text))
-
+        raw_text = richify(hoistWhitespace(raw_text));
     }
 
     // ── Width classification ────────────────────────────────────────────────
@@ -147,28 +144,27 @@ Item {
     function isFullWidth(char) {
         const code = char.codePointAt(0);
 
-        if (!code) return false;
+        if (!code)
+            return false;
 
         // Fast path: ASCII and Latin-1 are never full-width.
-        if (code < 0x1100) return false;
+        if (code < 0x1100)
+            return false;
 
         // Code point ranges for Full-width and Wide characters:
-        return (
-            (code >= 0x1100 && code <= 0x115F) || // Hangul Jamo
+        return ((code >= 0x1100 && code <= 0x115F) || // Hangul Jamo
             (code >= 0x2E80 && code <= 0xA4CF && code !== 0x303F) || // CJK Radicals, Symbols, Ideographs
             (code >= 0xAC00 && code <= 0xD7A3) || // Hangul Syllables
             (code >= 0xF900 && code <= 0xFAFF) || // CJK Compatibility Ideographs
             (code >= 0xFE10 && code <= 0xFE19) || // Vertical Presentation Forms
             (code >= 0xFE30 && code <= 0xFE6F) || // CJK Compatibility Forms
             (code >= 0xFF00 && code <= 0xFF60) || // Fullwidth Forms (Letters, Numbers, Punctuation)
-            (code >= 0xFFE0 && code <= 0xFFE6) ||
-
-            (code >= 0x1F600 && code <= 0x1F64F) || // Smileys & Emoticons
+            (code >= 0xFFE0 && code <= 0xFFE6) || (code >= 0x1F600 && code <= 0x1F64F) || // Smileys & Emoticons
             (code >= 0x1F300 && code <= 0x1F5FF) || // Misc Symbols & Pictographs
             (code >= 0x1F680 && code <= 0x1F6FF) || // Transport & Map
             (code >= 0x1F900 && code <= 0x1F9FF) || // Supplemental Symbols
             (code >= 0x1FA70 && code <= 0x1FAFF) || // Symbols Extended-A
-            (code >= 0x2600  && code <= 0x26FF)  || // Misc Symbols (e.g., ☀, ☁, ⛑)
+            (code >= 0x2600 && code <= 0x26FF) || // Misc Symbols (e.g., ☀, ☁, ⛑)
             //(code >= 0x2700  && code <= 0x27BF)  || // Dingbats (e.g., ✂, ✅)
 
             (code >= 0x20000 && code <= 0x3FAFF)  // Rare/Extension CJK Ideographs
@@ -189,13 +185,14 @@ Item {
     }
 
     function purify(str) {
-        return str.replace(/<[^>]*>/g, "")
+        return str.replace(/<[^>]*>/g, "");
     }
 
     // Strips tags once, then measures each line. Avoids the old path
     // where purify ran on the whole string AND on every line via getWidth.
     function getMaxWidth(str) {
-        if (preferedW > 0) return preferedW;
+        if (preferedW > 0)
+            return preferedW;
 
         let maxW = 0;
         const lines = purify(str).split("\n");
@@ -204,7 +201,8 @@ Item {
             for (const c of line) {
                 lineWidth += isFullWidth(c) ? 2 : 1;
             }
-            if (lineWidth > maxW) maxW = lineWidth;
+            if (lineWidth > maxW)
+                maxW = lineWidth;
         }
         return maxW;
     }
@@ -216,9 +214,12 @@ Item {
     function _charWidth(char) {
         const code = char.codePointAt(0);
 
-        if (char === '\t') return 4;
-        if (code <= 31 || (code >= 0x7f && code <= 0x9f)) return 0;
-        if (isFullWidth(char)) return 2;
+        if (char === '\t')
+            return 4;
+        if (code <= 31 || (code >= 0x7f && code <= 0x9f))
+            return 0;
+        if (isFullWidth(char))
+            return 2;
         return 1;
     }
 
@@ -260,6 +261,12 @@ Item {
     }
 
     function wrapText(text, maxW) {
+        // Helper to calculate width without HTML tags
+        const getVisualWidth = str => {
+            const stripped = str.replace(/<\/?[^>]+(>|$)/g, '');
+            return _stringWidth(stripped);
+        };
+
         const lines = text.split('\n');
         const wrapped = [];
 
@@ -275,7 +282,7 @@ Item {
             let currentWidth = 0;
 
             for (const token of tokens) {
-                const tokenWidth = _stringWidth(token);
+                const tokenWidth = getVisualWidth(token);
 
                 // Handle huge token
                 if (tokenWidth > maxW) {
@@ -292,7 +299,7 @@ Item {
 
                         if (i === broken.length - 1) {
                             current = part;
-                            currentWidth = _stringWidth(part);
+                            currentWidth = getVisualWidth(part);
                         } else {
                             wrapped.push(part);
                         }
@@ -304,9 +311,9 @@ Item {
                 // Normal wrapping
                 if (currentWidth + tokenWidth > maxW) {
                     wrapped.push(current);
-                    // Remove ONLY leading spaces caused by wrapping
+                    // Remove ONLY leading spaces caused by wrapping, keeping tags intact
                     current = token.replace(/^\s+/, '');
-                    currentWidth = _stringWidth(current);
+                    currentWidth = getVisualWidth(current);
                 } else {
                     current += token;
                     currentWidth += tokenWidth;
@@ -320,54 +327,55 @@ Item {
     }
 
     function truncate(str, maxCells) {
-        if (maxCells <= 0) return str
+        if (maxCells <= 0)
+            return str;
 
-        let placeholder = str.replace(/<[^>]*>/g, (match) => "\uffff".repeat(match.length))
+        let placeholder = str.replace(/<[^>]*>/g, match => "\uffff".repeat(match.length));
 
-        let overflowed = str.length > maxCells
-        let result = ""
-        let cells = []
-        let count = 0
-        let excess = 0
-        let ellipses = ""
+        let overflowed = str.length > maxCells;
+        let result = "";
+        let cells = [];
+        let count = 0;
+        let excess = 0;
+        let ellipses = "";
 
         for (const c of placeholder) {
-            const isNone = /[\uffff]/.test(c)
-            const costs = (isNone ? 0 : (isFullWidth(c) ? 2 : 1))
-            cells.push(costs)
+            const isNone = /[\uffff]/.test(c);
+            const costs = (isNone ? 0 : (isFullWidth(c) ? 2 : 1));
+            cells.push(costs);
         }
         // Use numeric index — for-in iterates string keys, which is slow
         // and fragile (cells[i-1] only works by accident due to coercion).
         for (let i = 0; i < cells.length; i++) {
-            count += cells[i]
+            count += cells[i];
             if (count > maxCells) {
                 if (count - maxCells < cells[i]) {
-                    result = str.slice(0, i) + "…"
-                    break
+                    result = str.slice(0, i) + "…";
+                    break;
                 }
                 if (overflowed) {
-                    for (let k = 1; k < cells[i-1]; k++) {
-                        ellipses += " "
+                    for (let k = 1; k < cells[i - 1]; k++) {
+                        ellipses += " ";
                     }
-                    result = str.slice(0, i-1) + ellipses + "…"
-                    break
+                    result = str.slice(0, i - 1) + ellipses + "…";
+                    break;
                 }
-                result = str.slice(0, i)
-                break
+                result = str.slice(0, i);
+                break;
             }
-            result = str
+            result = str;
         }
 
-        return result
+        return result;
     }
 
     // ── Unpure text segmentation ────────────────────────────────────────────
 
     function wrapFullWidth(str) {
-        return `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Mono CJK JP';">${str}</span>`
+        return `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Mono CJK JP';">${str}</span>`;
     }
     function wrapBraille(str) {
-        return `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Symbols 2';">${str}</span>`
+        return `<span style="font-size:${Cell.cellHeight}px;font-family:'Noto Sans Symbols 2';">${str}</span>`;
     }
 
     function splitUnpure(str) {
@@ -378,17 +386,34 @@ Item {
             let inFullWidth = false, inEmoji = false, inBraille = false, buffer = "";
 
             const flush = () => {
-                if (!buffer) return;
+                if (!buffer)
+                    return;
                 if (inFullWidth) {
-                    processed.push({ text: wrapFullWidth(buffer), len: buffer.length, type: "cjk" });
+                    processed.push({
+                        text: wrapFullWidth(buffer),
+                        len: buffer.length,
+                        type: "cjk"
+                    });
                 } else if (inEmoji) {
                     // BUG FIX: was `${str}` (entire input) — now `${buffer}` (just the emoji run).
-                    processed.push({ text: `<span style="font-size:${Cell.cellHeight*1.4}px;font-family:'Apple Color Emoji';">${buffer}</span>`, len: buffer.length / 2, type: "emoji" });
+                    processed.push({
+                        text: `<span style="font-size:${Cell.cellHeight * 1.4}px;font-family:'Apple Color Emoji';">${buffer}</span>`,
+                        len: buffer.length / 2,
+                        type: "emoji"
+                    });
                 } else if (inBraille) {
-                    processed.push({ text: wrapBraille(buffer), len: buffer.length, type: "braille" });
+                    processed.push({
+                        text: wrapBraille(buffer),
+                        len: buffer.length,
+                        type: "braille"
+                    });
                 } else {
                     // Order fix: hoist first (raw spaces), then richify.
-                    processed.push({ text: richify(hoistWhitespace(buffer)), len: buffer.length, type: "pure" });
+                    processed.push({
+                        text: richify(hoistWhitespace(buffer)),
+                        len: buffer.length,
+                        type: "pure"
+                    });
                 }
                 buffer = "";
             };
@@ -397,22 +422,26 @@ Item {
                 const isBraille = /[\u2800-\u28FF]/.test(c);
 
                 if (c.length === 2) {
-                    if (inFullWidth || !inEmoji || inBraille) flush();
+                    if (inFullWidth || !inEmoji || inBraille)
+                        flush();
                     inFullWidth = false;
                     inEmoji = true;
                     inBraille = false;
                 } else if (isBraille) {
-                    if (inFullWidth || inEmoji || !inBraille) flush();
+                    if (inFullWidth || inEmoji || !inBraille)
+                        flush();
                     inFullWidth = false;
                     inEmoji = false;
                     inBraille = true;
                 } else if (isFullWidth(c)) {
-                    if (inEmoji || !inFullWidth || inBraille) flush();
+                    if (inEmoji || !inFullWidth || inBraille)
+                        flush();
                     inEmoji = false;
                     inFullWidth = true;
                     inBraille = false;
                 } else {
-                    if (inEmoji || inFullWidth || inBraille) flush();
+                    if (inEmoji || inFullWidth || inBraille)
+                        flush();
                     inEmoji = false;
                     inFullWidth = false;
                     inBraille = false;
@@ -434,7 +463,6 @@ Item {
         active: root.visible || !root.optimizeMemory
 
         sourceComponent: Cells {
-
             id: cell_text
 
             w: root.w
@@ -449,9 +477,9 @@ Item {
                 sourceComponent: ColumnLayout {
 
                     x: if (root.alignRight) {
-                        return cell_text.implicitWidth - implicitWidth
+                        return cell_text.implicitWidth - implicitWidth;
                     } else {
-                        return 0
+                        return 0;
                     }
 
                     spacing: 0
@@ -473,7 +501,6 @@ Item {
                                 model: processed[parent.index]
 
                                 delegate: Loader {
-
                                     id: cell_loader
 
                                     required property string text
@@ -484,11 +511,11 @@ Item {
 
                                     sourceComponent: Cells {
 
-                                        property string text : cell_loader.text
-                                        property int    len  : cell_loader.len
-                                        property string type : cell_loader.type
+                                        property string text: cell_loader.text
+                                        property int len: cell_loader.len
+                                        property string type: cell_loader.type
 
-                                        w: len*( type == "emoji" || type == "cjk" ? 2 : 1)
+                                        w: len * (type == "emoji" || type == "cjk" ? 2 : 1)
                                         h: 1
 
                                         color: root.bg
@@ -499,10 +526,10 @@ Item {
 
                                             anchors.centerIn: parent.type == "emoji" || parent.type == "cjk" || parent.type == "braille" ? parent : undefined
 
-                                            anchors.verticalCenterOffset: parent.type == "emoji" ? Cell.cellHeight*0.05 : 0
-                                            anchors.horizontalCenterOffset: parent.type == "emoji" ? Cell.cellWidth*0.05 : 0
+                                            anchors.verticalCenterOffset: parent.type == "emoji" ? Cell.cellHeight * 0.05 : 0
+                                            anchors.horizontalCenterOffset: parent.type == "emoji" ? Cell.cellWidth * 0.05 : 0
 
-                                            y: -(1 - Cell.cellHeight/Cell.realCellHeight)/2
+                                            y: -(1 - Cell.cellHeight / Cell.realCellHeight) / 2
 
                                             textFormat: Text.RichText
                                             text: parent.text
@@ -510,19 +537,13 @@ Item {
                                             color: root.color
                                             lineHeight: Cell.cellHeight
                                             lineHeightMode: Text.FixedHeight
-
                                         }
-
                                     }
                                 }
-
                             }
                         }
-
                     }
-
                 }
-
             }
 
             Loader {
@@ -532,12 +553,12 @@ Item {
                 sourceComponent: Text {
 
                     x: if (root.alignRight) {
-                        return cell_text.implicitWidth - implicitWidth
+                        return cell_text.implicitWidth - implicitWidth;
                     } else {
-                        return 0
+                        return 0;
                     }
 
-                    y: -(1 - Cell.cellHeight/Cell.realCellHeight)/2
+                    y: -(1 - Cell.cellHeight / Cell.realCellHeight) / 2
 
                     text: root.raw_text
                     textFormat: Text.RichText
@@ -547,11 +568,7 @@ Item {
                     lineHeight: Cell.cellHeight
                     lineHeightMode: Text.FixedHeight
                 }
-
             }
-
         }
     }
-
 }
-

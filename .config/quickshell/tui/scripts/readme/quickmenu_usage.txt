@@ -1,0 +1,101 @@
+Welcome to **Quick Menu**! This utility allows you to instantly trigger actions using custom keybinds.
+
+When activated, a popup appears that disables almost every desktop keyboard bind, giving you total control over every possible key mapped to *any action*.
+
+## INTERFACE OVERVIEW
+The popup displays a list of mapped actions. Each item includes:
+* An action **dropdown menu**
+* A **text field** to type your keybind
+
+Below the list, you will find:
+* An `Add` button to create new mappings
+* A `Manage custom actions` button
+
+## KEYBIND RULES
+When typing binds into the text field, please follow these formatting rules:
+
+### 1. Modifiers & Syntax
+* Modifiers can be written as the first letter, an abbreviation, or the full word.
+  > *Example:* `c`, `ctrl`, or `control`
+
+* Modifiers must join the final key using either a `+` or a `-`.
+  > *Example:* `Control+C` or `C-c`
+
+### 2. Forbidden Keys
+* The `Meta`/`Super` key and `Escape` are strictly forbidden.
+* These are desktop-exclusive keys.
+
+### 3. Duplicates
+* Duplicate binds are not allowed.
+* The *first* bind is kept.
+* The duplicate is ignored and marked with an exclamation mark (`!`).
+
+### 4. Supported Keys
+* System:
+  - `ret` or `return`
+  - `bs` or `backspace`
+  - `tab`
+  - `end`
+
+* Navigation:
+  - `up`
+  - `down`
+  - `left`
+  - `right`
+  - `pup` or `pageup`
+  - `pdown` or `pagedown`
+
+* Alphanumeric:
+  - `A` to `Z`
+  - `0` to `9`
+
+* Function:
+  - `F1` to `F35`
+
+* Brackets:
+  - All open/closed types
+
+* Symbols:
+  - `tick` or `
+  - `plus` or `+`
+  - `minus` or `-`
+  - `equal` or `=`
+  - `slash` or `/`
+  - `backslash` or `\`
+  - `quote` or `"`
+  - `singlequote` or `'`
+  - `pipe` or `|`
+  - `dot`, `period` or `.`
+  - `comma` or `,`
+  - `exclamation` or `!`
+  - `at` or `@`
+  - `hashtag`, `tag` or `#`
+  - `dollar` or `$`
+  - `percent` or `%`
+  - `caret`, `hat` or `^`
+  - `amp`, `and` or `&`
+  - `star`, `multiply` or `*`
+  - `tilde` or `~`
+
+### 5. Unsupported Keys
+* Unrecognized keys will trigger an error.
+* They will be colored **red**, marked with `!`, or simply ignored.
+
+## Actions & Customization
+The action dropdown defaults to built-in desktop actions. You can expand this by adding your own.
+
+### Managing Custom Actions
+* Click `Manage custom actions` to begin.
+* Each custom action requires:
+  * A **label**
+  * A **shell command**
+
+* Commands execute in a single line. For complex tasks, call a script or binary:
+  > `sh -c path/to/your/script`
+
+* Custom actions can be added or removed at any time.
+
+### Overriding & Orphaned Binds
+* Custom labels **override** default actions if they share a similar name.
+* Labels are converted to `snake_case` as their ID for internal lookup.
+* If a keybind is mapped to an action that gets removed, it automatically defaults to `No operation`.

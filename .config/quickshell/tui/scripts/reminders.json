@@ -89,14 +89,5 @@
       "urgency": 1,
       "time": ""
     }
-  ],
-  "02-07-2026": [
-    {
-      "title": "CISCO EXAM",
-      "body": "Do the cisco netacad introduction exam.",
-      "span": 1,
-      "urgency": 2,
-      "time": ""
-    }
   ]
 }

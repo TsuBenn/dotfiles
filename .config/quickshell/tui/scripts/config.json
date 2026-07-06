@@ -1,1 +1,25 @@
-{"hints":true,"quickStart":true,"minimal":false,"textBasedVolume":false,"hideBar":false,"bottomBar":false,"optimizeMemory":true,"safeNotifications":false,"dnd":false,"wallpaperAutoAdvance":true,"shadow":true,"hyprAnim":true,"hyprBlur":false,"bgCava":false,"bgCavaLock":false,"screenshotStay":true,"screenshotNotify":false,"screenshotCursor":false,"lockScreenMusic":false,"sfx":false,"userLightMode":false,"autoLightMode":true,"debug":false}
+{
+  "hints": true,
+  "quickStart": true,
+  "minimal": false,
+  "textBasedVolume": false,
+  "hideBar": false,
+  "bottomBar": false,
+  "optimizeMemory": true,
+  "safeNotifications": false,
+  "dnd": false,
+  "wallpaperAutoAdvance": true,
+  "shadow": true,
+  "hyprAnim": true,
+  "hyprBlur": true,
+  "bgCava": false,
+  "bgCavaLock": false,
+  "screenshotStay": true,
+  "screenshotNotify": false,
+  "screenshotCursor": false,
+  "lockScreenMusic": false,
+  "sfx": false,
+  "userLightMode": false,
+  "autoLightMode": true,
+  "debug": false
+}
