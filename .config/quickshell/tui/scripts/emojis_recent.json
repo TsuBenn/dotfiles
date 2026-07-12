@@ -1,28 +1,27 @@
 [
   {
     "category": "emoji",
-    "description": "Loudly crying face <i>Smileys & Emotion</i>",
+    "description": "Winking face <i>Smileys & Emotion</i>",
     "group": "Smileys & Emotion",
     "keywords": [
-      "face-concerned",
-      "loudly crying face",
-      "bawling",
-      "cry",
-      "crying",
+      "face-smiling",
+      "winking face",
       "face",
-      "loudly",
-      "sad",
-      "sob",
-      "tear",
-      "tears",
-      "unhappy"
+      "flirt",
+      "heartbreaker",
+      "sexy",
+      "slide",
+      "tease",
+      "wink",
+      "winking",
+      "winks"
     ],
-    "label": "😭",
+    "label": "😉",
     "type": "exec",
     "value": [
       "bash",
       "-c",
-      "sleep 0.2 && wtype 😭"
+      "sleep 0.2 && wtype 😉"
     ]
   },
   {
@@ -51,6 +50,85 @@
       "bash",
       "-c",
       "sleep 0.2 && wtype 💀"
+    ]
+  },
+  {
+    "category": "emoji",
+    "description": "Loudly crying face <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-concerned",
+      "loudly crying face",
+      "bawling",
+      "cry",
+      "crying",
+      "face",
+      "loudly",
+      "sad",
+      "sob",
+      "tear",
+      "tears",
+      "unhappy"
+    ],
+    "label": "😭",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 😭"
+    ]
+  },
+  {
+    "category": "emoji",
+    "description": "Thinking face <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-hand",
+      "thinking face",
+      "chin",
+      "consider",
+      "face",
+      "hmm",
+      "ponder",
+      "pondering",
+      "thinking",
+      "wondering"
+    ],
+    "label": "🤔",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 🤔"
+    ]
+  },
+  {
+    "category": "emoji",
+    "description": "Grinning face with sweat <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-smiling",
+      "grinning face with sweat",
+      "cold",
+      "dejected",
+      "excited",
+      "face",
+      "grinning",
+      "mouth",
+      "nervous",
+      "open",
+      "smile",
+      "smiling",
+      "stress",
+      "stressed",
+      "sweat"
+    ],
+    "label": "😅",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 😅"
     ]
   },
   {

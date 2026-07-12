@@ -18,8 +18,8 @@ SETTINGS = [
         "type": "exec",
         "value": ["qs", "-c", "tui", "ipc", "call", "config", "open_popup", "pacman"],
     },
-    { 
-        # These are hidden items that are only show up when searched. 
+    {
+        # These are hidden items that are only show up when searched.
         # Mainly for options within another menu that can still be accessed quickly without using that menu.
 
         "label": "",
@@ -35,7 +35,7 @@ SETTINGS = [
                     "type": "exec",
                     "value": ["qs", "-c", "tui", "ipc", "call", "config", "set_color_theme", color],
                 } for color in COLORS
-            ], 
+            ],
             {
                 "label": "Sleep",
                 "description": "(aka. Suspend) Put your PC to sleep.",
@@ -237,7 +237,7 @@ SETTINGS = [
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_bgcava"],
             },
             {
-                "label": "{bgCava} Lock screen music",
+                "label": "{lockScreenMusic} Lock screen music",
                 "description": "Play music during lock session.",
                 "category": "settings",
                 "type": "exec",

@@ -32,4 +32,5 @@ export NVD_BACKEND=direct
 export QML_IMPORT_PATH=/usr/lib/qt6/qml
 export QML2_IMPORT_PATH=/usr/lib/qt6/qml
 export PATH=$PATH:/usr/lib/qt6/bin
-export PATH="/home/tsubenn/.local/bin:$PATH"
+export PATH=~/.local/bin:$PATH
+export PATH=~/.cargo/bin:$PATH

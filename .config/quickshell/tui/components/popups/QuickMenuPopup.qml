@@ -87,6 +87,14 @@ CellPopup {
 
                         spacing: 0
 
+                        CellText {
+                            visible: QuickMenuInfo.binds.length == 0
+                            text: "\nNo Bindings Specified"
+                            color: Colors.fgSubtle
+                            centered: true
+                            preferedW: list.contentW
+                        }
+
                         Repeater {
 
                             model: QuickMenuInfo.binds
@@ -273,6 +281,14 @@ CellPopup {
                     source: ColumnLayout {
 
                         spacing: 0
+
+                        CellText {
+                            visible: Object.keys(QuickMenuInfo.custom_actions).length == 0
+                            text: "\nNo Custom Actions"
+                            color: Colors.fgSubtle
+                            centered: true
+                            preferedW: custom_list.contentW
+                        }
 
                         Repeater {
 

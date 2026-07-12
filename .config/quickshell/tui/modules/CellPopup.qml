@@ -5,7 +5,6 @@ import qs.modules
 import qs.services
 
 import QtQuick
-import Qt5Compat.GraphicalEffects
 
 Item {
     id: root
@@ -37,12 +36,16 @@ Item {
         function onSigClose(name) {
             if (root.name == name) {
                 root.onSigClose();
-                PopupManager.close(root.name);
             }
         }
     }
 
+    function forceClose() {
+        PopupManager.close(root.name);
+    }
+
     function onSigClose() {
+        forceClose();
     }
 
     onEscapeToCloseChanged: {
@@ -53,14 +56,12 @@ Item {
 
     onIsTopChanged: {
         if (isTop) {
-            console.log(root.name);
             root.promoted();
             refreshShortcuts();
         }
     }
 
     function refreshShortcuts() {
-        console.log("bruh");
         ShortcutInfo.shortcuts = [
             {
                 binds: "Escape",

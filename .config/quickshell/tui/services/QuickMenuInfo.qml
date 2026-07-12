@@ -274,8 +274,8 @@ Singleton {
                 data.binds = root.binds;
             if (!keys.includes("custom_actions"))
                 data.custom_actions = root.custom_actions;
-            root.binds = data.binds;
             root.custom_actions = data.custom_actions;
+            root.binds = data.binds;
         }
 
         printErrors: false
@@ -332,7 +332,7 @@ Singleton {
 
     function addCustom() {
         let customs = Object.keys(custom_actions);
-        if (customs.length > 1) {
+        if (customs.length > 0) {
             customs = customs[customs.length - 1];
             editCustom(customs + "_copy", custom_actions[customs].label + " copy", custom_actions[customs].cmd);
         } else {

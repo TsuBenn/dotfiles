@@ -1,0 +1,24 @@
+import { Cells } from "Cells.slint";
+import { Button, Spinner } from "std-widgets.slint";
+
+export component Main inherits Window {
+
+    default-font-family: "JetBrains Mono";
+    default-font-size: 12pt;
+    full-screen: true;
+
+    pure callback greet(name: string);
+
+    title: "Learn Slint";
+
+    height: 500px;
+    width: 500px;
+
+    Button {
+        text: "debug";
+
+        clicked => {
+            root.greet("TsuBenn")
+        }
+    }
+}

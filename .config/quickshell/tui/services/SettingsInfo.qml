@@ -16,7 +16,7 @@ Singleton {
         running: true
     }
 
-    property real frameTime: fpsMonitor.smoothFrameTime 
+    property real frameTime: fpsMonitor.smoothFrameTime
 
     property int fps: fpsMonitor.smoothFrameTime > 0 ? Math.round(1.0 / fpsMonitor.smoothFrameTime) : 0
 
@@ -170,10 +170,10 @@ Singleton {
             if (userLightMode) toggle("userLightMode")
             toggle("autoLightMode")
         } else if (lightMode) {
-            if (!autoLightMode) toggle("autoLightMode") 
+            if (!autoLightMode) toggle("autoLightMode")
             if (userLightMode) toggle("userLightMode")
         } else {
-            if (autoLightMode) toggle("autoLightMode") 
+            if (autoLightMode) toggle("autoLightMode")
             if (!userLightMode) toggle("userLightMode")
         }
     }
@@ -235,7 +235,7 @@ Singleton {
         function audio_restart(): void {
             AudioInfo.restart()
         }
-        function screenshot(full: bool): void { 
+        function screenshot(full: bool): void {
             if (PopupManager.isOpen("screenshot")) {
                 PopupManager.sendSignal("screenshot", "full_now")
                 return

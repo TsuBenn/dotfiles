@@ -12,184 +12,191 @@ Item {
 
     property string text: "Sample"
 
-    implicitHeight: layout.implicitHeight
+    implicitHeight: 0
     implicitWidth: Cell.w(w)
 
     property int w: 40
 
-    ColumnLayout {
-        id: layout
+    Loader {
 
-        x: Cell.w(1)
+        active: root.visible
 
-        spacing: 0
+        sourceComponent: ColumnLayout {
+            id: layout
 
-        Repeater {
+            onImplicitHeightChanged: {
+                root.implicitHeight = implicitHeight;
+            }
 
-            model: parseMarkdown(root.text, root.w - 2)
+            x: Cell.w(1)
 
-            delegate: Loader {
-                id: l
+            spacing: 0
 
-                active: root.visible
+            Repeater {
 
-                asynchronous: true
+                model: parseMarkdown(root.text, root.w - 2)
 
-                required property var modelData
+                delegate: Loader {
+                    id: l
 
-                property Component p: P {}
+                    active: root.visible
 
-                property Component code_block: Cells {
-                    w: root.w - 2
-                    h: cb_text.h
-                    color: Colors.bgOverlay
-                    CellText {
-                        id: cb_text
-                        text: l.modelData.value
-                        preferedW: root.w - 2
-                        color: Colors.secondary
-                    }
-                }
+                    required property var modelData
 
-                property Component img: Cells {
-                    w: root.w - 2
-                    h: image.status == Image.Ready ? Cell.hCount(image.height, "ceil") : 1
-                    color: "transparent"
+                    property Component p: P {}
 
-                    CellText {
-                        text: "[image] " + l.modelData.value
-                        color: Colors.info
+                    property Component code_block: Cells {
+                        w: root.w - 2
+                        h: cb_text.h
+                        color: Colors.bgOverlay
+                        CellText {
+                            id: cb_text
+                            text: l.modelData.value
+                            preferedW: root.w - 2
+                            color: Colors.secondary
+                        }
                     }
 
-                    Image {
-                        id: image
-                        width: Cell.w(root.w - 2)
-                        source: l.modelData.data
-                        height: width * (sourceSize.height / sourceSize.width)
-                        fillMode: Image.PreserveAspectCrop
-                    }
-                }
+                    property Component img: Cells {
+                        w: root.w - 2
+                        h: image.status == Image.Ready ? Cell.hCount(image.height, "ceil") : 1
+                        color: "transparent"
 
-                property Component quote: RowLayout {
+                        CellText {
+                            text: "[image] " + l.modelData.value
+                            color: Colors.info
+                        }
 
-                    property int level: modelData.level
-
-                    spacing: 0
-
-                    CellText {
-                        Layout.alignment: Qt.AlignTop
-                        text: " " + "  ".repeat(parent.level) + "┃ "
-                        color: Colors.fgSubtle
-                        pure: false
-                        lockPure: true
+                        Image {
+                            id: image
+                            width: Cell.w(root.w - 2)
+                            source: l.modelData.data
+                            height: width * (sourceSize.height / sourceSize.width)
+                            fillMode: Image.PreserveAspectCrop
+                        }
                     }
 
-                    P {
-                        Layout.alignment: Qt.AlignTop
-                        lines: l.modelData.value
-                        color: Colors.fgSubtle
-                    }
-                }
+                    property Component quote: RowLayout {
 
-                property Component unordered_list: RowLayout {
+                        property int level: modelData.level
 
-                    property int level: modelData.level
-                    property string marker: modelData.marker
+                        spacing: 0
 
-                    spacing: 0
+                        CellText {
+                            Layout.alignment: Qt.AlignTop
+                            text: " " + "  ".repeat(parent.level) + "┃ "
+                            color: Colors.fgSubtle
+                            pure: false
+                            lockPure: true
+                        }
 
-                    CellText {
-                        Layout.alignment: Qt.AlignTop
-                        text: " " + "  ".repeat(parent.level)
-                    }
-
-                    CellText {
-                        Layout.alignment: Qt.AlignTop
-                        text: parent.marker + " "
-                        font: Cell.fontB
-                        color: Colors.fgSubtle
+                        P {
+                            Layout.alignment: Qt.AlignTop
+                            lines: l.modelData.value
+                            color: Colors.fgSubtle
+                        }
                     }
 
-                    P {
-                        Layout.alignment: Qt.AlignTop
-                        lines: l.modelData.value
-                    }
-                }
+                    property Component unordered_list: RowLayout {
 
-                property Component ordered_list: RowLayout {
+                        property int level: modelData.level
+                        property string marker: modelData.marker
 
-                    property int level: modelData.level
-                    property string marker: modelData.marker
+                        spacing: 0
 
-                    spacing: 0
+                        CellText {
+                            Layout.alignment: Qt.AlignTop
+                            text: " " + "  ".repeat(parent.level)
+                        }
 
-                    CellText {
-                        Layout.alignment: Qt.AlignTop
-                        text: " " + "  ".repeat(parent.level)
-                    }
+                        CellText {
+                            Layout.alignment: Qt.AlignTop
+                            text: parent.marker + " "
+                            font: Cell.fontB
+                            color: Colors.fgSubtle
+                        }
 
-                    CellText {
-                        Layout.alignment: Qt.AlignTop
-                        text: parent.marker + ". "
-                        font: Cell.fontB
-                    }
-
-                    P {
-                        Layout.alignment: Qt.AlignTop
-                        lines: l.modelData.value
-                    }
-                }
-
-                property Component h: ColumnLayout {
-
-                    spacing: 0
-
-                    x: Cell.centerWCell(implicitWidth, Cell.w(root.w - 2))
-
-                    P {
-                        Layout.leftMargin: l.modelData.type.endsWith("2") ? Cell.centerWCell(implicitWidth, Cell.w(root.w - 2)) : 0
-                        color: l.modelData.type.endsWith("2") ? Colors.onAccent : Colors.secondary
-                        font: Cell.fontB
-                        bg: l.modelData.type.endsWith("2") ? Colors.accentStrong : "transparent"
-                        padding: 1
+                        P {
+                            Layout.alignment: Qt.AlignTop
+                            lines: l.modelData.value
+                        }
                     }
 
-                    CellSeparator {
-                        w: l.modelData.type.endsWith("2") ? root.w - 2 : Cell.wCount(parent.implicitWidth)
-                        color: l.modelData.type.endsWith("2") ? Colors.accentStrong : Colors.secondary
-                        type: l.modelData.type.endsWith("2") ? 2 : 0
+                    property Component ordered_list: RowLayout {
+
+                        property int level: modelData.level
+                        property string marker: modelData.marker
+
+                        spacing: 0
+
+                        CellText {
+                            Layout.alignment: Qt.AlignTop
+                            text: " " + "  ".repeat(parent.level)
+                        }
+
+                        CellText {
+                            Layout.alignment: Qt.AlignTop
+                            text: parent.marker + ". "
+                            font: Cell.fontB
+                        }
+
+                        P {
+                            Layout.alignment: Qt.AlignTop
+                            lines: l.modelData.value
+                        }
                     }
-                }
 
-                property Component separator: CellSeparator {
-                    x: Cell.centerWCell(implicitWidth, Cell.w(root.w - 2))
-                    w: root.w - 2
-                    color: Colors.bgOverlay
-                }
+                    property Component h: ColumnLayout {
 
-                property Component blank: CellText {
-                    text: ""
-                }
+                        spacing: 0
 
-                sourceComponent: {
-                    if (modelData.type == "p")
-                        return p;
-                    else if (modelData.type == "code_block")
-                        return code_block;
-                    else if (modelData.type == "quote")
-                        return quote;
-                    else if (modelData.type == "img")
-                        return img;
-                    else if (modelData.type == "separator")
-                        return separator;
-                    else if (modelData.type == "ordered_list")
-                        return ordered_list;
-                    else if (modelData.type == "unordered_list")
-                        return unordered_list;
-                    else if (modelData.type.startsWith("h"))
-                        return h;
-                    else
-                        return blank;
+                        x: Cell.centerWCell(implicitWidth, Cell.w(root.w - 2))
+
+                        P {
+                            Layout.leftMargin: l.modelData.type.endsWith("2") ? Cell.centerWCell(implicitWidth, Cell.w(root.w - 2)) : 0
+                            color: l.modelData.type.endsWith("2") ? Colors.onAccent : Colors.secondary
+                            font: Cell.fontB
+                            bg: l.modelData.type.endsWith("2") ? Colors.accentStrong : "transparent"
+                            padding: 1
+                        }
+
+                        CellSeparator {
+                            w: l.modelData.type.endsWith("2") ? root.w - 2 : Cell.wCount(parent.implicitWidth)
+                            color: l.modelData.type.endsWith("2") ? Colors.accentStrong : Colors.secondary
+                            type: l.modelData.type.endsWith("2") ? 2 : 0
+                        }
+                    }
+
+                    property Component separator: CellSeparator {
+                        x: Cell.centerWCell(implicitWidth, Cell.w(root.w - 2))
+                        w: root.w - 2
+                        color: Colors.bgOverlay
+                    }
+
+                    property Component blank: CellText {
+                        text: ""
+                    }
+
+                    sourceComponent: {
+                        if (modelData.type == "p")
+                            return p;
+                        else if (modelData.type == "code_block")
+                            return code_block;
+                        else if (modelData.type == "quote")
+                            return quote;
+                        else if (modelData.type == "img")
+                            return img;
+                        else if (modelData.type == "separator")
+                            return separator;
+                        else if (modelData.type == "ordered_list")
+                            return ordered_list;
+                        else if (modelData.type == "unordered_list")
+                            return unordered_list;
+                        else if (modelData.type.startsWith("h"))
+                            return h;
+                        else
+                            return blank;
+                    }
                 }
             }
         }

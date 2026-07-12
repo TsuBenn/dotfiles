@@ -1,0 +1,16 @@
+export component Cells {
+
+    in property <int> w;
+    in property <int> h;
+
+    in property <color> color;
+
+    preferred-width: w * 25px;
+    preferred-height: h * 50px;
+
+    Rectangle {
+        width: root.width;
+        height: root.height;
+        background: root.color;
+    }
+}

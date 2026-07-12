@@ -63,7 +63,7 @@ cursor-line = "warning"
     V = ["select_mode", "extend_to_line_bounds"]
 
     # Select all
-    C-a = "select_all"
+    C-a = ["select_all", "select_mode"]
 
     # Backspace
     f = "delete_char_backward"
@@ -137,6 +137,12 @@ cursor-line = "warning"
     h = "hover"
     ";" = ":toggle-option lsp.display-inlay-hints"
 
+    C-r = [":sh tmux display-popup -E -d \"#{pane_current_path}\" -h 50%% -w 50%% \"~/dotfiles/.config/helix/run.sh %{buffer_name}\""]
+
+[keys.normal.G]
+
+    a = "code_action"
+
 [keys.normal." "]
 
     # Big jumps
@@ -189,8 +195,8 @@ cursor-line = "warning"
     q = [":write","wclose"]
     Q = ["wclose"]
 
-    F = "file_picker_in_current_directory"
-    f = "file_picker"
+    f = "file_picker_in_current_directory"
+    F = "file_picker"
 
     s = "global_search"
 
@@ -229,6 +235,8 @@ cursor-line = "warning"
     # Extend cursor
     "tab" = "copy_selection_on_prev_line" # C-i is "tab" idk why ask Linux
     C-k = "copy_selection_on_next_line"
+
+    C-a = "select_all"
 
     # Surround ops
     a = "surround_add"
@@ -304,7 +312,7 @@ cursor-line = "warning"
     i = "extend_to_file_start"
     l = "extend_to_line_end"
     k = "extend_to_file_end"
-    j = "extend_to_line_start"
+    j = "extend_to_first_nonwhitespace"
 
     # Bracket select inclusive
     "(" = "@ma("
