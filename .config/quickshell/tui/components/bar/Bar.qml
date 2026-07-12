@@ -21,7 +21,6 @@ Scope {
         model: Quickshell.screens
 
         PanelWindow {
-
             id: root
 
             WlrLayershell.layer: WlrLayer.Overlay
@@ -34,85 +33,93 @@ Scope {
             screen: modelData
 
             property string screen_name: screen.name
-            property var monitor: HyprInfo.monitors[screen_name] != undefined ? HyprInfo.monitors[screen_name] : {"width": 1920, "height": 1080}
+            property var monitor: HyprInfo.monitors[screen_name] != undefined ? HyprInfo.monitors[screen_name] : {
+                "width": 1920,
+                "height": 1080
+            }
 
             property HyprlandMonitor monitorObject
 
             Component.onCompleted: {
-                PopupManager.opened.connect((name) => {
-                    HintManager.hide()
-                    DropdownManager.hide()
-                    ContextMenuManager.hide()
-                    root.shield = true
-                })
-                PopupManager.closed.connect((name) => {
-                    HintManager.hide()
-                    DropdownManager.hide()
-                    ContextMenuManager.hide()
-                    if (name == "" || PopupManager.active_popups.length == 0) root.shield = false
-                })
-                DropdownManager.opened.connect((name) => {
-                    HintManager.hide()
-                    ContextMenuManager.hide()
-                    root.shield = true
-                })
-                DropdownManager.closed.connect((name) => {
-                    if (PopupManager.active_popups.length > 0) return
-                    root.shield = false
-                })
-                ContextMenuManager.opened.connect((name) => {
-                    HintManager.hide()
-                    root.shield = true
-                })
-                ContextMenuManager.closed.connect((name) => {
-                    if (PopupManager.active_popups.length > 0) return
-                    root.shield = false
-                })
-                HintManager.opened.connect((name) => {
-                    root.shield = true
-                })
-                HintManager.closed.connect((name) => {
-                    if (PopupManager.active_popups.length > 0) return
-                    root.shield = false
-                })
-                HyprInfo.hyprEvent.connect((event)=> {
+                PopupManager.opened.connect(name => {
+                    HintManager.hide();
+                    DropdownManager.hide();
+                    ContextMenuManager.hide();
+                    root.shield = true;
+                });
+                PopupManager.closed.connect(name => {
+                    HintManager.hide();
+                    DropdownManager.hide();
+                    ContextMenuManager.hide();
+                    if (name == "" || PopupManager.active_popups.length == 0)
+                        root.shield = false;
+                });
+                DropdownManager.opened.connect(name => {
+                    HintManager.hide();
+                    ContextMenuManager.hide();
+                    root.shield = true;
+                });
+                DropdownManager.closed.connect(name => {
+                    if (PopupManager.active_popups.length > 0)
+                        return;
+                    root.shield = false;
+                });
+                ContextMenuManager.opened.connect(name => {
+                    HintManager.hide();
+                    root.shield = true;
+                });
+                ContextMenuManager.closed.connect(name => {
+                    if (PopupManager.active_popups.length > 0)
+                        return;
+                    root.shield = false;
+                });
+                HintManager.opened.connect(name => {
+                    root.shield = true;
+                });
+                HintManager.closed.connect(name => {
+                    if (PopupManager.active_popups.length > 0)
+                        return;
+                    root.shield = false;
+                });
+                HyprInfo.hyprEvent.connect(event => {
                     switch (event) {
-                        //case "activewindow":
-                        case "activespecial":
-                        case "closewindow":
-                        case "openwindow":
-                        case "focusedmon": 
-                        case "workspace": 
-                        case "movewindow": {
+                    //case "activewindow":
+                    case "activespecial":
+                    case "closewindow":
+                    case "openwindow":
+                    case "focusedmon":
+                    case "workspace":
+                    case "movewindow":
+                        {
                             if (event == "movewindow") {
-                                showBar.restart()
+                                showBar.restart();
                             }
-                            PopupManager.close()
-                            DropdownManager.hide()
-                            HintManager.hide()
-                            ContextMenuManager.hide()
+                            PopupManager.close();
+                            DropdownManager.hide();
+                            HintManager.hide();
+                            ContextMenuManager.hide();
                             break;
                         }
-                        case "configreloaded": {
-                            SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/revive.sh"])
+                    case "configreloaded":
+                        {
+                            SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/revive.sh"]);
                             break;
                         }
                     }
-                })
+                });
                 for (const m of Hyprland.monitors.values) {
                     if (m.name == screen.name) {
-                        monitorObject = m
+                        monitorObject = m;
                     }
                 }
             }
 
             SequentialAnimation {
-
                 id: showBar
 
                 ScriptAction {
                     script: {
-                        bar.peekBar = true
+                        bar.peekBar = true;
                     }
                 }
                 PauseAnimation {
@@ -120,7 +127,7 @@ Scope {
                 }
                 ScriptAction {
                     script: {
-                        bar.peekBar = false
+                        bar.peekBar = false;
                     }
                 }
             }
@@ -132,45 +139,31 @@ Scope {
             }
 
             property bool peekBar: bar.peekBar
-            property bool forceBar: (
-                PopupManager.active_popups.length > 0 
-                && !PopupManager.isOpen("quick_menu") 
-                && !PopupManager.isOpen("power") 
-                && !PopupManager.isOpen("emoji") 
-                && !PopupManager.isOpen("wallpaper")
-                && !PopupManager.isOpen("launcher")
-                && !PopupManager.isOpen("screenshot")
-            )
-            property bool hideBar: (
-                ((Hyprland.focusedWorkspace.hasFullscreen ?? false) 
-                && Hyprland.focusedMonitor.name == root.monitor.name) 
-                || SettingsInfo.hideBar
-            )
+            property bool forceBar: (PopupManager.active_popups.length > 0 && !PopupManager.isOpen("quick_menu") && !PopupManager.isOpen("power") && !PopupManager.isOpen("emoji") && !PopupManager.isOpen("wallpaper") && !PopupManager.isOpen("launcher") && !PopupManager.isOpen("screenshot"))
+            property bool hideBar: (((Hyprland.focusedWorkspace.hasFullscreen ?? false) && Hyprland.focusedMonitor.name == root.monitor.name) || SettingsInfo.hideBar)
 
             margins {
-                top: -(Cell.h(1)-1)*(root.hideBar && !root.peekBar && !root.forceBar)
+                top: -(Cell.h(1) - 1) * (root.hideBar && !root.peekBar && !root.forceBar)
 
                 Behavior on top {
                     NumberAnimation {
-                        duration: 200*!SettingsInfo.hyprAnim
+                        duration: 200 * !SettingsInfo.hyprAnim
                         easing.type: Easing.OutCubic
                     }
                 }
             }
 
-            exclusiveZone: root.implicitHeight*!root.hideBar
+            exclusiveZone: root.implicitHeight * !root.hideBar
 
             implicitHeight: Cell.h(1) + 1
 
             color: "transparent"
 
             StatusBar {
-
                 id: bar
 
                 hideBar: root.hideBar
                 forceBar: root.forceBar
-
             }
 
             PanelWindow {
@@ -200,7 +193,6 @@ Scope {
                 }
 
                 Item {
-
                     id: background
 
                     anchors.fill: parent
@@ -209,14 +201,12 @@ Scope {
 
                         monitor: root.monitor
                         anchors.fill: parent
-
                     }
 
                     Cells {
+                        id: bg
 
                         y: Cell.h()
-
-                        id: bg
 
                         w: Cell.wCount(root.monitor.width, "ceil")
                         h: Cell.hCount(root.monitor.height, "ceil")
@@ -224,21 +214,25 @@ Scope {
                         color: "transparent"
 
                         Rectangle {
-
                             id: bar_shadow
 
                             anchors.top: parent.top
                             anchors.left: parent.left
                             anchors.right: parent.right
 
-                            implicitHeight: (Cell.h(1))*!(root.hideBar && !root.peekBar && !root.forceBar)
+                            implicitHeight: (Cell.h(1)) * !(root.hideBar && !root.peekBar && !root.forceBar)
 
                             opacity: !(root.hideBar && !root.peekBar && !root.forceBar)
 
                             Behavior on opacity {
                                 SequentialAnimation {
-                                    PauseAnimation {duration: 200}
-                                    NumberAnimation {duration: 200; easing.type: Easing.OutCubic}
+                                    PauseAnimation {
+                                        duration: 200
+                                    }
+                                    NumberAnimation {
+                                        duration: 200
+                                        easing.type: Easing.OutCubic
+                                    }
                                 }
                             }
 
@@ -248,14 +242,17 @@ Scope {
                             layer.effect: DropShadow {
 
                                 cached: true
-                                color: Colors.transparent(Colors.blend("black",Colors.bgBase,0.2),0.5*SettingsInfo.shadow)
+                                color: Colors.transparent(Colors.blend("black", Colors.bgBase, 0.2), 0.5 * SettingsInfo.shadow)
                                 radius: 10
                                 samples: 20
 
-                                Behavior on color {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
-
+                                Behavior on color {
+                                    ColorAnimation {
+                                        duration: 500
+                                        easing.type: Easing.OutCubic
+                                    }
+                                }
                             }
-
                         }
 
                         Rectangle {
@@ -264,25 +261,37 @@ Scope {
 
                             opacity: SettingsInfo.bgCava
 
-                            Behavior on opacity {NumberAnimation {
-                                duration: 1000
-                                easing.type: Easing.OutCubic
-                            }}
+                            Behavior on opacity {
+                                NumberAnimation {
+                                    duration: 1000
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
 
                             anchors.fill: parent
 
                             gradient: Gradient {
                                 orientation: Gradient.Vertical
-                                GradientStop { position: 0.0; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5) }
-                                GradientStop { position: 0.4; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0) }
-                                GradientStop { position: 0.6; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0) }
-                                GradientStop { position: 1.0; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5) }
+                                GradientStop {
+                                    position: 0.0
+                                    color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5)
+                                }
+                                GradientStop {
+                                    position: 0.4
+                                    color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0)
+                                }
+                                GradientStop {
+                                    position: 0.6
+                                    color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0)
+                                }
+                                GradientStop {
+                                    position: 1.0
+                                    color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5)
+                                }
                             }
-
                         }
 
                         Rectangle {
-
                             id: cava_mask
 
                             visible: false
@@ -291,68 +300,37 @@ Scope {
 
                             gradient: Gradient {
                                 orientation: Gradient.Vertical
-                                GradientStop { position: 0.0; color: "transparent" }
-                                GradientStop { position: 0.3; color: "white"}
-                                GradientStop { position: 0.7; color: "white"}
-                                GradientStop { position: 1.0; color: "transparent" }
-                            }
-
-                        }
-
-                        component BgCava: CellAudioVisual {
-
-                            visible: opacity > 0
-
-                            opacity: SettingsInfo.bgCava*0.5
-
-                            property real interval: 4
-
-                            Behavior on opacity {NumberAnimation {
-                                duration: 1000
-                                easing.type: Easing.OutCubic
-                            }}
-
-                            Component.onCompleted: {
-                                if (visible) {
-                                    Cava.requestStart()
+                                GradientStop {
+                                    position: 0.0
+                                    color: "transparent"
+                                }
+                                GradientStop {
+                                    position: 0.3
+                                    color: "white"
+                                }
+                                GradientStop {
+                                    position: 0.7
+                                    color: "white"
+                                }
+                                GradientStop {
+                                    position: 1.0
+                                    color: "transparent"
                                 }
                             }
-                            onVisibleChanged: {
-                                if (visible) {
-                                    Cava.requestStart()
-                                } else {
-                                    Cava.release()
-                                }
-                            }
-
-                            w: Cell.wCount(background.width,"ceil")
-                            h: Cell.hCount(background.height/interval,"ceil")
-
-                            spacing: 2
-                            barW: 2
-
-                            color: [Colors.secondary, Colors.warning, Colors.danger]
-
-                            layer.enabled: true
-                            layer.effect: OpacityMask {
-                                maskSource: cava_mask
-                            }
-
                         }
 
-                        BgCava { rotation: 180 }
+                        BgCava {
+                            rotation: 180
+                        }
 
-                        BgCava { y: background.height - background.height/interval }
-
-
+                        BgCava {
+                            y: background.height - background.height / interval
+                        }
                     }
-
                 }
-
             }
 
             PanelWindow {
-
                 id: notifcations
 
                 screen: root.screen
@@ -381,18 +359,14 @@ Scope {
                 }
 
                 NotificationsPopup {
-
                     id: notif
 
                     cellX: Cell.wCount(Cell.alignRightWCell(implicitWidth, root.monitor.width)) + 1
                     cellY: 2
-
                 }
-
             }
 
             PanelWindow {
-
                 id: pacman_progress
 
                 screen: root.screen
@@ -421,20 +395,16 @@ Scope {
                 }
 
                 PacmanProgress {
-
                     id: pacman
 
                     monitor: root.monitor
 
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: -Cell.h(1)*(1-threshold)
-
+                    anchors.bottomMargin: -Cell.h(1) * (1 - threshold)
                 }
-
             }
 
             PanelWindow {
-
                 id: popups_screen
 
                 screen: root.screen
@@ -459,6 +429,9 @@ Scope {
 
                 HyprlandFocusGrab {
                     active: root.shield && popups_screen.visible
+                    onCleared: {
+                        console.log("Grab");
+                    }
                     windows: [root, popups_screen]
                 }
 
@@ -469,12 +442,11 @@ Scope {
                 }
 
                 Item {
-
                     id: shield
 
                     property bool mouse_check: false
 
-                    anchors.topMargin: (root.implicitHeight-1)*(!PopupManager.isOpen("power")&&!PopupManager.isOpen("screenshot"))
+                    anchors.topMargin: (root.implicitHeight - 1) * (!PopupManager.isOpen("power") && !PopupManager.isOpen("screenshot"))
                     anchors.top: parent.top
                     anchors.right: parent.right
                     anchors.left: parent.left
@@ -486,12 +458,11 @@ Scope {
                         anchors.fill: parent
 
                         onPressed: {
-                            PopupManager.close()
+                            PopupManager.close();
                         }
                     }
 
                     Item {
-
                         id: popups_wrapper
 
                         anchors.fill: parent
@@ -500,20 +471,22 @@ Scope {
                         layer.effect: DropShadow {
 
                             cached: true
-                            color: Colors.transparent(Colors.blend("black",Colors.bgBase,0.2),0.5*SettingsInfo.shadow)
+                            color: Colors.transparent(Colors.blend("black", Colors.bgBase, 0.2), 0.5 * SettingsInfo.shadow)
                             radius: 10
                             samples: 20
 
-                            Behavior on color {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
-
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 500
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
                         }
 
                         Popups {
-
                             id: popups
                             monitor: root.monitor
                         }
-
                     }
 
                     MouseControl {
@@ -523,15 +496,16 @@ Scope {
                         anchors.fill: parent
 
                         onMoved: {
-                            if (HintManager.visible && HintManager.timer == 0) HintManager.hide()
+                            if (HintManager.visible && HintManager.timer == 0)
+                                HintManager.hide();
                         }
 
                         onPressed: {
-                            if (!HintManager.visible || HintManager.timer != 0) HintManager.hide()
-                            ContextMenuManager.hide()
-                            DropdownManager.hide()
+                            if (!HintManager.visible || HintManager.timer != 0)
+                                HintManager.hide();
+                            ContextMenuManager.hide();
+                            DropdownManager.hide();
                         }
-
                     }
 
                     CellDropdownMenu {
@@ -550,12 +524,11 @@ Scope {
                     }
 
                     Cells {
+                        id: grid
 
                         Component.onCompleted: {
-                            SettingsInfo.showGrid.connect(() => grid.visible = !grid.visible)
+                            SettingsInfo.showGrid.connect(() => grid.visible = !grid.visible);
                         }
-
-                        id: grid
 
                         visible: false
 
@@ -567,22 +540,18 @@ Scope {
 
                         color: "black"
                         color2: "transparent"
-
                     }
-
                 }
-
             }
 
             IpcHandler {
                 target: "launcher"
                 function toggle(): void {
-                    PopupManager.toggle("launcher")
+                    PopupManager.toggle("launcher");
                 }
             }
 
             PanelWindow {
-
                 id: lock_screen_background
 
                 screen: root.screen
@@ -603,7 +572,7 @@ Scope {
 
                 focusable: false
 
-                color: Qt.rgba(0,0,0,opacity)
+                color: Qt.rgba(0, 0, 0, opacity)
 
                 property real opacity: 0
 
@@ -612,15 +581,14 @@ Scope {
                 }
 
                 Component.onCompleted: {
-                    SystemInfo.lockRequest.connect(()=> {
-                        lockAnimStart.restart()
-                    })
-                    SystemInfo.unlockRequest.connect(()=> {
-                        lockAnimEnd.restart()
-                        LockInfo.unlock()
-                    })
+                    SystemInfo.lockRequest.connect(() => {
+                        lockAnimStart.restart();
+                    });
+                    SystemInfo.unlockRequest.connect(() => {
+                        lockAnimEnd.restart();
+                        LockInfo.unlock();
+                    });
                 }
-
             }
 
             SequentialAnimation {
@@ -634,7 +602,7 @@ Scope {
                 }
                 ScriptAction {
                     script: {
-                        LockInfo.lock()
+                        LockInfo.lock();
                     }
                 }
             }
@@ -649,8 +617,48 @@ Scope {
                     easing.type: Easing.OutCubic
                 }
             }
+        }
+    }
 
+    component BgCava: CellAudioVisual {
+
+        visible: opacity > 0
+
+        opacity: SettingsInfo.bgCava * 0.5
+
+        property real interval: 4
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 1000
+                easing.type: Easing.OutCubic
+            }
         }
 
+        Component.onCompleted: {
+            if (visible) {
+                Cava.requestStart();
+            }
+        }
+        onVisibleChanged: {
+            if (visible) {
+                Cava.requestStart();
+            } else {
+                Cava.release();
+            }
+        }
+
+        w: Cell.wCount(background.width, "ceil")
+        h: Cell.hCount(background.height / interval, "ceil")
+
+        spacing: 2
+        barW: 2
+
+        color: [Colors.secondary, Colors.warning, Colors.danger]
+
+        layer.enabled: true
+        layer.effect: OpacityMask {
+            maskSource: cava_mask
+        }
     }
 }

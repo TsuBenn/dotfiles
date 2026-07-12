@@ -9,9 +9,17 @@
     "posY": 0.5
   },
   "wallpapers": [
-    "asuka_landscape.jpg"
+    "minami.jpg"
   ],
-  "config": {},
+  "config": {
+    "macbook.jpg": {
+      "reposition": {
+        "scalar": 1,
+        "verticalOffset": 1,
+        "horizontalOffset": 0
+      }
+    }
+  },
   "live": true,
   "slideshow": false,
   "selected": 0

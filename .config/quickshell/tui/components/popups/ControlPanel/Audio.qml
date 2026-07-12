@@ -48,18 +48,19 @@ ColumnLayout {
                         })
                     }
 
-                    model: AudioInfo.streams
-
+                    model: AudioInfo.streams.length
 
                     delegate: Cells {
 
                         id: stream
 
-                        required property int id
-                        required property real volume
-                        required property string app
-                        required property string name
-                        required property string binary
+                        required property int index
+
+                        property int id : AudioInfo.streams[index]?.id
+                        property real volume : AudioInfo.streams[index]?.volume
+                        property string app : AudioInfo.streams[index]?.app
+                        property string name : AudioInfo.streams[index]?.name
+                        property string binary : AudioInfo.streams[index]?.binary
 
                         w: list.contentW
                         h: 3

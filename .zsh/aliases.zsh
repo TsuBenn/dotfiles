@@ -56,6 +56,7 @@ alias kittyconf='cd ~/dotfiles/ && nvim ~/.config/kitty/kitty.conf'
 alias ghosttyconf='cd ~/dotfiles/ && nvim ~/.config/ghostty/config'
 alias tmuxconf='cd ~/dotfiles/ && nvim ~/.tmux.conf'
 alias nvimconf='cd ~/.config/nvim && nvim ~/.config/nvim/'
+alias helixconf='cd ~/dotfiles/.config/helix && nvim ~/.config/helix/'
 alias bashconf='cd ~/dotfiles/ && nvim ~/.bashrc'
 alias zshconf='cd ~/dotfiles/.zsh/ && nvim ~/dotfiles/.zsh/'
 

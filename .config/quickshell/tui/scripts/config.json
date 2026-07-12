@@ -5,7 +5,7 @@
   "textBasedVolume": false,
   "hideBar": false,
   "bottomBar": false,
-  "optimizeMemory": true,
+  "optimizeMemory": false,
   "safeNotifications": false,
   "dnd": false,
   "wallpaperAutoAdvance": true,

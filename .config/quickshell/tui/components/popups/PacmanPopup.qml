@@ -40,6 +40,7 @@ CellPopup {
             multi_selected_pkg = []
             selected_pkg = ""
             search_field.set("")
+            PacmanInfo.search("")
         }
     }
 
@@ -100,7 +101,7 @@ CellPopup {
             binds: "Escape",
             action: () => {
                 if (
-                    root.pacmanState == "success" 
+                    root.pacmanState == "success"
                     || root.pacmanState == "failed"
                     || root.pacmanState == "pre-flight"
                 ) {
@@ -647,7 +648,7 @@ CellPopup {
                                     }
                                 }
 
-                            } 
+                            }
 
 
                         }

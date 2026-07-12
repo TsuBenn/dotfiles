@@ -29,12 +29,6 @@
         "P"
       ],
       "action": "open_pacman"
-    },
-    {
-      "binds": [
-        "S"
-      ],
-      "action": "open_system_info"
     }
   ],
   "custom_actions": {}

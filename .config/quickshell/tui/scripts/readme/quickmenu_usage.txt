@@ -11,6 +11,8 @@ Below the list, you will find:
 * An `Add` button to create new mappings
 * A `Manage custom actions` button
 
+To trigger the listed actions, you can simply press the keybind on your keyboard of the corresponding action and it will trigger it.
+
 ## KEYBIND RULES
 When typing binds into the text field, please follow these formatting rules:
 

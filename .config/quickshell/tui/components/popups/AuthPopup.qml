@@ -28,7 +28,6 @@ import QtQuick
 // ─────────────────────────────────────────────────────────────────
 
 CellPopup {
-
     id: root
 
     // ── State driven by AuthInfo signals ──
@@ -57,14 +56,15 @@ CellPopup {
     // instead of just closing — AuthInfo.cancel() will emit closed()
     // which triggers our onClosed handler to do the actual close.
     function onSigClose() {
-        pwd_field.set("")
-        succeed_anim.stop()
-        status_reset.stop()
-        AuthInfo.cancel()
+        pwd_field.set("");
+        succeed_anim.stop();
+        status_reset.stop();
+        AuthInfo.cancel();
+        forceClose();
     }
 
     onMarginsPressed: {
-        AuthInfo.cancel()
+        AuthInfo.cancel();
     }
 
     // ── Listen to AuthInfo signals ──
@@ -73,76 +73,83 @@ CellPopup {
         target: AuthInfo
 
         function onPrompted(p: string, d: string) {
-            root.prompt = p
-            root.description = d
-            pwd_field.set("")
-            root._setStatus("Insert password for <b>" + SystemInfo.username + "</b>",
-            Colors.info, Cell.font)
-            PopupManager.open(root.name, false)
+            root.prompt = p;
+            root.description = d;
+            pwd_field.set("");
+            root._setStatus("Insert password for <b>" + SystemInfo.username + "</b>", Colors.info, Cell.font);
+            PopupManager.open(root.name, false);
             // Focus after the popup is visible
-            Qt.callLater(() => { pwd_field.forceActiveFocus() })
+            Qt.callLater(() => {
+                pwd_field.forceActiveFocus();
+            });
         }
 
         function onVerifySucceeded() {
-            if (!root.visible) return
-            root._setStatus("Authentication succeed!", Colors.success, Cell.fontB)
-            succeed_anim.restart()
+            if (!root.visible)
+                return;
+            root._setStatus("Authentication succeed!", Colors.success, Cell.fontB);
+            succeed_anim.restart();
         }
 
         function onVerifyFailed(reason: string) {
-            if (!root.visible) return
-            root._setStatus(reason || "Authentication failed!", Colors.danger, Cell.fontB)
-            pwd_field.set("")
-            Qt.callLater(() => { pwd_field.forceActiveFocus() })
+            if (!root.visible)
+                return;
+            root._setStatus(reason || "Authentication failed!", Colors.danger, Cell.fontB);
+            pwd_field.set("");
+            Qt.callLater(() => {
+                pwd_field.forceActiveFocus();
+            });
         }
 
         function onClosed() {
-            root.close()
+            root.close();
         }
-
     }
 
     function _setStatus(text, color, font) {
-        status.text = text
-        status.color = color
-        status.font = font || Cell.font
-        status_reset.restart()
+        status.text = text;
+        status.color = color;
+        status.font = font || Cell.font;
+        status_reset.restart();
     }
 
     // ── Submit handler ──
     function _submit(password) {
         if (password.length === 0) {
-            _setStatus("Password field cannot be left empty!", Colors.warning)
-            return
+            _setStatus("Password field cannot be left empty!", Colors.warning);
+            return;
         }
         if (AuthInfo.checking) {
             // PAM check already in flight — wait for it
-            return
+            return;
         }
 
-        _setStatus("Processing password...", Colors.info, Cell.font)
-        AuthInfo._check(password)
+        _setStatus("Processing password...", Colors.info, Cell.font);
+        AuthInfo._check(password);
     }
 
     // ── Animations ──
     SequentialAnimation {
         id: succeed_anim
-        PauseAnimation { duration: 500 }
+        PauseAnimation {
+            duration: 500
+        }
         ScriptAction {
             script: {
-                root.close()
+                root.close();
             }
         }
     }
 
     SequentialAnimation {
         id: status_reset
-        PauseAnimation { duration: 2000 }
+        PauseAnimation {
+            duration: 2000
+        }
         ScriptAction {
             script: {
                 if (root.visible && !AuthInfo.checking) {
-                    root._setStatus("Insert password for <b>" + SystemInfo.username + "</b>",
-                    Colors.info, Cell.font)
+                    root._setStatus("Insert password for <b>" + SystemInfo.username + "</b>", Colors.info, Cell.font);
                 }
             }
         }
@@ -154,21 +161,18 @@ CellPopup {
         h: root.h
 
         CellBox {
-
             id: box
 
             w: root.w
             h: root.h
 
             ColumnLayout {
-
                 id: layout
 
                 spacing: 0
 
                 // ── Title ──
                 CellText {
-
                     id: title
 
                     Layout.leftMargin: Cell.w(1)
@@ -177,7 +181,6 @@ CellPopup {
                     preferedW: box.contentW - 2
                     centered: true
                     color: Colors.secondary
-
                 }
 
                 CellSeparator {
@@ -187,7 +190,6 @@ CellPopup {
 
                 // ── Description (optional) ──
                 CellText {
-
                     id: context
 
                     visible: text.length > 0
@@ -199,7 +201,6 @@ CellPopup {
                     preferedW: box.contentW - 2
                     centered: true
                     wrap: true
-
                 }
 
                 // ── Password field ──
@@ -217,7 +218,6 @@ CellPopup {
                         border.color: pwd_field.text.length > 0 ? Colors.secondary : Colors.accentStrong
 
                         CellTextField {
-
                             id: pwd_field
 
                             x: Cell.w(1)
@@ -234,29 +234,24 @@ CellPopup {
 
                             placeholder: "Password"
 
-                            onEntered: (input) => {
-                                root._submit(input)
+                            onEntered: input => {
+                                root._submit(input);
                             }
-
                         }
-
                     }
-
                 }
 
                 // ── Status text ──
                 CellText {
+                    id: status
 
                     Layout.leftMargin: Cell.w(1)
-
-                    id: status
 
                     text: "Insert password for <b>" + SystemInfo.username + "</b>"
                     color: Colors.info
                     preferedW: box.contentW - 2
                     wrap: true
                     centered: true
-
                 }
 
                 CellSeparator {
@@ -278,15 +273,15 @@ CellPopup {
                         clickable: pwd_field.text.length > 0 && !AuthInfo.checking && !succeed_anim.running
 
                         color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                        fg:    clickable ? [Colors.onAccent, Colors.fgBase]        : Colors.fgSubtle
+                        fg: clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
 
-                        onReleased: (button) => {
+                        onReleased: button => {
                             if (button == "L") {
-                                if (AuthInfo.checking) return
-                                pwd_field.enter()  // triggers onEntered → _submit
+                                if (AuthInfo.checking)
+                                    return;
+                                pwd_field.enter();  // triggers onEntered → _submit
                             }
                         }
-
                     }
 
                     CellButton {
@@ -297,23 +292,16 @@ CellPopup {
                         clickable: true
 
                         color: [Colors.bgOverlay, Colors.fgBase]
-                        fg:    [Colors.fgBase, Colors.bgSurface]
+                        fg: [Colors.fgBase, Colors.bgSurface]
 
-                        onReleased: (button) => {
+                        onReleased: button => {
                             if (button == "L") {
-                                root.close()
+                                root.close();
                             }
                         }
-
                     }
-
                 }
-
             }
-
         }
-
     }
-
 }
-
