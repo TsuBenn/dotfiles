@@ -77,15 +77,15 @@ cursor-line = "warning"
 
     # Copy
     c = ["extend_to_line_bounds", "yank"]
-    A-c = ["extend_to_line_bounds", "yank_to_clipboard"]
     C = ["extend_to_line_bounds", "yank", "paste_after", "collapse_selection"]
+    C-c = ["extend_to_line_bounds", "yank_to_clipboard"]
 
     # Paste
     p = "paste_after"
-    P = "paste_clipboard_after"
+    C-v = "paste_clipboard_after"
 
     # Move line
-    A-i = ["extend_to_line_bounds", "delete_selection", "move_line_up", "move_line_up", "paste_after", "format_selections"]
+    A-i = ["extend_to_line_bounds", "delete_selection", "move_line_up", "open_above", "extend_to_line_bounds", "replace_with_yanked", "normal_mode", "extend_to_line_bounds", "format_selections"]
     A-k = ["extend_to_line_bounds", "delete_selection", "paste_after", "format_selections"]
 
     # Format and Save
@@ -244,8 +244,12 @@ cursor-line = "warning"
     R = "surround_replace"
 
     # Move multiple lines
-    A-i = ["extend_to_line_bounds", "delete_selection", "move_line_up", "move_line_up", "paste_after"]
+    A-i = ["extend_to_line_bounds", "delete_selection", "move_line_up", "open_above", "extend_to_line_bounds", "replace_with_yanked", "select_mode", "extend_to_line_bounds", "format_selections"]
     A-k = ["extend_to_line_bounds", "delete_selection", "paste_after"]
+
+    # Delete
+    "del" = ["delete_selection"]
+    "backspace" = ["delete_selection"]
 
     # Insert mode
     A = ["ensure_selections_forward", "flip_selections", "insert_mode", "collapse_selection"]
@@ -253,8 +257,9 @@ cursor-line = "warning"
 
     # Copy
     c = "yank"
-    A-c = ["extend_to_line_bounds", "yank_to_clipboard"]
     C = ["extend_to_line_bounds", "yank", "paste_after"]
+
+    C-c = "yank_to_clipboard"
 
     # Split/Join lines
     u = "join_selections_space"
@@ -298,6 +303,7 @@ cursor-line = "warning"
 
     # Undo
     C-z = ["undo", "collapse_selection", "keep_primary_selection"]
+    C-y = "redo"
 
     # Bracket select exclusive
     "(" = "@mi("
@@ -334,6 +340,8 @@ cursor-line = "warning"
 
     # Escape
     "esc" = ["normal_mode", "move_char_left"]
+
+    "C-v" = ["paste_clipboard_before"]
 
     # Save
     C-s = [":format", ":write", "normal_mode"]
