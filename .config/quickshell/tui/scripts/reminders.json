@@ -89,5 +89,48 @@
       "urgency": 1,
       "time": ""
     }
+  ],
+  "18-07-2026": [
+    {
+      "title": "PRO192-PE (P.234)",
+      "body": "Object Oriented Programming Practical Exam",
+      "span": 1,
+      "urgency": 2,
+      "time": ""
+    }
+  ],
+  "29-07-2026": [
+    {
+      "title": "OSG202-FE (P.130)",
+      "body": "Operating System Final Exam",
+      "span": 1,
+      "urgency": 2,
+      "time": "09:10"
+    },
+    {
+      "title": "MAD101-FE (P.121)",
+      "body": "Discrete Mathematics Final Exam",
+      "span": 1,
+      "urgency": 2,
+      "time": "12:50"
+    }
+  ],
+  "30-07-2026": [
+    {
+      "title": "NWC204-FE (P.420)",
+      "body": "Computer Networking Final Exam",
+      "span": 1,
+      "urgency": 2,
+      "time": "07:30"
+    }
+  ],
+  "01-08-2026": [
+    {
+      "title": "PRO192-FE (P.121)",
+      "body": "Object Oriented Programming Final Exam",
+      "span": 1,
+      "urgency": 2,
+      "time": "07:30"
+    }
   ]
 }

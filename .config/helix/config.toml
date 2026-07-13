@@ -142,6 +142,16 @@ cursor-line = "warning"
 [keys.normal.G]
 
     a = "code_action"
+    d = "goto_definition"
+    D = "goto_type_definition"
+    r = "goto_reference"
+    R = "rename_symbol"
+    h = "select_references_to_symbol_under_cursor"
+    s = "symbol_picker"
+    S = "workspace_symbol_picker"
+    p = "diagnostics_picker"
+    P = "workspace_diagnostics_picker"
+    i = "goto_implementation"
 
 [keys.normal." "]
 

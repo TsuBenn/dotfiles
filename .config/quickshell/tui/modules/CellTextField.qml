@@ -671,10 +671,7 @@ Item {
                 root.select_char_back();
             } else if (event.key == Qt.Key_Right) {
                 root.select_char_forward();
-            } else {
-                return;
             }
-            event.accepted = true;
         }
 
         if (event.key == Qt.Key_Return) {
