@@ -72,10 +72,7 @@ Item {
     }
 
     onDisabledChanged: {
-        if (focus && disabled) {
-            unFocus();
-            return;
-        }
+        unFocus();
         if (!disabled && focusOnVisible && visible) {
             grabFocus();
         }
@@ -123,7 +120,9 @@ Item {
     }
 
     function grabFocus() {
-        forceActiveFocus();
+        if (visible) {
+            forceActiveFocus();
+        }
     }
 
     function unFocus() {
@@ -152,7 +151,6 @@ Item {
         if (autoClear) {
             clear();
         }
-        unFocus();
         if (bindText != "") {
             text = Qt.binding(() => bindText);
         }
@@ -160,6 +158,7 @@ Item {
             grabFocus();
             return;
         }
+        unFocus();
     }
 
     onCursorPosChanged: {
@@ -646,7 +645,6 @@ Item {
     }
 
     Keys.onPressed: event => {
-        event.accepted = true;
         if (root.disabled)
             return;
         if (event.modifiers & Qt.ControlModifier) {
@@ -664,8 +662,19 @@ Item {
                 root.select_all();
             } else if (event.key == Qt.Key_Backspace) {
                 root.delete_word_back();
+            } else {
+                return;
             }
-            return;
+            event.accepted = true;
+        } else if (event.modifiers & Qt.ShiftModifier) {
+            if (event.key == Qt.Key_Left) {
+                root.select_char_back();
+            } else if (event.key == Qt.Key_Right) {
+                root.select_char_forward();
+            } else {
+                return;
+            }
+            event.accepted = true;
         }
 
         if (event.key == Qt.Key_Return) {
@@ -683,14 +692,9 @@ Item {
             root.move_cursor_back();
         } else if (event.key == Qt.Key_Right) {
             root.move_cursor_forward();
+        } else {
+            return;
         }
-
-        if (event.modifiers & Qt.ShiftModifier) {
-            if (event.key == Qt.Key_Left) {
-                root.select_char_back();
-            } else if (event.key == Qt.Key_Right) {
-                root.select_char_forward();
-            }
-        }
+        event.accepted = true;
     }
 }

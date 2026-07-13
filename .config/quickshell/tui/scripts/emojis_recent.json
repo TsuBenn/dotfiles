@@ -1,6 +1,33 @@
 [
   {
     "category": "emoji",
+    "description": "Pensive face <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-sleepy",
+      "pensive face",
+      "awful",
+      "bored",
+      "dejected",
+      "died",
+      "disappointed",
+      "face",
+      "losing",
+      "lost",
+      "pensive",
+      "sad",
+      "sucks"
+    ],
+    "label": "😔",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 😔"
+    ]
+  },
+  {
+    "category": "emoji",
     "description": "Winking face <i>Smileys & Emotion</i>",
     "group": "Smileys & Emotion",
     "keywords": [
@@ -249,33 +276,6 @@
       "bash",
       "-c",
       "sleep 0.2 && wtype 😀"
-    ]
-  },
-  {
-    "category": "emoji",
-    "description": "Pensive face <i>Smileys & Emotion</i>",
-    "group": "Smileys & Emotion",
-    "keywords": [
-      "face-sleepy",
-      "pensive face",
-      "awful",
-      "bored",
-      "dejected",
-      "died",
-      "disappointed",
-      "face",
-      "losing",
-      "lost",
-      "pensive",
-      "sad",
-      "sucks"
-    ],
-    "label": "😔",
-    "type": "exec",
-    "value": [
-      "bash",
-      "-c",
-      "sleep 0.2 && wtype 😔"
     ]
   }
 ]
