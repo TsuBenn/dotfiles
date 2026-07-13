@@ -44,7 +44,7 @@ ColumnLayout {
                     Component.onCompleted: {
                         AudioInfo.statusUpdated.connect(()=>{
                             if (thetimer.running) return
-                            repeater.model = AudioInfo.streams
+                            repeater.model = AudioInfo.streams.length
                         })
                     }
 
@@ -56,11 +56,11 @@ ColumnLayout {
 
                         required property int index
 
-                        property int id : AudioInfo.streams[index]?.id
-                        property real volume : AudioInfo.streams[index]?.volume
-                        property string app : AudioInfo.streams[index]?.app
-                        property string name : AudioInfo.streams[index]?.name
-                        property string binary : AudioInfo.streams[index]?.binary
+                        property int id : AudioInfo.streams[index]?.id ?? 0
+                        property real volume : AudioInfo.streams[index]?.volume ?? 0
+                        property string app : AudioInfo.streams[index]?.app ?? ""
+                        property string name : AudioInfo.streams[index]?.name ?? ""
+                        property string binary : AudioInfo.streams[index]?.binary ?? ""
 
                         w: list.contentW
                         h: 3

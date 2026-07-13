@@ -112,7 +112,7 @@ CellPopup {
     ]
 
     onVisibleChanged: {
-        if (color.edit) {
+        if (color.edit && visible) {
             color.toggleEdit();
         }
         resetList();
@@ -213,7 +213,7 @@ CellPopup {
 
                 Component.onCompleted: {
                     root.resultChanged.connect(() => {
-                    //root.resetList()
+                        root.resetList();
                     });
                     Colors.currentChanged.connect(() => {
                     //root.resetList()
@@ -391,352 +391,29 @@ CellPopup {
                     }
                 }
 
-                Cells {
+                CellColorPicker {
                     id: color_picker
 
                     visible: color.color_picker
 
+                    // When the picker closes, drop the key so the next openPicker()
+                    // call is treated as a fresh open rather than a "switch key".
                     onVisibleChanged: {
-                        if (!visible) {
+                        if (!visible)
                             key = "";
-                        }
                     }
 
-                    property string key: "bgSurface"
+                    // The picker is the source of truth for the editing color.
+                    // Whenever its `buffer` changes (SV drag, slider, HEX/RGB
+                    // entry), forward the new value to the parent edit buffer so
+                    // the preview pane and palette list stay in sync.
+                    key: ""
+                    sourceColor: Qt.color(color.source[color_picker.key] || "#000000")
+                    buffer: "black"
 
-                    property color buffer: "black"
-
-                    onBufferChanged: {
-                        if (buffer.hsvHue < 0) {
-                            buffer.hsvHue = 0;
-                        }
-                        sv_square.requestPaint();
-                        color.setBuffer(key, buffer.toString());
-                    }
-
-                    w: 36
                     h: color.h
 
-                    color: "transparent"
-
-                    ColumnLayout {
-
-                        y: Cell.h(0)
-
-                        spacing: Cell.h(0)
-
-                        RowLayout {
-
-                            Layout.leftMargin: Cell.w(3)
-
-                            spacing: 0
-
-                            Cells {
-
-                                w: 15
-                                h: 1.5
-                                color: Qt.color(color.source[color_picker.key] || "#000000")
-                            }
-
-                            Cells {
-
-                                w: 15
-                                h: 1.5
-                                color: color_picker.buffer
-                            }
-                        }
-
-                        CellText {
-                            text: " "
-                        }
-
-                        Canvas {
-                            id: sv_square
-
-                            Layout.leftMargin: Cell.w(3)
-
-                            implicitWidth: Cell.w(30)
-                            implicitHeight: Cell.h(15)
-
-                            onPaint: {
-                                var ctx = getContext("2d");
-
-                                for (let i = 0; i < implicitWidth; i += Cell.w(1)) {
-                                    for (let j = 0; j < implicitHeight; j += Cell.h(1)) {
-                                        ctx.fillStyle = Qt.hsva(color_picker.buffer.hsvHue, i / (implicitWidth - Cell.w(1)), 1 - j / (implicitHeight - Cell.h(1)), 1);
-                                        ctx.fillRect(i, j, Cell.w(1), Cell.h(1));
-                                    }
-                                }
-                            }
-
-                            CellText {
-
-                                x: Cell.w(Math.round(color_picker.buffer.hsvSaturation * 29))
-                                y: Cell.h(Math.round((1 - color_picker.buffer.hsvValue) * 14))
-
-                                text: "✕"
-
-                                color: Qt.hsva(color_picker.buffer.hsvHue, (1 - color_picker.buffer.hsvSaturation) * 0.8, color_picker.buffer.hsvValue > 0.5 ? 0 : 1, 1)
-
-                                font: Cell.fontBB
-                            }
-
-                            MouseControl {
-
-                                anchors.fill: parent
-
-                                function setColor() {
-                                    if (buttonDown == "L") {
-                                        color_picker.buffer.hsvSaturation = Math.max(Math.min(mouseX / (parent.implicitWidth - Cell.w(0.5)), 1), 0);
-                                        color_picker.buffer.hsvValue = Math.max(Math.min(1 - mouseY / (parent.implicitHeight - Cell.h(0.5)), 1), 0);
-                                    }
-                                }
-
-                                onReleased: {
-                                    setColor();
-                                }
-                                onPressed: {
-                                    setColor();
-                                }
-                                onMoved: {
-                                    setColor();
-                                }
-                            }
-                        }
-
-                        CellText {
-                            text: " "
-                        }
-
-                        CellSeparator {
-                            w: color_picker.w
-                            color: Colors.accentDim
-                        }
-
-                        Slider {
-                            id: slider_hue
-
-                            value: color_picker.buffer.hsvHue * 100
-                            knob_color: Qt.hsva(color_picker.buffer.hsvHue, 1, 1, 1)
-                            placeholder: "Hue"
-                            render: () => {
-                                var ctx = slider.getContext("2d");
-
-                                const width = Cell.w(26);
-                                const height = Cell.h(1);
-
-                                for (let i = 0; i < width; i += Cell.w(1)) {
-                                    ctx.fillStyle = Qt.hsva(i / (width - Cell.w(1)), 1, 1, 1);
-                                    ctx.fillRect(i, (Cell.h(1) - Cell.w(1)) / 2, Cell.w(1), Cell.w(1));
-                                }
-                            }
-
-                            onAdjusted: percent => {
-                                sv_square.requestPaint();
-                                percent = Math.max(Math.min(percent, 100), 0);
-                                color_picker.buffer.hsvHue = percent.toFixed(1) / 100;
-                            }
-
-                            onEntered: percent => {
-                                sv_square.requestPaint();
-                                percent = Math.max(Math.min(parseFloat(percent), 100), 0);
-                                color_picker.buffer.hsvHue = percent.toFixed(1) / 100;
-                            }
-
-                            onTabbed: {
-                                slider_hue.unFocus();
-                                slider_saturation.grabFocus();
-                            }
-                        }
-
-                        CellSeparator {
-                            w: color_picker.w
-                            padding: 1
-                            color: Colors.bgOverlay
-                        }
-
-                        Slider {
-                            id: slider_saturation
-
-                            value: color_picker.buffer.hsvSaturation * 100
-                            knob_color: Qt.hsva(1, color_picker.buffer.hsvSaturation, 1, 1)
-                            placeholder: "Hue"
-                            render: () => {
-                                var ctx = slider.getContext("2d");
-
-                                const width = Cell.w(26);
-                                const height = Cell.h(1);
-
-                                for (let i = 0; i < width; i += Cell.w(1)) {
-                                    ctx.fillStyle = Qt.hsva(1, i / (width - Cell.w(1)), 1, 1);
-                                    ctx.fillRect(i, (Cell.h(1) - Cell.w(1)) / 2, Cell.w(1), Cell.w(1));
-                                }
-                            }
-
-                            onAdjusted: percent => {
-                                percent = Math.max(Math.min(percent, 100), 0);
-                                color_picker.buffer.hsvSaturation = percent.toFixed(1) / 100;
-                            }
-
-                            onEntered: percent => {
-                                percent = Math.max(Math.min(parseFloat(percent), 100), 0);
-                                color_picker.buffer.hsvSaturation = percent.toFixed(1) / 100;
-                            }
-
-                            onTabbed: {
-                                slider_saturation.unFocus();
-                                slider_value.grabFocus();
-                            }
-                        }
-
-                        CellSeparator {
-                            w: color_picker.w
-                            padding: 1
-                            color: Colors.bgOverlay
-                        }
-
-                        Slider {
-                            id: slider_value
-
-                            value: color_picker.buffer.hsvValue * 100
-                            knob_color: Qt.hsva(1, 0, color_picker.buffer.hsvValue, 1)
-                            placeholder: "Hue"
-                            render: () => {
-                                var ctx = slider.getContext("2d");
-
-                                const width = Cell.w(26);
-                                const height = Cell.h(1);
-
-                                for (let i = 0; i < width; i += Cell.w(1)) {
-                                    ctx.fillStyle = Qt.hsva(1, 0, i / (width - Cell.w(1)), 1);
-                                    ctx.fillRect(i, (Cell.h(1) - Cell.w(1)) / 2, Cell.w(1), Cell.w(1));
-                                }
-                            }
-
-                            onAdjusted: percent => {
-                                percent = Math.max(Math.min(percent, 100), 0);
-                                color_picker.buffer.hsvValue = percent.toFixed(1) / 100;
-                            }
-
-                            onEntered: percent => {
-                                percent = Math.max(Math.min(parseFloat(percent), 100), 0);
-                                color_picker.buffer.hsvValue = percent.toFixed(1) / 100;
-                            }
-
-                            onTabbed: {
-                                slider_value.unFocus();
-                                slider_hue.grabFocus();
-                            }
-                        }
-
-                        CellSeparator {
-                            w: color_picker.w
-                            padding: 1
-                            color: Colors.bgOverlay
-                        }
-
-                        RowLayout {
-
-                            Layout.leftMargin: Cell.centerWCell(implicitWidth, color_picker.implicitWidth)
-
-                            spacing: Cell.w(1)
-
-                            CellText {
-                                text: "HEX"
-                            }
-
-                            Detail {
-                                id: color_picker_hex
-
-                                w: 8
-                                placeholder: "#RRGGBB"
-                                bindText: color_picker.buffer.toString()
-
-                                onEntered: input => {
-                                    if (/^#?([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/.test(input)) {
-                                        color_picker.buffer = Qt.color(input.startsWith("#") ? input : "#" + input);
-                                    }
-                                }
-
-                                onTabbed: {
-                                    color_picker_hex.unFocus();
-                                    color_picker_r.grabFocus();
-                                }
-                            }
-
-                            CellText {
-                                text: "R"
-                            }
-
-                            Detail {
-                                id: color_picker_r
-
-                                w: 4
-                                placeholder: "RRR"
-                                bindText: Math.round(color_picker.buffer.r * 255)
-
-                                onEntered: input => {
-                                    input = parseInt(input);
-                                    if (input >= 0 && input <= 255) {
-                                        color_picker.buffer.r = input / 255;
-                                    }
-                                }
-
-                                onTabbed: {
-                                    color_picker_r.unFocus();
-                                    color_picker_g.grabFocus();
-                                }
-                            }
-
-                            CellText {
-                                text: "G"
-                            }
-
-                            Detail {
-                                id: color_picker_g
-
-                                w: 4
-                                placeholder: "GGG"
-                                bindText: Math.round(color_picker.buffer.g * 255)
-
-                                onEntered: input => {
-                                    input = parseInt(input);
-                                    if (input >= 0 && input <= 255) {
-                                        color_picker.buffer.g = input / 255;
-                                    }
-                                }
-
-                                onTabbed: {
-                                    color_picker_g.unFocus();
-                                    color_picker_b.grabFocus();
-                                }
-                            }
-
-                            CellText {
-                                text: "B"
-                            }
-
-                            Detail {
-                                id: color_picker_b
-
-                                w: 4
-                                placeholder: "BBB"
-                                bindText: Math.round(color_picker.buffer.b * 255)
-
-                                onEntered: input => {
-                                    input = parseInt(input);
-                                    if (input >= 0 && input <= 255) {
-                                        color_picker.buffer.b = input / 255;
-                                    }
-                                }
-
-                                onTabbed: {
-                                    color_picker_b.unFocus();
-                                    color_picker_hex.grabFocus();
-                                }
-                            }
-                        }
-                    }
+                    onApplied: (k, v) => color.setBuffer(k, v)
                 }
             }
 
@@ -1051,8 +728,9 @@ CellPopup {
                                             disabled_color: color.color.fgSubtle
 
                                             onFocusChanged: {
-                                                if (!focus)
+                                                if (!focus) {
                                                     textfield.grabFocus();
+                                                }
                                             }
                                         }
                                     }
@@ -1762,154 +1440,6 @@ CellPopup {
                         return "Exit textfield";
                     } else
                         return "Exit"
-                }
-            }
-        }
-    }
-
-    component Slider: RowLayout {
-
-        Layout.leftMargin: Cell.centerWCell(implicitWidth, color_picker.implicitWidth)
-
-        property real value: color_picker.buffer.hsvHue * 100
-
-        property color knob_color: Qt.hsva(color_picker.buffer.hsvHue, 1, 1, 1)
-
-        property string placeholder: "Hue"
-        property var slider: color_slider
-
-        property var render: () => {}
-
-        signal adjusted(percent: real)
-        signal entered(percent: real)
-
-        signal tabbed
-
-        function grabFocus() {
-            color_picker_slider.grabFocus();
-        }
-
-        function unFocus() {
-            color_picker_slider.unFocus();
-        }
-
-        spacing: Cell.w(2)
-
-        CellProgressSquare {
-
-            w: 25
-            h: 1
-
-            percent: parent.value
-
-            color: "transparent"
-            fg: "transparent"
-
-            percentSmoother: 100
-
-            wheelInterval: 0.1
-
-            interactive: true
-
-            syncDelay: 0
-
-            onAdjusted: percent => parent.adjusted(percent)
-
-            Canvas {
-                id: color_slider
-
-                implicitWidth: Cell.w(parent.w)
-                implicitHeight: Cell.h(parent.h)
-
-                onPaint: parent.parent.render()
-            }
-
-            Cells {
-
-                x: Cell.w(Math.round((parent.percent / 100) * (parent.w - 1)))
-
-                w: 1
-                h: 1
-
-                color: parent.parent.knob_color
-            }
-        }
-
-        Cells {
-
-            w: 5
-            h: 1
-
-            color: Colors.bgOverlay
-
-            CellTextField {
-                id: color_picker_slider
-
-                w: parent.w
-                h: parent.h
-
-                focusOnVisible: false
-                unfocusOnEntered: true
-
-                autoApply: true
-                bindText: parent.parent.value.toFixed(1)
-
-                placeholder: parent.placeholder ?? ""
-
-                onEntered: input => {
-                    parent.parent.entered(input);
-                }
-
-                Keys.onPressed: event => {
-                    parent.parent.tabbed();
-                }
-            }
-        }
-    }
-
-    component Detail: Cells {
-        id: color_picker_detail
-
-        w: 8
-        h: 1
-        color: Colors.bgOverlay
-
-        property string placeholder: "#RRGGBB"
-        property string bindText: color_picker.buffer.toString()
-
-        signal entered(input: string)
-        signal tabbed
-
-        function unFocus() {
-            color_picker_rgb.unFocus();
-        }
-
-        function grabFocus() {
-            color_picker_rgb.grabFocus();
-        }
-
-        CellTextField {
-            id: color_picker_rgb
-
-            w: parent.w
-            h: parent.h
-            scroll: false
-
-            unfocusOnEntered: true
-
-            placeholder: parent.placeholder
-            focusOnVisible: false
-
-            autoApply: true
-            bindText: parent.bindText
-
-            onEntered: input => {
-                parent.entered(input);
-            }
-
-            Keys.onPressed: event => {
-                if (event.key == Qt.Key_Tab) {
-                    color_picker_detail.tabbed();
                 }
             }
         }

@@ -60,7 +60,7 @@ CellPopup {
                 countdown.active = false;
                 top_bar.implicitHeight = 0;
                 bottom_bar.implicitHeight = 0;
-                root.forceClose()
+                root.forceClose();
             }
         }
     }
@@ -200,60 +200,55 @@ CellPopup {
             }
         }
 
-        Loader {
+        Cells {
             id: list
 
             property bool show: true
 
-            active: (root.visible || !root.optimizeMemory) && show
+            visible: show
 
-            sourceComponent: Cells {
+            w: Cell.wCount(layout.implicitWidth)
+            h: Cell.hCount(layout.implicitHeight)
 
-                w: Cell.wCount(layout.implicitWidth)
-                h: Cell.hCount(layout.implicitHeight)
+            x: Cell.centerWCell(implicitWidth, menu.implicitWidth) - Cell.w(3)
+            y: Cell.centerHCell(implicitHeight, menu.implicitHeight)
 
-                color: "transparent"
+            color: "transparent"
 
-                Component.onCompleted: {
-                    x = Cell.centerWCell(implicitWidth, menu.implicitWidth) - Cell.w(3);
-                    y = Cell.centerHCell(implicitHeight, menu.implicitHeight);
+            ColumnLayout {
+                id: layout
+
+                spacing: Cell.h(1)
+
+                Option {
+                    index: 0
+                    title: "1.suspend"
                 }
 
-                ColumnLayout {
-                    id: layout
+                Option {
+                    index: 1
+                    title: "2.reboot"
+                }
 
-                    spacing: Cell.h(1)
+                Option {
+                    index: 2
+                    title: "3.Shutdown"
+                }
 
-                    Option {
-                        index: 0
-                        title: "1.suspend"
-                    }
+                Option {
+                    visible: !root.lock
+                    index: 3
+                    title: "4.lock"
+                }
 
-                    Option {
-                        index: 1
-                        title: "2.reboot"
-                    }
+                Option {
+                    index: 4
+                    title: root.lock ? "4.logout" : "5.logout"
+                }
 
-                    Option {
-                        index: 2
-                        title: "3.Shutdown"
-                    }
-
-                    Option {
-                        visible: !root.lock
-                        index: 3
-                        title: "4.lock"
-                    }
-
-                    Option {
-                        index: 4
-                        title: root.lock ? "4.logout" : "5.logout"
-                    }
-
-                    Option {
-                        index: 5
-                        title: "0.cancel"
-                    }
+                Option {
+                    index: 5
+                    title: "0.cancel"
                 }
             }
         }

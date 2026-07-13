@@ -14,11 +14,13 @@ export component Main inherits Window {
     height: 500px;
     width: 500px;
 
-    Button {
-        text: "debug";
+    Text {
+        text: "click me!";
 
-        clicked => {
-            root.greet("TsuBenn")
+        TouchArea {
+            clicked => {
+                debug("Text clicked")
+            }
         }
     }
 }
