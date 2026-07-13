@@ -28,6 +28,13 @@ case "$EXT" in
     cpp|cc|cxx)
         g++ "$FILE_PATH" -o /tmp/hx_cpp_out && eval $ENV_VARS /tmp/hx_cpp_out $ARGS
         ;;
+    slint)
+        if cargo verify-project &>/dev/null; then
+            eval $ENV_VARS cargo run -- $ARGS
+        else
+            echo "$FILE_PATH is not inside of a cargo project. Please use Slint's live preview instead."
+        fi
+        ;;
     rs)
         if cargo verify-project &>/dev/null; then
             eval $ENV_VARS cargo run -- $ARGS
@@ -42,7 +49,7 @@ case "$EXT" in
         node "$FILE_PATH" $ARGS
         ;;
     *)
-        echo "Error: Extension '.$EXT' is not configured in hx-run."
+        echo "Error: Extension '.$EXT' is not configured in run.sh"
         ;;
 esac
 
