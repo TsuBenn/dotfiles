@@ -22,16 +22,80 @@ CellPopup {
 
         if (!visible) {
             textfield.path = []
-            textfield.set("")
+            textfield.clear()
             textfield.search("")
             breadcrumbs.updatePath()
         } else {
-            textfield.set("")
+            textfield.clear()
             textfield.search("")
             LauncherInfo.write("-r")
         }
 
     }
+
+    property int result_h: root.minimal ? 2 : 3
+
+    shortcuts: [
+        {
+            binds: ["Backtab", "Up"],
+            action: () => {
+                safe_mouse.safe = 1
+                safe_mouse.visible = true
+                textfield.selected = Math.min((textfield.selected - 1 + LauncherInfo.result.length)% + LauncherInfo.result.length, textfield.selected + 15/result_h - 1)
+                if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
+                    results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
+                }
+            }
+        },
+        {
+            binds: ["Tab", "Down"],
+            action: () => {
+                safe_mouse.safe = 1
+                safe_mouse.visible = true
+                textfield.selected = Math.min((textfield.selected + 1 + LauncherInfo.result.length)% + LauncherInfo.result.length, textfield.selected + 15/result_h - 1)
+                if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
+                    results.offset = textfield.selected*result_h
+                } else if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
+                    results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
+                }
+            }
+        },
+        {
+            binds: "Right",
+            action: () => {
+                if (textfield.text.length == 0) {
+                    tab.advance(1)
+                } else {
+                    textfield.move_char_right()
+                }
+            }
+        },
+        {
+            binds: "Left",
+            action: () => {
+                if (textfield.text.length == 0) {
+                    tab.advance(-1)
+                } else {
+                    textfield.move_char_left()
+                }
+            }
+        },
+        {
+            binds: "Escape",
+            action: () => {
+                if (textfield.path.length > 0) {
+                    const new_path = textfield.path
+                    new_path.pop()
+                    textfield.path = new_path
+                    textfield.search("")
+                    textfield.clear
+                    breadcrumbs.updatePath()
+                } else {
+                    PopupManager.close("launcher")
+                }
+            }
+        },
+    ]
 
     onPromoted: {
         textfield.grabFocus()
@@ -175,11 +239,13 @@ CellPopup {
 
                                 property var path: []
 
+                                escapeToUnFocus: false
+
                                 Component.onCompleted: {
                                     LauncherInfo.pathFound.connect((id, label) => {
                                         textfield.path = [...path, {"id": id, "label": label}]
                                         textfield.search("")
-                                        textfield.set("")
+                                        textfield.clear()
                                         breadcrumbs.updatePath()
                                     })
                                 }
@@ -220,12 +286,12 @@ CellPopup {
                                     if (removed == "" && textfield.path.length > 0) {
                                         textfield.path.pop()
                                         textfield.search("")
-                                        textfield.set("")
+                                        textfield.clear()
                                         breadcrumbs.updatePath()
                                     }
                                     if (removed == "" && tab.selected != 0) {
                                         tab.selected = 0
-                                        set("")
+                                        clear()
                                         search("")
                                     }
                                 }
@@ -233,22 +299,22 @@ CellPopup {
                                 onTextInput: (input) => {
                                     if (input == ">") {
                                         tab.selected = 2
-                                        set("")
+                                        clear()
                                         search("")
                                         return
                                     } else if (input == "=") {
                                         tab.selected = 3
-                                        set("")
+                                        clear()
                                         search("")
                                         return
                                     } else if (input == "/") {
                                         tab.selected = 4
-                                        set("")
+                                        clear()
                                         search("")
                                         return
                                     } else if (input == "@") {
                                         tab.selected = 1
-                                        set("")
+                                        clear()
                                         search("")
                                         return
                                     }
@@ -271,8 +337,6 @@ CellPopup {
                                     }
                                     return "Search"
                                 }
-
-                                editable: text.trim().length > 0
 
                             }
 
@@ -307,7 +371,7 @@ CellPopup {
                 }
 
                 onSelectedChanged: {
-                    textfield.set("")
+                    textfield.clear()
                     textfield.path = []
                     textfield.search("")
                     breadcrumbs.updatePath()
@@ -368,11 +432,7 @@ CellPopup {
 
                 }
 
-                Loader {
-
-                    active: root.visible || !root.optimizeMemory
-
-                    sourceComponent: CellScrollView {
+                    CellScrollView {
 
                         optimizeMemory: root.optimizeMemory
 
@@ -388,124 +448,6 @@ CellPopup {
                         source: ColumnLayout {
 
                             spacing: 0
-
-                            property int result_h: root.minimal ? 2 : 3
-
-                            Component.onCompleted: {
-                                root.shortcuts = [
-                                    {
-                                        binds: "Up",
-                                        action: () => {
-                                            safe_mouse.safe = 1
-                                            safe_mouse.visible = true
-                                            textfield.selected = Math.min((textfield.selected - 1 + LauncherInfo.result.length)% + LauncherInfo.result.length, textfield.selected + 15/result_h - 1)
-                                            if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
-                                                results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
-                                            }
-                                        }
-                                    },
-                                    {
-                                        binds: "Ctrl+Up",
-                                        action: () => {
-                                            safe_mouse.safe = 1
-                                            safe_mouse.visible = true
-                                            textfield.selected = Math.min((textfield.selected - 15/result_h + LauncherInfo.result.length)% + LauncherInfo.result.length, textfield.selected + 15/result_h - 1)
-                                            if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
-                                                results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
-                                            }
-                                        }
-                                    },
-                                    {
-                                        binds: "Down",
-                                        action: () => {
-                                            safe_mouse.safe = 1
-                                            safe_mouse.visible = true
-                                            textfield.selected = Math.min((textfield.selected + 1 + LauncherInfo.result.length)% + LauncherInfo.result.length, textfield.selected + 15/result_h - 1)
-                                            if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
-                                                results.offset = textfield.selected*result_h
-                                            } else if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
-                                                results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
-                                            }
-                                        }
-                                    },
-                                    {
-                                        binds: "Ctrl+Down",
-                                        action: () => {
-                                            safe_mouse.safe = 1
-                                            safe_mouse.visible = true
-                                            textfield.selected = Math.min((textfield.selected + 15/result_h + LauncherInfo.result.length)% + LauncherInfo.result.length, textfield.selected + 15/result_h - 1)
-                                            if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
-                                                results.offset = textfield.selected*result_h
-                                            } else if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
-                                                results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
-                                            }
-
-                                        }
-                                    },
-                                    {
-                                        binds: "Right",
-                                        action: () => {
-                                            if (textfield.text.length == 0) {
-                                                tab.advance(1)
-                                            } else {
-                                                textfield.move_char_right()
-                                            }
-                                        }
-                                    },
-                                    {
-                                        binds: "Left",
-                                        action: () => {
-                                            if (textfield.text.length == 0) {
-                                                tab.advance(-1)
-                                            } else {
-                                                textfield.move_char_left()
-                                            }
-                                        }
-                                    },
-                                    {
-                                        binds: "Tab",
-                                        action: () => {
-                                            safe_mouse.safe = 1
-                                            safe_mouse.visible = true
-                                            if (textfield.selected >= LauncherInfo.result.length-1) {
-                                                textfield.selected = 0
-                                                return
-                                            }
-                                            textfield.selected += 1
-                                            if (textfield.selected - Math.floor(results.offset/result_h) > Math.ceil(15/result_h)-1) {
-                                                results.offset = textfield.selected*result_h
-                                            }
-                                        }
-                                    },
-                                    {
-                                        binds: "Shift+Tab",
-                                        action: () => {
-                                            safe_mouse.safe = 1
-                                            safe_mouse.visible = true
-                                            if (textfield.selected == 0) return
-                                            textfield.selected -= 1
-                                            if (textfield.selected - Math.floor(results.offset/result_h) < 0) {
-                                                results.offset = Math.max((textfield.selected-Math.ceil(15/result_h))*result_h,0)
-                                            }
-                                        }
-                                    },
-                                    {
-                                        binds: "Escape",
-                                        action: () => {
-                                            if (textfield.path.length > 0) {
-                                                const new_path = textfield.path
-                                                new_path.pop()
-                                                textfield.path = new_path
-                                                textfield.search("")
-                                                textfield.set("")
-                                                breadcrumbs.updatePath()
-                                            } else {
-                                                PopupManager.close("launcher")
-                                            }
-                                        }
-                                    },
-                                ]
-                            }
 
                             Repeater {
 
@@ -669,7 +611,6 @@ CellPopup {
                         }
 
                     }
-                }
 
             }
 

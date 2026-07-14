@@ -40,6 +40,15 @@ Item {
         }
     }
 
+    function attemptFocus() {
+        if (!TextFieldManager.active) {
+            if (root.isTop)
+                root.focus = true;
+        } else {
+            root.focus = false;
+        }
+    }
+
     function forceClose() {
         PopupManager.close(root.name);
     }
@@ -48,27 +57,16 @@ Item {
         forceClose();
     }
 
-    onEscapeToCloseChanged: {
-        if (isTop) {
-            refreshShortcuts();
-        }
-    }
+    /* onVisibleChanged: {
+        if (visible)
+            attemptFocus();
+    } */
 
-    onIsTopChanged: {
-        if (isTop) {
-            root.promoted();
-            refreshShortcuts();
+    Keys.onPressed: event => {
+        ShortcutInfo.handleShortcuts(event, root.shortcuts);
+        if (ShortcutInfo.matchShortcut(event, "Escape")) {
+            root.close();
         }
-    }
-
-    function refreshShortcuts() {
-        ShortcutInfo.shortcuts = [
-            {
-                binds: "Escape",
-                active: root.escapeToClose,
-                action: () => PopupManager.sigClose(root.name)
-            },
-            ...shortcuts];
     }
 
     property bool escapeToClose: true
@@ -96,7 +94,7 @@ Item {
         return Cell.h(Cell.hCount(monitor.height, "floor") - h);
     }
 
-    focus: true
+    focus: !TextFieldManager.active && root.visible
 
     function close() {
         PopupManager.sigClose(root.name);

@@ -36,7 +36,6 @@ CellPopup {
         },
         {
             binds: "Tab",
-            active: textfield.focus,
             action: () => {
                 more.yes = !more.yes;
             }
@@ -49,13 +48,6 @@ CellPopup {
                     return;
                 }
                 PopupManager.close("wallpaper");
-            }
-        },
-        {
-            binds: "Return",
-            active: textfield.focus,
-            action: () => {
-                selection.select();
             }
         }
     ]
@@ -119,16 +111,6 @@ CellPopup {
 
     property bool edit: false
     property bool reposition: false
-
-    MouseControl {
-        anchors.fill: parent
-
-        onPressed: {
-            if (!textfield.focus) {
-                textfield.grabFocus();
-            }
-        }
-    }
 
     CellBox {
         id: box
@@ -493,16 +475,12 @@ CellPopup {
                     }
 
                     function advance(step: int) {
-                        TextFieldManager.unFocusAll();
-                        textfield.grabFocus();
                         if (autoAdvance.auto)
                             WallpaperInfo.add(items[2 + step]);
                         selected = (selected + selection.wallpapers.length + step) % selection.wallpapers.length;
                     }
 
                     function select() {
-                        TextFieldManager.unFocusAll();
-                        textfield.grabFocus();
                         const current = items[2];
                         if (WallpaperInfo.inSet(current)) {
                             WallpaperInfo.remove(current);
@@ -637,9 +615,15 @@ CellPopup {
                         w: textbox.contentW - 2
                         h: 1
 
-                        editable: false
+                        focusOnVisible: true
+
+                        escapeToUnFocus: false
 
                         placeholder: "Search wallpaper"
+
+                        onEntered: {
+                            selection.select();
+                        }
 
                         onTextInput: query => {
                             if (text == " ") {
@@ -752,13 +736,6 @@ CellPopup {
                             if (/^\d+$/.test(text)) {
                                 WallpaperInfo.slideshowInterval = text * 1000;
                                 textfield.grabFocus();
-                            }
-                        }
-
-                        Keys.onPressed: event => {
-                            if (event.key == Qt.Key_Escape) {
-                                focus = false;
-                                event.accepted = true;
                             }
                         }
                     }
@@ -1045,12 +1022,6 @@ CellPopup {
                                             textfield.grabFocus();
                                         }
                                     }
-
-                                    onFocusChanged: {
-                                        if (focus) {
-                                            return;
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -1096,12 +1067,6 @@ CellPopup {
                                             textfield.grabFocus();
                                         }
                                     }
-
-                                    onFocusChanged: {
-                                        if (focus) {
-                                            return;
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -1143,12 +1108,6 @@ CellPopup {
                                                 WallpaperInfo.transition.fps = text;
                                             }
                                             textfield.grabFocus();
-                                        }
-                                    }
-
-                                    onFocusChanged: {
-                                        if (focus) {
-                                            return;
                                         }
                                     }
                                 }
@@ -1196,12 +1155,6 @@ CellPopup {
                                             textfield.grabFocus();
                                         }
                                     }
-
-                                    onFocusChanged: {
-                                        if (focus) {
-                                            return;
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -1246,12 +1199,6 @@ CellPopup {
                                                 WallpaperInfo.transition.posX = text;
                                             }
                                             textfield.grabFocus();
-                                        }
-                                    }
-
-                                    onFocusChanged: {
-                                        if (focus) {
-                                            return;
                                         }
                                     }
 

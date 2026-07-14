@@ -8,7 +8,6 @@ import QtQuick
 import QtQuick.Layouts
 
 CellPopup {
-
     id: root
 
     w: 100
@@ -23,24 +22,24 @@ CellPopup {
     Connections {
         target: PacmanInfo
         function onSearch_modeChanged() {
-            search_field.textChanged()
+            search_field.textChanged();
         }
         function onFetched() {
-            info.index = PacmanInfo.getPackageIndex(root.selected_pkg)
-            search_field.textChanged()
+            info.index = PacmanInfo.getPackageIndex(root.selected_pkg);
+            search_field.textChanged();
         }
     }
 
     onSelected_pkgChanged: {
-        info.index = PacmanInfo.getPackageIndex(root.selected_pkg)
+        info.index = PacmanInfo.getPackageIndex(root.selected_pkg);
     }
 
     onPacmanStateChanged: {
         if (pacmanState == "success") {
-            multi_selected_pkg = []
-            selected_pkg = ""
-            search_field.set("")
-            PacmanInfo.search("")
+            multi_selected_pkg = [];
+            selected_pkg = "";
+            search_field.set("");
+            PacmanInfo.search("");
         }
     }
 
@@ -55,104 +54,102 @@ CellPopup {
      */
 
     onPromoted: {
-        search_field.grabFocus()
+        search_field.grabFocus();
     }
 
     escapeToClose: false
 
     shortcuts: [
         {
-            binds: ["Up", "Shift+Tab"],
+            binds: ["Up", "Backtab"],
             action: () => {
-                if (PacmanInfo.fetching) return
-                let index = PacmanInfo.search_results.findIndex(item => item.name == root.selected_pkg)
+                if (PacmanInfo.fetching)
+                    return;
+                let index = PacmanInfo.search_results.findIndex(item => item.name == root.selected_pkg);
                 if (index == -1 || index < list.offset || index > list.offset + list.h) {
-                    root.selected_pkg = ""
+                    root.selected_pkg = "";
                 }
                 if (root.selected_pkg == "") {
-                    root.selected_pkg = list.datas[list.offset].name
-                    return
+                    root.selected_pkg = list.datas[list.offset].name;
+                    return;
                 }
-                if (root.selected_index-1 < 0) {
-                    list.offset -= list.h
+                if (root.selected_index - 1 < 0) {
+                    list.offset -= list.h;
                 }
-                root.selected_pkg = list.datas[list.offset + (root.selected_index+list.h-1)%list.h].name
+                root.selected_pkg = list.datas[list.offset + (root.selected_index + list.h - 1) % list.h].name;
             }
         },
         {
             binds: ["Down", "Tab"],
             action: () => {
-                if (PacmanInfo.fetching) return
-                let index = PacmanInfo.search_results.findIndex(item => item.name == root.selected_pkg)
+                if (PacmanInfo.fetching)
+                    return;
+                let index = PacmanInfo.search_results.findIndex(item => item.name == root.selected_pkg);
                 if (index == -1 || index < list.offset || index > list.offset + list.h) {
-                    root.selected_pkg = ""
+                    root.selected_pkg = "";
                 }
                 if (root.selected_pkg == "") {
-                    root.selected_pkg = list.datas[list.offset].name
-                    return
+                    root.selected_pkg = list.datas[list.offset].name;
+                    return;
                 }
-                if (root.selected_index+1 >= list.h) {
-                    list.offset += list.h
+                if (root.selected_index + 1 >= list.h) {
+                    list.offset += list.h;
                 }
-                root.selected_pkg = list.datas[list.offset + (root.selected_index+list.h+1)%list.h].name
+                root.selected_pkg = list.datas[list.offset + (root.selected_index + list.h + 1) % list.h].name;
             }
         },
         {
             binds: "Escape",
             action: () => {
-                if (
-                    root.pacmanState == "success"
-                    || root.pacmanState == "failed"
-                    || root.pacmanState == "pre-flight"
-                ) {
-                    PacmanInfo.cancel()
+                if (root.pacmanState == "success" || root.pacmanState == "failed" || root.pacmanState == "pre-flight") {
+                    PacmanInfo.cancel();
                 } else {
-                    root.close()
+                    root.close();
                 }
             }
         },
         {
             binds: "Ctrl+S",
             action: () => {
-                PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%PacmanInfo.search_modes.length
+                PacmanInfo.search_mode = (PacmanInfo.search_mode + 1) % PacmanInfo.search_modes.length;
             }
         },
         {
             binds: "Ctrl+R",
             action: () => {
-                if (
-                    root.pacmanState == "idle"
-                ) {
-                    PacmanInfo.fetch()
+                if (root.pacmanState == "idle") {
+                    PacmanInfo.fetch();
                 }
             }
         },
         {
             binds: "Ctrl+C",
             action: () => {
-                if (
-                    root.pacmanState == "running"
-                ) {
-                    PacmanInfo.cancel()
+                if (root.pacmanState == "running") {
+                    PacmanInfo.cancel();
                 }
             }
         },
         {
             binds: "Return",
             action: () => {
-                if (PacmanInfo.fetching) return
-                if (selected_pkg == "" && multi_selected_pkg.length == 0) return
+                if (PacmanInfo.fetching)
+                    return;
+                if (selected_pkg == "" && multi_selected_pkg.length == 0)
+                    return;
                 if (root.pacmanState == "idle") {
                     if (root.multi_selected_pkg.length > 0) {
-                        PacmanInfo.requestInstallation(root.multi_selected_pkg)
+                        PacmanInfo.requestInstallation(root.multi_selected_pkg);
                     } else if (PacmanInfo.isInstalled(root.selected_pkg)) {
-                        PacmanInfo.requestRemoval([root.selected_pkg])
+                        PacmanInfo.requestRemoval([root.selected_pkg]);
                     } else {
-                        PacmanInfo.requestInstallation(info.deps.length > 0 ? [info.deps[info.deps.length-1]] : [root.selected_pkg])
+                        PacmanInfo.requestInstallation(info.deps.length > 0 ? [info.deps[info.deps.length - 1]] : [root.selected_pkg]);
                     }
                 } else if (root.pacmanState == "pre-flight") {
-                    if (PacmanInfo.pacmanMode == "install" && confirm_install.countdown == 0) PacmanInfo.confirmInstallation()
-                    else if (PacmanInfo.pacmanMode == "remove" && confirm_remove.countdown == 0) PacmanInfo.confirmRemoval()
+                    if (PacmanInfo.pacmanMode == "install" && confirm_install.countdown == 0)
+                        PacmanInfo.confirmInstallation();
+                    else if (PacmanInfo.pacmanMode == "remove" && confirm_remove.countdown == 0)
+                        PacmanInfo.confirmRemoval();
                 }
             }
         },
@@ -175,7 +172,6 @@ CellPopup {
     //          remove_preflight_dep (remove), req (broken dependents).
 
     component CollapseFooter: RowLayout {
-
         id: footer
 
         property int maxItems
@@ -197,52 +193,46 @@ CellPopup {
             padding: 0
             text: "[+ " + (footer.maxItems - footer.maxShown) + " more]"
             color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
-            fg:    Colors.info
+            fg: Colors.info
 
-            onReleased: (button) => {
+            onReleased: button => {
                 if (button == "L") {
-                    footer.maxShown = Math.min(footer.maxShown + footer.expandStep, footer.maxItems)
+                    footer.maxShown = Math.min(footer.maxShown + footer.expandStep, footer.maxItems);
                 }
             }
-
         }
 
         CellButton {
 
-            visible: footer.maxShown < footer.maxItems
-            && footer.maxShown > footer.collapseThreshold
+            visible: footer.maxShown < footer.maxItems && footer.maxShown > footer.collapseThreshold
 
             padding: 0
             text: "[Show all (" + footer.maxItems + ")]"
             color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
-            fg:    Colors.info
+            fg: Colors.info
 
-            onReleased: (button) => {
+            onReleased: button => {
                 if (button == "L") {
-                    footer.maxShown = footer.maxItems
+                    footer.maxShown = footer.maxItems;
                 }
             }
-
         }
 
         CellButton {
 
-            visible: footer.maxShown >= footer.maxItems
-            && footer.maxItems > footer.collapseThreshold
+            visible: footer.maxShown >= footer.maxItems && footer.maxItems > footer.collapseThreshold
 
             padding: 0
             text: "[Show less]"
             color: ["transparent", Colors.bgOverlay, Colors.bgOverlay]
-            fg:    Colors.info
+            fg: Colors.info
 
-            onReleased: (button) => {
+            onReleased: button => {
                 if (button == "L") {
-                    footer.maxShown = footer.collapseThreshold
+                    footer.maxShown = footer.collapseThreshold;
                 }
             }
-
         }
-
     }
 
     // ── TransactionRow ──────────────────────────────────────────────
@@ -259,12 +249,11 @@ CellPopup {
     //   -  → fgSubtle (remove dep)
 
     component TransactionRow: RowLayout {
-
         id: row
 
         property string mode: "install"
         property string name
-        property color  name_color: Colors.fgBase
+        property color name_color: Colors.fgBase
         property string version
         property string downloadSize
         property string installedSize
@@ -281,11 +270,12 @@ CellPopup {
 
             text: row.prefix
             color: {
-                if (text == "!") return Colors.danger
-                if (text == "=") return Colors.warning
-                return Colors.fgSubtle
+                if (text == "!")
+                    return Colors.danger;
+                if (text == "=")
+                    return Colors.warning;
+                return Colors.fgSubtle;
             }
-
         }
 
         CellText {
@@ -293,14 +283,12 @@ CellPopup {
             text: row.name
             preferedW: row.maxW - row._sizeCols - row.version.length
             color: row.name_color
-
         }
 
         CellText {
 
             text: row.version
             color: Colors.fgSubtle
-
         }
 
         // ── Install-only columns: download -> installed ──
@@ -313,7 +301,6 @@ CellPopup {
             color: Colors.info
             preferedW: 11
             alignRight: true
-
         }
 
         CellText {
@@ -322,7 +309,6 @@ CellPopup {
 
             text: "->"
             color: Colors.fgSubtle
-
         }
 
         CellText {
@@ -333,7 +319,6 @@ CellPopup {
             color: Colors.success
             preferedW: 11
             alignRight: true
-
         }
 
         // ── Remove-only column: +freedSize ──
@@ -346,9 +331,7 @@ CellPopup {
             color: Colors.success
             preferedW: 12
             alignRight: true
-
         }
-
     }
 
     // ── CountdownConfirm ────────────────────────────────────────────
@@ -371,16 +354,15 @@ CellPopup {
     // confirmed(): emitted when the confirm button is activated.
 
     component CountdownConfirm: RowLayout {
-
         id: confirm
 
         property bool requiresCountdown: false
 
         property string countdownLabel: "Continue anyway (%1)"
-        property string standbyLabel:   "Continue anyway"
-        property string confirmLabel:   "Confirm"
+        property string standbyLabel: "Continue anyway"
+        property string confirmLabel: "Confirm"
 
-        signal confirmed()
+        signal confirmed
 
         anchors.right: parent.right
         anchors.rightMargin: Cell.w(1)
@@ -391,7 +373,7 @@ CellPopup {
 
         onVisibleChanged: {
             if (visible && requiresCountdown) {
-                countdown = 3
+                countdown = 3;
             }
         }
 
@@ -406,19 +388,19 @@ CellPopup {
 
             text: {
                 if (confirm.countdown > 0)
-                return confirm.countdownLabel.arg(confirm.countdown)
-                return confirm.requiresCountdown ? confirm.standbyLabel : confirm.confirmLabel
+                    return confirm.countdownLabel.arg(confirm.countdown);
+                return confirm.requiresCountdown ? confirm.standbyLabel : confirm.confirmLabel;
             }
 
             clickable: confirm.countdown == 0
 
             color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-            fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
+            fg: clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
 
-            onReleased: (button) => {
-                if (button == "L") confirm.confirmed()
+            onReleased: button => {
+                if (button == "L")
+                    confirm.confirmed();
             }
-
         }
 
         CellButton {
@@ -426,14 +408,13 @@ CellPopup {
             text: "Cancel"
 
             color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
-            fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+            fg: clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
 
-            onReleased: (button) => {
-                if (button == "L") PacmanInfo.cancel()
+            onReleased: button => {
+                if (button == "L")
+                    PacmanInfo.cancel();
             }
-
         }
-
     }
 
     Cells {
@@ -444,7 +425,6 @@ CellPopup {
         color: "transparent"
 
         CellBox {
-
             id: box
 
             w: parent.w
@@ -481,7 +461,6 @@ CellPopup {
                         text: "/" + PacmanInfo.packages.length + " packages)"
                         color: Colors.fgDim
                     }
-
                 }
 
                 // Separator for header
@@ -492,17 +471,9 @@ CellPopup {
 
                 // Package list
                 CellScrollView {
-
-                    visible: (
-                        root.pacmanState == "idle"
-                        || root.pacmanState == "prepare"
-                        || root.pacmanState == "pre-flight"
-                        || root.pacmanState == "authentication"
-                        || root.pacmanState == "checking_updates"
-                        || root.pacmanState == "fetching"
-                    )
-
                     id: list
+
+                    visible: (root.pacmanState == "idle" || root.pacmanState == "prepare" || root.pacmanState == "pre-flight" || root.pacmanState == "authentication" || root.pacmanState == "checking_updates" || root.pacmanState == "fetching")
 
                     w: box.contentW
                     h: 14
@@ -517,7 +488,7 @@ CellPopup {
 
                     virtualH: true
 
-                    contentH: Cell.h(1)*datas.length
+                    contentH: Cell.h(1) * datas.length
 
                     source: ColumnLayout {
 
@@ -528,7 +499,6 @@ CellPopup {
                             model: list.h
 
                             delegate: Loader {
-
                                 id: pkg_loader
 
                                 required property int index
@@ -536,7 +506,6 @@ CellPopup {
                                 active: list.datas[list.offset + index] ?? false
 
                                 sourceComponent: Cells {
-
                                     id: pkg
 
                                     property int index: pkg_loader.index
@@ -560,11 +529,11 @@ CellPopup {
 
                                     onSelectedChanged: {
                                         if (selected) {
-                                            root.selected_index = index
+                                            root.selected_index = index;
                                             if (PacmanInfo.search_mode == 4) {
-                                                let inputs = search_field.text.split(" ")
-                                                inputs[inputs.length-1] = pkg.name
-                                                search_field.set(inputs.join(" "))
+                                                let inputs = search_field.text.split(" ");
+                                                inputs[inputs.length - 1] = pkg.name;
+                                                search_field.set(inputs.join(" "));
                                             }
                                         }
                                     }
@@ -588,11 +557,9 @@ CellPopup {
                                         }
 
                                         RowLayout {
-
                                             id: pkg_version
 
                                             property int w: Cell.wCount(implicitWidth)
-
 
                                             spacing: 0
 
@@ -603,7 +570,7 @@ CellPopup {
 
                                             CellText {
                                                 text: pkg.version
-                                                color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : (pkg.update_available ? Colors.blend(Colors.fgSubtle,Colors.danger,0.5) : Colors.fgSubtle))
+                                                color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : (pkg.update_available ? Colors.blend(Colors.fgSubtle, Colors.danger, 0.5) : Colors.fgSubtle))
                                             }
 
                                             CellText {
@@ -622,52 +589,36 @@ CellPopup {
                                                 text: ")"
                                                 color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
                                             }
-
                                         }
-
                                     }
 
                                     MouseControl {
-
                                         id: pkg_mouse
 
                                         visible: !parent.disabled
 
                                         anchors.fill: parent
 
-                                        onReleased: (button) => {
+                                        onReleased: button => {
                                             if (button == "L") {
                                                 if (root.selected_pkg == pkg.name) {
-                                                    root.selected_pkg = ""
-                                                    return
+                                                    root.selected_pkg = "";
+                                                    return;
                                                 }
-                                                root.selected_pkg = pkg.name
+                                                root.selected_pkg = pkg.name;
                                             }
                                         }
-
                                     }
                                 }
-
                             }
-
-
                         }
-
                     }
-
                 }
 
                 // Search bar
                 Cells {
 
-                    visible: (
-                        root.pacmanState == "idle"
-                        || root.pacmanState == "prepare"
-                        || root.pacmanState == "pre-flight"
-                        || root.pacmanState == "authentication"
-                        || root.pacmanState == "fetching"
-                        || root.pacmanState == "checking_updates"
-                    )
+                    visible: (root.pacmanState == "idle" || root.pacmanState == "prepare" || root.pacmanState == "pre-flight" || root.pacmanState == "authentication" || root.pacmanState == "fetching" || root.pacmanState == "checking_updates")
 
                     w: box.contentW
                     h: 3
@@ -684,10 +635,9 @@ CellPopup {
                             spacing: Cell.w(1)
 
                             CellTextField {
-
                                 id: search_field
 
-                                w: box.contentW - 30 - search_mode.text.length - 3*PacmanInfo.fetching
+                                w: box.contentW - 30 - search_mode.text.length - 3 * PacmanInfo.fetching
                                 h: 1
 
                                 placeholder: "Search package"
@@ -695,41 +645,35 @@ CellPopup {
                                 escapeToUnFocus: false
                                 unfocusOnEntered: false
 
-                                disabled: (
-                                    root.pacmanState == "prepare"
-                                    || root.pacmanState == "pre-flight"
-                                    || root.pacmanState == "running"
-                                    || root.pacmanState == "authentication"
-                                    || root.pacmanState == "success"
-                                )
+                                disabled: (root.pacmanState == "prepare" || root.pacmanState == "pre-flight" || root.pacmanState == "running" || root.pacmanState == "authentication" || root.pacmanState == "success")
 
                                 onTextChanged: {
                                     if (PacmanInfo.search_mode == 4) {
-                                        list.reset()
-                                        let inputs = text.split(" ")
-                                        root.multi_selected_pkg = []
+                                        list.reset();
+                                        let inputs = text.split(" ");
+                                        root.multi_selected_pkg = [];
                                         for (const pkg of inputs) {
                                             // O(1) lookup via nameIndex + installedSet
-                                            if (PacmanInfo.isInstalled(pkg)) continue
+                                            if (PacmanInfo.isInstalled(pkg))
+                                                continue;
                                             if (PacmanInfo.getPackageIndex(pkg) !== -1) {
-                                                root.multi_selected_pkg.push(pkg)
-                                                root.multi_selected_pkgChanged()
+                                                root.multi_selected_pkg.push(pkg);
+                                                root.multi_selected_pkgChanged();
                                             }
                                         }
                                     }
                                 }
 
-                                onTextInput: (input) => {
+                                onTextInput: input => {
                                     if (PacmanInfo.search_mode == 4) {
-                                        root.selected_pkg = ""
-                                        let inputs = input.split(" ")
-                                        let new_input = inputs[inputs.length-1]
-                                        PacmanInfo.search(new_input)
+                                        root.selected_pkg = "";
+                                        let inputs = input.split(" ");
+                                        let new_input = inputs[inputs.length - 1];
+                                        PacmanInfo.search(new_input);
                                     } else {
-                                        PacmanInfo.search(input)
+                                        PacmanInfo.search(input);
                                     }
                                 }
-
                             }
 
                             CellLoading {
@@ -738,20 +682,18 @@ CellPopup {
                             }
 
                             CellButton {
-
                                 id: search_mode
 
                                 text: PacmanInfo.search_modes[PacmanInfo.search_mode]
 
                                 color: Colors.bgOverlay
-                                fg:    Colors.fgBase
+                                fg: Colors.fgBase
 
-                                onReleased: (button) => {
+                                onReleased: button => {
                                     if (button == "L") {
-                                        PacmanInfo.search_mode = (PacmanInfo.search_mode + 1)%PacmanInfo.search_modes.length
+                                        PacmanInfo.search_mode = (PacmanInfo.search_mode + 1) % PacmanInfo.search_modes.length;
                                     }
                                 }
-
                             }
 
                             CellButton {
@@ -759,14 +701,13 @@ CellPopup {
                                 text: "Installed"
 
                                 color: PacmanInfo.installed ? Colors.accentStrong : Colors.bgOverlay
-                                fg:    PacmanInfo.installed ? Colors.onAccent : Colors.fgBase
+                                fg: PacmanInfo.installed ? Colors.onAccent : Colors.fgBase
 
-                                onReleased: (button) => {
+                                onReleased: button => {
                                     if (button == "L") {
-                                        PacmanInfo.installed = !PacmanInfo.installed
+                                        PacmanInfo.installed = !PacmanInfo.installed;
                                     }
                                 }
-
                             }
 
                             CellButton {
@@ -774,38 +715,29 @@ CellPopup {
                                 text: "Outdated"
 
                                 color: PacmanInfo.outdated ? Colors.accentStrong : Colors.bgOverlay
-                                fg:    PacmanInfo.outdated ? Colors.onAccent : Colors.fgBase
+                                fg: PacmanInfo.outdated ? Colors.onAccent : Colors.fgBase
 
-                                onReleased: (button) => {
+                                onReleased: button => {
                                     if (button == "L") {
-                                        PacmanInfo.outdated = !PacmanInfo.outdated
+                                        PacmanInfo.outdated = !PacmanInfo.outdated;
                                     }
                                 }
-
                             }
-
-
                         }
-
                     }
-
-
                 }
 
                 // Breadcrumbs
                 RowLayout {
 
-                    visible: (
-                        root.pacmanState == "idle"
-                        || root.pacmanState == "fetching"
-                    )
+                    visible: (root.pacmanState == "idle" || root.pacmanState == "fetching")
 
                     Layout.leftMargin: {
-                        let result = root.selected_pkg.length + 2
+                        let result = root.selected_pkg.length + 2;
                         for (const dep of info.deps) {
-                            result += dep.length + 2*PacmanInfo.isInstalled(dep) + 4
+                            result += dep.length + 2 * PacmanInfo.isInstalled(dep) + 4;
                         }
-                        return Cell.w(1 - Math.max(result - info.contentW-1,0))
+                        return Cell.w(1 - Math.max(result - info.contentW - 1, 0));
                     }
 
                     spacing: Cell.w(1)
@@ -819,12 +751,11 @@ CellPopup {
 
                             anchors.fill: parent
 
-                            onReleased: (button) => {
+                            onReleased: button => {
                                 if (button == "L") {
-                                    info.deps = []
+                                    info.deps = [];
                                 }
                             }
-
                         }
                     }
 
@@ -837,7 +768,6 @@ CellPopup {
                             model: info.deps
 
                             delegate: RowLayout {
-
                                 id: dep_crumb
 
                                 required property int index
@@ -869,58 +799,39 @@ CellPopup {
                                         anchors.fill: parent
                                         anchors.leftMargin: -Cell.w(3)
 
-                                        onReleased: (button) => {
+                                        onReleased: button => {
                                             if (button == "L") {
-                                                info.deps = info.deps.slice(0, dep_crumb.index+1)
+                                                info.deps = info.deps.slice(0, dep_crumb.index + 1);
                                             }
                                         }
-
                                     }
-
                                 }
-
                             }
-
                         }
-
                     }
-
                 }
 
                 // Installing header
                 CellText {
-                    Layout.leftMargin: Cell.centerWCell(implicitWidth,parent.implicitWidth)
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
 
-                    visible: (
-                        root.pacmanState == "prepare"
-                        || root.pacmanState == "pre-flight"
-                        || root.pacmanState == "authentication"
-                    )
+                    visible: (root.pacmanState == "prepare" || root.pacmanState == "pre-flight" || root.pacmanState == "authentication")
                     text: (PacmanInfo.pacmanMode == "install" ? "Installing" : (PacmanInfo.forceRemove ? "Force removing" : "Removing")) + " <b>" + (PacmanInfo.pacmanMode == "install" ? PacmanInfo.installTarget.join(", ") : PacmanInfo.removeTarget.join(", ")) + "</b>"
                     color: PacmanInfo.forceRemove ? Colors.danger : Colors.secondary
                 }
 
                 // Check updates header
                 CellText {
-                    Layout.leftMargin: Cell.centerWCell(implicitWidth,parent.implicitWidth)
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
 
-                    visible: (
-                        root.pacmanState == "checking_updates"
-                    )
+                    visible: (root.pacmanState == "checking_updates")
                     text: "Synchronizing packages database"
                     color: Colors.secondary
                 }
 
                 // Separator for Breadcrumbs and Installing header
                 CellSeparator {
-                    visible: (
-                        root.pacmanState == "idle"
-                        || root.pacmanState == "prepare"
-                        || root.pacmanState == "pre-flight"
-                        || root.pacmanState == "authentication"
-                        || root.pacmanState == "fetching"
-                        || root.pacmanState == "checking_updates"
-                    )
+                    visible: (root.pacmanState == "idle" || root.pacmanState == "prepare" || root.pacmanState == "pre-flight" || root.pacmanState == "authentication" || root.pacmanState == "fetching" || root.pacmanState == "checking_updates")
                     w: box.contentW
                     color: Colors.accentStrong
                 }
@@ -928,41 +839,37 @@ CellPopup {
                 // Info
                 RowLayout {
 
-                    visible: (
-                        root.pacmanState == "idle"
-                        || root.pacmanState == "fetching"
-                    )
+                    visible: (root.pacmanState == "idle" || root.pacmanState == "fetching")
 
                     spacing: 0
 
                     CellScrollView {
-
                         id: info
 
                         w: box.contentW - (root.multi_selected_pkg.length > 0 ? install_queue.w : 0)
                         h: box.contentH - list.h - 9
 
                         // ── O(1) lookups via nameIndex ──────────────────
-                        property int dep_index: PacmanInfo.getPackageIndex(deps[deps.length-1])
+                        property int dep_index: PacmanInfo.getPackageIndex(deps[deps.length - 1])
                         property int index: PacmanInfo.getPackageIndex(root.selected_pkg)
 
                         property var deps: []
 
                         onIndexChanged: {
-                            deps = []
+                            deps = [];
                         }
 
                         onDepsChanged: {
-                            if (deps[deps.length-1] == root.selected_pkg) {
-                                deps = []
-                                depsChanged()
-                                return
+                            if (deps[deps.length - 1] == root.selected_pkg) {
+                                deps = [];
+                                depsChanged();
+                                return;
                             }
-                            for (let i = 0; i < deps.length-1; i++) {
-                                if (deps[deps.length-1] == deps[i]) {
-                                    deps = deps.slice(0, i+1)
-                                    depsChanged()
-                                    return
+                            for (let i = 0; i < deps.length - 1; i++) {
+                                if (deps[deps.length - 1] == deps[i]) {
+                                    deps = deps.slice(0, i + 1);
+                                    depsChanged();
+                                    return;
                                 }
                             }
                         }
@@ -972,200 +879,17 @@ CellPopup {
                         property int magic: 22
 
                         // ── Section visibility flags (for separator conditionals) ──
-                        property bool hasIdentity:  (datas?.description ?? "").length > 0
-                        || (datas?.url ?? "").length > 0
-                        || (datas?.version ?? "").length > 0
-                        || (datas?.licenses ?? []).length > 0
+                        property bool hasIdentity: (datas?.description ?? "").length > 0 || (datas?.url ?? "").length > 0 || (datas?.version ?? "").length > 0 || (datas?.licenses ?? []).length > 0
 
-                        property bool hasSource:    (datas?.repository ?? "").length > 0
-                        || (datas?.arch ?? "").length > 0
-                        || (datas?.groups ?? []).length > 0
+                        property bool hasSource: (datas?.repository ?? "").length > 0 || (datas?.arch ?? "").length > 0 || (datas?.groups ?? []).length > 0
 
-                        property bool hasFootprint: (datas?.download_size ?? "").length > 0
-                        || (datas?.installed_size ?? "").length > 0
-                        || (datas?.conflicts_with ?? []).length > 0
-                        || (datas?.replaces ?? []).length > 0
-                        || (datas?.provides ?? []).length > 0
+                        property bool hasFootprint: (datas?.download_size ?? "").length > 0 || (datas?.installed_size ?? "").length > 0 || (datas?.conflicts_with ?? []).length > 0 || (datas?.replaces ?? []).length > 0 || (datas?.provides ?? []).length > 0
 
                         // "Installed" is always rendered when index != -1, so hasStatus is always
                         // true alongside a real selection. Kept here for symmetry / future-proofing.
-                        property bool hasStatus:    index != -1
+                        property bool hasStatus: index != -1
 
-                        property bool hasRelations: (datas?.required_by ?? []).length > 0
-                        || (datas?.optional_for ?? []).length > 0
-                        || (datas?.depends ?? []).length > 0
-                        || (datas?.optional_deps ?? []).length > 0
-                        || (datas?.make_deps ?? []).length > 0
-                        || (datas?.check_deps ?? []).length > 0
-
-                        component Info: RowLayout {
-
-                            visible: value.length > 0 && info.index != -1
-
-                            property string key: "Name"
-
-                            property string value: info.datas.name
-
-                            Layout.leftMargin: Cell.w(1)
-
-                            spacing: 0
-
-                            CellText {
-                                Layout.alignment: Qt.AlignTop
-                                text: (parent.key).padEnd(info.magic-4, " ") + ": "
-                                color: Colors.fgDim
-                            }
-
-                            CellText {
-                                text: parent.value
-                                preferedW: info.contentW - info.magic
-                                wrap: true
-                            }
-
-                        }
-
-                        component Deps: RowLayout {
-
-                            id: deps
-
-                            property string key: "Dependencies"
-                            property var values: info.datas?.depends ?? []
-
-                            // ── Collapse behavior ──
-                            // Initial visible rows, and step size for each "+N more" click.
-                            // 5 / 5 keeps the default footprint small (longest list takes 5 rows)
-                            // while making each expansion click cheap (~1ms for 5 new delegates).
-                            property int collapseThreshold: 5
-                            property int expandStep: 5
-
-                            Layout.leftMargin: Cell.w(1)
-
-                            spacing: 0
-
-                            CellText {
-                                Layout.alignment: Qt.AlignTop
-                                text: (parent.key).padEnd(info.magic-4, " ") + ":"
-                                color: Colors.fgDim
-                            }
-
-                            ColumnLayout {
-
-                                Layout.alignment: Qt.AlignTop
-
-                                spacing: 0
-
-                                Repeater {
-
-                                    model: deps.values?.slice(0, deps_footer.maxShown)
-
-                                    delegate: Cells {
-
-                                        id: dep
-
-                                        required property string name
-                                        required property bool installed
-
-                                        // O(1) check via nameIndex instead of packages.some()
-                                        property bool isReal: PacmanInfo.getPackageIndex(dep.dep_name) !== -1
-
-                                        property var dep_data: {
-                                            if (name.includes("<="))      return name.split("<=")
-                                            else if (name.includes("<"))      return name.split("<")
-                                            else if (name.includes(">=")) return name.split(">=")
-                                            else if (name.includes(">")) return name.split(">")
-                                            else if (name.includes("="))  return name.split("=")
-                                            return [name]
-                                        }
-                                        property string version_ops: {
-                                            if (name.includes("<="))      return "<="
-                                            else if (name.includes("<"))      return "<"
-                                            else if (name.includes(">=")) return ">="
-                                            else if (name.includes(">"))      return ">"
-                                            else if (name.includes("="))  return ""
-                                            return ""
-                                        }
-                                        property string dep_name: dep_data[0]
-                                        property string dep_version: dep_data[1] ?? ""
-
-                                        // No hover highlight for virtual packages — reinforces
-                                        // unclickability at the visual level.
-                                        color: (dep.isReal && dep_mouse.hovered)
-                                        ? Colors.bgOverlay
-                                        : "transparent"
-
-                                        w: info.contentW - info.magic + 2
-                                        h: 1
-
-                                        RowLayout {
-
-                                            x: Cell.w(1)
-
-                                            spacing: Cell.w(1)
-
-                                            CellText {
-                                                // Star column legend:
-                                                //   *  = real package, installed      (green, clickable)
-                                                //      = real package, not installed  (default, clickable)
-                                                //   ~  = virtual / provided name      (dim, unclickable)
-                                                text: dep.installed
-                                                ? "*"
-                                                : (dep.isReal ? "-" : "~")
-                                                color: dep.installed
-                                                ? Colors.success
-                                                : Colors.fgSubtle
-                                                font: Cell.fontB
-                                            }
-
-                                            CellText {
-                                                text: dep.dep_name
-                                                preferedW: Math.min(dep.w - 3, text.length)
-                                                // Dim virtual names so they read as "informational"
-                                                // rather than "navigable".
-                                                color: dep.isReal ? Colors.fgBase : Colors.fgSubtle
-                                            }
-
-                                            CellText {
-                                                id: dep_version
-                                                text: dep.version_ops + dep.dep_version
-                                                preferedW: dep.w - dep.dep_name.length - 5
-                                                color: Colors.fgSubtle
-                                            }
-
-                                        }
-
-                                        MouseControl {
-
-                                            id: dep_mouse
-
-                                            anchors.fill: parent
-
-                                            // Disabled MouseControls don't track hover or fire
-                                            // onReleased — exactly what we want for virtuals.
-                                            enabled: dep.isReal
-
-                                            onReleased: (button) => {
-                                                if (button == "L") {
-                                                    info.deps.push(dep.dep_name)
-                                                    info.depsChanged()
-                                                }
-                                            }
-
-                                        }
-
-                                    }
-
-                                }
-
-                                CollapseFooter {
-                                    id: deps_footer
-                                    maxItems: deps.values?.length ?? 0
-                                    collapseThreshold: deps.collapseThreshold
-                                    expandStep: deps.expandStep
-                                }
-
-                            }
-
-                        }
+                        property bool hasRelations: (datas?.required_by ?? []).length > 0 || (datas?.optional_for ?? []).length > 0 || (datas?.depends ?? []).length > 0 || (datas?.optional_deps ?? []).length > 0 || (datas?.make_deps ?? []).length > 0 || (datas?.check_deps ?? []).length > 0
 
                         source: ColumnLayout {
 
@@ -1180,7 +904,6 @@ CellPopup {
 
                                 text: "\nNo package selected"
                                 color: Colors.fgDim
-
                             }
 
                             // ════════════ Section 1: Identity ════════════
@@ -1240,23 +963,26 @@ CellPopup {
                                 visible: (info.datas?.conflicts_with ?? []).length > 0
                                 key: "Conflicts with"
                                 collapseThreshold: 10   // generous — this field is almost always short
-                                values: (info.datas?.conflicts_with ?? []).map(
-                                    n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
-                                )
+                                values: (info.datas?.conflicts_with ?? []).map(n => ({
+                                            name: n,
+                                            installed: PacmanInfo.isInstalled(n)
+                                        }))
                             }
                             Deps {
                                 visible: (info.datas?.replaces ?? []).length > 0
                                 key: "Replaces"
-                                values: (info.datas?.replaces ?? []).map(
-                                    n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
-                                )
+                                values: (info.datas?.replaces ?? []).map(n => ({
+                                            name: n,
+                                            installed: PacmanInfo.isInstalled(n)
+                                        }))
                             }
                             Deps {
                                 visible: (info.datas?.provides ?? []).length > 0
                                 key: "Provides"
-                                values: (info.datas?.provides ?? []).map(
-                                    n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
-                                )
+                                values: (info.datas?.provides ?? []).map(n => ({
+                                            name: n,
+                                            installed: PacmanInfo.isInstalled(n)
+                                        }))
                             }
 
                             CellSeparator {
@@ -1281,9 +1007,10 @@ CellPopup {
                             Info {
                                 key: "Last sync"
                                 value: {
-                                    const ls = info.datas?.last_sync
-                                    if (!ls) return ""
-                                    return ls.action + " on " + ls.timestamp
+                                    const ls = info.datas?.last_sync;
+                                    if (!ls)
+                                        return "";
+                                    return ls.action + " on " + ls.timestamp;
                                 }
                             }
                             Info {
@@ -1303,16 +1030,18 @@ CellPopup {
                                 visible: (info.datas?.required_by ?? []).length > 0
                                 key: "Required by"
                                 collapseThreshold: 3    // tighter — this field gets huge for base libs
-                                values: (info.datas?.required_by ?? []).map(
-                                    n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
-                                )
+                                values: (info.datas?.required_by ?? []).map(n => ({
+                                            name: n,
+                                            installed: PacmanInfo.isInstalled(n)
+                                        }))
                             }
                             Deps {
                                 visible: (info.datas?.optional_for ?? []).length > 0
                                 key: "Optional for"
-                                values: (info.datas?.optional_for ?? []).map(
-                                    n => ({ name: n, installed: PacmanInfo.isInstalled(n) })
-                                )
+                                values: (info.datas?.optional_for ?? []).map(n => ({
+                                            name: n,
+                                            installed: PacmanInfo.isInstalled(n)
+                                        }))
                             }
                             // Forward deps — "what does this need?"
                             Deps {
@@ -1334,16 +1063,13 @@ CellPopup {
                                 key: "Check depends"
                                 values: info.datas?.check_deps
                             }
-
                         }
-
                     }
 
                     Cells {
+                        id: install_queue
 
                         visible: root.multi_selected_pkg.length > 0
-
-                        id: install_queue
 
                         w: 41
                         h: box.contentH - list.h - 9
@@ -1378,10 +1104,9 @@ CellPopup {
                                 }
 
                                 CellScrollView {
-
                                     id: selected_pkg_list
 
-                                    w: install_queue.w-1
+                                    w: install_queue.w - 1
                                     h: box.contentH - list.h - 12
 
                                     source: ColumnLayout {
@@ -1393,7 +1118,6 @@ CellPopup {
                                             model: root.multi_selected_pkg
 
                                             delegate: Cells {
-
                                                 id: selected_pkgs
 
                                                 required property string modelData
@@ -1413,44 +1137,34 @@ CellPopup {
 
                                                         text: selected_pkgs.modelData
                                                         preferedW: selected_pkg_list.contentW - selected_pkgs_version.text.length - 3
-
                                                     }
 
                                                     CellText {
-
                                                         id: selected_pkgs_version
 
                                                         // O(1) lookup via getPackage()
                                                         text: {
-                                                            let p = PacmanInfo.getPackage(selected_pkgs.modelData)
-                                                            return p ? p.version : ""
+                                                            let p = PacmanInfo.getPackage(selected_pkgs.modelData);
+                                                            return p ? p.version : "";
                                                         }
                                                         color: Colors.fgSubtle
-
                                                     }
-
                                                 }
 
                                                 MouseControl {
-
                                                     id: selected_pkgs_mouse
 
                                                     anchors.fill: parent
 
-                                                    onReleased: (button) => {
+                                                    onReleased: button => {
                                                         if (button == "L") {
-                                                            root.selected_pkg = selected_pkgs.modelData
+                                                            root.selected_pkg = selected_pkgs.modelData;
                                                         }
                                                     }
-
                                                 }
-
                                             }
-
                                         }
-
                                     }
-
                                 }
 
                                 CellSeparator {
@@ -1468,13 +1182,14 @@ CellPopup {
                                     CellText {
                                         id: estimate_download
                                         text: {
-                                            let result = 0
+                                            let result = 0;
                                             for (const pkg of root.multi_selected_pkg) {
                                                 // O(1) lookup via getPackage()
-                                                let p = PacmanInfo.getPackage(pkg)
-                                                if (p) result += PacmanInfo.convertToBytes(p.download_size)
+                                                let p = PacmanInfo.getPackage(pkg);
+                                                if (p)
+                                                    result += PacmanInfo.convertToBytes(p.download_size);
                                             }
-                                            return PacmanInfo.formatBytes(result)
+                                            return PacmanInfo.formatBytes(result);
                                         }
                                         color: Colors.info
                                     }
@@ -1490,31 +1205,27 @@ CellPopup {
                                     CellText {
                                         id: estimate_installed
                                         text: {
-                                            let result = 0
+                                            let result = 0;
                                             for (const pkg of root.multi_selected_pkg) {
                                                 // O(1) lookup via getPackage()
-                                                let p = PacmanInfo.getPackage(pkg)
-                                                if (p) result += PacmanInfo.convertToBytes(p.installed_size)
+                                                let p = PacmanInfo.getPackage(pkg);
+                                                if (p)
+                                                    result += PacmanInfo.convertToBytes(p.installed_size);
                                             }
-                                            return PacmanInfo.formatBytes(result)
+                                            return PacmanInfo.formatBytes(result);
                                         }
                                         color: Colors.success
                                     }
                                 }
-
                             }
-
                         }
-
                     }
                 }
 
                 // Prepare for pre-flight
                 Cells {
 
-                    visible: (
-                        root.pacmanState == "prepare"
-                    )
+                    visible: (root.pacmanState == "prepare")
 
                     w: box.contentW
                     h: box.contentH - list.h - 9
@@ -1535,17 +1246,13 @@ CellPopup {
                         CellLoading {
                             style: 2
                         }
-
                     }
-
                 }
 
                 // Checking for updates
                 Cells {
 
-                    visible: (
-                        root.pacmanState == "checking_updates"
-                    )
+                    visible: (root.pacmanState == "checking_updates")
 
                     w: box.contentW
                     h: box.contentH - list.h - 9
@@ -1566,18 +1273,13 @@ CellPopup {
                         CellLoading {
                             style: 2
                         }
-
                     }
-
                 }
 
                 // Pre-flight
                 ColumnLayout {
 
-                    visible: (
-                        root.pacmanState == "pre-flight"
-                        || root.pacmanState == "authentication"
-                    )
+                    visible: (root.pacmanState == "pre-flight" || root.pacmanState == "authentication")
 
                     spacing: 0
 
@@ -1590,7 +1292,6 @@ CellPopup {
                         h: box.contentH - list.h - 12
 
                         source: ColumnLayout {
-
                             id: preflight
 
                             spacing: 0
@@ -1600,7 +1301,7 @@ CellPopup {
 
                             CellText {
                                 visible: PacmanInfo.installPlan.error ?? false
-                                Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW-1))
+                                Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW - 1))
                                 text: "\n" + PacmanInfo.installPlan.error ?? ""
                                 preferedW: box.contentW - 5
                                 centered: true
@@ -1634,12 +1335,10 @@ CellPopup {
                                     version: modelData?.version ?? ""
                                     downloadSize: modelData?.downloadSize ?? ""
                                     installedSize: modelData?.installedSize ?? ""
-
                                 }
                             }
 
                             ColumnLayout {
-
                                 id: preflight_dep
 
                                 spacing: 0
@@ -1661,13 +1360,11 @@ CellPopup {
                                         required property var modelData
 
                                         name: modelData.name
-                                        name_color: Colors.blend(Colors.fgSubtle,Colors.fgBase,0.5)
+                                        name_color: Colors.blend(Colors.fgSubtle, Colors.fgBase, 0.5)
                                         version: modelData.version
                                         downloadSize: modelData.downloadSize
                                         installedSize: modelData.installedSize
-
                                     }
-
                                 }
 
                                 CollapseFooter {
@@ -1676,7 +1373,6 @@ CellPopup {
                                     maxItems: preflight_dep.dep_pkgs.length
                                     collapseThreshold: 3
                                 }
-
                             }
 
                             CellSeparator {
@@ -1690,7 +1386,7 @@ CellPopup {
                                 Layout.leftMargin: Cell.w(1)
                                 text: "Replaces:"
                                 font: Cell.fontB
-                                color: Colors.blend(Colors.warning,Colors.fgBase, 0.5)
+                                color: Colors.blend(Colors.warning, Colors.fgBase, 0.5)
                             }
 
                             ColumnLayout {
@@ -1721,11 +1417,8 @@ CellPopup {
                                         version: modelData.version
                                         downloadSize: "-"
                                         installedSize: "-"
-
                                     }
-
                                 }
-
                             }
 
                             CellSeparator {
@@ -1769,15 +1462,10 @@ CellPopup {
                                         version: modelData.version
                                         downloadSize: "-"
                                         installedSize: "-"
-
                                     }
-
                                 }
-
                             }
-
                         }
-
                     }
 
                     // Removal pre-flight
@@ -1789,7 +1477,6 @@ CellPopup {
                         h: box.contentH - list.h - 11 - (PacmanInfo.forceRemove ? 3 : 0)
 
                         source: ColumnLayout {
-
                             id: remove_preflight
 
                             spacing: 0
@@ -1799,7 +1486,7 @@ CellPopup {
 
                             CellText {
                                 visible: PacmanInfo.removalPlan.error ?? false
-                                Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW-1))
+                                Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW - 1))
                                 text: "\n" + PacmanInfo.removalPlan.error ?? ""
                                 preferedW: box.contentW - 5
                                 centered: true
@@ -1832,12 +1519,10 @@ CellPopup {
                                     name: modelData?.name ?? ""
                                     version: modelData?.version ?? ""
                                     freedSize: modelData?.freedSize ?? ""
-
                                 }
                             }
 
                             ColumnLayout {
-
                                 id: remove_preflight_dep
 
                                 spacing: 0
@@ -1859,12 +1544,10 @@ CellPopup {
                                         required property var modelData
 
                                         name: modelData?.name
-                                        name_color: Colors.blend(Colors.fgSubtle,Colors.fgBase,0.5)
+                                        name_color: Colors.blend(Colors.fgSubtle, Colors.fgBase, 0.5)
                                         version: modelData?.version
                                         freedSize: modelData?.freedSize
-
                                     }
-
                                 }
 
                                 CollapseFooter {
@@ -1873,7 +1556,6 @@ CellPopup {
                                     maxItems: remove_preflight_dep.dep_pkgs.length
                                     collapseThreshold: 3
                                 }
-
                             }
 
                             CellText {
@@ -1895,7 +1577,6 @@ CellPopup {
                                     model: remove_preflight.removalPlan.brokenDependents
 
                                     delegate: ColumnLayout {
-
                                         id: broken_deps
 
                                         required property string target
@@ -1914,27 +1595,22 @@ CellPopup {
                                                 text: "! "
                                                 color: Colors.danger
                                                 font: Cell.fontB
-
                                             }
 
                                             CellText {
 
                                                 text: broken_deps.target
                                                 color: Colors.fgBase
-
                                             }
 
                                             CellText {
 
                                                 text: " is required by: "
                                                 color: Colors.fgSubtle
-
                                             }
-
                                         }
 
                                         ColumnLayout {
-
                                             id: req
 
                                             spacing: 0
@@ -1957,18 +1633,14 @@ CellPopup {
 
                                                         text: "~ "
                                                         color: Colors.danger
-
                                                     }
 
                                                     CellText {
 
                                                         text: parent.modelData
                                                         color: Colors.danger
-
                                                     }
-
                                                 }
-
                                             }
 
                                             CollapseFooter {
@@ -1977,17 +1649,11 @@ CellPopup {
                                                 maxItems: req.dep_pkgs.length
                                                 collapseThreshold: 3
                                             }
-
                                         }
-
                                     }
-
                                 }
-
                             }
-
                         }
-
                     }
 
                     CellSeparator {
@@ -2028,7 +1694,6 @@ CellPopup {
                             font: Cell.fontB
                             alignRight: true
                         }
-
                     }
 
                     RowLayout {
@@ -2050,7 +1715,6 @@ CellPopup {
                             font: Cell.fontB
                             alignRight: true
                         }
-
                     }
 
                     RowLayout {
@@ -2072,29 +1736,21 @@ CellPopup {
                             font: Cell.fontB
                             alignRight: true
                         }
-
                     }
-
-
                 }
 
                 // Installation/Removing screen
                 ColumnLayout {
 
-                    visible: (
-                        root.pacmanState == "running"
-                        || root.pacmanState == "success"
-                        || root.pacmanState == "failed"
-                    )
+                    visible: (root.pacmanState == "running" || root.pacmanState == "success" || root.pacmanState == "failed")
 
                     spacing: 0
 
                     // Log
                     CellScrollView {
+                        id: log
 
                         Layout.leftMargin: Cell.w(1)
-
-                        id: log
 
                         w: box.contentW - 1
                         h: box.contentH - 4 - (install_footer.h)
@@ -2105,39 +1761,31 @@ CellPopup {
 
                             spacing: 0
 
-                            property var lines: PacmanInfo.log.replace(/^\n/g,"").replace(/\n$/g,"").split("\n")
+                            property var lines: PacmanInfo.log.replace(/^\n/g, "").replace(/\n$/g, "").split("\n")
 
                             CellText {
-
                                 id: log_text
 
                                 preferedW: log.contentW - 2
 
-                                text: parent.lines.slice(0,parent.lines.length-1).join("\n")
+                                text: parent.lines.slice(0, parent.lines.length - 1).join("\n")
                                 wrap: true
                                 color: Colors.fgSubtle
-
                             }
 
                             CellText {
-
                                 id: log_text_focus
 
                                 preferedW: log.contentW - 2
 
-                                text: parent.lines[parent.lines.length-1]
+                                text: parent.lines[parent.lines.length - 1]
                                 wrap: true
-
                             }
-
-
                         }
-
                     }
 
                     // Installation/removal footer
                     Cells {
-
                         id: install_footer
 
                         w: box.contentW
@@ -2146,7 +1794,6 @@ CellPopup {
                         color: Colors.bgSurface
 
                         ColumnLayout {
-
                             id: install_footer_content
 
                             spacing: 0
@@ -2164,48 +1811,58 @@ CellPopup {
 
                                 RowLayout {
 
-                                    Layout.leftMargin: Cell.centerWCell(implicitWidth,install_footer.implicitWidth)
+                                    Layout.leftMargin: Cell.centerWCell(implicitWidth, install_footer.implicitWidth)
 
                                     spacing: 0
 
                                     CellText {
 
                                         text: {
-                                            let header
+                                            let header;
                                             if (PacmanInfo.pacmanMode == "install") {
                                                 switch (PacmanInfo.installState?.currentPhase) {
-                                                    case "START": header = "Initializing installation for"; break
-                                                    case "DOWNLOAD": header = "Retrieving packages for"; break
-                                                    case "INSTALL": header = "Processing package changes for"; break
-                                                    case "HOOKS": header = "Running post-transaction hooks for"; break
+                                                case "START":
+                                                    header = "Initializing installation for";
+                                                    break;
+                                                case "DOWNLOAD":
+                                                    header = "Retrieving packages for";
+                                                    break;
+                                                case "INSTALL":
+                                                    header = "Processing package changes for";
+                                                    break;
+                                                case "HOOKS":
+                                                    header = "Running post-transaction hooks for";
+                                                    break;
                                                 }
                                             } else {
                                                 switch (PacmanInfo.removeState?.currentPhase) {
-                                                    case "START": header = "Initializing removal for"; break
-                                                    case "UNHOOKS": header = "Running pre-transaction hooks for"; break
-                                                    case "UNINSTALLING": header = "Processing package changes for"; break
-                                                    case "HOOKS": header = "Running post-transaction hooks for"; break
+                                                case "START":
+                                                    header = "Initializing removal for";
+                                                    break;
+                                                case "UNHOOKS":
+                                                    header = "Running pre-transaction hooks for";
+                                                    break;
+                                                case "UNINSTALLING":
+                                                    header = "Processing package changes for";
+                                                    break;
+                                                case "HOOKS":
+                                                    header = "Running post-transaction hooks for";
+                                                    break;
                                                 }
                                             }
-                                            return " " + header + " <b>" + (PacmanInfo.pacmanMode == "install" ? PacmanInfo.installTarget.join(", ") : PacmanInfo.removeTarget.join(", ")) + "</b>"
+                                            return " " + header + " <b>" + (PacmanInfo.pacmanMode == "install" ? PacmanInfo.installTarget.join(", ") : PacmanInfo.removeTarget.join(", ")) + "</b>";
                                         }
                                         color: Colors.info
                                         preferedW: Math.min(purify(text).length, box.contentW - 4)
-
                                     }
 
                                     CellLoading {
                                         style: 2
                                     }
-
                                 }
 
                                 CellSeparator {
-                                    visible: (
-                                        PacmanInfo.installState.currentPhase != "HOOKS"
-                                        && PacmanInfo.installState.currentPhase != "START"
-                                        && PacmanInfo.pacmanMode == "install"
-                                    )
+                                    visible: (PacmanInfo.installState.currentPhase != "HOOKS" && PacmanInfo.installState.currentPhase != "START" && PacmanInfo.pacmanMode == "install")
                                     w: box.contentW
                                     color: Colors.bgOverlay
                                 }
@@ -2226,20 +1883,16 @@ CellPopup {
 
                                             text: "Downloaded size : "
                                             color: Colors.fgSubtle
-
                                         }
                                         CellText {
 
                                             text: PacmanInfo.installState.progressData.downloadedSize ?? ""
-
                                         }
                                         CellText {
 
                                             text: "/" + PacmanInfo.installPlan.totalDownload
                                             color: Colors.fgDim
-
                                         }
-
                                     }
 
                                     RowLayout {
@@ -2250,14 +1903,11 @@ CellPopup {
 
                                             text: "Download speed  : "
                                             color: Colors.fgSubtle
-
                                         }
                                         CellText {
 
                                             text: PacmanInfo.installState.progressData.downloadSpeed ?? ""
-
                                         }
-
                                     }
 
                                     RowLayout {
@@ -2268,16 +1918,12 @@ CellPopup {
 
                                             text: "Time remaining  : "
                                             color: Colors.fgSubtle
-
                                         }
                                         CellText {
 
                                             text: PacmanInfo.installState.progressData.estimateTime ?? ""
-
                                         }
-
                                     }
-
                                 }
 
                                 ColumnLayout {
@@ -2296,22 +1942,17 @@ CellPopup {
 
                                             text: "Processing package : "
                                             color: Colors.fgSubtle
-
                                         }
                                         CellText {
 
                                             text: PacmanInfo.installState.progressData.currentPkg ?? ""
-
                                         }
                                         CellText {
 
                                             text: "/" + PacmanInfo.installState.progressData.totalPkg
                                             color: Colors.fgDim
-
                                         }
-
                                     }
-
                                 }
 
                                 CellSeparator {
@@ -2345,12 +1986,15 @@ CellPopup {
 
                                     CellText {
                                         property int percent: PacmanInfo.pacmanMode == "install" ? (PacmanInfo.installState?.overallProgress ?? 0) : (PacmanInfo.removeState?.overallProgress ?? 0)
-                                        Behavior on percent {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
+                                        Behavior on percent {
+                                            NumberAnimation {
+                                                duration: 500
+                                                easing.type: Easing.OutCubic
+                                            }
+                                        }
                                         text: percent.toString().padStart(3, " ") + "%"
                                     }
-
                                 }
-
                             }
 
                             CellText {
@@ -2363,7 +2007,6 @@ CellPopup {
 
                                 preferedW: box.contentW
                                 centered: true
-
                             }
 
                             CellText {
@@ -2376,21 +2019,14 @@ CellPopup {
 
                                 preferedW: box.contentW
                                 centered: true
-
                             }
-
-
                         }
-
                     }
-
                 }
 
                 Cells {
 
-                    visible: (
-                        root.pacmanState == "cancel"
-                    )
+                    visible: (root.pacmanState == "cancel")
 
                     w: box.contentW
                     h: box.contentH
@@ -2407,15 +2043,12 @@ CellPopup {
                         CellText {
 
                             text: "Interrupting Pacman"
-
                         }
 
                         CellLoading {
                             style: 2
                         }
-
                     }
-
                 }
 
                 // Separator for footer
@@ -2435,12 +2068,7 @@ CellPopup {
                     // Check updates and fetching
                     RowLayout {
 
-                        visible: (
-                            root.pacmanState == "idle"
-                            || root.pacmanState == "prepare"
-                            || root.pacmanState == "fetching"
-                            || root.pacmanState == "checking_updates"
-                        )
+                        visible: (root.pacmanState == "idle" || root.pacmanState == "prepare" || root.pacmanState == "fetching" || root.pacmanState == "checking_updates")
 
                         x: Cell.w(1)
 
@@ -2453,14 +2081,13 @@ CellPopup {
                             clickable: !PacmanInfo.fetching && !PacmanInfo.checking_updates && root.pacmanState != "prepare"
 
                             color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                            fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
+                            fg: clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
 
-                            onReleased: (button) => {
+                            onReleased: button => {
                                 if (button == "L") {
-                                    PacmanInfo.check_updates()
+                                    PacmanInfo.check_updates();
                                 }
                             }
-
                         }
 
                         CellButton {
@@ -2470,16 +2097,14 @@ CellPopup {
                             clickable: !PacmanInfo.fetching && !PacmanInfo.checking_updates && root.pacmanState != "prepare"
 
                             color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                            fg:    clickable ? [Colors.onAccent,     Colors.fgBase]    : Colors.fgSubtle
+                            fg: clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
 
-                            onReleased: (button) => {
+                            onReleased: button => {
                                 if (button == "L") {
-                                    PacmanInfo.fetch()
+                                    PacmanInfo.fetch();
                                 }
                             }
-
                         }
-
                     }
 
                     // Install
@@ -2492,36 +2117,25 @@ CellPopup {
 
                         CellButton {
 
-                            visible: (
-                                root.pacmanState == "idle"
-                                || root.pacmanState == "prepare"
-                                || root.pacmanState == "fetching"
-                                || root.pacmanState == "checking_updates"
-                            ) && root.multi_selected_pkg.length > 0
+                            visible: (root.pacmanState == "idle" || root.pacmanState == "prepare" || root.pacmanState == "fetching" || root.pacmanState == "checking_updates") && root.multi_selected_pkg.length > 0
 
                             text: "Clear queue"
 
                             clickable: root.pacmanState != "prepare"
 
                             color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
-                            fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+                            fg: clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
 
-                            onReleased: (button) => {
+                            onReleased: button => {
                                 if (button == "L") {
-                                    root.multi_selected_pkg = []
+                                    root.multi_selected_pkg = [];
                                 }
                             }
-
                         }
 
                         CellButton {
 
-                            visible: (
-                                root.pacmanState == "idle"
-                                || root.pacmanState == "prepare"
-                                || root.pacmanState == "fetching"
-                                || root.pacmanState == "checking_updates"
-                            ) && !PacmanInfo.isInstalled(root.selected_pkg) && root.selected_pkg != ""
+                            visible: (root.pacmanState == "idle" || root.pacmanState == "prepare" || root.pacmanState == "fetching" || root.pacmanState == "checking_updates") && !PacmanInfo.isInstalled(root.selected_pkg) && root.selected_pkg != ""
 
                             property bool in_queue: root.multi_selected_pkg.some(item => item == root.selected_pkg)
 
@@ -2530,75 +2144,61 @@ CellPopup {
                             clickable: root.pacmanState != "prepare"
 
                             color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
-                            fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+                            fg: clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
 
-                            onReleased: (button) => {
+                            onReleased: button => {
                                 if (button == "L") {
                                     if (in_queue) {
-                                        root.multi_selected_pkg.splice(root.multi_selected_pkg.findIndex(item=>item == root.selected_pkg),1)
-                                        root.multi_selected_pkgChanged()
+                                        root.multi_selected_pkg.splice(root.multi_selected_pkg.findIndex(item => item == root.selected_pkg), 1);
+                                        root.multi_selected_pkgChanged();
                                     } else {
-                                        root.multi_selected_pkg.push(root.selected_pkg)
-                                        root.multi_selected_pkgChanged()
+                                        root.multi_selected_pkg.push(root.selected_pkg);
+                                        root.multi_selected_pkgChanged();
                                     }
                                 }
                             }
-
                         }
 
                         CellButton {
 
-                            visible: (
-                                root.pacmanState == "idle"
-                                || root.pacmanState == "prepare"
-                                || root.pacmanState == "fetching"
-                                || root.pacmanState == "checking_updates"
-                            ) && !PacmanInfo.isInstalled(root.selected_pkg)
+                            visible: (root.pacmanState == "idle" || root.pacmanState == "prepare" || root.pacmanState == "fetching" || root.pacmanState == "checking_updates") && !PacmanInfo.isInstalled(root.selected_pkg)
 
                             text: (root.multi_selected_pkg.length > 0 ? "Install all" : "Install")
 
                             clickable: (root.selected_pkg != "" || root.multi_selected_pkg.length > 0) && root.pacmanState != "prepare"
 
                             color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                            fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+                            fg: clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
 
-                            onReleased: (button) => {
+                            onReleased: button => {
                                 if (button == "L") {
                                     if (root.multi_selected_pkg.length > 0) {
-                                        PacmanInfo.requestInstallation(root.multi_selected_pkg)
+                                        PacmanInfo.requestInstallation(root.multi_selected_pkg);
                                     } else {
-                                        PacmanInfo.requestInstallation(info.deps.length > 0 ? [info.deps[info.deps.length-1]] : [root.selected_pkg])
+                                        PacmanInfo.requestInstallation(info.deps.length > 0 ? [info.deps[info.deps.length - 1]] : [root.selected_pkg]);
                                     }
                                 }
                             }
-
                         }
 
                         CellButton {
 
-                            visible: (
-                                root.pacmanState == "idle"
-                                || root.pacmanState == "prepare"
-                                || root.pacmanState == "fetching"
-                                || root.pacmanState == "checking_updates"
-                            ) && PacmanInfo.isInstalled(root.selected_pkg)
+                            visible: (root.pacmanState == "idle" || root.pacmanState == "prepare" || root.pacmanState == "fetching" || root.pacmanState == "checking_updates") && PacmanInfo.isInstalled(root.selected_pkg)
 
                             text: "Uninstall"
 
                             clickable: root.selected_pkg != "" && root.multi_selected_pkg.length == 0 && root.pacmanState != "prepare"
 
                             color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
-                            fg:    clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
+                            fg: clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
 
-                            onReleased: (button) => {
+                            onReleased: button => {
                                 if (button == "L") {
-                                    PacmanInfo.requestRemoval([root.selected_pkg])
+                                    PacmanInfo.requestRemoval([root.selected_pkg]);
                                 }
                             }
-
                         }
                     }
-
 
                     // Success
                     CellButton {
@@ -2610,14 +2210,13 @@ CellPopup {
                         text: "Return"
 
                         color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
-                        fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+                        fg: clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
 
-                        onReleased: (button) => {
+                        onReleased: button => {
                             if (button == "L") {
-                                PacmanInfo.cancel()
+                                PacmanInfo.cancel();
                             }
                         }
-
                     }
 
                     // Cancel mid installation
@@ -2630,64 +2229,209 @@ CellPopup {
                         text: "Cancel"
 
                         color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
-                        fg:    clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+                        fg: clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
 
-                        onReleased: (button) => {
+                        onReleased: button => {
                             if (button == "L") {
-                                PacmanInfo.cancel()
+                                PacmanInfo.cancel();
                             }
                         }
-
                     }
 
                     // Installation confirmation
                     CountdownConfirm {
-
                         id: confirm_install
 
-                        visible: (
-                            root.pacmanState == "pre-flight"
-                            && PacmanInfo.pacmanMode == "install"
-                        )
+                        visible: (root.pacmanState == "pre-flight" && PacmanInfo.pacmanMode == "install")
 
-                        requiresCountdown: PacmanInfo.installPlan.conflictsWith.length > 0
-                        || PacmanInfo.installPlan.willReplace.length > 0
+                        requiresCountdown: PacmanInfo.installPlan.conflictsWith.length > 0 || PacmanInfo.installPlan.willReplace.length > 0
 
                         countdownLabel: "Continue anyway (%1)"
-                        standbyLabel:   "Continue anyway"
-                        confirmLabel:   "Confirm"
+                        standbyLabel: "Continue anyway"
+                        confirmLabel: "Confirm"
 
                         onConfirmed: PacmanInfo.confirmInstallation()
-
                     }
 
                     // Removal confirmation
                     CountdownConfirm {
-
                         id: confirm_remove
 
-                        visible: (
-                            root.pacmanState == "pre-flight"
-                            && PacmanInfo.pacmanMode == "remove"
-                        )
+                        visible: (root.pacmanState == "pre-flight" && PacmanInfo.pacmanMode == "remove")
 
                         requiresCountdown: PacmanInfo.removalPlan.brokenDependents.length > 0 || PacmanInfo.forceRemove
 
                         countdownLabel: PacmanInfo.forceRemove ? "Confirm cascade (%1)" : "Force remove (%1)"
-                        standbyLabel:   PacmanInfo.forceRemove ? "Confirm cascade" : "Force remove"
-                        confirmLabel:   "Confirm"
+                        standbyLabel: PacmanInfo.forceRemove ? "Confirm cascade" : "Force remove"
+                        confirmLabel: "Confirm"
 
                         onConfirmed: PacmanInfo.confirmRemoval()
-
                     }
-
                 }
-
             }
-
         }
-
     }
 
-}
+    component Info: RowLayout {
 
+        visible: value.length > 0 && info.index != -1
+
+        property string key: "Name"
+
+        property string value: info.datas.name
+
+        Layout.leftMargin: Cell.w(1)
+
+        spacing: 0
+
+        CellText {
+            Layout.alignment: Qt.AlignTop
+            text: (parent.key).padEnd(info.magic - 4, " ") + ": "
+            color: Colors.fgDim
+        }
+
+        CellText {
+            text: parent.value
+            preferedW: info.contentW - info.magic
+            wrap: true
+        }
+    }
+
+    component Deps: RowLayout {
+        id: deps
+
+        property string key: "Dependencies"
+        property var values: info.datas?.depends ?? []
+
+        // ── Collapse behavior ──
+        // Initial visible rows, and step size for each "+N more" click.
+        // 5 / 5 keeps the default footprint small (longest list takes 5 rows)
+        // while making each expansion click cheap (~1ms for 5 new delegates).
+        property int collapseThreshold: 5
+        property int expandStep: 5
+
+        Layout.leftMargin: Cell.w(1)
+
+        spacing: 0
+
+        CellText {
+            Layout.alignment: Qt.AlignTop
+            text: (parent.key).padEnd(info.magic - 4, " ") + ":"
+            color: Colors.fgDim
+        }
+
+        ColumnLayout {
+
+            Layout.alignment: Qt.AlignTop
+
+            spacing: 0
+
+            Repeater {
+
+                model: deps.values?.slice(0, deps_footer.maxShown)
+
+                delegate: Cells {
+                    id: dep
+
+                    required property string name
+                    required property bool installed
+
+                    // O(1) check via nameIndex instead of packages.some()
+                    property bool isReal: PacmanInfo.getPackageIndex(dep.dep_name) !== -1
+
+                    property var dep_data: {
+                        if (name.includes("<="))
+                            return name.split("<=");
+                        else if (name.includes("<"))
+                            return name.split("<");
+                        else if (name.includes(">="))
+                            return name.split(">=");
+                        else if (name.includes(">"))
+                            return name.split(">");
+                        else if (name.includes("="))
+                            return name.split("=");
+                        return [name];
+                    }
+                    property string version_ops: {
+                        if (name.includes("<="))
+                            return "<=";
+                        else if (name.includes("<"))
+                            return "<";
+                        else if (name.includes(">="))
+                            return ">=";
+                        else if (name.includes(">"))
+                            return ">";
+                        else if (name.includes("="))
+                            return "";
+                        return "";
+                    }
+                    property string dep_name: dep_data[0]
+                    property string dep_version: dep_data[1] ?? ""
+
+                    // No hover highlight for virtual packages — reinforces
+                    // unclickability at the visual level.
+                    color: (dep.isReal && dep_mouse.hovered) ? Colors.bgOverlay : "transparent"
+
+                    w: info.contentW - info.magic + 2
+                    h: 1
+
+                    RowLayout {
+
+                        x: Cell.w(1)
+
+                        spacing: Cell.w(1)
+
+                        CellText {
+                            // Star column legend:
+                            //   *  = real package, installed      (green, clickable)
+                            //      = real package, not installed  (default, clickable)
+                            //   ~  = virtual / provided name      (dim, unclickable)
+                            text: dep.installed ? "*" : (dep.isReal ? "-" : "~")
+                            color: dep.installed ? Colors.success : Colors.fgSubtle
+                            font: Cell.fontB
+                        }
+
+                        CellText {
+                            text: dep.dep_name
+                            preferedW: Math.min(dep.w - 3, text.length)
+                            // Dim virtual names so they read as "informational"
+                            // rather than "navigable".
+                            color: dep.isReal ? Colors.fgBase : Colors.fgSubtle
+                        }
+
+                        CellText {
+                            id: dep_version
+                            text: dep.version_ops + dep.dep_version
+                            preferedW: dep.w - dep.dep_name.length - 5
+                            color: Colors.fgSubtle
+                        }
+                    }
+
+                    MouseControl {
+                        id: dep_mouse
+
+                        anchors.fill: parent
+
+                        // Disabled MouseControls don't track hover or fire
+                        // onReleased — exactly what we want for virtuals.
+                        enabled: dep.isReal
+
+                        onReleased: button => {
+                            if (button == "L") {
+                                info.deps.push(dep.dep_name);
+                                info.depsChanged();
+                            }
+                        }
+                    }
+                }
+            }
+
+            CollapseFooter {
+                id: deps_footer
+                maxItems: deps.values?.length ?? 0
+                collapseThreshold: deps.collapseThreshold
+                expandStep: deps.expandStep
+            }
+        }
+    }
+}

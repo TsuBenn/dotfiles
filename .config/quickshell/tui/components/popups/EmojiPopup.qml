@@ -8,76 +8,80 @@ import QtQuick
 import QtQuick.Layouts
 
 CellPopup {
+    id: root
 
     property bool optimizeMemory: false
 
     property bool mouseLocked: true
 
-    id: root
-
     w: 28
     h: 14
 
     onVisibleChanged: {
-        mouseLocked: true
-        textfield.set("")
-        emojis.result = []
+        mouseLocked: true;
+        textfield.set("");
+        emojis.result = [];
     }
 
     shortcuts: [
         {
             binds: "Up",
             action: () => {
-                root.advance(-5)
-                root.alignList()
+                root.advance(-5);
+                root.alignList();
             }
         },
         {
-            binds: ["Left", "Shift+Tab"],
+            binds: ["Left", "Backtab"],
             action: () => {
-                root.advance(-1)
-                root.alignList()
+                root.advance(-1);
+                root.alignList();
             }
         },
         {
             binds: "Down",
             action: () => {
-                root.advance(5)
-                root.alignList()
+                root.advance(5);
+                root.alignList();
             }
         },
         {
             binds: ["Right", "Tab"],
             action: () => {
-                root.advance(1)
-                root.alignList()
+                root.advance(1);
+                root.alignList();
             }
         },
         {
             binds: "Return",
             action: () => {
-                root.select()
-                root.alignList()
+                root.select();
+                root.alignList();
             }
         },
     ]
 
     function alignList() {
-        if (Math.floor(emojis.selected/5) > Math.floor(list.offset/3) + 1) {
-            list.offset = Math.floor(emojis.selected/5)*3
+        if (Math.floor(emojis.selected / 5) > Math.floor(list.offset / 3) + 1) {
+            list.offset = Math.floor(emojis.selected / 5) * 3;
         }
-        if (Math.floor(emojis.selected/5) < Math.floor(list.offset/3) + 1) {
-            list.offset = Math.floor(emojis.selected/5)*3
+        if (Math.floor(emojis.selected / 5) < Math.floor(list.offset / 3) + 1) {
+            list.offset = Math.floor(emojis.selected / 5) * 3;
         }
     }
 
     function advance(delta: int) {
-        if (emojis.selected + delta > (emojis.result.length > 0 ? emojis.result.length-1 : EmojisInfo.recent.length-1)) { if (Math.abs(delta) == 1) emojis.selected = 0 }
-        else if (emojis.selected + delta < 0) { if (Math.abs(delta) == 1) emojis.selected = (emojis.result.length > 0 ? emojis.result.length-1 : EmojisInfo.recent.length-1) }
-        else emojis.selected += delta
+        if (emojis.selected + delta > (emojis.result.length > 0 ? emojis.result.length - 1 : EmojisInfo.recent.length - 1)) {
+            if (Math.abs(delta) == 1)
+                emojis.selected = 0;
+        } else if (emojis.selected + delta < 0) {
+            if (Math.abs(delta) == 1)
+                emojis.selected = (emojis.result.length > 0 ? emojis.result.length - 1 : EmojisInfo.recent.length - 1);
+        } else
+            emojis.selected += delta;
     }
 
-    signal select()
+    signal select
 
     component EmojiGrid: GridLayout {
 
@@ -93,28 +97,27 @@ CellPopup {
             model: parent.model
 
             delegate: Loader {
-
                 id: emoji
 
                 required property var modelData
                 required property int index
 
-                property int offset: Math.floor(index/5)*3 + 1
+                property int offset: Math.floor(index / 5) * 3 + 1
 
                 active: offset >= list.offset - 2 && offset <= list.offset + 7
 
                 asynchronous: index >= 10
 
                 sourceComponent: Cells {
-
                     id: emoji_cell
 
                     property bool selected: emoji.index == emojis.selected
 
                     Component.onCompleted: {
-                        root.select.connect(()=> {
-                            if (emoji_cell?.selected) emojis.select(emoji.modelData)
-                        })
+                        root.select.connect(() => {
+                            if (emoji_cell?.selected)
+                                emojis.select(emoji.modelData);
+                        });
                     }
 
                     w: 5
@@ -134,9 +137,7 @@ CellPopup {
 
                             x: Cell.w(0.5)
                             text: emoji.modelData.label
-
                         }
-
                     }
 
                     MouseControl {
@@ -146,31 +147,25 @@ CellPopup {
                         anchors.fill: parent
 
                         onEntered: {
-                            emojis.selected = emoji.index
+                            emojis.selected = emoji.index;
                         }
 
                         onPressed: {
-                            emojis.select(emoji.modelData)
+                            emojis.select(emoji.modelData);
                         }
                     }
-
                 }
-
-            } 
-
+            }
         }
-
     }
 
     CellBox {
-
         id: box
 
         w: root.w
         h: root.h
 
         ColumnLayout {
-
             id: layout
 
             spacing: 0
@@ -185,10 +180,9 @@ CellPopup {
                 color: "transparent"
 
                 Text {
+                    id: emoji_preview
 
                     anchors.centerIn: parent
-
-                    id: emoji_preview
 
                     text: ""
 
@@ -196,7 +190,6 @@ CellPopup {
                         family: "Apple Color Emoji"
                         pointSize: 50
                     }
-
                 }
             }
 
@@ -206,23 +199,23 @@ CellPopup {
             }
 
             CellTextField {
+                id: textfield
 
                 Layout.leftMargin: Cell.w(1)
 
-                w: box.contentW-2
-
-                id: textfield
+                w: box.contentW - 2
 
                 placeholder: "Search emojis"
+                escapeToUnFocus: false
 
-                onTextInput: (input) => {
-                    if (input.length > 0) emojis.result = EmojisInfo.search(input, 200) 
+                onTextInput: input => {
+                    if (input.length > 0)
+                        emojis.result = EmojisInfo.search(input, 200);
                     else {
-                        emojis.resultChanged()
-                        emojis.result = []
+                        emojis.resultChanged();
+                        emojis.result = [];
                     }
                 }
-
             }
 
             CellSeparator {
@@ -231,50 +224,43 @@ CellPopup {
             }
 
             Item {
-
                 id: emojis
 
                 property var result: []
 
                 onSelectedChanged: {
-                    emoji_preview.text = (result[selected]?.label ?? EmojisInfo.recent[selected]?.label) ?? ""
+                    emoji_preview.text = (result[selected]?.label ?? EmojisInfo.recent[selected]?.label) ?? "";
                 }
 
                 onResultChanged: {
-                    emoji_preview.text = (result[selected]?.label ?? EmojisInfo.recent[selected]?.label) ?? ""
-                    root.mouseLocked = true
-                    selected = 0
+                    emoji_preview.text = (result[selected]?.label ?? EmojisInfo.recent[selected]?.label) ?? "";
+                    root.mouseLocked = true;
+                    selected = 0;
                 }
 
                 property int selected: 0
 
                 function select(emoji: var) {
-                    PopupManager.close("emoji")
-                    EmojisInfo.select(emoji)
+                    PopupManager.close("emoji");
+                    EmojisInfo.select(emoji);
                 }
-
             }
 
             CellScrollView {
-
                 id: list
 
                 w: box.contentW
-                h: root.h-2
+                h: root.h - 2
 
                 onVisibleChanged: {
-                    reset()
+                    reset();
                 }
 
                 source: EmojiGrid {
                     model: (emojis.result.length > 0 ? emojis.result : EmojisInfo.recent) ?? []
                 }
-
             }
-
         }
-
-
     }
 
     MouseControl {
@@ -287,11 +273,9 @@ CellPopup {
 
         onMoved: (x, y) => {
             if (pos[0] != x || pos[1] != y) {
-                root.mouseLocked = false
+                root.mouseLocked = false;
             }
-            pos = [x, y]
+            pos = [x, y];
         }
-
     }
-
 }

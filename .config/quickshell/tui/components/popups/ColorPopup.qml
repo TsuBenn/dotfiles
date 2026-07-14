@@ -26,7 +26,7 @@ CellPopup {
         }
     }
 
-    escapeToClose: false
+    escapeToClose: true
 
     function getNextCopyNumber(array, baseString) {
         let maxCounter = 0;
@@ -48,7 +48,7 @@ CellPopup {
 
     shortcuts: [
         {
-            binds: ["Up", "Shift+Tab"],
+            binds: ["BackTab", "Up"],
             action: () => {
                 if (color.edit) {
                     if (id_textfield.focus) {
@@ -67,7 +67,7 @@ CellPopup {
             }
         },
         {
-            binds: ["Down", "Tab"],
+            binds: ["Tab", "Down"],
             action: () => {
                 if (color.edit) {
                     if (id_textfield.focus) {
@@ -82,14 +82,6 @@ CellPopup {
                 color.selected = Math.min(color.selected + 1, root.result.length - 1);
                 if (color.selected - list.offset / 2 >= 13) {
                     list.offset = Math.floor(color.selected / 13) * 26;
-                }
-            }
-        },
-        {
-            binds: "Return",
-            action: () => {
-                if (Colors.current != root.result[color.selected]) {
-                    Colors.current = root.result[color.selected];
                 }
             }
         },
@@ -359,6 +351,12 @@ CellPopup {
                                 onFocusChanged: {
                                     if (color.edit && focus) {
                                         color.toggleEdit();
+                                    }
+                                }
+
+                                onEntered: {
+                                    if (Colors.current != root.result[color.selected]) {
+                                        Colors.current = root.result[color.selected];
                                     }
                                 }
 
