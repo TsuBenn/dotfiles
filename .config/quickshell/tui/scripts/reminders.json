@@ -122,6 +122,13 @@
       "span": 1,
       "urgency": 2,
       "time": "07:30"
+    },
+    {
+      "title": "NWC204-FE (P.420)",
+      "body": "Computer Networking Final Exam",
+      "span": 1,
+      "urgency": 2,
+      "time": "07:30"
     }
   ],
   "01-08-2026": [

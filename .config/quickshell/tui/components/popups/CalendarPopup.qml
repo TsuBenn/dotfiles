@@ -816,6 +816,24 @@ CellPopup {
                                                         disabled: day.isToday && calendar.selected.day == calendar.today.day && calendar.selected.month == calendar.today.month && calendar.selected.year == calendar.today.year
                                                     },
                                                     {
+                                                        label: "Paste",
+                                                        disabled: !root.clipboard.mode,
+                                                        action: () => {
+                                                            if (root.clipboard.mode) {
+                                                                console.log(JSON.stringify(root.clipboard));
+                                                                let mode = root.clipboard.mode;
+                                                                let title = root.clipboard.title;
+                                                                let body = root.clipboard.body;
+                                                                let date = CalendarInfo.moveDate(root.clipboard.date, day.date, calendar.month, calendar.year);
+                                                                let urgency = root.clipboard.urgency;
+                                                                let time = root.clipboard.time;
+                                                                let span = root.clipboard.span;
+                                                                CalendarInfo.add(mode, title, body, date, urgency, time, span);
+                                                                root.clipboard = {};
+                                                            }
+                                                        }
+                                                    },
+                                                    {
                                                         label: "Add reminder",
                                                         action: () => {
                                                             if (!day.isSelected) {

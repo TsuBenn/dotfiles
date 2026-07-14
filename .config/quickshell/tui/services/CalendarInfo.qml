@@ -92,6 +92,24 @@ Singleton {
         }
     }
 
+    function moveDate(date: string, new_date: int, new_month: int, new_year: int): string {
+        date = date.trim();
+        new_date = new_date.toString().padStart(2, "0")
+        new_month = new_month.toString().padStart(2, "0")
+        new_year = new_year.toString().padStart(4, "0")
+        if (weekdays.includes(date)) {
+            return getDay(new_date, new_month, new_year);
+        } else if (/^\d{2}-\d{2}-\d{4}$/.test(date)) {
+            return `${new_date}-${new_month}-${new_year}`
+        } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(date)) {
+            return `${new_date}/${new_month}/${new_year}`
+        } else if (/^\d{2}$/.test(date)) {
+            return `${new_date}`
+        } else if (/^\d{2}-\d{2}$/.test(date)) {
+            return `${new_date}-${new_month}`
+        }
+    }
+
     FileView {
         id: load_events
 

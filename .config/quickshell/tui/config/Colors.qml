@@ -56,20 +56,20 @@ Singleton {
     property color borderActive: "white"
     property color borderInactive: bgOverlay
 
-    // Behavior on bgBase       {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
-    // Behavior on bgSurface    {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
-    // Behavior on bgOverlay    {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
-    // Behavior on fgBase       {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
-    // Behavior on onAccent     {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
-    // Behavior on fgDim        {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
-    // Behavior on fgSubtle     {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
-    // Behavior on accentStrong {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
-    // Behavior on accentDim    {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
-    // Behavior on secondary    {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
-    // Behavior on info         {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
-    // Behavior on success      {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
-    // Behavior on warning      {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
-    // Behavior on danger       {ColorAnimation {duration: 500; easing.type: Easing.OutCubic}}
+    // Behavior on bgBase       {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on bgSurface    {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on bgOverlay    {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on fgBase       {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on onAccent     {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on fgDim        {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on fgSubtle     {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on accentStrong {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on accentDim    {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on secondary    {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on info         {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on success      {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on warning      {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    // Behavior on danger       {ColorAnimation {duration: 200; easing.type: Easing.OutCubic}}
 
     // Helpers
     function transparent(c, factor) {
