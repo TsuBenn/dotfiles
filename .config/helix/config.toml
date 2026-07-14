@@ -296,6 +296,7 @@ cursor-line = "warning"
     # Replace selection with yanked
     p = "replace_with_yanked"
     P = "replace_selections_with_clipboard"
+    C-v = "replace_selections_with_clipboard"
 
     # Escape to normal mode
     "esc" = ["normal_mode"]

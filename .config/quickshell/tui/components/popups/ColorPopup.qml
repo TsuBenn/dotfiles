@@ -1017,6 +1017,7 @@ CellPopup {
                                                             if (event.key == Qt.Key_Tab) {
                                                                 palette_hue.unFocus();
                                                                 palette_saturation.grabFocus();
+                                                                event.accepted = true;
                                                             }
                                                         }
                                                     }
@@ -1060,6 +1061,7 @@ CellPopup {
                                                             if (event.key == Qt.Key_Tab) {
                                                                 palette_saturation.unFocus();
                                                                 palette_value.grabFocus();
+                                                                event.accepted = true;
                                                             }
                                                         }
                                                     }
@@ -1103,6 +1105,7 @@ CellPopup {
                                                             if (event.key == Qt.Key_Tab) {
                                                                 palette_value.unFocus();
                                                                 palette_hex.grabFocus();
+                                                                event.accepted = true;
                                                             }
                                                         }
                                                     }

@@ -758,6 +758,7 @@ CellPopup {
                         Keys.onPressed: event => {
                             if (event.key == Qt.Key_Escape) {
                                 focus = false;
+                                event.accepted = true;
                             }
                         }
                     }
@@ -1258,6 +1259,7 @@ CellPopup {
                                         if (event.key == Qt.Key_Tab) {
                                             posX.unFocus();
                                             posY.grabFocus();
+                                            event.accepted = true;
                                         }
                                     }
                                 }
@@ -1306,6 +1308,7 @@ CellPopup {
                                         if (event.key == Qt.Key_Tab) {
                                             posY.unFocus();
                                             posX.grabFocus();
+                                            event.accepted = true;
                                         }
                                     }
                                 }
