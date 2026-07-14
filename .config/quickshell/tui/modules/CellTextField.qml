@@ -42,7 +42,7 @@ Item {
     property bool scroll: true
     property bool wrap: false
 
-    implicitWidth: root.w > 0 ? Cell.w(w) : text.length + 1
+    implicitWidth: root.w > 0 ? Cell.w(w) : root.text.length + 1
     implicitHeight: root.h > 0 ? Cell.h(h) : 1
 
     property font font: Cell.font
@@ -66,57 +66,43 @@ Item {
 
     clip: true
 
-    onEntered: {
-        if (unfocusOnEntered)
-            unFocus();
-    }
+    property var processed_text: [""]
 
-    onDisabledChanged: {
-        unFocus();
-        if (!disabled && focusOnVisible && visible) {
-            grabFocus();
+    Timer {
+        id: cursorTimer
+        running: root.visible && root.blinkCursor && root.focus
+        repeat: true
+        interval: 500
+        onTriggered: {
+            root.showCursor = !root.showCursor;
         }
     }
 
-    function refresh() {
-        visibleChanged();
+    onBlinkCursorChanged: {
+        showCursor = focus;
+    }
+
+    onVisibleChanged: {
+        if (visible) {
+            if (focusOnVisible) {
+                grabFocus();
+            }
+        }
     }
 
     onFocusChanged: {
         if (focus) {
-            if (disabled) {
-                unFocus();
-                return;
-            }
-            if (autoClear) {
-                set("");
-            } else if (bindText) {
-                text = Qt.binding(() => bindText);
-                cursorPos = bindText.length;
-            }
-            TextFieldManager.activated();
             resetCursor();
-        } else if (!focus) {
-            TextFieldManager.deactivated();
-            showCursor = false;
-            visualPos = 0;
-            if (autoApply) {
-                if (text != bindText)
-                    entered(text);
-            }
-            if (bindText) {
-                text = Qt.binding(() => bindText);
-                cursorPos = bindText.length;
-                return;
-            }
+        } else {
+            showCursor = focus;
         }
     }
 
-    onTextAdded: text => {
-        textInput(root.text, text, "a");
-    }
-    onTextRemoved: text => {
-        textInput(root.text, text, "r");
+    function isBetween(num, bound1, bound2): bool {
+        const min = Math.min(bound1, bound2);
+        const max = Math.max(bound1, bound2);
+
+        return num >= min && num <= max;
     }
 
     function grabFocus() {
@@ -129,566 +115,327 @@ Item {
         focus = false;
     }
 
+    function set(str: string) {
+        textRemoved(text);
+        root.text = str;
+        textAdded(text);
+    }
+
+    function resetCursor() {
+        cursorTimer.restart();
+        showCursor = focus;
+    }
+
     function clear() {
         cursorPos = 0;
         visualPos = 0;
         resetCursor();
-        text = root.bindText;
-        textfield.offset = 0;
+        set("");
     }
 
-    function set(new_text: string) {
-        text = new_text;
-        cursorPos = text.length;
-    }
-
-    function resetCursor() {
-        cursor_timer.restart();
-        root.showCursor = focus;
-    }
-
-    onVisibleChanged: {
-        if (autoClear) {
-            clear();
+    function wrapText(str: string): var {
+        console.log("str: " + str);
+        if (root.w == 0)
+            return [str];
+        let result = [];
+        let buffer = "";
+        for (const c of str) {
+            if (c == "\n") {
+                result.push(buffer);
+                buffer = "";
+                continue;
+            }
+            buffer += c;
+            if (buffer.length == root.w) {
+                result.push(buffer);
+                buffer = "";
+            }
         }
-        if (bindText != "") {
-            text = Qt.binding(() => bindText);
+        if (buffer) {
+            result.push(buffer);
         }
-        if (visible && focusOnVisible) {
-            grabFocus();
-            return;
-        }
-        unFocus();
-    }
-
-    onCursorPosChanged: {
-        resetCursor();
-        if (cursorPos + textfield.offset > (root.w - (root.unit.length > 0 ? root.unit.length - 1 : 0)) - 1) {
-            textfield.offset -= 1;
-        }
-        if (cursorPos + textfield.offset < 0) {
-            textfield.offset += 1;
-            textfield.offset = Math.max(textfield.offset, 0);
-        }
+        return result;
     }
 
     onTextChanged: {
-        resetCursor();
+        root.processed_text = wrapText(root.text);
+        console.log(processed_text);
     }
 
-    Component.onCompleted: {
-        TextFieldManager.unFocusAll.connect(() => {
-            if (root) {
-                root.unFocus();
+    RowLayout {
+
+        spacing: Cell.w(1)
+
+        Cells {
+            id: text
+
+            clip: true
+
+            w: root.w - unit.w - 1
+            h: root.h
+
+            color: "transparent"
+
+            CellText {
+                visible: root.text.length == 0
+                text: root.placeholder
+                color: root.disabled_color
+                preferedH: text.h
+                preferedW: text.w
+                wrap: true
             }
-        });
-        root.visibleChanged();
-    }
 
-    Timer {
-        id: cursor_timer
+            ColumnLayout {
 
-        running: (root.blinkCursor && !root.disabled && root.focus) || root.showCursor
-        interval: 500
-        repeat: true
-        onTriggered: {
-            if (root.focus) {
-                root.showCursor = !root.showCursor;
-                return;
-            }
-            root.showCursor = false;
-        }
-    }
+                spacing: 0
 
-    onTextCopied: {
-        copied_anim.restart();
-    }
+                Repeater {
 
-    SequentialAnimation {
-        id: copied_anim
-        ColorAnimation {
-            target: snap
-            property: "color"
-            to: root.color
-            duration: 0
-        }
-        ColorAnimation {
-            target: snap
-            property: "color"
-            to: Colors.transparent(root.color, 0)
-            duration: 500
-            easing.type: Easing.OutCubic
-        }
-        ColorAnimation {
-            target: snap
-            property: "color"
-            to: "transparent"
-            duration: 0
-            easing.type: Easing.OutCubic
-        }
-    }
+                    model: root.processed_text.length
 
-    ColumnLayout {
+                    delegate: RowLayout {
+                        id: text_line
 
-        spacing: 0
+                        required property int index
 
-        Item {
-            id: textfield
+                        property string line: root.processed_text[index] ?? ""
 
-            property int offset: 0
+                        spacing: 0
 
-            Layout.leftMargin: (!root.wrap && root.scroll) ? Math.min(Cell.w(offset), 0) : 0
+                        Repeater {
 
-            implicitHeight: Cell.h(1)
-            implicitWidth: Cell.w(root.w - (root.unit.length > 0 ? root.unit.length - 1 : 0))
+                            model: text_line.line.length
 
-            Repeater {
+                            delegate: CellText {
+                                id: text_char
 
-                model: root.h
+                                required property int index
 
-                delegate: Loader {
-                    id: loader
+                                property bool selected: root.isBetween(getPos(), root.cursorPos, root.cursorPos + root.visualPos) && root.visualPos != 0
 
-                    required property int index
-
-                    active: root.visible || !root.optimizeMemory
-
-                    sourceComponent: Item {
-
-                        y: Cell.h(loader.index)
-                        x: -Cell.w(loader.index * root.w)
-
-                        Loader {
-
-                            active: root.text.length == 0
-
-                            sourceComponent: CellText {
-                                id: placeholder
-
-                                visible: root.text.length == 0
-
-                                text: root.placeholder
-                                color: root.disabled_color
-                            }
-                        }
-
-                        Loader {
-
-                            active: !root.hidden
-
-                            sourceComponent: CellText {
-                                id: input
-
-                                visible: !root.hidden
-
-                                text: root.text
-                                font: root.font
-                                color: root.disabled ? root.disabled_color : root.color
-                            }
-                        }
-
-                        Loader {
-
-                            active: root.visible || !root.optimizeMemory
-
-                            sourceComponent: CellText {
-
-                                text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos + root.visualPos, 0)) + "█".repeat(Math.abs(root.visualPos))
-                                font: root.font
-                                color: root.visual_color
-                            }
-                        }
-
-                        Loader {
-
-                            active: root.visible || !root.optimizeMemory
-
-                            sourceComponent: CellText {
-                                id: cursor
-
-                                text: " ".repeat(root.cursorPos) + (root.showCursor && !(root.visual && root.cursorPos == root.text.length) ? "█" : "")
-                                font: root.font
-                                color: root.disabled ? root.disabled_color : root.color
-
-                                CellText {
-
-                                    visible: root.showCursor && !root.hidden
-
-                                    text: " ".repeat(root.cursorPos) + (root.text[root.cursorPos] ?? "")
-                                    color: root.invert
+                                function getPos(): int {
+                                    return index + text_line.index;
                                 }
-                            }
-                        }
 
-                        Loader {
-
-                            active: !root.hidden
-
-                            sourceComponent: CellText {
-                                id: visual
-
-                                visible: !root.hidden
-
-                                text: " ".repeat(root.visualPos > 0 ? root.cursorPos : Math.max(root.cursorPos + root.visualPos, 0)) + root.text.slice(root.visualPos > 0 ? root.cursorPos : root.cursorPos + root.visualPos, root.visualPos > 0 ? root.cursorPos + root.visualPos : root.cursorPos)
-                                font: root.fontB
-                                color: root.disabled ? root.disabled_color : root.invert
-                            }
-                        }
-
-                        Loader {
-
-                            active: root.hidden
-
-                            sourceComponent: RowLayout {
-
-                                visible: root.hidden
-
-                                spacing: 0
-
-                                Repeater {
-
-                                    model: root.text.length
-
-                                    delegate: CellText {
-
-                                        required property int index
-
-                                        property bool invert: {
-                                            if (root.visualPos > 0 && index >= root.cursorPos && index < root.cursorPos + root.visualPos) {
-                                                return true;
-                                            } else if (root.visualPos < 0 && index <= root.cursorPos && index > root.cursorPos + root.visualPos) {
-                                                return true;
-                                            }
-                                            return false;
-                                        }
-
-                                        text: "*"
-                                        font: invert ? root.fontB : root.font
-                                        color: root.disabled ? root.disabled_color : (invert ? root.invert : root.color)
-                                    }
-                                }
+                                text: root.hidden ? "*" : (text_line.line[index] ?? " ")
+                                color: root.disabled ? root.disabled_color : (selected ? root.invert : root.color)
+                                bg: selected ? root.visual_color : "transparent"
                             }
                         }
                     }
                 }
             }
+
+            CellText {
+
+                visible: !root.disabled && root.showCursor
+
+                x: Cell.w(root.cursorPos % text.w)
+                y: Cell.h(Math.floor(root.cursorPos / text.w))
+
+                color: root.invert
+                bg: root.color
+
+                text: root.text[root.cursorPos] ?? " "
+            }
+        }
+
+        CellText {
+            id: unit
+            Layout.alignment: Qt.AlignTop
+
+            text: root.unit
+
+            color: root.color
         }
     }
 
-    Cells {
-        id: snap
-
-        h: root.h
-        w: root.w
-
-        color: "transparent"
-    }
-
-    CellText {
-
-        preferedW: root.w
-
-        text: " ".repeat(root.w - root.unit.length) + root.unit
-        font: root.font
-        color: root.disabled ? root.disabled_color : root.color
-    }
-
-    MouseControl {
-
-        visible: !root.disabled
-
-        anchors.fill: parent
-
-        onPressed: button => {
-            if (button == "L") {
-                root.forceActiveFocus();
-            }
+    function type(c: string) {
+        if (visualPos != 0) {
+            delete_selections();
         }
+        root.text = root.text.slice(0, cursorPos) + c + root.text.slice(cursorPos);
+        root.cursorPos++;
+        root.textAdded(c);
     }
 
-    function delete_char_back() {
-        if (root.visual) {
-            if (root.visualPos > 0) {
-                const removed = root.text.slice(root.cursorPos, root.cursorPos + root.visualPos);
-                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + root.visualPos, root.text.length);
-                root.textRemoved(removed);
-            }
-            if (root.visualPos < 0) {
-                const removed = root.text.slice(root.cursorPos + root.visualPos, root.cursorPos);
-                root.text = root.text.slice(0, root.cursorPos + root.visualPos) + root.text.slice(root.cursorPos, root.text.length);
-                root.cursorPos = root.cursorPos + root.visualPos;
-                root.textRemoved(removed);
-            }
-            root.visualPos = 0;
-            return;
-        }
-        if (root.cursorPos == 0) {
-            root.textRemoved("");
-            return;
-        }
-        const removed = root.text[root.cursorPos - 1];
-        root.text = root.text.slice(0, root.cursorPos - 1) + root.text.slice(root.cursorPos);
-        root.cursorPos -= 1;
-        root.textRemoved(removed);
-    }
-
-    function delete_word_back() {
-        if (root.text.length > 0) {
-            if (root.visual) {
-                if (root.visualPos > 0) {
-                    const removed = root.text.slice(root.cursorPos, root.cursorPos + root.visualPos);
-                    root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + root.visualPos, root.text.length);
-                    root.textRemoved(removed);
-                }
-                if (root.visualPos < 0) {
-                    const removed = root.text.slice(root.cursorPos + root.visualPos, root.cursorPos);
-                    root.text = root.text.slice(0, root.cursorPos + root.visualPos) + root.text.slice(root.cursorPos, root.text.length);
-                    root.cursorPos = root.cursorPos + root.visualPos;
-                    root.textRemoved(removed);
-                }
-                root.visualPos = 0;
-                return;
-            }
-
-            const start = cursorPos;
-
-            let inword = 0;
-
-            while (cursorPos > 0) {
-                cursorPos -= 1;
-                if (root.text[cursorPos] != " ") {
-                    continue;
-                }
-                if (root.text[cursorPos - 1] == " ") {
-                    continue;
-                }
+    function move_word_left() {
+        if (cursorPos == 0)
+            return false;
+        do {
+            cursorPos--;
+            if (cursorPos == 0)
                 break;
-            }
-
-            const end = cursorPos;
-
-            const removed = root.text.slice(end, start);
-            root.text = root.text.slice(0, end) + root.text.slice(start, root.text.length);
-            root.textRemoved(removed);
-        } else
-            root.textRemoved("");
+        } while (root.text[cursorPos - 1] != " ")
+        return true;
     }
 
-    function enter() {
-        root.visualPos = 0;
-        root.entered(root.text);
+    function move_char_left() {
+        visualPos = 0;
+        if (cursorPos == 0)
+            return false;
+        cursorPos--;
+        return true;
     }
 
-    function delete_char_forward() {
-        if (root.visual) {
-            if (root.visualPos > 0) {
-                const removed = root.text.slice(root.cursorPos, root.cursorPos + root.visualPos);
-                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + root.visualPos, root.text.length);
-                root.textRemoved(removed);
-            }
-            if (root.visualPos < 0) {
-                const removed = root.text.slice(root.cursorPos + root.visualPos, root.cursorPos);
-                root.text = root.text.slice(0, root.cursorPos + root.visualPos) + root.text.slice(root.cursorPos, root.text.length);
-                root.cursorPos = root.cursorPos + root.visualPos;
-                root.textRemoved(removed);
-            }
-            root.visualPos = 0;
-            return;
-        }
-        const removed = root.text[root.cursorPos];
-        if (root.cursorPos == root.text.length)
-            return;
-        root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + 1);
-        root.textRemoved(removed);
+    function extend_char_left() {
+        if (cursorPos == 0)
+            return false;
+        cursorPos--;
+        visualPos++;
+        return true;
     }
 
-    function select_char_back() {
-        if (!root.editable)
-            return;
-        if (root.cursorPos == 0)
-            return;
-        root.cursorPos -= 1;
-        root.visualPos += 1;
+    function extend_word_left() {
+        if (cursorPos == 0)
+            return false;
+        do {
+            extend_char_left();
+            if (cursorPos == 0)
+                break;
+        } while (root.text[cursorPos - 1] != " ")
+        return true;
     }
 
-    function select_char_forward() {
-        if (!root.editable)
-            return;
-        if (root.cursorPos == root.text.length)
-            return;
-        root.cursorPos += 1;
-        root.visualPos -= 1;
+    function move_word_right() {
+        if (cursorPos == root.text.length)
+            return false;
+        do {
+            cursorPos++;
+            if (cursorPos == root.text.length)
+                break;
+        } while (root.text[cursorPos] != " ")
+        return true;
     }
 
-    function select_char_forward_word() {
-        if (!root.editable)
-            return;
-        if (root.cursorPos == root.text.length)
-            return;
-        if (root.text[Math.min(root.cursorPos + 1, text.length)] != " " && root.cursorPos < root.text.length) {
-            root.cursorPos += 1;
-            root.visualPos -= 1;
-        }
-        while (root.cursorPos < root.text.length && root.text[root.cursorPos] != " ") {
-            root.cursorPos += 1;
-            root.visualPos -= 1;
-        }
+    function move_char_right(): bool {
+        visualPos = 0;
+        if (cursorPos == root.text.length)
+            return false;
+        cursorPos++;
+        return true;
     }
 
-    function move_cursor_back() {
-        if (!root.editable)
-            return;
-        root.visualPos = 0;
-        root.cursorPos -= 1;
-        if (root.cursorPos < 0) {
-            root.cursorPos = 0;
-        }
+    function extend_char_right() {
+        if (cursorPos == root.text.length)
+            return false;
+        cursorPos++;
+        visualPos--;
+        return true;
     }
 
-    function move_cursor_back_word() {
-        if (!root.editable)
-            return;
-        root.visualPos = 0;
-        if (root.text[Math.max(root.cursorPos - 1, 0)] != " " && root.cursorPos > 0)
-            root.cursorPos -= 1;
-        while (root.cursorPos > 0 && root.text[root.cursorPos] != " ") {
-            root.cursorPos -= 1;
-        }
-        if (root.cursorPos < 0) {
-            root.cursorPos = 0;
-        }
-    }
-
-    function move_cursor_forward() {
-        if (!root.editable)
-            return;
-        root.visualPos = 0;
-        root.cursorPos += 1;
-        if (root.cursorPos > root.text.length) {
-            root.cursorPos = root.text.length;
-        }
-    }
-
-    function move_cursor_forward_word() {
-        if (!root.editable)
-            return;
-        root.visualPos = 0;
-        if (root.text[Math.min(root.cursorPos + 1, text.length)] != " " && root.cursorPos < root.text.length)
-            root.cursorPos += 1;
-        while (root.cursorPos < root.text.length && root.text[root.cursorPos] != " ") {
-            root.cursorPos += 1;
-        }
-        if (root.cursorPos < 0) {
-            root.cursorPos = 0;
-        }
+    function extend_word_right() {
+        if (cursorPos == root.text.length)
+            return false;
+        do {
+            extend_char_right();
+            if (cursorPos == root.text.length)
+                break;
+        } while (root.text[cursorPos] != " ")
+        return true;
     }
 
     function select_all() {
-        root.visualPos = -root.text.length;
-        root.cursorPos = root.text.length;
+        if (cursorPos == 0)
+            return false;
+        cursorPos = root.text.length - 1;
+        visualPos = -(root.text.length - 1);
+        return true;
     }
 
-    function type(char: string) {
-        if (root.visual) {
-            if (root.visualPos > 0) {
-                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + root.visualPos, root.text.length);
-            }
-            if (root.visualPos < 0) {
-                root.text = root.text.slice(0, root.cursorPos + root.visualPos) + root.text.slice(root.cursorPos, root.text.length);
-                root.cursorPos = root.cursorPos + root.visualPos;
-            }
-            root.visualPos = 0;
-        }
-        root.text = root.text.slice(0, root.cursorPos) + char + root.text.slice(root.cursorPos);
-        root.cursorPos += 1;
-        root.textAdded(char);
+    function delete_selections() {
+        let min = Math.min(cursorPos, cursorPos + visualPos);
+        let max = Math.max(cursorPos, cursorPos + visualPos);
+        let rm = root.text.slice(min, max + 1);
+        root.text = root.text.slice(0, min) + root.text.slice(max + 1);
+        visualPos = 0;
+        cursorPos = min;
+        root.textRemoved(rm);
     }
 
-    function copy_selected() {
-        if (root.visualPos == 0)
+    function delete_char_left() {
+        if (visualPos != 0) {
+            delete_selections();
             return;
-        if (!root.canCopy)
-            return;
-        let copy = "";
-        if (root.visual) {
-            if (root.visualPos > 0) {
-                copy = root.text.slice(root.cursorPos, root.cursorPos + root.visualPos);
-            }
-            if (root.visualPos < 0) {
-                copy = root.text.slice(root.cursorPos + root.visualPos, root.cursorPos);
-            }
         }
-        SystemInfo.copy_clipboard(copy);
-        root.textCopied(copy);
+        if (cursorPos == 0)
+            return false;
+        let rm = root.text[cursorPos - 1];
+        root.text = root.text.slice(0, cursorPos - 1) + root.text.slice(cursorPos);
+        root.cursorPos--;
+        root.textRemoved(rm);
+        return true;
     }
 
-    function cut_selected() {
-        if (root.visualPos == 0)
+    function delete_word_left() {
+        if (visualPos != 0) {
+            delete_selections();
             return;
-        if (!root.canCopy)
-            return;
-        let copy = "";
-        if (root.visual) {
-            if (root.visualPos > 0) {
-                copy = root.text.slice(root.cursorPos, root.cursorPos + root.visualPos);
-                root.text = root.text.slice(0, root.cursorPos) + root.text.slice(root.cursorPos + root.visualPos, root.text.length);
-            }
-            if (root.visualPos < 0) {
-                copy = root.text.slice(root.cursorPos + root.visualPos, root.cursorPos);
-                root.text = root.text.slice(0, root.cursorPos + root.visualPos) + root.text.slice(root.cursorPos, root.text.length);
-                root.cursorPos = root.cursorPos + root.visualPos;
-            }
-            root.visualPos = 0;
         }
-        SystemInfo.copy_clipboard(copy);
-        root.textCopied(copy);
+        let rm = "";
+        if (cursorPos == 0)
+            return false;
+        do {
+            delete_char_left();
+            if (cursorPos == 0)
+                break;
+        } while (root.text[cursorPos - 1] != " ")
+        root.textRemoved(rm);
+        return true;
+    }
+
+    function delete_char_right() {
+        if (visualPos != 0) {
+            delete_selections();
+            return;
+        }
+        let rm = root.text[cursorPos];
+        root.text = root.text.slice(0, cursorPos) + root.text.slice(cursorPos + 1);
+        root.cursorPos;
+        root.textRemoved(rm);
+        return rm ? true : false;
     }
 
     Keys.onPressed: event => {
-        if (root.disabled)
-            return;
-        if (event.modifiers & Qt.ControlModifier) {
-            if (event.key == Qt.Key_C) {
-                root.copy_selected();
-            } else if (event.key == Qt.Key_X) {
-                root.cut_selected();
-            } else if (event.key == Qt.Key_V) {
-                ClipboardInfo.paste();
-            } else if (event.key == Qt.Key_Left) {
-                root.move_cursor_back_word();
-            } else if (event.key == Qt.Key_Right) {
-                root.move_cursor_forward_word();
-            } else if (event.key == Qt.Key_A) {
-                root.select_all();
-            } else if (event.key == Qt.Key_Backspace) {
-                root.delete_word_back();
-            } else {
-                return;
-            }
-            event.accepted = true;
-        } else if (event.modifiers & Qt.ShiftModifier) {
-            if (event.key == Qt.Key_Left) {
-                root.select_char_back();
-            } else if (event.key == Qt.Key_Right) {
-                root.select_char_forward();
-            }
-        }
-
-        if (event.key == Qt.Key_Return) {
-            root.enter();
-        } else if (event.key == Qt.Key_Escape) {
-            if (root.escapeToUnFocus)
-                root.unFocus();
-        } else if (event.key == Qt.Key_Backspace) {
-            root.delete_char_back();
+        console.log(JSON.stringify(event, null, 2));
+        const shift = Qt.ShiftModifier;
+        const ctrl = Qt.ControlModifier;
+        const mod = event.modifiers;
+        const key = event.key;
+        const etext = event.text;
+        resetCursor();
+        if (event.key == Qt.Key_Backspace) {
+            if (mod & ctrl)
+                root.delete_word_left();
+            else
+                root.delete_char_left();
         } else if (event.key == Qt.Key_Delete) {
-            root.delete_char_forward();
-        } else if (event.text.length > 0 && event.text >= " ") {
-            root.type(event.text);
-        } else if (event.key == Qt.Key_Left) {
-            root.move_cursor_back();
+            root.delete_char_right();
         } else if (event.key == Qt.Key_Right) {
-            root.move_cursor_forward();
+            if ((mod & ctrl) && (mod & shift)) {
+                root.extend_word_right();
+            } else if (mod & ctrl) {
+                root.move_word_right();
+            } else if (mod & shift)
+                root.extend_char_right();
+            else {
+                root.move_char_right();
+            }
+        } else if (event.key == Qt.Key_Left) {
+            if ((mod & ctrl) && (mod & shift)) {
+                root.extend_word_left();
+            } else if (mod & ctrl) {
+                root.move_word_left();
+            } else if (mod & shift)
+                root.extend_char_left();
+            else {
+                root.move_char_left();
+            }
+        } else if (mod & ctrl) {
+            if (event.key == Qt.Key_A)
+                root.select_all();
+        } else if (etext.length > 0 && etext >= " ") {
+            root.type(etext);
         } else {
             return;
         }
