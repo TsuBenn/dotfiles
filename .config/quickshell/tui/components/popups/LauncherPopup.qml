@@ -151,7 +151,7 @@ CellPopup {
                                         return
                                     }
                                     text = ""
-                                } 
+                                }
 
                                 text: ""
                             }
@@ -448,7 +448,7 @@ CellPopup {
                                             if (textfield.text.length == 0) {
                                                 tab.advance(1)
                                             } else {
-                                                textfield.move_cursor_forward()
+                                                textfield.move_char_right()
                                             }
                                         }
                                     },
@@ -458,7 +458,7 @@ CellPopup {
                                             if (textfield.text.length == 0) {
                                                 tab.advance(-1)
                                             } else {
-                                                textfield.move_cursor_back()
+                                                textfield.move_char_left()
                                             }
                                         }
                                     },
@@ -712,7 +712,7 @@ CellPopup {
 
                 CellKeyHint {
                     visible: (
-                        tab.selected == 0 || 
+                        tab.selected == 0 ||
                         tab.selected == 1 ||
                         tab.selected == 2 ||
                         tab.selected == 4
@@ -730,7 +730,7 @@ CellPopup {
                 }
 
                 CellKeyHint {
-                    visible: ( tab.selected == 0 || tab.selected == 1 || tab.selected == 2) && LauncherInfo.result.length > 0 
+                    visible: ( tab.selected == 0 || tab.selected == 1 || tab.selected == 2) && LauncherInfo.result.length > 0
                     key: "Enter"
                     hint: "Select"
                 }
