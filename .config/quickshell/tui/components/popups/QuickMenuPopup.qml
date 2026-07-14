@@ -15,18 +15,12 @@ CellPopup {
     w: 48
     h: 20
 
-    shortcuts: TextFieldManager.active || custom ? [] : QuickMenuInfo.shortcuts
+    shortcuts: QuickMenuInfo.shortcuts
 
     property bool custom: false
     property bool help: false
 
     escapeToClose: !TextFieldManager.active
-
-    onShortcutsChanged: {
-        if (visible) {
-            refreshShortcuts();
-        }
-    }
 
     onVisibleChanged: {
         custom = false;
