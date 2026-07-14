@@ -252,14 +252,57 @@ def render_footer(stdscr, state: ExplorerState, height: int, width: int):
                      curses.A_DIM)
 
 
+# Replace the old MENU_LINES array with this structured list of tuples
+MENU_ITEMS = [
+    ("i / k", "Move Up / Down"),
+    ("I / K", "Jump Up/Down 3 Items"),
+    ("l / Enter", "Open File / Enter Dir"),
+    ("j", "Go to Parent Directory"),
+    ("f", "Create New File"),
+    ("d", "Create New Directory"),
+    ("D (S-d)", "Delete File or Directory"),
+    ("c / x", "Copy / Cut Selected Item"),
+    ("p", "Paste Item Here"),
+    ("/", "Real-time Search Filter"),
+    ("Space", "Close Action Menu"),
+    ("Esc / q", "Exit Explorer")
+]
+
 def render_menu(stdscr, height: int, width: int):
-    menu_h = len(MENU_LINES)
-    menu_w = len(MENU_LINES[0])
+    # Calculate dimensions dynamically based on content padding
+    menu_h = len(MENU_ITEMS) + 4
+    menu_w = 46
     start_y = max(0, (height - menu_h) // 2)
     start_x = max(0, (width - menu_w) // 2)
-    for offset, line in enumerate(MENU_LINES):
-        safe_addstr(stdscr, start_y + offset, start_x, line, curses.color_pair(4))
 
+    # 1. Create a sub-window to cleanly contain the menu overlay
+    menu_win = stdscr.subwin(menu_h, menu_w, start_y, start_x)
+    menu_win.erase()
+
+    # 2. Draw styled borders for the modal box
+    menu_win.attron(curses.color_pair(4) | curses.A_BOLD)
+    menu_win.border()
+    menu_win.attroff(curses.color_pair(4) | curses.A_BOLD)
+
+    # 3. Draw Centered Header Accent
+    title = " MININETRW ACTIONS "
+    title_x = max(1, (menu_w - len(title)) // 2)
+    menu_win.addstr(0, title_x, title, curses.color_pair(4) | curses.A_BOLD)
+
+    # 4. Render Layout Rows
+    for idx, (key_bind, description) in enumerate(MENU_ITEMS):
+        row = idx + 2
+
+        # Left column: Action Keybinds (Highlighted in Cyan/Selected color profile or Yellow)
+        menu_win.addstr(row, 3, f"{key_bind:>10}", curses.color_pair(3) | curses.A_BOLD)
+
+        # Divider element
+        menu_win.addstr(row, 14, " │ ", curses.color_pair(4) | curses.A_DIM)
+
+        # Right column: Descriptions (Standard text)
+        menu_win.addstr(row, 17, f"{description:<26}", curses.A_NORMAL)
+
+    menu_win.refresh()
 
 # ─── Input Handlers ───────────────────────────────────────────────────────────
 
