@@ -112,7 +112,7 @@ CellPopup {
                 visible: !image_preview.visible
 
                 w: 78
-                h: 18
+                h: 28
 
                 itemH: 0
 
@@ -242,7 +242,7 @@ CellPopup {
             CellText {
                 visible: ClipboardInfo.clipboard.length == 0
                 text: "\n\n\nNothing in the clipboard, yet!"
-                preferedW: parent.contentW
+                preferedW: 78
                 centered: true
                 color: Colors.fgSubtle
             }

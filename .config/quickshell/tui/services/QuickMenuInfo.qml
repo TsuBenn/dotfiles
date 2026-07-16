@@ -468,6 +468,12 @@ Singleton {
             "action": function () {
                 PopupManager.open("launcher");
             }
+        },
+        "open_spell_checker": {
+            "label": "Open Spell Checker",
+            "action": function () {
+                PopupManager.open("spell_checker");
+            }
         }
     }
 }

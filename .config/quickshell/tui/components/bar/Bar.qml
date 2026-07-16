@@ -156,7 +156,6 @@ Scope {
             exclusiveZone: root.implicitHeight * !root.hideBar
 
             implicitHeight: Cell.h(1) + 1
-
             color: "transparent"
 
             StatusBar {

@@ -321,7 +321,7 @@ CellPopup {
                             CellTextField {
                                 id: textfield
 
-                                w: 31 - appearance.text.length
+                                w: 31 - appearance.text.length - 10
                                 h: 1
 
                                 placeholder: "Search themes"
@@ -355,6 +355,20 @@ CellPopup {
                                         root.result = root.colors.filter(item => {
                                             return Colors.colors[item][SettingsInfo.lightMode ? "light" : "dark"].name.toLowerCase().includes(textfield.text.toLowerCase()) || Colors.colors[item][SettingsInfo.lightMode ? "light" : "dark"].description.toLowerCase().includes(textfield.text.toLowerCase()) || item.includes(textfield.text.toLowerCase());
                                         });
+                                    }
+                                }
+                            }
+
+                            CellButton {
+
+                                text: "Recache"
+
+                                color: [Colors.bgOverlay, Colors.fgBase]
+                                fg: [Colors.fgBase, Colors.bgSurface]
+
+                                onReleased: button => {
+                                    if (button == "L") {
+                                        Colors.recache();
                                     }
                                 }
                             }

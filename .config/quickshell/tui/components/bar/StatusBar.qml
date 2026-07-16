@@ -7,6 +7,7 @@ import QtQuick.Layouts
 import QtQuick
 
 Rectangle {
+    id: root
 
     required property bool hideBar
     required property bool forceBar
@@ -24,8 +25,6 @@ Rectangle {
 
     opacity: unfocus > 0
 
-    id: root
-
     anchors.fill: parent
     anchors.bottomMargin: 1
     //anchors.leftMargin: Cell.w(1)
@@ -38,7 +37,7 @@ Rectangle {
         anchors.fill: parent
 
         onPressed: {
-            PopupManager.close()
+            PopupManager.close();
         }
     }
 
@@ -57,20 +56,17 @@ Rectangle {
         }
 
         CellText {
-
             id: window_title
 
             property string wTitle: HyprInfo.focusedwindow.title
             property string wClass: HyprInfo.focusedwindow.class
 
-            preferedW: Cell.wCount(root.width/2-clock.implicitWidth/2-system.implicitWidth-workspaces.implicitWidth) - 10
+            preferedW: Cell.wCount(root.width / 2 - clock.implicitWidth / 2 - system.implicitWidth - workspaces.implicitWidth) - 10
 
             text: `${wClass}`
             font: Cell.font
             color: Colors.fgBase
-
         }
-
     }
 
     System {
@@ -81,7 +77,7 @@ Rectangle {
 
     Clock {
         id: clock
-        x: Cell.centerWCell(implicitWidth,root.width)
+        x: Cell.centerWCell(implicitWidth, root.width)
     }
 
     BarMediaPlayer {
@@ -96,29 +92,36 @@ Rectangle {
 
         spacing: Cell.w(0)
 
-        OBS {} 
+        OBS {}
 
-        CellText { text: " " }
+        CellText {
+            text: " "
+        }
 
         Volume {}
 
-        CellText { text: " " }
+        CellText {
+            text: " "
+        }
 
         CellText {
             text: "*" + NotificationsInfo.totalMessagesCount()
             color: Colors.danger
         }
 
-        CellText { text: " " }
+        CellText {
+            text: " "
+        }
 
         ControlPanel {}
 
-        CellText { text: " " }
+        CellText {
+            text: " "
+        }
 
         Search {
             id: search
         }
-
     }
 
     MouseArea {
@@ -128,8 +131,8 @@ Rectangle {
         anchors.fill: parent
 
         onPressed: {
-            ContextMenuManager.hide()
-            DropdownManager.hide()
+            ContextMenuManager.hide();
+            DropdownManager.hide();
         }
     }
 
@@ -143,23 +146,20 @@ Rectangle {
         acceptedButtons: Qt.NoButton
 
         onEntered: {
-            root.peekBar = true
-            unpeek_timer.stop()
+            root.peekBar = true;
+            unpeek_timer.stop();
         }
 
         onExited: {
-            unpeek_timer.restart()
+            unpeek_timer.restart();
         }
     }
 
     Timer {
-
         id: unpeek_timer
         interval: 500
         onTriggered: {
-            root.peekBar = false
+            root.peekBar = false;
         }
-
     }
-
 }
