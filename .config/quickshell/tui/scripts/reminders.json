@@ -139,5 +139,23 @@
       "urgency": 2,
       "time": "07:30"
     }
+  ],
+  "WE": [
+    {
+      "title": "UNI-VOV134 (F.5-1)",
+      "body": "Vovinam Season 3",
+      "span": 1,
+      "urgency": 0,
+      "time": "14:15"
+    }
+  ],
+  "SA": [
+    {
+      "title": "UNI-VOV134 (F.5-1)",
+      "body": "Vovinam Season 3",
+      "span": 1,
+      "urgency": 0,
+      "time": "14:15"
+    }
   ]
 }

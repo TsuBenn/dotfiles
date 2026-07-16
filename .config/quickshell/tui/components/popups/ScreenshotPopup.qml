@@ -86,16 +86,16 @@ CellPopup {
         ColorAnimation {
             target: overlay
             property: "color"
-            from: Colors.transparent(Colors.fgDim,0)
-            to: Colors.fgDim
+            from: Colors.transparent(Colors.fgBase,0)
+            to: Colors.fgBase
             duration: 0
             easing.type: Easing.OutCubic
         }
         ColorAnimation {
             target: overlay
             property: "color"
-            from: Colors.fgDim
-            to: Colors.transparent(Colors.fgDim,0)
+            from: Colors.fgBase
+            to: Colors.transparent(Colors.fgBase,0)
             duration: 300
             easing.type: Easing.OutCubic
         }
@@ -119,16 +119,16 @@ CellPopup {
         ColorAnimation {
             target: overlay
             property: "color"
-            from: Colors.transparent(Colors.fgDim,0)
-            to: Colors.fgDim
+            from: Colors.transparent(Colors.fgBase,0)
+            to: Colors.fgBase
             duration: 0
             easing.type: Easing.OutCubic
         }
         ColorAnimation {
             target: overlay
             property: "color"
-            from: Colors.fgDim
-            to: Colors.transparent(Colors.fgDim,0)
+            from: Colors.fgBase
+            to: Colors.transparent(Colors.fgBase,0)
             duration: 300
             easing.type: Easing.OutCubic
         }
@@ -392,7 +392,7 @@ CellPopup {
 
         Timer {
             id: drag_delay
-            running: mouse.buttonDown == "L" || mouse.buttonDown == "SL" 
+            running: mouse.buttonDown == "L" || mouse.buttonDown == "SL"
             repeat: true
             interval: SettingsInfo.frameTime*1000
             onTriggered: {

@@ -1,4 +1,4 @@
-pragma ComponentBehavior: Bound 
+pragma ComponentBehavior: Bound
 
 import qs.config
 import qs.modules
@@ -7,7 +7,6 @@ import QtQuick.Layouts
 import QtQuick
 
 Item {
-
     id: root
 
     property int h: 5
@@ -58,16 +57,17 @@ Item {
                 visible: root.type.arrow > 0
                 text: {
                     switch (root.type.arrow) {
-                        case 1: return "↑"; 
-                        case 2: return "▲"; 
+                    case 1:
+                        return "↑";
+                    case 2:
+                        return "▲";
                     }
-                    return ""
+                    return "";
                 }
                 color: root.progress > 0 ? root.color : root.bg
             }
 
             Cells {
-
                 id: scroll
 
                 w: 1
@@ -91,34 +91,43 @@ Item {
 
                             text: {
                                 switch (root.type.bg) {
-                                    case 1: return "│"; 
-                                    case 2: return "┃"; 
-                                    case 3: return "║"; 
+                                case 1:
+                                    return "│";
+                                case 2:
+                                    return "┃";
+                                case 3:
+                                    return "║";
                                 }
                             }
 
                             color: root.bg
-
                         }
-
                     }
-
                 }
 
                 Cells {
-
                     id: thumb
 
                     visible: root.contentH > root.h
 
                     w: 1
-                    h: root.toScale ? Math.min(Math.round((root.h/root.contentH)*scroll.h),root.h) : root.thumbH
+                    h: root.toScale ? Math.min(Math.max(Math.round((root.h / root.contentH) * scroll.h), 1), root.h) : root.thumbH
 
-                    Behavior on h {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
+                    Behavior on h {
+                        NumberAnimation {
+                            duration: 200
+                            easing.type: Easing.OutCubic
+                        }
+                    }
 
-                    property real progress: root.progress*(scroll.h-h)
+                    property real progress: root.progress * (scroll.h - h)
 
-                    Behavior on progress {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
+                    Behavior on progress {
+                        NumberAnimation {
+                            duration: 200
+                            easing.type: Easing.OutCubic
+                        }
+                    }
 
                     y: Cell.h(Math.round(progress))
 
@@ -140,34 +149,33 @@ Item {
 
                                 text: {
                                     switch (root.type.fg) {
-                                        case 1: return "┃"; 
-                                        case 2: return "●"; 
+                                    case 1:
+                                        return "┃";
+                                    case 2:
+                                        return "●";
                                     }
                                 }
 
                                 color: root.color
-
                             }
-
                         }
-
                     }
                 }
-
             }
 
             CellText {
                 visible: root.type.arrow > 0
                 text: {
                     switch (root.type.arrow) {
-                        case 1: return "↓"; 
-                        case 2: return "▼"; 
+                    case 1:
+                        return "↓";
+                    case 2:
+                        return "▼";
                     }
-                    return ""
+                    return "";
                 }
                 color: root.progress < 1 && root.contentH > root.h ? root.color : root.bg
             }
-
         }
 
         MouseControl {
@@ -176,21 +184,18 @@ Item {
 
             anchors.fill: parent
 
-            onPressed: (button) => {
+            onPressed: button => {
                 if (button == "L") {
-                    const progress = Math.min(Math.max(mouseY-thumb.implicitHeight/2,0),scroll.implicitHeight - thumb.implicitHeight)/(scroll.implicitHeight - thumb.implicitHeight)
-                    root.adjusted(progress)
+                    const progress = Math.min(Math.max(mouseY - thumb.implicitHeight / 2, 0), scroll.implicitHeight - thumb.implicitHeight) / (scroll.implicitHeight - thumb.implicitHeight);
+                    root.adjusted(progress);
                 }
             }
             onMoved: {
                 if (buttonDown == "L") {
-                    const progress = Math.min(Math.max(mouseY-thumb.implicitHeight/2,0),scroll.implicitHeight - thumb.implicitHeight)/(scroll.implicitHeight - thumb.implicitHeight)
-                    root.adjusted(progress)
+                    const progress = Math.min(Math.max(mouseY - thumb.implicitHeight / 2, 0), scroll.implicitHeight - thumb.implicitHeight) / (scroll.implicitHeight - thumb.implicitHeight);
+                    root.adjusted(progress);
                 }
             }
-
         }
-
     }
-
 }

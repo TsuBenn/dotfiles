@@ -4,6 +4,7 @@ import os
 os.environ["ESCDELAY"] = "25"
 
 import sys
+import stat
 import shutil
 import curses
 import subprocess
@@ -17,30 +18,11 @@ ENTER_KEYS = (10, 13)
 BACKSPACE_KEYS = (curses.KEY_BACKSPACE, 127, 8)
 QUIT_KEYS = (ord('q'), ESC_KEY)
 
-MENU_LINES = [
-    "┌────────────────────────────────────────┐",
-    "│           MININETRW ACTIONS            │",
-    "├────────────────────────────────────────┤",
-    "│  i / k    : Move Up / Down             │",
-    "│  I / K    : Jump Up/Down 3 Items       │",
-    "│  l / Enter: Open File / Enter Dir      │",
-    "│  j        : Go to Parent Directory     │",
-    "│  f        : Create New File            │",
-    "│  d        : Create New Directory       │",
-    "│  D (S-d)  : Delete File or Directory   │",
-    "│  c / x    : Copy / Cut Selected Item   │",
-    "│  p        : Paste Item Here            │",
-    "│  /        : Real-time Search Filter    │",
-    "│  Space    : Close Action Menu          │",
-    "│  Esc / q  : Exit Explorer              │",
-    "└────────────────────────────────────────┘",
-]
-
 # ─── State ────────────────────────────────────────────────────────────────────
 
 @dataclass
 class ExplorerState:
-    current_dir: str = field(default_factory=os.getcwd)
+    current_dir: str
     selected_idx: int = 0
     scroll_offset: int = 0
     search_query: str = ""
@@ -54,11 +36,44 @@ class ExplorerState:
     status_message: str = ""
     status_type: str = ""  # "success", "error", "info"
     should_quit: bool = False
+    open_payload: Optional[str] = None
 
     def set_status(self, msg: str, type: str = "info"):
         self.status_message = msg
         self.status_type = type
 
+# ─── Permission Helpers ───────────────────────────────────────────────────────
+
+def get_file_permissions(path: str) -> dict:
+    """Returns a dict of bools indicating if the owner has r, w, x permissions."""
+    try:
+        current_mode = os.stat(path).st_mode
+        return {
+            "r": bool(current_mode & stat.S_IRUSR),
+            "w": bool(current_mode & stat.S_IWUSR),
+            "x": bool(current_mode & stat.S_IXUSR)
+        }
+    except Exception:
+        return {"r": False, "w": False, "x": False}
+
+def toggle_permission(path: str, perm_type: str) -> bool:
+    """Toggles a specific owner permission (r, w, or x) using bitwise XOR."""
+    try:
+        current_mode = os.stat(path).st_mode
+        mask_map = {
+            "r": stat.S_IRUSR,
+            "w": stat.S_IWUSR,
+            "x": stat.S_IXUSR
+        }
+        mask = mask_map.get(perm_type)
+        if not mask:
+            return False
+
+        new_mode = current_mode ^ mask
+        os.chmod(path, new_mode)
+        return True
+    except Exception:
+        return False
 
 # ─── Directory Helpers ────────────────────────────────────────────────────────
 
@@ -131,13 +146,10 @@ def read_line_input(stdscr, prompt: str, height: int, width: int) -> Optional[st
 def send_to_tmux(target_pane: str, absolute_path: str):
     try:
         subprocess.run(
-            ["tmux", "send-keys", "-t", target_pane, f":open {absolute_path}", "Enter"],
+            ["tmux", "send-keys", "-t", target_pane, f":o {absolute_path}", "Enter"],
             check=True, capture_output=True, text=True,
         )
-        subprocess.run(
-            ["tmux", "refresh-client", "-t", target_pane],
-            check=True, capture_output=True, text=True,
-        )
+        pass
     except (subprocess.CalledProcessError, FileNotFoundError) as exc:
         print(f"tmux error: {exc}", file=sys.stderr)
 
@@ -154,7 +166,6 @@ def render(stdscr, state: ExplorerState):
     stdscr.attroff(curses.color_pair(4))
 
     # ── Header ──
-    # Display parent icon structure cleanly inside borders
     header = f" 📂 {os.path.basename(state.current_dir) or state.current_dir} "
     safe_addstr(stdscr, 0, 2, header, curses.color_pair(4) | curses.A_BOLD)
 
@@ -176,11 +187,9 @@ def render(stdscr, state: ExplorerState):
         row = i + 2
         actual_idx = state.scroll_offset + i
 
-        # Format names dynamically
         suffix = "/" if is_dir else ""
         display = f" {entry}{suffix} "
 
-        # Color processing logic
         if actual_idx == state.selected_idx:
             attr = curses.color_pair(5) | curses.A_BOLD
         else:
@@ -191,7 +200,6 @@ def render(stdscr, state: ExplorerState):
             else:
                 attr = curses.color_pair(6)
 
-        # Padding adjustment for item line selections
         padded_display = display + " " * (width - len(display) - 3)
         safe_addstr(stdscr, row, 1, padded_display, attr)
 
@@ -211,7 +219,6 @@ def render(stdscr, state: ExplorerState):
 
 
 def render_footer(stdscr, state: ExplorerState, height: int, width: int):
-    # Separator rule line right above bottom text area
     stdscr.attron(curses.color_pair(4))
     stdscr.hline(height - 3, 1, curses.ACS_HLINE, width - 2)
     stdscr.attroff(curses.color_pair(4))
@@ -248,11 +255,11 @@ def render_footer(stdscr, state: ExplorerState, height: int, width: int):
         safe_addstr(stdscr, height - 2, 2, f"[{status}: {fname}] Press p to paste | Space: Menu", attr)
     else:
         safe_addstr(stdscr, height - 2, 2,
-                     "Space: Menu | /: Search | f/d: New | c/x/p: Copy/Cut/Paste | Esc: Quit",
+                     "Space: Menu | /: Search | f/d: New | m: Perms | c/x/p: Copy/Cut/Paste | Esc: Quit",
                      curses.A_DIM)
 
 
-# Replace the old MENU_LINES array with this structured list of tuples
+# Menu components updated to include the permissions shortcut
 MENU_ITEMS = [
     ("i / k", "Move Up / Down"),
     ("I / K", "Jump Up/Down 3 Items"),
@@ -260,6 +267,7 @@ MENU_ITEMS = [
     ("j", "Go to Parent Directory"),
     ("f", "Create New File"),
     ("d", "Create New Directory"),
+    ("m", "Toggle Owner Permissions"),
     ("D (S-d)", "Delete File or Directory"),
     ("c / x", "Copy / Cut Selected Item"),
     ("p", "Paste Item Here"),
@@ -269,40 +277,73 @@ MENU_ITEMS = [
 ]
 
 def render_menu(stdscr, height: int, width: int):
-    # Calculate dimensions dynamically based on content padding
     menu_h = len(MENU_ITEMS) + 4
     menu_w = 46
     start_y = max(0, (height - menu_h) // 2)
     start_x = max(0, (width - menu_w) // 2)
 
-    # 1. Create a sub-window to cleanly contain the menu overlay
     menu_win = stdscr.subwin(menu_h, menu_w, start_y, start_x)
     menu_win.erase()
 
-    # 2. Draw styled borders for the modal box
     menu_win.attron(curses.color_pair(4) | curses.A_BOLD)
     menu_win.border()
     menu_win.attroff(curses.color_pair(4) | curses.A_BOLD)
 
-    # 3. Draw Centered Header Accent
     title = " MININETRW ACTIONS "
     title_x = max(1, (menu_w - len(title)) // 2)
     menu_win.addstr(0, title_x, title, curses.color_pair(4) | curses.A_BOLD)
 
-    # 4. Render Layout Rows
     for idx, (key_bind, description) in enumerate(MENU_ITEMS):
         row = idx + 2
-
-        # Left column: Action Keybinds (Highlighted in Cyan/Selected color profile or Yellow)
         menu_win.addstr(row, 3, f"{key_bind:>10}", curses.color_pair(3) | curses.A_BOLD)
-
-        # Divider element
         menu_win.addstr(row, 14, " │ ", curses.color_pair(4) | curses.A_DIM)
-
-        # Right column: Descriptions (Standard text)
         menu_win.addstr(row, 17, f"{description:<26}", curses.A_NORMAL)
 
     menu_win.refresh()
+
+
+def render_permission_menu(stdscr, filepath: str, height: int, width: int):
+    """Renders a styled layout block modal to toggle standard UNIX file owner scopes."""
+    menu_h = 9
+    menu_w = 46
+    start_y = max(0, (height - menu_h) // 2)
+    start_x = max(0, (width - menu_w) // 2)
+
+    perm_win = stdscr.subwin(menu_h, menu_w, start_y, start_x)
+    perm_win.keypad(True)
+
+    while True:
+        perms = get_file_permissions(filepath)
+        filename = os.path.basename(filepath)
+
+        perm_win.erase()
+        perm_win.attron(curses.color_pair(4) | curses.A_BOLD)
+        perm_win.border()
+        perm_win.attroff(curses.color_pair(4) | curses.A_BOLD)
+
+        title = f" PERMISSIONS: {filename[:25]} "
+        title_x = max(1, (menu_w - len(title)) // 2)
+        perm_win.addstr(0, title_x, title, curses.color_pair(4) | curses.A_BOLD)
+
+        # Render current execution state selections
+        perm_win.addstr(2, 6, f"[ {'✓' if perms['r'] else ' '} ]   (r) Owner Read", curses.A_NORMAL)
+        perm_win.addstr(3, 6, f"[ {'✓' if perms['w'] else ' '} ]   (w) Owner Write", curses.A_NORMAL)
+        perm_win.addstr(4, 6, f"[ {'✓' if perms['x'] else ' '} ]   (x) Owner Execute", curses.A_NORMAL)
+
+        perm_win.hline(6, 1, curses.ACS_HLINE, menu_w - 2, curses.color_pair(4) | curses.A_DIM)
+        footer_text = "Press [r, w, x] to toggle | Esc/q to exit"
+        perm_win.addstr(7, max(1, (menu_w - len(footer_text)) // 2), footer_text, curses.A_DIM)
+        perm_win.refresh()
+
+        ch = perm_win.getch()
+        if ch in (ord('r'), ord('R')):
+            toggle_permission(filepath, "r")
+        elif ch in (ord('w'), ord('W')):
+            toggle_permission(filepath, "w")
+        elif ch in (ord('x'), ord('X')):
+            toggle_permission(filepath, "x")
+        elif ch in (ord('q'), ord('Q'), ESC_KEY, *ENTER_KEYS):
+            break
 
 # ─── Input Handlers ───────────────────────────────────────────────────────────
 
@@ -352,15 +393,35 @@ def handle_normal_input(stdscr, key: int, state: ExplorerState,
     elif key == ord('K'):
         state.selected_idx = min(state.selected_idx + 3, len(state.entries) - 1)
     elif key in (ord('j'), curses.KEY_LEFT):
-        parent = os.path.dirname(state.current_dir)
+        old_dir = state.current_dir
+        parent = os.path.dirname(old_dir)
+
+        # Guard: If we're already at root, don't do anything
+        if old_dir == parent:
+            return
+
+        # Target the parent directory and drop the search filter
         state.current_dir = parent if parent else "/"
-        state.selected_idx = 0
         state.search_query = ""
-        state.needs_refresh = True
+
+        # Force an immediate directory read to locate the folder we just left
+        state.all_entries = list_directory(state.current_dir)
+        state.entries = filter_entries(state.all_entries, state.search_query)
+        state.needs_refresh = False  # Main loop won't need to re-read now
+
+        # Match the old folder name and update the selection index
+        old_name = os.path.basename(old_dir)
+        state.selected_idx = 0  # Fallback to top if not found for some reason
+        for idx, (name, is_dir) in enumerate(state.entries):
+            if is_dir and name == old_name:
+                state.selected_idx = idx
+                break
     elif key in (ord('l'),) + ENTER_KEYS:
         _handle_open(state, target_pane)
     elif key in (ord('f'), ord('d')):
         _handle_create(stdscr, key, state, height, width)
+    elif key == ord('m'):
+        _handle_permissions(stdscr, state, height, width)
     elif key == ord('D'):
         _handle_delete(stdscr, state, height, width)
     elif key in (ord('c'), ord('x')):
@@ -386,10 +447,8 @@ def _handle_open(state: ExplorerState, target_pane: str):
         state.search_query = ""
         state.needs_refresh = True
     else:
-        curses.endwin()
-        send_to_tmux(target_pane, os.path.abspath(next_path))
-        sys.exit(0)
-
+        state.open_payload = os.path.abspath(next_path)
+        state.should_quit = True
 
 def _handle_create(stdscr, key: int, state: ExplorerState, height: int, width: int):
     prompt = ("New File: " if key == ord('f') else "New Dir: ")
@@ -413,6 +472,17 @@ def _handle_create(stdscr, key: int, state: ExplorerState, height: int, width: i
         state.set_status(f"Already exists: {item_name}", "error")
     except OSError as exc:
         state.set_status(f"Error: {exc}", "error")
+
+
+def _handle_permissions(stdscr, state: ExplorerState, height: int, width: int):
+    if not state.entries:
+        return
+    target, _ = state.entries[state.selected_idx]
+    if target.startswith("["):
+        return
+
+    target_path = os.path.join(state.current_dir, target)
+    render_permission_menu(stdscr, target_path, height, width)
 
 
 def _handle_delete(stdscr, state: ExplorerState, height: int, width: int):
@@ -547,7 +617,7 @@ def _handle_paste(stdscr, state: ExplorerState, height: int, width: int):
 
 # ─── Main Loop ────────────────────────────────────────────────────────────────
 
-def run_explorer(stdscr, target_pane: str):
+def run_explorer(stdscr, target_pane: str, start_dir: str):
     curses.start_color()
     curses.use_default_colors()  # Clean transparency handling
 
@@ -562,7 +632,7 @@ def run_explorer(stdscr, target_pane: str):
     curses.curs_set(0)
     stdscr.keypad(True)
 
-    state = ExplorerState()
+    state = ExplorerState(current_dir=start_dir)
 
     while not state.should_quit:
         if state.needs_refresh:
@@ -589,25 +659,49 @@ def run_explorer(stdscr, target_pane: str):
         else:
             handle_normal_input(stdscr, key, state, target_pane, height, width)
 
+    return state.open_payload
 
 # ─── Entry Point ──────────────────────────────────────────────────────────────
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: mininetrw.py <target_tmux_pane>", file=sys.stderr)
+        print("Usage: mininetrw.py <target_tmux_pane> [current_buffer_path]", file=sys.stderr)
         sys.exit(1)
 
     pane_id = sys.argv[1]
 
+    # Resolve starting directory from the second argument if provided
+    start_dir = os.getcwd()
+    if len(sys.argv) >= 3 and sys.argv[2]:
+        raw_path = sys.argv[2]
+
+        # Guard against typical Helix scratch or empty buffer strings
+        if raw_path not in ("", "*scratch*", "[No Name]", "New file"):
+            # Expand ~ if present, then resolve relative elements safely
+            expanded_path = os.path.expanduser(raw_path)
+            provided_path = os.path.abspath(expanded_path)
+
+            if os.path.isdir(provided_path):
+                start_dir = provided_path
+            else:
+                # If it's a file path, extract its parent directory
+                start_dir = os.path.dirname(provided_path)
+
+    chosen_file = None
+
     try:
-        curses.wrapper(run_explorer, pane_id)
+        chosen_file = curses.wrapper(run_explorer, pane_id, start_dir)
     except KeyboardInterrupt:
-        pass
+        sys.exit(0)
     except Exception as exc:
         curses.endwin()
         print(f"Fatal error: {exc}", file=sys.stderr)
         sys.exit(1)
 
+    if chosen_file:
+        send_to_tmux(pane_id, chosen_file)
+
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()

@@ -26,7 +26,7 @@ CellPopup {
         }
     }
 
-    escapeToClose: true
+    escapeToClose: false
 
     function getNextCopyNumber(array, baseString) {
         let maxCounter = 0;
@@ -62,7 +62,7 @@ CellPopup {
                 }
                 color.selected = Math.max(color.selected - 1, 0);
                 if (color.selected - list.offset / 2 < 0) {
-                    list.offset = Math.floor(color.selected / 13) * 26;
+                    list.scrollToView(color.selected);
                 }
             }
         },
@@ -81,7 +81,7 @@ CellPopup {
                 }
                 color.selected = Math.min(color.selected + 1, root.result.length - 1);
                 if (color.selected - list.offset / 2 >= 13) {
-                    list.offset = Math.floor(color.selected / 13) * 26;
+                    list.scrollToView(color.selected);
                 }
             }
         },
@@ -91,14 +91,28 @@ CellPopup {
                 if (color.color_picker) {
                     color.color_picker = false;
                 } else if (color.edit) {
-                    if (TextFieldManager.active) {
-                        TextFieldManager.unFocusAll();
-                    } else {
-                        color.toggleEdit();
-                    }
+                    color.toggleEdit();
                 } else {
                     root.close();
                 }
+            }
+        },
+        {
+            binds: "Ctrl+E",
+            action: () => {
+                if (root.result[color.selected] != "auto" && !Colors.colors[root.result[color.selected]][SettingsInfo.lightMode ? "light" : "dark"].generated) {
+                    color.toggleEdit();
+                }
+            }
+        },
+        {
+            binds: "Ctrl+F",
+            action: () => {
+                id_textfield.unFocus();
+                name_textfield.unFocus();
+                des_textfield.unFocus();
+                textfield.set("");
+                Colors.fork(root.result[color.selected], color.edit ? id_textfield.text : "");
             }
         },
     ]
@@ -110,12 +124,17 @@ CellPopup {
         resetList();
     }
 
+    onResultChanged: {
+        // console.log(root.result);
+        color.selected = Math.min(color.selected, result.length);
+    }
+
     function resetList() {
         color.selected = result.findIndex(item => item == Colors.current);
         if (color.selected == -1) {
             color.selected = 0;
         }
-        list.offset = Math.floor(color.selected / 13) * 26;
+        list.scrollToView(color.selected);
     }
 
     ColumnLayout {
@@ -136,7 +155,7 @@ CellPopup {
 
                 property var buffer: Colors.dummy
 
-                property var source: Colors.colors[root.result[selected]]?.[SettingsInfo.lightMode ? "light" : "dark"] ?? Colors.dummy
+                property var source: Colors.colors[root.result[selected]]?.[SettingsInfo.lightMode ? "light" : "dark"] ?? Colors.colors[root.colors[selected]]?.[SettingsInfo.lightMode ? "light" : "dark"] ?? Colors.dummy
 
                 property var color: source
 
@@ -202,15 +221,6 @@ CellPopup {
                         color.color_picker = false;
                     }
                 }
-
-                Component.onCompleted: {
-                    root.resultChanged.connect(() => {
-                        root.resetList();
-                    });
-                    Colors.currentChanged.connect(() => {
-                    //root.resetList()
-                    });
-                }
             }
 
             CellBox {
@@ -224,88 +234,64 @@ CellPopup {
 
                     spacing: 0
 
-                    CellScrollView {
+                    CellScrollList {
                         id: list
 
                         w: 36
                         h: color.h - 2
 
-                        onContentHChanged: {
-                            root.resetList();
-                        }
+                        model: root.result
 
-                        onMaxOffsetChanged: {
-                            list.snapBack();
-                            root.resetList();
-                        }
+                        itemH: 2
 
-                        source: ColumnLayout {
+                        delegate: Cells {
+                            id: theme
 
-                            spacing: 0
+                            property int index
+                            property string modelData
 
-                            Repeater {
+                            property var source: Colors.colors[modelData]?.[SettingsInfo.lightMode ? "light" : "dark"] ?? Colors.dummy
 
-                                model: root.result
+                            property bool isCurrent: modelData == Colors.current
+                            property bool selected: color.selected == index
 
-                                delegate: Loader {
-                                    id: list_loader
+                            w: list.contentW
+                            h: 2
 
-                                    active: list.visible
+                            color: color.edit ? Colors.bgSurface : (isCurrent ? theme.source.accentStrong : (theme_mouse.hovered ? theme.source.bgOverlay : Colors.bgSurface))
 
-                                    required property int index
-                                    required property string modelData
+                            ColumnLayout {
 
-                                    sourceComponent: Cells {
-                                        id: theme
+                                spacing: 0
 
-                                        property int index: list_loader.index
-                                        property string modelData: list_loader.modelData
+                                CellText {
 
-                                        property var source: Colors.colors[modelData]?.[SettingsInfo.lightMode ? "light" : "dark"] ?? Colors.dummy
+                                    Layout.leftMargin: Cell.w(1)
 
-                                        property bool isCurrent: modelData == Colors.current
-                                        property bool selected: color.selected == index
+                                    text: (theme.selected ? "> " : "  ") + theme.source.name
+                                    color: color.edit ? Colors.fgSubtle : (theme.isCurrent ? theme.source.onAccent : (theme_mouse.hovered ? theme.source.fgBase : Colors.fgBase))
+                                    font: theme.isCurrent ? Cell.fontB : Cell.font
 
-                                        w: list.contentW
-                                        h: 2
+                                    preferedW: theme.w - 4
+                                }
 
-                                        color: color.edit ? Colors.bgSurface : (isCurrent ? theme.source.accentStrong : (theme_mouse.hovered ? theme.source.bgOverlay : Colors.bgSurface))
+                                CellSeparator {
+                                    w: theme.w
+                                    type: 0
+                                    color: Colors.bgOverlay
+                                }
+                            }
 
-                                        ColumnLayout {
+                            MouseControl {
+                                id: theme_mouse
 
-                                            spacing: 0
+                                visible: !color.edit
 
-                                            CellText {
+                                anchors.fill: parent
 
-                                                Layout.leftMargin: Cell.w(1)
-
-                                                text: (theme.selected ? "> " : "  ") + theme.source.name
-                                                color: color.edit ? Colors.fgSubtle : (theme.isCurrent ? theme.source.onAccent : (theme_mouse.hovered ? theme.source.fgBase : Colors.fgBase))
-                                                font: theme.isCurrent ? Cell.fontB : Cell.font
-
-                                                preferedW: theme.w - 4
-                                            }
-
-                                            CellSeparator {
-                                                w: theme.w
-                                                type: 0
-                                                color: Colors.bgOverlay
-                                            }
-                                        }
-
-                                        MouseControl {
-                                            id: theme_mouse
-
-                                            visible: !color.edit
-
-                                            anchors.fill: parent
-
-                                            onReleased: button => {
-                                                if (button == "L") {
-                                                    color.selected = theme.index;
-                                                }
-                                            }
-                                        }
+                                onReleased: button => {
+                                    if (button == "L") {
+                                        color.selected = theme.index;
                                     }
                                 }
                             }
@@ -341,6 +327,7 @@ CellPopup {
                                 placeholder: "Search themes"
 
                                 focusOnVisible: !color.edit
+                                escapeToUnFocus: false
 
                                 onVisibleChanged: {
                                     if (visible) {
@@ -363,9 +350,10 @@ CellPopup {
                                 onTextInput: input => {
                                     if (input == "") {
                                         root.result = root.colors;
+                                        root.resetList();
                                     } else {
                                         root.result = root.colors.filter(item => {
-                                            return Colors.colors[item][SettingsInfo.lightMode ? "light" : "dark"].name.toLowerCase().includes(input.toLowerCase()) || Colors.colors[item][SettingsInfo.lightMode ? "light" : "dark"].description.toLowerCase().includes(input.toLowerCase()) || item.includes(input.toLowerCase());
+                                            return Colors.colors[item][SettingsInfo.lightMode ? "light" : "dark"].name.toLowerCase().includes(textfield.text.toLowerCase()) || Colors.colors[item][SettingsInfo.lightMode ? "light" : "dark"].description.toLowerCase().includes(textfield.text.toLowerCase()) || item.includes(textfield.text.toLowerCase());
                                         });
                                     }
                                 }
@@ -887,7 +875,7 @@ CellPopup {
                                 }
                             }
 
-                            CellScrollView {
+                            CellScrollList {
 
                                 visible: preview_tab.selected == 1
 
@@ -899,239 +887,233 @@ CellPopup {
                                     bg_color: color.color.bgOverlay
                                 }
 
-                                source: ColumnLayout {
+                                itemH: 2
+
+                                model: ["bgBase", "bgSurface", "bgOverlay", "fgBase", "onAccent", "fgDim", "fgSubtle", "accentStrong", "accentDim", "secondary", "info", "success", "warning", "danger", "borderActive", "borderInactive",]
+
+                                delegate: ColumnLayout {
+                                    id: palette
+
+                                    property string modelData
+
+                                    property bool selected: color_picker.key == modelData
+
+                                    Component.onCompleted: {
+                                        color.unFocusPalette.connect(() => {
+                                            palette_hex?.unFocus();
+                                            palette_hue?.unFocus();
+                                            palette_saturation?.unFocus();
+                                            palette_value?.unFocus();
+                                        });
+                                    }
 
                                     spacing: 0
 
-                                    Repeater {
+                                    RowLayout {
+                                        id: palette_label
 
-                                        model: ["bgBase", "bgSurface", "bgOverlay", "fgBase", "onAccent", "fgDim", "fgSubtle", "accentStrong", "accentDim", "secondary", "info", "success", "warning", "danger", "borderActive", "borderInactive",]
+                                        spacing: Cell.w(1)
 
-                                        delegate: ColumnLayout {
-                                            id: palette
+                                        CellText {
+                                            text: palette.modelData.toString().padEnd(14, " ")
+                                            color: palette.selected ? color.color.secondary : color.color.fgDim
+                                            font: palette.selected ? Cell.fontB : Cell.font
+                                        }
 
-                                            required property string modelData
+                                        Cells {
+                                            w: 7
+                                            h: 1
+                                            color: color.color[palette.modelData] ?? "#000000"
+                                        }
 
-                                            property bool selected: color_picker.key == modelData
+                                        Cells {
 
-                                            Component.onCompleted: {
-                                                color.unFocusPalette.connect(() => {
-                                                    palette_hex?.unFocus();
-                                                    palette_hue?.unFocus();
-                                                    palette_saturation?.unFocus();
-                                                    palette_value?.unFocus();
-                                                });
-                                            }
+                                            w: 8
+                                            h: 1
+                                            color: color.color.bgOverlay
 
-                                            spacing: 0
+                                            CellTextField {
+                                                id: palette_hex
 
-                                            RowLayout {
-                                                id: palette_label
+                                                w: parent.w
+                                                h: parent.h
+                                                scroll: false
 
-                                                spacing: Cell.w(1)
+                                                disabled: !color.edit
 
-                                                CellText {
-                                                    text: palette.modelData.toString().padEnd(14, " ")
-                                                    color: palette.selected ? color.color.secondary : color.color.fgDim
-                                                    font: palette.selected ? Cell.fontB : Cell.font
-                                                }
+                                                placeholder: "#RRGGBB"
+                                                focusOnVisible: false
+                                                unfocusOnEntered: true
 
-                                                Cells {
-                                                    w: 7
-                                                    h: 1
-                                                    color: color.color[palette.modelData] ?? "#000000"
-                                                }
+                                                autoApply: true
+                                                bindText: color.color[palette.modelData]?.toString().toUpperCase() ?? ""
 
-                                                Cells {
+                                                color: color.color.fgBase
+                                                invert: color.color.bgSurface
+                                                visual_color: color.color.secondary
+                                                disabled_color: color.color.fgSubtle
 
-                                                    w: 8
-                                                    h: 1
-                                                    color: color.color.bgOverlay
-
-                                                    CellTextField {
-                                                        id: palette_hex
-
-                                                        w: parent.w
-                                                        h: parent.h
-                                                        scroll: false
-
-                                                        disabled: !color.edit
-
-                                                        placeholder: "#RRGGBB"
-                                                        focusOnVisible: false
-                                                        unfocusOnEntered: true
-
-                                                        autoApply: true
-                                                        bindText: color.color[palette.modelData]?.toString().toUpperCase() ?? ""
-
-                                                        color: color.color.fgBase
-                                                        invert: color.color.bgSurface
-                                                        visual_color: color.color.secondary
-                                                        disabled_color: color.color.fgSubtle
-
-                                                        onEntered: input => {
-                                                            if (/^#?([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/.test(input)) {
-                                                                color.setBuffer(palette.modelData, Qt.color(input.startsWith("#") ? input : "#" + input).toString());
-                                                            }
-                                                        }
+                                                onEntered: input => {
+                                                    if (/^#?([a-fA-F0-9]{3}|[a-fA-F0-9]{6})$/.test(input)) {
+                                                        color.setBuffer(palette.modelData, Qt.color(input.startsWith("#") ? input : "#" + input).toString());
                                                     }
                                                 }
-
-                                                Cells {
-
-                                                    w: 5
-                                                    h: 1
-                                                    color: color.color.bgOverlay
-
-                                                    CellTextField {
-                                                        id: palette_hue
-
-                                                        w: parent.w
-                                                        h: parent.h
-                                                        scroll: false
-
-                                                        disabled: !color.edit
-
-                                                        placeholder: "Hue"
-                                                        focusOnVisible: false
-                                                        unfocusOnEntered: true
-
-                                                        autoApply: true
-                                                        bindText: Math.max(Math.round(Qt.color(color.color[palette.modelData] || "#000000").hsvHue * 360), 0)
-
-                                                        color: color.color.fgBase
-                                                        invert: color.color.bgSurface
-                                                        visual_color: color.color.secondary
-                                                        disabled_color: color.color.fgSubtle
-
-                                                        onEntered: input => {
-                                                            input = parseInt(input);
-                                                            if (input >= 0 && input <= 360) {
-                                                                color.setBuffer(palette.modelData, Qt.hsva(input / 360, palette_saturation.text / 100, palette_value.text / 100, 1).toString());
-                                                            }
-                                                        }
-
-                                                        Keys.onPressed: event => {
-                                                            if (event.key == Qt.Key_Tab) {
-                                                                palette_hue.unFocus();
-                                                                palette_saturation.grabFocus();
-                                                                event.accepted = true;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-
-                                                Cells {
-
-                                                    w: 5
-                                                    h: 1
-                                                    color: color.color.bgOverlay
-
-                                                    CellTextField {
-                                                        id: palette_saturation
-
-                                                        w: parent.w
-                                                        h: parent.h
-                                                        scroll: false
-
-                                                        disabled: !color.edit
-
-                                                        placeholder: "Sat"
-                                                        focusOnVisible: false
-                                                        unfocusOnEntered: true
-
-                                                        autoApply: true
-                                                        bindText: (Qt.color(color.color[palette.modelData] || "#000000").hsvSaturation * 100).toFixed(1)
-
-                                                        color: color.color.fgBase
-                                                        invert: color.color.bgSurface
-                                                        visual_color: color.color.secondary
-                                                        disabled_color: color.color.fgSubtle
-
-                                                        onEntered: input => {
-                                                            input = parseFloat(input);
-                                                            if (input >= 0 && input <= 100) {
-                                                                color.setBuffer(palette.modelData, Qt.hsva(palette_hue.text / 360, input / 100, palette_value.text / 100, 1).toString());
-                                                            }
-                                                        }
-
-                                                        Keys.onPressed: event => {
-                                                            if (event.key == Qt.Key_Tab) {
-                                                                palette_saturation.unFocus();
-                                                                palette_value.grabFocus();
-                                                                event.accepted = true;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-
-                                                Cells {
-
-                                                    w: 5
-                                                    h: 1
-                                                    color: color.color.bgOverlay
-
-                                                    CellTextField {
-                                                        id: palette_value
-
-                                                        w: parent.w
-                                                        h: parent.h
-                                                        scroll: false
-
-                                                        disabled: !color.edit
-
-                                                        placeholder: "Val"
-                                                        focusOnVisible: false
-                                                        unfocusOnEntered: true
-
-                                                        autoApply: true
-                                                        bindText: (Qt.color(color.color[palette.modelData] || "#000000").hsvValue * 100).toFixed(1)
-
-                                                        color: color.color.fgBase
-                                                        invert: color.color.bgSurface
-                                                        visual_color: color.color.secondary
-                                                        disabled_color: color.color.fgSubtle
-
-                                                        onEntered: input => {
-                                                            input = parseFloat(input);
-                                                            if (input >= 0 && input <= 100) {
-                                                                color.setBuffer(palette.modelData, Qt.hsva(palette_hue.text / 360, palette_saturation.text / 100, input / 100, 1).toString());
-                                                            }
-                                                        }
-
-                                                        Keys.onPressed: event => {
-                                                            if (event.key == Qt.Key_Tab) {
-                                                                palette_value.unFocus();
-                                                                palette_hex.grabFocus();
-                                                                event.accepted = true;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-
-                                                CellButton {
-
-                                                    text: "…"
-
-                                                    clickable: color.edit
-
-                                                    color: clickable ? (palette.selected ? color.color.accentStrong : color.color.bgOverlay) : color.color.bgOverlay
-                                                    fg: clickable ? (palette.selected ? color.color.onAccent : color.color.fgBase) : color.color.fgSubtle
-
-                                                    onReleased: button => {
-                                                        if (button == "L") {
-                                                            color.openPicker(palette.modelData);
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            CellSeparator {
-                                                w: Cell.wCount(palette_label.implicitWidth)
-                                                color: color.color.bgOverlay
-                                                bg: "transparent"
                                             }
                                         }
+
+                                        Cells {
+
+                                            w: 5
+                                            h: 1
+                                            color: color.color.bgOverlay
+
+                                            CellTextField {
+                                                id: palette_hue
+
+                                                w: parent.w
+                                                h: parent.h
+                                                scroll: false
+
+                                                disabled: !color.edit
+
+                                                placeholder: "Hue"
+                                                focusOnVisible: false
+                                                unfocusOnEntered: true
+
+                                                autoApply: true
+                                                bindText: Math.max(Math.round(Qt.color(color.color[palette.modelData] || "#000000").hsvHue * 360), 0)
+
+                                                color: color.color.fgBase
+                                                invert: color.color.bgSurface
+                                                visual_color: color.color.secondary
+                                                disabled_color: color.color.fgSubtle
+
+                                                onEntered: input => {
+                                                    input = parseInt(input);
+                                                    if (input >= 0 && input <= 360) {
+                                                        color.setBuffer(palette.modelData, Qt.hsva(input / 360, palette_saturation.text / 100, palette_value.text / 100, 1).toString());
+                                                    }
+                                                }
+
+                                                Keys.onPressed: event => {
+                                                    if (event.key == Qt.Key_Tab) {
+                                                        palette_hue.unFocus();
+                                                        palette_saturation.grabFocus();
+                                                        event.accepted = true;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        Cells {
+
+                                            w: 5
+                                            h: 1
+                                            color: color.color.bgOverlay
+
+                                            CellTextField {
+                                                id: palette_saturation
+
+                                                w: parent.w
+                                                h: parent.h
+                                                scroll: false
+
+                                                disabled: !color.edit
+
+                                                placeholder: "Sat"
+                                                focusOnVisible: false
+                                                unfocusOnEntered: true
+
+                                                autoApply: true
+                                                bindText: (Qt.color(color.color[palette.modelData] || "#000000").hsvSaturation * 100).toFixed(1)
+
+                                                color: color.color.fgBase
+                                                invert: color.color.bgSurface
+                                                visual_color: color.color.secondary
+                                                disabled_color: color.color.fgSubtle
+
+                                                onEntered: input => {
+                                                    input = parseFloat(input);
+                                                    if (input >= 0 && input <= 100) {
+                                                        color.setBuffer(palette.modelData, Qt.hsva(palette_hue.text / 360, input / 100, palette_value.text / 100, 1).toString());
+                                                    }
+                                                }
+
+                                                Keys.onPressed: event => {
+                                                    if (event.key == Qt.Key_Tab) {
+                                                        palette_saturation.unFocus();
+                                                        palette_value.grabFocus();
+                                                        event.accepted = true;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        Cells {
+
+                                            w: 5
+                                            h: 1
+                                            color: color.color.bgOverlay
+
+                                            CellTextField {
+                                                id: palette_value
+
+                                                w: parent.w
+                                                h: parent.h
+                                                scroll: false
+
+                                                disabled: !color.edit
+
+                                                placeholder: "Val"
+                                                focusOnVisible: false
+                                                unfocusOnEntered: true
+
+                                                autoApply: true
+                                                bindText: (Qt.color(color.color[palette.modelData] || "#000000").hsvValue * 100).toFixed(1)
+
+                                                color: color.color.fgBase
+                                                invert: color.color.bgSurface
+                                                visual_color: color.color.secondary
+                                                disabled_color: color.color.fgSubtle
+
+                                                onEntered: input => {
+                                                    input = parseFloat(input);
+                                                    if (input >= 0 && input <= 100) {
+                                                        color.setBuffer(palette.modelData, Qt.hsva(palette_hue.text / 360, palette_saturation.text / 100, input / 100, 1).toString());
+                                                    }
+                                                }
+
+                                                Keys.onPressed: event => {
+                                                    if (event.key == Qt.Key_Tab) {
+                                                        palette_value.unFocus();
+                                                        palette_hex.grabFocus();
+                                                        event.accepted = true;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        CellButton {
+
+                                            text: "…"
+
+                                            clickable: color.edit
+
+                                            color: clickable ? (palette.selected ? color.color.accentStrong : color.color.bgOverlay) : color.color.bgOverlay
+                                            fg: clickable ? (palette.selected ? color.color.onAccent : color.color.fgBase) : color.color.fgSubtle
+
+                                            onReleased: button => {
+                                                if (button == "L") {
+                                                    color.openPicker(palette.modelData);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    CellSeparator {
+                                        w: Cell.wCount(palette_label.implicitWidth)
+                                        color: color.color.bgOverlay
+                                        bg: "transparent"
                                     }
                                 }
                             }
@@ -1315,7 +1297,7 @@ CellPopup {
 
                                 text: "Edit"
 
-                                property bool available: root.result[color.selected] != "auto" && !SettingsInfo.lightMode
+                                property bool available: root.result[color.selected] != "auto" && !Colors.colors[root.result[color.selected]][SettingsInfo.lightMode ? "light" : "dark"].generated
 
                                 property Component hint: ColumnLayout {
                                     spacing: 0
@@ -1335,7 +1317,7 @@ CellPopup {
                                     }
                                     CellText {
                                         visible: root.result[color.selected] == "auto"
-                                        text: "<i>This palette has been auto generated base on current the wallpaper.</i>"
+                                        text: "<i>This palette has been auto generated based on current the wallpaper.</i>"
                                         preferedW: 41
                                         wrap: true
                                         color: Colors.fgDim
@@ -1390,7 +1372,7 @@ CellPopup {
                     visible: root.result.length == 0
 
                     x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
-                    y: Cell.centerHCell(implicitHeight, parent.implicitHeight) - Cell.h(1)
+                    y: Cell.centerHCell(implicitHeight, parent.implicitHeight)
 
                     text: "Nothing to see here"
                     color: Colors.secondary
@@ -1410,19 +1392,31 @@ CellPopup {
 
             RowLayout {
 
-                x: Cell.centerWCell(implicitWidth, root.implicitWidth)
+                x: Cell.centerWCell(implicitWidth, root.implicitWidth) - Cell.w(1)
 
                 spacing: Cell.w(2)
 
                 CellKeyHint {
-                    key: "↑/↓"
-                    hint: "Up/Down"
+                    key: "↑/S-Tab"
+                    hint: "Up"
                 }
 
                 CellKeyHint {
                     visible: !TextFieldManager.active || textfield.focus
-                    key: "Tab"
-                    hint: "Switch tab"
+                    key: "↓/Tab"
+                    hint: "Down"
+                }
+
+                CellKeyHint {
+                    visible: !color.edit
+                    key: "C-E"
+                    hint: "Edit"
+                    disabled: root.result[color.selected] == "auto" || Colors.colors[root.result[color.selected]][SettingsInfo.lightMode ? "light" : "dark"].generated
+                }
+
+                CellKeyHint {
+                    key: "C-F"
+                    hint: "Fork"
                 }
 
                 CellKeyHint {
@@ -1434,11 +1428,11 @@ CellPopup {
                 CellKeyHint {
                     key: "Esc"
                     hint: if (color.edit && !color.color_picker && !TextFieldManager.active) {
-                        return "Exit editing mode";
+                        return "Cancel";
                     } else if (color.color_picker && !TextFieldManager.active) {
-                        return "Exit color picker";
+                        return "Return";
                     } else if (TextFieldManager.active && !textfield.focus) {
-                        return "Exit textfield";
+                        return "Return";
                     } else
                         return "Exit"
                 }

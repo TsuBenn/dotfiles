@@ -17,170 +17,140 @@ ColumnLayout {
 
     spacing: 0
 
-    CellScrollView {
+    CellScrollList {
 
         id: list
 
         w: root.box.contentW
         h: 21
 
-        source: ColumnLayout {
+        itemH: 3
 
-            spacing: 0
+        model: AudioInfo.streams
+
+        delegate: Cells {
+
+            id: stream
+
+            property int index
+            property var modelData
+
+            property int id : modelData.id ?? 0
+            property real volume : modelData.volume ?? 0
+            property string app : modelData.app ?? ""
+            property string name : modelData.name ?? ""
+            property string binary : modelData.binary ?? ""
+
+            w: list.contentW
+            h: 3
+
+            color: "transparent"
 
             ColumnLayout {
 
                 spacing: 0
 
-                Timer {
-                    id: thetimer
-                    interval: 200
-                }
+                RowLayout {
 
-                Repeater {
+                    spacing: 0
 
-                    id: repeater
-
-                    Component.onCompleted: {
-                        AudioInfo.statusUpdated.connect(()=>{
-                            if (thetimer.running) return
-                            repeater.model = AudioInfo.streams.length
-                        })
+                    CellText {
+                        text: " "
                     }
 
-                    model: AudioInfo.streams.length
+                    CellIcon {
+                        id: icon
+                        w: 5
+                        icon: [stream.binary,stream.app,stream.name]
+                        hideOnFail: false
+                    }
 
-                    delegate: Cells {
+                    CellText {
 
-                        id: stream
+                        visible: !root.minimal
 
-                        required property int index
+                        text: " "
+                    }
 
-                        property int id : AudioInfo.streams[index]?.id ?? 0
-                        property real volume : AudioInfo.streams[index]?.volume ?? 0
-                        property string app : AudioInfo.streams[index]?.app ?? ""
-                        property string name : AudioInfo.streams[index]?.name ?? ""
-                        property string binary : AudioInfo.streams[index]?.binary ?? ""
+                    ColumnLayout {
 
-                        w: list.contentW
-                        h: 3
+                        spacing: 0
 
-                        color: "transparent"
+                        CellText {
 
-                        ColumnLayout {
+                            text: stream.app.toLowerCase() == stream.name.toLowerCase() ? `${stream.app}` : `${stream.app} | ${stream.name}`
+
+                            preferedW: stream.w - 3 - 5*icon.success
+
+                        }
+
+                        RowLayout {
 
                             spacing: 0
 
-                            RowLayout {
-
-                                spacing: 0
-
-                                CellText {
-                                    text: " "
-                                }
-
-                                CellIcon {
-                                    id: icon
-                                    w: 5
-                                    icon: [stream.binary,stream.app,stream.name]
-                                    hideOnFail: false
-                                }
-
-                                CellText {
-
-                                    visible: !root.minimal
-
-                                    text: " "
-                                }
-
-                                ColumnLayout {
-
-                                    spacing: 0
-
-                                    CellText {
-
-                                        text: stream.app.toLowerCase() == stream.name.toLowerCase() ? `${stream.app}` : `${stream.app} | ${stream.name}`
-
-                                        preferedW: stream.w - 3 - 5*icon.success
-
-                                    }
-
-                                    RowLayout {
-
-                                        spacing: 0
-
-                                        CellText {
-                                            text: "["
-                                            color: Colors.fgSubtle
-                                        }
-
-                                        CellProgressSquare {
-
-                                            w: stream.w - 5 - 5*icon.success + root.minimal*1
-                                            percent: stream.volume
-                                            interactive: true
-                                            adjustOnHold: false
-                                            syncDelay: 5000
-                                            adjustOnPress: true
-                                            cellInterval: 2
-
-                                            fg: Colors.accentStrong
-
-                                            onAdjusted: (percent) => {
-                                                AudioInfo.setVolume(stream.id, percent)
-                                                thetimer.restart()
-                                            }
-
-                                        }
-
-                                        CellText {
-                                            text: "]"
-                                            color: Colors.fgSubtle
-                                        }
-
-                                    }
-
-
-                                }
+                            CellText {
+                                text: "["
+                                color: Colors.fgSubtle
                             }
 
-                            CellSeparator {
+                            CellProgressSquare {
 
-                                padding: 1
-                                w: stream.w
-                                type: root.minimal ? 0 : 2
-                                color: Colors.bgOverlay
+                                w: stream.w - 5 - 5*icon.success + root.minimal*1
+                                percent: stream.volume
+                                interactive: true
+                                adjustOnHold: false
+                                syncDelay: 5000
+                                adjustOnPress: true
+                                cellInterval: 2
+
+                                fg: Colors.accentStrong
+
+                                onAdjusted: (percent) => {
+                                    AudioInfo.setVolume(stream.id, percent)
+                                }
 
                             }
+
+                            CellText {
+                                text: "]"
+                                color: Colors.fgSubtle
+                            }
+
                         }
 
-
                     }
-
                 }
 
+                CellSeparator {
+
+                    padding: 1
+                    w: stream.w
+                    type: root.minimal ? 0 : 2
+                    color: Colors.bgOverlay
+
+                }
             }
 
-            ColumnLayout {
-
-                spacing: 0
-
-                CellText {
-                    visible: AudioInfo.streams.length == 0
-                    text: " "
-                }
-
-                CellText {
-                    visible: AudioInfo.streams.length == 0
-                    Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(list.contentW))
-
-                    text: "No media"
-                    color: Colors.fgSubtle
-                }
-
-            }
         }
 
+        ColumnLayout {
+
+            spacing: 0
+
+            CellText {
+                visible: AudioInfo.streams.length == 0
+                text: " "
+            }
+
+            CellText {
+                visible: AudioInfo.streams.length == 0
+                Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(list.contentW))
+
+                text: "No media"
+                color: Colors.fgSubtle
+            }
+
+        }
 
     }
 

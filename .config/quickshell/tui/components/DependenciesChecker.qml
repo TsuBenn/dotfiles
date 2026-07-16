@@ -10,34 +10,33 @@ import QtQuick
 import QtQuick.Layouts
 
 FloatingWindow {
-
     id: root
 
-    visible: !SettingsInfo.quickStart
+    visible: !SettingsInfo.quickStart && !SettingsInfo.dependenciesChecked
 
     title: "tsubenn_tui_qs_depcheck"
 
     onClosed: {
-        SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/quit.sh"])
+        SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/quit.sh"]);
     }
 
     implicitWidth: Cell.w(box.w) + Cell.w(1)
     implicitHeight: Cell.h(box.h) + Cell.h(1)
 
-    maximumSize: Qt.size(implicitWidth,implicitHeight)
-    minimumSize: Qt.size(implicitWidth,implicitHeight)
+    maximumSize: Qt.size(implicitWidth, implicitHeight)
+    minimumSize: Qt.size(implicitWidth, implicitHeight)
 
     color: Colors.bgSurface
 
     Component.onCompleted: {
-        init_delay.start()
+        init_delay.start();
     }
 
     Timer {
         id: init_delay
-        interval: 200*!SettingsInfo.quickStart
+        interval: 200 * !SettingsInfo.quickStart
         onTriggered: {
-            checker.running = true
+            checker.running = true;
         }
     }
 
@@ -45,7 +44,8 @@ FloatingWindow {
         id: success_timer
         ScriptAction {
             script: {
-                if (SettingsInfo.quickStart) SettingsInfo.dependenciesChecked = true
+                if (SettingsInfo.quickStart)
+                    SettingsInfo.dependenciesChecked = true;
             }
         }
         PauseAnimation {
@@ -53,7 +53,7 @@ FloatingWindow {
         }
         ScriptAction {
             script: {
-                status.text = "Starting config..."
+                status.text = "Starting config...";
             }
         }
         PauseAnimation {
@@ -61,8 +61,9 @@ FloatingWindow {
         }
         ScriptAction {
             script: {
-                SettingsInfo.dependenciesChecked = true
-                if (SettingsInfo.sfx) AudioInfo.playSound("wow", 1)
+                SettingsInfo.dependenciesChecked = true;
+                if (SettingsInfo.sfx)
+                    AudioInfo.playSound("wow", 1);
             }
         }
     }
@@ -71,9 +72,9 @@ FloatingWindow {
         id: unstable_timer
         ScriptAction {
             script: {
-                status.color = Colors.danger
-                status.font = Cell.fontBB
-                status.text = "Don't say I didn't warn ya..."
+                status.color = Colors.danger;
+                status.font = Cell.fontBB;
+                status.text = "Don't say I didn't warn ya...";
             }
         }
         PauseAnimation {
@@ -81,24 +82,21 @@ FloatingWindow {
         }
         ScriptAction {
             script: {
-                SettingsInfo.dependenciesChecked = true
+                SettingsInfo.dependenciesChecked = true;
             }
         }
     }
 
     Item {
-
         id: dep
 
         property var results: []
-
     }
 
     Cells {
+        id: box
 
         anchors.centerIn: parent
-
-        id: box
 
         w: 60
         h: 20
@@ -127,7 +125,6 @@ FloatingWindow {
                     style: 2
                     color: Colors.accentStrong
                 }
-
             }
 
             CellSeparator {
@@ -136,111 +133,77 @@ FloatingWindow {
                 color: Colors.accentStrong
             }
 
-            CellScrollView {
-
+            CellScrollList {
                 id: list
 
                 w: box.w
                 h: box.h - 3 - Cell.hCount(footer.implicitHeight)
 
-                source: ColumnLayout {
+                model: [...dep.results]
 
-                    spacing: 0
+                delegate: Cells {
+                    id: dependency
 
-                    Repeater {
+                    property var modelData
+                    property string status: modelData.status
+                    property string manager: modelData.manager
+                    property string pkg: modelData.pkg
+                    property string name: modelData.name
+                    property string description: modelData.description
 
-                        model: dep.results
+                    color: "transparent"
 
-                        delegate: Loader {
+                    w: list.contentW
+                    h: Cell.hCount(layout.implicitHeight)
 
-                            id: dep_loader
+                    ColumnLayout {
+                        id: layout
 
-                            required property var modelData
+                        spacing: 0
 
-                            property string stat: modelData.status
-                            required property string manager
-                            required property string pkg
-                            required property string name
-                            required property string description
-
-                            active: true
-
-                            sourceComponent: Cells {
-
-                                id: dependency
-
-                                property string status      : dep_loader.stat
-                                property string manager     : dep_loader.manager    
-                                property string pkg         : dep_loader.pkg        
-                                property string name        : dep_loader.name       
-                                property string description : dep_loader.description
-
-                                color: "transparent"
-
-                                w: list.contentW
-                                h: Cell.hCount(layout.implicitHeight)
-
-                                ColumnLayout {
-
-                                    id: layout
-
-                                    spacing: 0
-
-                                    CellText {
-                                        text: ` ${dependency.name} (${dependency.status == "START" ? "CHECKING" : dependency.status})`
-                                        preferedW: list.contentW
-                                        font: Cell.fontB
-                                        color: {
-                                            if (dependency.status == "OK") {
-                                                return Colors.success
-                                            } else if (dependency.status == "MISSING") {
-                                                return Colors.danger
-                                            }
-                                            return Colors.fgBase
-                                        }
-                                    }
-
-                                    Loader {
-
-                                        active: dependency.status == "MISSING"
-
-                                        sourceComponent: ColumnLayout {
-
-                                            spacing: 0
-
-                                            CellText {
-                                                text: ` Install by: ${dependency.manager == "pacman" ? "sudo pacman -S" : "yay -S"} ${dependency.pkg}`
-                                                preferedW: list.contentW
-                                                color: Colors.fgDim
-                                            }
-
-                                            CellText {
-                                                text: " " + dependency.description
-                                                wrap: true
-                                                preferedW: list.contentW
-                                                color: Colors.fgSubtle
-                                            }
-
-                                        }
-
-
-                                    }
-
-
-                                    CellSeparator {
-                                        w: list.contentW
-                                        type: 2
-                                        color: Colors.bgOverlay
-                                    }
-
+                        CellText {
+                            text: ` ${dependency.name} (${dependency.status == "START" ? "CHECKING" : dependency.status})`
+                            preferedW: list.contentW
+                            font: Cell.fontB
+                            color: {
+                                if (dependency.status == "OK") {
+                                    return Colors.success;
+                                } else if (dependency.status == "MISSING") {
+                                    return Colors.danger;
                                 }
-
+                                return Colors.fgBase;
                             }
-
                         }
 
-                    }
+                        Loader {
 
+                            active: dependency.status == "MISSING"
+
+                            sourceComponent: ColumnLayout {
+
+                                spacing: 0
+
+                                CellText {
+                                    text: ` Install by: ${dependency.manager == "pacman" ? "sudo pacman -S" : "yay -S"} ${dependency.pkg}`
+                                    preferedW: list.contentW
+                                    color: Colors.fgDim
+                                }
+
+                                CellText {
+                                    text: " " + dependency.description
+                                    wrap: true
+                                    preferedW: list.contentW
+                                    color: Colors.fgSubtle
+                                }
+                            }
+                        }
+
+                        CellSeparator {
+                            w: list.contentW
+                            type: 2
+                            color: Colors.bgOverlay
+                        }
+                    }
                 }
             }
 
@@ -251,7 +214,6 @@ FloatingWindow {
             }
 
             ColumnLayout {
-
                 id: footer
 
                 property bool error: false
@@ -260,8 +222,8 @@ FloatingWindow {
                 spacing: 0
 
                 CellText {
-                    Layout.leftMargin: Cell.w(1)
                     id: status
+                    Layout.leftMargin: Cell.w(1)
                     text: "Initializing dependencies check..."
                     color: Colors.info
                     preferedW: box.w - 2
@@ -291,14 +253,13 @@ FloatingWindow {
                         clickable: !footer.unstable
 
                         color: footer.unstable ? Colors.bgOverlay : [Colors.accentStrong, Colors.bgOverlay]
-                        fg:  footer.unstable ? Colors.fgSubtle : [Colors.onAccent, Colors.fgBase]
+                        fg: footer.unstable ? Colors.fgSubtle : [Colors.onAccent, Colors.fgBase]
 
-                        onReleased: (button) => {
+                        onReleased: button => {
                             if (button == "L") {
-                                SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/revive.sh"])
+                                SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/revive.sh"]);
                             }
                         }
-
                     }
 
                     CellButton {
@@ -308,15 +269,14 @@ FloatingWindow {
                         clickable: !footer.unstable
 
                         color: footer.unstable ? Colors.bgOverlay : [Colors.bgOverlay, Colors.fgBase]
-                        fg:  footer.unstable ? Colors.fgSubtle : [Colors.fgBase, Colors.bgSurface]
+                        fg: footer.unstable ? Colors.fgSubtle : [Colors.fgBase, Colors.bgSurface]
 
-                        onReleased: (button) => {
+                        onReleased: button => {
                             if (button == "L") {
-                                footer.unstable = true
-                                unstable_timer.start()
+                                footer.unstable = true;
+                                unstable_timer.start();
                             }
                         }
-
                     }
 
                     CellButton {
@@ -326,104 +286,92 @@ FloatingWindow {
                         clickable: !footer.unstable
 
                         color: footer.unstable ? Colors.bgOverlay : [Colors.bgOverlay, Colors.fgBase]
-                        fg:  footer.unstable ? Colors.fgSubtle : [Colors.fgBase, Colors.bgSurface]
+                        fg: footer.unstable ? Colors.fgSubtle : [Colors.fgBase, Colors.bgSurface]
 
-
-                        onReleased: (button) => {
+                        onReleased: button => {
                             if (button == "L") {
-                                SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/quit.sh"])
+                                SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/quit.sh"]);
                             }
                         }
-
                     }
-
                 }
-
             }
-
         }
-
     }
 
     Process {
-
         id: checker
 
-        command: [SystemInfo.configdir + (SettingsInfo.quickStart ? "/scripts/quick_dependencies_checker.sh" : "/scripts/dependencies_checker.sh" )]
+        command: [SystemInfo.configdir + (SettingsInfo.quickStart ? "/scripts/quick_dependencies_checker.sh" : "/scripts/dependencies_checker.sh")]
 
         stdout: SplitParser {
-            onRead: (text) => {
-
+            onRead: text => {
                 if (text == "TERMINATE") {
+                    const missing_pkg = dep.results.filter(item => item.status == "MISSING");
 
-                    const missing_pkg = dep.results.filter(item => item.status == "MISSING")
+                    let result = "Dependencies checked... ";
 
-                    let result = "Dependencies checked... "
+                    title.text = `Checked dependencies (${missing_pkg.length > 0 ? "ERROR" : "SUCCESS"})`;
+                    title.color = missing_pkg.length > 0 ? Colors.danger : Colors.success;
 
-                    title.text = `Checked dependencies (${missing_pkg.length > 0 ? "ERROR" : "SUCCESS"})`
-                    title.color = missing_pkg.length > 0 ? Colors.danger : Colors.success
-
-                    title_loading.visible = false
+                    title_loading.visible = false;
 
                     if (missing_pkg.length == 0) {
-                        result += "No missing packages found!"
-                        status.color = Colors.success
-                    }
-                    else {
-                        footer.error = true
-                        root.visible = true
-                        result += `${missing_pkg.length} package${missing_pkg.length > 1 ? "s" : ""} missing`
-                        status.color = Colors.danger
+                        result += "No missing packages found!";
+                        status.color = Colors.success;
+                    } else {
+                        footer.error = true;
+                        root.visible = true;
+                        result += `${missing_pkg.length} package${missing_pkg.length > 1 ? "s" : ""} missing`;
+                        status.color = Colors.danger;
                     }
 
-                    status.text = result
+                    status.text = result;
 
                     const missingItems = dep.results.filter(item => item.status === "MISSING");
                     const otherItems = dep.results.filter(item => item.status !== "MISSING");
 
                     dep.results = [...missingItems, ...otherItems];
-                    dep.resultsChanged()
+                    dep.resultsChanged();
 
-                    if (missing_pkg.length == 0) success_timer.start()
+                    if (missing_pkg.length == 0)
+                        success_timer.start();
 
-                    return
+                    return;
                 }
 
-                const data = text.split(":")
+                const data = text.split(":");
 
                 const object = {
-                    "status"      : data[0],
-                    "manager"     : data[1],
-                    "pkg"         : data[2],
-                    "name"        : data[3],
-                    "description" : data[4],
-                }
+                    "status": data[0],
+                    "manager": data[1],
+                    "pkg": data[2],
+                    "name": data[3],
+                    "description": data[4]
+                };
 
                 if (object.status == "START") {
-                    status.text = `Checking: Looking for package ${object.pkg}...`
-                    status.color = Colors.fgBase
+                    status.text = `Checking: Looking for package ${object.pkg}...`;
+                    status.color = Colors.fgBase;
                 } else if (object.status == "OK") {
-                    status.text = `Success: Found package ${object.pkg}!`
-                    status.color = Colors.success
+                    status.text = `Success: Found package ${object.pkg}!`;
+                    status.color = Colors.success;
                 } else if (object.status == "MISSING") {
-                    status.text = `Error: Cannot find package ${object.pkg}!`
-                    status.color = Colors.danger
+                    status.text = `Error: Cannot find package ${object.pkg}!`;
+                    status.color = Colors.danger;
                 }
 
                 for (const i in dep.results) {
                     if (dep.results[i].pkg == object.pkg) {
-                        dep.results[i] = object
-                        dep.resultsChanged()
-                        return
-                    } 
+                        dep.results[i] = object;
+                        dep.resultsChanged();
+                        return;
+                    }
                 }
 
-                dep.results.unshift(object)
-                dep.resultsChanged()
-
+                dep.results.unshift(object);
+                dep.resultsChanged();
             }
         }
-
     }
-
 }
