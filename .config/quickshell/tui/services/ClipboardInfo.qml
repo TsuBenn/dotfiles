@@ -21,12 +21,18 @@ Singleton {
 
         stdout: SplitParser {
             splitMarker: ""
-            onRead: text => {
-                console.log(text);
-                let data = JSON.parse(text);
-                data.reverse();
-                root.clipboard = data;
+            onRead: {
+                reader.reload();
             }
         }
+    }
+
+    FileView {
+        id: reader
+        path: SystemInfo.homedir + "/.cache/clip-watcher/clipboard_history.json"
+        onLoaded: {
+            root.clipboard = JSON.parse(text());
+        }
+        // onFileChanged: reload()
     }
 }

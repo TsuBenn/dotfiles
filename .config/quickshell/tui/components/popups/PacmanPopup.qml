@@ -92,10 +92,10 @@ CellPopup {
                     root.selected_pkg = list.datas[list.offset].name;
                     return;
                 }
-                if (root.selected_index + 1 >= list.h) {
+                if (root.selected_index + 1 >= list.offset + list.h) {
                     list.offset += list.h;
                 }
-                root.selected_pkg = list.datas[list.offset + (root.selected_index + list.h + 1) % list.h].name;
+                root.selected_pkg = list.datas[root.selected_index + 1].name;
             }
         },
         {
@@ -470,7 +470,7 @@ CellPopup {
                 }
 
                 // Package list
-                CellScrollView {
+                CellScrollList {
                     id: list
 
                     visible: (root.pacmanState == "idle" || root.pacmanState == "prepare" || root.pacmanState == "pre-flight" || root.pacmanState == "authentication" || root.pacmanState == "checking_updates" || root.pacmanState == "fetching")
@@ -486,128 +486,117 @@ CellPopup {
 
                     property var datas: PacmanInfo.search_results
 
-                    virtualH: true
+                    itemH: 1
 
-                    contentH: Cell.h(1) * datas.length
+                    model: list.datas
 
-                    source: ColumnLayout {
+                    delegate: Loader {
+                        id: pkg_loader
 
-                        spacing: 0
+                        property int index
+                        property var modelData
 
-                        Repeater {
+                        sourceComponent: Cells {
+                            id: pkg
 
-                            model: list.h
+                            property int index: pkg_loader.index
+                            property var modelData: pkg_loader.modelData
 
-                            delegate: Loader {
-                                id: pkg_loader
+                            property string name: modelData.name
+                            property string repo: modelData.repository
+                            property string version: modelData.version
+                            property string latest_version: modelData.latest_version
+                            property bool installed: modelData.installed
+                            property bool update_available: pkg.latest_version != ""
 
-                                required property int index
+                            property bool selected: root.selected_pkg == name && !disabled
 
-                                active: list.datas[list.offset + index] ?? false
+                            property bool disabled: PacmanInfo.fetching || PacmanInfo.checking_updates
 
-                                sourceComponent: Cells {
-                                    id: pkg
+                            w: list.contentW
+                            h: 1
 
-                                    property int index: pkg_loader.index
-                                    property var modelData: list.datas[list.offset + index]
+                            color: (selected ? Colors.accentStrong : (pkg_mouse.hovered ? Colors.bgOverlay : "transparent"))
 
-                                    property string name: modelData.name
-                                    property string repo: modelData.repository
-                                    property string version: modelData.version
-                                    property string latest_version: modelData.latest_version
-                                    property bool installed: modelData.installed
-                                    property bool update_available: pkg.latest_version != ""
+                            onSelectedChanged: {
+                                if (selected) {
+                                    root.selected_index = index;
+                                    if (PacmanInfo.search_mode == 4) {
+                                        let inputs = search_field.text.split(" ");
+                                        inputs[inputs.length - 1] = pkg.name;
+                                        search_field.set(inputs.join(" "));
+                                    }
+                                }
+                            }
 
-                                    property bool selected: root.selected_pkg == name && !disabled
+                            RowLayout {
 
-                                    property bool disabled: PacmanInfo.fetching || PacmanInfo.checking_updates
+                                x: Cell.w(1)
 
-                                    w: list.contentW
-                                    h: 1
+                                spacing: Cell.w(1)
 
-                                    color: (selected ? Colors.accentStrong : (pkg_mouse.hovered ? Colors.bgOverlay : "transparent"))
+                                CellText {
+                                    text: pkg.installed ? "*" : " "
+                                    color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.success)
+                                    font: Cell.fontB
+                                }
 
-                                    onSelectedChanged: {
-                                        if (selected) {
-                                            root.selected_index = index;
-                                            if (PacmanInfo.search_mode == 4) {
-                                                let inputs = search_field.text.split(" ");
-                                                inputs[inputs.length - 1] = pkg.name;
-                                                search_field.set(inputs.join(" "));
-                                            }
-                                        }
+                                CellText {
+                                    text: pkg.name
+                                    preferedW: list.contentW - 5 - pkg_version.w
+                                    color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgBase)
+                                }
+
+                                RowLayout {
+                                    id: pkg_version
+
+                                    property int w: Cell.wCount(implicitWidth)
+
+                                    spacing: 0
+
+                                    CellText {
+                                        text: "("
+                                        color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
                                     }
 
-                                    RowLayout {
-
-                                        x: Cell.w(1)
-
-                                        spacing: Cell.w(1)
-
-                                        CellText {
-                                            text: pkg.installed ? "*" : " "
-                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.success)
-                                            font: Cell.fontB
-                                        }
-
-                                        CellText {
-                                            text: pkg.name
-                                            preferedW: list.contentW - 5 - pkg_version.w
-                                            color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgBase)
-                                        }
-
-                                        RowLayout {
-                                            id: pkg_version
-
-                                            property int w: Cell.wCount(implicitWidth)
-
-                                            spacing: 0
-
-                                            CellText {
-                                                text: "("
-                                                color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
-                                            }
-
-                                            CellText {
-                                                text: pkg.version
-                                                color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : (pkg.update_available ? Colors.blend(Colors.fgSubtle, Colors.danger, 0.5) : Colors.fgSubtle))
-                                            }
-
-                                            CellText {
-                                                visible: pkg.update_available
-                                                text: " -> "
-                                                color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
-                                            }
-
-                                            CellText {
-                                                visible: pkg.update_available
-                                                text: pkg.latest_version
-                                                color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.success)
-                                            }
-
-                                            CellText {
-                                                text: ")"
-                                                color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
-                                            }
-                                        }
+                                    CellText {
+                                        text: pkg.version
+                                        color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : (pkg.update_available ? Colors.blend(Colors.fgSubtle, Colors.danger, 0.5) : Colors.fgSubtle))
                                     }
 
-                                    MouseControl {
-                                        id: pkg_mouse
+                                    CellText {
+                                        visible: pkg.update_available
+                                        text: " -> "
+                                        color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
+                                    }
 
-                                        visible: !parent.disabled
+                                    CellText {
+                                        visible: pkg.update_available
+                                        text: pkg.latest_version
+                                        color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.success)
+                                    }
 
-                                        anchors.fill: parent
+                                    CellText {
+                                        text: ")"
+                                        color: pkg.disabled ? Colors.fgSubtle : (pkg.selected ? Colors.onAccent : Colors.fgSubtle)
+                                    }
+                                }
+                            }
 
-                                        onReleased: button => {
-                                            if (button == "L") {
-                                                if (root.selected_pkg == pkg.name) {
-                                                    root.selected_pkg = "";
-                                                    return;
-                                                }
-                                                root.selected_pkg = pkg.name;
-                                            }
+                            MouseControl {
+                                id: pkg_mouse
+
+                                visible: !parent.disabled
+
+                                anchors.fill: parent
+
+                                onReleased: button => {
+                                    if (button == "L") {
+                                        if (root.selected_pkg == pkg.name) {
+                                            root.selected_pkg = "";
+                                            return;
                                         }
+                                        root.selected_pkg = pkg.name;
                                     }
                                 }
                             }
@@ -644,6 +633,7 @@ CellPopup {
 
                                 escapeToUnFocus: false
                                 unfocusOnEntered: false
+                                canEnter: false
 
                                 disabled: (root.pacmanState == "prepare" || root.pacmanState == "pre-flight" || root.pacmanState == "running" || root.pacmanState == "authentication" || root.pacmanState == "success")
 
@@ -1103,64 +1093,58 @@ CellPopup {
                                     color: Colors.accentStrong
                                 }
 
-                                CellScrollView {
+                                CellScrollList {
                                     id: selected_pkg_list
 
                                     w: install_queue.w - 1
                                     h: box.contentH - list.h - 12
 
-                                    source: ColumnLayout {
+                                    itemH: 1
 
-                                        spacing: 0
+                                    model: [...root.multi_selected_pkg]
 
-                                        Repeater {
+                                    delegate: Cells {
+                                        id: selected_pkgs
 
-                                            model: root.multi_selected_pkg
+                                        property string modelData
 
-                                            delegate: Cells {
-                                                id: selected_pkgs
+                                        w: selected_pkg_list.contentW
+                                        h: 1
 
-                                                required property string modelData
+                                        color: selected_pkgs_mouse.hovered ? Colors.bgOverlay : "transparent"
 
-                                                w: selected_pkg_list.contentW
-                                                h: 1
+                                        RowLayout {
 
-                                                color: selected_pkgs_mouse.hovered ? Colors.bgOverlay : "transparent"
+                                            x: Cell.w(1)
 
-                                                RowLayout {
+                                            spacing: Cell.w(1)
 
-                                                    x: Cell.w(1)
+                                            CellText {
 
-                                                    spacing: Cell.w(1)
+                                                text: selected_pkgs.modelData
+                                                preferedW: selected_pkg_list.contentW - selected_pkgs_version.text.length - 3
+                                            }
 
-                                                    CellText {
+                                            CellText {
+                                                id: selected_pkgs_version
 
-                                                        text: selected_pkgs.modelData
-                                                        preferedW: selected_pkg_list.contentW - selected_pkgs_version.text.length - 3
-                                                    }
-
-                                                    CellText {
-                                                        id: selected_pkgs_version
-
-                                                        // O(1) lookup via getPackage()
-                                                        text: {
-                                                            let p = PacmanInfo.getPackage(selected_pkgs.modelData);
-                                                            return p ? p.version : "";
-                                                        }
-                                                        color: Colors.fgSubtle
-                                                    }
+                                                // O(1) lookup via getPackage()
+                                                text: {
+                                                    let p = PacmanInfo.getPackage(selected_pkgs.modelData);
+                                                    return p ? p.version : "";
                                                 }
+                                                color: Colors.fgSubtle
+                                            }
+                                        }
 
-                                                MouseControl {
-                                                    id: selected_pkgs_mouse
+                                        MouseControl {
+                                            id: selected_pkgs_mouse
 
-                                                    anchors.fill: parent
+                                            anchors.fill: parent
 
-                                                    onReleased: button => {
-                                                        if (button == "L") {
-                                                            root.selected_pkg = selected_pkgs.modelData;
-                                                        }
-                                                    }
+                                            onReleased: button => {
+                                                if (button == "L") {
+                                                    root.selected_pkg = selected_pkgs.modelData;
                                                 }
                                             }
                                         }

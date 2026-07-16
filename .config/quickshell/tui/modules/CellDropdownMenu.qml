@@ -7,7 +7,6 @@ import QtQuick.Layouts
 import QtQuick
 
 CellPopup {
-
     id: root
 
     visible: DropdownManager.visible
@@ -31,14 +30,12 @@ CellPopup {
     property color active_invert: DropdownManager.active_invert
 
     Cells {
-
         id: menu
 
         w: root.w
         h: root.scrollbar ? root.h : root.items.length
 
-        CellScrollView {
-
+        CellScrollList {
             id: list
 
             w: root.w
@@ -46,62 +43,49 @@ CellPopup {
 
             scrollbar.enabled: root.scrollbar
 
+            scrollbar.bg_color: Colors.fgSubtle
+
+            itemH: 1
+
             color: root.color
 
-            source: ColumnLayout {
+            model: root.items
 
-                id: layout
+            delegate: Cells {
+                id: button
 
-                spacing: 0
+                property int index
+                property var modelData
 
-                Repeater {
+                property bool active: root.selected == index
 
-                    model: root.items
+                w: list.contentW
+                h: 1
 
-                    delegate: Cells {
+                color: active ? root.active : (!mouse.hovered ? root.color : Qt.lighter(root.color, 1.5))
 
-                        id: button
-
-                        required property int index
-                        required property var modelData
-
-                        property bool active: root.selected == index
-
-                        w: list.contentW
-                        h: 1
-
-                        color: active ? root.active : (!mouse.hovered ? root.color : Qt.lighter(root.color,1.5))
-
-                        CellText {
-                            id: button_text 
-                            text: " ".repeat(root.padding) + button.modelData.label
-                            preferedW: root.w - root.padding
-                            color: button.active ? root.active_invert : root.fg
-                            font: button.active ? Cell.fontB : Cell.font
-                        }
-
-                        MouseControl {
-                            id: mouse
-                            anchors.fill: parent
-
-                            onReleased: (button) => {
-                                if (button == "L" && hovered) {
-                                    DropdownManager.hide()
-                                    if (root.selected != parent.index) {
-                                        parent.modelData.action()
-                                    }
-                                }
-                            }
-                        }
-
-                    }
-
+                CellText {
+                    id: button_text
+                    text: " ".repeat(root.padding) + button.modelData.label
+                    preferedW: root.w - root.padding
+                    color: button.active ? root.active_invert : root.fg
+                    font: button.active ? Cell.fontB : Cell.font
                 }
 
+                MouseControl {
+                    id: mouse
+                    anchors.fill: parent
+
+                    onReleased: button => {
+                        if (button == "L" && hovered) {
+                            DropdownManager.hide();
+                            if (root.selected != parent.index) {
+                                parent.modelData.action();
+                            }
+                        }
+                    }
+                }
             }
-
         }
-
     }
-
 }

@@ -10,8 +10,8 @@ import QtQuick.Layouts
 CellPopup {
     id: root
 
-    w: Cell.wCount(layout.implicitWidth)
-    h: Cell.hCount(layout.implicitHeight)
+    w: Cell.wCount(layout.implicitWidth) + 4
+    h: Cell.hCount(layout.implicitHeight) + 2
 
     onVisibleChanged: {
         clipboard.selected = 0;
@@ -61,6 +61,8 @@ CellPopup {
     ColumnLayout {
         id: layout
 
+        x: Cell.w(2)
+
         spacing: Cell.h(2)
 
         Item {
@@ -97,14 +99,14 @@ CellPopup {
             id: preview
 
             w: 80
-            h: 20
+            h: 30
 
             header {
                 text: " Preview "
                 offset: Math.round((preview.contentW - header.text.length) / 2)
             }
 
-            CellScrollView {
+            CellScrollList {
                 id: preview_list
 
                 visible: !image_preview.visible
@@ -112,32 +114,39 @@ CellPopup {
                 w: 78
                 h: 18
 
-                source: RowLayout {
+                itemH: 0
 
-                    spacing: Cell.w(1)
+                model: (layout.dedent(ClipboardInfo.clipboard[clipboard.selected]?.data) ?? "").split("\n")
+
+                delegate: RowLayout {
+
+                    property int index
+                    property string modelData
+
+                    spacing: 0
 
                     CellText {
-                        text: ""
+                        text: " "
                     }
 
                     CellText {
                         id: line_num
-
                         Layout.alignment: Qt.AlignTop
-
-                        text: [...Array((ClipboardInfo.clipboard[clipboard.selected]?.data)?.split("\n").length).keys()].map(i => i + 1).join("\n")
+                        text: (parent.index + 1).toString().padStart(preview_list.model.length.toString().length, " ")
                         color: Colors.fgSubtle
+                    }
 
-                        alignRight: true
+                    CellText {
+                        text: " "
                     }
 
                     CellText {
 
                         Layout.alignment: Qt.AlignTop
 
-                        text: layout.dedent(ClipboardInfo.clipboard[clipboard.selected]?.data) ?? ""
-                        preferedW: preview_list.contentW - line_num.w - 2
-                        debug: true
+                        text: parent.modelData ?? ""
+                        preferedW: preview_list.contentW - line_num.w - 3
+                        wrap: true
                     }
                 }
             }
@@ -228,54 +237,76 @@ CellPopup {
         CellBox {
 
             w: 80
-            h: 8
+            h: 9
 
-            CellScrollView {
+            CellText {
+                visible: ClipboardInfo.clipboard.length == 0
+                text: "\n\n\nNothing in the clipboard, yet!"
+                preferedW: parent.contentW
+                centered: true
+                color: Colors.fgSubtle
+            }
+
+            CellScrollList {
                 id: list
 
                 w: 78
-                h: 6
+                h: 7
 
-                source: ColumnLayout {
+                itemH: 1
 
-                    spacing: 0
+                model: ClipboardInfo.clipboard
 
-                    Repeater {
+                delegate: Cells {
+                    id: clip
 
-                        model: ClipboardInfo.clipboard.length
+                    property int index
+                    property var modelData
+                    property bool selected: clip.index == clipboard.selected
 
-                        delegate: Loader {
-                            id: clip
+                    w: list.contentW
+                    h: 1
 
-                            required property int index
-                            property var modelData: ClipboardInfo.clipboard[index]
+                    color: selected ? Colors.accentStrong : "transparent"
 
-                            active: (index >= list.offset && index <= list.offset + 6) && modelData
+                    CellText {
+                        text: (clip.index + 1).toString().padStart(3, " ") + ". " + clip.modelData.value
+                        color: parent.selected ? Colors.onAccent : Colors.fgBase
+                        preferedW: list.contentW - 1
+                    }
 
-                            sourceComponent: Cells {
-
-                                property bool selected: clip.index == clipboard.selected
-
-                                w: list.contentW
-                                h: 1
-
-                                color: selected ? Colors.accentStrong : "transparent"
-
-                                CellText {
-                                    text: (clip.index + 1).toString().padStart(3, " ") + ". " + clip.modelData.value
-                                    color: parent.selected ? Colors.onAccent : Colors.fgBase
-                                    preferedW: list.contentW - 1
-                                }
-
-                                MouseControl {
-                                    anchors.fill: parent
-                                    onPressed: {
-                                        clipboard.selected = clip.index;
-                                    }
-                                }
-                            }
+                    MouseControl {
+                        anchors.fill: parent
+                        onPressed: {
+                            clipboard.selected = clip.index;
                         }
                     }
+                }
+            }
+        }
+
+        CellBox {
+
+            w: 80
+            h: 3
+
+            RowLayout {
+                x: Cell.centerWCell(implicitWidth, parent.width)
+                spacing: Cell.w(2)
+
+                CellKeyHint {
+                    key: "↑/S-Tab"
+                    hint: "Up"
+                }
+
+                CellKeyHint {
+                    key: "↓/Tab"
+                    hint: "Down"
+                }
+
+                CellKeyHint {
+                    key: "Return"
+                    hint: "Copy"
                 }
             }
         }

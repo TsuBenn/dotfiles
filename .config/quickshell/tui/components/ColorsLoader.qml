@@ -10,7 +10,6 @@ import QtQuick
 import QtQuick.Layouts
 
 FloatingWindow {
-
     id: root
 
     visible: processLog.length > 0
@@ -18,22 +17,21 @@ FloatingWindow {
     implicitWidth: Cell.w(box.w) + Cell.w(1)
     implicitHeight: Cell.h(box.h) + Cell.h(1)
 
-    maximumSize: Qt.size(implicitWidth,implicitHeight)
-    minimumSize: Qt.size(implicitWidth,implicitHeight)
+    maximumSize: Qt.size(implicitWidth, implicitHeight)
+    minimumSize: Qt.size(implicitWidth, implicitHeight)
 
     color: Colors.bgSurface
 
     property var processLog: []
 
     onClosed: {
-        SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/quit.sh"])
+        SystemInfo.runDetached(["bash", SystemInfo.configdir + "/scripts/quit.sh"]);
     }
 
     Cells {
+        id: box
 
         anchors.centerIn: parent
-
-        id: box
 
         w: 60
         h: 20
@@ -49,7 +47,6 @@ FloatingWindow {
                 Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
                 text: "Processing color themes"
                 font: Cell.fontB
-
             }
 
             CellSeparator {
@@ -57,8 +54,7 @@ FloatingWindow {
                 bg: "transparent"
             }
 
-            CellScrollView {
-
+            CellScrollList {
                 id: list
 
                 snapToMax: true
@@ -66,55 +62,45 @@ FloatingWindow {
                 w: box.w
                 h: box.h - 4
 
-                source: ColumnLayout {
+                model: [...root.processLog]
 
-                    spacing: 0
+                itemH: 2
 
-                    Repeater {
+                delegate: Cells {
+                    id: item
 
-                        model: root.processLog
+                    property var modelData
 
-                        delegate: Cells {
+                    property string mode: modelData.mode
+                    property string type: modelData.type
+                    property string target: modelData.target
 
-                            id: item
+                    w: list.contentW
+                    h: 2
+                    color: "transparent"
 
-                            required property string mode
-                            required property string type
-                            required property string target
+                    ColumnLayout {
 
-                            w: list.contentW
-                            h: 2
-                            color: "transparent"
+                        spacing: 0
 
-                            ColumnLayout {
-
-                                spacing: 0
-
-                                CellText {
-                                    text: {
-                                        if (item.type == "prewarm") {
-                                            return " Generating palette for " + item.target
-                                        } else {
-                                            return " Loading palette " + item.target
-                                        }
-                                    }
-                                    color: "white"
-                                    preferedW: box.w - 2
+                        CellText {
+                            text: {
+                                if (item.type == "prewarm") {
+                                    return " Generating palette for " + item.target;
+                                } else {
+                                    return " Loading palette " + item.target;
                                 }
-
-                                CellSeparator {
-                                    w: list.contentW
-                                    color: Colors.bgOverlay
-                                    bg: "transparent"
-                                }
-
                             }
-
-
+                            color: "white"
+                            preferedW: box.w - 2
                         }
 
+                        CellSeparator {
+                            w: list.contentW
+                            color: Colors.bgOverlay
+                            bg: "transparent"
+                        }
                     }
-
                 }
             }
 
@@ -125,20 +111,19 @@ FloatingWindow {
 
             CellText {
                 id: status
-                property var log: root.processLog[root.processLog.length-1]
+                property var log: root.processLog[root.processLog.length - 1]
                 text: {
                     if (log?.type == "prewarm") {
-                        return " Generating palette for " + log?.target
+                        return " Generating palette for " + log?.target;
                     } else if (log?.type == "pipeline") {
-                        return " Loading palette " + log?.target
+                        return " Loading palette " + log?.target;
                     } else {
-                        return " Processing..." + log?.target
+                        return " Processing..." + log?.target;
                     }
                 }
                 preferedW: box.w - 2
             }
         }
-
     }
 
     Timer {
@@ -149,22 +134,21 @@ FloatingWindow {
         id: log_finalize
         interval: 50
         onTriggered: {
-            root.processLogChanged()
+            root.processLogChanged();
         }
     }
 
     Timer {
         id: success
-        interval: 1000*(root.processLog.length > 0)
+        interval: 1000 * (root.processLog.length > 0)
         onTriggered: {
-            root.visible = false
-            console.log("Colors loaded successfully!")
-            Colors.init()
+            root.visible = false;
+            console.log("Colors loaded successfully!");
+            Colors.init();
         }
     }
 
     Process {
-
         id: loader
 
         command: ["python", SystemInfo.configdir + `/scripts/color_manager.py`, "--config-dir", SystemInfo.configdir, "--wallpaper-dir", SystemInfo.homedir + WallpaperInfo.cache_path]
@@ -172,35 +156,33 @@ FloatingWindow {
         running: true
 
         onExited: {
-            status.text = " Colors loaded successfully! Resolving dependencies..."
-            success.restart()
+            status.text = " Colors loaded successfully! Resolving dependencies...";
+            success.restart();
         }
 
         stderr: SplitParser {
-            onRead: (text) => {
+            onRead: text => {
                 if (text) {
                     //console.log(text)
                     if (text.startsWith("[prewarm]")) {
-                        const log = text.match(/\[prewarm\]\s+OK:\s+(.*)\s+→\s+(dark|light)/)
+                        const log = text.match(/\[prewarm\]\s+OK:\s+(.*)\s+→\s+(dark|light)/);
                         if (log) {
                             root.processLog.push({
                                 "type": "prewarm",
                                 "mode": log[2],
-                                "target": log[1],
-                            })
+                                "target": log[1]
+                            });
                         }
                     } else if (text.startsWith("[pipeline]")) {
-                        return
+                        return;
                     }
                     if (!log_delay.running) {
-                        root.processLogChanged()
-                        log_delay.restart()
+                        root.processLogChanged();
+                        log_delay.restart();
                     }
-                    log_finalize.restart()
+                    log_finalize.restart();
                 }
             }
         }
-
     }
-
 }

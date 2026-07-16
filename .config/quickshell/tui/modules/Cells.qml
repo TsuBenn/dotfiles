@@ -1,13 +1,12 @@
 pragma ComponentBehavior: Bound
 
-import qs.config 
-import qs.services 
+import qs.config
+import qs.services
 
 import QtQuick.Layouts
 import QtQuick
 
 Item {
-
     id: root
 
     property bool optimizeMemory: SettingsInfo.optimizeMemory
@@ -28,12 +27,12 @@ Item {
 
     onWChanged: {
         if (w < 0) {
-            w = 0
+            w = 0;
         }
     }
     onHChanged: {
         if (h < 0) {
-            h = 0
+            h = 0;
         }
     }
 
@@ -60,33 +59,28 @@ Item {
                     implicitHeight: Cell.h(root.h)
 
                     onPaint: {
-                        var ctx = getContext("2d")
-                        let cw = Cell.w(1)
-                        let ch = Cell.h(1)
+                        var ctx = getContext("2d");
+                        let cw = Cell.w(1);
+                        let ch = Cell.h(1);
 
                         // Cache the lengths to avoid calling functions every iteration
-                        let wLimit = implicitWidth 
-                        let hLimit = implicitHeight
+                        let wLimit = implicitWidth;
+                        let hLimit = implicitHeight;
 
                         for (let i = 0; i < wLimit; i += cw) {
                             for (let j = 0; j < hLimit; j += ch) { // Fixed: j < height and j += ch
 
                                 // Logic: (col_index + row_index) % 2
-                                let col = Math.floor(i / cw)
-                                let row = Math.floor(j / ch)
+                                let col = Math.floor(i / cw);
+                                let row = Math.floor(j / ch);
 
-                                ctx.fillStyle = (col + row) % 2 === 0 ? root.color : root.color2
-                                ctx.fillRect(i, j, cw, ch)
+                                ctx.fillStyle = (col + row) % 2 === 0 ? root.color : root.color2;
+                                ctx.fillRect(i, j, cw, ch);
                             }
                         }
                     }
                 }
-
             }
-
         }
-
     }
-
-
 }

@@ -22,6 +22,7 @@ Item {
     property bool alignRight: false
 
     property bool wrap: false
+    property bool smartWrap: true
 
     property bool lockPure: false
     // Set exclusively by updateText() — no binding, so it doesn't get
@@ -270,57 +271,76 @@ Item {
         const lines = text.split('\n');
         const wrapped = [];
 
-        for (const originalLine of lines) {
-            if (originalLine.length === 0) {
-                wrapped.push('');
-                continue;
-            }
-
-            const tokens = _tokenize(originalLine);
-
-            let current = '';
-            let currentWidth = 0;
-
-            for (const token of tokens) {
-                const tokenWidth = getVisualWidth(token);
-
-                // Handle huge token
-                if (tokenWidth > maxW) {
-                    if (current) {
-                        wrapped.push(current);
-                        current = '';
-                        currentWidth = 0;
-                    }
-
-                    const broken = _breakLongToken(token, maxW);
-
-                    for (let i = 0; i < broken.length; i++) {
-                        const part = broken[i];
-
-                        if (i === broken.length - 1) {
-                            current = part;
-                            currentWidth = getVisualWidth(part);
-                        } else {
-                            wrapped.push(part);
-                        }
-                    }
-
+        if (root.smartWrap) {
+            for (const originalLine of lines) {
+                if (originalLine.length === 0) {
+                    wrapped.push('');
                     continue;
                 }
 
-                // Normal wrapping
-                if (currentWidth + tokenWidth > maxW) {
-                    wrapped.push(current);
-                    // Remove ONLY leading spaces caused by wrapping, keeping tags intact
-                    current = token.replace(/^\s+/, '');
-                    currentWidth = getVisualWidth(current);
-                } else {
-                    current += token;
-                    currentWidth += tokenWidth;
+                const tokens = _tokenize(originalLine);
+
+                let current = '';
+                let currentWidth = 0;
+
+                for (const token of tokens) {
+                    const tokenWidth = getVisualWidth(token);
+
+                    // Handle huge token
+                    if (tokenWidth > maxW) {
+                        if (current) {
+                            wrapped.push(current);
+                            current = '';
+                            currentWidth = 0;
+                        }
+
+                        const broken = _breakLongToken(token, maxW);
+
+                        for (let i = 0; i < broken.length; i++) {
+                            const part = broken[i];
+
+                            if (i === broken.length - 1) {
+                                current = part;
+                                currentWidth = getVisualWidth(part);
+                            } else {
+                                wrapped.push(part);
+                            }
+                        }
+
+                        continue;
+                    }
+
+                    // Normal wrapping
+                    if (currentWidth + tokenWidth > maxW) {
+                        wrapped.push(current);
+                        // Remove ONLY leading spaces caused by wrapping, keeping tags intact
+                        current = token.replace(/^\s+/, '');
+                        currentWidth = getVisualWidth(current);
+                    } else {
+                        current += token;
+                        currentWidth += tokenWidth;
+                    }
+                }
+
+                wrapped.push(current);
+            }
+        } else {
+            let buffer = "";
+            for (const c of text) {
+                if (c == "\n") {
+                    wrapped.push(buffer);
+                    buffer = "";
+                    continue;
+                }
+                buffer += c;
+                if (buffer.length == maxW) {
+                    wrapped.push(buffer);
+                    buffer = "";
                 }
             }
-
-            wrapped.push(current);
+            if (buffer) {
+                wrapped.push(buffer);
+            }
         }
 
         return wrapped.join('\n');

@@ -64,7 +64,7 @@ Item {
 
     Keys.onPressed: event => {
         ShortcutInfo.handleShortcuts(event, root.shortcuts);
-        if (ShortcutInfo.matchShortcut(event, "Escape")) {
+        if (ShortcutInfo.matchShortcut(event, "Escape") && escapeToClose) {
             root.close();
         }
     }
@@ -102,6 +102,11 @@ Item {
 
     implicitWidth: Cell.w(w)
     implicitHeight: Cell.h(h)
+
+    /* Rectangle {
+        anchors.fill: parent
+        color: "white"
+    } */
 
     MouseControl {
 

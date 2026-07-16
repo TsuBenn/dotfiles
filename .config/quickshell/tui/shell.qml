@@ -13,32 +13,32 @@ import QtQuick
 import QtQuick.Layouts
 
 ShellRoot {
-
     id: root
 
     Item {
         Component.onCompleted: {
             Colors.applied.connect(() => {
-                SettingsInfo.colorsLoaded = true
-                init()
-            })
+                SettingsInfo.colorsLoaded = true;
+                init();
+            });
             SettingsInfo.dependenciesCheckedChanged.connect(() => {
-                if (SettingsInfo.dependenciesChecked) init()
-            })
+                if (SettingsInfo.dependenciesChecked)
+                    init();
+            });
             SettingsInfo.hyprAnimChanged.connect(() => {
-                init()
-            })
+                init();
+            });
             SettingsInfo.hyprBlurChanged.connect(() => {
-                init()
-            })
+                init();
+            });
             SystemInfo.initializedSystemInfo.connect(() => {
-                wallpaper_check.active = true
-            })
+                wallpaper_check.active = true;
+            });
         }
 
         function init() {
-            const active_border = "rgba(" + Colors.borderActive.toString().slice(1) + "ff)"
-            const inactive_border = "rgba(" + Colors.borderInactive.toString().slice(1) + "ff)"
+            const active_border = "rgba(" + Colors.borderActive.toString().slice(1) + "ff)";
+            const inactive_border = "rgba(" + Colors.borderInactive.toString().slice(1) + "ff)";
 
             const command = `hl.config({
 
@@ -129,7 +129,7 @@ ShellRoot {
             hl.unbind(\"SUPER + print\")
             hl.unbind(\"SUPER + backspace\")
             hl.unbind(\"SUPER + L\")
-            ${ SettingsInfo.dependenciesChecked ? `
+            ${SettingsInfo.dependenciesChecked ? `
             hl.bind(\"SUPER + space\", hl.dsp.exec_cmd(\"qs -c tui ipc call config toggle_popup quick_menu\"))
             hl.bind(\"SUPER + escape\", hl.dsp.exec_cmd(\"qs -c tui ipc call launcher toggle\"))
             hl.bind(\"SUPER + P\", hl.dsp.exec_cmd(\"qs -c tui ipc call config dummy\"))
@@ -143,42 +143,71 @@ ShellRoot {
             hl.bind(\"SUPER + backspace\", hl.dsp.exec_cmd(\"qs -c tui ipc call config toggle_hidebar\"))
             hl.bind(\"SUPER + L\", hl.dsp.exec_cmd(\"qs -c tui ipc call config lock_screen\"))
             ` : ""}
-            `
+            `;
 
-            process.exec(["hyprctl", "eval", command])
+            process.exec(["hyprctl", "eval", command]);
         }
     }
+
+    /* FloatingWindow {
+
+        visible: SettingsInfo.debug
+
+        maximumSize: Qt.size(Cell.w(test_box.w), Cell.h(test_box.h))
+        minimumSize: Qt.size(Cell.w(test_box.w), Cell.h(test_box.h))
+
+        Cells {
+            id: test_box
+            w: 50
+            h: 25
+            color: Colors.bgSurface
+
+            CellScrollList {
+                id: test_list
+                y: Cell.h(2)
+                w: 40
+                h: 20
+                itemH: 2
+                model: LauncherInfo.result
+                delegate: CellText {
+                    property int index
+                    property var modelData
+                    preferedW: test_list.contentW
+                    text: index + " " + modelData?.label + "\n"
+                    wrap: true
+                }
+            }
+        }
+    } */
 
     Loader {
 
         active: SettingsInfo.dependenciesChecked && SettingsInfo.colorsLoaded && SettingsInfo.wallpaperCached
 
         sourceComponent: Bar {}
-
     }
-
 
     WlSessionLock {
 
         Component.onCompleted: {
-            LockInfo.lock.connect(()=>{
-                this.locked = true
-            })
-            LockInfo.unlock.connect(()=>{
-                this.locked = false
-            })
+            LockInfo.lock.connect(() => {
+                this.locked = true;
+            });
+            LockInfo.unlock.connect(() => {
+                this.locked = false;
+            });
         }
 
         LockSession {
 
-            monitor: screen != null ? HyprInfo.monitors[screen.name] : {"width": 1920, "height": 1080}
-
+            monitor: screen != null ? HyprInfo.monitors[screen.name] : {
+                "width": 1920,
+                "height": 1080
+            }
         }
-
     }
 
     Loader {
-
         id: dependencies_check
 
         active: SettingsInfo.colorsLoaded
@@ -186,44 +215,38 @@ ShellRoot {
         sourceComponent: DependenciesChecker {
             property var hyprinfo_loader: HyprInfo.maxRefreshRate   // Pre-initiating HyprInfo
         }
-
     }
 
     Loader {
-
         id: color_loader
 
         active: SettingsInfo.wallpaperCached
 
         sourceComponent: ColorsLoader {}
-
     }
 
     Loader {
-
         id: wallpaper_check
 
         active: false
 
         sourceComponent: WallpaperCacher {}
-
     }
 
     Process {
-        id: process 
+        id: process
 
         stdout: StdioCollector {
             onStreamFinished: {
-                console.log(text)
+                console.log(text);
             }
         }
 
         stderr: StdioCollector {
             onStreamFinished: {
-                if (text) console.error(text)
+                if (text)
+                    console.error(text);
             }
         }
     }
-
 }
-

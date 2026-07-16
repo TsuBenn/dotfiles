@@ -8,10 +8,9 @@ import QtQuick.Layouts
 import QtQuick
 
 Cells {
+    id: root
 
     optimizeMemory: SettingsInfo.optimizeMemory
-
-    id: root
 
     w: 10
     h: 5
@@ -23,33 +22,33 @@ Cells {
     property int spacing: 0
 
     property int offset: 0
-    property int contentY: Cell.h(1)*root.offset
+    property int contentY: Cell.h(1) * root.offset
 
     property bool virtualH: false
 
-    readonly property int maxOffset: Math.floor(root.contentH/Cell.cellHeight)-root.h
+    readonly property int maxOffset: Math.floor(root.contentH / Cell.cellHeight) - root.h
 
     property bool snapToMax: false
 
     onOffsetChanged: {
         if ((offset > maxOffset || offset < 0) && maxOffset > 0) {
-            snapBack()
+            snapBack();
         }
     }
 
     onMaxOffsetChanged: {
         if (snapToMax) {
-            maximizeScroll()
+            maximizeScroll();
         }
-        snapBack()
+        snapBack();
     }
 
     function snapBack() {
-        offset = Math.max(Math.min(root.offset,maxOffset),0)
+        offset = Math.max(Math.min(root.offset, maxOffset), 0);
     }
 
     function maximizeScroll() {
-        offset = Math.max(maxOffset,0)
+        offset = Math.max(maxOffset, 0);
     }
 
     property bool keyNav: true
@@ -79,28 +78,26 @@ Cells {
     color: "transparent"
 
     function reset() {
-        offset = 0
+        offset = 0;
     }
 
     ListView {
+        id: content
 
-        implicitWidth: Cell.w(root.w - root.padding*2)
+        implicitWidth: Cell.w(root.w - root.padding * 2)
         implicitHeight: Cell.h(root.h)
 
         clip: true
 
-        contentY: Cell.h(1)*root.offset*!root.virtualH
+        contentY: Cell.h(1) * root.offset * !root.virtualH
 
         interactive: false
-
-        id: content
 
         spacing: 0
 
         model: 1
 
         delegate: root.source
-
     }
 
     Loader {
@@ -115,8 +112,8 @@ Cells {
 
             x: Cell.alignRightWCell(implicitWidth, root.implicitWidth)
 
-            onAdjusted: (percent) => {
-                root.offset = (root.maxOffset)*percent
+            onAdjusted: percent => {
+                root.offset = (root.maxOffset) * percent;
             }
 
             type {
@@ -129,12 +126,11 @@ Cells {
             thumbH: root.scrollbar.thumbH
 
             h: root.h
-            progress: root.offset/(root.maxOffset)
-            contentH: Math.floor(root.contentH/Cell.cellHeight)
+            progress: root.offset / (root.maxOffset)
+            contentH: Math.floor(root.contentH / Cell.cellHeight)
 
             bg: root.scrollbar.bg_color
             color: root.scrollbar.color
-
         }
     }
 
@@ -146,11 +142,8 @@ Cells {
 
         hoverEnabled: false
 
-        onWheel: (delta) => {
-            root.offset = Math.max(Math.min(root.offset - delta,root.maxOffset),0)
+        onWheel: delta => {
+            root.offset = Math.max(Math.min(root.offset - delta, root.maxOffset), 0);
         }
-
     }
-
-
 }

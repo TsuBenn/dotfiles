@@ -208,17 +208,59 @@ ColumnLayout {
 
                                 spacing: 0
 
+                                Timer {
+                                    id: blink
+                                    property bool blink: false
+                                    running: WifiInfo.connectivity == "portal" || WifiInfo.connectivity == "unknown"
+                                    repeat: true
+                                    interval: 500
+                                    onTriggered: blink.blink = !blink.blink
+                                }
+
+                                property string connectivity: {
+                                    if (wifi.in_use) {
+                                        if (WifiInfo.connectivity == "full")
+                                            return "";
+                                        else if (WifiInfo.connectivity == "limited")
+                                            return "(-)";
+                                        else if (WifiInfo.connectivity == "none")
+                                            return "(!)";
+                                        else if (WifiInfo.connectivity == "portal")
+                                            return "(*)";
+                                        else
+                                            return "";
+                                    } else {
+                                        return "";
+                                    }
+                                }
+
                                 CellText {
+                                    id: wifi_status
 
                                     text: ` █  `
-                                    color: wifi.in_use ? Colors.success : WifiInfo.isSaved(wifi.name) ? Colors.info : Colors.bgOverlay
+                                    color: {
+                                        if (wifi.in_use) {
+                                            if (WifiInfo.connectivity == "full")
+                                                return Colors.success;
+                                            else if (WifiInfo.connectivity == "limited")
+                                                return Colors.warning;
+                                            else if (WifiInfo.connectivity == "none")
+                                                return Colors.danger;
+                                            else if (WifiInfo.connectivity == "portal")
+                                                return blink.blink ? Colors.info : Colors.warning;
+                                            else
+                                                return blink.blink ? Colors.danger : Colors.warning;
+                                        } else if (WifiInfo.isSaved(wifi.name))
+                                            return Colors.info;
+                                        return Colors.bgOverlay;
+                                    }
                                 }
 
                                 CellText {
 
-                                    text: `${wifi.name}`
+                                    text: `${wifi.name} ${parent.connectivity}`
                                     preferedW: list.contentW - wifi_security.w - 5
-                                    color: !WifiInfo.scanning ? (wifi.in_use ? Colors.success : Colors.fgBase) : Colors.fgSubtle
+                                    color: !WifiInfo.scanning ? (wifi.in_use ? wifi_status.color : Colors.fgBase) : Colors.fgSubtle
                                     font: wifi.in_use ? Cell.fontB : Cell.font
                                 }
 

@@ -432,185 +432,172 @@ CellPopup {
 
                 }
 
-                    CellScrollView {
+                CellScrollList {
 
-                        optimizeMemory: root.optimizeMemory
+                    optimizeMemory: root.optimizeMemory
 
-                        id: results
+                    id: results
 
-                        w: box.contentW
-                        h: 15
+                    w: box.contentW
+                    h: 15
 
-                        onVisibleChanged: {
-                            results.reset()
-                        }
+                    itemH: root.minimal ? 2 : 3
 
-                        source: ColumnLayout {
+                    onVisibleChanged: {
+                        results.reset()
+                    }
 
-                            spacing: 0
+                    model: debounce.data
 
-                            Repeater {
+                    onModelChanged: {
+                        results.reset()
+                        textfield.selected = 0
+                    }
 
-                                model: debounce.data
+                    delegate: Loader {
 
-                                onModelChanged: {
-                                    results.reset()
-                                    textfield.selected = 0
-                                }
+                        id: result
 
-                                delegate: Loader {
+                        property int index
 
-                                    id: result
+                        property var modelData
 
-                                    active: (index - Math.ceil(results.offset/(root.minimal ? 2 : 3)) < Math.ceil(15/(root.minimal ? 2 : 3)) * 2)
-                                    && (root.visible || !root.optimizeMemory)
+                        property string id: modelData.id ?? ""
+                        property string label: modelData.label ?? ""
+                        property string description: modelData.description ?? ""
+                        property string icon: modelData.icon ?? ""
+                        property string type: modelData.type ?? ""
+                        property string category: modelData.category ?? ""
+                        property var value: modelData.value ?? []
 
-                                    required property int index
+                        property bool selected: textfield.selected == index
 
-                                    required property var modelData
+                        sourceComponent: Cells {
 
-                                    property string id: modelData.id ?? ""
-                                    property string label: modelData.label ?? ""
-                                    property string description: modelData.description ?? ""
-                                    property string icon: modelData.icon ?? ""
-                                    property string type: modelData.type ?? ""
-                                    property string category: modelData.category ?? ""
-                                    property var value: modelData.value ?? []
+                            // optimizeMemory: root.optimizeMemory
 
-                                    property bool selected: textfield.selected == index
+                            w: results.contentW
+                            h: root.minimal ? 2 : 3
 
-                                    asynchronous: (index < Math.ceil(15/(root.minimal ? 2 : 3)) ? false : true) || type == "dir" || type == "file"
+                            color: Colors.bgSurface
 
-                                    sourceComponent: Cells {
+                            ColumnLayout {
+
+                                id: result_layout
+
+                                spacing: 0
+
+                                RowLayout {
+
+                                    spacing: 0
+
+                                    CellText {
+                                        optimizeMemory: root.optimizeMemory
+                                        text: " "
+                                    }
+
+                                    CellIcon {
+
+                                        optimizeMemory: root.optimizeMemory
+                                        visible: !root.minimal
+                                        id: result_icon
+                                        icon: [result.icon, result.icon ? result.label : ""]
+                                        w: 5
+
+                                    }
+
+                                    CellText {
+
+                                        visible: !root.minimal
+                                        text: " "
+
+                                    }
+
+                                    ColumnLayout {
+                                        spacing: 0
+
+                                        CellText {
+                                            optimizeMemory: root.optimizeMemory
+                                            text: {
+                                                let macro = result.label.match(/\{(.*)\}/)?.[1] ?? ""
+                                                if (macro) {
+                                                    return result.label.replace(/\{(.*)\}/,SettingsInfo.get_state(macro))
+                                                }
+                                                return result.label
+                                            }
+                                            preferedW: results.contentW - 4 - 5*result_icon.success - 1*!root.minimal
+                                        }
+
+                                        CellText {
+                                            optimizeMemory: root.optimizeMemory
+                                            visible: !root.minimal
+                                            text: result.description
+                                            preferedW: results.contentW - 4 - 5*result_icon.success - 1*!root.minimal
+                                            color: Colors.fgSubtle
+                                        }
+                                    }
+
+                                    CellText {
+                                        optimizeMemory: root.optimizeMemory
+                                        text: " "
+                                    }
+
+                                    Cells {
 
                                         optimizeMemory: root.optimizeMemory
 
-                                        w: results.contentW
-                                        h: root.minimal ? 2 : 3
+                                        w: 1
+                                        h: root.minimal ? 1 : 2
 
-                                        color: Colors.bgSurface
-
-                                        ColumnLayout {
-
-                                            id: result_layout
-
-                                            spacing: 0
-
-                                            RowLayout {
-
-                                                spacing: 0
-
-                                                CellText {
-                                                    optimizeMemory: root.optimizeMemory
-                                                    text: " "
-                                                }
-
-                                                CellIcon {
-
-                                                    optimizeMemory: root.optimizeMemory
-                                                    visible: !root.minimal
-                                                    id: result_icon
-                                                    icon: [result.icon, result.icon ? result.label : ""]
-                                                    w: 5
-
-                                                }
-
-                                                CellText {
-
-                                                    visible: !root.minimal
-                                                    text: " "
-
-                                                }
-
-                                                ColumnLayout {
-                                                    spacing: 0
-
-                                                    CellText {
-                                                        optimizeMemory: root.optimizeMemory
-                                                        text: {
-                                                            let macro = result.label.match(/\{(.*)\}/)?.[1] ?? ""
-                                                            if (macro) {
-                                                                return result.label.replace(/\{(.*)\}/,SettingsInfo.get_state(macro))
-                                                            }
-                                                            return result.label
-                                                        }
-                                                        preferedW: results.contentW - 4 - 5*result_icon.success - 1*!root.minimal
-                                                    }
-
-                                                    CellText {
-                                                        optimizeMemory: root.optimizeMemory
-                                                        visible: !root.minimal
-                                                        text: result.description
-                                                        preferedW: results.contentW - 4 - 5*result_icon.success - 1*!root.minimal
-                                                        color: Colors.fgSubtle
-                                                    }
-                                                }
-
-                                                CellText {
-                                                    optimizeMemory: root.optimizeMemory
-                                                    text: " "
-                                                }
-
-                                                Cells {
-
-                                                    optimizeMemory: root.optimizeMemory
-
-                                                    w: 1
-                                                    h: root.minimal ? 1 : 2
-
-                                                    color: result.selected ? Colors.accentStrong : Colors.bgOverlay
-
-                                                }
-
-                                            }
-
-                                            CellSeparator {
-
-                                                optimizeMemory: root.optimizeMemory
-
-                                                type: 0
-                                                color: Colors.bgOverlay
-                                                padding: 1
-                                                w: results.contentW
-
-                                            }
-
-                                        }
-
-                                        Cells {
-
-                                            optimizeMemory: root.optimizeMemory
-
-                                            w: results.contentW
-                                            h: root.minimal ? 1 : 2
-                                            color: "transparent"
-
-                                            MouseControl {
-
-                                                anchors.fill: parent
-
-                                                onEntered: {
-                                                    textfield.selected = result.index
-                                                }
-
-                                                onReleased: (button) => {
-                                                    if (button == "L") {
-                                                        textfield.entered(textfield.text)
-                                                    }
-                                                }
-
-                                            }
-
-                                        }
+                                        color: result.selected ? Colors.accentStrong : Colors.bgOverlay
 
                                     }
+
+                                }
+
+                                CellSeparator {
+
+                                    optimizeMemory: root.optimizeMemory
+
+                                    type: 0
+                                    color: Colors.bgOverlay
+                                    padding: 1
+                                    w: results.contentW
+
+                                }
+
+                            }
+
+                            Cells {
+
+                                optimizeMemory: root.optimizeMemory
+
+                                w: results.contentW
+                                h: root.minimal ? 1 : 2
+                                color: "transparent"
+
+                                MouseControl {
+
+                                    anchors.fill: parent
+
+                                    onEntered: {
+                                        textfield.selected = result.index
+                                    }
+
+                                    onReleased: (button) => {
+                                        if (button == "L") {
+                                            textfield.entered(textfield.text)
+                                        }
+                                    }
+
                                 }
 
                             }
 
                         }
-
                     }
+
+                }
 
             }
 

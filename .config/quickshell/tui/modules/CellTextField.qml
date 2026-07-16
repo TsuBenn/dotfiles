@@ -16,18 +16,16 @@ Item {
     property int h: 1
 
     property string text: ""
-
     property string placeholder: ""
-
     property string unit: ""
     property string bindText: ""
 
     property bool autoClear: false
-
     property bool showCursor: false
     property bool blinkCursor: true
 
     property bool canCopy: true
+    property bool canPaste: true
 
     property bool escapeToUnFocus: true
     property bool unfocusOnEntered: false
@@ -36,9 +34,9 @@ Item {
     property int visualPos: 0
 
     property bool visual: visualPos != 0
-
     property bool editable: root.text.length > 0
     property bool moveable: root.text.length > 0
+    property bool canEnter: true
 
     property bool scroll: true
     property bool wrap: false
@@ -58,6 +56,10 @@ Item {
 
     property bool hidden: false
     property bool disabled: false
+
+    // Scroll Offsets for Virtualization
+    property int rowOffset: 0
+    property int colOffset: 0
 
     signal entered(text: string)
     signal textInput(text: string, change: string, mode: string)
@@ -139,9 +141,13 @@ Item {
         bind();
     }
 
+    onBindTextChanged: {
+        bind();
+    }
+
     function bind() {
-        if (bindText != "")
-            root.text = Qt.binding(() => root.bindText);
+        if (bindText != "" && !focus)
+            root.text = root.bindText;
     }
 
     function isBetween(num, bound1, bound2): bool {
@@ -165,9 +171,8 @@ Item {
     }
 
     function set(str: string) {
-        textRemoved(text);
         root.text = str;
-        textAdded(text);
+        cursorPos = root.text.length;
     }
 
     function resetCursor() {
@@ -180,7 +185,7 @@ Item {
         cursorPos = 0;
         visualPos = 0;
         resetCursor();
-        root.text = "";
+        set("");
     }
 
     function wrapText(str: string): var {
@@ -209,21 +214,16 @@ Item {
     onTextChanged: {
         root.processed_text = wrapText(root.text);
         resetCursor();
-        // console.log(processed_text);
     }
 
     RowLayout {
-
         spacing: Cell.w(1)
 
         Cells {
             id: text
-
             clip: true
-
             w: root.w - unit.w - (unit.w ? 1 : 0)
             h: root.h
-
             color: "transparent"
 
             SequentialAnimation {
@@ -255,60 +255,54 @@ Item {
 
             ColumnLayout {
                 id: text_input
+                spacing: 0
 
                 Component.onCompleted: {
                     root.cursorPosChanged.connect(() => {
                         if (!root.wrap && root.scroll) {
-                            let overflow = -Cell.w(root.cursorPos + Cell.wCount(text_input.x) - text.w + 1);
-                            if (overflow < 0) {
-                                text_input.x += overflow;
-                            }
-                            if (overflow > Cell.w(text.w - 1)) {
-                                text_input.x += overflow - Cell.w(text.w) + Cell.w(1);
+                            let current_col = root.cursorPos;
+                            if (current_col >= root.colOffset + text.w) {
+                                root.colOffset = current_col - text.w + 1;
+                            } else if (current_col < root.colOffset) {
+                                root.colOffset = current_col;
                             }
                         } else if (root.wrap && root.scroll) {
-                            let overflow = -Cell.h(Math.floor(root.cursorPos / text.w) + Cell.hCount(text_input.y) - text.h + 1);
-                            if (overflow < 0) {
-                                text_input.y += overflow;
-                            }
-                            if (overflow > Cell.h(text.h - 1)) {
-                                text_input.y += overflow - Cell.h(text.h) + Cell.h(1);
+                            let current_row = Math.floor(root.cursorPos / text.w);
+                            if (current_row >= root.rowOffset + text.h) {
+                                root.rowOffset = current_row - text.h + 1;
+                            } else if (current_row < root.rowOffset) {
+                                root.rowOffset = current_row;
                             }
                         }
                     });
                 }
 
-                spacing: 0
-
                 Repeater {
-
-                    model: root.processed_text.length
+                    model: root.h // Fixed rows count based on viewport height
 
                     delegate: RowLayout {
                         id: text_line
-
                         required property int index
-
-                        property string line: root.processed_text[index] ?? ""
-
                         spacing: 0
 
-                        Repeater {
+                        readonly property int virtualRow: index + root.rowOffset
+                        readonly property var lineData: root.processed_text[virtualRow] ?? ""
 
-                            model: text_line.line.length
+                        Repeater {
+                            model: text.w // Fixed columns count based on viewport width
 
                             delegate: CellText {
                                 id: text_char
-
                                 required property int index
 
-                                property bool selected: root.isBetween(getPos(), root.cursorPos, root.cursorPos + root.visualPos) && root.visualPos != 0
+                                readonly property int virtualCol: index + root.colOffset
+                                readonly property int absolutePos: root.wrap ? (text_line.virtualRow * text.w + virtualCol) : virtualCol
+                                readonly property bool selected: root.isBetween(absolutePos, root.cursorPos, root.cursorPos + root.visualPos) && root.visualPos != 0
 
-                                function getPos(): int {
-                                    return index + text_line.index * text.w;
-                                }
+                                // Check if character exists in data model, otherwise fallback to empty space
+                                text: absolutePos < root.text.length ?
+                                      (root.hidden ? "*" : (text_line.lineData[virtualCol] ?? " ")) : " "
 
-                                text: root.hidden ? "*" : (text_line.line[index] ?? " ")
                                 color: root.disabled ? root.disabled_color : (selected ? root.invert : root.color)
                                 bg: selected ? root.visual_color : "transparent"
                                 font: selected ? root.fontB : root.font
@@ -319,16 +313,20 @@ Item {
             }
 
             CellText {
-
                 visible: !root.disabled && root.showCursor && root.focus
 
-                x: root.wrap ? Cell.w(root.cursorPos % text.w) : Cell.w(root.cursorPos) + text_input.x
-                y: root.wrap ? Cell.h(Math.floor(root.cursorPos / text.w)) + text_input.y : 0
+                // Calculate position relative to fixed layout frame
+                x: root.wrap ?
+                   Cell.w(root.cursorPos % text.w) :
+                   Cell.w(root.cursorPos - root.colOffset)
+
+                y: root.wrap ?
+                   Cell.h(Math.floor(root.cursorPos / text.w) - root.rowOffset) :
+                   0
 
                 color: root.invert
                 bg: root.color
                 font: root.fontB
-
                 text: root.text[root.cursorPos] ? (root.hidden ? "*" : root.text[root.cursorPos]) : " "
             }
 
@@ -348,9 +346,7 @@ Item {
         CellText {
             id: unit
             Layout.alignment: Qt.AlignTop
-
             text: root.unit
-
             color: root.color
         }
     }
@@ -360,7 +356,7 @@ Item {
             delete_selections();
         }
         root.text = root.text.slice(0, cursorPos) + c + root.text.slice(cursorPos);
-        root.cursorPos++;
+        root.cursorPos += c.length;
         root.textAdded(c);
     }
 
@@ -511,9 +507,10 @@ Item {
             return;
         }
         let rm = "";
-        if (cursorPos == 0)
+        if (cursorPos == 0) {
             root.textRemoved("");
-        return false;
+            return false;
+        }
         do {
             delete_char_left(false);
             if (cursorPos == 0)
@@ -568,6 +565,13 @@ Item {
         copy(cp);
     }
 
+    function paste() {
+        const to_paste = ClipboardInfo.clipboard[0];
+        // console.log(JSON.stringify(to_paste));
+        if (to_paste.type.includes("text"))
+            type(to_paste.data);
+    }
+
     function enter() {
         entered(root.text);
         if (unfocusOnEntered && focus)
@@ -594,7 +598,10 @@ Item {
             else
                 root.delete_char_left();
         } else if (event.key == Qt.Key_Return) {
-            root.enter();
+            if (root.canEnter)
+                root.enter();
+            else
+                return;
         } else if (event.key == Qt.Key_Escape) {
             if (escapeToUnFocus)
                 root.unFocus();
@@ -604,7 +611,7 @@ Item {
             root.delete_char_right();
         } else if (event.key == Qt.Key_Up) {
             if (mod & shift) {
-                if (!root.editable)
+                if (!root.editable || !root.wrap)
                     return;
                 root.extend_line_up();
             } else {
@@ -614,7 +621,7 @@ Item {
             }
         } else if (event.key == Qt.Key_Down) {
             if (mod & shift) {
-                if (!root.editable)
+                if (!root.editable || !root.wrap)
                     return;
                 root.extend_line_down();
             } else {
@@ -673,6 +680,10 @@ Item {
                 if (!root.canCopy)
                     return;
                 root.cut_selections();
+            } else if (event.key == Qt.Key_V) {
+                if (!root.canPaste)
+                    return;
+                root.paste();
             } else
                 return;
         } else if (etext.length > 0 && etext >= " ") {

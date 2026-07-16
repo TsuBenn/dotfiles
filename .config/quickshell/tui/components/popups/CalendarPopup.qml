@@ -1663,6 +1663,7 @@ CellPopup {
                                     focusOnVisible: false
 
                                     autoApply: true
+                                    unfocusOnEntered: true
 
                                     onTextInput: input => {
                                         if (input == "")
@@ -1718,6 +1719,7 @@ CellPopup {
                                     focusOnVisible: false
 
                                     autoApply: true
+                                    unfocusOnEntered: true
 
                                     onTextInput: input => {
                                         if (input == "")
