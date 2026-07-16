@@ -8,7 +8,6 @@ import QtQuick.Layouts
 import QtQuick
 
 Item {
-
     id: root
 
     property bool optimizeMemory: SettingsInfo.optimizeMemory
@@ -57,11 +56,11 @@ Item {
     property bool grid: false
 
     Component.onCompleted: {
-        x += Cell.w(1)
-        y += Cell.h(1)
+        x += Cell.w(1);
+        y += Cell.h(1);
         for (const i in children) {
             if (i >= 2) {
-                children[i].parent = content
+                children[i].parent = content;
             }
         }
     }
@@ -71,7 +70,6 @@ Item {
         active: root.visible || !root.optimizeMemory
 
         sourceComponent: Cells {
-
             id: border_cells
 
             w: root.w
@@ -85,85 +83,127 @@ Item {
             color: root.color
 
             CellText {
-
                 clip: true
-
                 bg: root.border.type == 0 ? root.border.color : "transparent"
-
                 pure: false
                 lockPure: true
-
-                text: {
-                    switch (root.border.type) {
-                        case 0: return " ";
-                        case 1: {
-                            return "┌"
-                            +(header.w > 0 ? "─".repeat(Math.max(root.header.offset,0))+" ".repeat(header.w)+"─".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.w) : "─".repeat(root.w-2))
-                            +"┐\n"
-                            +("│"+" ".repeat(Math.max(root.w-2,0))+"│\n").repeat(root.h-2)
-                            +"└"
-                            +(footer.w > 0 ? "─".repeat(Math.max(root.footer.offset,0))+" ".repeat(footer.w)+"─".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.w) : "─".repeat(root.w-2))
-                            +"┘";
-                        }
-
-                        case 2: {
-                            return "┏"
-                            +(header.w > 0 ? "━".repeat(Math.max(root.header.offset,0))+" ".repeat(header.w)+"━".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.w) : "━".repeat(root.w-2))
-                            +"┓\n"
-                            +("┃"+" ".repeat(Math.max(root.w-2,0))+"┃\n").repeat(root.h-2)
-                            +"┗"
-                            +(footer.w > 0 ? "━".repeat(Math.max(root.footer.offset,0))+" ".repeat(footer.w)+"━".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.w) : "━".repeat(root.w-2))
-                            +"┛";
-                        }
-
-                        case 3: {
-                            return "╔"
-                            +(header.w > 0 ? "═".repeat(Math.max(root.header.offset,0))+" ".repeat(header.w)+"═".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.w) : "═".repeat(root.w-2))
-                            +"╗\n"
-                            +("║"+" ".repeat(Math.max(root.w-2,0))+"║\n").repeat(root.h-2)
-                            +"╚"
-                            +(footer.w > 0 ? "═".repeat(Math.max(root.footer.offset,0))+" ".repeat(footer.w)+"═".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.w) : "═".repeat(root.w-2))
-                            +"╝";
-                        }
-
-                        case 4: {
-                            return "╭"
-                            +(header.w > 0 ? "─".repeat(Math.max(root.header.offset,0))+" ".repeat(header.w)+"─".repeat(root.w - 2 - Math.max(root.header.offset,0) - header.w) : "─".repeat(root.w-2))
-                            +"╮\n"
-                            +("│"+" ".repeat(Math.max(root.w-2,0))+"│\n").repeat(root.h-2)
-                            +"╰"
-                            +(footer.w > 0 ? "─".repeat(Math.max(root.footer.offset,0))+" ".repeat(footer.w)+"─".repeat(root.w - 2 - Math.max(root.footer.offset,0) - footer.w) : "─".repeat(root.w-2))
-                            +"╯";
-                        }
-                    }
-                }
                 color: root.border.color
 
+                // Clean, safe helper to prevent negative repeat counts
+                function safeRepeat(str, count) {
+                    return str.repeat(Math.max(0, Math.floor(count)));
+                }
+
+                text: {
+                    if (root.border.type === 0) {
+                        return " ";
+                    }
+
+                    // 1. Pick our borders based on type
+                    var chars;
+                    switch (root.border.type) {
+                    case 1:
+                        chars = {
+                            tl: "┌",
+                            tr: "┐",
+                            bl: "└",
+                            br: "┘",
+                            h: "─",
+                            v: "│"
+                        };
+                        break;
+                    case 2:
+                        chars = {
+                            tl: "┏",
+                            tr: "┓",
+                            bl: "┗",
+                            br: "┛",
+                            h: "━",
+                            v: "┃"
+                        };
+                        break;
+                    case 3:
+                        chars = {
+                            tl: "╔",
+                            tr: "╗",
+                            bl: "╚",
+                            br: "╝",
+                            h: "═",
+                            v: "║"
+                        };
+                        break;
+                    case 4:
+                        chars = {
+                            tl: "╭",
+                            tr: "╮",
+                            bl: "╰",
+                            br: "╯",
+                            h: "─",
+                            v: "│"
+                        };
+                        break;
+                    default:
+                        return "";
+                    }
+
+                    // 2. Calculate inside width (accounting for left and right borders)
+                    var innerW = Math.max(0, root.w - 2);
+                    var innerH = Math.max(0, root.h - 2);
+
+                    // 3. Build Top Border (Header)
+                    var topBorder = chars.tl;
+                    if (header.w > 0) {
+                        var headOffset = Math.max(0, root.header.offset);
+                        var leftFill = Math.min(innerW, headOffset);
+                        var rightFill = Math.max(0, innerW - leftFill - header.w);
+
+                        topBorder += safeRepeat(chars.h, leftFill) + safeRepeat(" ", Math.min(innerW - leftFill, header.w)) + safeRepeat(chars.h, rightFill);
+                    } else {
+                        topBorder += safeRepeat(chars.h, innerW);
+                    }
+                    topBorder += chars.tr + "\n";
+
+                    // 4. Build Middle Rows
+                    var middleRow = chars.v + safeRepeat(" ", innerW) + chars.v + "\n";
+                    var middleSection = safeRepeat(middleRow, innerH);
+
+                    // 5. Build Bottom Border (Footer)
+                    var bottomBorder = chars.bl;
+                    if (footer.w > 0) {
+                        var footOffset = Math.max(0, root.footer.offset);
+                        var leftFillFoot = Math.min(innerW, footOffset);
+                        var rightFillFoot = Math.max(0, innerW - leftFillFoot - footer.w);
+
+                        bottomBorder += safeRepeat(chars.h, leftFillFoot) + safeRepeat(" ", Math.min(innerW - leftFillFoot, footer.w)) + safeRepeat(chars.h, rightFillFoot);
+                    } else {
+                        bottomBorder += safeRepeat(chars.h, innerW);
+                    }
+                    bottomBorder += chars.br;
+
+                    return topBorder + middleSection + bottomBorder;
+                }
             }
 
             CellText {
                 id: header
-                x: Cell.w(Math.max(root.header.offset,0)+1)
+                x: Cell.w(Math.max(root.header.offset, 0) + 1)
                 anchors.top: parent.top
                 text: root.header.text
-                preferedW: text == "" || text.length < root.w-2-Math.max(root.header.offset,0) ? 0 : root.w-2-Math.max(root.header.offset,0)
+                preferedW: text == "" || text.length < root.w - 2 - Math.max(root.header.offset, 0) ? 0 : root.w - 2 - Math.max(root.header.offset, 0)
                 font: root.header.font
             }
             CellText {
                 id: footer
-                x: Cell.w(Math.max(root.footer.offset,0)+1)
+                x: Cell.w(Math.max(root.footer.offset, 0) + 1)
                 anchors.bottom: parent.bottom
                 text: root.footer.text
-                preferedW: text == "" || text.length < root.w-2-Math.max(root.footer.offset,0) ? 0 : root.w-2-Math.max(root.footer.offset,0)
+                preferedW: text == "" || text.length < root.w - 2 - Math.max(root.footer.offset, 0) ? 0 : root.w - 2 - Math.max(root.footer.offset, 0)
                 font: root.footer.font
             }
-
         }
-
     }
 
     Rectangle {
-
         id: content
 
         anchors.fill: parent
@@ -171,7 +211,5 @@ Item {
         clip: true
 
         color: "transparent"
-
     }
-
 }

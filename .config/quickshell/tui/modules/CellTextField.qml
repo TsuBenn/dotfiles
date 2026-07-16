@@ -36,6 +36,8 @@ Item {
     property bool visual: visualPos != 0
     property bool editable: root.text.length > 0
     property bool moveable: root.text.length > 0
+    property bool vertMove: root.wrap
+    property bool horiMove: true
     property bool canEnter: true
 
     property bool scroll: true
@@ -300,8 +302,7 @@ Item {
                                 readonly property bool selected: root.isBetween(absolutePos, root.cursorPos, root.cursorPos + root.visualPos) && root.visualPos != 0
 
                                 // Check if character exists in data model, otherwise fallback to empty space
-                                text: absolutePos < root.text.length ?
-                                      (root.hidden ? "*" : (text_line.lineData[virtualCol] ?? " ")) : " "
+                                text: absolutePos < root.text.length ? (root.hidden ? "*" : (text_line.lineData[virtualCol] ?? " ")) : " "
 
                                 color: root.disabled ? root.disabled_color : (selected ? root.invert : root.color)
                                 bg: selected ? root.visual_color : "transparent"
@@ -316,13 +317,9 @@ Item {
                 visible: !root.disabled && root.showCursor && root.focus
 
                 // Calculate position relative to fixed layout frame
-                x: root.wrap ?
-                   Cell.w(root.cursorPos % text.w) :
-                   Cell.w(root.cursorPos - root.colOffset)
+                x: root.wrap ? Cell.w(root.cursorPos % text.w) : Cell.w(root.cursorPos - root.colOffset)
 
-                y: root.wrap ?
-                   Cell.h(Math.floor(root.cursorPos / text.w) - root.rowOffset) :
-                   0
+                y: root.wrap ? Cell.h(Math.floor(root.cursorPos / text.w) - root.rowOffset) : 0
 
                 color: root.invert
                 bg: root.color
@@ -347,7 +344,7 @@ Item {
             id: unit
             Layout.alignment: Qt.AlignTop
             text: root.unit
-            color: root.color
+            color: root.disable ? root.disabled_color : root.color
         }
     }
 
@@ -615,7 +612,7 @@ Item {
                     return;
                 root.extend_line_up();
             } else {
-                if (!root.moveable)
+                if (!root.moveable || !root.vertMove)
                     return;
                 root.move_line_up();
             }
@@ -625,7 +622,7 @@ Item {
                     return;
                 root.extend_line_down();
             } else {
-                if (!root.moveable)
+                if (!root.moveable || !root.vertMove)
                     return;
                 root.move_line_down();
             }
@@ -636,7 +633,7 @@ Item {
                 root.extend_word_right();
             } else if (mod & ctrl) {
                 {
-                    if (!root.moveable)
+                    if (!root.moveable || !root.horiMove)
                         return;
                     root.move_word_right();
                 }
@@ -645,7 +642,7 @@ Item {
                     return;
                 root.extend_char_right();
             } else {
-                if (!root.moveable)
+                if (!root.moveable || !root.horiMove)
                     return;
                 root.move_char_right();
             }
@@ -655,7 +652,7 @@ Item {
                     return;
                 root.extend_word_left();
             } else if (mod & ctrl) {
-                if (!root.moveable)
+                if (!root.moveable || !root.horiMove)
                     return;
                 root.move_word_left();
             } else if (mod & shift) {
@@ -663,7 +660,7 @@ Item {
                     return;
                 root.extend_char_left();
             } else {
-                if (!root.moveable)
+                if (!root.moveable || !root.horiMove)
                     return;
                 root.move_char_left();
             }

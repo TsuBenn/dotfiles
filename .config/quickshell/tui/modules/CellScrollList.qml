@@ -24,6 +24,8 @@ Cells {
 
     property bool snapToMax: false
 
+    property bool reloadOnChanges: false
+
     property int offset: 0
 
     property bool atMax: false

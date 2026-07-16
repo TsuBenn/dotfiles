@@ -440,7 +440,28 @@ CellPopup {
                 clip: true
 
                 RowLayout {
+
+                    visible: WallpaperInfo.scanning
+
+                    x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                    y: Cell.centerHCell(implicitHeight, parent.implicitHeight)
+
+                    spacing: 0
+
+                    CellText {
+                        text: "Rescanning wallpapers in " + "~" + WallpaperInfo.cache_path
+                        color: Colors.fgDim
+                    }
+
+                    CellLoading {
+                        style: 2
+                    }
+                }
+
+                RowLayout {
                     id: selection
+
+                    visible: !WallpaperInfo.scanning
 
                     x: Cell.centerWCell(implicitWidth, parent.implicitWidth) - Cell.w(1)
 
@@ -493,7 +514,7 @@ CellPopup {
                     Repeater {
                         id: repeater
 
-                        model: selection.items
+                        model: 5
 
                         function refresh() {
                             model = [];
@@ -505,7 +526,7 @@ CellPopup {
 
                             active: root.visible || !root.optimizeMemory
 
-                            required property string modelData
+                            property string modelData: selection.items?.[index] ?? ""
                             required property int index
 
                             sourceComponent: CellBox {
@@ -515,9 +536,7 @@ CellPopup {
                                 property int index: thumbnail_loader.index
 
                                 property string value: modelData.split(".")[0]
-                                property bool selected: {
-                                    return index == 2;
-                                }
+                                property bool selected: WallpaperInfo.scanning ? false : (index == 2)
 
                                 opacity: selected ? 1 : 0.5
 
@@ -558,6 +577,9 @@ CellPopup {
                                 }
 
                                 MouseControl {
+
+                                    visible: !WallpaperInfo.scanning
+
                                     anchors.fill: parent
 
                                     onReleased: button => {
@@ -1482,6 +1504,34 @@ CellPopup {
                         }
                     }
                 }
+
+                CellSeparator {
+                    w: box.contentW
+                    padding: 1
+                    color: Colors.bgOverlay
+                }
+
+                RowLayout {
+
+                    Layout.leftMargin: Cell.w(1)
+
+                    spacing: Cell.w(2)
+
+                    CellText {
+                        text: "Others    :"
+                    }
+
+                    CellButton {
+                        text: "Recache"
+                        color: [Colors.bgOverlay, Colors.fgBase]
+                        fg: [Colors.fgBase, Colors.bgSurface]
+                        onReleased: button => {
+                            if (button == "L") {
+                                WallpaperInfo.recache();
+                            }
+                        }
+                    }
+                }
             }
 
             CellSeparator {
@@ -1517,6 +1567,11 @@ CellPopup {
                     visible: WallpaperInfo.slideshow && textfield.text.length == 0
                     key: "Space"
                     hint: "Toggle"
+                }
+
+                CellKeyHint {
+                    key: "C-R"
+                    hint: "Rescan"
                 }
 
                 CellKeyHint {

@@ -90,6 +90,10 @@ CellPopup {
                         property var binds: modelData.binds
                         property string action: modelData.action
 
+                        onActionChanged: {
+                            console.log("bruh");
+                        }
+
                         spacing: 0
 
                         Cells {

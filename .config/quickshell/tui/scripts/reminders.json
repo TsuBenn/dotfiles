@@ -90,15 +90,6 @@
       "time": ""
     }
   ],
-  "18-07-2026": [
-    {
-      "title": "PRO192-PE (P.234)",
-      "body": "Object Oriented Programming Practical Exam",
-      "span": 1,
-      "urgency": 2,
-      "time": ""
-    }
-  ],
   "29-07-2026": [
     {
       "title": "OSG202-FE (P.130)",
@@ -156,6 +147,15 @@
       "span": 1,
       "urgency": 0,
       "time": "14:15"
+    }
+  ],
+  "19-07-2026": [
+    {
+      "title": "PRO192-PE (P.234)",
+      "body": "Object Oriented Programming Practical Exam",
+      "span": 1,
+      "urgency": 2,
+      "time": "09:10"
     }
   ]
 }

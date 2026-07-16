@@ -68,9 +68,7 @@ qss() {
     qs -c ~/.config/quickshell/$1
 }
 qsD() {
-    qs kill -c $1
-    clear
-    qs -c ~/.config/quickshell/$1
+    qs -c ~/.config/quickshell/$1 log -f
 }
 qsR() {
     qs kill -c $1

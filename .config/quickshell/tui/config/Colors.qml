@@ -24,6 +24,11 @@ Singleton {
         load.running = true;
     }
 
+    function recache() {
+        SystemInfo.runDetached(["bash", "-c", "rm " + SystemInfo.configdir + "/scripts/colors_cache.json"]);
+        SystemInfo.runDetached(["bash", "-c", SystemInfo.configdir + "/scripts/revive.sh"]);
+    }
+
     function init() {
         reload();
     }
@@ -196,11 +201,6 @@ Singleton {
     }
 
     Component.onCompleted: {
-        WallpaperInfo.rescanned.connect(() => {
-            if (!SettingsInfo.initialized)
-                return;
-            root.reload();
-        });
         WallpaperInfo.currentChanged.connect(() => {
             if (!SettingsInfo.initialized)
                 return;
@@ -238,8 +238,8 @@ Singleton {
 
         stderr: SplitParser {
             onRead: text => {
-                if (text && !text.startsWith("[pipeline]"))
-                    console.log("Colors (load): " + text);
+            // if (text && !text.startsWith("[pipeline]"))
+            //     console.log("Colors (load): " + text);
             }
         }
     }

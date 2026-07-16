@@ -57,6 +57,7 @@ Singleton {
     property bool optimizeMemory               : false // Reduce memory usage significantly, but takes more time to load UI elements
 
     property bool wallpaperAutoAdvance         : true  // Advance selection as you scroll through the wallpaper selections
+    property bool wallpaperCleanReccan         : false // Force re-caching wallpaper else it will only cache new files found.
 
     property bool shadow                       : false // Shadows for UI elements
 
@@ -110,6 +111,10 @@ Singleton {
     ]
 
     signal showGrid()
+
+    function restart() {
+    SystemInfo.runDetached(["bash", "-c", SystemInfo.configdir + "/scripts/revive.sh"])
+}
 
     function get_state(text) {
         let result = -1
@@ -265,6 +270,8 @@ Singleton {
         function toggle_quickstart(): void              { root.toggle("quickStart") }
         function toggle_screenshot_notify(): void       { root.toggle("screenshotNotify") }
         function toggle_wallpaper_auto_advance(): void  { root.toggle("wallpaperAutoAdvance") }
+
+        function restart(): void  { root.restart() }
 
         function lock_screen(): void               { SystemInfo.lock() }
 

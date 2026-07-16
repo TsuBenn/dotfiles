@@ -8,14 +8,13 @@ import QtQuick
 import Quickshell.Io
 
 Singleton {
-
     id: root
 
     property var all: []
 
     property var wallpapers: []
 
-    property string current: wallpapers[selected]
+    property string current: wallpapers[selected] ?? ""
 
     property string path: "/Wallpapers/"
     property string cache_path: "/Wallpapers/.qscache/"
@@ -26,7 +25,7 @@ Singleton {
 
     property bool live: false
 
-    property bool scanning: scan.running
+    property bool scanning: scan.running || cacher.running
 
     property int selected: 0
 
@@ -34,18 +33,18 @@ Singleton {
 
     property bool loaded: false
 
-    signal rescanned()
+    signal rescanned
 
     onConfigChanged: {
-        saveConfig()
+        saveConfig();
     }
 
     function getCacheLocation() {
-        return SystemInfo.homedir + root.cache_path+root.current+root.cache_prefix 
+        return SystemInfo.homedir + root.cache_path + root.current + root.cache_prefix;
     }
 
     function getLocation() {
-        return SystemInfo.homedir + root.path + root.current
+        return SystemInfo.homedir + root.path + root.current;
     }
 
     function setConfig(imageName, propertyPath, value) {
@@ -96,8 +95,8 @@ Singleton {
 
         // Force QML to update reactive bindings
         root.config = currentConfig;
-        saveConfig()
-        configChanged()
+        saveConfig();
+        configChanged();
     }
 
     component Type: Item {
@@ -114,141 +113,154 @@ Singleton {
 
     function getTransition(image: string): var {
         return {
-            "type"     : config[image]?.transition?.type     ?? transition.type,
-            "step"     : config[image]?.transition?.step     ?? transition.step,
-            "duration" : config[image]?.transition?.duration ?? transition.duration,
-            "fps"      : config[image]?.transition?.fps      ?? transition.fps,
-            "angle"    : config[image]?.transition?.angle    ?? transition.angle,
-            "posX"     : config[image]?.transition?.posX     ?? transition.posX,
-            "posY"     : config[image]?.transition?.posY     ?? transition.posY,
-        }
+            "type": config[image]?.transition?.type ?? transition.type,
+            "step": config[image]?.transition?.step ?? transition.step,
+            "duration": config[image]?.transition?.duration ?? transition.duration,
+            "fps": config[image]?.transition?.fps ?? transition.fps,
+            "angle": config[image]?.transition?.angle ?? transition.angle,
+            "posX": config[image]?.transition?.posX ?? transition.posX,
+            "posY": config[image]?.transition?.posY ?? transition.posY
+        };
     }
 
     function getReposition(image: string): var {
         return {
-            "scalar"           : config[image]?.reposition?.scalar           ?? 1,
-            "verticalOffset"   : config[image]?.reposition?.verticalOffset   ?? 0,
-            "horizontalOffset" : config[image]?.reposition?.horizontalOffset ?? 0,
-        }
+            "scalar": config[image]?.reposition?.scalar ?? 1,
+            "verticalOffset": config[image]?.reposition?.verticalOffset ?? 0,
+            "horizontalOffset": config[image]?.reposition?.horizontalOffset ?? 0
+        };
     }
 
     onLiveChanged: {
-        root.saveConfig()
+        root.saveConfig();
     }
 
     property Type transition: Type {
 
         onTypeChanged: {
-            root.saveConfig()
+            root.saveConfig();
         }
         onStepChanged: {
-            root.saveConfig()
+            root.saveConfig();
         }
         onDurationChanged: {
-            root.saveConfig()
+            root.saveConfig();
         }
         onFpsChanged: {
-            root.saveConfig()
+            root.saveConfig();
         }
         onAngleChanged: {
-            root.saveConfig()
+            root.saveConfig();
         }
         onPosXChanged: {
-            root.saveConfig()
+            root.saveConfig();
         }
         onPosYChanged: {
-            root.saveConfig()
+            root.saveConfig();
         }
-
     }
 
-
     onCurrentChanged: {
-        saveConfig()
+        saveConfig();
     }
 
     onWallpapersChanged: {
-        saveConfig()
-        advance(0)
-        currentChanged()
+        saveConfig();
+        advance(0);
+        currentChanged();
     }
 
     function isLive(image: string): bool {
-        return /\.mp4$|\.mp4_thumb\.jpg$/.test(image)
+        return /\.mp4$|\.mp4_thumb\.jpg$/.test(image);
     }
 
     function getIndex(image: string): int {
         for (const i in all) {
             if (all[i] == image) {
-                return i
+                return i;
             }
         }
-        return 0
+        return 0;
     }
 
     function search(image: string): var {
         return all.filter(item => {
-            item = item.toLowerCase().replace(/\s+/g,"").replace(/_/g,"")
-            image = image.toLowerCase().replace(/\s+/g,"").replace(/_/g,"")
+            item = item.toLowerCase().replace(/\s+/g, "").replace(/_/g, "");
+            image = image.toLowerCase().replace(/\s+/g, "").replace(/_/g, "");
             //console.log(item)
-            return item.includes(image)
-        })
+            return item.includes(image);
+        });
     }
 
     function slideshowToggle() {
-        slideshow = !slideshow
+        slideshow = !slideshow;
         if (!slideshow) {
-            singlify()
+            singlify();
         }
     }
 
     function inSet(image: string): bool {
-        return wallpapers.includes(image)
+        return wallpapers.includes(image);
     }
 
     function add(image: string) {
-        if (inSet(image)) return
+        if (inSet(image))
+            return;
         if (slideshow) {
-            wallpapers.push(image)
-            return
+            wallpapers.push(image);
+            return;
         }
-        singlify(image)
+        singlify(image);
     }
 
     function remove(image: string) {
-        if (!inSet(image) || !slideshow || wallpapers.length == 1) return
-        wallpapers = wallpapers.filter(item => {return item != image})
+        if (!inSet(image) || !slideshow || wallpapers.length == 1)
+            return;
+        wallpapers = wallpapers.filter(item => {
+            return item != image;
+        });
     }
 
     function clear() {
-        wallpapers = []
+        wallpapers = [];
     }
 
     function singlify(image = "") {
-        if (!wallpapers) return
+        if (!wallpapers)
+            return;
         if (image != "" && all.includes(image)) {
-            wallpapers = [image]
-            return
+            wallpapers = [image];
+            return;
         }
-        wallpapers = [wallpapers[root.selected]]
+        wallpapers = [wallpapers[root.selected]];
     }
 
     function advance(step: int) {
-        if (wallpapers.length > 1) selected = (selected + wallpapers.length + step)%(wallpapers.length)
-        else selected = 0
+        if (wallpapers.length > 1)
+            selected = (selected + wallpapers.length + step) % (wallpapers.length);
+        else
+            selected = 0;
     }
 
     function set(image) {
-
     }
 
     function minute(min: int): int {
-        return min*60000
+        return min * 60000;
     }
 
     function rescan() {
-        cacher.recache = true
-        cacher.running = true
+        // SystemInfo.runDetached(["bash", "-c", "rm -rf " + SystemInfo.homedir + root.cache_path + " && " + SystemInfo.configdir + "/scripts/revive.sh"]);
+        // cacher.recache = true;
+        cacher.running = true;
+    }
+
+    function recache() {
+        // console.log("bruh");
+        SystemInfo.runDetached(["bash", "-c", "rm -rf " + SystemInfo.homedir + root.cache_path]);
+        SystemInfo.runDetached(["bash", "-c", SystemInfo.configdir + "/scripts/revive.sh"]);
+        // cacher.recache = true;
+        // cacher.running = true;
     }
 
     Timer {
@@ -258,12 +270,11 @@ Singleton {
         running: root.slideshow
         repeat: true
         onTriggered: {
-            root.advance(1)
+            root.advance(1);
         }
     }
 
     Process {
-
         id: cacher
 
         property bool recache: false
@@ -271,39 +282,37 @@ Singleton {
         command: [SystemInfo.configdir + "/scripts/wallpapers_cacher.sh", SystemInfo.homedir + root.path, SystemInfo.cputhreads, recache ? "--force" : ""]
 
         stdout: StdioCollector {
+            onTextChanged: {
+                console.log("WallpaperInfo: " + text);
+            }
             onStreamFinished: {
-                console.log("WallpaperInfo: " + text)
-                cacher.recache = false
-                scan.running = true
-                root.rescanned()
+                cacher.recache = false;
+                scan.running = true;
             }
         }
-
     }
 
     Process {
-
         id: scan
 
         command: ["ls", SystemInfo.homedir + root.path]
 
         stdout: StdioCollector {
             onStreamFinished: {
-
-                const data = text.split("\n").filter(item => item != "")
-                root.all = data
+                const data = text.split("\n").filter(item => item != "");
+                root.all = data;
 
                 if (!SettingsInfo.wallpaperCached) {
-                    SettingsInfo.wallpaperCached = true
+                    SettingsInfo.wallpaperCached = true;
                 }
-
+                Colors.reload();
+                root.rescanned();
             }
         }
-
     }
 
     function saveConfig() {
-        saveDelay.restart()
+        saveDelay.restart();
     }
 
     Timer {
@@ -311,14 +320,13 @@ Singleton {
 
         interval: 200
         onTriggered: {
-            root.save()
+            root.save();
         }
     }
 
     function save() {
-
-        if (!root.loaded) return
-
+        if (!root.loaded)
+            return;
         let originalConfig = root.config;
         let filteredConfig = {};
 
@@ -355,34 +363,33 @@ Singleton {
 
         let config = {
             transition: {
-                "type"     : root.transition.type,
-                "step"     : root.transition.step,
-                "duration" : root.transition.duration,
-                "fps"      : root.transition.fps,
-                "angle"    : root.transition.angle,
-                "posX"      : root.transition.posX,
-                "posY"      : root.transition.posY,
+                "type": root.transition.type,
+                "step": root.transition.step,
+                "duration": root.transition.duration,
+                "fps": root.transition.fps,
+                "angle": root.transition.angle,
+                "posX": root.transition.posX,
+                "posY": root.transition.posY
             },
             wallpapers: root.wallpapers,
             config: filteredConfig,
             live: root.live,
             slideshow: root.slideshow,
             selected: root.selected
-        }
+        };
 
-        loader.setText(JSON.stringify(config,null,2))
+        loader.setText(JSON.stringify(config, null, 2));
 
         //console.log("saved")
 
     }
 
     function init() {
-        loader.preload = true
-        cacher.running = true
+        loader.preload = true;
+        cacher.running = true;
     }
 
     FileView {
-
         id: loader
 
         preload: false
@@ -390,35 +397,30 @@ Singleton {
         path: SystemInfo.configdir + "/scripts/wallpapers_config.json"
 
         onLoaded: {
-
-            let data = {}
+            let data = {};
 
             if (text()) {
-                data = JSON.parse(text())
+                data = JSON.parse(text());
             }
 
-            root.transition.type     = data.transition?.type     ?? root.transition.type
-            root.transition.step     = data.transition?.step     ?? root.transition.step
-            root.transition.duration = data.transition?.duration ?? root.transition.duration
-            root.transition.fps      = data.transition?.fps      ?? root.transition.fps
-            root.transition.angle    = data.transition?.angle    ?? root.transition.angle
-            root.transition.posX     = data.transition?.posX     ?? root.transition.posX
-            root.transition.posY     = data.transition?.posY     ?? root.transition.posY
+            root.transition.type = data.transition?.type ?? root.transition.type;
+            root.transition.step = data.transition?.step ?? root.transition.step;
+            root.transition.duration = data.transition?.duration ?? root.transition.duration;
+            root.transition.fps = data.transition?.fps ?? root.transition.fps;
+            root.transition.angle = data.transition?.angle ?? root.transition.angle;
+            root.transition.posX = data.transition?.posX ?? root.transition.posX;
+            root.transition.posY = data.transition?.posY ?? root.transition.posY;
 
-            root.wallpapers = data.wallpapers ?? []
-            root.config = data.config ?? ({})
+            root.wallpapers = data.wallpapers ?? [];
+            root.config = data.config ?? ({});
 
-            root.live = data.live ?? true
-            root.slideshow = data.slideshow ?? false
-            root.selected = data.selected ?? 0
+            root.live = data.live ?? true;
+            root.slideshow = data.slideshow ?? false;
+            root.selected = data.selected ?? 0;
 
-            root.loaded = true
+            root.loaded = true;
 
-            console.log("WallpaperInfo (loader): Loaded!")
-
+            console.log("WallpaperInfo (loader): Loaded!");
         }
-
     }
-
 }
-

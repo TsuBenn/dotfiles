@@ -4,37 +4,13 @@
       "binds": [
         "W"
       ],
-      "action": "open_power_menu"
-    },
-    {
-      "binds": [
-        "Q"
-      ],
       "action": "open_wallpaper_menu"
-    },
-    {
-      "binds": [
-        "E"
-      ],
-      "action": "open_media_player"
-    },
-    {
-      "binds": [
-        "C"
-      ],
-      "action": "open_color_menu"
     },
     {
       "binds": [
         "P"
       ],
-      "action": "open_pacman"
-    },
-    {
-      "binds": [
-        "S"
-      ],
-      "action": "open_system_info"
+      "action": "open_wallpaper_menu"
     }
   ],
   "custom_actions": {}

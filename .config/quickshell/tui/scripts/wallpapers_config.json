@@ -17,7 +17,9 @@
         "scalar": 1,
         "verticalOffset": 1,
         "horizontalOffset": 0
-      }
+      },
+      "posX": 0.6360544217687075,
+      "posY": 0.27976190476190477
     }
   },
   "live": true,
