@@ -1,4 +1,4 @@
-pragma Singleton 
+pragma Singleton
 
 import qs.services
 
@@ -20,6 +20,8 @@ Singleton {
     property string systemUTF: "\udb82\udcc7"
     property string uptime: "0h0m0s"
     property string wm: "n/a"
+
+    property bool polkit_active: PolkitInfo.active
 
     signal auth(string prompt)
 
