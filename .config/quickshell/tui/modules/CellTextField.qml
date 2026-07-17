@@ -237,6 +237,14 @@ Item {
     RowLayout {
         spacing: Cell.w(1)
 
+        Connections {
+            target: root
+            function onWChanged() {
+                text.w = root.w - unit.w - (unit.w ? 1 : 0);
+                text.h = root.h;
+            }
+        }
+
         Cells {
             id: text
             clip: true
