@@ -5,15 +5,11 @@ import qs.modules
 import qs.services
 
 import QtQuick.Layouts
+import Quickshell.Services.Polkit
 import QtQuick
 
 CellPopup {
     id: root
-
-    property string prompt: PolkitInfo.prompt
-    property string message: PolkitInfo.message
-    property string description: PolkitInfo.description
-    property string identity: PolkitInfo.selectedId
 
     w: 40
     h: Cell.hCount(layout.implicitHeight) + 2
@@ -22,24 +18,14 @@ CellPopup {
 
     Connections {
         target: PolkitInfo
-        function onRequest(prompt, message, description, identity) {
-            PopupManager.open("auth", false);
+        function onRequest() {
+            root.open(false);
         }
-        function onFailedChanged() {
-            if (PolkitInfo.failed) {
-                root.setStatus("Authorization failed!", Colors.danger, Cell.fontB);
-                console.log("Authorization failed!");
-            }
+        function onSucceed() {
+            root.close();
         }
-        function onSuccessfulChanged() {
-            if (PolkitInfo.successful) {
-                root.setStatus("Authorization successful!", Colors.success, Cell.fontB);
-                console.log("Authorization successful!");
-            }
-        }
-        function onCompletedChanged() {
-            if (PolkitInfo.completed)
-                console.log("Authorization completed!");
+        function onFailed() {
+            root.setStatus("Authentication failed!", Colors.danger, Cell.font);
         }
     }
 
@@ -47,12 +33,16 @@ CellPopup {
         pwd_field.set("");
         succeed_anim.stop();
         status_reset.stop();
-        PolkitInfo.cancel();
         forceClose();
+        cancel();
+    }
+
+    function cancel() {
+        PolkitInfo.cancel();
     }
 
     onMarginsPressed: {
-        AuthInfo.cancel();
+        root.close();
     }
 
     function setStatus(text, color, font, reset = true) {
@@ -83,7 +73,7 @@ CellPopup {
         }
         ScriptAction {
             script: {
-                if (root.visible && !AuthInfo.checking) {
+                if (root.visible && !PolkitInfo.checking) {
                     root.setStatus("Insert password for <b>" + SystemInfo.username + "</b>", Colors.info, Cell.font, false);
                 }
             }
@@ -112,7 +102,7 @@ CellPopup {
 
                     Layout.leftMargin: Cell.w(1)
 
-                    text: root.prompt
+                    text: "Polkit authentication"
                     preferedW: box.contentW - 2
                     centered: true
                     color: Colors.secondary
@@ -130,7 +120,7 @@ CellPopup {
 
                     Layout.leftMargin: Cell.w(1)
 
-                    text: root.message
+                    text: PolkitInfo.message
                     color: Colors.fgDim
                     preferedW: box.contentW - 2
                     centered: true
@@ -144,7 +134,7 @@ CellPopup {
 
                     Layout.leftMargin: Cell.w(1)
 
-                    text: root.description
+                    text: PolkitInfo.extra
                     color: PolkitInfo.error ? Colors.danger : Colors.fgSubtle
                     preferedW: box.contentW - 2
                     centered: true
@@ -175,14 +165,13 @@ CellPopup {
 
                             forceFocus: true
 
-                            disabled: AuthInfo.checking || succeed_anim.running
+                            disabled: PolkitInfo.checking || succeed_anim.running
 
                             hidden: true
 
-                            placeholder: "Password"
+                            placeholder: PolkitInfo.prompt
 
                             onEntered: input => {
-                                console.log(input);
                                 PolkitInfo.submit(input);
                             }
                         }
@@ -195,7 +184,7 @@ CellPopup {
 
                     Layout.leftMargin: Cell.w(1)
 
-                    text: "Insert password for <b>" + PolkitInfo.selectedId + "</b>"
+                    text: "Insert password for <b>" + SystemInfo.username + "</b>"
                     color: Colors.info
                     preferedW: box.contentW - 2
                     wrap: true

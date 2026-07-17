@@ -1,4 +1,10 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
+
+import qs.config
+import qs.components.popups
+import qs.modules
+import qs.services
 
 import QtQuick
 import Quickshell
@@ -9,61 +15,59 @@ Singleton {
 
     property bool active: pk.isActive
 
-    readonly property AuthFlow flow: pk.flow
+    property AuthFlow flow: pk.flow
 
-    property string actionId: flow?.actionId ?? ""
-
-    property string icon: flow?.iconName ?? ""
     property string prompt: flow?.inputPrompt ?? ""
-    property string message: flow?.message ?? ""
-    property string description: flow?.supplementaryMessage ?? ""
-    property string cookie: flow?.cookie ?? ""
-    property string selectedId: flow?.selectedIdentity?.string ?? ""
+    property string message: flow?.message.trim() ?? ""
+    property string extra: flow?.supplementaryMessage.trim() ?? ""
     property bool error: flow?.supplementaryIsError ?? false
-    property bool hidden: !flow?.responseVisible ?? true
 
-    property bool required: flow?.isResponseRequired ?? true
-    property bool completed: flow?.isCompleted ?? false
-    property bool successful: flow?.isSuccessful ?? false
-    property bool failed: flow?.failed ?? false
-    property bool cancelled: flow?.isCancelled ?? false
+    Connections {
+        target: root.flow
+        function onAuthenticationFailed() {
+            root.checking = false;
+            root.failed();
+        }
+    }
 
-    signal request(prompt: string, message: string, description: string, identity: string)
-    signal success()
-    signal failure()
+    property bool checking: false
 
-    onFlowChanged: {
-        if (flow) {
-            request(prompt, message, description, selectedId);
+    signal request
+    signal succeed
+    signal failed
+    signal canceled
+
+    function cancel() {
+        if (active) {
+            root.flow.cancelAuthenticationRequest();
+            canceled();
         }
     }
 
     function submit(value: string) {
-        if (active)
-            flow.submit(value);
+        root.checking = true;
+        root.flow.submit(value);
     }
 
-    function cancel() {
-        if (active)
-            flow.cancelAuthenticationRequest();
-    }
-
-    Timer {
-        running: root.flow
-        repeat: true
-        interval: 1000
-        onTriggered: {
-            console.log(JSON.stringify(root.flow, null, 2));
+    Connections {
+        target: SettingsInfo
+        function onDebugSig() {
+            console.log(pk.flow);
+            root.cancel();
         }
     }
 
     PolkitAgent {
         id: pk
-
         onIsActiveChanged: {
-            if (isActive) {
-                console.log("Polkit activated");
+            if (!isActive) {
+                root.checking = false;
+                root.succeed();
             }
+        }
+        onAuthenticationRequestStarted: {
+            console.log("Authentication needed!");
+            root.request();
         }
     }
 }

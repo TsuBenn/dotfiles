@@ -97,6 +97,10 @@ Item {
 
     focus: !TextFieldManager.active && root.visible
 
+    function open(isolate = true) {
+        PopupManager.open(root.name, isolate);
+    }
+
     function close() {
         PopupManager.sigClose(root.name);
     }
