@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import qs.components
 import qs.components.bar
 import qs.components.popups
+import qs.components.floats
 import qs.modules
 import qs.config
 import qs.services
@@ -157,6 +158,8 @@ Scope {
 
             implicitHeight: Cell.h(1) + 1
             color: "transparent"
+
+            Floats {}
 
             StatusBar {
                 id: bar

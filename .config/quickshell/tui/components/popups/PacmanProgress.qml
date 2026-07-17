@@ -14,7 +14,7 @@ Item {
     property bool show: (
         PacmanInfo.pacmanState == "running"
         || PacmanInfo.pacmanState == "success"
-    ) && !PopupManager.isOpen("pacman") && !root.hidden
+    ) && !PopupManager.isOpen("pacman") && !FloatsManager.isOpen("pacman") && !root.hidden
 
     property real threshold: show ? 1 : 0
 
@@ -64,7 +64,7 @@ Item {
         }
 
         w: 104
-        h: expanded && PacmanInfo.pacmanState != "success" ? Cell.hCount(layout.implicitHeight) + 2 : 1 
+        h: expanded && PacmanInfo.pacmanState != "success" ? Cell.hCount(layout.implicitHeight) + 2 : 1
 
         color: Colors.bgSurface
 
