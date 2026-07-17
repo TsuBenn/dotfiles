@@ -50,8 +50,8 @@ Item {
 
         name: "spell_checker"
 
-        cellX: Cell.wCount(root.monitor.width / 2, "floor") - Math.floor(w / 2) - 1
-        cellY: Cell.hCount(root.monitor.height / 2, "floor") - Math.round(h / 2) - 2
+        cellX: Cell.wCount(root.monitor.width / 2, "floor") - Math.floor(w / 2)
+        cellY: Cell.hCount(root.monitor.height / 2, "floor") - Math.round(h / 2)
     }
 
     ColorPopup {
@@ -59,8 +59,8 @@ Item {
 
         name: "color"
 
-        cellX: Cell.wCount(root.monitor.width / 2, "floor") - Math.floor(w / 2) - 1
-        cellY: Cell.hCount(root.monitor.height / 2, "floor") - Math.round(h / 2) - 2
+        cellX: Cell.wCount(root.monitor.width / 2, "floor") - Math.floor(w / 2)
+        cellY: Cell.hCount(root.monitor.height / 2, "floor") - Math.round(h / 2)
     }
 
     WallpaperPopup {
@@ -154,5 +154,28 @@ Item {
         monitor: root.monitor
 
         name: "screenshot"
+    }
+
+    MouseControl {
+        implicitHeight: root.monitor.height
+        implicitWidth: root.monitor.width
+
+        propagateComposedEvents: true
+
+        hoverEnabled: false
+
+        onPressed: (button, event) => {
+            TextFieldManager.unFocusAll();
+            event.accepted = false;
+        }
+
+        onReleased: (button, event) => {
+            TextFieldManager.unFocusAll();
+            event.accepted = false;
+        }
+
+        onWheel: (button, event) => {
+            event.accepted = false;
+        }
     }
 }

@@ -29,6 +29,7 @@ Item {
 
     property bool escapeToUnFocus: true
     property bool unfocusOnEntered: false
+    property bool forceFocus: false
 
     property int cursorPos: 0
     property int visualPos: 0
@@ -110,7 +111,13 @@ Item {
     }
 
     onDisabledChanged: {
-        unFocus();
+        if (disabled)
+            unFocus();
+        else {
+            if (focusOnVisible || (!disabled && visible && forceFocus)) {
+                grabFocus();
+            }
+        }
     }
 
     onFocusChanged: {
@@ -123,6 +130,7 @@ Item {
             cursorPos = root.text.length;
             TextFieldManager.activated();
         } else {
+            TextFieldManager.deactivated();
             if (autoApply)
                 enter();
             bind();
@@ -133,8 +141,15 @@ Item {
     Connections {
         target: TextFieldManager
         function onActive_fieldsChanged() {
-            if (TextFieldManager.active_fields > 1) {
-                TextFieldManager.deactivated();
+            if (TextFieldManager.active_fields == 0) {
+                if (!root.disabled && root.visible && root.forceFocus) {
+                    root.grabFocus();
+                }
+            }
+        }
+        function onUnFocusAll() {
+            if (root.focus) {
+                root.unFocus();
             }
         }
     }
@@ -144,6 +159,7 @@ Item {
     }
 
     onBindTextChanged: {
+        root.text = root.bindText;
         bind();
     }
 
@@ -161,13 +177,13 @@ Item {
 
     function grabFocus() {
         if (visible) {
+            TextFieldManager.unFocusAll();
             forceActiveFocus();
         }
     }
 
     function unFocus() {
         if (focus) {
-            TextFieldManager.deactivated();
             focus = false;
         }
     }
@@ -570,9 +586,9 @@ Item {
     }
 
     function enter() {
-        entered(root.text);
         if (unfocusOnEntered && focus)
             unFocus();
+        entered(root.text);
     }
 
     function cut_selections() {
@@ -600,7 +616,7 @@ Item {
             else
                 return;
         } else if (event.key == Qt.Key_Escape) {
-            if (escapeToUnFocus)
+            if (root.escapeToUnFocus && !root.forceFocus)
                 root.unFocus();
             else
                 return;

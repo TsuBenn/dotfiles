@@ -228,6 +228,8 @@ CellPopup {
 
                                 property bool init: false
 
+                                forceFocus: true
+
                                 onVisibleChanged: {
                                     if (!init && visible) {
                                         textfield.search("")

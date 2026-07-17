@@ -4,14 +4,49 @@
       "binds": [
         "W"
       ],
+      "action": "open_power_menu"
+    },
+    {
+      "binds": [
+        "Q"
+      ],
       "action": "open_wallpaper_menu"
+    },
+    {
+      "binds": [
+        "E"
+      ],
+      "action": "open_media_player"
+    },
+    {
+      "binds": [
+        "C"
+      ],
+      "action": "open_color_menu"
     },
     {
       "binds": [
         "P"
       ],
-      "action": "open_wallpaper_menu"
+      "action": "open_pacman"
+    },
+    {
+      "binds": [
+        "I"
+      ],
+      "action": "open_spell_checker"
+    },
+    {
+      "binds": [
+        "SPACE"
+      ],
+      "action": "polkit_test"
     }
   ],
-  "custom_actions": {}
+  "custom_actions": {
+    "polkit_test": {
+      "label": "Polkit Test",
+      "cmd": "pkexec id"
+    }
+  }
 }

@@ -11,7 +11,7 @@ CellPopup {
     id: root
 
     w: Cell.wCount(popup.implicitWidth)
-    h: Cell.hCount(popup.implicitHeight)
+    h: Cell.hCount(popup.implicitHeight) + 5
 
     property bool minimal: SettingsInfo.minimal
 
@@ -138,6 +138,9 @@ CellPopup {
     }
 
     ColumnLayout {
+
+        x: -Cell.w(1)
+        y: Cell.h(1)
 
         spacing: 0
 

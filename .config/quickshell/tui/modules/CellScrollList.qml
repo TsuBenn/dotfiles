@@ -112,8 +112,7 @@ Cells {
             // Allocate just enough view nodes to cover the visible grid matrix plus one buffer
             model: Math.floor(root.h / (root.itemH > 0 ? root.itemH : 1)) + 1
 
-            // REMOVED: Nested Component block wrapper. Loader is now the direct visual delegate node.
-            Loader {
+            delegate: Loader {
                 id: viewLoader
 
                 required property int index
@@ -135,6 +134,14 @@ Cells {
                         // FIXED: Re-mapped index targets to pass true array positioning (realIndex)
                         if (item.hasOwnProperty("index"))
                             item.index = Qt.binding(() => viewLoader.realIndex ?? -1);
+                    }
+                }
+
+                Connections {
+                    target: root
+                    function onModelChanged() {
+                        viewLoader.sourceComponent = null;
+                        viewLoader.sourceComponent = Qt.binding(() => viewLoader.modelData || viewLoader.modelData == "" || viewLoader.modelData == 0 ? root.delegate : null);
                     }
                 }
             }

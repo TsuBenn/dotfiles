@@ -7,59 +7,47 @@ import qs.services
 import QtQuick.Layouts
 import QtQuick
 
-// ─────────────────────────────────────────────────────────────────
-// AuthPopup — modal password dialog, driven by AuthInfo.
-//
-// AuthPopup is a passive UI component. It doesn't expose a public API
-// for callers — instead, it listens to signals from AuthInfo:
-//
-//   AuthInfo.prompted(prompt, description) → opens + shows prompt/desc
-//   AuthInfo.verifySucceeded()             → shows "success" briefly, closes
-//   AuthInfo.verifyFailed(reason)          → shows error, lets user retry
-//   AuthInfo.closed()                      → closes itself
-//
-// When the user submits a password, AuthPopup calls AuthInfo._check(password).
-// When the user cancels (Escape / Cancel button / click outside),
-// AuthPopup calls AuthInfo.cancel().
-//
-// Callers never touch AuthPopup directly. They call:
-//   AuthInfo.verify(prompt, description, callback)
-// and AuthInfo handles the rest.
-// ─────────────────────────────────────────────────────────────────
-
 CellPopup {
     id: root
 
-    // ── State driven by AuthInfo signals ──
-    property string prompt: "Authenticate"
-    property string description: ""
-
-    // No public API — driven entirely by AuthInfo signals.
-    // The popup opens when AuthInfo.prompted fires, closes when
-    // AuthInfo.closed fires.
+    property string prompt: PolkitInfo.prompt
+    property string message: PolkitInfo.message
+    property string description: PolkitInfo.description
+    property string identity: PolkitInfo.selectedId
 
     w: 40
     h: Cell.hCount(layout.implicitHeight) + 2
 
     escapeToClose: true  // CellPopup binds Escape → PopupManager.sigClose → onSigClose()
 
-    // ── Cancel paths ──
-    // Three ways the user can cancel from inside the popup:
-    //   1. Press Escape (CellPopup's built-in escapeToClose → sigClose → onSigClose)
-    //   2. Click the Cancel button
-    //   3. Click outside the popup (marginsPressed from CellPopup)
-    // All three call AuthInfo.cancel(), which fires the pending
-    // callback with (false, "") and emits closed() to close this popup.
+    Connections {
+        target: PolkitInfo
+        function onRequest(prompt, message, description, identity) {
+            PopupManager.open("auth", false);
+        }
+        function onFailedChanged() {
+            if (PolkitInfo.failed) {
+                root.setStatus("Authorization failed!", Colors.danger, Cell.fontB);
+                console.log("Authorization failed!");
+            }
+        }
+        function onSuccessfulChanged() {
+            if (PolkitInfo.successful) {
+                root.setStatus("Authorization successful!", Colors.success, Cell.fontB);
+                console.log("Authorization successful!");
+            }
+        }
+        function onCompletedChanged() {
+            if (PolkitInfo.completed)
+                console.log("Authorization completed!");
+        }
+    }
 
-    // Override CellPopup's onSigClose function. Called when Escape is
-    // pressed (via PopupManager.sigClose). We cancel the auth flow
-    // instead of just closing — AuthInfo.cancel() will emit closed()
-    // which triggers our onClosed handler to do the actual close.
     function onSigClose() {
         pwd_field.set("");
         succeed_anim.stop();
         status_reset.stop();
-        AuthInfo.cancel();
+        PolkitInfo.cancel();
         forceClose();
     }
 
@@ -67,65 +55,12 @@ CellPopup {
         AuthInfo.cancel();
     }
 
-    // ── Listen to AuthInfo signals ──
-    Connections {
-
-        target: AuthInfo
-
-        function onPrompted(p: string, d: string) {
-            root.prompt = p;
-            root.description = d;
-            pwd_field.set("");
-            root._setStatus("Insert password for <b>" + SystemInfo.username + "</b>", Colors.info, Cell.font);
-            PopupManager.open(root.name, false);
-            // Focus after the popup is visible
-            Qt.callLater(() => {
-                pwd_field.forceActiveFocus();
-            });
-        }
-
-        function onVerifySucceeded() {
-            if (!root.visible)
-                return;
-            root._setStatus("Authentication succeed!", Colors.success, Cell.fontB);
-            succeed_anim.restart();
-        }
-
-        function onVerifyFailed(reason: string) {
-            if (!root.visible)
-                return;
-            root._setStatus(reason || "Authentication failed!", Colors.danger, Cell.fontB);
-            pwd_field.set("");
-            Qt.callLater(() => {
-                pwd_field.forceActiveFocus();
-            });
-        }
-
-        function onClosed() {
-            root.close();
-        }
-    }
-
-    function _setStatus(text, color, font) {
+    function setStatus(text, color, font, reset = true) {
         status.text = text;
         status.color = color;
         status.font = font || Cell.font;
-        status_reset.restart();
-    }
-
-    // ── Submit handler ──
-    function _submit(password) {
-        if (password.length === 0) {
-            _setStatus("Password field cannot be left empty!", Colors.warning);
-            return;
-        }
-        if (AuthInfo.checking) {
-            // PAM check already in flight — wait for it
-            return;
-        }
-
-        _setStatus("Processing password...", Colors.info, Cell.font);
-        AuthInfo._check(password);
+        if (reset)
+            status_reset.restart();
     }
 
     // ── Animations ──
@@ -149,7 +84,7 @@ CellPopup {
         ScriptAction {
             script: {
                 if (root.visible && !AuthInfo.checking) {
-                    root._setStatus("Insert password for <b>" + SystemInfo.username + "</b>", Colors.info, Cell.font);
+                    root.setStatus("Insert password for <b>" + SystemInfo.username + "</b>", Colors.info, Cell.font, false);
                 }
             }
         }
@@ -188,7 +123,20 @@ CellPopup {
                     color: Colors.accentStrong
                 }
 
-                // ── Description (optional) ──
+                CellText {
+                    id: message
+
+                    visible: text.length > 0
+
+                    Layout.leftMargin: Cell.w(1)
+
+                    text: root.message
+                    color: Colors.fgDim
+                    preferedW: box.contentW - 2
+                    centered: true
+                    wrap: true
+                }
+
                 CellText {
                     id: context
 
@@ -197,7 +145,7 @@ CellPopup {
                     Layout.leftMargin: Cell.w(1)
 
                     text: root.description
-                    color: Colors.fgDim
+                    color: PolkitInfo.error ? Colors.danger : Colors.fgSubtle
                     preferedW: box.contentW - 2
                     centered: true
                     wrap: true
@@ -225,9 +173,8 @@ CellPopup {
                             w: box.contentW - 4
                             h: 1
 
-                            // Disable only while PAM is actively checking a
-                            // password. NOT disabled during the rest of the auth
-                            // session (user can retype to retry on failure).
+                            forceFocus: true
+
                             disabled: AuthInfo.checking || succeed_anim.running
 
                             hidden: true
@@ -235,7 +182,8 @@ CellPopup {
                             placeholder: "Password"
 
                             onEntered: input => {
-                                root._submit(input);
+                                console.log(input);
+                                PolkitInfo.submit(input);
                             }
                         }
                     }
@@ -247,7 +195,7 @@ CellPopup {
 
                     Layout.leftMargin: Cell.w(1)
 
-                    text: "Insert password for <b>" + SystemInfo.username + "</b>"
+                    text: "Insert password for <b>" + PolkitInfo.selectedId + "</b>"
                     color: Colors.info
                     preferedW: box.contentW - 2
                     wrap: true

@@ -639,6 +639,8 @@ CellPopup {
 
                         focusOnVisible: true
 
+                        forceFocus: true
+
                         escapeToUnFocus: false
 
                         placeholder: "Search wallpaper"

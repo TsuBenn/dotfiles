@@ -65,7 +65,7 @@ When typing binds into the text field, please follow these formatting rules:
   - `slash` or `/`
   - `backslash` or `\`
   - `quote` or `"`
-  - `singlequote` or `'`
+  - `singlequote`, `apostrophe` or `'`
   - `pipe` or `|`
   - `dot`, `period` or `.`
   - `comma` or `,`

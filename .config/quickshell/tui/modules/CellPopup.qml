@@ -63,7 +63,8 @@ Item {
     } */
 
     Keys.onPressed: event => {
-        ShortcutInfo.handleShortcuts(event, root.shortcuts);
+        if (root.shortcuts.length > 0)
+            ShortcutInfo.handleShortcuts(event, root.shortcuts);
         if (ShortcutInfo.matchShortcut(event, "Escape") && escapeToClose) {
             root.close();
         }
@@ -103,11 +104,6 @@ Item {
     implicitWidth: Cell.w(w)
     implicitHeight: Cell.h(h)
 
-    /* Rectangle {
-        anchors.fill: parent
-        color: "white"
-    } */
-
     MouseControl {
 
         visible: (!ContextMenuManager.visible && !DropdownManager.visible && !HintManager.visible)
@@ -133,5 +129,9 @@ Item {
         onReleased: {
             root.marginsPressed();
         }
+        // Rectangle {
+        //     anchors.fill: parent
+        //     color: "white"
+        // }
     }
 }

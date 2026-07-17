@@ -19,6 +19,13 @@ Singleton {
         command: ["python", root.path]
         running: true
 
+        onRunningChanged: {
+            if (!running) {
+                console.log("ClipboardInfo: Process closed unexpectedly, restarting...");
+                running = true;
+            }
+        }
+
         stdout: SplitParser {
             splitMarker: ""
             onRead: {

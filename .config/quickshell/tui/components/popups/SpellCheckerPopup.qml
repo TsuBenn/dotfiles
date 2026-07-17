@@ -5,18 +5,22 @@ import qs.services
 import QtQuick
 
 CellPopup {
+    id: root
 
-    w: Cell.wCount(box.implicitWidth) + 2
-    h: Cell.hCount(box.implicitHeight) + 2
+    w: 48
+    h: 20
 
+    Cells {
 
-    CellBox {
+        w: root.w
+        h: root.h
 
-        id: box
+        CellBox {
+            id: box
 
-        w: 50
-        h: 30
+            w: root.w
+            h: root.h
 
+        }
     }
-
 }
