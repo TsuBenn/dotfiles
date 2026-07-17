@@ -265,11 +265,11 @@ CellPopup {
 
                     CellText { text: "" }
 
-                    Header { 
+                    Header {
 
                         id: gpu
 
-                        text: "GPU" 
+                        text: "GPU"
 
                         property int index: 0
                         property var model: SystemInfo.gpumodels[index] ?? ({
@@ -514,9 +514,9 @@ CellPopup {
 
                     CellText { text: "" }
 
-                    Header { 
+                    Header {
 
-                        text: "Motherboard" 
+                        text: "Motherboard"
 
                     }
 
@@ -702,8 +702,12 @@ CellPopup {
 
                                             text: root.fmt("<b>{}</b> <i>{}</i>",disks.name, disks.fs)
                                             fg: box.stc
-                                            cellw: box.eW - box.p*2 - 1 - diskused.w - disktotal.w
+                                            cellw: box.eW - box.p*2 - 2 - diskused.w - disktotal.w
 
+                                        }
+
+                                        CellText {
+                                            text: " "
                                         }
 
                                         CellText {
@@ -736,7 +740,7 @@ CellPopup {
 
                                         fg: Colors.fgSubtle
 
-                                        cellw: box.eW - box.p*2 - 1 
+                                        cellw: box.eW - box.p*2 - 1
 
                                     }
 

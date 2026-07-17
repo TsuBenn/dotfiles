@@ -7,17 +7,16 @@ import qs.services
 import qs.modules
 
 import Quickshell.Wayland
-import Quickshell.Io
+import Quickshell.Services.Pam
 import QtQuick
 import QtQuick.Layouts
 import QtMultimedia
 import Qt5Compat.GraphicalEffects
 
 WlSessionLockSurface {
-
     id: root
 
-    property bool processing: AuthInfo.checking
+    property bool processing: false
 
     property bool focused: monitor.name == HyprInfo.focusedMonitor.name
 
@@ -25,18 +24,12 @@ WlSessionLockSurface {
 
     property var monitor: {
         "width": 1920,
-        "height": 1080,
+        "height": 1080
     }
 
     onVisibleChanged: {
-        AuthInfo.authenticating = true
-        password_field.focus = true
-        lock_screen_anim.restart()
-    }
-
-    function unlock(password: string) {
-        AuthInfo._check(password)
-        AuthInfo.authenticating = false
+        password_field.focus = true;
+        lock_screen_anim.restart();
     }
 
     MediaPlayer {
@@ -53,7 +46,12 @@ WlSessionLockSurface {
         layer.enabled: true
         layer.effect: GaussianBlur {
 
-            Behavior on radius {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
+            Behavior on radius {
+                NumberAnimation {
+                    duration: 500
+                    easing.type: Easing.OutCubic
+                }
+            }
 
             cached: true
             radius: root.focused ? 10 : 0
@@ -66,32 +64,49 @@ WlSessionLockSurface {
 
             opacity: SettingsInfo.bgCava
 
-            Behavior on opacity {NumberAnimation {
-                duration: 1000
-                easing.type: Easing.OutCubic
-            }}
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 1000
+                    easing.type: Easing.OutCubic
+                }
+            }
 
             anchors.fill: parent
 
             gradient: Gradient {
                 orientation: Gradient.Vertical
-                GradientStop { position: 0.0; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5) }
-                GradientStop { position: 0.4; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0) }
-                GradientStop { position: 0.6; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0) }
-                GradientStop { position: 1.0; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5) }
+                GradientStop {
+                    position: 0.0
+                    color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5)
+                }
+                GradientStop {
+                    position: 0.4
+                    color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0)
+                }
+                GradientStop {
+                    position: 0.6
+                    color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0)
+                }
+                GradientStop {
+                    position: 1.0
+                    color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5)
+                }
             }
-
         }
         Rectangle {
             anchors.fill: parent
-            color: Qt.darker(Colors.bgBase,2)
+            color: Qt.darker(Colors.bgBase, 2)
             opacity: root.focused ? 0.5 : 0
-            Behavior on opacity {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 500
+                    easing.type: Easing.OutCubic
+                }
+            }
         }
     }
 
     Rectangle {
-
         id: cava_mask
 
         visible: false
@@ -100,12 +115,23 @@ WlSessionLockSurface {
 
         gradient: Gradient {
             orientation: Gradient.Vertical
-            GradientStop { position: 0.0; color: "transparent" }
-            GradientStop { position: 0.3; color: "white"}
-            GradientStop { position: 0.7; color: "white"}
-            GradientStop { position: 1.0; color: "transparent" }
+            GradientStop {
+                position: 0.0
+                color: "transparent"
+            }
+            GradientStop {
+                position: 0.3
+                color: "white"
+            }
+            GradientStop {
+                position: 0.7
+                color: "white"
+            }
+            GradientStop {
+                position: 1.0
+                color: "transparent"
+            }
         }
-
     }
 
     Rectangle {
@@ -114,51 +140,66 @@ WlSessionLockSurface {
 
         opacity: SettingsInfo.bgCavaLock && !root.focused
 
-        Behavior on opacity {NumberAnimation {
-            duration: 500
-            easing.type: Easing.OutCubic
-        }}
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 500
+                easing.type: Easing.OutCubic
+            }
+        }
 
         anchors.fill: parent
 
         gradient: Gradient {
             orientation: Gradient.Vertical
-            GradientStop { position: 0.0; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5) }
-            GradientStop { position: 0.4; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0) }
-            GradientStop { position: 0.6; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0) }
-            GradientStop { position: 1.0; color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5) }
+            GradientStop {
+                position: 0.0
+                color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5)
+            }
+            GradientStop {
+                position: 0.4
+                color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0)
+            }
+            GradientStop {
+                position: 0.6
+                color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.0)
+            }
+            GradientStop {
+                position: 1.0
+                color: Colors.transparent(Qt.darker(Colors.bgBase, 5), 0.5)
+            }
         }
-
     }
 
     component BgCava: CellAudioVisual {
 
         visible: opacity > 0
 
-        opacity: SettingsInfo.bgCavaLock*0.2
+        opacity: SettingsInfo.bgCavaLock * 0.2
 
         property real interval: 3
 
-        Behavior on opacity {NumberAnimation {
-            duration: 1000
-            easing.type: Easing.OutCubic
-        }}
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 1000
+                easing.type: Easing.OutCubic
+            }
+        }
 
         Component.onCompleted: {
             if (visible) {
-                Cava.requestStart()
+                Cava.requestStart();
             }
         }
         onVisibleChanged: {
             if (visible) {
-                Cava.requestStart()
+                Cava.requestStart();
             } else {
-                Cava.release()
+                Cava.release();
             }
         }
 
-        w: Cell.wCount(parent.width,"floor")
-        h: Cell.hCount(parent.height/interval,"floor")
+        w: Cell.wCount(parent.width, "floor")
+        h: Cell.hCount(parent.height / interval, "floor")
 
         spacing: 2
         barW: 2
@@ -169,22 +210,29 @@ WlSessionLockSurface {
         layer.effect: OpacityMask {
             maskSource: cava_mask
         }
-
     }
 
-    BgCava {rotation: 180}
+    BgCava {
+        rotation: 180
+    }
 
-    BgCava {y: parent.height - parent.height/interval}
+    BgCava {
+        y: parent.height - parent.height / interval
+    }
 
     Rectangle {
-
         id: util_bar
 
         property bool peek: false && root.focused
 
-        Behavior on anchors.topMargin {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+        Behavior on anchors.topMargin {
+            NumberAnimation {
+                duration: 200
+                easing.type: Easing.OutCubic
+            }
+        }
 
-        anchors.topMargin: -Cell.h(1)*!peek
+        anchors.topMargin: -Cell.h(1) * !peek
 
         anchors.top: parent.top
         anchors.left: parent.left
@@ -193,7 +241,6 @@ WlSessionLockSurface {
         implicitHeight: Cell.h(1)
 
         color: Colors.bgSurface
-
 
         Item {
 
@@ -207,7 +254,7 @@ WlSessionLockSurface {
 
                 spacing: Cell.w(1)
 
-                x: Cell.toW(root.width,"floor") - width - Cell.w(1)
+                x: Cell.toW(root.width, "floor") - width - Cell.w(1)
 
                 CellText {
                     text: ""
@@ -227,11 +274,8 @@ WlSessionLockSurface {
                 ControlPanel {
                     interactive: false
                 }
-
             }
-
         }
-
     }
 
     MouseArea {
@@ -246,34 +290,35 @@ WlSessionLockSurface {
         implicitHeight: util_bar.peek ? Cell.h(3) : 1
 
         onEntered: {
-            util_bar.peek = true
-            unpeek_util.stop()
+            util_bar.peek = true;
+            unpeek_util.stop();
         }
 
         onExited: {
-            unpeek_util.restart()
+            unpeek_util.restart();
         }
-
     }
 
     Timer {
-
         id: unpeek_util
         interval: 500
         onTriggered: {
-            util_bar.peek = false
+            util_bar.peek = false;
         }
-
     }
 
     ColumnLayout {
+        id: layout
 
         opacity: root.focused ? 1 : 0
 
         layer.enabled: true
-        Behavior on opacity {NumberAnimation {duration: 500*SettingsInfo.hyprAnim; easing.type: Easing.OutCubic}}
-
-        id: layout
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 500 * SettingsInfo.hyprAnim
+                easing.type: Easing.OutCubic
+            }
+        }
 
         x: Cell.centerWCell(implicitWidth, root.monitor.width)
         y: Cell.centerHCell(implicitHeight, root.monitor.height)
@@ -305,7 +350,7 @@ WlSessionLockSurface {
         CellText {
             id: user
             Layout.leftMargin: Cell.centerWCell(width, parent.width)
-            text: SystemInfo.username + (`${SystemInfo.username}@${SystemInfo.hostname}`.length%2!=0 ? " " : "") + "@" + SystemInfo.hostname
+            text: SystemInfo.username + (`${SystemInfo.username}@${SystemInfo.hostname}`.length % 2 != 0 ? " " : "") + "@" + SystemInfo.hostname
             color: Colors.secondary
             font: Cell.fontB
         }
@@ -335,7 +380,6 @@ WlSessionLockSurface {
                 h: parent.h
 
                 CellTextField {
-
                     id: password_field
 
                     x: Cell.w(1)
@@ -345,35 +389,33 @@ WlSessionLockSurface {
 
                     hidden: true
 
-                    disabled: root.processing   
+                    disabled: root.processing
 
                     escapeToUnFocus: false
 
                     placeholder: "Password"
 
-                    onTextInput: (input) => {
-                        LockInfo.password = input
+                    onTextInput: input => {
+                        LockInfo.password = input;
                     }
 
                     Component.onCompleted: {
-                        LockInfo.passwordChanged.connect(()=> {
+                        LockInfo.passwordChanged.connect(() => {
                             if (!root.focused) {
-                                password_field?.set(LockInfo.password)
+                                password_field?.set(LockInfo.password);
                             }
-                        })
+                        });
                     }
 
-                    onEntered: (input) => {
-                        root.processing = true
-                        pwd_status.text = " Info: Processing password... "
-                        pwd_status.color = Colors.info
-                        root.unlock(input)
+                    onEntered: input => {
+                        root.processing = true;
+                        pwd_status.text = " Info: Processing password... ";
+                        pwd_status.color = Colors.info;
+                        // root.unlock(input);
+                        pam.respond(input);
                     }
-
                 }
-
             }
-
         }
 
         CellText {
@@ -393,21 +435,20 @@ WlSessionLockSurface {
                 color: SettingsInfo.lockScreenMusic ? Colors.accentStrong : Colors.bgOverlay
                 fg: SettingsInfo.lockScreenMusic ? Colors.onAccent : Colors.fgBase
 
-                onReleased: (button) => {
+                onReleased: button => {
                     if (button == "L") {
-                        SettingsInfo.toggle("lockScreenMusic")
+                        SettingsInfo.toggle("lockScreenMusic");
                         if (SettingsInfo.lockScreenMusic) {
                             if (MediaPlayerInfo.status == "playing") {
-                                MediaPlayerInfo.pauseMedia()
+                                MediaPlayerInfo.pauseMedia();
                             }
-                            lock_screen_music.play()
+                            lock_screen_music.play();
                         } else {
-                            MediaPlayerInfo.pauseMedia()
-                            lock_screen_music.stop()
+                            MediaPlayerInfo.pauseMedia();
+                            lock_screen_music.stop();
                         }
                     }
                 }
-
             }
 
             CellButton {
@@ -417,12 +458,11 @@ WlSessionLockSurface {
                 color: SettingsInfo.bgCavaLock ? Colors.accentStrong : Colors.bgOverlay
                 fg: SettingsInfo.bgCavaLock ? Colors.onAccent : Colors.fgBase
 
-                onReleased: (button) => {
+                onReleased: button => {
                     if (button == "L") {
-                        SettingsInfo.toggle("bgCavaLock")
+                        SettingsInfo.toggle("bgCavaLock");
                     }
                 }
-
             }
 
             CellButton {
@@ -432,14 +472,12 @@ WlSessionLockSurface {
                 color: [Colors.accentStrong, Colors.bgOverlay]
                 fg: [Colors.onAccent, Colors.fgBase]
 
-                onReleased: (button) => {
+                onReleased: button => {
                     if (button == "L") {
-                        PopupManager.open("power")
+                        PopupManager.open("power");
                     }
                 }
-
             }
-
         }
 
         CellText {
@@ -447,17 +485,14 @@ WlSessionLockSurface {
         }
 
         CellText {
-            Layout.leftMargin: Cell.centerWCell(width, parent.width)
             id: pwd_status
+            Layout.leftMargin: Cell.centerWCell(width, parent.width)
             text: ""
             bg: Colors.bgSurface
         }
-
-
     }
 
     MouseControl {
-
         id: mouse
 
         x: layout.x - 200
@@ -466,14 +501,13 @@ WlSessionLockSurface {
         width: layout.width + 400
 
         acceptedButtons: Qt.NoButton
-
     }
 
     Timer {
         id: reset_pwd_status
         interval: 5000
         onTriggered: {
-            pwd_status.text = ""
+            pwd_status.text = "";
         }
     }
 
@@ -484,21 +518,20 @@ WlSessionLockSurface {
                 target: lock_status_buffer
                 property: "opacity"
                 from: 0
-                to: 1*root.focused
+                to: 1 * root.focused
                 duration: 500
                 easing.type: Easing.OutCubic
             }
         }
         ScriptAction {
             script: {
-                lock_status.status = "locked"
-                lock_screen_music_output.volume = AudioInfo.volume/100
+                lock_status.status = "locked";
+                lock_screen_music_output.volume = AudioInfo.volume / 100;
                 if (SettingsInfo.lockScreenMusic && MediaPlayerInfo.status != "playing") {
-                    lock_screen_music.play()
+                    lock_screen_music.play();
                 } else {
-                    lock_screen_music.stop()
+                    lock_screen_music.stop();
                 }
-
             }
         }
         PauseAnimation {
@@ -513,7 +546,6 @@ WlSessionLockSurface {
                 easing.type: Easing.OutCubic
             }
         }
-
     }
 
     Rectangle {
@@ -530,7 +562,12 @@ WlSessionLockSurface {
         x: lock_status.x + layout.x
         y: lock_status.y + layout.y
         opacity: root.focused
-        Behavior on opacity {NumberAnimation {duration: 500*SettingsInfo.hyprAnim; easing.type: Easing.OutCubic}}
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 500 * SettingsInfo.hyprAnim
+                easing.type: Easing.OutCubic
+            }
+        }
         live: true
         hideSource: true
         sourceItem: lock_status
@@ -545,7 +582,6 @@ WlSessionLockSurface {
         name: "power"
 
         lock: true
-
     }
 
     SequentialAnimation {
@@ -569,7 +605,7 @@ WlSessionLockSurface {
         ParallelAnimation {
             ScriptAction {
                 script: {
-                    lock_status.status = "unlocked"
+                    lock_status.status = "unlocked";
                 }
             }
             NumberAnimation {
@@ -582,25 +618,41 @@ WlSessionLockSurface {
         }
         ScriptAction {
             script: {
-                SystemInfo.unlockRequest()
+                SystemInfo.unlockRequest();
             }
         }
     }
 
-    Connections {
-        target: AuthInfo
-        function onVerifySucceeded() {
-            pwd_status.text = " Success: Correct password! "
-            pwd_status.color = Colors.success
-            unlock_anim.restart()
-        }
-        function onVerifyFailed() {
-            pwd_status.text = " Error: Wrong password! "
-            pwd_status.color = Colors.danger
-            reset_pwd_status.running = true
-            password_field.set("")
-            root.processing = false
+    PamContext {
+        id: pam
+
+        active: true
+
+        onCompleted: result => {
+            pam.active = true;
+            if (result == PamResult.Success) {
+                pwd_status.text = " Success: Correct password! ";
+                pwd_status.color = Colors.success;
+                unlock_anim.restart();
+            } else if (result == PamResult.Failed) {
+                pwd_status.text = " Error: Wrong password! ";
+                pwd_status.color = Colors.danger;
+                reset_pwd_status.running = true;
+                password_field.set("");
+                root.processing = false;
+            } else if (result == PamResult.MaxTries) {
+                pwd_status.text = " Error: No more tries, try again later! ";
+                pwd_status.color = Colors.danger;
+                reset_pwd_status.running = true;
+                password_field.set("");
+                root.processing = false;
+            } else {
+                pwd_status.text = " Error: Unexpected error, try again! ";
+                pwd_status.color = Colors.danger;
+                reset_pwd_status.running = true;
+                password_field.set("");
+                root.processing = false;
+            }
         }
     }
-
 }

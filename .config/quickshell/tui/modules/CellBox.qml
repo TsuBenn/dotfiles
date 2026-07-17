@@ -30,7 +30,7 @@ Item {
     }
 
     property Border border: Border {
-        type: 4
+        type: 1
         color: Colors.accentStrong
     }
 
