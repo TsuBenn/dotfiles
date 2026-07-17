@@ -551,7 +551,7 @@ CellPopup {
                                 footer.font: WallpaperInfo.inSet(modelData) ? Cell.fontB : Cell.font
 
                                 border.color: WallpaperInfo.inSet(modelData) ? Colors.secondary : "transparent"
-                                border.type: WallpaperInfo.isLive(modelData) ? 3 : 4
+                                border.type: WallpaperInfo.isLive(modelData) ? 3 : 1
 
                                 Cells {
 
@@ -625,7 +625,6 @@ CellPopup {
                     w: box.contentW
                     h: 3
 
-                    border.type: 4
                     border.color: textfield.text.trim().length > 0 ? Colors.secondary : Colors.accentStrong
 
                     CellTextField {

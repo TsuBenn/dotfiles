@@ -180,7 +180,6 @@ CellPopup {
                     w: parent.w
                     h: parent.h
 
-                    border.type: 4
                     border.color: textfield.text.trim().length > 0 ? Colors.secondary : Colors.accentStrong
 
                     Item {

@@ -5,7 +5,6 @@ import qs.modules
 import qs.services
 
 import QtQuick.Layouts
-import Quickshell.Services.Polkit
 import QtQuick
 
 CellPopup {
@@ -13,6 +12,8 @@ CellPopup {
 
     w: 40
     h: Cell.hCount(layout.implicitHeight) + 2
+
+    property bool succeed: false
 
     escapeToClose: true  // CellPopup binds Escape → PopupManager.sigClose → onSigClose()
 
@@ -22,6 +23,7 @@ CellPopup {
             root.open(false);
         }
         function onSucceed() {
+            root.succeed = true;
             root.close();
         }
         function onFailed() {
@@ -34,7 +36,9 @@ CellPopup {
         succeed_anim.stop();
         status_reset.stop();
         forceClose();
-        cancel();
+        if (!succeed)
+            cancel();
+        succeed = false;
     }
 
     function cancel() {
@@ -102,7 +106,7 @@ CellPopup {
 
                     Layout.leftMargin: Cell.w(1)
 
-                    text: "Polkit authentication"
+                    text: "Polkit authentication" + (PolkitInfo.flows.length > 1 ? " (" + PolkitInfo.flows.length + " left)" : "")
                     preferedW: box.contentW - 2
                     centered: true
                     color: Colors.secondary
@@ -141,6 +145,11 @@ CellPopup {
                     wrap: true
                 }
 
+                CellSeparator {
+                    w: box.contentW
+                    color: Colors.bgOverlay
+                }
+
                 // ── Password field ──
                 Cells {
 
@@ -154,6 +163,9 @@ CellPopup {
                         h: parent.h
 
                         border.color: pwd_field.text.length > 0 ? Colors.secondary : Colors.accentStrong
+
+                        header.text: PolkitInfo.cleanPrompt != "" ? " " + PolkitInfo.cleanPrompt + " " : ""
+                        header.offset: Math.round((contentW - header.text.length) / 2)
 
                         CellTextField {
                             id: pwd_field
@@ -169,7 +181,7 @@ CellPopup {
 
                             hidden: true
 
-                            placeholder: PolkitInfo.prompt
+                            placeholder: PolkitInfo.cleanPrompt
 
                             onEntered: input => {
                                 PolkitInfo.submit(input);
@@ -196,7 +208,6 @@ CellPopup {
                     color: Colors.bgOverlay
                 }
 
-                // ── Buttons ──
                 RowLayout {
 
                     Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
@@ -207,16 +218,16 @@ CellPopup {
 
                         text: "Verify"
 
-                        clickable: pwd_field.text.length > 0 && !AuthInfo.checking && !succeed_anim.running
+                        clickable: pwd_field.text.length > 0 && !PolkitInfo.checking && !succeed_anim.running
 
                         color: clickable ? [Colors.accentStrong, Colors.bgOverlay] : Colors.bgOverlay
                         fg: clickable ? [Colors.onAccent, Colors.fgBase] : Colors.fgSubtle
 
                         onReleased: button => {
                             if (button == "L") {
-                                if (AuthInfo.checking)
+                                if (PolkitInfo.checking)
                                     return;
-                                pwd_field.enter();  // triggers onEntered → _submit
+                                pwd_field.enter();
                             }
                         }
                     }

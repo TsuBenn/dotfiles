@@ -426,7 +426,6 @@ CellPopup {
                 h: color.h + 2
 
                 border {
-                    type: 4
                     color: root.result.length > 0 ? color.color.accentStrong : Colors.accentStrong
                 }
 
