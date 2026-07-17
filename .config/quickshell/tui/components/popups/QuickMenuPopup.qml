@@ -7,8 +7,6 @@ import qs.services
 import QtQuick
 import QtQuick.Layouts
 
-import Quickshell.Io
-
 CellPopup {
     id: root
 
@@ -79,7 +77,7 @@ CellPopup {
 
                     itemH: 2
 
-                    model: QuickMenuInfo.binds
+                    model: [...QuickMenuInfo.binds]
 
                     delegate: ColumnLayout {
                         id: keybind
@@ -89,10 +87,6 @@ CellPopup {
                         property int index
                         property var binds: modelData.binds
                         property string action: modelData.action
-
-                        onActionChanged: {
-                            console.log("bruh");
-                        }
 
                         spacing: 0
 
@@ -120,11 +114,14 @@ CellPopup {
                                         for (const actions of Object.keys(QuickMenuInfo.actions)) {
                                             result.push({
                                                 "label": QuickMenuInfo.actions[actions].label,
-                                                "action": () => QuickMenuInfo.setAction(keybind.index, actions)
+                                                "data": actions
                                             });
                                         }
                                         // console.log(JSON.stringify(result, null, 2));
                                         return result;
+                                    }
+                                    onActivated: (index, label) => {
+                                        QuickMenuInfo.setAction(keybind.index, items[index].data);
                                     }
                                 }
 
@@ -279,7 +276,7 @@ CellPopup {
                     delegate: ColumnLayout {
                         id: custom
 
-                        property string modelData
+                        property var modelData
 
                         property var custom_actions: QuickMenuInfo.custom_actions[modelData]
 
@@ -302,6 +299,7 @@ CellPopup {
                                 color: Colors.bgOverlay
 
                                 CellTextField {
+                                    id: custom_label
 
                                     x: Cell.w(1)
 

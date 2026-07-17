@@ -7,7 +7,6 @@ import QtQuick.Layouts
 import QtQuick
 
 Item {
-
     id: root
 
     property int w
@@ -41,26 +40,34 @@ Item {
 
     property int selected: 0
 
+    signal activated(index: int, label: string)
+
     property var items: [
-        {label: "Button 1", action: () => console.log("Button 1 of the dropdown has been pressed")},
-        {label: "Button 2", action: () => console.log("Button 2 of the dropdown has been pressed")}
+        {
+            label: "Button 1",
+            action: () => console.log("Button 1 of the dropdown has been pressed")
+        },
+        {
+            label: "Button 2",
+            action: () => console.log("Button 2 of the dropdown has been pressed")
+        }
     ]
 
     function advance(delta: int) {
-        items[(selected + items.length + delta)%items.length].action()
+        items[(selected + items.length + delta) % items.length].action();
     }
-
 
     implicitWidth: Cell.w(w)
     implicitHeight: Cell.h(1)
 
     Component.onCompleted: {
-        DropdownManager.closed.connect(()=> {
-            if (!root) return
+        DropdownManager.closed.connect(() => {
+            if (!root)
+                return;
             if (root.active) {
-                root.active = false
+                root.active = false;
             }
-        })
+        });
     }
 
     Cells {
@@ -85,25 +92,27 @@ Item {
                 text: (!root.active ? " ⏷" : " ⏶") + " ".repeat(root.padding)
                 color: root.active ? root.button.active_invert : root.button.fg
             }
-
         }
-
     }
 
     MouseControl {
         anchors.fill: parent
 
-        onWheel: (delta) => {
-            root.advance(-delta)
+        onWheel: delta => {
+            root.advance(-delta);
         }
 
-        onPressed: (button) => {
+        onPressed: button => {
             if (button == "L") {
-                root.active = true
-                const global = mapToGlobal(x, y)
-                DropdownManager.show(root.items, global.x, global.y - root.reversed*Cell.h(root.items.length + 1), root.w, root.h, root.selected, root.menu.padding, root.menu.color, root.menu.fg, root.menu.active, root.menu.active_invert)
+                root.active = true;
+
+                let selectBridge = function (index) {
+                    root.activated(index, root.items[index]?.label ?? "");
+                };
+
+                const global = mapToGlobal(x, y);
+                DropdownManager.show(root.items, global.x, global.y - root.reversed * Cell.h(root.items.length + 1), root.w, root.h, root.selected, root.menu.padding, root.menu.color, root.menu.fg, root.menu.active, root.menu.active_invert, selectBridge);
             }
         }
-
     }
 }

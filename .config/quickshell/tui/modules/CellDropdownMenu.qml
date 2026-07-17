@@ -28,6 +28,7 @@ CellPopup {
     property color fg: DropdownManager.fg
     property color active: DropdownManager.active
     property color active_invert: DropdownManager.active_invert
+    property var callback: DropdownManager.callback
 
     Cells {
         id: menu
@@ -76,11 +77,13 @@ CellPopup {
                     id: mouse
                     anchors.fill: parent
 
-                    onReleased: button => {
-                        if (button == "L" && hovered) {
+                    onReleased: btn => {
+                        if (btn == "L" && hovered) {
+                            let selection = button.index;
                             DropdownManager.hide();
                             if (root.selected != parent.index) {
-                                parent.modelData.action();
+                                // console.log(selection);
+                                root.callback(selection);
                             }
                         }
                     }

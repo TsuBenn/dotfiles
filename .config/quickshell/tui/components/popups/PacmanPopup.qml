@@ -15,7 +15,7 @@ CellPopup {
 
     property string pacmanState: PacmanInfo.pacmanState
 
-    property int selected_index: 0
+    property int selected_index: list.datas.findIndex(item => item.name == selected_pkg)
     property string selected_pkg: ""
     property var multi_selected_pkg: []
 
@@ -63,7 +63,7 @@ CellPopup {
         {
             binds: ["Up", "Backtab"],
             action: () => {
-                if (PacmanInfo.fetching)
+                if (PacmanInfo.fetching || selected_index == 0)
                     return;
                 let index = PacmanInfo.search_results.findIndex(item => item.name == root.selected_pkg);
                 if (index == -1 || index < list.offset || index > list.offset + list.h) {
@@ -73,16 +73,16 @@ CellPopup {
                     root.selected_pkg = list.datas[list.offset].name;
                     return;
                 }
-                if (root.selected_index - 1 < 0) {
+                root.selected_pkg = list.datas[root.selected_index - 1].name;
+                if (root.selected_index - 1 < list.offset) {
                     list.offset -= list.h;
                 }
-                root.selected_pkg = list.datas[list.offset + (root.selected_index + list.h - 1) % list.h].name;
             }
         },
         {
             binds: ["Down", "Tab"],
             action: () => {
-                if (PacmanInfo.fetching)
+                if (PacmanInfo.fetching || selected_index == list.datas.length - 1)
                     return;
                 let index = PacmanInfo.search_results.findIndex(item => item.name == root.selected_pkg);
                 if (index == -1 || index < list.offset || index > list.offset + list.h) {
@@ -520,7 +520,6 @@ CellPopup {
 
                             onSelectedChanged: {
                                 if (selected) {
-                                    root.selected_index = index;
                                     if (PacmanInfo.search_mode == 4) {
                                         let inputs = search_field.text.split(" ");
                                         inputs[inputs.length - 1] = pkg.name;
