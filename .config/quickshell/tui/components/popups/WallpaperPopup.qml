@@ -94,6 +94,7 @@ CellPopup {
     onVisibleChanged: {
         edit = false;
         reposition = false;
+        textfield.set("");
     }
 
     onEditChanged: {
@@ -645,6 +646,8 @@ CellPopup {
                         escapeToUnFocus: false
 
                         placeholder: "Search wallpaper"
+
+                        moveable: false
 
                         onEntered: {
                             selection.select();

@@ -38,15 +38,10 @@
     },
     {
       "binds": [
-        "SPACE"
+        "S"
       ],
-      "action": "polkit_test"
+      "action": "open_system_info"
     }
   ],
-  "custom_actions": {
-    "polkit_test": {
-      "label": "Polkit Test",
-      "cmd": "pkexec id"
-    }
-  }
+  "custom_actions": {}
 }

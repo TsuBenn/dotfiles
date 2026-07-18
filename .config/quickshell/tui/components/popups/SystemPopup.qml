@@ -10,7 +10,7 @@ import QtQuick.Layouts
 CellPopup {
     id: root
 
-    property bool optimizeMemory: SettingsInfo.optimizeMemory
+    property bool optimizeMemory: /* SettingsInfo.optimizeMemory */ false
 
     property bool minimal: SettingsInfo.minimal
 

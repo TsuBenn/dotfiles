@@ -127,6 +127,7 @@ CellFloats {
     ]
 
     onVisibleChanged: {
+        textfield.set("");
         if (color.edit && visible) {
             color.toggleEdit();
         }
@@ -134,8 +135,7 @@ CellFloats {
     }
 
     onResultChanged: {
-        console.log(root.result);
-        color.selected = Math.min(color.selected, result.length);
+        // console.log(root.result);
     }
 
     function resetList() {
@@ -385,6 +385,8 @@ CellFloats {
                                         root.result = root.colors.filter(item => {
                                             return Colors.colors[item][SettingsInfo.lightMode ? "light" : "dark"].name.toLowerCase().includes(textfield.text.toLowerCase()) || Colors.colors[item][SettingsInfo.lightMode ? "light" : "dark"].description.toLowerCase().includes(textfield.text.toLowerCase()) || item.includes(textfield.text.toLowerCase());
                                         });
+                                        list.reset();
+                                        color.selected = 0;
                                     }
                                 }
                             }

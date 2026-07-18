@@ -9,6 +9,7 @@ import shutil
 import curses
 import subprocess
 import re
+import time
 from dataclasses import dataclass, field
 from typing import Optional, List
 
@@ -35,6 +36,8 @@ class ExplorerState:
     search_query: str = ""
     in_search_mode: bool = False
     in_menu_mode: bool = False
+    in_sort_menu_mode: bool = False  # Track if sorting menu window overlay is open
+    sort_by: str = "name"            # Current sort mode: "name", "size", or "date"
     clipboard_path: Optional[str] = None
     clipboard_action: Optional[str] = None
     entries: List[tuple] = field(default_factory=list)
@@ -82,16 +85,37 @@ def toggle_permission(path: str, perm_type: str) -> bool:
 
 # ─── Directory Helpers ────────────────────────────────────────────────────────
 
-def list_directory(path: str) -> List[tuple]:
+def list_directory(path: str, sort_by: str = "name") -> List[tuple]:
     try:
         names = os.listdir(path)
-        entries = [(name, os.path.isdir(os.path.join(path, name))) for name in names]
-        entries.sort(key=lambda e: (not e[1], e[0].lower()))
-        return entries
+        raw_entries = []
+
+        for name in names:
+            full_path = os.path.join(path, name)
+            is_dir = os.path.isdir(full_path)
+
+            try:
+                file_stat = os.stat(full_path)
+                size = file_stat.st_size if not is_dir else 0
+                mod_time = file_stat.st_mtime
+            except OSError:
+                size = 0
+                mod_time = 0
+
+            raw_entries.append((name, is_dir, size, mod_time))
+
+        if sort_by == "size":
+            raw_entries.sort(key=lambda e: (not e[1], -e[2], e[0].lower()))
+        elif sort_by == "date":
+            raw_entries.sort(key=lambda e: (not e[1], -e[3], e[0].lower()))
+        else:
+            raw_entries.sort(key=lambda e: (not e[1], e[0].lower()))
+
+        return raw_entries
     except PermissionError:
-        return [("[Permission Denied]", False)]
+        return [("[Permission Denied]", False, 0, 0)]
     except OSError:
-        return [("[Error Reading Directory]", False)]
+        return [("[Error Reading Directory]", False, 0, 0)]
 
 
 def filter_entries(entries: List[tuple], query: str) -> List[tuple]:
@@ -99,6 +123,13 @@ def filter_entries(entries: List[tuple], query: str) -> List[tuple]:
         return entries
     return [e for e in entries if query.lower() in e[0].lower()]
 
+
+def format_size(num_bytes: int) -> str:
+    for unit in ['B', 'KB', 'MB', 'GB']:
+        if num_bytes < 1024.0:
+            return f"{num_bytes:.1f} {unit}"
+        num_bytes /= 1024.0
+    return f"{num_bytes:.1f} TB"
 
 # ─── Status / Input Helpers ───────────────────────────────────────────────────
 
@@ -113,41 +144,28 @@ def safe_addstr(stdscr, y, x, text, attr=curses.A_NORMAL):
 
 
 def read_line_input(stdscr, prompt: str, height: int, width: int, initial_text: str = "") -> Optional[str]:
-    """
-    A line editor that supports standard terminal navigation:
-    - Arrow keys: move cursor left/right
-    - Ctrl+w: delete word backward
-    - Ctrl+u: clear entire line
-    - Ctrl+Left/Alt+b: jump back word
-    - Ctrl+Right/Alt+f: jump forward word
-    """
     curses.curs_set(1)
-    stdscr.nodelay(False)  # Blocking input
+    stdscr.nodelay(False)
 
     text = initial_text
     cursor_idx = len(text)
 
     def draw_input_line():
-        # Clear line space
         try:
             stdscr.addstr(height - 2, 1, " " * (width - 3))
             stdscr.addstr(height - 2, 2, prompt[:width - 4], curses.color_pair(3) | curses.A_BOLD)
 
             prompt_len = len(prompt)
-            # Render text
             display_text = text[:width - 5 - prompt_len]
             stdscr.addstr(height - 2, 2 + prompt_len, display_text)
 
-            # Position cursor
             cursor_col = min(2 + prompt_len + cursor_idx, width - 3)
             stdscr.move(height - 2, cursor_col)
             stdscr.refresh()
         except curses.error:
             pass
 
-    # Helper boundaries for word jumps (regex-like)
     def get_word_boundaries(s: str) -> List[int]:
-        # Identify start indexes of word clusters or transitions
         bounds = [0]
         for m in re.finditer(r'\b\w', s):
             bounds.append(m.start())
@@ -160,22 +178,18 @@ def read_line_input(stdscr, prompt: str, height: int, width: int, initial_text: 
         draw_input_line()
         ch = stdscr.getch()
 
-        # Handle Alt keysequences (often starts with ESC)
         if ch == ESC_KEY:
-            # Check if there is a quick following key to determine if it's Alt-bound
             stdscr.nodelay(True)
             next_ch = stdscr.getch()
             stdscr.nodelay(False)
 
             if next_ch == -1:
-                return None  # Pure Escape key pressed
+                return None
             elif next_ch == ord('b') or next_ch == ord('B'):
-                # Alt+b: Move word back
                 bounds = get_word_boundaries(text)
                 prev_bounds = [b for b in bounds if b < cursor_idx]
                 cursor_idx = prev_bounds[-1] if prev_bounds else 0
             elif next_ch == ord('f') or next_ch == ord('F'):
-                # Alt+f: Move word forward
                 bounds = get_word_boundaries(text)
                 next_bounds = [b for b in bounds if b > cursor_idx]
                 cursor_idx = next_bounds[0] if next_bounds else len(text)
@@ -189,7 +203,7 @@ def read_line_input(stdscr, prompt: str, height: int, width: int, initial_text: 
                 text = text[:cursor_idx - 1] + text[cursor_idx:]
                 cursor_idx -= 1
 
-        elif ch == curses.KEY_DC:  # Delete key
+        elif ch == curses.KEY_DC:
             if cursor_idx < len(text):
                 text = text[:cursor_idx] + text[cursor_idx + 1:]
 
@@ -199,39 +213,37 @@ def read_line_input(stdscr, prompt: str, height: int, width: int, initial_text: 
         elif ch == curses.KEY_RIGHT:
             cursor_idx = min(len(text), cursor_idx + 1)
 
-        elif ch == curses.KEY_HOME or ch == 1:  # Home or Ctrl+A
+        elif ch == curses.KEY_HOME or ch == 1:
             cursor_idx = 0
 
-        elif ch == curses.KEY_END or ch == 5:   # End or Ctrl+E
+        elif ch == curses.KEY_END or ch == 5:
             cursor_idx = len(text)
 
-        elif ch == CTRL_W:  # Delete word back
+        elif ch == CTRL_W:
             if cursor_idx > 0:
                 left_side = text[:cursor_idx]
                 right_side = text[cursor_idx:]
-                # Strip trailing whitespace on the left side first
                 stripped = left_side.rstrip()
-                # Find index of last word transition
                 m = list(re.finditer(r'\b\w|\W\w', stripped))
                 new_cursor = m[-1].start() if m else 0
                 text = text[:new_cursor] + right_side
                 cursor_idx = new_cursor
 
-        elif ch == CTRL_U:  # Clear entire line
+        elif ch == CTRL_U:
             text = ""
             cursor_idx = 0
 
-        elif ch in (curses.KEY_SLEFT, 393):  # Ctrl + Left (or Alt + Left on some setups)
+        elif ch in (curses.KEY_SLEFT, 393):
             bounds = get_word_boundaries(text)
             prev_bounds = [b for b in bounds if b < cursor_idx]
             cursor_idx = prev_bounds[-1] if prev_bounds else 0
 
-        elif ch in (curses.KEY_SRIGHT, 402):  # Ctrl + Right
+        elif ch in (curses.KEY_SRIGHT, 402):
             bounds = get_word_boundaries(text)
             next_bounds = [b for b in bounds if b > cursor_idx]
             cursor_idx = next_bounds[0] if next_bounds else len(text)
 
-        elif 32 <= ch <= 126:  # Printable character
+        elif 32 <= ch <= 126:
             if len(prompt) + len(text) < width - 5:
                 text = text[:cursor_idx] + chr(ch) + text[cursor_idx:]
                 cursor_idx += 1
@@ -243,7 +255,6 @@ def send_to_tmux(target_pane: str, absolute_path: str):
             ["tmux", "send-keys", "-t", target_pane, f":o {absolute_path}", "Enter"],
             check=True, capture_output=True, text=True,
         )
-        pass
     except (subprocess.CalledProcessError, FileNotFoundError) as exc:
         print(f"tmux error: {exc}", file=sys.stderr)
 
@@ -260,7 +271,7 @@ def render(stdscr, state: ExplorerState):
     stdscr.attroff(curses.color_pair(4))
 
     # ── Header ──
-    header = f" 📂 {os.path.basename(state.current_dir) or state.current_dir} "
+    header = f" 📂 {os.path.basename(state.current_dir) or state.current_dir} [Sort: {state.sort_by.upper()}] "
     safe_addstr(stdscr, 0, 2, header, curses.color_pair(4) | curses.A_BOLD)
 
     # Path tracking subtitle row
@@ -275,27 +286,41 @@ def render(stdscr, state: ExplorerState):
         state.scroll_offset = state.selected_idx - visible_height + 1
 
     # ── Entry list ──
-    for i, (entry, is_dir) in enumerate(state.entries[state.scroll_offset:]):
+    for i, (entry, is_dir, size, mod_time) in enumerate(state.entries[state.scroll_offset:]):
         if i >= visible_height:
             break
         row = i + 2
         actual_idx = state.scroll_offset + i
 
         suffix = "/" if is_dir else ""
-        display = f" {entry}{suffix} "
+        display_name = f" {entry}{suffix}"
 
         if actual_idx == state.selected_idx:
             attr = curses.color_pair(5) | curses.A_BOLD
         else:
             if entry.startswith("["):
                 attr = curses.color_pair(2)
+            elif entry.startswith('.'):
+                attr = curses.color_pair(7) | (curses.A_BOLD if is_dir else curses.A_NORMAL)
             elif is_dir:
                 attr = curses.color_pair(4) | curses.A_BOLD
             else:
                 attr = curses.color_pair(6)
 
-        padded_display = display + " " * (width - len(display) - 3)
-        safe_addstr(stdscr, row, 1, padded_display, attr)
+        # Build metadata column layout strings
+        size_str = "" if is_dir else format_size(size)
+        date_str = time.strftime("%Y-%m-%d %H:%M", time.localtime(mod_time)) if mod_time else ""
+
+        meta_str = f"{size_str:>10}  {date_str} "
+        max_name_len = width - len(meta_str) - 3
+
+        if len(display_name) > max_name_len:
+            display_name = display_name[:max_name_len - 3] + "..."
+
+        padded_name = display_name + " " * (max_name_len - len(display_name))
+        full_line = padded_name + meta_str
+
+        safe_addstr(stdscr, row, 1, full_line, attr)
 
     # ── Scroll indicator ──
     if len(state.entries) > visible_height:
@@ -305,12 +330,13 @@ def render(stdscr, state: ExplorerState):
     # ── Footer ──
     render_footer(stdscr, state, height, width)
 
-    # ── Menu overlay ──
+    # ── Overlay Modals ──
     if state.in_menu_mode:
         render_menu(stdscr, height, width)
+    elif state.in_sort_menu_mode:
+        render_sort_menu(stdscr, height, width)
 
     stdscr.refresh()
-
 
 def render_footer(stdscr, state: ExplorerState, height: int, width: int):
     stdscr.attron(curses.color_pair(4))
@@ -349,7 +375,7 @@ def render_footer(stdscr, state: ExplorerState, height: int, width: int):
         safe_addstr(stdscr, height - 2, 2, f"[{status}: {fname}] Press p to paste | Space: Menu", attr)
     else:
         safe_addstr(stdscr, height - 2, 2,
-                     "Space: Menu | /: Search | f/d: New | r: Rename | m: Perms | c/x/p: Copy/Cut/Paste | Esc: Quit",
+                     "Space: Menu | s: Sort Options | /: Search | f/d: New | r: Rename | m: Perms | Esc: Quit",
                      curses.A_DIM)
 
 
@@ -358,6 +384,7 @@ MENU_ITEMS = [
     ("I / K", "Jump Up/Down 3 Items"),
     ("l / Enter", "Open File / Enter Dir"),
     ("j", "Go to Parent Directory"),
+    ("s", "Open Sort Menu Overlay"),
     ("f", "Create New File"),
     ("d", "Create New Directory"),
     ("r", "Rename Selected Item"),
@@ -394,6 +421,31 @@ def render_menu(stdscr, height: int, width: int):
         menu_win.addstr(row, 17, f"{description:<26}", curses.A_NORMAL)
 
     menu_win.refresh()
+
+
+def render_sort_menu(stdscr, height: int, width: int):
+    menu_h = 7
+    menu_w = 36
+    start_y = max(0, (height - menu_h) // 2)
+    start_x = max(0, (width - menu_w) // 2)
+
+    sort_win = stdscr.subwin(menu_h, menu_w, start_y, start_x)
+    sort_win.erase()
+
+    sort_win.attron(curses.color_pair(4) | curses.A_BOLD)
+    sort_win.border()
+    sort_win.attroff(curses.color_pair(4) | curses.A_BOLD)
+
+    title = " SORT METHOD "
+    sort_win.addstr(0, max(1, (menu_w - len(title)) // 2), title, curses.color_pair(4) | curses.A_BOLD)
+
+    sort_win.addstr(2, 4, "(n) Sort by Name", curses.A_NORMAL)
+    sort_win.addstr(3, 4, "(s) Sort by File Size", curses.A_NORMAL)
+    sort_win.addstr(4, 4, "(d) Sort by Date Modified", curses.A_NORMAL)
+
+    sort_win.hline(5, 1, curses.ACS_HLINE, menu_w - 2, curses.color_pair(4) | curses.A_DIM)
+    sort_win.addstr(6, 4, "Press choice key or Esc", curses.A_DIM)
+    sort_win.refresh()
 
 
 def render_permission_menu(stdscr, filepath: str, height: int, width: int):
@@ -474,6 +526,8 @@ def handle_normal_input(stdscr, key: int, state: ExplorerState,
             state.should_quit = True
     elif key == ord(' '):
         state.in_menu_mode = True
+    elif key == ord('s'):
+        state.in_sort_menu_mode = True
     elif key == ord('/'):
         state.in_search_mode = True
     elif key in (ord('i'), curses.KEY_UP):
@@ -494,13 +548,13 @@ def handle_normal_input(stdscr, key: int, state: ExplorerState,
         state.current_dir = parent if parent else "/"
         state.search_query = ""
 
-        state.all_entries = list_directory(state.current_dir)
+        state.all_entries = list_directory(state.current_dir, sort_by=state.sort_by)
         state.entries = filter_entries(state.all_entries, state.search_query)
         state.needs_refresh = False
 
         old_name = os.path.basename(old_dir)
         state.selected_idx = 0
-        for idx, (name, is_dir) in enumerate(state.entries):
+        for idx, (name, is_dir, _, _) in enumerate(state.entries):
             if is_dir and name == old_name:
                 state.selected_idx = idx
                 break
@@ -521,8 +575,7 @@ def handle_normal_input(stdscr, key: int, state: ExplorerState,
 
 
 def _highlight_matching_entry(state: ExplorerState, target_name: str):
-    """Re-scans state.entries and updates state.selected_idx to highlight the target_name."""
-    for idx, (name, _) in enumerate(state.entries):
+    for idx, (name, _, _, _) in enumerate(state.entries):
         if name == target_name:
             state.selected_idx = idx
             break
@@ -532,7 +585,7 @@ def _handle_open(state: ExplorerState, target_pane: str):
     if not state.entries:
         state.set_status("Directory is empty.", "info")
         return
-    target, is_dir = state.entries[state.selected_idx]
+    target, is_dir, _, _ = state.entries[state.selected_idx]
 
     if target.startswith("["):
         state.set_status("Cannot open invalid entry.", "error")
@@ -567,8 +620,7 @@ def _handle_create(stdscr, key: int, state: ExplorerState, height: int, width: i
             os.makedirs(creation_target, exist_ok=False)
         state.set_status(f"Created: {item_name}", "success")
 
-        # Load entries and highlight the new item
-        state.all_entries = list_directory(state.current_dir)
+        state.all_entries = list_directory(state.current_dir, sort_by=state.sort_by)
         state.entries = filter_entries(state.all_entries, state.search_query)
         _highlight_matching_entry(state, item_name)
         state.needs_refresh = False
@@ -581,7 +633,7 @@ def _handle_create(stdscr, key: int, state: ExplorerState, height: int, width: i
 def _handle_rename(stdscr, state: ExplorerState, height: int, width: int):
     if not state.entries:
         return
-    old_name, _ = state.entries[state.selected_idx]
+    old_name, _, _, _ = state.entries[state.selected_idx]
     if old_name.startswith("["):
         return
 
@@ -607,8 +659,7 @@ def _handle_rename(stdscr, state: ExplorerState, height: int, width: int):
         if state.clipboard_path == src_path:
             state.clipboard_path = dst_path
 
-        # Immediately update list state and set the selection highlight
-        state.all_entries = list_directory(state.current_dir)
+        state.all_entries = list_directory(state.current_dir, sort_by=state.sort_by)
         state.entries = filter_entries(state.all_entries, state.search_query)
         _highlight_matching_entry(state, new_name)
         state.needs_refresh = False
@@ -619,7 +670,7 @@ def _handle_rename(stdscr, state: ExplorerState, height: int, width: int):
 def _handle_permissions(stdscr, state: ExplorerState, height: int, width: int):
     if not state.entries:
         return
-    target, _ = state.entries[state.selected_idx]
+    target, _, _, _ = state.entries[state.selected_idx]
     if target.startswith("["):
         return
 
@@ -630,7 +681,7 @@ def _handle_permissions(stdscr, state: ExplorerState, height: int, width: int):
 def _handle_delete(stdscr, state: ExplorerState, height: int, width: int):
     if not state.entries:
         return
-    target, is_dir = state.entries[state.selected_idx]
+    target, is_dir, _, _ = state.entries[state.selected_idx]
     if target.startswith("["):
         return
 
@@ -663,7 +714,7 @@ def _handle_delete(stdscr, state: ExplorerState, height: int, width: int):
 def _handle_copy_cut(key: int, state: ExplorerState):
     if not state.entries:
         return
-    target_name, _ = state.entries[state.selected_idx]
+    target_name, _, _, _ = state.entries[state.selected_idx]
     if target_name.startswith("["):
         return
 
@@ -702,7 +753,7 @@ def _handle_paste(stdscr, state: ExplorerState, height: int, width: int):
                 shutil.copy2(src_path, destination)
             state.set_status(f"Duplicated: {new_base}", "success")
 
-            state.all_entries = list_directory(state.current_dir)
+            state.all_entries = list_directory(state.current_dir, sort_by=state.sort_by)
             state.entries = filter_entries(state.all_entries, state.search_query)
             _highlight_matching_entry(state, new_base)
             state.needs_refresh = False
@@ -758,8 +809,7 @@ def _handle_paste(stdscr, state: ExplorerState, height: int, width: int):
             state.clipboard_action = None
             state.set_status(f"Pasted (move): {final_basename}", "success")
 
-        # Reload immediately and focus the newly pasted item
-        state.all_entries = list_directory(state.current_dir)
+        state.all_entries = list_directory(state.current_dir, sort_by=state.sort_by)
         state.entries = filter_entries(state.all_entries, state.search_query)
         _highlight_matching_entry(state, final_basename)
         state.needs_refresh = False
@@ -780,6 +830,7 @@ def run_explorer(stdscr, target_pane: str, start_dir: str):
     curses.init_pair(4, curses.COLOR_BLUE, -1)    # Directories & Borders
     curses.init_pair(5, curses.COLOR_BLACK, curses.COLOR_CYAN) # High-contrast Selection Bar
     curses.init_pair(6, -1, -1)                   # Standard Files (Default Term Colors)
+    curses.init_pair(7, 23, -1)                    # Dimmed custom dark gray/bright black for hidden files
 
     curses.curs_set(0)
     stdscr.keypad(True)
@@ -788,7 +839,7 @@ def run_explorer(stdscr, target_pane: str, start_dir: str):
 
     while not state.should_quit:
         if state.needs_refresh:
-            state.all_entries = list_directory(state.current_dir)
+            state.all_entries = list_directory(state.current_dir, sort_by=state.sort_by)
             state.needs_refresh = False
 
         state.entries = filter_entries(state.all_entries, state.search_query)
@@ -806,6 +857,21 @@ def run_explorer(stdscr, target_pane: str, start_dir: str):
 
         if state.in_menu_mode:
             handle_menu_input(key, state)
+        elif state.in_sort_menu_mode:
+            if key in (ord('n'), ord('N')):
+                state.sort_by = "name"
+                state.in_sort_menu_mode = False
+                state.needs_refresh = True
+            elif key in (ord('s'), ord('S')):
+                state.sort_by = "size"
+                state.in_sort_menu_mode = False
+                state.needs_refresh = True
+            elif key in (ord('d'), ord('D')):
+                state.sort_by = "date"
+                state.in_sort_menu_mode = False
+                state.needs_refresh = True
+            elif key in (ESC_KEY, ord('q'), ord(' ')):
+                state.in_sort_menu_mode = False
         elif state.in_search_mode:
             handle_search_input(key, state)
         else:
