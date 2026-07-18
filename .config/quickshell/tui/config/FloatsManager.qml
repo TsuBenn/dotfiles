@@ -42,7 +42,7 @@ Singleton {
     Connections {
         target: SettingsInfo
         function onDebugSig() {
-            root.open("pacman");
+            root.open("color");
         }
     }
 }

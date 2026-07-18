@@ -54,14 +54,16 @@ Item {
         cellY: Cell.hCount(root.monitor.height / 2, "floor") - Math.round(h / 2)
     }
 
-    ColorPopup {
-        id: color
+    // Deprecated -> Use ColorFloats instead
+    //
+    // ColorPopup {
+    //     id: color
 
-        name: "color"
+    //     name: "color"
 
-        cellX: Cell.wCount(root.monitor.width / 2, "floor") - Math.floor(w / 2)
-        cellY: Cell.hCount(root.monitor.height / 2, "floor") - Math.round(h / 2)
-    }
+    //     cellX: Cell.wCount(root.monitor.width / 2, "floor") - Math.floor(w / 2)
+    //     cellY: Cell.hCount(root.monitor.height / 2, "floor") - Math.round(h / 2)
+    // }
 
     WallpaperPopup {
         id: wallpaper

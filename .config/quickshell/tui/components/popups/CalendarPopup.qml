@@ -296,6 +296,9 @@ CellPopup {
 
                     h: Cell.hCount(row1.implicitHeight)
                     color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
                 }
 
                 Item {
@@ -873,6 +876,9 @@ CellPopup {
 
                     h: Cell.hCount(row1.implicitHeight)
                     color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
                 }
 
                 ColumnLayout {
@@ -902,6 +908,9 @@ CellPopup {
                         w: Cell.wCount(col3.implicitWidth)
                         type: 0
                         color: Colors.accentStrong
+                        bg: "transparent"
+                        connectStart: true
+                        connectEnd: true
                     }
 
                     Cells {
@@ -1218,6 +1227,9 @@ CellPopup {
                         w: Cell.wCount(col3.implicitWidth)
                         type: 0
                         color: Colors.accentStrong
+                        bg: "transparent"
+                        connectStart: true
+                        connectEnd: true
                     }
 
                     RowLayout {
@@ -1252,6 +1264,9 @@ CellPopup {
 
                 w: box.contentW
                 color: Colors.accentStrong
+                bg: "transparent"
+                connectStart: true
+                connectEnd: true
             }
 
             ColumnLayout {
@@ -1848,6 +1863,9 @@ CellPopup {
                 w: box.contentW
                 type: 0
                 color: Colors.accentStrong
+                bg: "transparent"
+                connectStart: true
+                connectEnd: true
             }
 
             RowLayout {

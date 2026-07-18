@@ -96,6 +96,10 @@ ColumnLayout {
     CellSeparator {
 
         w: root.box.contentW
+        color: Colors.accentStrong
+        bg: "transparent"
+        connectStart: true
+        connectEnd: true
     }
 
     CellScrollView {
@@ -509,7 +513,10 @@ ColumnLayout {
 
         w: root.box.contentW
 
-        color: Colors.accentDim
+        color: Colors.accentStrong
+        bg: "transparent"
+        connectStart: true
+        connectEnd: true
     }
 
     Timer {

@@ -208,8 +208,6 @@ Item {
 
         anchors.fill: parent
 
-        clip: true
-
         color: "transparent"
     }
 }

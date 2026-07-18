@@ -353,6 +353,9 @@ CellPopup {
                     w: parent.w
                     visible: root.minimal
                     color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
                 }
 
             }
@@ -611,6 +614,9 @@ CellPopup {
                 w: box.contentW
                 type: 0
                 color: Colors.accentStrong
+                bg: "transparent"
+                connectStart: true
+                connectEnd: true
             }
 
             GridLayout {

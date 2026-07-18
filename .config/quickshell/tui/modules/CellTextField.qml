@@ -25,7 +25,7 @@ Item {
     property bool showCursor: false
     property bool blinkCursor: true
 
-    property bool globalFocus: Window.window.active ?? true // Used for isolating Floats textfields
+    property bool globalFocus: Window.window?.active ?? true // Used for isolating Floats textfields
 
     property bool canCopy: true
     property bool canPaste: true

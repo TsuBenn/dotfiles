@@ -64,6 +64,9 @@ ColumnLayout {
         w: root.box.contentW
         padding: 0
         color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
 
     }
 
@@ -263,7 +266,7 @@ ColumnLayout {
                         if (!SystemInfo.bluetooth.enabled) {
                             return "OFF"
                         } else if (SystemInfo.bluetooth.devices.length > 0) {
-                            return `${SystemInfo.bluetooth.devices[0]?.name} (${SystemInfo.bluetooth.devices[0]?.battery}%) ${SystemInfo.bluetooth.devices.length > 1 ? `[+${SystemInfo.bluetooth.devices.length - 1}]` : ""}` 
+                            return `${SystemInfo.bluetooth.devices[0]?.name} (${SystemInfo.bluetooth.devices[0]?.battery}%) ${SystemInfo.bluetooth.devices.length > 1 ? `[+${SystemInfo.bluetooth.devices.length - 1}]` : ""}`
                         } else {
                             return "No devices"
                         }
@@ -381,6 +384,9 @@ ColumnLayout {
 
         padding: 0
         color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
 
     }
 
@@ -432,6 +438,9 @@ ColumnLayout {
         w: root.box.contentW
         padding: 0
         color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
 
     }
 

@@ -526,7 +526,7 @@ Singleton {
 
         property string pkg: root.installTarget.join(" ")
 
-        command: ["script", "-qc", `pkexec env COLUMNS=76 LINES=0 pacman -S ${pkg}`, "/dev/null"]
+        command: ["script", "-qc", `pkexec env COLUMNS=97 LINES=0 pacman -S ${pkg}`, "/dev/null"]
 
         stdout: SplitParser {
             splitMarker: ""
@@ -562,7 +562,7 @@ Singleton {
 
         property string pkg: root.removeTarget.join(" ")
 
-        command: ["script", "-qc", `pkexec env COLUMNS=76 LINES=0 pacman -Rs${root.forceRemove ? "c" : ""} ${pkg}`, "/dev/null"]
+        command: ["script", "-qc", `pkexec env COLUMNS=97 LINES=0 pacman -Rs${root.forceRemove ? "c" : ""} ${pkg}`, "/dev/null"]
 
         stdout: SplitParser {
             splitMarker: ""
@@ -915,7 +915,7 @@ Singleton {
     Process {
         id: updates_checker
 
-        command: ["sudo", "-S", "-k", "-p", "", "pacman", "-Sy"]
+        command: ["pkexec", "pacman", "-Sy"]
 
         onRunningChanged: {
             root.updates_checker_authorized = false;

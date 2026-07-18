@@ -137,7 +137,7 @@ CellPopup {
                                 return 0
                             }
                             items: {
-                                let items = [] 
+                                let items = []
                                 for (const i in MediaPlayerInfo.players) {
                                     items.push({
                                         label: MediaPlayerInfo.players[i]?.desktopEntry.toUpperCase(),
@@ -317,6 +317,9 @@ CellPopup {
                 w: box.contentW
                 type: 0
                 color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
             }
 
             CellAudioVisual {
@@ -339,6 +342,9 @@ CellPopup {
                 w: box.contentW
                 type: 0
                 color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
 
             }
 

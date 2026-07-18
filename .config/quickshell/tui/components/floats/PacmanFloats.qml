@@ -11,15 +11,15 @@ CellFloats {
     id: root
     name: "pacman"
 
-    noMax: true
+    // noMax: true
 
     title: "Pacman"
 
     w: 100
     h: 44
 
-    minW: multi_selected_pkg.length > 0 ? 100 : 80
-    minH: 40
+    // minW: 100
+    // minH: 40
 
     property string pacmanState: PacmanInfo.pacmanState
 
@@ -466,6 +466,9 @@ CellFloats {
             CellSeparator {
                 w: box.contentW
                 color: Colors.accentStrong
+                bg: "transparent"
+                connectStart: true
+                connectEnd: true
             }
 
             // Package list
@@ -508,7 +511,7 @@ CellFloats {
                         property bool installed: modelData.installed
                         property bool update_available: pkg.latest_version != ""
 
-                        property bool selected: root.selected_pkg == name && !disabled
+                        property bool selected: root.selected_pkg == "" ? false : (root.selected_pkg == name && !disabled)
 
                         property bool disabled: PacmanInfo.fetching || PacmanInfo.checking_updates
 
@@ -824,6 +827,9 @@ CellFloats {
                 visible: (root.pacmanState == "idle" || root.pacmanState == "prepare" || root.pacmanState == "pre-flight" || root.pacmanState == "authentication" || root.pacmanState == "fetching" || root.pacmanState == "checking_updates")
                 w: box.contentW
                 color: Colors.accentStrong
+                bg: "transparent"
+                connectStart: true
+                connectEnd: true
             }
 
             // Info
@@ -1076,6 +1082,9 @@ CellFloats {
                             vertical: true
                             h: box.contentH - list.h - 7
                             color: Colors.accentStrong
+                            bg: "transparent"
+                            connectStart: true
+                            connectEnd: true
                         }
 
                         ColumnLayout {
@@ -1091,6 +1100,9 @@ CellFloats {
                             CellSeparator {
                                 w: install_queue.w - 1
                                 color: Colors.accentStrong
+                                bg: "transparent"
+                                connectStart: true
+                                connectEnd: true
                             }
 
                             CellScrollList {
@@ -1750,7 +1762,7 @@ CellFloats {
                         CellText {
                             id: log_text
 
-                            preferedW: 76
+                            preferedW: 97
 
                             text: parent.lines.slice(0, parent.lines.length - 1).join("\n")
                             wrap: true
@@ -1760,7 +1772,7 @@ CellFloats {
                         CellText {
                             id: log_text_focus
 
-                            preferedW: 76
+                            preferedW: log_text.preferedW
 
                             text: parent.lines[parent.lines.length - 1]
                             wrap: true
@@ -2039,6 +2051,9 @@ CellFloats {
             CellSeparator {
                 w: box.contentW
                 color: Colors.accentStrong
+                bg: "transparent"
+                connectStart: true
+                connectEnd: true
             }
 
             // Footer

@@ -8,7 +8,6 @@ import QtQuick.Layouts
 import QtQuick
 
 ColumnLayout {
-
     id: root
 
     property bool optimizeMemory: SettingsInfo.optimizeMemory
@@ -21,26 +20,26 @@ ColumnLayout {
 
     onVisibleChanged: {
         if (visible) {
-            BluetoothInfo.scanOn()
+            BluetoothInfo.scanOn();
         } else {
-            BluetoothInfo.scanOff()
+            BluetoothInfo.scanOff();
         }
-        BluetoothInfo.refresh()
+        BluetoothInfo.refresh();
     }
 
     function back() {
-        root.box.view = "main"
+        root.box.view = "main";
     }
 
     Component.onCompleted: {
         BluetoothInfo.scanningChanged.connect(() => {
-            bt_report.status = "Info"
+            bt_report.status = "Info";
             if (BluetoothInfo.scanning) {
-                bt_report.report = "Scanning for devices"
-                return
+                bt_report.report = "Scanning for devices";
+                return;
             }
-            bt_report.report = "Stopped scanning"
-        })
+            bt_report.report = "Stopped scanning";
+        });
     }
 
     Timer {
@@ -58,7 +57,6 @@ ColumnLayout {
 
         color: "transparent"
 
-
         RowLayout {
 
             spacing: 0
@@ -66,7 +64,6 @@ ColumnLayout {
             CellText {
 
                 text: " "
-
             }
 
             CellButton {
@@ -75,21 +72,18 @@ ColumnLayout {
                 fg: [Colors.onAccent, Colors.fgBase]
                 color: [Colors.accentStrong, Colors.bgOverlay]
 
-                onReleased: (button) => {
+                onReleased: button => {
                     if (button == "L") {
-                        root.back()
+                        root.back();
                     }
                 }
-
             }
 
             CellText {
 
                 text: "  Bluetooth"
                 font: Cell.fontB
-
             }
-
         }
 
         RowLayout {
@@ -108,7 +102,6 @@ ColumnLayout {
 
                 text: `█`
                 color: BluetoothInfo.scanning && scan.on ? Colors.info : Colors.bgOverlay
-
             }
 
             CellButton {
@@ -117,16 +110,14 @@ ColumnLayout {
                 fg: clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
                 color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
 
-                onPressed: (button) => {
+                onPressed: button => {
                     if (button == "L") {
-                        BluetoothInfo.scanToggle()
+                        BluetoothInfo.scanToggle();
                     }
                 }
-
             }
 
             Timer {
-
                 id: scan
 
                 property bool on: true
@@ -135,24 +126,24 @@ ColumnLayout {
                 repeat: true
                 interval: 500
                 onTriggered: {
-                    on = !on
+                    on = !on;
                 }
             }
-
         }
-
     }
 
     CellSeparator {
 
         w: root.box.contentW
-
+        color: Colors.accentStrong
+        bg: "transparent"
+        connectStart: true
+        connectEnd: true
     }
 
-    signal collapse()
+    signal collapse
 
     component Device: Cells {
-
         id: dev
         required property string name
         required property string mac
@@ -170,26 +161,25 @@ ColumnLayout {
         Component.onCompleted: {
             BluetoothInfo.agent.connect((text, mac) => {
                 if (mac == dev.mac) {
-                    pass.key = text
-                    confirmation = true
+                    pass.key = text;
+                    confirmation = true;
                 }
-            })
-            BluetoothInfo.error.connect((text) => {
-                bt_report.status = "Error"
-                bt_report.report = text
-            })
-            BluetoothInfo.success.connect((text) => {
-                bt_report.status = "Success"
-                bt_report.report = text
-            })
-            BluetoothInfo.info.connect((text) => {
-                bt_report.status = "Info"
-                bt_report.report = text
-            })
+            });
+            BluetoothInfo.error.connect(text => {
+                bt_report.status = "Error";
+                bt_report.report = text;
+            });
+            BluetoothInfo.success.connect(text => {
+                bt_report.status = "Success";
+                bt_report.report = text;
+            });
+            BluetoothInfo.info.connect(text => {
+                bt_report.status = "Info";
+                bt_report.report = text;
+            });
         }
 
         ColumnLayout {
-
             id: dev_button
 
             spacing: 0
@@ -202,7 +192,6 @@ ColumnLayout {
                 color: "transparent"
 
                 Cells {
-
                     id: select
 
                     x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
@@ -211,7 +200,6 @@ ColumnLayout {
                     h: 1
 
                     color: "transparent"
-
                 }
 
                 RowLayout {
@@ -222,18 +210,15 @@ ColumnLayout {
 
                         text: ` █  `
                         color: dev.connected ? Colors.success : dev.saved ? Colors.info : Colors.bgOverlay
-
                     }
 
                     CellText {
-
                         id: dev_name
 
                         text: `${dev.name}`
                         preferedW: dev.w - 25
                         color: !BluetoothInfo.refreshing ? (dev.connected ? Colors.success : Colors.fgBase) : Colors.fgSubtle
                         font: dev.connected ? Cell.fontB : Cell.font
-
                     }
 
                     CellText {
@@ -243,11 +228,8 @@ ColumnLayout {
                         text: ` [${dev.mac}]`
                         color: Colors.fgSubtle
                         font: Cell.font
-
                     }
-
                 }
-
             }
 
             ColumnLayout {
@@ -259,15 +241,13 @@ ColumnLayout {
                 }
 
                 CellText {
-
-                    Layout.leftMargin: Cell.centerWCell(implicitWidth,dev.implicitWidth)
-
                     id: pass
+
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, dev.implicitWidth)
 
                     property int key: 0
                     text: "Confirm passkey " + key
                     font: Cell.fontB
-
                 }
 
                 CellText {
@@ -276,7 +256,7 @@ ColumnLayout {
 
                 RowLayout {
 
-                    Layout.leftMargin: Cell.centerWCell(implicitWidth,dev.implicitWidth)
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, dev.implicitWidth)
 
                     spacing: Cell.w(6)
 
@@ -285,11 +265,11 @@ ColumnLayout {
                         color: [Colors.accentStrong, Colors.bgOverlay]
                         fg: [Colors.onAccent, Colors.fgBase]
 
-                        onPressed: (button) => {
-                            dev.confirmation = false
+                        onPressed: button => {
+                            dev.confirmation = false;
                             if (button == "L") {
-                                BluetoothInfo.send("yes")
-                                dev.confirmation_pair = true
+                                BluetoothInfo.send("yes");
+                                dev.confirmation_pair = true;
                             }
                         }
                     }
@@ -299,14 +279,13 @@ ColumnLayout {
                         color: [Colors.accentStrong, Colors.bgOverlay]
                         fg: [Colors.onAccent, Colors.fgBase]
 
-                        onPressed: (button) => {
-                            dev.confirmation = false
+                        onPressed: button => {
+                            dev.confirmation = false;
                             if (button == "L") {
-                                BluetoothInfo.send("no")
+                                BluetoothInfo.send("no");
                             }
                         }
                     }
-
                 }
 
                 CellText {
@@ -323,7 +302,7 @@ ColumnLayout {
 
                 onPairingChanged: {
                     if (!pairing) {
-                        dev.confirmation_pair = false
+                        dev.confirmation_pair = false;
                     }
                 }
 
@@ -337,22 +316,19 @@ ColumnLayout {
 
                     CellText {
 
-                        Layout.leftMargin: Cell.centerWCell(implicitWidth,dev.implicitWidth)
+                        Layout.leftMargin: Cell.centerWCell(implicitWidth, dev.implicitWidth)
 
                         text: "Pairing "
-
                     }
 
                     CellLoading {
                         style: 2
                     }
-
                 }
 
                 CellText {
                     text: ""
                 }
-
             }
 
             CellSeparator {
@@ -361,9 +337,7 @@ ColumnLayout {
                 type: 2
                 w: dev.w
                 color: Colors.bgOverlay
-
             }
-
         }
 
         MouseControl {
@@ -376,50 +350,62 @@ ColumnLayout {
             implicitHeight: Cell.h(2)
 
             onEntered: {
-                select.color = Colors.bgOverlay
+                select.color = Colors.bgOverlay;
             }
             onExited: {
-                select.color = "transparent"
+                select.color = "transparent";
             }
 
-            onPressed: (button) => {
-                const global = mapToGlobal(mouseX, mouseY)
+            onPressed: button => {
+                const global = mapToGlobal(mouseX, mouseY);
                 if (button == "L") {
-                    if (dev.connected) return
-                    BluetoothInfo.connect(dev.mac)
+                    if (dev.connected)
+                        return;
+                    BluetoothInfo.connect(dev.mac);
                 } else if (button == "R") {
                     if (dev.connected) {
                         ContextMenuManager.show([
-                            {label: "Disconnect", action: () => BluetoothInfo.disconnect(dev.mac)},
-                            {label: "Unpair", action: () => BluetoothInfo.unpair(dev.mac)}
-                        ],global.x,global.y,undefined,dev.name)
-                        return
+                            {
+                                label: "Disconnect",
+                                action: () => BluetoothInfo.disconnect(dev.mac)
+                            },
+                            {
+                                label: "Unpair",
+                                action: () => BluetoothInfo.unpair(dev.mac)
+                            }
+                        ], global.x, global.y, undefined, dev.name);
+                        return;
                     }
                     if (dev.saved) {
                         ContextMenuManager.show([
-                            {label: "Connect", action: () => BluetoothInfo.connect(dev.mac)},
-                            {label: "Unpair", action: () => BluetoothInfo.unpair(dev.mac)}
-                        ],global.x,global.y,undefined,dev.name)
-                        return
+                            {
+                                label: "Connect",
+                                action: () => BluetoothInfo.connect(dev.mac)
+                            },
+                            {
+                                label: "Unpair",
+                                action: () => BluetoothInfo.unpair(dev.mac)
+                            }
+                        ], global.x, global.y, undefined, dev.name);
+                        return;
                     }
                     ContextMenuManager.show([
-                        {label: "Connect", action: () => BluetoothInfo.connect(dev.mac)},
-                    ],global.x,global.y,undefined,dev.name)
-                    return
+                        {
+                            label: "Connect",
+                            action: () => BluetoothInfo.connect(dev.mac)
+                        },
+                    ], global.x, global.y, undefined, dev.name);
+                    return;
                 }
-
             }
-
         }
-
     }
 
     CellScrollView {
-
         id: list
 
         w: root.box.contentW
-        h: root.h - 2 - 2*(bt_report.status != "")
+        h: root.h - 2 - 2 * (bt_report.status != "")
 
         source: Loader {
 
@@ -441,7 +427,6 @@ ColumnLayout {
                     padding: 1
                     title.color: Colors.fgSubtle
                     color: Colors.bgOverlay
-
                 }
 
                 ColumnLayout {
@@ -455,9 +440,7 @@ ColumnLayout {
                         delegate: Device {
                             w: list.contentW
                         }
-
                     }
-
                 }
 
                 CellSeparator {
@@ -470,7 +453,6 @@ ColumnLayout {
                     padding: 1
                     title.color: Colors.fgSubtle
                     color: Colors.bgOverlay
-
                 }
 
                 ColumnLayout {
@@ -484,16 +466,11 @@ ColumnLayout {
                         delegate: Device {
                             w: list.contentW
                         }
-
                     }
-
                 }
-
             }
         }
-
     }
-
 
     CellSeparator {
 
@@ -501,27 +478,28 @@ ColumnLayout {
 
         w: root.box.contentW
 
+        color: Colors.accentStrong
+        bg: "transparent"
+        connectStart: true
+        connectEnd: true
     }
 
     Timer {
-
         id: report_cooldown
 
         interval: 5000
         onTriggered: {
-            bt_report.status = ""
+            bt_report.status = "";
         }
-
     }
 
     CellText {
-
         id: bt_report
 
         visible: status != ""
 
         onTextChanged: {
-            report_cooldown.start()
+            report_cooldown.start();
         }
 
         property string report: ""
@@ -532,17 +510,15 @@ ColumnLayout {
 
         color: {
             if (status == "Error") {
-                return Colors.danger
+                return Colors.danger;
             } else if (status == "Success") {
-                return Colors.success
+                return Colors.success;
             } else if (status == "Info") {
-                return Colors.info
+                return Colors.info;
             } else if (status == "Warning") {
-                return Colors.warning
+                return Colors.warning;
             }
-            return Colors.fgBase
+            return Colors.fgBase;
         }
-
     }
-
 }

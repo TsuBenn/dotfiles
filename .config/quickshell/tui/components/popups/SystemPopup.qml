@@ -8,14 +8,13 @@ import QtQuick
 import QtQuick.Layouts
 
 CellPopup {
-
     id: root
 
     property bool optimizeMemory: SettingsInfo.optimizeMemory
 
     property bool minimal: SettingsInfo.minimal
 
-    w: box.eW*3 + 3 + 2
+    w: box.eW * 3 + 3 + 2
     h: minimal ? 23 : 29
 
     function fmt(str, ...args) {
@@ -23,11 +22,10 @@ CellPopup {
     }
 
     function strip(str: string): string {
-        return str.trim().replace(/<[^>]*>/g,"")
+        return str.trim().replace(/<[^>]*>/g, "");
     }
 
     CellBox {
-
         id: box
 
         property int eW: 42
@@ -43,112 +41,6 @@ CellPopup {
 
         w: root.w
         h: root.h
-
-        component Header: CellSeparator {
-
-            property string text: "CPU"
-
-            w: box.eW
-            type: 2
-            padding: 1
-            title {
-                text: text
-                centered: false
-                font: Cell.fontBB
-                color: box.head
-            }
-            color: Colors.accentDim
-
-        }
-
-        component Stat: Cells {
-
-            id: stat
-
-            property string key: "Name:"
-            property string value: "Ryzen R5 7600"
-
-            property color key_color: box.key
-            property color value_color: stc ? box.stc : box.dyn
-
-            property bool stc: false
-            property bool debug: false
-
-            w: box.eW
-            h: 1
-
-            color: "transparent"
-
-            CellText {
-
-                id: stat_key
-
-                anchors.left: stat.left
-                anchors.leftMargin: Cell.w(box.p)
-
-                text: stat.key
-                color: stat.key_color
-                debug: stat.debug
-
-            }
-
-            MarqueeCellText {
-
-                id: stat_value
-
-                anchors.right: stat.right
-                anchors.rightMargin: Cell.w(box.p)
-
-                text: stat.value
-                fg: stat.value_color
-                cellw: stat.w - root.strip(stat.key).length - box.p*2 - 1
-                alignRight: true
-
-            }
-
-        }
-
-        component Bar: Cells {
-
-            id: bar
-
-            property string key: value + "%"
-            property int value: SystemInfo.cpuusage
-
-            property color key_color: Colors.fgBase
-            property color value_color: Colors.fgBase
-
-            w: box.eW
-            h: 1
-
-            color: "transparent"
-
-            CellProgressSquare {
-
-                id: bar_bar
-
-                anchors.left: bar.left
-                anchors.leftMargin: Cell.w(box.p)
-
-                w: bar.w - 2*box.p - bar_value.w - 1
-                percent: bar.value
-
-                fg: bar.value_color
-
-            }
-
-            CellText {
-
-                anchors.right: bar.right
-                anchors.rightMargin: Cell.w(box.p)
-
-                id: bar_value
-
-                text: bar.key
-
-            }
-
-        }
 
         Loader {
 
@@ -166,7 +58,9 @@ CellPopup {
 
                     spacing: 0
 
-                    Header { text: "CPU" }
+                    Header {
+                        text: "CPU"
+                    }
 
                     Stat {
                         key: "Name:"
@@ -174,11 +68,11 @@ CellPopup {
 
                         value_color: {
                             if (value.toLowerCase().includes("amd")) {
-                                return Colors.blend(Colors.danger,Colors.fgBase,0.2)
+                                return Colors.blend(Colors.danger, Colors.fgBase, 0.2);
                             } else if (value.toLowerCase().includes("intel")) {
-                                return Colors.blend(Colors.danger,Colors.info,0.2)
+                                return Colors.blend(Colors.danger, Colors.info, 0.2);
                             }
-                            return Colors.fgBase
+                            return Colors.fgBase;
                         }
                     }
 
@@ -198,22 +92,21 @@ CellPopup {
 
                         value_color: {
                             if (value > box.danger_thres) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres, 10) / 10);
                             } else if (value > box.warning_thres) {
-                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres,10)/10)
+                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres, 10) / 10);
                             }
-                            return box.bar
+                            return box.bar;
                         }
 
                         key_color: {
                             if (value > box.danger_thres) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres, 10) / 10);
                             } else if (value > box.warning_thres) {
-                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
+                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres, 10) / 10);
                             }
-                            return box.dyn
+                            return box.dyn;
                         }
-
                     }
 
                     CellSeparator {
@@ -227,27 +120,27 @@ CellPopup {
 
                     Stat {
                         key: "Temp:"
-                        value: root.fmt("<b>{}°C</b>",parseInt(SystemInfo.cputemp))
+                        value: root.fmt("<b>{}°C</b>", parseInt(SystemInfo.cputemp))
 
                         value_color: {
-                            const value = SystemInfo.cputemp
+                            const value = SystemInfo.cputemp;
                             if (value > box.warning_thres) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres, 10) / 10);
                             } else if (value > 70) {
-                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
+                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres, 10) / 10);
                             }
-                            return box.dyn
+                            return box.dyn;
                         }
                     }
 
                     Stat {
                         key: "Freq:"
-                        value: root.fmt("<b>{}MHz</b>",parseInt(SystemInfo.cpubase))
+                        value: root.fmt("<b>{}MHz</b>", parseInt(SystemInfo.cpubase))
                     }
 
                     Stat {
                         key: "Boost:"
-                        value: root.fmt("{}MHz",parseInt(SystemInfo.cpuboost))
+                        value: root.fmt("{}MHz", parseInt(SystemInfo.cpuboost))
                         stc: true
                     }
 
@@ -263,40 +156,40 @@ CellPopup {
                         stc: true
                     }
 
-                    CellText { text: "" }
+                    CellText {
+                        text: ""
+                    }
 
                     Header {
-
                         id: gpu
 
                         text: "GPU"
 
                         property int index: 0
                         property var model: SystemInfo.gpumodels[index] ?? ({
-                            "name": "None",
-                            "usage": 0,
-                            "memoryused": 0,
-                            "memorytotal": 0,
-                            "cores": 0,
-                            "type": "None",
-                            "temp": 0,
-                        })
-
+                                "name": "None",
+                                "usage": 0,
+                                "memoryused": 0,
+                                "memorytotal": 0,
+                                "cores": 0,
+                                "type": "None",
+                                "temp": 0
+                            })
                     }
 
                     Stat {
                         key: "Name:"
-                        value: root.fmt("<b>{}</b>",gpu.model.name)
+                        value: root.fmt("<b>{}</b>", gpu.model.name)
 
                         value_color: {
                             if (value.toLowerCase().includes("amd")) {
-                                return Colors.blend(Colors.danger,Colors.fgBase,0.2)
+                                return Colors.blend(Colors.danger, Colors.fgBase, 0.2);
                             } else if (value.toLowerCase().includes("intel")) {
-                                return Colors.blend(Colors.danger,Colors.info,0.2)
+                                return Colors.blend(Colors.danger, Colors.info, 0.2);
                             } else if (value.toLowerCase().includes("nvidia")) {
-                                return Colors.blend(Colors.success,Colors.info,0.2)
+                                return Colors.blend(Colors.success, Colors.info, 0.2);
                             }
-                            return Colors.fgBase
+                            return Colors.fgBase;
                         }
                     }
 
@@ -311,27 +204,26 @@ CellPopup {
 
                     Bar {
 
-                        key: root.fmt("<b>{}%</b>",parseInt(gpu.model.usage).toString().padStart(3, " "))
+                        key: root.fmt("<b>{}%</b>", parseInt(gpu.model.usage).toString().padStart(3, " "))
                         value: gpu.model.usage
 
                         value_color: {
                             if (value > box.danger_thres) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres, 10) / 10);
                             } else if (value > box.warning_thres) {
-                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres,10)/10)
+                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres, 10) / 10);
                             }
-                            return box.bar
+                            return box.bar;
                         }
 
                         key_color: {
                             if (value > box.danger_thres) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres, 10) / 10);
                             } else if (value > box.warning_thres) {
-                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
+                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres, 10) / 10);
                             }
-                            return box.dyn
+                            return box.dyn;
                         }
-
                     }
 
                     CellSeparator {
@@ -345,16 +237,16 @@ CellPopup {
 
                     Stat {
                         key: "Temp:"
-                        value: root.fmt("<b>{}°C</b>",gpu.model.temp)
+                        value: root.fmt("<b>{}°C</b>", gpu.model.temp)
 
                         value_color: {
-                            const value = gpu.model.temp
+                            const value = gpu.model.temp;
                             if (value > box.warning_thres) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres, 10) / 10);
                             } else if (value > 70) {
-                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
+                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres, 10) / 10);
                             }
-                            return box.dyn
+                            return box.dyn;
                         }
                     }
 
@@ -376,32 +268,29 @@ CellPopup {
 
                         Stat {
                             key: "VRAM:"
-                            value: root.fmt("<b>{}G</b>",SystemInfo.ktoG(gpu.model.memoryused).toFixed(1))
+                            value: root.fmt("<b>{}G</b>", SystemInfo.ktoG(gpu.model.memoryused).toFixed(1))
 
                             w: box.eW - vram.w
 
                             value_color: {
-                                const value = (SystemInfo.ktoG(gpu.model.memoryused).toFixed(1)/SystemInfo.ktoG(gpu.model.memorytotal).toFixed(1))*100
+                                const value = (SystemInfo.ktoG(gpu.model.memoryused).toFixed(1) / SystemInfo.ktoG(gpu.model.memorytotal).toFixed(1)) * 100;
                                 if (value > box.danger_thres) {
-                                    return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                    return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres, 10) / 10);
                                 } else if (value > box.warning_thres) {
-                                    return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
+                                    return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres, 10) / 10);
                                 }
-                                return box.dyn
+                                return box.dyn;
                             }
                         }
 
                         CellText {
+                            id: vram
 
                             Layout.leftMargin: -Cell.w(box.p)
 
-                            id: vram
-
-                            text: root.fmt("/{}G",SystemInfo.ktoG(gpu.model.memorytotal).toFixed(1))
+                            text: root.fmt("/{}G", SystemInfo.ktoG(gpu.model.memorytotal).toFixed(1))
                             color: box.stc
-
                         }
-
                     }
 
                     CellSeparator {
@@ -415,27 +304,26 @@ CellPopup {
 
                     Bar {
 
-                        key: root.fmt("<b>{}%</b>",parseInt(value).toString().padStart(3, " "))
-                        value: (gpu.model.memoryused/gpu.model.memorytotal)*100
+                        key: root.fmt("<b>{}%</b>", parseInt(value).toString().padStart(3, " "))
+                        value: (gpu.model.memoryused / gpu.model.memorytotal) * 100
 
                         value_color: {
                             if (value > box.danger_thres) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres, 10) / 10);
                             } else if (value > box.warning_thres) {
-                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres,10)/10)
+                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres, 10) / 10);
                             }
-                            return box.bar
+                            return box.bar;
                         }
 
                         key_color: {
                             if (value > box.danger_thres) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres, 10) / 10);
                             } else if (value > box.warning_thres) {
-                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
+                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres, 10) / 10);
                             }
-                            return box.dyn
+                            return box.dyn;
                         }
-
                     }
 
                     CellSeparator {
@@ -467,21 +355,19 @@ CellPopup {
                                 anchors.topMargin: Cell.h(-1)
                                 anchors.bottomMargin: Cell.h(-1)
 
-                                onReleased: (button) => {
+                                onReleased: button => {
                                     if (button == "L" && parent.available) {
-                                        gpu.index -= 1
+                                        gpu.index -= 1;
                                     }
                                 }
-
                             }
-
                         }
 
                         CellText {
                             text: {
-                                const base = [..."-".repeat(SystemInfo.gpumodels.length)]
-                                base[gpu.index] = "*"
-                                return base.join("")
+                                const base = [..."-".repeat(SystemInfo.gpumodels.length)];
+                                base[gpu.index] = "*";
+                                return base.join("");
                             }
                             font: Cell.fontBB
                         }
@@ -500,24 +386,22 @@ CellPopup {
                                 anchors.topMargin: Cell.h(-1)
                                 anchors.bottomMargin: Cell.h(-1)
 
-                                onReleased: (button) => {
+                                onReleased: button => {
                                     if (button == "L" && parent.available) {
-                                        gpu.index += 1
+                                        gpu.index += 1;
                                     }
                                 }
-
                             }
-
                         }
-
                     }
 
-                    CellText { text: "" }
+                    CellText {
+                        text: ""
+                    }
 
                     Header {
 
                         text: "Motherboard"
-
                     }
 
                     Stat {
@@ -525,12 +409,11 @@ CellPopup {
                         value: SystemInfo.board
                         stc: true
                     }
-
                 }
 
                 CellSeparator {
                     vertical: true
-                    h: 27
+                    h: box.contentH
                     color: Colors.bgOverlay
                 }
 
@@ -540,7 +423,9 @@ CellPopup {
 
                     spacing: 0
 
-                    Header { text: "MEMORY" }
+                    Header {
+                        text: "MEMORY"
+                    }
 
                     RowLayout {
 
@@ -548,22 +433,19 @@ CellPopup {
 
                         Stat {
                             key: "RAM:"
-                            value: root.fmt("<b>{}G</b>",SystemInfo.ktoG(SystemInfo.memused).toFixed(1))
+                            value: root.fmt("<b>{}G</b>", SystemInfo.ktoG(SystemInfo.memused).toFixed(1))
 
                             w: box.eW - ram.w
                         }
 
                         CellText {
+                            id: ram
 
                             Layout.leftMargin: -Cell.w(box.p)
 
-                            id: ram
-
-                            text: root.fmt("/{}G",SystemInfo.ktoG(SystemInfo.memtotal).toFixed(1))
+                            text: root.fmt("/{}G", SystemInfo.ktoG(SystemInfo.memtotal).toFixed(1))
                             color: box.stc
-
                         }
-
                     }
 
                     Bar {
@@ -573,22 +455,21 @@ CellPopup {
 
                         value_color: {
                             if (value > box.danger_thres) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres, 10) / 10);
                             } else if (value > box.warning_thres) {
-                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres,10)/10)
+                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres, 10) / 10);
                             }
-                            return box.bar
+                            return box.bar;
                         }
 
                         key_color: {
                             if (value > box.danger_thres) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres, 10) / 10);
                             } else if (value > box.warning_thres) {
-                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
+                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres, 10) / 10);
                             }
-                            return box.dyn
+                            return box.dyn;
                         }
-
                     }
 
                     CellSeparator {
@@ -606,22 +487,19 @@ CellPopup {
 
                         Stat {
                             key: "SWAP:"
-                            value: root.fmt("<b>{}G</b>",SystemInfo.ktoG(SystemInfo.swapused).toFixed(1))
+                            value: root.fmt("<b>{}G</b>", SystemInfo.ktoG(SystemInfo.swapused).toFixed(1))
 
                             w: box.eW - swap.w
                         }
 
                         CellText {
+                            id: swap
 
                             Layout.leftMargin: -Cell.w(box.p)
 
-                            id: swap
-
-                            text: root.fmt("/{}G",SystemInfo.ktoG(SystemInfo.swaptotal).toFixed(1))
+                            text: root.fmt("/{}G", SystemInfo.ktoG(SystemInfo.swaptotal).toFixed(1))
                             color: box.stc
-
                         }
-
                     }
 
                     Bar {
@@ -631,22 +509,21 @@ CellPopup {
 
                         value_color: {
                             if (value > box.danger_thres) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres, 10) / 10);
                             } else if (value > box.warning_thres) {
-                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres,10)/10)
+                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres, 10) / 10);
                             }
-                            return box.bar
+                            return box.bar;
                         }
 
                         key_color: {
                             if (value > box.danger_thres) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres, 10) / 10);
                             } else if (value > box.warning_thres) {
-                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
+                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres, 10) / 10);
                             }
-                            return box.dyn
+                            return box.dyn;
                         }
-
                     }
 
                     CellSeparator {
@@ -662,7 +539,9 @@ CellPopup {
                         text: " "
                     }
 
-                    Header { text: "DISKS" }
+                    Header {
+                        text: "DISKS"
+                    }
 
                     CellScrollView {
 
@@ -678,7 +557,6 @@ CellPopup {
                                 model: SystemInfo.disks.length
 
                                 delegate: ColumnLayout {
-
                                     id: disks
 
                                     required property int index
@@ -700,10 +578,9 @@ CellPopup {
 
                                             Layout.leftMargin: Cell.w(1)
 
-                                            text: root.fmt("<b>{}</b> <i>{}</i>",disks.name, disks.fs)
+                                            text: root.fmt("<b>{}</b> <i>{}</i>", disks.name, disks.fs)
                                             fg: box.stc
-                                            cellw: box.eW - box.p*2 - 2 - diskused.w - disktotal.w
-
+                                            cellw: box.eW - box.p * 2 - 2 - diskused.w - disktotal.w
                                         }
 
                                         CellText {
@@ -711,23 +588,18 @@ CellPopup {
                                         }
 
                                         CellText {
-
                                             id: diskused
 
-                                            text: root.fmt("<b>{}G</b>",SystemInfo.ktoG(disks.used))
+                                            text: root.fmt("<b>{}G</b>", SystemInfo.ktoG(disks.used))
                                             color: box.dyn
-
                                         }
 
                                         CellText {
-
                                             id: disktotal
 
-                                            text: root.fmt("<b>/{}G</b>",SystemInfo.ktoG(disks.total))
+                                            text: root.fmt("<b>/{}G</b>", SystemInfo.ktoG(disks.total))
                                             color: box.stc
-
                                         }
-
                                     }
 
                                     MarqueeCellText {
@@ -740,35 +612,33 @@ CellPopup {
 
                                         fg: Colors.fgSubtle
 
-                                        cellw: box.eW - box.p*2 - 1
-
+                                        cellw: box.eW - box.p * 2 - 1
                                     }
 
                                     Bar {
 
-                                        key: root.fmt("<b>{}%<b>", parseInt((disks.used/disks.total)*100).toString().padStart(3, " "))
-                                        value: (disks.used/disks.total)*100
+                                        key: root.fmt("<b>{}%<b>", parseInt((disks.used / disks.total) * 100).toString().padStart(3, " "))
+                                        value: (disks.used / disks.total) * 100
 
                                         w: box.eW - box.p
 
                                         value_color: {
                                             if (value > box.danger_thres) {
-                                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres, 10) / 10);
                                             } else if (value > box.warning_thres) {
-                                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres,10)/10)
+                                                return Colors.blend(box.bar, Colors.warning, Math.min(value - box.warning_thres, 10) / 10);
                                             }
-                                            return box.bar
+                                            return box.bar;
                                         }
 
                                         key_color: {
                                             if (value > box.danger_thres) {
-                                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres,10)/10)
+                                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - box.danger_thres, 10) / 10);
                                             } else if (value > box.warning_thres) {
-                                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres,10)/10)
+                                                return Colors.blend(box.dyn, Colors.warning, Math.min(value - box.warning_thres, 10) / 10);
                                             }
-                                            return box.dyn
+                                            return box.dyn;
                                         }
-
                                     }
 
                                     CellSeparator {
@@ -778,22 +648,19 @@ CellPopup {
                                         w: box.eW - box.p
                                         padding: 1
                                         color: Colors.bgOverlay
-
                                     }
-
                                 }
-
                             }
-
                         }
-
                     }
 
                     CellText {
                         text: " "
                     }
 
-                    Header { text: "DISKS IO" }
+                    Header {
+                        text: "DISKS IO"
+                    }
 
                     RowLayout {
 
@@ -801,22 +668,19 @@ CellPopup {
 
                         Stat {
                             key: "Write:"
-                            value: root.fmt("<b>{}</b>",SystemInfo.storageRounder(SystemInfo.diskwritespeed,1,10))
+                            value: root.fmt("<b>{}</b>", SystemInfo.storageRounder(SystemInfo.diskwritespeed, 1, 10))
 
                             w: box.eW - diskio.w
                         }
 
                         CellText {
+                            id: diskio
 
                             Layout.leftMargin: -Cell.w(box.p)
 
-                            id: diskio
-
                             text: "/s"
                             color: box.stc
-
                         }
-
                     }
 
                     RowLayout {
@@ -825,7 +689,7 @@ CellPopup {
 
                         Stat {
                             key: "Read:"
-                            value: root.fmt("<b>{}</b>",SystemInfo.storageRounder(SystemInfo.diskreadspeed,1,10))
+                            value: root.fmt("<b>{}</b>", SystemInfo.storageRounder(SystemInfo.diskreadspeed, 1, 10))
 
                             w: box.eW - diskio.w
                         }
@@ -837,31 +701,32 @@ CellPopup {
                             text: "/s"
                             color: box.stc
                         }
-
                     }
 
                     CellText {
                         text: " "
                     }
 
-                    Header { text: "POWER" }
+                    Header {
+                        text: "POWER"
+                    }
 
                     Stat {
                         key: "Battery:"
-                        value: root.fmt("<b>{}</b>",SystemInfo.battery)
+                        value: root.fmt("<b>{}</b>", SystemInfo.battery)
                         value_color: {
                             if (SystemInfo.batterystate == "charging" || SystemInfo.batterystate == "fully-charged") {
-                                return Colors.success
+                                return Colors.success;
                             }
-                            const value = parseInt(SystemInfo.battery)
+                            const value = parseInt(SystemInfo.battery);
                             if (value) {
-                                if (value <= 10 ) {
-                                    return Colors.danger
-                                } else if (value <= 20 ) {
-                                    return Colors.warning
+                                if (value <= 10) {
+                                    return Colors.danger;
+                                } else if (value <= 20) {
+                                    return Colors.warning;
                                 }
                             }
-                            return box.dyn
+                            return box.dyn;
                         }
                     }
 
@@ -869,22 +734,22 @@ CellPopup {
                         key: "Health:"
                         value: SystemInfo.batteryhealth != "" ? parseFloat(SystemInfo.batteryhealth).toFixed(1) + "%" : "inf"
                         value_color: {
-                            const value = parseInt(SystemInfo.batteryhealth)
+                            const value = parseInt(SystemInfo.batteryhealth);
                             if (value) {
-                                if (value <= 80 ) {
-                                    return Colors.danger
-                                } else if (value <= 90 ) {
-                                    return Colors.warning
+                                if (value <= 80) {
+                                    return Colors.danger;
+                                } else if (value <= 90) {
+                                    return Colors.warning;
                                 }
                             }
-                            return box.stc
+                            return box.stc;
                         }
                         stc: true
                     }
 
                     Stat {
                         key: "State:"
-                        value: root.fmt("<b>{}</b>",SystemInfo.batterystate)
+                        value: root.fmt("<b>{}</b>", SystemInfo.batterystate)
                     }
 
                     Stat {
@@ -892,12 +757,11 @@ CellPopup {
                         value: SystemInfo.onbattery ? "YES" : "NO"
                         stc: true
                     }
-
                 }
 
                 CellSeparator {
                     vertical: true
-                    h: 27
+                    h: box.contentH
                     color: Colors.bgOverlay
                 }
 
@@ -907,11 +771,13 @@ CellPopup {
 
                     spacing: 0
 
-                    Header { text: "NETWORK" }
+                    Header {
+                        text: "NETWORK"
+                    }
 
                     Stat {
                         key: SystemInfo.wifi["ethernet"] ? "Ethernet:" : "Wifi:"
-                        value: root.fmt("<b>{}</b>" , SystemInfo.wifi["ethernet"] ? SystemInfo.wifi["device"] : SystemInfo.wifi["name"])
+                        value: root.fmt("<b>{}</b>", SystemInfo.wifi["ethernet"] ? SystemInfo.wifi["device"] : SystemInfo.wifi["name"])
                     }
 
                     Stat {
@@ -923,19 +789,19 @@ CellPopup {
                         key: "Signal:"
                         value: root.fmt("<b>{}</b>", SystemInfo.wifi["signal"])
                         value_color: {
-                            const value = SystemInfo.wifi["signal"]
+                            const value = SystemInfo.wifi["signal"];
                             if (value > 80) {
-                                return Colors.success
+                                return Colors.success;
                             } else if (value > 50) {
-                                return Colors.warning
+                                return Colors.warning;
                             }
-                            return Colors.danger
+                            return Colors.danger;
                         }
                     }
 
                     Stat {
                         key: "Frequency:"
-                        value: root.fmt("{}G",(SystemInfo.wifi["freq"]/1000).toFixed(1))
+                        value: root.fmt("{}G", (SystemInfo.wifi["freq"] / 1000).toFixed(1))
                         stc: true
                     }
 
@@ -952,7 +818,9 @@ CellPopup {
                         text: " "
                     }
 
-                    Header { text: "NETWORK IO" }
+                    Header {
+                        text: "NETWORK IO"
+                    }
 
                     RowLayout {
 
@@ -960,22 +828,19 @@ CellPopup {
 
                         Stat {
                             key: "Transmit:"
-                            value: root.fmt("<b>{}</b>",SystemInfo.storageRounder(SystemInfo.networktransmit,1,10))
+                            value: root.fmt("<b>{}</b>", SystemInfo.storageRounder(SystemInfo.networktransmit, 1, 10))
 
                             w: box.eW - networkio.w
                         }
 
                         CellText {
+                            id: networkio
 
                             Layout.leftMargin: -Cell.w(box.p)
 
-                            id: networkio
-
                             text: "/s"
                             color: box.stc
-
                         }
-
                     }
 
                     RowLayout {
@@ -984,7 +849,7 @@ CellPopup {
 
                         Stat {
                             key: "Receive:"
-                            value: root.fmt("<b>{}</b>",SystemInfo.storageRounder(SystemInfo.networkreceive,1,10))
+                            value: root.fmt("<b>{}</b>", SystemInfo.storageRounder(SystemInfo.networkreceive, 1, 10))
 
                             w: box.eW - networkio.w
                         }
@@ -995,16 +860,16 @@ CellPopup {
 
                             text: "/s"
                             color: box.stc
-
                         }
-
                     }
 
                     CellText {
                         text: " "
                     }
 
-                    Header { text: "PHYSICAL DISKS" }
+                    Header {
+                        text: "PHYSICAL DISKS"
+                    }
 
                     CellScrollView {
 
@@ -1020,7 +885,6 @@ CellPopup {
                                 model: SystemInfo.phydisks.length
 
                                 delegate: ColumnLayout {
-
                                     id: phydisks
 
                                     required property int index
@@ -1039,10 +903,9 @@ CellPopup {
 
                                             Layout.leftMargin: Cell.w(1)
 
-                                            text: root.fmt("<b>{}</b> <i>{}</i>",phydisks.name, phydisks.type)
+                                            text: root.fmt("<b>{}</b> <i>{}</i>", phydisks.name, phydisks.type)
                                             fg: box.stc
-                                            cellw: box.eW - box.p*2 - 2 - phydisk.w
-
+                                            cellw: box.eW - box.p * 2 - 2 - phydisk.w
                                         }
 
                                         CellText {
@@ -1050,14 +913,11 @@ CellPopup {
                                         }
 
                                         CellText {
-
                                             id: phydisk
 
-                                            text: root.fmt("<b>{}G</b>",SystemInfo.ktoG(phydisks.size))
+                                            text: root.fmt("<b>{}G</b>", SystemInfo.ktoG(phydisks.size))
                                             color: box.stc
-
                                         }
-
                                     }
 
                                     CellSeparator {
@@ -1067,22 +927,19 @@ CellPopup {
                                         w: box.eW - box.p
                                         padding: 1
                                         color: Colors.bgOverlay
-
                                     }
-
                                 }
-
                             }
-
                         }
-
                     }
 
                     CellText {
                         text: " "
                     }
 
-                    Header { text: "OPERATION SYSTEM" }
+                    Header {
+                        text: "OPERATION SYSTEM"
+                    }
 
                     Stat {
 
@@ -1142,13 +999,101 @@ CellPopup {
                         value: SystemInfo.wm
                         stc: true
                     }
-
                 }
-
             }
         }
-
-
     }
 
+    component Header: CellSeparator {
+
+        property string text: "CPU"
+
+        w: box.eW
+        type: 2
+        padding: 1
+        title {
+            text: text
+            centered: false
+            font: Cell.fontBB
+            color: box.head
+        }
+        color: Colors.accentDim
+    }
+
+    component Stat: Cells {
+        id: stat
+
+        property string key: "Name:"
+        property string value: "Ryzen R5 7600"
+
+        property color key_color: box.key
+        property color value_color: stc ? box.stc : box.dyn
+
+        property bool stc: false
+        property bool debug: false
+
+        w: box.eW
+        h: 1
+
+        color: "transparent"
+
+        CellText {
+            id: stat_key
+
+            anchors.left: stat.left
+            anchors.leftMargin: Cell.w(box.p)
+
+            text: stat.key
+            color: stat.key_color
+            debug: stat.debug
+        }
+
+        MarqueeCellText {
+            id: stat_value
+
+            anchors.right: stat.right
+            anchors.rightMargin: Cell.w(box.p)
+
+            text: stat.value
+            fg: stat.value_color
+            cellw: stat.w - root.strip(stat.key).length - box.p * 2 - 1
+            alignRight: true
+        }
+    }
+
+    component Bar: Cells {
+        id: bar
+
+        property string key: value + "%"
+        property int value: SystemInfo.cpuusage
+
+        property color key_color: Colors.fgBase
+        property color value_color: Colors.fgBase
+
+        w: box.eW
+        h: 1
+
+        color: "transparent"
+
+        CellProgressSquare {
+            id: bar_bar
+
+            anchors.left: bar.left
+            anchors.leftMargin: Cell.w(box.p)
+
+            w: bar.w - 2 * box.p - bar_value.w - 1
+            percent: bar.value
+
+            fg: bar.value_color
+        }
+
+        CellText {
+            id: bar_value
+
+            anchors.right: bar.right
+            anchors.rightMargin: Cell.w(box.p)
+
+            text: bar.key
+        }
+    }
 }

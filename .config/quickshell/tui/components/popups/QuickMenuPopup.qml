@@ -67,6 +67,10 @@ CellPopup {
 
                     w: list.w
                     color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
+
                 }
 
                 CellScrollList {
@@ -197,6 +201,10 @@ CellPopup {
 
                     w: list.w
                     color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
+
                 }
 
                 RowLayout {
@@ -263,6 +271,9 @@ CellPopup {
                 CellSeparator {
                     w: box.contentW
                     color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
                 }
 
                 CellScrollList {
@@ -406,6 +417,9 @@ CellPopup {
                 CellSeparator {
                     w: box.contentW
                     color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
                 }
 
                 RowLayout {
@@ -456,6 +470,9 @@ CellPopup {
                 CellSeparator {
                     w: box.contentW
                     color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
                 }
 
                 CellScrollView {
@@ -473,6 +490,9 @@ CellPopup {
                 CellSeparator {
                     w: box.contentW
                     color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
                 }
 
                 RowLayout {

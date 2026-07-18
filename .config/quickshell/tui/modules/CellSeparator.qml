@@ -8,7 +8,6 @@ import QtQuick.Layouts
 import QtQuick
 
 Item {
-
     id: root
 
     property bool optimizeMemory: SettingsInfo.optimizeMemory
@@ -35,6 +34,9 @@ Item {
     property color color: Colors.fgSubtle
     property color bg: Colors.bgSurface
 
+    property bool connectStart: false
+    property bool connectEnd: false
+
     implicitWidth: Cell.w(vertical ? 1 : w)
     implicitHeight: Cell.h(vertical ? h : 1)
 
@@ -52,18 +54,80 @@ Item {
             lockPure: true
 
             text: {
-                let char = " "
+                let char = " ";
                 switch (root.type) {
-                    case 0: char = "─"; break;
-                    case 1: char = "━"; break;
-                    case 2: char = "═"; break;
-                    case 3: char = "-"; break;
-                    case 4: char = "="; break;
+                case 0:
+                    char = "─";
+                    break;
+                case 1:
+                    char = "━";
+                    break;
+                case 2:
+                    char = "═";
+                    break;
+                case 3:
+                    char = "-";
+                    break;
+                case 4:
+                    char = "=";
+                    break;
                 }
-                return " ".repeat(root.padding) + char.repeat(root.w - root.padding*2) + " ".repeat(root.padding)
+                return " ".repeat(root.padding) + char.repeat(root.w - root.padding * 2) + " ".repeat(root.padding);
             }
 
             bg: root.bg
+
+            CellText {
+
+                visible: root.connectStart || root.connectEnd
+
+                x: -Cell.w(1)
+
+                pure: false
+                lockPure: true
+
+                text: {
+                    let charStart = " ";
+                    let charEnd = " ";
+                    switch (root.type) {
+                    case 0:
+                        charStart = "╶";
+                        break;
+                    case 1:
+                        charStart = "╺";
+                        break;
+                    case 2:
+                        charStart = " ";
+                        break;
+                    case 3:
+                        charStart = " ";
+                        break;
+                    case 4:
+                        charStart = " ";
+                        break;
+                    }
+                    switch (root.type) {
+                    case 0:
+                        charEnd = "╴";
+                        break;
+                    case 1:
+                        charEnd = "╸";
+                        break;
+                    case 2:
+                        charEnd = " ";
+                        break;
+                    case 3:
+                        charEnd = " ";
+                        break;
+                    case 4:
+                        charEnd = " ";
+                        break;
+                    }
+                    return (root.connectStart ? charStart : " ") + " ".repeat(Math.max(root.w, 0)) + (root.connectEnd ? charEnd : " ");
+                }
+                bg: root.bg
+                color: root.color
+            }
 
             CellText {
 
@@ -74,9 +138,7 @@ Item {
                 bg: root.bg
                 color: root.title.color
                 clip: true
-
             }
-
         }
     }
 
@@ -90,26 +152,80 @@ Item {
             lockPure: true
 
             text: {
-
-                let type = "│"
+                let type = "│";
 
                 switch (root.type) {
-                    case 0: type = "│"; break;
-                    case 1: type = "┃"; break;
-                    case 2: type = "║"; break;
-                    case 3: type = "|"; break;
+                case 0:
+                    type = "│";
+                    break;
+                case 1:
+                    type = "┃";
+                    break;
+                case 2:
+                    type = "║";
+                    break;
+                case 3:
+                    type = "|";
+                    break;
                 }
 
-                const lines = [..." ".repeat(root.padding), ...type.repeat(root.h - root.padding*2), ..." ".repeat(root.padding)]
+                const lines = [..." ".repeat(root.padding), ...type.repeat(root.h - root.padding * 2), ..." ".repeat(root.padding)];
 
-                return lines.join("\n")
-
+                return lines.join("\n");
             }
             bg: root.bg
             color: root.color
 
+            CellText {
+
+                visible: root.connectStart || root.connectEnd
+
+                y: -Cell.h(1)
+
+                pure: false
+                lockPure: true
+
+                text: {
+                    let charStart = " ";
+                    let charEnd = " ";
+                    switch (root.type) {
+                    case 0:
+                        charStart = "╷";
+                        break;
+                    case 1:
+                        charStart = "╻";
+                        break;
+                    case 2:
+                        charStart = " ";
+                        break;
+                    case 3:
+                        charStart = " ";
+                        break;
+                    case 4:
+                        charStart = " ";
+                        break;
+                    }
+                    switch (root.type) {
+                    case 0:
+                        charEnd = "╵";
+                        break;
+                    case 1:
+                        charEnd = "╹";
+                        break;
+                    case 2:
+                        charEnd = " ";
+                        break;
+                    case 3:
+                        charEnd = " ";
+                        break;
+                    case 4:
+                        charEnd = " ";
+                        break;
+                    }
+                    return (root.connectStart ? charStart : " ") + "\n" + " \n".repeat(Math.max(root.h, 0)) + (root.connectEnd ? charEnd : " ");
+                }
+                color: root.color
+            }
         }
-
     }
-
 }
