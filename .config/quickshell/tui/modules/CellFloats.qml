@@ -6,6 +6,7 @@ import qs.modules
 
 import Quickshell
 import QtQuick
+import QtQuick.Window
 
 FloatingWindow {
     id: root
@@ -108,41 +109,12 @@ FloatingWindow {
 
         color: root.color
 
-        focus: !TextFieldManager.active && root.visible && root.active
+        focus: !TextFieldManager.active && root.visible && Window.window.active
 
         Keys.onPressed: event => {
             if (root.shortcuts.length > 0) {
                 ShortcutInfo.handleShortcuts(event, root.shortcuts);
             }
-        }
-    }
-
-    MouseControl {
-        anchors.fill: parent
-
-        propagateComposedEvents: true
-
-        hoverEnabled: true
-
-        onEntered: {
-            root.active = true;
-        }
-        onExited: {
-            root.active = false;
-        }
-
-        onPressed: (button, event) => {
-            TextFieldManager.unFocusAll();
-            event.accepted = false;
-        }
-
-        onReleased: (button, event) => {
-            TextFieldManager.unFocusAll();
-            event.accepted = false;
-        }
-
-        onWheel: (button, event) => {
-            event.accepted = false;
         }
     }
 
@@ -164,7 +136,7 @@ FloatingWindow {
             NumberAnimation {
                 target: size
                 property: "prefered_opacity"
-                duration: 500
+                duration: 200
                 to: 0
                 easing.type: Easing.OutCubic
             }
@@ -175,15 +147,16 @@ FloatingWindow {
 
         color: Colors.transparent(Colors.bgBase, 0.5)
 
-        property int prefered_opacity: 0
+        property real prefered_opacity: 0
 
         opacity: root._faultySize ? 1 : prefered_opacity
 
         CellText {
             x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
             y: Cell.centerHCell(implicitHeight, parent.implicitHeight)
-            text: root._faultySize ? ` Unavailable size ` : ` ${parent.w} x ${parent.h} `
+            text: root._faultySize ? ` Unavailable size ` : ` ${root.w + 1} x ${root.h + 1}`
             bg: Colors.bgSurface
+            centered: true
         }
     }
 }

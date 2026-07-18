@@ -17,6 +17,13 @@ CellFloats {
     w: 40
     h: Cell.hCount(layout.implicitHeight)
 
+    Connections {
+        target: layout
+        function onimplicitHeightChanged() {
+            root.h = Cell.hCount(layout.implicitHeight);
+        }
+    }
+
     property bool succeed: false
 
     Connections {
@@ -99,15 +106,21 @@ CellFloats {
             spacing: 0
 
             // ── Title ──
-            CellText {
-                id: title
+            RowLayout {
+                Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                spacing: 0
+                CellText {
+                    id: title
 
-                Layout.leftMargin: Cell.w(1)
+                    text: "POLKIT"
+                    font: Cell.fontBB
+                    color: Colors.secondary
+                }
+                CellText {
 
-                text: "Polkit authenticator" + (PolkitInfo.flows.length > 1 ? " (" + PolkitInfo.flows.length + " left)" : "")
-                preferedW: box.contentW - 2
-                centered: true
-                color: Colors.secondary
+                    text: (PolkitInfo.flows.length > 1 ? " (" + PolkitInfo.flows.length + " left)" : "")
+                    color: Colors.secondary
+                }
             }
 
             CellSeparator {
@@ -123,8 +136,8 @@ CellFloats {
                 Layout.leftMargin: Cell.w(1)
 
                 text: PolkitInfo.message
-                color: Colors.fgDim
-                preferedW: box.contentW
+                color: Colors.fgBase
+                preferedW: box.contentW - 2
                 centered: true
                 wrap: true
             }
@@ -137,8 +150,8 @@ CellFloats {
                 Layout.leftMargin: Cell.w(1)
 
                 text: PolkitInfo.extra
-                color: PolkitInfo.error ? Colors.danger : Colors.fgSubtle
-                preferedW: box.contentW
+                color: PolkitInfo.error ? Colors.danger : Colors.fgDim
+                preferedW: box.contentW - 2
                 centered: true
                 wrap: true
             }
@@ -174,8 +187,6 @@ CellFloats {
                         h: 1
 
                         forceFocus: true
-
-                        globalFocus: root.active
 
                         disabled: PolkitInfo.checking || succeed_anim.running
 

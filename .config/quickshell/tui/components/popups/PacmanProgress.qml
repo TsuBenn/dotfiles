@@ -11,38 +11,39 @@ Item {
 
     visible: threshold > 0
 
-    property bool show: (
-        PacmanInfo.pacmanState == "running"
-        || PacmanInfo.pacmanState == "success"
-    ) && !PopupManager.isOpen("pacman") && !FloatsManager.isOpen("pacman") && !root.hidden
+    property bool show: (PacmanInfo.pacmanState == "running" || PacmanInfo.pacmanState == "success") && /* !PopupManager.isOpen("pacman") && */ !FloatsManager.isOpen("pacman") && !root.hidden
 
     property real threshold: show ? 1 : 0
 
-    Behavior on threshold {NumberAnimation {duration: 200; easing.type: Easing.OutCubic}}
+    Behavior on threshold {
+        NumberAnimation {
+            duration: 200
+            easing.type: Easing.OutCubic
+        }
+    }
 
     x: root.expanded ? 0 : Cell.centerWCell(implicitWidth, monitor.width)
 
-    implicitWidth: root.expanded ? Cell.toW(monitor.width,"floor") : Cell.w(root.w)
-    implicitHeight: root.expanded ? Cell.toH(monitor.height,"floor") : Cell.h(root.h)
+    implicitWidth: root.expanded ? Cell.toW(monitor.width, "floor") : Cell.w(root.w)
+    implicitHeight: root.expanded ? Cell.toH(monitor.height, "floor") : Cell.h(root.h)
 
     MouseControl {
 
         anchors.fill: parent
 
-        onReleased: (button) => {
-            if (button == "L") root.expanded = false
+        onReleased: button => {
+            if (button == "L")
+                root.expanded = false;
         }
-
     }
 
     Cells {
+        id: root
 
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
         anchors.right: parent.right
-
-        id: root
 
         property bool expanded: false
         property bool hidden: false
@@ -51,16 +52,16 @@ Item {
             target: PopupManager
             function onOpened(name) {
                 if (name == "pacman") {
-                    root.hidden = false
+                    root.hidden = false;
                 }
             }
             function onClosed() {
-                root.expanded = false
+                root.expanded = false;
             }
         }
 
         onVisibleChanged: {
-            expanded = false
+            expanded = false;
         }
 
         w: 104
@@ -84,15 +85,18 @@ Item {
 
                 text: {
                     switch (PacmanInfo.installState.currentPhase) {
-                        case "START":    return "Starting    "
-                        case "DOWNLOAD": return "Downloading "
-                        case "INSTALL":  return "Installing  "
-                        case "HOOKS":    return "Hookings    "
+                    case "START":
+                        return "Starting    ";
+                    case "DOWNLOAD":
+                        return "Downloading ";
+                    case "INSTALL":
+                        return "Installing  ";
+                    case "HOOKS":
+                        return "Hookings    ";
                     }
                 }
 
                 font: Cell.fontB
-
             }
 
             CellProgressSquare {
@@ -106,7 +110,12 @@ Item {
 
             CellText {
                 property int percent: PacmanInfo.installState?.overallProgress ?? 0
-                Behavior on percent {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
+                Behavior on percent {
+                    NumberAnimation {
+                        duration: 500
+                        easing.type: Easing.OutCubic
+                    }
+                }
                 text: percent.toString().padStart(3, " ") + "%"
             }
 
@@ -120,9 +129,9 @@ Item {
                 fg: Colors.info
                 color: "transparent"
                 font: hovered ? Cell.fontB : Cell.font
-                onReleased: (button) => {
+                onReleased: button => {
                     if (button == "L") {
-                        root.expanded = !root.expanded
+                        root.expanded = !root.expanded;
                     }
                 }
             }
@@ -133,9 +142,9 @@ Item {
                 fg: Colors.info
                 color: "transparent"
                 font: hovered ? Cell.fontB : Cell.font
-                onReleased: (button) => {
+                onReleased: button => {
                     if (button == "L") {
-                        PopupManager.open("pacman")
+                        PopupManager.open("pacman");
                     }
                 }
             }
@@ -146,9 +155,9 @@ Item {
                 fg: Colors.info
                 color: "transparent"
                 font: hovered ? Cell.fontB : Cell.font
-                onReleased: (button) => {
+                onReleased: button => {
                     if (button == "L") {
-                        root.hidden = true
+                        root.hidden = true;
                     }
                 }
             }
@@ -159,9 +168,9 @@ Item {
                 fg: Colors.info
                 color: "transparent"
                 font: hovered ? Cell.fontB : Cell.font
-                onReleased: (button) => {
+                onReleased: button => {
                     if (button == "L") {
-                        PacmanInfo.cancel()
+                        PacmanInfo.cancel();
                     }
                 }
             }
@@ -171,20 +180,17 @@ Item {
                 color: Colors.accentStrong
                 font: Cell.fontBB
             }
-
         }
 
         CellBox {
+            id: box
 
             visible: root.expanded && PacmanInfo.pacmanState != "success" && PacmanInfo.pacmanState != "idle" && PacmanInfo.pacmanState != "cancel"
-
-            id: box
 
             w: root.w
             h: root.h
 
             ColumnLayout {
-
                 id: layout
 
                 spacing: 0
@@ -198,31 +204,34 @@ Item {
                     CellText {
 
                         text: {
-                            let header
+                            let header;
                             switch (PacmanInfo.installState.currentPhase) {
-                                case "START": header = "Initializing installation for"; break
-                                case "DOWNLOAD": header = "Retrieving packages for"; break
-                                case "INSTALL": header = "Processing package changes for"; break
-                                case "HOOKS": header = "Running post-transaction hooks for"; break
+                            case "START":
+                                header = "Initializing installation for";
+                                break;
+                            case "DOWNLOAD":
+                                header = "Retrieving packages for";
+                                break;
+                            case "INSTALL":
+                                header = "Processing package changes for";
+                                break;
+                            case "HOOKS":
+                                header = "Running post-transaction hooks for";
+                                break;
                             }
-                            return " " + header + " <b>" + PacmanInfo.installTarget.join(", ") + "</b>"
+                            return " " + header + " <b>" + PacmanInfo.installTarget.join(", ") + "</b>";
                         }
                         color: Colors.info
                         preferedW: Math.min(purify(text).length, box.contentW - 4)
-
                     }
 
                     CellLoading {
                         style: 2
                     }
-
                 }
 
                 CellSeparator {
-                    visible: (
-                        PacmanInfo.installState.currentPhase != "HOOKS"
-                        && PacmanInfo.installState.currentPhase != "START"
-                    )
+                    visible: (PacmanInfo.installState.currentPhase != "HOOKS" && PacmanInfo.installState.currentPhase != "START")
                     w: box.contentW
                     color: Colors.bgOverlay
                 }
@@ -243,20 +252,16 @@ Item {
 
                             text: "Downloaded size : "
                             color: Colors.fgSubtle
-
                         }
                         CellText {
 
                             text: PacmanInfo.installState.progressData.downloadedSize ?? ""
-
                         }
                         CellText {
 
                             text: "/" + PacmanInfo.installPlan.totalDownload
                             color: Colors.fgDim
-
                         }
-
                     }
 
                     RowLayout {
@@ -267,14 +272,11 @@ Item {
 
                             text: "Download speed  : "
                             color: Colors.fgSubtle
-
                         }
                         CellText {
 
                             text: PacmanInfo.installState.progressData.downloadSpeed ?? ""
-
                         }
-
                     }
 
                     RowLayout {
@@ -285,16 +287,12 @@ Item {
 
                             text: "Time remaining  : "
                             color: Colors.fgSubtle
-
                         }
                         CellText {
 
                             text: PacmanInfo.installState.progressData.estimateTime ?? ""
-
                         }
-
                     }
-
                 }
 
                 ColumnLayout {
@@ -313,22 +311,17 @@ Item {
 
                             text: "Processing package : "
                             color: Colors.fgSubtle
-
                         }
                         CellText {
 
                             text: PacmanInfo.installState.progressData.currentPkg ?? ""
-
                         }
                         CellText {
 
                             text: "/" + PacmanInfo.installState.progressData.totalPkg
                             color: Colors.fgDim
-
                         }
-
                     }
-
                 }
 
                 CellSeparator {
@@ -362,10 +355,14 @@ Item {
 
                     CellText {
                         property int percent: PacmanInfo.installState?.overallProgress ?? 0
-                        Behavior on percent {NumberAnimation {duration: 500; easing.type: Easing.OutCubic}}
+                        Behavior on percent {
+                            NumberAnimation {
+                                duration: 500
+                                easing.type: Easing.OutCubic
+                            }
+                        }
                         text: percent.toString().padStart(3, " ") + "%"
                     }
-
                 }
 
                 CellSeparator {
@@ -386,9 +383,9 @@ Item {
                         fg: Colors.info
                         color: "transparent"
                         font: hovered ? Cell.fontB : Cell.font
-                        onReleased: (button) => {
+                        onReleased: button => {
                             if (button == "L") {
-                                root.expanded = !root.expanded
+                                root.expanded = !root.expanded;
                             }
                         }
                     }
@@ -399,9 +396,9 @@ Item {
                         fg: Colors.info
                         color: "transparent"
                         font: hovered ? Cell.fontB : Cell.font
-                        onReleased: (button) => {
+                        onReleased: button => {
                             if (button == "L") {
-                                PopupManager.open("pacman")
+                                PopupManager.open("pacman");
                             }
                         }
                     }
@@ -412,9 +409,9 @@ Item {
                         fg: Colors.info
                         color: "transparent"
                         font: hovered ? Cell.fontB : Cell.font
-                        onReleased: (button) => {
+                        onReleased: button => {
                             if (button == "L") {
-                                root.hidden = true
+                                root.hidden = true;
                             }
                         }
                     }
@@ -425,27 +422,19 @@ Item {
                         fg: Colors.info
                         color: "transparent"
                         font: hovered ? Cell.fontB : Cell.font
-                        onReleased: (button) => {
+                        onReleased: button => {
                             if (button == "L") {
-                                PacmanInfo.cancel()
+                                PacmanInfo.cancel();
                             }
                         }
                     }
-
                 }
-
-
             }
-
         }
 
         RowLayout {
 
-            visible: (
-                PacmanInfo.pacmanState == "success"
-                || PacmanInfo.pacmanState == "idle"
-                || PacmanInfo.pacmanState == "cancel"
-            )
+            visible: (PacmanInfo.pacmanState == "success" || PacmanInfo.pacmanState == "idle" || PacmanInfo.pacmanState == "cancel")
 
             spacing: Cell.w(1)
 
@@ -468,10 +457,11 @@ Item {
                 fg: Colors.info
                 color: "transparent"
                 font: hovered ? Cell.fontB : Cell.font
-                onReleased: (button) => {
+                onReleased: button => {
                     if (button == "L") {
-                        root.hidden = true
-                        PopupManager.open("pacman")
+                        root.hidden = true;
+                        // PopupManager.open("pacman")
+                        FloatsManager.open("pacman");
                     }
                 }
             }
@@ -482,9 +472,9 @@ Item {
                 fg: Colors.info
                 color: "transparent"
                 font: hovered ? Cell.fontB : Cell.font
-                onReleased: (button) => {
+                onReleased: button => {
                     if (button == "L") {
-                        PacmanInfo.cancel()
+                        PacmanInfo.cancel();
                     }
                 }
             }
@@ -494,9 +484,6 @@ Item {
                 color: Colors.accentStrong
                 font: Cell.fontBB
             }
-
         }
-
     }
-
 }

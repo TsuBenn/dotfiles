@@ -141,6 +141,8 @@ CellPopup {
                 property var transData: WallpaperInfo.getTransition(currentItem)
                 property var configData: WallpaperInfo.config[currentItem]
 
+                clip: true
+
                 Item {
 
                     anchors.centerIn: parent
@@ -564,11 +566,11 @@ CellPopup {
 
                                         anchors.centerIn: parent
 
-                                        sourceSize.width: Cell.w(thumbnail.w)
-                                        sourceSize.height: Cell.h(thumbnail.h - 1)
+                                        sourceSize.width: Cell.w(thumbnail.w - 2)
+                                        sourceSize.height: Cell.h(thumbnail.h - 2)
 
-                                        width: Cell.w(thumbnail.w)
-                                        height: Cell.h(thumbnail.h - 1)
+                                        width: Cell.w(thumbnail.w - 2)
+                                        height: Cell.h(thumbnail.h - 2)
 
                                         source: (thumbnail.modelData ? (SystemInfo.homedir + WallpaperInfo.cache_path + thumbnail.modelData + WallpaperInfo.cache_prefix) : "")
 
@@ -1343,7 +1345,7 @@ CellPopup {
                     }
 
                     CellText {
-                        text: "  "
+                        text: " "
                     }
 
                     CellText {
@@ -1522,7 +1524,7 @@ CellPopup {
                     spacing: Cell.w(2)
 
                     CellText {
-                        text: "Others    :"
+                        text: "Others:   "
                     }
 
                     CellButton {
@@ -1545,6 +1547,9 @@ CellPopup {
                 w: box.contentW
                 type: 0
                 color: Colors.accentStrong
+                bg: "transparent"
+                connectStart: true
+                connectEnd: true
             }
 
             RowLayout {

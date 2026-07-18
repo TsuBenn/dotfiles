@@ -37,8 +37,8 @@ ShellRoot {
         }
 
         function init() {
-            const active_border = "rgba(" + Colors.borderActive.toString().slice(1) + "ff)";
-            const inactive_border = "rgba(" + Colors.borderInactive.toString().slice(1) + "ff)";
+            const active_border = "rgba(" + Colors.accentStrong.toString().slice(1) + "ff)";
+            const inactive_border = "rgba(" + Colors.accentDim.toString().slice(1) + "ff)";
 
             const command = `hl.config({
 
@@ -47,7 +47,7 @@ ShellRoot {
                     gaps_in =  { top = 8, left = 3, bottom = 8, right = 3 },
                     gaps_out = { top = 9, left = 5, bottom = 9, right = 5 },
 
-                    border_size = 1,
+                    border_size = 2,
 
                     allow_tearing = true,
 

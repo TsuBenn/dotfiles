@@ -478,7 +478,7 @@ Singleton {
         "open_color_menu": {
             "label": "Open Color Menu",
             "action": function () {
-                PopupManager.open("color");
+                FloatsManager.open("color");
             }
         },
         "open_app_launcher": {

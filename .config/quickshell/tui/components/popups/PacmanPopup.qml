@@ -467,6 +467,9 @@ CellPopup {
                 CellSeparator {
                     w: box.contentW
                     color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
                 }
 
                 // Package list
@@ -823,6 +826,9 @@ CellPopup {
                     visible: (root.pacmanState == "idle" || root.pacmanState == "prepare" || root.pacmanState == "pre-flight" || root.pacmanState == "authentication" || root.pacmanState == "fetching" || root.pacmanState == "checking_updates")
                     w: box.contentW
                     color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
                 }
 
                 // Info
@@ -1075,6 +1081,9 @@ CellPopup {
                                 vertical: true
                                 h: box.contentH - list.h - 7
                                 color: Colors.accentStrong
+                                bg: "transparent"
+                                connectStart: true
+                                connectEnd: true
                             }
 
                             ColumnLayout {
@@ -1090,6 +1099,9 @@ CellPopup {
                                 CellSeparator {
                                     w: install_queue.w - 1
                                     color: Colors.accentStrong
+                                    bg: "transparent"
+                                    connectStart: true
+                                    connectEnd: true
                                 }
 
                                 CellScrollList {
@@ -2038,6 +2050,9 @@ CellPopup {
                 CellSeparator {
                     w: box.contentW
                     color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
                 }
 
                 // Footer

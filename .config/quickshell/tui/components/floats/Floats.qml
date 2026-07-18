@@ -15,4 +15,8 @@ Item {
     AuthFloats {
         id: auth
     }
+
+    ColorFloats {
+        id: color
+    }
 }
