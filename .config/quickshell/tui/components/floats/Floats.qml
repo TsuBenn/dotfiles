@@ -11,4 +11,8 @@ Item {
     PacmanFloats {
         id: pacman
     }
+
+    AuthFloats {
+        id: auth
+    }
 }

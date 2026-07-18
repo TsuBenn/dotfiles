@@ -195,14 +195,20 @@ Singleton {
 
             if (match) {
                 // 1. Build Modifiers for Usage (Qt format: "Ctrl+Shift+Alt+")
-                if (match[2]) combo += "Ctrl+";
-                if (match[4]) combo += "Shift+";
-                if (match[6]) combo += "Alt+";
+                if (match[2])
+                    combo += "Ctrl+";
+                if (match[4])
+                    combo += "Shift+";
+                if (match[6])
+                    combo += "Alt+";
 
                 // 2. Build Modifiers for Display (Vim format: "C-S-A-")
-                if (match[2]) revised += "C-";
-                if (match[4]) revised += "S-";
-                if (match[6]) revised += "A-";
+                if (match[2])
+                    revised += "C-";
+                if (match[4])
+                    revised += "S-";
+                if (match[6])
+                    revised += "A-";
 
                 if (match[7]) {
                     let rawKey = match[7];
@@ -262,7 +268,8 @@ Singleton {
             let eval_binds = decodeBinds(binds[i].binds);
             let eval_action = actions[binds[i].action].action;
             for (const j in eval_binds.display) {
-                if (eval_binds.display == "") continue;
+                if (eval_binds.display == "")
+                    continue;
                 if (dup.includes(eval_binds.display[j])) {
                     eval_binds.display[j] += "!";
                     success = false;
@@ -465,7 +472,7 @@ Singleton {
         "open_pacman": {
             "label": "Open Pacman",
             "action": function () {
-                PopupManager.open("pacman");
+                FloatsManager.open("pacman");
             }
         },
         "open_color_menu": {

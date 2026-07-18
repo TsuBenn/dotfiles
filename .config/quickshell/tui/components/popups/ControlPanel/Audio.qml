@@ -242,13 +242,13 @@ ColumnLayout {
                 for (const sink of AudioInfo.sinks) {
                     items.push({
                         label: sink.name,
-                        action: () => {
-                            AudioInfo.switchDefault(sink.id)
-                        }
-                    })
+                        data: sink.id                    })
                 }
                 return items
             }
+                onActivated: index => {
+                            AudioInfo.switchDefault(items[index]?.data)
+                }
         }
     }
 
@@ -284,13 +284,14 @@ ColumnLayout {
                 for (const sink of AudioInfo.sources) {
                     items.push({
                         label: sink.name,
-                        action: () => {
-                            AudioInfo.switchDefault(sink.id)
-                        }
+                        data: sink.id,
                     })
                 }
                 return items
             }
+                onActivated: index => {
+                            AudioInfo.switchDefault(items[index]?.data)
+                }
         }
     }
 

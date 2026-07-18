@@ -13,10 +13,12 @@ CellFloats {
 
     noMax: true
 
+    title: "Pacman"
+
     w: 100
     h: 44
 
-    minW: 80
+    minW: multi_selected_pkg.length > 0 ? 100 : 80
     minH: 40
 
     property string pacmanState: PacmanInfo.pacmanState
@@ -49,15 +51,14 @@ CellFloats {
         }
     }
 
-    /*
-     onVisibleChanged: {
-         selected_index = 0
-         multi_selected_pkg = []
-         selected_pkg = ""
-         PacmanInfo.query = ""
-         list.reset()
-     }
-     */
+    onVisibleChanged: {
+        if (visible) {
+            multi_selected_pkg = [];
+            selected_pkg = "";
+            PacmanInfo.query = "";
+            list.reset();
+        }
+    }
 
     shortcuts: [
         {
@@ -111,7 +112,7 @@ CellFloats {
         {
             binds: "Ctrl+S",
             action: () => {
-                PacmanInfo.search_mode = (PacmanInfo.search_mode + 1) % PacmanInfo.search_modes.length;
+                PacmanInfo.iterateSearchMode();
             }
         },
         {
@@ -420,8 +421,8 @@ CellFloats {
     Cells {
         id: box
 
-        w: root.preferredW
-        h: root.preferredH
+        w: root.w
+        h: root.h
 
         property int contentW: w
         property int contentH: h
@@ -474,7 +475,7 @@ CellFloats {
                 visible: (root.pacmanState == "idle" || root.pacmanState == "prepare" || root.pacmanState == "pre-flight" || root.pacmanState == "authentication" || root.pacmanState == "checking_updates" || root.pacmanState == "fetching")
 
                 w: box.contentW
-                h: Math.floor(box.contentH / 2) - 8
+                h: Math.floor(box.contentH / 2) - 6
 
                 // ── Unified data source ──────────────────────────────
                 //
@@ -680,7 +681,7 @@ CellFloats {
 
                             onReleased: button => {
                                 if (button == "L") {
-                                    PacmanInfo.search_mode = (PacmanInfo.search_mode + 1) % PacmanInfo.search_modes.length;
+                                    PacmanInfo.iterateSearchMode();
                                 }
                             }
                         }
@@ -1749,7 +1750,7 @@ CellFloats {
                         CellText {
                             id: log_text
 
-                            preferedW: log.contentW - 2
+                            preferedW: 76
 
                             text: parent.lines.slice(0, parent.lines.length - 1).join("\n")
                             wrap: true
@@ -1759,7 +1760,7 @@ CellFloats {
                         CellText {
                             id: log_text_focus
 
-                            preferedW: log.contentW - 2
+                            preferedW: 76
 
                             text: parent.lines[parent.lines.length - 1]
                             wrap: true

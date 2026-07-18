@@ -117,14 +117,16 @@ Item {
         cellY: Cell.hCount(root.monitor.height / 2, "floor") - Math.round(h / 2)
     }
 
-    PacmanPopup {
-        id: pacman
+    // Deprecated -> Use PacmanFloats instead
+    //
+    // PacmanPopup {
+    //     id: pacman
 
-        name: "pacman"
+    //     name: "pacman"
 
-        cellX: Cell.wCount(root.monitor.width / 2) - Math.round(w / 2) - 1
-        cellY: Cell.hCount(root.monitor.height / 2, "floor") - Math.round(h / 2)
-    }
+    //     cellX: Cell.wCount(root.monitor.width / 2) - Math.round(w / 2) - 1
+    //     cellY: Cell.hCount(root.monitor.height / 2, "floor") - Math.round(h / 2)
+    // }
 
     QuickMenuPopup {
         id: quick_menu
@@ -137,16 +139,18 @@ Item {
         cellY: Cell.hCount(root.monitor.height / 2, "floor") - Math.round(h / 2)
     }
 
-    AuthPopup {
-        id: auth
+    // Deprecated -> Use AuthFloats instead
+    //
+    // AuthPopup {
+    //     id: auth
 
-        monitor: root.monitor
+    //     monitor: root.monitor
 
-        name: "auth"
+    //     name: "auth"
 
-        cellX: Cell.wCount(root.monitor.width / 2) - Math.round(w / 2)
-        cellY: Cell.hCount(root.monitor.height / 2, "floor") - Math.round(h / 2)
-    }
+    //     cellX: Cell.wCount(root.monitor.width / 2) - Math.round(w / 2)
+    //     cellY: Cell.hCount(root.monitor.height / 2, "floor") - Math.round(h / 2)
+    // }
 
     ScreenshotPopup {
         id: screenshot

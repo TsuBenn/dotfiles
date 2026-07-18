@@ -140,6 +140,8 @@ Cells {
                 Connections {
                     target: root
                     function onModelChanged() {
+                        if (!root.reloadOnChanges)
+                            return;
                         viewLoader.sourceComponent = null;
                         viewLoader.sourceComponent = Qt.binding(() => viewLoader.modelData || viewLoader.modelData == "" || viewLoader.modelData == 0 ? root.delegate : null);
                     }
