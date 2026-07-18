@@ -50,7 +50,7 @@ ayano() {
 
 }
 
-alias dot='cd ~/dotfiles/ && nvim .'
+alias dot='cd ~/dotfiles/'
 alias hyprconf='cd ~/dotfiles/ && nvim ~/.config/hypr/hyprland.lua'
 alias kittyconf='cd ~/dotfiles/ && nvim ~/.config/kitty/kitty.conf'
 alias ghosttyconf='cd ~/dotfiles/ && nvim ~/.config/ghostty/config'
