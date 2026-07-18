@@ -526,7 +526,7 @@ Singleton {
 
         property string pkg: root.installTarget.join(" ")
 
-        command: ["script", "-qc", `pkexec env COLUMNS=94 LINES=0 pacman -S ${pkg}`, "/dev/null"]
+        command: ["script", "-qc", `pkexec env COLUMNS=76 LINES=0 pacman -S ${pkg}`, "/dev/null"]
 
         stdout: SplitParser {
             splitMarker: ""
@@ -562,7 +562,7 @@ Singleton {
 
         property string pkg: root.removeTarget.join(" ")
 
-        command: ["script", "-qc", `pkexec env COLUMNS=94 LINES=0 pacman -Rs${root.forceRemove ? "c" : ""} ${pkg}`, "/dev/null"]
+        command: ["script", "-qc", `pkexec env COLUMNS=76 LINES=0 pacman -Rs${root.forceRemove ? "c" : ""} ${pkg}`, "/dev/null"]
 
         stdout: SplitParser {
             splitMarker: ""
@@ -618,7 +618,11 @@ Singleton {
         queryChanged();
     }
 
-    property int search_mode: 0
+    function iterateSearchMode() {
+        SettingsInfo.iterate("pacmanSearchMode", search_modes.length);
+    }
+
+    property int search_mode: SettingsInfo.pacmanSearchMode
 
     property var search_modes: ["Normal"      // Just includes
         , "Fuzzy"       // Remove spaces and connectors ("-", "_")

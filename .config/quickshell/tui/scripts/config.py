@@ -16,7 +16,7 @@ SETTINGS = [
         "description": "Manage your Arch Linux packages.",
         "category": "settings",
         "type": "exec",
-        "value": ["qs", "-c", "tui", "ipc", "call", "config", "open_popup", "pacman"],
+        "value": ["qs", "-c", "tui", "ipc", "call", "config", "open_float", "pacman"],
     },
     {
         # These are hidden items that are only show up when searched.

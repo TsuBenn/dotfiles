@@ -13,9 +13,9 @@ CellPopup {
     w: 40
     h: Cell.hCount(layout.implicitHeight) + 2
 
-    property bool succeed: false
+    escapeToClose: true // CellPopup binds Escape → PopupManager.sigClose → onSigClose()
 
-    escapeToClose: true  // CellPopup binds Escape → PopupManager.sigClose → onSigClose()
+    property bool succeed: false
 
     Connections {
         target: PolkitInfo

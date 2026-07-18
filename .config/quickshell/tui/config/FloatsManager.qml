@@ -16,6 +16,8 @@ Singleton {
 
     signal sig(name: string, sig: string)
 
+    signal sigClose(name: string)
+
     function sendSig(name = "", sig: string) {
         root.sig(name, sig);
     }

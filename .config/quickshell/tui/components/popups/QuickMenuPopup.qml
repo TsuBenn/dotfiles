@@ -77,6 +77,8 @@ CellPopup {
 
                     itemH: 2
 
+                    reloadOnChanges: true
+
                     model: [...QuickMenuInfo.binds]
 
                     delegate: ColumnLayout {
@@ -270,6 +272,8 @@ CellPopup {
                     h: box.contentH - 4
 
                     itemH: 4
+
+                    reloadOnChanges: true
 
                     model: Object.keys(QuickMenuInfo.custom_actions)
 

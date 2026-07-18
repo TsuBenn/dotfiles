@@ -8,7 +8,7 @@
   "optimizeMemory": true,
   "safeNotifications": false,
   "dnd": false,
-  "wallpaperAutoAdvance": false,
+  "wallpaperAutoAdvance": true,
   "shadow": true,
   "hyprAnim": true,
   "hyprBlur": true,
@@ -21,5 +21,6 @@
   "sfx": false,
   "userLightMode": false,
   "autoLightMode": true,
-  "debug": true
+  "debug": true,
+  "pacmanSearchMode": 4
 }

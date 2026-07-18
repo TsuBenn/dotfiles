@@ -941,6 +941,9 @@ CellPopup {
                                     }
                                     return 0;
                                 }
+                                onActivated: index => {
+                                    items[index]?.action();
+                                }
                                 items: [
                                     {
                                         label: "None",

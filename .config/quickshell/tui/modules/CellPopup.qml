@@ -40,6 +40,10 @@ Item {
         }
     }
 
+    onPromoted: {
+        TextFieldManager.unFocusAll();
+    }
+
     function attemptFocus() {
         if (!TextFieldManager.active) {
             if (root.isTop)
@@ -95,7 +99,7 @@ Item {
         return Cell.h(Cell.hCount(monitor.height, "floor") - h);
     }
 
-    focus: !TextFieldManager.active && root.visible
+    focus: !TextFieldManager.active && !ContextMenuManager.visible && !DropdownManager.visible && !HintManager.visible && root.visible
 
     function open(isolate = true) {
         PopupManager.open(root.name, isolate);

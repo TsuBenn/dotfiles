@@ -6,6 +6,7 @@ import qs.services
 
 import QtQuick.Layouts
 import QtQuick
+import QtQuick.Window
 
 Item {
     id: root
@@ -23,6 +24,8 @@ Item {
     property bool autoClear: false
     property bool showCursor: false
     property bool blinkCursor: true
+
+    property bool globalFocus: Window.window.active ?? true // Used for isolating Floats textfields
 
     property bool canCopy: true
     property bool canPaste: true
@@ -101,7 +104,17 @@ Item {
     }
 
     onVisibleChanged: {
-        if (visible) {
+        if (visible && globalFocus) {
+            if (focusOnVisible) {
+                grabFocus();
+            }
+        } else {
+            unFocus();
+        }
+    }
+
+    onGlobalFocusChanged: {
+        if (visible && globalFocus) {
             if (focusOnVisible) {
                 grabFocus();
             }
@@ -114,7 +127,7 @@ Item {
         if (disabled)
             unFocus();
         else {
-            if (focusOnVisible || (!disabled && visible && forceFocus)) {
+            if (focusOnVisible || (!disabled && visible && globalFocus && forceFocus)) {
                 grabFocus();
             }
         }
@@ -128,7 +141,7 @@ Item {
                 clear();
             resetCursor();
             cursorPos = root.text.length;
-            TextFieldManager.activated();
+            // TextFieldManager.activated();
         } else {
             TextFieldManager.deactivated();
             if (autoApply)
@@ -142,7 +155,7 @@ Item {
         target: TextFieldManager
         function onActive_fieldsChanged() {
             if (TextFieldManager.active_fields == 0) {
-                if (!root.disabled && root.visible && root.forceFocus) {
+                if (!root.disabled && root.visible && root.globalFocus && root.forceFocus) {
                     root.grabFocus();
                 }
             }
@@ -178,6 +191,8 @@ Item {
     function grabFocus() {
         if (visible) {
             TextFieldManager.unFocusAll();
+            if (!focus)
+                TextFieldManager.activated();
             forceActiveFocus();
         }
     }
@@ -248,7 +263,7 @@ Item {
         Cells {
             id: text
             clip: true
-            w: root.w - unit.w - (unit.w ? 1 : 0)
+            w: Math.max(root.w - unit.w - (unit.w ? 1 : 0), 0)
             h: root.h
             color: "transparent"
 
