@@ -53,6 +53,8 @@ Item {
             pure: false
             lockPure: true
 
+            cellIsolated: true
+
             text: {
                 let char = " ";
                 switch (root.type) {
@@ -82,6 +84,8 @@ Item {
                 visible: root.connectStart || root.connectEnd
 
                 x: -Cell.w(1)
+
+                cellIsolated: true
 
                 pure: false
                 lockPure: true
@@ -138,6 +142,7 @@ Item {
                 bg: root.bg
                 color: root.title.color
                 clip: true
+                cellIsolated: true
             }
         }
     }
@@ -150,6 +155,7 @@ Item {
 
             pure: false
             lockPure: true
+            cellIsolated: true
 
             text: {
                 let type = "│";
@@ -184,6 +190,7 @@ Item {
 
                 pure: false
                 lockPure: true
+                cellIsolated: true
 
                 text: {
                     let charStart = " ";

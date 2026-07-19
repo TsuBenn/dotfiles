@@ -296,8 +296,8 @@ CellFloats {
                                     Layout.leftMargin: Cell.w(1)
 
                                     text: (theme.selected ? "> " : " ") + theme.source.name
-                                    color: color.edit ? Colors.fgSubtle : (theme.isCurrent ? theme.source.onAccent : (theme_mouse.hovered ? theme.source.fgBase : Colors.fgBase))
-                                    font: theme.isCurrent ? Cell.fontB : Cell.font
+                                    color: color.edit ? Colors.fgSubtle : (theme.isCurrent ? theme.source.onAccent : ((theme_mouse.hovered ? theme.source.fgBase : (theme.selected ? theme.source.accentStrong : Colors.fgBase))))
+                                    font: theme.isCurrent || theme.selected ? Cell.fontB : Cell.font
 
                                     preferedW: theme.w - 4
                                 }

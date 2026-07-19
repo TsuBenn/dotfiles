@@ -87,6 +87,7 @@ Item {
                 bg: root.border.type == 0 ? root.border.color : "transparent"
                 pure: false
                 lockPure: true
+                cellIsolated: true
                 color: root.border.color
 
                 // Clean, safe helper to prevent negative repeat counts
