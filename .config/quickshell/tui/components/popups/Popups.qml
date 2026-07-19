@@ -13,10 +13,7 @@ import QtQuick.Layouts
 Item {
     id: root
 
-    property var monitor: {
-        "width": 1920,
-        "height": 1080
-    }
+    property var monitor
 
     CalendarPopup {
         id: calendar
@@ -73,7 +70,7 @@ Item {
         name: "wallpaper"
 
         cellX: Cell.wCount(root.monitor.width / 2) - Math.round(w / 2) - 1
-        cellY: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 ? Cell.hCount(root.monitor.height / 2, "floor") - Math.floor(h / 2) : Cell.hCount(root.monitor.height, "floor") - Math.floor(h) - 1
+        cellY: HyprInfo.clientCount() > 0 ? Cell.hCount(root.monitor.height / 2, "floor") - Math.floor(h / 2) : Cell.hCount(root.monitor.height, "floor") - Math.floor(h) - 1
     }
 
     PowerPopup {

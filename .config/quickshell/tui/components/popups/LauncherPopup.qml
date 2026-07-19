@@ -25,13 +25,20 @@ CellPopup {
             textfield.clear()
             textfield.search("")
             breadcrumbs.updatePath()
+            refresh_delay.stop()
         } else {
             textfield.clear()
             textfield.search("")
-            LauncherInfo.write("-r")
+            refresh_delay.restart()
         }
 
     }
+
+        Timer {
+            id: refresh_delay
+            interval: 1000
+            onTriggered: LauncherInfo.write("-r")
+        }
 
     property int result_h: root.minimal ? 2 : 3
 
@@ -125,6 +132,8 @@ CellPopup {
         w: root.w
         h: root.h
 
+        optimizeMemory: root.optimizeMemory
+
         ColumnLayout {
 
             id: layout
@@ -147,10 +156,12 @@ CellPopup {
                     width: Cell.w(box.contentW)
                     height: Cell.h(10)
 
+                    sourceSize.width: root.monitor.width
+                    sourceSize.height: root.monitor.height
+
                     source: SystemInfo.homedir + WallpaperInfo.cache_path + WallpaperInfo.current + WallpaperInfo.cache_prefix
 
                     fillMode: Image.PreserveAspectCrop
-
                 }
 
             }
@@ -476,9 +487,11 @@ CellPopup {
 
                         property bool selected: textfield.selected == index
 
+                        // asynchronous: true
+
                         sourceComponent: Cells {
 
-                            // optimizeMemory: root.optimizeMemory
+                            optimizeMemory: root.optimizeMemory
 
                             w: results.contentW
                             h: root.minimal ? 2 : 3

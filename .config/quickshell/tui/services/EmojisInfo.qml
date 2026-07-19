@@ -6,7 +6,6 @@ import Quickshell
 import Quickshell.Io
 
 Singleton {
-
     id: root
 
     property var emojis: []
@@ -14,22 +13,17 @@ Singleton {
     property var recent: []
 
     function search(query: string, max: int): var {
-        query = query.toLowerCase()
-        let result = []
+        query = query.toLowerCase();
+        let result = [];
         for (const emoji of emojis) {
-            if (
-                emoji.label.toLowerCase().includes(query)
-                || emoji.description.toLowerCase().includes(query)
-                || emoji.keywords.some(item => item.toLowerCase().includes(query))
-                || emoji.group.toLowerCase().includes(query)
-            ) {
-                result.push(emoji)
+            if (emoji.label.toLowerCase().includes(query) || emoji.description.toLowerCase().includes(query) || emoji.keywords.some(item => item.toLowerCase().includes(query)) || emoji.group.toLowerCase().includes(query)) {
+                result.push(emoji);
             }
             if (result.length >= max) {
-                break
+                break;
             }
         }
-        return result
+        return result;
     }
 
     function select(emoji: var) {
@@ -44,49 +38,44 @@ Singleton {
             root.recent = root.recent.slice(0, 20);
         }
 
-        saveRecent()
+        saveRecent();
         SystemInfo.type(emoji.label);
         SystemInfo.copy_clipboard(emoji.label);
     }
 
     function saveRecent() {
-        recent_loader.setText(JSON.stringify(root.recent,null,2))
+        recent_loader.setText(JSON.stringify(root.recent, null, 2));
     }
 
     FileView {
-
         id: recent_loader
 
         path: SystemInfo.configdir + "/scripts/emojis_recent.json"
 
         printErrors: false
 
-        onLoadFailed: (error) => {
+        onLoadFailed: error => {
             if (error == FileViewError.FileNotFound) {
-                setText("[]")
+                setText("[]");
             }
         }
 
         onLoaded: {
             if (text()) {
-                root.recent = JSON.parse(text())
+                root.recent = JSON.parse(text());
             }
         }
-
     }
 
     FileView {
-
         id: loader
 
         path: SystemInfo.configdir + "/scripts/emojis.json"
 
         onLoaded: {
             if (text()) {
-                root.emojis = JSON.parse(text())
+                root.emojis = JSON.parse(text());
             }
         }
-
     }
-
 }

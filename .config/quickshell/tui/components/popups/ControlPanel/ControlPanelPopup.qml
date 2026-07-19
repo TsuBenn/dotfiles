@@ -9,7 +9,6 @@ import QtQuick.Layouts
 import QtQuick
 
 CellPopup {
-
     id: root
 
     w: 50
@@ -18,20 +17,18 @@ CellPopup {
     escapeToClose: !TextFieldManager.active
 
     CellBox {
-
         id: box
 
         property string view: "main"
 
         onVisibleChanged: {
-            view = "main"
+            view = "main";
         }
 
         w: root.w
         h: root.h
 
         ColumnLayout {
-
             id: content
 
             spacing: 0
@@ -40,24 +37,19 @@ CellPopup {
 
                 visible: box.view == "main"
                 box: box
-
             }
 
             Wifi {
 
                 visible: box.view == "wifi"
                 box: box
-
             }
 
             Bluetooth {
 
                 visible: box.view == "bluetooth"
                 box: box
-
             }
         }
-
     }
-
 }

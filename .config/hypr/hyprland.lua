@@ -279,7 +279,7 @@ hl.bind(SUPER.."V", hl.dsp.exec_cmd("clipvault list | rofi -dmenu -display-colum
 
 hl.bind(SUPER.."period", hl.dsp.exec_cmd(emoji))
 
-hl.bind(SUPER.."EQUAL", hl.dsp.exec_cmd("qalculate-qt"))
+hl.bind(SUPER.."delete", hl.dsp.exec_cmd("qalculate-qt"))
 hl.bind("XF86Calculator", hl.dsp.exec_cmd("qalculate-qt"))
 
 hl.bind(SUPER.."A", hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }))
@@ -289,7 +289,7 @@ local zoom = 1
 local zoom_strength = 1.5
 
 -- Scroll through existing workspaces with SUPER + scroll
-hl.bind(SUPER .. "mouse_up", function()
+hl.bind(SUPER .. "grave", function()
     zoom = math.max(zoom/zoom_strength, 1)
     hl.config({
         cursor = {
@@ -299,36 +299,7 @@ hl.bind(SUPER .. "mouse_up", function()
 end
 )
 
-hl.bind(SUPER .. "mouse_down", function()
-    zoom = math.max(zoom * zoom_strength, 1)
-    hl.config({
-        cursor = {
-            zoom_factor = zoom
-        }
-    })
-end
-)
-
-hl.bind(SUPER.."tab", function()
-    zoom = math.max(zoom/zoom_strength, 1)
-    hl.config({
-        cursor = {
-            zoom_factor = zoom
-        }
-    })
-end
-)
-hl.bind(SUPER.."tab", function()
-    zoom = 1
-    hl.config({
-        cursor = {
-            zoom_factor = zoom
-        }
-    })
-end
-    , {long_press = true})
-
-hl.bind(SUPER..SHIFT.."tab", function()
+hl.bind(SUPER .. SHIFT .. "grave", function()
     zoom = math.max(zoom * zoom_strength, 1)
     hl.config({
         cursor = {

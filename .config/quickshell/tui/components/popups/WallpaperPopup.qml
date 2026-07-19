@@ -84,7 +84,7 @@ CellPopup {
 
     Component.onCompleted: {
         WallpaperInfo.currentChanged.connect(() => {
-            if (HyprInfo.windowCount(HyprInfo.focusedworkspace) == 0)
+            if (HyprInfo.clientCount() == 0)
                 hide.restart();
             root.edit = false;
             root.reposition = false;
@@ -127,7 +127,7 @@ CellPopup {
             Cells {
                 id: preview
 
-                visible: root.edit || root.reposition || (HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 && !root.minimal)
+                visible: root.edit || root.reposition || (HyprInfo.clientCount() > 0 && !root.minimal)
 
                 w: box.contentW
                 h: Math.floor(root.w / 16 * 9 / 2)
@@ -436,7 +436,7 @@ CellPopup {
                 id: thumbnails
 
                 w: box.contentW
-                h: HyprInfo.windowCount(HyprInfo.focusedworkspace) > 0 && !root.minimal ? 8 : 7
+                h: HyprInfo.clientCount() > 0 && !root.minimal ? 8 : 7
 
                 color: "transparent"
 

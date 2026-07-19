@@ -117,6 +117,22 @@ ShellRoot {
             hl.animation({ leaf = \"specialWorkspaceOut\", enabled = ${SettingsInfo.hyprAnim}, speed = 2,    bezier = \"easeOutQuint\", style = \"slidevert bottom 50%\"})
             hl.animation({ leaf = \"zoomFactor\",          enabled = 1, speed = 5,    bezier = \"easeOutQuint\"})
 
+            function focusWindow(window_title, window_class, window_address)
+                window_title = window_title or ""
+                window_class = window_class or ""
+                window_address = window_address or ""
+                if (window_address ~= "") then
+                    hl.dispatch(hl.dsp.focus({ window = "address:"..window_address }))
+                    return
+                end
+                for i, w in pairs(hl.get_windows()) do
+                    if ((window_class == "" and true or w.class:match(window_class)) and (window_title == "" and true or w.title:match(window_title))) then
+                        hl.dispatch(hl.dsp.focus({ window = w }))
+                        break
+                    end
+                end
+            end
+
             hl.unbind(\"SUPER + space\")
             hl.unbind(\"SUPER + escape\")
             hl.unbind(\"SUPER + SHIFT + P\")
@@ -198,13 +214,7 @@ ShellRoot {
             });
         }
 
-        LockSession {
-
-            monitor: screen != null ? HyprInfo.monitors[screen.name] : {
-                "width": 1920,
-                "height": 1080
-            }
-        }
+        LockSession {}
     }
 
     Loader {
@@ -213,7 +223,7 @@ ShellRoot {
         active: SettingsInfo.colorsLoaded
 
         sourceComponent: DependenciesChecker {
-            property var hyprinfo_loader: HyprInfo.maxRefreshRate   // Pre-initiating HyprInfo
+            property var hyprinfo_loader: HyprInfo.active   // Pre-initiating HyprInfo
         }
     }
 

@@ -33,13 +33,7 @@ Scope {
 
             screen: modelData
 
-            property string screen_name: screen.name
-            property var monitor: HyprInfo.monitors[screen_name] != undefined ? HyprInfo.monitors[screen_name] : {
-                "width": 1920,
-                "height": 1080
-            }
-
-            property HyprlandMonitor monitorObject
+            property var monitor: Hyprland.monitorFor(screen)
 
             Component.onCompleted: {
                 PopupManager.opened.connect(name => {
@@ -108,11 +102,6 @@ Scope {
                         }
                     }
                 });
-                for (const m of Hyprland.monitors.values) {
-                    if (m.name == screen.name) {
-                        monitorObject = m;
-                    }
-                }
             }
 
             SequentialAnimation {
@@ -141,7 +130,7 @@ Scope {
 
             property bool peekBar: bar.peekBar
             property bool forceBar: (PopupManager.active_popups.length > 0 && !PopupManager.isOpen("quick_menu") && !PopupManager.isOpen("power") && !PopupManager.isOpen("emoji") && !PopupManager.isOpen("wallpaper") && !PopupManager.isOpen("launcher") && !PopupManager.isOpen("screenshot"))
-            property bool hideBar: (((Hyprland.focusedWorkspace.hasFullscreen ?? false) && Hyprland.focusedMonitor.name == root.monitor.name) || SettingsInfo.hideBar)
+            property bool hideBar: (((Hyprland.focusedWorkspace.hasFullscreen ?? false) && HyprInfo.isFocusedMonitor(root.monitor)) || SettingsInfo.hideBar)
 
             margins {
                 top: -(Cell.h(1) - 1) * (root.hideBar && !root.peekBar && !root.forceBar)
@@ -409,8 +398,7 @@ Scope {
             PanelWindow {
                 id: popups_screen
 
-                screen: root.screen
-                visible: HyprInfo.isCurrentMonitor(root.screen.name)
+                visible: HyprInfo.isFocusedMonitor(root.monitor)
 
                 anchors {
                     top: true

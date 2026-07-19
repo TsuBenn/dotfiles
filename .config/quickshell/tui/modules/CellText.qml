@@ -482,7 +482,7 @@ Item {
 
     Loader {
 
-        active: root.visible || !root.optimizeMemory || root.cellIsolated
+        active: root.visible || !root.optimizeMemory
 
         sourceComponent: Cells {
             id: cell_text
@@ -493,6 +493,8 @@ Item {
             color: root.pure || root.cellIsolated ? root.bg : "transparent"
 
             Loader {
+
+                // asynchronous: true
 
                 active: root.cellIsolated
 
@@ -521,6 +523,8 @@ Item {
                                     id: isolated_cell
 
                                     required property var modelData
+
+                                    // asynchronous: true
 
                                     sourceComponent: Cells {
 
@@ -553,6 +557,8 @@ Item {
             Loader {
 
                 active: (root.visible || !root.optimizeMemory) && !root.pure && !root.cellIsolated
+
+                // asynchronous: true
 
                 sourceComponent: ColumnLayout {
 
@@ -588,6 +594,8 @@ Item {
                                     required property string type
 
                                     active: root.visible
+
+                                    // asynchronous: true
 
                                     sourceComponent: Cells {
 
@@ -629,6 +637,8 @@ Item {
             Loader {
 
                 active: (root.visible || !root.optimizeMemory) && root.pure && !root.cellIsolated
+
+                // asynchronous: true
 
                 sourceComponent: Text {
 

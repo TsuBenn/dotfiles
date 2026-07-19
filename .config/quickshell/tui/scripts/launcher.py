@@ -12,43 +12,66 @@ Quickshell writes one request per line to stdin:
 Tags (single characters, case-sensitive):
     a   apps        (parse .desktop files)
     s   settings    (search SETTINGS from config.py)
-    h   files       (search cached filesystem index)
+    h   files       (live fd-based filesystem search)
     c   calculator
     t   colors      (return COLORS palette from config.py)
     f   fuzzy       (modifier: enables fuzzy matching for this query)
     n   norush      (modifier: skip file-search debounce, fire immediately)
     F   <query> is an app id — increment its frequency, no output
     w   web         (open <query> as URL or Google search)
-    r   refresh     (background rescan of apps + files, no output)
+    r   refresh     (background rescan of apps only, no output)
 
 Regex mode
 ----------
 
-If the query starts with `re:`, the rest is treated as a Python regex.
-Use `re:^fire` for prefix match, `re:(?i)firefox` for case-insensitive,
-`re:chrome|firefox` for alternation.
+If the (file-search) query starts with `re:`, the rest is treated as a
+Python regex. Use `re:^fire` for prefix match, `re:(?i)firefox` for
+case-insensitive, `re:chrome|firefox` for alternation.
+
+Root-scope mode
+----------------
+
+File searches default to scanning `$HOME`. Prefixing the query with
+`root:` scopes the search to `/` instead — same idea as the `re:`
+prefix, just for search scope rather than matching mode. Example:
+`root:passwd` searches the whole filesystem, `passwd` searches only
+the home directory.
 
 Output protocol
 ===============
 
 One JSON array per line on stdout. File searches are async and
 *debounced* — when `h` is in tags, the script emits the
-apps+settings result immediately, then waits 250ms (debounce) before
-starting the file search thread. If the user types again during the
-debounce window, the old timer is cancelled and a new one starts.
-When the file search finishes, it emits a second JSON line with the
-combined result. If the user types a new query before the in-flight
-file search finishes, the old search is cancelled via a generation
-counter. The `n` (norush) tag bypasses the debounce for immediate
-results.
+apps+settings result immediately, then waits before starting the
+file search thread (see "Debounce" below). When the file search
+finishes, it emits a second JSON line with the combined result. If
+the user types a new query before the in-flight file search
+finishes, the old search is cancelled — both by generation counter
+AND by killing the underlying `fd` process, since it's no longer
+cheap now that nothing is cached. The `n` (norush) tag bypasses the
+debounce for immediate results.
+
+Debounce
+========
+
+Two separate debounce windows:
+    _FILE_SEARCH_DEBOUNCE       — normal (home-scoped) file search
+    _FILE_SEARCH_ROOT_DEBOUNCE  — `root:` scoped file search (longer,
+                                   since a full-filesystem `fd` walk
+                                   is much heavier than a home-only one
+                                   and firing it on every keystroke
+                                   would be wasteful)
 
 Refresh behavior
 ================
 
-When a refresh finishes (either from the `r` tag or the startup
-auto-refresh), the launcher re-emits the user's most recent search
-with the new data. This way the user doesn't have to retype to see
-updated results — they just wait a moment and the UI silently updates.
+When an apps/icons refresh finishes (either from the `r` tag or the
+startup auto-refresh), the launcher re-emits the user's most recent
+search with the new data. This way the user doesn't have to retype
+to see updated app results — they just wait a moment and the UI
+silently updates. File search results are NOT part of this rerun
+mechanism, since file search is live per-query now — there's no
+stale file cache to refresh.
 
 Concurrency model
 =================
@@ -57,13 +80,15 @@ Concurrency model
 * Main thread: drains the queue with a short timeout, processes
   requests, writes results to stdout. Between requests, checks if a
   refresh just finished and re-emits the last search if so.
-* Refresh thread: spawned by `r` tag (and once at startup). Runs `fd`
-  + app scan + icon index build, atomically swaps the new data into
+* Refresh thread: spawned by `r` tag (and once at startup). Rescans
+  apps + builds the icon index, atomically swaps the new data into
   place, then signals the main thread to re-emit.
 * File-search thread: spawned per query that includes `h`. Each search
-  has a generation id; before printing, the worker checks that its
-  generation is still current — if not, it discards silently. Searches
-  are debounced (250ms) unless the `n` tag is present.
+  has a generation id; the worker checks generation both before
+  starting AND on every line read from `fd`'s output — if superseded,
+  it kills the `fd` subprocess immediately instead of letting it run
+  to completion uselessly. Searches are debounced (see above) unless
+  the `n` tag is present.
 
 Icon cache
 ==========
@@ -84,13 +109,19 @@ The icon cache (icon_cache.json) has three layers, all built from
 IconInfo.qml does layered lookup: direct → case-insensitive → alias →
 substring fallback. See IconInfo.qml for the lookup logic.
 
-Data caches
-===========
+Data caches (memory-resident)
+==============================
 
 * `apps`         — list of parsed .desktop entries (memory)
 * `icon_index`   — dict {icon_name: path} built once at startup
-* `file_paths`   — list of strings, atomically swapped on refresh
 * `frequency`    — dict {app_id: count}, loaded once, written on increment
+
+File paths are deliberately NOT cached in memory anymore. Every file
+search spawns `fd` live, scoped to either $HOME or `/` (via `root:`),
+and streams results back. This trades a bit of per-search latency for
+dropping a multi-hundred-MB permanent memory cost, and gets instant
+freshness (a file created 2 seconds ago just shows up) for free,
+since there's no cache to go stale in the first place.
 
 All caches support "swap-in-place" refresh: a refresh builds the new
 data in local variables, then assigns to the global in one step.
@@ -117,7 +148,6 @@ from config import SETTINGS, CALC, COLORS
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 FREQ_FILE = SCRIPT_DIR / "frequency.json"
-FILE_CACHE_FILE = SCRIPT_DIR / "file_cache.json"
 ICON_CACHE_FILE = SCRIPT_DIR / "icon_cache.json"
 
 DESKTOP_DIRS = [
@@ -144,10 +174,9 @@ ICON_SIZES = [
 ]
 ICON_EXTS = ["png", "svg", "xpm"]
 
-# fd command for the initial filesystem scan.
-FD_CMD = [
-    "fd", ".",
-    "/",
+# Base fd args shared by every file search. The scope directory (home
+# or root) is appended per-search in _run_fd.
+FD_BASE_ARGS = [
     "-I",
     "--absolute-path",
     "--exclude", ".git",
@@ -156,6 +185,8 @@ FD_CMD = [
     "--hidden",
     "--no-follow",
 ]
+
+FILE_SEARCH_MAX_RESULTS = 50
 
 # ─── Shared state ─────────────────────────────────────────────────────────────
 #
@@ -167,21 +198,26 @@ FD_CMD = [
 # re-renders on every keystroke anyway.
 
 apps: list[dict] = []
-file_paths: list[str] = []
 icon_index: dict[str, str] = {}
 frequency: dict[str, int] = {}
 
 # File-search generation counter. Each new file search increments this;
-# the worker captures the value at start and compares before printing.
-# If a newer search has started, the old worker silently discards.
+# the worker captures the value at start and compares before printing —
+# and, crucially, checks it mid-scan too so a superseded `fd` process
+# gets killed instead of running to completion for nothing.
 _file_search_lock = threading.Lock()
 _file_search_generation = 0
+_active_fd_proc: dict[int, subprocess.Popen] = {}
 
 # File-search debounce. When the user types rapidly, we don't want to
 # fire a file search on every keystroke. Instead, we wait a short delay
 # after the last keystroke before actually starting the search thread.
-# The `n` (norush) tag bypasses this debounce for immediate results.
-_FILE_SEARCH_DEBOUNCE = 0.25  # seconds
+# Root-scoped searches (`root:` prefix) get a longer debounce, since a
+# full-filesystem `fd` walk is much heavier than a home-only one and
+# firing it on every keystroke would be wasteful. The `n` (norush) tag
+# bypasses both debounces for immediate results.
+_FILE_SEARCH_DEBOUNCE = 0.25       # seconds, home-scoped
+_FILE_SEARCH_ROOT_DEBOUNCE = 0.6   # seconds, root-scoped
 _file_search_debounce_timer: threading.Timer | None = None
 _file_search_pending: dict | None = None  # args for the deferred search
 
@@ -911,50 +947,34 @@ def select_web(query: str) -> None:
     subprocess.Popen(["xdg-open", url], start_new_session=True)
 
 
-# ─── File index (cached filesystem scan) ─────────────────────────────────────
+# ─── Live file search (no cache) ─────────────────────────────────────────────
 #
-# On startup: load the previous file_cache.json into memory, then kick
-# off a background `fd` run to refresh. The cache is the fallback while
-# the refresh is in flight.
+# Every file search spawns `fd` fresh, scoped to $HOME by default, or `/`
+# if the query starts with `root:` (same idea as the `re:` prefix, just
+# for scope instead of match mode). Nothing is cached in memory — this
+# trades a bit of per-search latency for dropping the old multi-hundred-MB
+# permanent `file_paths` list, and gets "just-created files show up
+# instantly" for free, since every search is inherently live.
 #
-# On `r` tag: same thing — kick off a background refresh, swap in place.
+# Because scans aren't cached and root-scoped ones can be slow, a
+# superseded search must actually kill its `fd` subprocess, not just
+# discard the result after the fact — otherwise old scans pile up
+# running in the background for no reason.
 
-def load_file_cache() -> list[str]:
-    try:
-        with open(FILE_CACHE_FILE) as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return []
-
-
-def save_file_cache(paths: list[str]) -> None:
-    tmp = FILE_CACHE_FILE.with_suffix(".json.tmp")
-    with open(tmp, "w") as f:
-        json.dump(paths, f)
-    tmp.rename(FILE_CACHE_FILE)
+def _parse_file_query(query: str) -> tuple[str, str, bool]:
+    """Detect `root:` prefix. Returns (scope_dir, remaining_query, is_root)."""
+    if query.startswith("root:"):
+        return "/", query[5:], True
+    return os.path.expanduser("~"), query, False
 
 
-def rescan_files() -> list[str]:
-    """Run `fd` and return the new path list. Raises if fd is missing."""
-    proc = subprocess.run(FD_CMD, capture_output=True, text=True, timeout=120)
-    out = proc.stdout.strip()
-    return out.split("\n") if out else []
+def _run_fd(scope: str) -> subprocess.Popen:
+    """Start fd as a live, streaming subprocess scoped to `scope`."""
+    cmd = ["fd", ".", scope, *FD_BASE_ARGS]
+    return subprocess.Popen(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
+    )
 
-
-# ─── Async file search with debounce + cancellation ─────────────────────────
-#
-# Every file search gets a generation id. The worker captures the id at
-# start; before emitting its result, it checks if its id is still the
-# latest. If a newer search has started, the old worker silently discards.
-#
-# Additionally, file searches are debounced: we wait 250ms after the
-# latest keystroke before actually starting the worker thread. If the
-# user types again during the debounce window, the old timer is
-# cancelled and a new one starts. The `n` (norush) tag bypasses this.
-#
-# When the query is cleared or a non-file-search request comes in, we
-# cancel any in-flight search by bumping the generation counter. This
-# prevents stale file search results from overwriting the current view.
 
 def _emit_combined(base_result: list[dict], file_results: list[dict]) -> None:
     """Print the combined result list as a single JSON line."""
@@ -962,56 +982,68 @@ def _emit_combined(base_result: list[dict], file_results: list[dict]) -> None:
     sys.stdout.flush()
 
 
-def _file_search_worker(
-    paths_snapshot: list[str],
-    query: str,
-    generation: int,
-    base_result: list[dict],
-) -> None:
-    """Runs in a background thread. Discards result if superseded."""
+def _file_search_worker(query: str, generation: int, base_result: list[dict]) -> None:
+    """Runs in a background thread. Kills its own `fd` if superseded."""
     if not query:
         return
 
-    # Detect regex mode. In worker threads, regex matching has no
-    # SIGALRM timeout protection — see compile_regex/regex_match for
-    # why. The generation counter ensures a slow worker's output is
-    # discarded if the user types again.
-    query_re, plain_query, err = parse_regex_query(query)
+    scope, remaining, _is_root = _parse_file_query(query)
+    query_re, plain_query, err = parse_regex_query(remaining)
     if err:
-        return  # invalid regex — no file results, just emit base
+        return  # invalid regex — no file results, just the base result already emitted
     plain_query_lower = plain_query.lower() if plain_query else ""
 
+    # Bail before even spawning fd if we're already stale.
+    with _file_search_lock:
+        if generation != _file_search_generation:
+            return
+        proc = _run_fd(scope)
+        _active_fd_proc[generation] = proc
+
     local_results: list[dict] = []
-    for path in paths_snapshot:
-        name = os.path.basename(path[:-1] if path.endswith("/") else path)
+    try:
+        for line in proc.stdout:
+            # Check every line — if a newer search has started, stop
+            # immediately instead of letting fd walk the rest of the tree.
+            with _file_search_lock:
+                if generation != _file_search_generation:
+                    proc.kill()
+                    return
 
-        if query_re is not None:
-            # Regex mode — search() returns None on no match, which is falsy.
-            if not query_re.search(name) and not query_re.search(path):
+            path = line.rstrip("\n")
+            if not path:
                 continue
-        else:
-            # Plain substring mode — cheap check first.
-            if (plain_query_lower not in name.lower()
-                    and plain_query_lower not in path.lower()):
-                continue
+            name = os.path.basename(path.rstrip("/"))
 
-        try:
-            is_dir = os.path.isdir(path)
-        except OSError:
-            is_dir = False
-        local_results.append({
-            "id": path,
-            "label": name,
-            "description": path,
-            "icon": "",
-            "category": "files",
-            "value": path,
-            "type": "dir" if is_dir else "file",
-        })
-        if len(local_results) >= 50:
-            break
+            if query_re is not None:
+                if not query_re.search(name) and not query_re.search(path):
+                    continue
+            else:
+                if (plain_query_lower not in name.lower()
+                        and plain_query_lower not in path.lower()):
+                    continue
 
-    # Generation check — if a newer search has started, discard.
+            try:
+                is_dir = os.path.isdir(path)
+            except OSError:
+                is_dir = False
+            local_results.append({
+                "id": path,
+                "label": name,
+                "description": path,
+                "icon": "",
+                "category": "files",
+                "value": path,
+                "type": "dir" if is_dir else "file",
+            })
+            if len(local_results) >= FILE_SEARCH_MAX_RESULTS:
+                proc.kill()
+                break
+    finally:
+        proc.wait()
+        with _file_search_lock:
+            _active_fd_proc.pop(generation, None)
+
     with _file_search_lock:
         if generation != _file_search_generation:
             return
@@ -1021,19 +1053,24 @@ def _file_search_worker(
 def _cancel_file_search() -> None:
     """Cancel any in-flight or debounced file search.
 
-    Bumps the generation counter so any running worker discards its result,
-    and cancels any pending debounce timer so it never fires.
+    Bumps the generation counter (so any worker mid-scan kills its fd
+    process on the next line check) and cancels any pending debounce
+    timer so it never fires. Also kills any fd process already running
+    under the old generation immediately, rather than waiting for it
+    to notice on its next line.
     """
     global _file_search_generation, _file_search_debounce_timer
     with _file_search_lock:
         _file_search_generation += 1
+        for gen, proc in list(_active_fd_proc.items()):
+            proc.kill()
+            del _active_fd_proc[gen]
     if _file_search_debounce_timer is not None:
         _file_search_debounce_timer.cancel()
         _file_search_debounce_timer = None
 
 
-def _fire_file_search(paths_snapshot: list[str], query: str,
-                       base_result: list[dict]) -> None:
+def _fire_file_search(query: str, base_result: list[dict]) -> None:
     """Actually start the file search worker thread."""
     global _file_search_generation
     with _file_search_lock:
@@ -1041,23 +1078,24 @@ def _fire_file_search(paths_snapshot: list[str], query: str,
         gen = _file_search_generation
     t = threading.Thread(
         target=_file_search_worker,
-        args=(paths_snapshot, query, gen, base_result),
+        args=(query, gen, base_result),
         daemon=True,
     )
     t.start()
 
 
 def start_file_search(
-    paths_snapshot: list[str],
     query: str,
     base_result: list[dict],
     norush: bool = False,
 ) -> None:
     """Bump generation, schedule a fresh worker (with debounce).
 
-    Old workers will self-cancel via the generation counter.
-    If `norush` is True (the `n` tag), the debounce is skipped and the
-    search fires immediately.
+    Old workers will self-cancel (and kill their fd process) via the
+    generation counter. If `norush` is True (the `n` tag), the debounce
+    is skipped and the search fires immediately. Root-scoped queries
+    (`root:` prefix) use a longer debounce than home-scoped ones, since
+    a full-filesystem fd walk is much heavier.
     """
     global _file_search_debounce_timer, _file_search_pending
 
@@ -1065,35 +1103,25 @@ def start_file_search(
     _cancel_file_search()
 
     if norush:
-        # Immediate — no debounce.
-        _fire_file_search(paths_snapshot, query, base_result)
-    else:
-        # Debounced — wait a short delay before firing. If the user
-        # types another character before the delay, _cancel_file_search
-        # will cancel this timer and start a new one.
-        _file_search_pending = {
-            "paths_snapshot": paths_snapshot,
-            "query": query,
-            "base_result": base_result,
-        }
+        _fire_file_search(query, base_result)
+        return
 
-        def _debounce_fire() -> None:
-            global _file_search_debounce_timer, _file_search_pending
-            _file_search_debounce_timer = None
-            if _file_search_pending is not None:
-                args = _file_search_pending
-                _file_search_pending = None
-                _fire_file_search(
-                    args["paths_snapshot"],
-                    args["query"],
-                    args["base_result"],
-                )
+    _, _, is_root = _parse_file_query(query)
+    delay = _FILE_SEARCH_ROOT_DEBOUNCE if is_root else _FILE_SEARCH_DEBOUNCE
 
-        _file_search_debounce_timer = threading.Timer(
-            _FILE_SEARCH_DEBOUNCE, _debounce_fire,
-        )
-        _file_search_debounce_timer.daemon = True
-        _file_search_debounce_timer.start()
+    _file_search_pending = {"query": query, "base_result": base_result}
+
+    def _debounce_fire() -> None:
+        global _file_search_debounce_timer, _file_search_pending
+        _file_search_debounce_timer = None
+        if _file_search_pending is not None:
+            args = _file_search_pending
+            _file_search_pending = None
+            _fire_file_search(args["query"], args["base_result"])
+
+    _file_search_debounce_timer = threading.Timer(delay, _debounce_fire)
+    _file_search_debounce_timer.daemon = True
+    _file_search_debounce_timer.start()
 
 
 # ─── Input parsing ───────────────────────────────────────────────────────────
@@ -1105,7 +1133,8 @@ def start_file_search(
 #   -ashn matrix          -> tags=['a','s','h','n'], query='matrix' (norush)
 #   -s --network wifi     -> tags=['s'], paths=['network'], query='wifi'
 #   -F firefox            -> tags=['F'], treat query as app id
-#   -a re:^fire           -> tags=['a'], query='re:^fire' (regex mode)
+#   -h re:^fire           -> tags=['h'], query='re:^fire' (regex mode)
+#   -h root:passwd        -> tags=['h'], query='root:passwd' (root-scoped)
 
 _TAG_RE = re.compile(r"(?<!\S)-([a-zA-Z]+)\b")
 _PATH_RE = re.compile(r"--(\w+)")
@@ -1125,23 +1154,23 @@ def parse_input(raw: str) -> tuple[list[str], str, list[str]]:
     return tags, query, paths
 
 
-# ─── Background refresh ──────────────────────────────────────────────────────
+# ─── Background refresh (apps + icons only) ──────────────────────────────────
 #
-# Builds new app list, icon index (+ binary/app aliases), and file path
-# list in local variables, then swaps them into the globals in one step.
-# Readers see either the old set or the new set, never a mix.
+# Builds new app list and icon index (+ binary/app aliases) in local
+# variables, then swaps them into the globals in one step. Readers see
+# either the old set or the new set, never a mix. File paths are no
+# longer part of this — file search is live per-query now.
 #
 # After the swap, signals the main loop to re-emit the user's most
-# recent search so the UI picks up the new data without the user
+# recent search so the UI picks up the new app data without the user
 # needing to retype.
 
 def refresh_background(initial: bool = False) -> None:
-    """Rescan apps + icons + files. Swaps into globals atomically when done."""
-    global apps, icon_index, file_paths
+    """Rescan apps + icons. Swaps into globals atomically when done."""
+    global apps, icon_index
 
     start = time.perf_counter()
 
-    # -- Apps + icons (CPU-bound, fast — ~200ms typical) --
     new_apps = scan_apps()
     new_icon_index = build_icon_index()
 
@@ -1152,26 +1181,16 @@ def refresh_background(initial: bool = False) -> None:
 
     save_icon_cache(new_icon_index, new_binary_aliases, new_app_aliases)
 
-    # -- Files (slow — fd can take 5-30s on a big system) --
-    try:
-        new_files = rescan_files()
-        save_file_cache(new_files)
-    except (FileNotFoundError, subprocess.TimeoutExpired) as e:
-        print(f"launcher: file rescan failed: {e}", file=sys.stderr)
-        new_files = file_paths  # keep old on failure
-
     # -- Atomic swap --
     apps = new_apps
     icon_index = new_icon_index
-    file_paths = new_files
 
     elapsed = time.perf_counter() - start
     print(
         f"launcher: refresh done ({elapsed:.2f}s) "
         f"— {len(apps)} apps, {len(icon_index)} icons, "
         f"{len(new_binary_aliases)} binary aliases, "
-        f"{len(new_app_aliases)} app aliases, "
-        f"{len(file_paths)} files",
+        f"{len(new_app_aliases)} app aliases",
         file=sys.stderr,
     )
 
@@ -1191,7 +1210,7 @@ def refresh_async(initial: bool = False) -> None:
 
 def initial_load() -> None:
     """Load caches from disk synchronously, then kick off async refresh."""
-    global apps, icon_index, file_paths, frequency
+    global apps, icon_index, frequency
 
     frequency = load_frequency()
 
@@ -1202,7 +1221,6 @@ def initial_load() -> None:
     icon_index = icon_cache_data["icons"]
 
     apps = scan_apps()
-    file_paths = load_file_cache()
     refresh_async(initial=True)
 
 
@@ -1271,7 +1289,7 @@ def handle_request(tags: list[str], query: str, paths: list[str]) -> None:
             sys.stdout.flush()
             return
 
-    # -- Search categories: apps, settings, files --
+    # -- Search categories: apps, settings (instant) --
     scored_results: list[tuple[int, dict]] = []
 
     if "a" in tags:
@@ -1304,17 +1322,17 @@ def handle_request(tags: list[str], query: str, paths: list[str]) -> None:
     scored_results.sort(key=lambda x: x[0], reverse=True)
     base_result = [item for _, item in scored_results]
 
-    # -- File search: async, debounced, non-blocking --
+    # -- File search: async, debounced, live (no cache) --
     if "h" in tags:
         # Emit base result immediately so the UI shows apps+settings now.
         print(json.dumps(base_result))
         sys.stdout.flush()
         norush = "n" in tags
-        if query and file_paths:
-            start_file_search(file_paths, query, base_result, norush=norush)
+        if query:
+            start_file_search(query, base_result, norush=norush)
         else:
-            # Empty query or no file index — cancel any in-flight file
-            # search so stale results don't overwrite the current display.
+            # Empty query — cancel any in-flight file search so stale
+            # results don't overwrite the current display.
             _cancel_file_search()
     else:
         print(json.dumps(base_result))
@@ -1413,4 +1431,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

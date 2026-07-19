@@ -98,52 +98,61 @@ Cells {
 
     clip: true
 
-    ColumnLayout {
-        id: container
-        spacing: 0
+    Loader {
 
-        // Exact horizontal dimension tracking matching your scroll width metrics
-        width: Cell.w(root.contentW)
+        active: root.visible || !root.optimizeMemory
 
-        // Sub-pixel terminal tracking alignment shifting raw offset remainders
-        y: -Cell.h(Math.floor(root.offset % (root.itemH > 0 ? root.itemH : 1)))
+        // asynchronous: true
 
-        Repeater {
-            // Allocate just enough view nodes to cover the visible grid matrix plus one buffer
-            model: Math.floor(root.h / (root.itemH > 0 ? root.itemH : 1)) + 1
+        sourceComponent: ColumnLayout {
+            id: container
+            spacing: 0
 
-            delegate: Loader {
-                id: viewLoader
+            // Exact horizontal dimension tracking matching your scroll width metrics
+            width: Cell.w(root.contentW)
 
-                required property int index
+            // Sub-pixel terminal tracking alignment shifting raw offset remainders
+            y: -Cell.h(Math.floor(root.offset % (root.itemH > 0 ? root.itemH : 1)))
 
-                // Track item alignment calculation parameters
-                readonly property int realIndex: Math.floor(root.offset / (root.itemH > 0 ? root.itemH : 1)) + index
-                readonly property var modelData: root.model[Math.min(realIndex, root.model.length - 1)]
+            Repeater {
+                // Allocate just enough view nodes to cover the visible grid matrix plus one buffer
+                model: Math.floor(root.h / (root.itemH > 0 ? root.itemH : 1)) + 1
 
-                visible: realIndex < root.model.length
+                delegate: Loader {
+                    id: viewLoader
 
-                sourceComponent: modelData || modelData == "" || modelData == 0 ? root.delegate : null
+                    required property int index
 
-                // Native reactive hooks implementation
-                onLoaded: {
-                    if (item) {
-                        if (item.hasOwnProperty("modelData"))
-                            item.modelData = Qt.binding(() => viewLoader.modelData ?? null);
+                    // Track item alignment calculation parameters
+                    readonly property int realIndex: Math.floor(root.offset / (root.itemH > 0 ? root.itemH : 1)) + index
+                    readonly property var modelData: root.model[Math.min(realIndex, root.model.length - 1)]
 
-                        // FIXED: Re-mapped index targets to pass true array positioning (realIndex)
-                        if (item.hasOwnProperty("index"))
-                            item.index = Qt.binding(() => viewLoader.realIndex ?? -1);
+                    visible: realIndex < root.model.length
+
+                    sourceComponent: modelData || modelData == "" || modelData == 0 ? root.delegate : null
+
+                    // asynchronous: true
+
+                    // Native reactive hooks implementation
+                    onLoaded: {
+                        if (item) {
+                            if (item.hasOwnProperty("modelData"))
+                                item.modelData = Qt.binding(() => viewLoader.modelData ?? null);
+
+                            // FIXED: Re-mapped index targets to pass true array positioning (realIndex)
+                            if (item.hasOwnProperty("index"))
+                                item.index = Qt.binding(() => viewLoader.realIndex ?? -1);
+                        }
                     }
-                }
 
-                Connections {
-                    target: root
-                    function onModelChanged() {
-                        if (!root.reloadOnChanges)
-                            return;
-                        viewLoader.sourceComponent = null;
-                        viewLoader.sourceComponent = Qt.binding(() => viewLoader.modelData || viewLoader.modelData == "" || viewLoader.modelData == 0 ? root.delegate : null);
+                    Connections {
+                        target: root
+                        function onModelChanged() {
+                            if (!root.reloadOnChanges)
+                                return;
+                            viewLoader.sourceComponent = null;
+                            viewLoader.sourceComponent = Qt.binding(() => viewLoader.modelData || viewLoader.modelData == "" || viewLoader.modelData == 0 ? root.delegate : null);
+                        }
                     }
                 }
             }

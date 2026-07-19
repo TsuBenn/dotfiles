@@ -18,11 +18,22 @@ FloatingWindow {
         root.close();
     }
 
+    // onVisibleChanged: {
+    //     if (visible) {
+    //         HyprInfo.focusWindow(root.title, "org.quickshell");
+    //     }
+    // }
+
     Connections {
         target: FloatsManager
         function onSigClose(name) {
             if (root.name == name) {
                 root.close();
+            }
+        }
+        function onSigOpen(name) {
+            if (root.name == name) {
+                HyprInfo.focusClient("org.quickshell", root.title);
             }
         }
     }

@@ -7,7 +7,6 @@ import Quickshell.Io
 import QtQuick
 
 CellText {
-
     id: root
 
     property bool interactive: true
@@ -21,7 +20,7 @@ CellText {
         repeat: true
         interval: 500
         onTriggered: {
-            blinking.on = !blinking.on
+            blinking.on = !blinking.on;
         }
     }
 
@@ -38,20 +37,12 @@ CellText {
 
         anchors.fill: parent
 
-        onReleased: (button) => {
+        onReleased: button => {
             if (button == "L") {
-                for (const workspace of Object.keys(HyprInfo.workspaces)) {
-                    for (const window of HyprInfo.workspaces[workspace]) {
-                        if (window.windowclass == "com.obsproject.Studio") {
-                            Hyprland.dispatch(`hl.dsp.focus({window = "address:${window.address}"})`)
-                            return
-                        }
-                    }
-                }
-                SystemInfo.runDetached(["obs"])
+                if (HyprInfo.focusClient("com.obsproject.Studio", ""))
+                    return;
+                SystemInfo.runDetached(["obs"]);
             }
         }
-
     }
-
 }

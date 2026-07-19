@@ -338,10 +338,10 @@ Singleton {
         }
 
         function dummy(): void {
-            // Contains debugging features that can be accessed by SUPER + P
             root.toggle("debug");
             root.debugSig();
-            // SystemInfo.lock()
+
+            console.log(PacmanInfo.packages.length);
         }
     }
 
