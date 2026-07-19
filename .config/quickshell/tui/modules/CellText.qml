@@ -24,6 +24,8 @@ Item {
     property bool wrap: false
     property bool smartWrap: true
 
+    property bool cellIsolated: false
+
     property bool lockPure: false
     // Set exclusively by updateText() — no binding, so it doesn't get
     // re-evaluated on every text change and then immediately overwritten.
@@ -480,7 +482,7 @@ Item {
 
     Loader {
 
-        active: root.visible || !root.optimizeMemory
+        active: root.visible || !root.optimizeMemory || root.cellIsolated
 
         sourceComponent: Cells {
             id: cell_text
@@ -488,11 +490,69 @@ Item {
             w: root.w
             h: root.h
 
-            color: root.pure ? root.bg : "transparent"
+            color: root.pure || root.cellIsolated ? root.bg : "transparent"
 
             Loader {
 
-                active: (root.visible || !root.optimizeMemory) && !root.pure
+                active: root.cellIsolated
+
+                sourceComponent: ColumnLayout {
+
+                    x: if (root.alignRight) {
+                        return cell_text.implicitWidth - implicitWidth;
+                    } else {
+                        return 0;
+                    }
+
+                    spacing: 0
+
+                    Repeater {
+                        model: root.text.split("\n")
+                        delegate: RowLayout {
+
+                            required property var modelData
+
+                            spacing: 0
+
+                            Repeater {
+                                model: [...parent.modelData]
+
+                                delegate: Loader {
+                                    id: isolated_cell
+
+                                    required property var modelData
+
+                                    sourceComponent: Cells {
+
+                                        x: -0.1
+
+                                        w: 1 + (x / 2)
+                                        h: 1
+
+                                        whole: false
+
+                                        color: "transparent"
+
+                                        clip: true
+
+                                        Text {
+                                            text: isolated_cell.modelData
+                                            font: root.font
+                                            color: root.color
+                                            lineHeight: Cell.cellHeight
+                                            lineHeightMode: Text.FixedHeight
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Loader {
+
+                active: (root.visible || !root.optimizeMemory) && !root.pure && !root.cellIsolated
 
                 sourceComponent: ColumnLayout {
 
@@ -568,7 +628,7 @@ Item {
 
             Loader {
 
-                active: (root.visible || !root.optimizeMemory) && root.pure
+                active: (root.visible || !root.optimizeMemory) && root.pure && !root.cellIsolated
 
                 sourceComponent: Text {
 
