@@ -17,8 +17,8 @@ RowLayout {
 
             required property int index
 
-            property bool isActive: HyprInfo.focusedworkspace == index
-            property int winCount: HyprInfo.windowCount(index) 
+            property bool isActive: HyprInfo.focusedWorkspace.id == index
+            property int winCount: HyprInfo.clientCount(index)
 
             Component.onCompleted: {
                 index += 1
@@ -38,7 +38,7 @@ RowLayout {
     }
 
     CellText {
-        visible: HyprInfo.specialworkspaces?.length > 0
+        visible: HyprInfo.specialWorkspaces.length > 0
         text: " "
         font: Cell.font
         color: Colors.fgDim
@@ -46,18 +46,19 @@ RowLayout {
 
     Repeater {
 
-        model: HyprInfo.specialworkspaces
+        model: HyprInfo.specialWorkspaces.length
 
         delegate: CellButton {
 
-            required property int id 
-            required property string name 
+            required property int index
+            property int id: HyprInfo.listSpecialWorkspaces()[index].id
+            property string name: HyprInfo.listSpecialWorkspaces()[index].name
 
             Component.onCompleted: {
                 name = name.match(/special:(.*)/)?.[1]
             }
 
-            property bool isActive: HyprInfo.focusedspecial == id
+            property bool isActive: HyprInfo.focusedSpecialWorkspace ? HyprInfo.focusedSpecialWorkspace.id == id : false
 
             text: isActive ? `${name}` : `${name}`
             font: isActive ? Cell.fontB : Cell.font

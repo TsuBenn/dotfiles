@@ -17,6 +17,7 @@ Singleton {
     signal sig(name: string, sig: string)
 
     signal sigClose(name: string)
+    signal sigOpen(name: string)
 
     function sendSig(name = "", sig: string) {
         root.sig(name, sig);
@@ -27,6 +28,9 @@ Singleton {
     }
 
     function open(name: string) {
+        sigOpen(name);
+        if (active_floats.includes(name))
+            return;
         active_floats = [...active_floats, name];
         opened(open);
     }
@@ -37,12 +41,5 @@ Singleton {
         }
         active_floats = active_floats.filter(item => item != name);
         closed(name);
-    }
-
-    Connections {
-        target: SettingsInfo
-        function onDebugSig() {
-            root.open("color");
-        }
     }
 }

@@ -7,6 +7,7 @@ import qs.services
 import qs.modules
 
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import Quickshell.Services.Pam
 import QtQuick
 import QtQuick.Layouts
@@ -18,14 +19,11 @@ WlSessionLockSurface {
 
     property bool processing: false
 
-    property bool focused: monitor.name == HyprInfo.focusedMonitor.name
+    property bool focused: HyprInfo.isFocusedMonitor(monitor)
 
     property bool onlyFocusedMonitorLockScreen: SettingsInfo.onlyFocusedMonitorLockScreen
 
-    property var monitor: {
-        "width": 1920,
-        "height": 1080
-    }
+    property var monitor: Hyprland.monitorFor(screen)
 
     onVisibleChanged: {
         password_field.focus = true;

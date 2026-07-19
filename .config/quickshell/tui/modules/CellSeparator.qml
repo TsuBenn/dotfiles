@@ -37,6 +37,8 @@ Item {
     property bool connectStart: false
     property bool connectEnd: false
 
+    property bool isolate: true
+
     implicitWidth: Cell.w(vertical ? 1 : w)
     implicitHeight: Cell.h(vertical ? h : 1)
 
@@ -53,7 +55,7 @@ Item {
             pure: false
             lockPure: true
 
-            cellIsolated: true
+            cellIsolated: root.isolate
 
             text: {
                 let char = " ";
@@ -85,7 +87,7 @@ Item {
 
                 x: -Cell.w(1)
 
-                cellIsolated: true
+                cellIsolated: root.isolate
 
                 pure: false
                 lockPure: true
@@ -142,7 +144,7 @@ Item {
                 bg: root.bg
                 color: root.title.color
                 clip: true
-                cellIsolated: true
+                cellIsolated: root.isolate
             }
         }
     }
@@ -155,7 +157,7 @@ Item {
 
             pure: false
             lockPure: true
-            cellIsolated: true
+            cellIsolated: root.isolate
 
             text: {
                 let type = "│";
@@ -190,7 +192,7 @@ Item {
 
                 pure: false
                 lockPure: true
-                cellIsolated: true
+                cellIsolated: root.isolate
 
                 text: {
                     let charStart = " ";

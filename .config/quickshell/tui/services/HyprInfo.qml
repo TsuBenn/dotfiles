@@ -5,246 +5,261 @@ import qs.services
 import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
+import Quickshell.Wayland
 import QtQuick
 
 Singleton {
-
     id: root
 
     function fmt(str, ...args) {
         return str.replace(/{}/g, () => args.shift());
     }
 
-    property int maxRefreshRate: 0
+    property list<HyprlandWorkspace> specialWorkspaces: Hyprland.workspaces.values.filter(ws => ws.id < 0)
+    property list<HyprlandWorkspace> workspaces: Hyprland.workspaces.values.filter(ws => ws.id >= 0)
+    property list<HyprlandMonitor> monitors: Hyprland.monitors.values
+    property list<HyprlandToplevel> clients: Hyprland.toplevels.values
 
-    property int focusedworkspace: Hyprland.focusedWorkspace?.id ?? 1
-    property int focusedspecial: 0
+    // property var workspacesObj: listWorkspaces()
+    // property var specialWorkspacesObj: listSpecialWorkspaces()
+    // property var monitorsObj: listMonitors()
+    // property var clientsObj: listClients()
 
-    property string activespecial: ""
+    property HyprlandMonitor focusedMonitor: Hyprland.focusedMonitor
 
-    property var focusedwindow: {"title": "", "class": ""}
+    property HyprlandWorkspace focusedWorkspace: Hyprland.focusedWorkspace
+    property HyprlandWorkspace focusedSpecialWorkspace: null
 
-    property var workspaces
+    property HyprlandToplevel focusedClient: Hyprland.activeToplevel
 
-    property var specialworkspaces
-    property var monitors: ({})
+    signal hyprEvent(event: string)
 
-    property var focusedMonitor: ({})
-
-    signal hyprEvent(event : string)
-
-    signal cursorPos(ex: int, why: int)
-
-    function switchWorkspace(n) {
-        if (Number.isInteger(n)) {
-            Hyprland.dispatch(root.fmt("hl.dsp.focus({workspace = {}})", n)) // New lua config
-            return
+    onFocusedWorkspaceChanged: {
+        if (focusedSpecialWorkspace) {
+            switchWorkspace(focusedSpecialWorkspace.name.replace("special:", ""));
         }
-        Hyprland.dispatch(root.fmt(`hl.dsp.workspace.toggle_special("{}")`, n)) // New lua config
     }
 
-    function windowCount(n) {
-        if (!workspaces) return 0
-        return workspaces[n]?.length ?? 0
-    }
-
-    function isCurrentMonitor(name: string): bool {
-        // console.log(`${focusedMonitor.name} == ${name}`)
-        return focusedMonitor.name == name
-    }
-
-    function getCursorPos() {
-        get_cursorpos.running = true
-    }
-
-    Component.onCompleted: {
-
-        Hyprland.rawEvent.connect((event) => {
+    Connections {
+        target: Hyprland
+        function onRawEvent(event) {
+            root.hyprEvent(event.name);
             switch (event.name) {
-                case "workspace": {
-                    if (!SettingsInfo.dependenciesChecked) {
-                        Hyprland.dispatch(root.fmt("hl.dsp.window.move({workspace = {}, window = \"title:tsubenn_tui_qs_depcheck\"})", event.data))
-                    }
-                    if (root.activespecial) {
-                        switchWorkspace(root.activespecial.replace("special:",""))
-                    }
-                    break
-                }
-                case "openwindow":
-                case "closewindow":
-                case "movewindow":
-                case "workspace":
-                case "activewindow": {
-                    process.running = true
-                    specials.running = true
-                    //get_icons.reload()
-                    break
-                }
-                case "focusedmon": {
-                    monitor.running = true
-                    break
-                }
-                case "activespecial": {
-                    const data = event.data.split(",")[0]
-                    root.activespecial = data
-                    if (!SettingsInfo.dependenciesChecked) {
-                        Hyprland.dispatch(root.fmt("hl.dsp.window.move({workspace = \"{}\", window = \"title:tsubenn_tui_qs_depcheck\"})", data == "" ? root.focusedworkspace : data))
-                    }
-                    break
-                }
-            }
-            root.hyprEvent(event.name)
-            // console.log(JSON.stringify(event))
-        })
-
-    }
-
-    Process {
-        id: specials
-
-        command: ["hyprctl", "workspaces", "-j"]
-
-        running: true
-        stdout: StdioCollector {
-            onStreamFinished: {
-                var special = []
-                const datas = JSON.parse(text)
-                for (const data of datas) {
-                    const id = data.id ?? 0
-                    const name = data.name ?? ""
-                    const windows = data.windows ?? 0
-                    if (id < 0) {
-                        special.push({"id":id,"name":name,"windows":windows})
+            case "activespecialv2":
+                {
+                    const data = event.data.split(",")[0];
+                    if (data != "") {
+                        root.focusedSpecialWorkspace = root.matchWorkspace(parseInt(data));
+                    } else {
+                        root.focusedSpecialWorkspace = null;
                     }
                 }
-                root.specialworkspaces = special
             }
         }
     }
 
-    Process {
-        id: process
+    property bool active: true
 
-        command: ["hyprctl", "clients", "-j"]
+    function isFocusedMonitor(monitor: var): bool {
+        if (!monitor)
+            return false;
+        if (monitor instanceof HyprlandMonitor)
+            return monitor.id == root.focusedMonitor?.id;
+        const m = matchMonitor(monitor);
+        return m ? m.id == root.focusedMonitor?.id : false;
+    }
 
-        running: true
-        stdout: StdioCollector {
-            onStreamFinished: {
-                var workspaces = {}
-                const datas = JSON.parse(text)
-                for (const data of datas) {
-                    const workspace = data.workspace.id ?? ""
-                    const monitor = data.monitor ?? ""
-                    const windowclass = data.class
-                    const windowtitle = data.title
-                    const fullscreen = parseInt(data.fullscreen)
-                    const address = data.address
-                    const focused = (data.focusHistoryID == 0)
-                    if (workspaces[workspace] == undefined) workspaces[workspace] = [] 
-                    workspaces[workspace].push({
-                        "workspace": workspace,
-                        "monitor": monitor,
-                        "windowclass": windowclass,
-                        "address": address,
-                        "windowtitle": windowtitle,
-                        "focused": focused,
-                        "fullscreen": fullscreen
-                    })
-                    if (focused) {
-                        root.focusedspecial = workspace < 0 ? workspace : 0
-                        root.focusedwindow = {
-                            "title": windowtitle,
-                            "class": windowclass,
-                            "address": address,
-                            "monitor": monitor,
-                            "fullscreen": fullscreen
-                        }
-                    }
-                }
-                if (root.windowCount(root.focusedworkspace) == 0) root.focusedwindow = {
-                    "title": "Desktop",
-                    "class": ""
-                }
-                root.workspaces = workspaces
-            }
+    function switchWorkspace(workspace) {
+        if (workspace instanceof HyprlandWorkspace) {
+            workspace.activate();
+            return true;
+        }
+        if (Number.isInteger(workspace)) {
+            Hyprland.dispatch(root.fmt("hl.dsp.focus({workspace = {}})", workspace));
+            return true;
+        } else if (matchWorkspace(workspace)) {
+            Hyprland.dispatch(root.fmt(`hl.dsp.workspace.toggle_special("{}")`, workspace));
+            return true;
+        }
+        return false;
+    }
+
+    function listMonitors() {
+        let result = [];
+        for (const m of monitors) {
+            result.push(objMonitor(m));
+        }
+        return result;
+    }
+
+    function listSpecialWorkspaces() {
+        let result = [];
+        for (const w of specialWorkspaces) {
+            result.push(objWorkspace(w));
+        }
+        return result;
+    }
+
+    function listWorkspaces() {
+        let result = [];
+        for (const w of workspaces) {
+            result.push(objWorkspace(w));
+        }
+        return result;
+    }
+
+    function listClients() {
+        let result = [];
+        for (const c of clients) {
+            result.push(objClient(c));
+        }
+        return result;
+    }
+
+    function objMonitor(m: HyprlandMonitor): var {
+        if (!m)
+            return null;
+        return {
+            id: m.id,
+            x: m.x,
+            y: m.y,
+            name: m.name,
+            width: m.width,
+            height: m.height,
+            scale: m.scale,
+            focused: m.id == root.focusedMonitor?.id
+        };
+    }
+
+    function matchMonitor(id: var): var {
+        if (typeof id == "string")
+            return monitors.find(item => RegExp(id).test(item.name)) ?? null;
+        return monitors.find(item => item.id == id) ?? null;
+    }
+
+    function resolveWorkpsaceSelector(w: HyprlandWorkspace): var { // Used for dispatcher since they don't take negative id as special workspaces
+        if (!w)
+            return null;
+        if (w.id >= 0) {
+            return w.id;
+        } else {
+            return w.name;
         }
     }
 
-    Process {
-        id: monitor
-
-        command: ["hyprctl", "monitors", "-j"]
-
-        running: true
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const monitors = []
-                const datas = JSON.parse(text)
-                for (const data of datas) {
-                    const id = data.id
-                    const name = data.name
-                    const x = data.x
-                    const y = data.y
-                    const width = data.width
-                    const height = data.height
-                    const scale = data.scale
-                    const model = data.model
-                    const refreshRate = data.refreshRate
-                    const focused = data.focused
-
-                    if (refreshRate > root.maxRefreshRate) {
-                        root.maxRefreshRate = refreshRate
-                    }
-
-                    monitors[name] = {
-                        "id": id,
-                        "name": name,
-                        "x": x,
-                        "y": y,
-                        "width": width/scale,
-                        "height": height/scale,
-                        "scale": scale,
-                        "model": model,
-                        "refreshRate": refreshRate,
-                        "focused": focused
-                    }
-                    monitors[id] = {
-                        "id": id,
-                        "name": name,
-                        "x": x,
-                        "y": y,
-                        "width": width/scale,
-                        "height": height/scale,
-                        "scale": scale,
-                        "model": model,
-                        "refreshRate": refreshRate,
-                        "focused": focused
-                    }
-                    if (focused) {
-                        root.focusedMonitor = monitors[name]
-                    }
-                }
-                root.monitors = monitors
-            }
-        }
+    function objWorkspace(w: HyprlandWorkspace): var {
+        if (!w)
+            return null;
+        return {
+            id: w.id,
+            name: w.name,
+            focused: w.focused,
+            active: w.active,
+            urgent: w.urgent,
+            monitor: w.monitor?.id,
+            clients: w.toplevels.values.length
+        };
     }
 
-    Process {
-        id: get_cursorpos
-
-        command: ["hyprctl", "cursorpos"]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                if (text) {
-                    const data = text.split(",")
-                    root.cursorPos(parseInt(data[0]),parseInt(data[1]))
-                }
-            }
-        }
-
+    function clientCount(workspace = null): var {
+        if (!workspace)
+            return objWorkspace(focusedWorkspace)?.clients ?? 0;
+        return objWorkspace(matchWorkspace(workspace))?.clients ?? 0;
     }
 
+    function matchWorkspace(id: var): var {
+        const all = [...specialWorkspaces, ...workspaces];
+        if (typeof id == "string")
+            return all.find(item => RegExp(id).test(item.name)) ?? null;
+        return all.find(item => item.id == id) ?? null;
+    }
+
+    function objClient(c: HyprlandToplevel): var {
+        if (!c)
+            return null;
+        return {
+            title: c.title,
+            class: c.wayland?.appId ?? "",
+            address: c.address,
+            workspace: c.workspace?.id ?? null,
+            monitor: c.monitor?.id ?? null,
+            active: c.activated,
+            urgent: c.urgent,
+            maximized: c.wayland?.maximized ?? false
+        };
+    }
+
+    function getClients(workspace = null) {
+        if (workspace == null) {
+            return focusedWorkspace.toplevels.values;
+        }
+        let idx = workspaces.findIndex(item => item.id == workspace || item.name == workspace);
+        if (idx != -1) {
+            return workspaces[idx].toplevels.values;
+        }
+        return [];
+    }
+
+    function matchClient(wClass = "", wTitle = "") {
+        let idx = clients.findIndex(item => (wTitle != "" ? RegExp(wTitle).test(item?.title) : true) && (wClass != "" ? RegExp(wClass).test(item?.wayland.appId) : true));
+        if (idx != -1) {
+            return clients[idx];
+        }
+        return null;
+    }
+
+    function getClient(wAddress = "") {
+        if (wAddress != "") {
+            let idx = clients.findIndex(item => item.address == wAddress);
+            if (idx != -1) {
+                return clients[idx];
+            }
+        }
+        return null;
+    }
+
+    function moveClient(client: HyprlandToplevel, workspace: var): bool {
+        if (!client) {
+            console.warn("HyprInfo: cannot move null client");
+            return false;
+        }
+        if (!workspace) {
+            console.warn("HyprInfo: cannot move client to a null workspace");
+            return false;
+        }
+        if (workspace instanceof HyprlandWorkspace) {
+            workspace = resolveWorkpsaceSelector(workspace);
+        } else {
+            console.warn("HyprInfo: cannot move client to something that's not a workspace");
+            return false;
+        }
+        Hyprland.dispatch(root.fmt("hl.dsp.window.move({workspace = \"{}\", window = \"address:0x{}\"})", workspace, objClient(client).address));
+        return true;
+    }
+
+    function focusClient(wClass, wTitle): bool {
+        const c = matchClient(wClass, wTitle);
+        if (!c) {
+            console.warn("HyprInfo: cannot focus a null client");
+            return false;
+        }
+        c.wayland.activate();
+        return true;
+    }
+    function closeClient(wClass, wTitle) {
+        const c = matchClient(wClass, wTitle);
+        if (!c) {
+            console.warn("HyprInfo: cannot close a null client");
+            return false;
+        }
+        c.wayland.close();
+        return true;
+    }
+
+    // Connections {
+    //     target: SettingsInfo
+    //     function onDebugSig() {
+    //         console.log(JSON.stringify(root.listClients(), null, 2));
+    //     }
+    // }
 }
-
-

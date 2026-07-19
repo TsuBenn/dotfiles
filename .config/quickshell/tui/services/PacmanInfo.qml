@@ -1,5 +1,6 @@
 pragma Singleton
 
+import qs.config
 import qs.services
 
 import Quickshell
@@ -782,9 +783,16 @@ Singleton {
         });
     }
 
+    function clear() {
+        packages = [];
+        installedSet = {};
+        nameIndex = {};
+    }
+
     function list() {
         if (lister.running)
             lister.running = false;
+        root.fetching = true;
         lister.running = true;
     }
 
@@ -875,6 +883,7 @@ Singleton {
                 if (text) {
                     //console.log(text)
                     root.packages = JSON.parse(text);
+                    // root.packages = [];
                 }
             }
         }
@@ -898,7 +907,8 @@ Singleton {
             onStreamFinished: {
                 if (text) {
                     console.log(text);
-                    lister.running = true;
+                    if (FloatsManager.isOpen("pacman"))
+                        lister.running = true;
                 }
             }
         }

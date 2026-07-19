@@ -58,8 +58,8 @@ Rectangle {
         CellText {
             id: window_title
 
-            property string wTitle: HyprInfo.focusedwindow.title
-            property string wClass: HyprInfo.focusedwindow.class
+            property string wTitle: HyprInfo.focusedClient?.title ?? ""
+            property string wClass: HyprInfo.objClient(HyprInfo.focusedClient)?.class ?? ""
 
             preferedW: Cell.wCount(root.width / 2 - clock.implicitWidth / 2 - system.implicitWidth - workspaces.implicitWidth) - 10
 

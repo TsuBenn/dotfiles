@@ -10,8 +10,6 @@ import QtQuick.Layouts
 CellPopup {
     id: root
 
-    property bool optimizeMemory: SettingsInfo.optimizeMemory
-
     implicitWidth: monitor.width
     implicitHeight: monitor.height
 

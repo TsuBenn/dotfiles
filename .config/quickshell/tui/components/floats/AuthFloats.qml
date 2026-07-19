@@ -19,7 +19,7 @@ CellFloats {
 
     Connections {
         target: layout
-        function onimplicitHeightChanged() {
+        function onImplicitHeightChanged() {
             root.h = Cell.hCount(layout.implicitHeight);
         }
     }

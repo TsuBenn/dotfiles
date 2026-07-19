@@ -57,6 +57,9 @@ CellFloats {
             selected_pkg = "";
             PacmanInfo.query = "";
             list.reset();
+            PacmanInfo.list();
+        } else {
+            PacmanInfo.clear();
         }
     }
 

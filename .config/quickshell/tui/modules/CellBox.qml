@@ -55,6 +55,8 @@ Item {
 
     property bool grid: false
 
+    property bool isolate: true
+
     Component.onCompleted: {
         x += Cell.w(1);
         y += Cell.h(1);
@@ -87,7 +89,7 @@ Item {
                 bg: root.border.type == 0 ? root.border.color : "transparent"
                 pure: false
                 lockPure: true
-                cellIsolated: true
+                cellIsolated: root.isolate
                 color: root.border.color
 
                 // Clean, safe helper to prevent negative repeat counts

@@ -17,7 +17,7 @@
   "screenshotStay": true,
   "screenshotNotify": false,
   "screenshotCursor": false,
-  "lockScreenMusic": false,
+  "lockScreenMusic": true,
   "sfx": false,
   "userLightMode": false,
   "autoLightMode": true,

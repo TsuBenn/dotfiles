@@ -6,13 +6,9 @@ import QtQuick
 import QtMultimedia
 
 Item {
-
     id: root
 
-    property var monitor: {
-        "width": 1920,
-        "height": 1080
-    }
+    property var monitor
 
     NumberAnimation {
         id: init_anim
@@ -33,29 +29,36 @@ Item {
 
     property string transition_type: {
         switch (WallpaperInfo.getTransition(main.current).type) {
-            case "none": return "none"
-            case "simple": return "fade"
-            case "wipe": return "wipe"
-            case "grow": return "grow"
-            case "shrink": return "shrink"
-            case "ripple": return "ripple"
-            default: return "fade"
+        case "none":
+            return "none";
+        case "simple":
+            return "fade";
+        case "wipe":
+            return "wipe";
+        case "grow":
+            return "grow";
+        case "shrink":
+            return "shrink";
+        case "ripple":
+            return "ripple";
+        default:
+            return "fade";
         }
     }
 
     onLiveChanged: {
         if (root.live) {
-            live.source = SystemInfo.homedir + WallpaperInfo.path + root.current
-            live.play()
+            live.source = SystemInfo.homedir + WallpaperInfo.path + root.current;
+            live.play();
         } else {
-            live.pause()
+            live.pause();
         }
     }
 
     onCurrentChanged: {
-        live.pause()
-        screen.live = false
-        wait.restart()
+        live.pause();
+        screen.live = false;
+        wait.restart();
     }
 
     Timer {
@@ -63,25 +66,24 @@ Item {
 
         interval: 0
         onTriggered: {
-            root.grabBuffer()
+            root.grabBuffer();
         }
     }
 
     Component.onCompleted: {
-        still.source = root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current
-        main.current = root.current
-        init_anim.start()
+        still.source = root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current;
+        main.current = root.current;
+        init_anim.start();
     }
 
     function grabBuffer() {
-        screen.grabToImage(function(result) {
-            buffer.source = result.url
-            //fadeAnim.restart()
-        })
+        screen.grabToImage(function (result) {
+            buffer.source = result.url;
+        //fadeAnim.restart()
+        });
     }
 
     Item {
-
         id: super_buffer
 
         anchors.fill: parent
@@ -89,10 +91,9 @@ Item {
         visible: false
 
         Item {
+            id: main
 
             anchors.fill: parent
-
-            id: main
             visible: false
 
             clip: true
@@ -100,24 +101,41 @@ Item {
             property string current: root.current
 
             Image {
-
                 id: still
 
                 anchors.centerIn: parent
 
-                anchors.verticalCenterOffset: ((height * scalar * WallpaperInfo.getReposition(main.current).scalar - parent.height)/2)*WallpaperInfo.getReposition(main.current).verticalOffset
-                anchors.horizontalCenterOffset: ((width * scalar * WallpaperInfo.getReposition(main.current).scalar - parent.width)/2)*WallpaperInfo.getReposition(main.current).horizontalOffset
+                anchors.verticalCenterOffset: ((height * scalar * WallpaperInfo.getReposition(main.current).scalar - parent.height) / 2) * WallpaperInfo.getReposition(main.current).verticalOffset
+                anchors.horizontalCenterOffset: ((width * scalar * WallpaperInfo.getReposition(main.current).scalar - parent.width) / 2) * WallpaperInfo.getReposition(main.current).horizontalOffset
 
-                width:  sourceSize.width  
-                height: sourceSize.height 
+                sourceSize.width: root.monitor.width
+                sourceSize.height: root.monitor.height
+
+                width: sourceSize.width
+                height: sourceSize.height
 
                 scale: 1 * scalar * WallpaperInfo.getReposition(main.current).scalar
 
-                Behavior on scale                          {NumberAnimation {duration: 200*(root.transitionProgress == 1); easing.type: Easing.OutCubic}}
-                Behavior on anchors.verticalCenterOffset   {NumberAnimation {duration: 200*(root.transitionProgress == 1); easing.type: Easing.OutCubic}}
-                Behavior on anchors.horizontalCenterOffset {NumberAnimation {duration: 200*(root.transitionProgress == 1); easing.type: Easing.OutCubic}}
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: 200 * (root.transitionProgress == 1)
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on anchors.verticalCenterOffset {
+                    NumberAnimation {
+                        duration: 200 * (root.transitionProgress == 1)
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on anchors.horizontalCenterOffset {
+                    NumberAnimation {
+                        duration: 200 * (root.transitionProgress == 1)
+                        easing.type: Easing.OutCubic
+                    }
+                }
 
-                property double scalar: Math.max(parent.width/sourceSize.width, parent.height/sourceSize.height)
+                property double scalar: Math.max(parent.width / sourceSize.width, parent.height / sourceSize.height)
 
                 source: root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current
 
@@ -127,47 +145,56 @@ Item {
 
                 onStatusChanged: {
                     if (status == Image.Ready) {
-                        main.current = root.current
-                        screen.live = true
-                        fadeAnim.restart()
+                        main.current = root.current;
+                        screen.live = true;
+                        fadeAnim.restart();
                     }
                 }
-
             }
 
             MediaPlayer {
-
                 id: live
                 source: ""
                 loops: MediaPlayer.Infinite
                 videoOutput: live_output
-
             }
 
             VideoOutput {
-
                 id: live_output
 
                 anchors.centerIn: parent
 
-                anchors.verticalCenterOffset: ((height * scalar * WallpaperInfo.getReposition(main.current).scalar - parent.height)/2)*WallpaperInfo.getReposition(main.current).verticalOffset
-                anchors.horizontalCenterOffset: ((width * scalar * WallpaperInfo.getReposition(main.current).scalar - parent.width)/2)*WallpaperInfo.getReposition(main.current).horizontalOffset
+                anchors.verticalCenterOffset: ((height * scalar * WallpaperInfo.getReposition(main.current).scalar - parent.height) / 2) * WallpaperInfo.getReposition(main.current).verticalOffset
+                anchors.horizontalCenterOffset: ((width * scalar * WallpaperInfo.getReposition(main.current).scalar - parent.width) / 2) * WallpaperInfo.getReposition(main.current).horizontalOffset
 
-                width:  sourceRect.width  
-                height: sourceRect.height 
+                width: sourceRect.width
+                height: sourceRect.height
 
                 scale: 1 * scalar * WallpaperInfo.getReposition(main.current).scalar
 
-                Behavior on scale                          {NumberAnimation {duration: 200*(root.transitionProgress == 1); easing.type: Easing.OutCubic}}
-                Behavior on anchors.verticalCenterOffset   {NumberAnimation {duration: 200*(root.transitionProgress == 1); easing.type: Easing.OutCubic}}
-                Behavior on anchors.horizontalCenterOffset {NumberAnimation {duration: 200*(root.transitionProgress == 1); easing.type: Easing.OutCubic}}
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: 200 * (root.transitionProgress == 1)
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on anchors.verticalCenterOffset {
+                    NumberAnimation {
+                        duration: 200 * (root.transitionProgress == 1)
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on anchors.horizontalCenterOffset {
+                    NumberAnimation {
+                        duration: 200 * (root.transitionProgress == 1)
+                        easing.type: Easing.OutCubic
+                    }
+                }
 
-                property double scalar: Math.max(parent.width/sourceRect.width, parent.height/sourceRect.height)
+                property double scalar: Math.max(parent.width / sourceRect.width, parent.height / sourceRect.height)
 
                 fillMode: VideoOutput.PreserveAspectCrop
-
             }
-
         }
 
         SequentialAnimation {
@@ -177,10 +204,9 @@ Item {
                 property: "transitionProgress"
                 from: 0.0
                 to: 1.0
-                duration: WallpaperInfo.getTransition(main.current).duration*1000
+                duration: WallpaperInfo.getTransition(main.current).duration * 1000
                 easing.type: Easing.InOutCubic
             }
-
         }
 
         ShaderEffectSource {
@@ -188,11 +214,10 @@ Item {
             anchors.fill: parent
             sourceItem: main
             hideSource: true
-            live: true
+            live: root.transitionProgress < 1 || root.live
         }
 
         Image {
-
             id: buffer
 
             anchors.fill: parent
@@ -202,22 +227,20 @@ Item {
 
             onStatusChanged: {
                 if (status == Image.Ready) {
-                    root.transitionProgress = 0
-                    still.source = root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current
+                    root.transitionProgress = 0;
+                    still.source = root.isLive ? SystemInfo.homedir + WallpaperInfo.cache_path + root.current + WallpaperInfo.still_prefix : SystemInfo.homedir + WallpaperInfo.path + root.current;
                     if (root.live) {
-                        live.source = SystemInfo.homedir + WallpaperInfo.path + root.current
-                        live.play()
+                        live.source = SystemInfo.homedir + WallpaperInfo.path + root.current;
+                        live.play();
                     } else {
-                        live.source = ""
-                        live.stop()
+                        live.source = "";
+                        live.stop();
                     }
                 }
             }
-
         }
 
         ShaderEffect {
-
             id: buffer_shader
 
             anchors.fill: parent
@@ -226,7 +249,7 @@ Item {
             property variant newSource: main_buffer
 
             property real progress: {
-                return root.quantize(root.transitionProgress, WallpaperInfo.getTransition(root.current).fps*WallpaperInfo.getTransition(main.current).duration)
+                return root.quantize(root.transitionProgress, WallpaperInfo.getTransition(root.current).fps * WallpaperInfo.getTransition(main.current).duration);
             }
 
             property real winWidth: root.monitor.width
@@ -240,11 +263,8 @@ Item {
             property real posY: WallpaperInfo.getTransition(main.current).posY
 
             fragmentShader: root.shaders_path + root.transition_type + root.shaders_ext
-
         }
-
     }
-
 
     property double transitionProgress: 0
 
@@ -257,7 +277,6 @@ Item {
         id: screen
         anchors.fill: parent
         sourceItem: super_buffer
-        live: true
+        live: root.transitionProgress < 1 || root.live
     }
-
 }

@@ -97,7 +97,7 @@ Cells {
 
         model: 1
 
-        delegate: root.source
+        delegate: root.visible || !root.optimizeMemory ? root.source : null
     }
 
     Loader {
