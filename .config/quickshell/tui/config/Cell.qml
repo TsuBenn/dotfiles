@@ -8,6 +8,8 @@ Singleton {
 
     property real pointSize: 11
 
+    property int border_width: 2
+
     readonly property font font: Qt.font({
         family: "JetBrainsMono Nerd Font",
         pointSize: root.pointSize

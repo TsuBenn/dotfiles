@@ -6,11 +6,12 @@ import qs.services
 
 import QtQuick.Layouts
 import QtQuick
+import Qt5Compat.GraphicalEffects
 
 Item {
     id: root
 
-    property bool optimizeMemory: SettingsInfo.optimizeMemory
+    property bool optimizeMemory: SettingsInfo.optimizeMemory && false
 
     property int w: 3
     property int h: 3
@@ -60,16 +61,15 @@ Item {
     Component.onCompleted: {
         x += Cell.w(1);
         y += Cell.h(1);
-        for (const i in children) {
-            if (i >= 2) {
-                children[i].parent = content;
-            }
-        }
     }
+
+    default property alias content: content.data
+
+    property bool optimize: true
 
     Loader {
 
-        active: root.visible || !root.optimizeMemory
+        active: (root.visible || !root.optimizeMemory) && !root.optimize
 
         sourceComponent: Cells {
             id: border_cells
@@ -202,6 +202,94 @@ Item {
                 text: root.footer.text
                 preferedW: text == "" || text.length < root.w - 2 - Math.max(root.footer.offset, 0) ? 0 : root.w - 2 - Math.max(root.footer.offset, 0)
                 font: root.footer.font
+            }
+        }
+    }
+
+    Loader {
+
+        active: (root.visible || !root.optimizeMemory) && root.optimize
+
+        sourceComponent: Cells {
+            id: border_optimize
+
+            w: root.w
+            h: root.h
+
+            x: -Cell.w(1)
+            y: -Cell.h(1)
+
+            grid: root.grid
+
+            color: root.color
+
+            layer.enabled: true
+
+            Rectangle {
+
+                implicitWidth: Cell.w(root.w - 1) + border.width
+                implicitHeight: Cell.h(root.h - 1) + border.width
+
+                x: (Cell.w(1) - border.width) / 2
+                y: (Cell.h(1) - border.width) / 2
+
+                border {
+                    width: {
+                        switch (root.border.type) {
+                        case 1:
+                            return 1 * Cell.border_width;
+                        case 2:
+                            return 2 * Cell.border_width;
+                        case 3:
+                            return 3 * Cell.border_width;
+                        case 4:
+                            return 1 * Cell.border_width;
+                        }
+                        return 1;
+                    }
+                    color: root.border.color
+                }
+
+                color: "transparent"
+            }
+
+            Rectangle {
+
+                visible: root.border.type == 3
+
+                implicitWidth: Cell.w(root.w - 1) + border.width
+                implicitHeight: Cell.h(root.h - 1) + border.width
+
+                x: (Cell.w(1) - border.width) / 2
+                y: (Cell.h(1) - border.width) / 2
+
+                border {
+                    width: Cell.border_width
+                    color: root.color
+                }
+
+                color: "transparent"
+            }
+
+            CellText {
+                visible: root.header.text.trim() != ""
+                x: Cell.w(Math.max(root.header.offset, 0) + 1)
+                text: root.header.text
+                color: root.header.color
+                font: root.header.font
+                preferedW: Math.min(root.contentW - Math.abs(root.header.offset), text.length)
+                bg: root.color
+            }
+
+            CellText {
+                visible: root.footer.text.trim() != ""
+                x: Cell.w(Math.max(root.footer.offset, 0) + 1)
+                y: Cell.h(root.h - 1)
+                text: root.footer.text
+                color: root.footer.color
+                font: root.footer.font
+                preferedW: Math.min(root.contentW - Math.abs(root.footer.offset), text.length)
+                bg: root.color
             }
         }
     }

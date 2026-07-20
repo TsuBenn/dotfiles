@@ -4,8 +4,8 @@ import qs.config
 import qs.modules
 import qs.services
 
-import QtQuick.Layouts
 import QtQuick
+import QtQuick.Layouts
 
 Item {
     id: root
@@ -42,9 +42,11 @@ Item {
     implicitWidth: Cell.w(vertical ? 1 : w)
     implicitHeight: Cell.h(vertical ? h : 1)
 
+    property bool optimize: true
+
     Loader {
 
-        active: (root.visible || !root.optimizeMemory) && !root.vertical
+        active: (root.visible || !root.optimizeMemory) && !root.vertical && !root.optimize
 
         sourceComponent: CellText {
 
@@ -151,7 +153,7 @@ Item {
 
     Loader {
 
-        active: (root.visible || !root.optimizeMemory) && root.vertical
+        active: (root.visible || !root.optimizeMemory) && root.vertical && !root.optimize
 
         sourceComponent: CellText {
 
@@ -234,6 +236,92 @@ Item {
                     return (root.connectStart ? charStart : " ") + "\n" + " \n".repeat(Math.max(root.h, 0)) + (root.connectEnd ? charEnd : " ");
                 }
                 color: root.color
+            }
+        }
+    }
+
+    Loader {
+        active: (root.visible || !root.optimizeMemory) && !root.vertical && root.optimize
+
+        sourceComponent: Cells {
+            w: root.w
+            h: 1
+
+            color: root.bg
+
+            ColumnLayout {
+
+                x: root.connectStart ? -Cell.w(1) / 2 : 0
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 2
+
+                Repeater {
+
+                    model: root.type == 2 ? 2 : 1
+
+                    delegate: Rectangle {
+                        implicitHeight: {
+                            switch (root.type) {
+                            case 0:
+                                return 1 * Cell.border_width;
+                            case 1:
+                                return 2 * Cell.border_width;
+                            case 2:
+                                return 1 * Cell.border_width;
+                            }
+                        }
+                        implicitWidth: Cell.w(root.w) + (root.connectStart ? Cell.w(1) / 2 : 0) + (root.connectEnd ? Cell.w(1) / 2 : 0)
+                        color: root.color
+                    }
+                }
+            }
+
+            CellText {
+                visible: root.title.text.trim() != ""
+                x: Math.max(root.title.centered ? Cell.centerWCell(implicitWidth, parent.implicitWidth) : Cell.w(root.title.offset), 0)
+                text: " ".repeat(root.title.padding) + root.title.text + " ".repeat(root.title.padding)
+                color: root.title.color
+                font: root.title.font
+                preferedW: Math.min(text.length, root.w - Math.abs(Cell.wCount(x)))
+                bg: root.bg
+            }
+        }
+    }
+
+    Loader {
+        active: (root.visible || !root.optimizeMemory) && root.vertical && root.optimize
+
+        sourceComponent: Cells {
+            w: 1
+            h: root.h
+
+            color: root.bg
+
+            RowLayout {
+
+                y: root.connectStart ? -Cell.h(1) / 2 : 0
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 2
+
+                Repeater {
+
+                    model: root.type == 2 ? 2 : 1
+
+                    delegate: Rectangle {
+                        implicitWidth: {
+                            switch (root.type) {
+                            case 0:
+                                return 1 * Cell.border_width;
+                            case 1:
+                                return 2 * Cell.border_width;
+                            case 2:
+                                return 1 * Cell.border_width;
+                            }
+                        }
+                        implicitHeight: Cell.h(root.h) + (root.connectStart ? Cell.h(1) / 2 : 0) + (root.connectEnd ? Cell.h(1) / 2 : 0)
+                        color: root.color
+                    }
+                }
             }
         }
     }

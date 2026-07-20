@@ -13,6 +13,8 @@ FloatingWindow {
 
     visible: FloatsManager.isOpen(name)
 
+    property bool isFloat: true
+
     onClosed: {
         TextFieldManager.unFocusAll();
         root.close();
