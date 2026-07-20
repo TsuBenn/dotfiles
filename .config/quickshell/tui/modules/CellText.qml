@@ -21,6 +21,8 @@ Item {
     property bool centered: false
     property bool alignRight: false
 
+    property bool ascii: SettingsInfo.purify || SettingsInfo.compat// Reduce everything to ASCII only
+
     property bool wrap: false
     property bool smartWrap: true
 
@@ -95,10 +97,122 @@ Item {
         }).join("").replace(/ /g, "&nbsp;").replace(/\n/g, "<br>");
     }
 
+    function cleanToAscii(str, placeholder = '?') {
+        const boxDrawingMap = {
+            '─': '-',
+            '━': '-',
+            '│': '|',
+            '┃': '|',
+            '┌': '+',
+            '┍': '+',
+            '┎': '+',
+            '┏': '+',
+            '┐': '+',
+            '┑': '+',
+            '┒': '+',
+            '┓': '+',
+            '└': '+',
+            '┕': '+',
+            '┖': '+',
+            '┗': '+',
+            '┘': '+',
+            '┙': '+',
+            '┚': '+',
+            '┛': '+',
+            '├': '+',
+            '┝': '+',
+            '┞': '+',
+            '┟': '+',
+            '┠': '+',
+            '┡': '+',
+            '┢': '+',
+            '┣': '+',
+            '┤': '+',
+            '┥': '+',
+            '┦': '+',
+            '┧': '+',
+            '┨': '+',
+            '┩': '+',
+            '┪': '+',
+            '┫': '+',
+            '┬': '+',
+            '┭': '+',
+            '┮': '+',
+            '┯': '+',
+            '┰': '+',
+            '┱': '+',
+            '┲': '+',
+            '┳': '+',
+            '┴': '+',
+            '┵': '+',
+            '┶': '+',
+            '┷': '+',
+            '┸': '+',
+            '┹': '+',
+            '┺': '+',
+            '┻': '+',
+            '┼': '+',
+            '┽': '+',
+            '┾': '+',
+            '┿': '+',
+            '╀': '+',
+            '╁': '+',
+            '╂': '+',
+            '╃': '+',
+            '╄': '+',
+            '╅': '+',
+            '╆': '+',
+            '╇': '+',
+            '╈': '+',
+            '╉': '+',
+            '╊': '+',
+            '╋': '+',
+            '═': '=',
+            '║': '|',
+            '╒': '+',
+            '╓': '+',
+            '╔': '+',
+            '╕': '+',
+            '╖': '+',
+            '╗': '+',
+            '╘': '+',
+            '╙': '+',
+            '╚': '+',
+            '╛': '+',
+            '╜': '+',
+            '╝': '+',
+            '╞': '+',
+            '╟': '+',
+            '╠': '+',
+            '╡': '+',
+            '╢': '+',
+            '╣': '+',
+            '╤': '+',
+            '╥': '+',
+            '╦': '+',
+            '╧': '+',
+            '╨': '+',
+            '╩': '+',
+            '╪': '+',
+            '╫': '+',
+            '╬': '+'
+        };
+
+        // Step 1: Replace box drawing characters using a regex map lookup
+        const replacedBoxes = SettingsInfo.purify ? str.replace(/[─-╬]/g, match => boxDrawingMap[match] || match) : str;
+
+        // Step 2: Replace any remaining non-ASCII/Extended ASCII with the placeholder
+        if (SettingsInfo.purify) {
+            return replacedBoxes.replace(/[^\x00-\xFF]/g, placeholder);
+        } else {
+            return replacedBoxes.replace(/[^\x00-\xFF─-╿]/g, placeholder);
+        }
+    }
+
     function updateText() {
         if (!root.visible)
             return;
-        raw_text = text;
+        raw_text = root.ascii ? cleanToAscii(text) : text;
 
         if (!lockPure) {
             pure = onlyLatin(raw_text);
@@ -496,7 +610,7 @@ Item {
 
                 // asynchronous: true
 
-                active: root.cellIsolated
+                active: root.cellIsolated && !SettingsInfo.purify
 
                 sourceComponent: ColumnLayout {
 
@@ -545,6 +659,7 @@ Item {
                                             color: root.color
                                             lineHeight: Cell.cellHeight
                                             lineHeightMode: Text.FixedHeight
+                                            antialiasing: Cell.antialiasing
                                         }
                                     }
                                 }
@@ -556,7 +671,7 @@ Item {
 
             Loader {
 
-                active: (root.visible || !root.optimizeMemory) && !root.pure && !root.cellIsolated
+                active: (root.visible || !root.optimizeMemory) && (!root.pure && !root.cellIsolated) && !root.ascii
 
                 // asynchronous: true
 
@@ -625,6 +740,7 @@ Item {
                                             color: root.color
                                             lineHeight: Cell.cellHeight
                                             lineHeightMode: Text.FixedHeight
+                                            antialiasing: Cell.antialiasing
                                         }
                                     }
                                 }
@@ -636,7 +752,7 @@ Item {
 
             Loader {
 
-                active: (root.visible || !root.optimizeMemory) && root.pure && !root.cellIsolated
+                active: (root.visible || !root.optimizeMemory) && ((root.pure && !root.cellIsolated) || SettingsInfo.purify)
 
                 // asynchronous: true
 
@@ -657,6 +773,7 @@ Item {
                     color: root.color
                     lineHeight: Cell.cellHeight
                     lineHeightMode: Text.FixedHeight
+                    antialiasing: Cell.antialiasing
                 }
             }
         }

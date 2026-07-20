@@ -75,34 +75,11 @@ Item {
 
                 color: root.type.bg > 0 ? "transparent" : root.bg
 
-                ColumnLayout {
-
-                    visible: root.type.bg > 0
-
-                    spacing: 0
-
-                    Repeater {
-
-                        model: scroll.h
-
-                        delegate: CellText {
-
-                            clip: true
-
-                            text: {
-                                switch (root.type.bg) {
-                                case 1:
-                                    return "│";
-                                case 2:
-                                    return "┃";
-                                case 3:
-                                    return "║";
-                                }
-                            }
-
-                            color: root.bg
-                        }
-                    }
+                CellSeparator {
+                    vertical: true
+                    h: root.h
+                    type: root.type.bg
+                    color: root.bg
                 }
 
                 Cells {
@@ -133,33 +110,12 @@ Item {
 
                     color: root.type.fg > 0 ? "transparent" : root.color
 
-                    ColumnLayout {
-
-                        visible: root.type.fg > 0
-
-                        spacing: 0
-
-                        Repeater {
-
-                            model: thumb.h
-
-                            delegate: CellText {
-
-                                clip: true
-
-                                text: {
-                                    switch (root.type.fg) {
-                                    case 1:
-                                        return "┃";
-                                    case 2:
-                                        return "●";
-                                    }
-                                }
-
-                                color: root.color
-                            }
-                        }
+                    CellSeparator {
+                        vertical: true
+                        h: parent.h
+                        color: root.color
                     }
+
                 }
             }
 

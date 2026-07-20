@@ -318,8 +318,7 @@ CellPopup {
 
             x: Cell.centerWCell(implicitWidth, menu.implicitWidth) - Cell.w(3)
             y: Cell.centerHCell(implicitHeight, menu.implicitHeight)
-            pure: false
-            lockPure: true
+            cellIsolated: true
             text: ANSI.render(mode + " in " + count, 2)
             color: menu.select_color
         }
@@ -377,6 +376,7 @@ CellPopup {
         lockPure: true
         text: ANSI.render(title, selected ? 2 : 1)
         clip: true
+        cellIsolated: true
 
         MouseControl {
 

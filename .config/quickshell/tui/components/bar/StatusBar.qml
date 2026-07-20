@@ -55,15 +55,15 @@ Rectangle {
             color: Colors.fgSubtle
         }
 
-        CellText {
+        MarqueeCellText {
             id: window_title
 
             property string wTitle: HyprInfo.focusedClient?.title ?? ""
             property string wClass: HyprInfo.objClient(HyprInfo.focusedClient)?.class ?? ""
 
-            preferedW: Cell.wCount(root.width / 2 - clock.implicitWidth / 2 - system.implicitWidth - workspaces.implicitWidth) - 10
+            cellw: Cell.wCount(root.width / 2 - clock.implicitWidth / 2 - system.implicitWidth - workspaces.implicitWidth) - 7
 
-            text: `${wClass}`
+            text: `<b>${wTitle}</b> - <i>${wClass}</i>`
             font: Cell.font
             color: Colors.fgBase
         }

@@ -48,7 +48,7 @@ Cells {
 
         }
 
-    } 
+    }
 
     RowLayout {
 

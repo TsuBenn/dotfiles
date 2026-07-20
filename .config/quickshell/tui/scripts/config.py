@@ -251,6 +251,27 @@ SETTINGS = [
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_sfx"],
             },
             {
+                "label": "{purify} Purify",
+                "description": "Reduce everything down to ASCII characters only.",
+                "category": "settings",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_purify"],
+            },
+            {
+                "label": "{compat} Compatible mode",
+                "description": "Reduce everything down to Extended ASCII characters only.",
+                "category": "settings",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_compat"],
+            },
+            {
+                "label": "{moveFloatOnFocus} Move Float on focus",
+                "description": "Bring float to current workspace instead of focusing onto it.",
+                "category": "settings",
+                "type": "exec",
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_movefloatonfocus"],
+            },
+            {
                 "label": "{quickStart} Quick start",
                 "description": "Run dependencies check procedure at maximum speed.",
                 "category": "settings",

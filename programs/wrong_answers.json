@@ -443,5 +443,15 @@
     "question": "Which type of thinking is defined as 'systematic problem-solving by separating a whole into component parts'?",
     "answer": "Analytical Thinking",
     "timestamp": "2026-05-05T17:58:23.691189"
+  },
+  {
+    "question": "Which security model enforces the rule 'No read down, no write up'?",
+    "answer": "Biba",
+    "timestamp": "2026-07-20T14:23:48.240812"
+  },
+  {
+    "question": "Which page replacement algorithm suffers from Belady's Anomaly, where increasing the number of page frames actually increases the number of page faults?",
+    "answer": "FIFO",
+    "timestamp": "2026-07-20T14:26:42.247213"
   }
 ]

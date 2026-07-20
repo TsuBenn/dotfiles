@@ -82,7 +82,7 @@ CellPopup {
 
                         text: parent.modelData.label
 
-                        w: root.w
+                        w: box.contentW
                         centered: false
 
                         clickable: !button.disabled

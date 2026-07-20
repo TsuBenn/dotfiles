@@ -317,6 +317,55 @@ Scope {
                         BgCava {
                             y: background.height - background.height / interval
                         }
+
+                        MouseControl {
+                            anchors.fill: parent
+
+                            onPressed: button => {
+                                const global = mapToGlobal(mouseX, mouseY);
+                                if (button == "R") {
+                                    ContextMenuManager.show([
+                                        {
+                                            label: "Open terminal",
+                                            action: () => {
+                                                if (HyprInfo.focusClient("com.mitchellh.ghostty", "Ghostty"))
+                                                    return;
+                                                SystemInfo.runDetached(["ghostty"]);
+                                            }
+                                        },
+                                        {
+                                            label: "Open file explorer",
+                                            action: () => {
+                                                if (HyprInfo.focusClient("org.kde.dolphin", ".*Dolphin$"))
+                                                    return;
+                                                SystemInfo.runDetached(["dolphin"]);
+                                            }
+                                        },
+                                        {
+                                            label: "Open Pacman",
+                                            action: () => {
+                                                FloatsManager.open("pacman");
+                                            }
+                                        },
+                                        {
+                                            label: "---"
+                                        },
+                                        {
+                                            label: "Manage wallpapers",
+                                            action: () => {
+                                                PopupManager.open("wallpaper");
+                                            }
+                                        },
+                                        {
+                                            label: "Manage color themes",
+                                            action: () => {
+                                                FloatsManager.open("color");
+                                            }
+                                        },
+                                    ], global.x, global.y, 30, "Desktop");
+                                }
+                            }
+                        }
                     }
                 }
             }

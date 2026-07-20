@@ -31,6 +31,9 @@ Singleton {
     property bool colorsLoaded: false // Use to initiallize the bar
     property bool wallpaperCached: false // Use to initiallize the bar
 
+    property bool purify: false // Reduce everything down to ascii only, better compatibility with more fonts
+    property bool compat: false // Reduce everything down to extended ascii.
+
     property bool quickStart: false // Quick dependencies check. Super fast
 
     property bool lightMode: autoLightMode ? Colors.preferredLightMode : userLightMode // Light mode of system
@@ -45,6 +48,8 @@ Singleton {
             return "Dark";
         }
     }
+
+    property bool moveFloatOnFocus: false // When requesting an already opened Float, move it to current workspace instead of focusing onto the workspace that it's in
 
     property bool hints: true  // Show keyboard hints
     property bool minimal: false // Reduce UI elements
@@ -81,7 +86,7 @@ Singleton {
 
     signal debugSig
 
-    property var toggles: ["hints", "quickStart", "minimal", "textBasedVolume", "hideBar", "bottomBar", "optimizeMemory", "safeNotifications", "dnd", "wallpaperAutoAdvance", "shadow", "hyprAnim", "hyprBlur", "bgCava", "bgCavaLock", "screenshotStay", "screenshotNotify", "screenshotCursor", "lockScreenMusic", "sfx", "userLightMode", "autoLightMode", "debug",]
+    property var toggles: ["hints", "quickStart", "minimal", "textBasedVolume", "hideBar", "bottomBar", "optimizeMemory", "safeNotifications", "dnd", "wallpaperAutoAdvance", "shadow", "hyprAnim", "hyprBlur", "bgCava", "bgCavaLock", "screenshotStay", "screenshotNotify", "screenshotCursor", "lockScreenMusic", "sfx", "userLightMode", "autoLightMode", "debug", "moveFloatOnFocus", "purify", "compat"]
 
     property var enums: ["pacmanSearchMode"]
 
@@ -327,6 +332,15 @@ Singleton {
         }
         function toggle_wallpaper_auto_advance(): void {
             root.toggle("wallpaperAutoAdvance");
+        }
+        function toggle_movefloatonfocus(): void {
+            root.toggle("moveFloatOnFocus");
+        }
+        function toggle_purify(): void {
+            root.toggle("purify");
+        }
+        function toggle_compat(): void {
+            root.toggle("compat");
         }
 
         function restart(): void {

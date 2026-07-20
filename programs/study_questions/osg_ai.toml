@@ -1,0 +1,931 @@
+version = 5
+
+[[questions]]
+question = "Which of the following best describes the 'Top-Down' view of an operating system as a resource manager?"
+choices = ["Manage pieces of a complex system", "Provide abstractions to application programs", "Provide orderly, controlled allocation of resources", "Turn ugly hardware into beautiful abstractions"]
+answer = "Provide abstractions to application programs"
+explanations = ["Correct. The top-down view focuses on providing abstractions to application programs.", "Incorrect. Managing pieces of a complex system is the 'Bottom-Up' view.", "Incorrect. Providing orderly, controlled allocation of resources is the 'Alternative' view.", "Incorrect. Turning ugly hardware into beautiful abstractions describes the OS as an Extended Machine."]
+
+[[questions]]
+question = "True or False: The third generation of operating systems (1965-1980) was characterized by vacuum tubes and batch systems."
+choices = ["True", "False"]
+answer = "False"
+explanations = ["Incorrect. The third generation was characterized by ICs and multiprogramming.", "Correct. Vacuum tubes and batch systems characterized the first and second generations, respectively."]
+
+[[questions]]
+question = "Which caching system issue determines what to do when a slot is needed and an item must be removed?"
+choices = ["When to put a new item into the cache", "Which cache line to put the new item in", "Which item to remove from the cache", "Where to put a newly evicted item in the larger memory"]
+answer = "Which item to remove from the cache"
+explanations = ["Incorrect. This refers to the timing of insertion.", "Incorrect. This refers to the placement strategy within the cache.", "Correct. Deciding which item to remove (eviction policy) is triggered when a slot is needed.", "Incorrect. This refers to the destination of the evicted item in the memory hierarchy."]
+
+[[questions]]
+question = "In a monolithic system structure, what is the role of the 'utility procedures'?"
+choices = ["They invoke the requested service procedure", "They carry out the system calls", "They help the service procedures", "They manage the hardware directly"]
+answer = "They help the service procedures"
+explanations = ["Incorrect. The main program invokes the requested service procedure.", "Incorrect. The service procedures carry out the system calls.", "Correct. Utility procedures exist to assist the service procedures.", "Incorrect. This is not the defined role of utility procedures in this model."]
+
+[[questions]]
+question = "Which of the following is NOT one of the four principal events that cause processes to be created?"
+choices = ["System initialization", "Execution of a process creation system call", "A fatal error in another process", "Initiation of a batch job"]
+answer = "A fatal error in another process"
+explanations = ["Incorrect. System initialization is a principal event for process creation.", "Incorrect. A running process executing a creation system call creates a new process.", "Correct. Fatal errors terminate processes; they do not create them.", "Incorrect. Initiation of a batch job creates a process."]
+
+[[questions]]
+question = "Which process state transition occurs when a process is temporarily stopped to let another process run?"
+choices = ["Running to Blocked", "Blocked to Ready", "Running to Ready", "Ready to Running"]
+answer = "Running to Ready"
+explanations = ["Incorrect. Running to Blocked occurs when waiting for an external event.", "Incorrect. Blocked to Ready occurs when the external event happens.", "Correct. A running process is moved to the Ready state (preempted) to let another run.", "Incorrect. Ready to Running occurs when the scheduler assigns the CPU."]
+
+[[questions]]
+question = "Which of the following items is PRIVATE to each thread in the classical thread model?"
+choices = ["Address space", "Open files", "Program counter", "Child processes"]
+answer = "Program counter"
+explanations = ["Incorrect. The address space is shared among all threads in a process.", "Incorrect. Open files are shared among all threads.", "Correct. Each thread has its own program counter, registers, and stack.", "Incorrect. Child processes are associated with the process as a whole."]
+
+[[questions]]
+question = "Which condition for mutual exclusion states that no process running outside its critical region may block other processes?"
+choices = ["No two processes may be simultaneously inside their critical regions", "No assumptions may be made about speeds or the number of CPUs", "No process running outside its critical region may block other processes", "No process should have to wait forever to enter its critical region"]
+answer = "No process running outside its critical region may block other processes"
+explanations = ["Incorrect. This is the mutual exclusion condition.", "Incorrect. This is the hardware independence condition.", "Correct. This ensures processes outside the critical region do not interfere with those trying to enter.", "Incorrect. This is the bounded waiting (progress) condition."]
+
+[[questions]]
+question = "True or False: Peterson's Solution is a mutual exclusion algorithm that relies on busy waiting."
+choices = ["True", "False"]
+answer = "True"
+explanations = ["Correct. Peterson's solution uses variables and a while loop that continuously checks conditions (busy waiting) to achieve mutual exclusion.", "Incorrect. Peterson's solution does utilize busy waiting."]
+
+[[questions]]
+question = "Which scheduling algorithm is specifically designed for interactive systems and assigns processes to lottery tickets?"
+choices = ["Shortest Process Next", "Guaranteed Scheduling", "Lottery Scheduling", "Fair-Share Scheduling"]
+answer = "Lottery Scheduling"
+explanations = ["Incorrect. Shortest Process Next estimates process time.", "Incorrect. Guaranteed Scheduling promises a specific fraction of CPU time.", "Correct. Lottery Scheduling gives processes lottery tickets, and the winner is chosen randomly.", "Incorrect. Fair-Share Scheduling considers user groups rather than individual processes."]
+
+[[questions]]
+question = "In the Dining Philosophers problem, what is the primary consequence of having each philosopher pick up their left fork simultaneously?"
+choices = ["Deadlock", "Livelock", "Starvation", "Race condition"]
+answer = "Deadlock"
+explanations = ["Correct. If all pick up the left fork, no one can pick up the right fork, causing a circular wait (deadlock).", "Incorrect. Livelock involves continuous state changes without progress.", "Incorrect. While starvation can occur, the specific simultaneous pickup leads to immediate deadlock.", "Incorrect. A race condition involves timing-dependent shared memory access."]
+
+[[questions]]
+question = "According to Parkinson's Law as paraphrased in memory management, what happens to programs?"
+choices = ["They shrink to fit the available cache", "They expand to fill the memory available to hold them", "They require virtual memory to execute", "They fragment the disk over time"]
+answer = "They expand to fill the memory available to hold them"
+explanations = ["Incorrect. Programs do not necessarily shrink.", "Correct. Parkinson's Law implies programs will grow to use all available memory.", "Incorrect. While virtual memory helps, this is not the paraphrased law.", "Incorrect. This refers to fragmentation, not Parkinson's Law."]
+
+[[questions]]
+question = "Which memory management algorithm allocates the first hole that is big enough for the process?"
+choices = ["Best fit", "Worst fit", "First fit", "Quick fit"]
+answer = "First fit"
+explanations = ["Incorrect. Best fit searches for the smallest adequate hole.", "Incorrect. Worst fit searches for the largest hole.", "Correct. First fit stops searching at the first hole that satisfies the requirement.", "Incorrect. Quick fit uses separate lists for common sizes."]
+
+[[questions]]
+question = "Which page replacement algorithm categorizes pages into classes based on their Referenced (R) and Modified (M) bits, replacing a page from the lowest-numbered non-empty class?"
+choices = ["Optimal algorithm", "First-in, First-out (FIFO)", "Not Recently Used (NRU)", "Least Recently Used (LRU)"]
+answer = "Not Recently Used (NRU)"
+explanations = ["Incorrect. Optimal replaces the page not used for the longest future time.", "Incorrect. FIFO replaces the oldest page regardless of R or M bits.", "Correct. NRU uses the R and M bits to classify pages into 4 classes and removes from the lowest class.", "Incorrect. LRU tracks the exact time of last use, not just R/M bit classes."]
+
+[[questions]]
+question = "True or False: In a system with separate Instruction and Data (I and D) spaces, the text segment (instructions) can be shared among multiple processes running the same program."
+choices = ["True", "False"]
+answer = "True"
+explanations = ["Correct. Separate I and D spaces allow the read-only instruction space to be shared while data spaces remain private.", "Incorrect. Separate I and D spaces explicitly allow text sharing."]
+
+[[questions]]
+question = "During page fault handling, what occurs immediately after the system discovers which virtual page is needed and verifies the address is valid?"
+choices = ["The hardware traps to kernel", "The faulting instruction is backed up", "If the selected frame is dirty, the page is scheduled for transfer to disk", "The operating system schedules a disk operation to bring the needed page in"]
+answer = "If the selected frame is dirty, the page is scheduled for transfer to disk"
+explanations = ["Incorrect. The trap happens before discovering the virtual page.", "Incorrect. The instruction is backed up after the page arrives.", "Correct. If the frame chosen for eviction is dirty, it must be written to disk before the new page is read in.", "Incorrect. Reading the new page from disk occurs after the dirty page is written out."]
+
+[[questions]]
+question = "In the context of file systems, what is the primary advantage of using an i-node over a linked list allocation with a table in memory (FAT)?"
+choices = ["I-nodes allow for random access without traversing a list", "I-nodes require less memory than a FAT", "I-nodes prevent external fragmentation", "I-nodes do not require disk space for metadata"]
+answer = "I-nodes require less memory than a FAT"
+explanations = ["Incorrect. Both allow random access effectively.", "Correct. An i-node only requires memory when the file is open, whereas a FAT for a large disk must be kept entirely in memory.", "Incorrect. Neither prevents external fragmentation.", "Incorrect. I-nodes occupy disk space for metadata."]
+
+[[questions]]
+question = "Which file system extension was specifically designed to add POSIX attributes (like file permissions) to the ISO 9660 standard?"
+choices = ["Joliet", "Rock Ridge", "NTFS", "Ext2"]
+answer = "Rock Ridge"
+explanations = ["Incorrect. Joliet adds long file names and Unicode, not POSIX attributes.", "Correct. Rock Ridge extensions add POSIX file attributes to ISO 9660.", "Incorrect. NTFS is a Windows file system.", "Incorrect. Ext2 is a Linux file system."]
+
+[[questions]]
+question = "What is the fundamental difference between block devices and character devices?"
+choices = ["Block devices are faster; character devices are slower", "Block devices store information in fixed-size blocks; character devices deliver/accept a stream of characters", "Block devices use DMA; character devices use interrupts", "Block devices are addressable; character devices use seek operations"]
+answer = "Block devices store information in fixed-size blocks; character devices deliver/accept a stream of characters"
+explanations = ["Incorrect. Speed is not the defining difference.", "Correct. Block devices use fixed-size blocks, while character devices handle streams without block structure.", "Incorrect. Both can use DMA or interrupts.", "Incorrect. Character devices are not addressable and do not have seek operations."]
+
+[[questions]]
+question = "Which of the following is a property of a 'precise interrupt'?"
+choices = ["Multiple instructions beyond the PC have partially executed", "The PC is saved in a known place", "The execution state of the instruction pointed to by PC is unknown", "Interrupts are handled by user-space drivers"]
+answer = "The PC is saved in a known place"
+explanations = ["Incorrect. A precise interrupt guarantees no instructions beyond the PC have executed.", "Correct. A precise interrupt saves the PC in a known place and fully executes instructions before it.", "Incorrect. The execution state must be known.", "Incorrect. Interrupts are handled by the kernel."]
+
+[[questions]]
+question = "True or False: Programmed I/O requires the CPU to continuously poll the device to check if it is ready, which wastes CPU cycles."
+choices = ["True", "False"]
+answer = "True"
+explanations = ["Correct. Programmed I/O uses busy waiting/polling, which ties up the CPU.", "Incorrect. This is exactly how programmed I/O works."]
+
+[[questions]]
+question = "Which disk arm scheduling algorithm moves the arm in one direction, servicing requests until it reaches the end, then reverses direction without servicing requests on the return trip (in the standard strict implementation)?"
+choices = ["Shortest Seek First (SSF)", "Elevator algorithm (SCAN)", "First-Come, First-Served (FCFS)", "Circular SCAN (C-SCAN)"]
+answer = "Elevator algorithm (SCAN)"
+explanations = ["Incorrect. SSF goes to the closest request regardless of direction.", "Correct. The Elevator (SCAN) algorithm moves continuously in one direction servicing requests, then reverses.", "Incorrect. FCFS services in the order of arrival.", "Incorrect. C-SCAN only services in one direction and returns without servicing."]
+
+[[questions]]
+question = "In stable storage, what defines a 'Stable Write'?"
+choices = ["Writing data to RAM and flushing to disk later", "Writing to one disk, and if successful, writing to the second disk", "Writing data simultaneously to both disks and verifying", "Writing data to disk and creating a backup tape"]
+answer = "Writing to one disk, and if successful, writing to the second disk"
+explanations = ["Incorrect. This is standard delayed write, not stable storage.", "Correct. A stable write writes to disk 1, verifies, then writes to disk 2 and verifies, handling crashes in between.", "Incorrect. The writes are sequential to handle crashes, not simultaneous.", "Incorrect. Tape backups are not part of stable storage."]
+
+[[questions]]
+question = "Which of the following is NOT one of the four conditions required for a resource deadlock?"
+choices = ["Mutual exclusion", "Hold and wait", "Preemption", "Circular wait"]
+answer = "Preemption"
+explanations = ["Incorrect. Mutual exclusion is required.", "Incorrect. Hold and wait is required.", "Correct. The condition is 'No preemption', meaning resources cannot be taken away.", "Incorrect. Circular wait is required."]
+
+[[questions]]
+question = "In deadlock avoidance, what characterizes a 'Safe State'?"
+choices = ["No deadlocks have occurred yet", "There exists a sequence of processes that can finish without deadlock", "All processes are blocked", "The system has enough resources for all processes simultaneously"]
+answer = "There exists a sequence of processes that can finish without deadlock"
+explanations = ["Incorrect. Deadlocks might still be possible in an unsafe state, but a safe state guarantees avoidance.", "Correct. A safe state means there is at least one order in which processes can execute to completion without running out of resources.", "Incorrect. This describes a deadlocked state.", "Incorrect. The system does not need to satisfy all processes at once, just sequence them."]
+
+[[questions]]
+question = "Which deadlock prevention strategy attacks the 'Circular Wait' condition?"
+choices = ["Requesting all resources at once before execution", "Forcing processes to release resources if they cannot get new ones", "Numerically ordering resources and requiring processes to request them in order", "Ignoring the problem"]
+answer = "Numerically ordering resources and requiring processes to request them in order"
+explanations = ["Incorrect. This attacks 'Hold and wait'.", "Incorrect. This attacks 'No preemption'.", "Correct. Assigning numbers to resources and requiring requests in numerical order prevents cyclic dependencies.", "Incorrect. This is the Ostrich algorithm."]
+
+[[questions]]
+question = "What is the key difference between livelock and deadlock?"
+choices = ["In livelock, processes are blocked; in deadlock, they are running", "In livelock, processes are not blocked but change state continuously without making progress; in deadlock, processes are blocked", "Deadlocks resolve automatically; livelocks require intervention", "Livelock only occurs in distributed systems; deadlock only in single-processor systems"]
+answer = "In livelock, processes are not blocked but change state continuously without making progress; in deadlock, processes are blocked"
+explanations = ["Incorrect. This is reversed.", "Correct. Livelocked processes are active and running but looping or reacting to each other without progress, whereas deadlocked processes are stuck waiting.", "Incorrect. Neither resolves automatically.", "Incorrect. Both can occur in various systems."]
+
+[[questions]]
+question = "Which of the following is a required dimension for a hypervisor to score well in virtualization?"
+choices = ["Mobility", "Fidelity", "Scalability", "Persistence"]
+answer = "Fidelity"
+explanations = ["Incorrect. Mobility is not a core requirement for hypervisors.", "Correct. Fidelity ensures the program on the VM behaves identically to bare hardware.", "Incorrect. Scalability is good but not a core virtualization requirement like safety, fidelity, and efficiency.", "Incorrect. Persistence is not a core requirement."]
+
+[[questions]]
+question = "True or False: A Type 1 hypervisor runs directly on the bare metal, whereas a Type 2 hypervisor relies on a host operating system."
+choices = ["True", "False"]
+answer = "True"
+explanations = ["Correct. Type 1 (bare-metal) runs on hardware, Type 2 (hosted) runs on an OS.", "Incorrect. This is the exact distinction between Type 1 and Type 2 hypervisors."]
+
+[[questions]]
+question = "In the context of virtualizing the x86 architecture, when is binary translation required?"
+choices = ["When the virtual machine is running in user mode", "When the virtual machine can disable interrupts and issue I/O instructions", "When hardware virtualization support (VT-x/AMD-V) is present", "When the guest OS is open-source"]
+answer = "When the virtual machine can disable interrupts and issue I/O instructions"
+explanations = ["Incorrect. User mode instructions generally execute natively.", "Correct. If the VM executes privileged instructions like disabling interrupts or I/O, and hardware support isn't handling it, binary translation is needed to trap and emulate.", "Incorrect. Hardware support reduces the need for binary translation.", "Incorrect. The OS being open-source (like paravirtualization) is different from binary translation."]
+
+[[questions]]
+question = "Which characteristic of cloud computing refers to the ability to automatically provision resources without human interaction?"
+choices = ["Broad network access", "Resource pooling", "On-demand self-service", "Rapid elasticity"]
+answer = "On-demand self-service"
+explanations = ["Incorrect. Broad network access means access over standard networks.", "Incorrect. Resource pooling is serving multiple consumers from a shared pool.", "Correct. On-demand self-service allows users to provision capabilities automatically.", "Incorrect. Rapid elasticity is scaling up and down quickly."]
+
+[[questions]]
+question = "Which multiprocessor architecture is characterized by having a single address space visible to all CPUs, but where access to remote memory is slower than access to local memory?"
+choices = ["UMA (Uniform Memory Access)", "NUMA (Non-Uniform Memory Access)", "Message-Passing Multicomputer", "Wide Area Distributed System"]
+answer = "NUMA (Non-Uniform Memory Access)"
+explanations = ["Incorrect. UMA has equal access times for all memory.", "Correct. NUMA has a single address space but varying access times depending on memory proximity.", "Incorrect. Message-passing does not have a single shared address space.", "Incorrect. Distributed systems do not share a single address space."]
+
+[[questions]]
+question = "What is the primary purpose of 'Gang Scheduling' in multiprocessor systems?"
+choices = ["To schedule processes based on their memory usage", "To ensure that related threads run simultaneously on different CPUs", "To prevent the CPU from overheating by alternating workloads", "To prioritize I/O-bound processes over CPU-bound processes"]
+answer = "To ensure that related threads run simultaneously on different CPUs"
+explanations = ["Incorrect. Gang scheduling is about timing, not memory.", "Correct. Gang scheduling schedules groups of related threads at the same time across different CPUs to minimize communication delays.", "Incorrect. This is thermal management, not scheduling.", "Incorrect. This is priority scheduling."]
+
+[[questions]]
+question = "In distributed shared memory (DSM), what is 'false sharing'?"
+choices = ["Two processes trying to write to the same variable simultaneously", "Two unrelated variables residing on the same page, causing the page to ping-pong between machines", "A memory leak in a distributed node", "Accessing memory that has been revoked"]
+answer = "Two unrelated variables residing on the same page, causing the page to ping-pong between machines"
+explanations = ["Incorrect. This is a race condition.", "Correct. False sharing occurs when the page size granularity causes unrelated data to be transferred together, creating unnecessary network traffic.", "Incorrect. This is a software bug, not false sharing.", "Incorrect. This is an access violation."]
+
+[[questions]]
+question = "Which security model enforces the rule 'No read up, no write down'?"
+choices = ["Biba Model", "Bell-LaPadula Model", "Clark-Wilson Model", "Brewer-Nash Model"]
+answer = "Bell-LaPadula Model"
+explanations = ["Incorrect. Biba enforces 'No read down, no write up'.", "Correct. Bell-LaPadula enforces the simple security property (no read up) and the * property (no write down) to ensure confidentiality.", "Incorrect. Clark-Wilson focuses on integrity via transaction separation.", "Incorrect. Brewer-Nash (Chinese Wall) prevents conflict of interest."]
+
+[[questions]]
+question = "In the Biba security model, which principle ensures data integrity by preventing processes from writing to objects at a higher security level?"
+choices = ["The simple integrity principle", "The integrity * property", "The simple security property", "The invocation property"]
+answer = "The integrity * property"
+explanations = ["Incorrect. The simple integrity principle prevents reading down (no read down).", "Correct. The integrity * property prevents writing up (no write up).", "Incorrect. This is a Bell-LaPadula property.", "Incorrect. This is not a Biba model property."]
+
+[[questions]]
+question = "What is a covert channel in the context of computer security?"
+choices = ["A hidden communication path that allows processes to transfer information in ways not intended by the system's security policy", "An encrypted tunnel between a client and server", "A physical wire tapping device", "A backdoor installed by a rootkit"]
+answer = "A hidden communication path that allows processes to transfer information in ways not intended by the system's security policy"
+explanations = ["Correct. Covert channels leak information by modulating shared resources (like CPU time or file locks) rather than using legitimate communication paths.", "Incorrect. This describes a VPN or SSH tunnel, not a covert channel.", "Incorrect. This is physical tampering.", "Incorrect. While a rootkit can facilitate it, a covert channel is specifically the method of unintended information transfer."]
+
+[[questions]]
+question = "Which of the following is an example of authentication based on 'something the user has'?"
+choices = ["A password", "A fingerprint", "A smart card", "A PIN"]
+answer = "A smart card"
+explanations = ["Incorrect. A password is 'something the user knows'.", "Incorrect. A fingerprint is 'something the user is'.", "Correct. A smart card is a physical token the user possesses.", "Incorrect. A PIN is 'something the user knows'."]
+
+[[questions]]
+question = "What is the primary mechanism used by a stack canary to prevent buffer overflow attacks?"
+choices = ["Encrypting the return address", "Placing a random value on the stack before the return address and checking it before returning", "Making the stack non-executable", "Limiting the size of local variables"]
+answer = "Placing a random value on the stack before the return address and checking it before returning"
+explanations = ["Incorrect. While encryption can help, this is not a stack canary.", "Correct. A canary is a known value placed between the buffer and the return address; if overwritten by a buffer overflow, the program aborts.", "Incorrect. This is the NX bit (DEP).", "Incorrect. This is not the mechanism of a canary."]
+
+[[questions]]
+question = "True or False: A hypervisor rootkit operates by modifying the operating system's user-space libraries."
+choices = ["True", "False"]
+answer = "False"
+explanations = ["Incorrect. A library rootkit modifies user-space libraries.", "Correct. A hypervisor rootkit operates below the OS, creating a stealthy virtual machine layer."]
+
+[[questions]]
+question = "In Linux, which scheduling class is intended for tasks that require strict real-time execution and are scheduled on a First-In, First-Out basis without time slicing?"
+choices = ["Timesharing", "Real-time round robin", "Real-time FIFO", "Completely Fair Scheduler (CFS)"]
+answer = "Real-time FIFO"
+explanations = ["Incorrect. Timesharing is for normal processes.", "Incorrect. Real-time round robin uses time slices.", "Correct. Real-time FIFO tasks run to completion or until blocked, without preemption by time slicing.", "Incorrect. CFS is the default scheduler for normal processes."]
+
+[[questions]]
+question = "Which memory zone in Linux is used for memory that the kernel can directly map to its virtual address space, typically found on 32-bit systems?"
+choices = ["ZONE_DMA", "ZONE_NORMAL", "ZONE_HIGHMEM", "ZONE_KERNEL"]
+answer = "ZONE_NORMAL"
+explanations = ["Incorrect. ZONE_DMA is for legacy DMA operations.", "Correct. ZONE_NORMAL is directly mapped by the kernel.", "Incorrect. ZONE_HIGHMEM is memory not permanently mapped by the kernel.", "Incorrect. ZONE_KERNEL is not a standard Linux zone."]
+
+[[questions]]
+question = "In the Linux Ext2 file system, what is stored in an i-node?"
+choices = ["File names", "Directory entries", "File attributes and pointers to data blocks", "The superblock"]
+answer = "File attributes and pointers to data blocks"
+explanations = ["Incorrect. File names are stored in directory entries, not i-nodes.", "Incorrect. Directory entries map names to i-nodes.", "Correct. The i-node contains metadata (attributes) and block pointers.", "Incorrect. The superblock contains file system-wide metadata."]
+
+[[questions]]
+question = "In Android's Binder IPC architecture, what is the role of the 'zygote' process?"
+choices = ["It manages the screen brightness", "It acts as a global name service for Binder objects", "It is a pre-initialized process that forks to create new Android application processes quickly", "It handles garbage collection for Dalvik"]
+answer = "It is a pre-initialized process that forks to create new application processes quickly"
+explanations = ["Incorrect. This is handled by the system server.", "Incorrect. This is the role of the Service Manager.", "Correct. The zygote is pre-loaded with core libraries and forks to start new apps rapidly.", "Incorrect. Garbage collection is internal to the Dalvik VM."]
+
+[[questions]]
+question = "Which Android application component is primarily designed to perform long-running operations in the background without a user interface?"
+choices = ["Activity", "Service", "Receiver", "Content Provider"]
+answer = "Service"
+explanations = ["Incorrect. An Activity provides a user interface.", "Correct. A Service runs in the background for tasks like music playback or network downloads.", "Incorrect. A Receiver responds to system-wide broadcast announcements.", "Incorrect. A Content Provider manages shared app data."]
+
+[[questions]]
+question = "In Windows, what is the primary function of the Hardware Abstraction Layer (HAL)?"
+choices = ["To manage user logins and security tokens", "To hide hardware differences from the rest of the operating system", "To schedule threads on the CPU", "To manage the virtual file system cache"]
+answer = "To hide hardware differences from the rest of the operating system"
+explanations = ["Incorrect. This is handled by the security subsystem.", "Correct. The HAL provides a consistent interface to hardware for the kernel, executive, and drivers.", "Incorrect. This is handled by the kernel scheduler.", "Incorrect. This is handled by the Cache Manager."]
+
+[[questions]]
+question = "In Windows, what is an I/O Request Packet (IRP)?"
+choices = ["A network packet sent to a remote server", "A data structure used to communicate I/O requests to device drivers", "An interrupt generated by a hardware device", "A packet containing memory page fault information"]
+answer = "A data structure used to communicate I/O requests to device drivers"
+explanations = ["Incorrect. IRPs are internal to the OS I/O system, not network packets.", "Correct. IRPs are passed down device stacks to instruct drivers on what I/O to perform.", "Incorrect. IRPs are not hardware interrupts.", "Incorrect. IRPs are for I/O, not page faults."]
+
+[[questions]]
+question = "How does the NTFS file system store small directories?"
+choices = ["As a separate file on disk", "As an index inside the Master File Table (MFT) record", "As a linked list of blocks", "In the boot sector"]
+answer = "As an index inside the Master File Table (MFT) record"
+explanations = ["Incorrect. Large directories might use external structures, but small ones do not.", "Correct. For small directories, NTFS stores the directory index directly within the MFT record.", "Incorrect. This is an older file system technique.", "Incorrect. The boot sector contains boot code."]
+
+[[questions]]
+question = "Which Windows security feature ensures that newly allocated memory pages must be zeroed out before being mapped into a process's address space?"
+choices = ["Address Space Layout Randomization (ASLR)", "Data Execution Prevention (DEP)", "Mandatory Integrity Control", "Zeroing pages before mapping"]
+answer = "Zeroing pages before mapping"
+explanations = ["Incorrect. ASLR randomizes memory locations.", "Incorrect. DEP prevents code execution from data pages.", "Incorrect. Mandatory Integrity Control assigns integrity levels.", "Correct. This prevents processes from reading leftover data (remnants) from previous processes."]
+
+[[questions]]
+question = "In operating system design, what is the primary trade-off considered in a 'Space-Time Trade-off'?"
+choices = ["Between CPU speed and bus width", "Between memory usage and execution speed", "Between user space and kernel space", "Between security and performance"]
+answer = "Between memory usage and execution speed"
+explanations = ["Incorrect. This is hardware architecture.", "Correct. Using more memory (e.g., caching, lookup tables) can speed up execution, while compressing data saves space but costs CPU time.", "Incorrect. This is about privilege levels.", "Incorrect. While a factor, it is not the space-time trade-off."]
+
+[[questions]]
+question = "When looking up a file path like `/usr/ast/mbox`, why is an i-node cache critical for performance?"
+choices = ["It caches the file data itself", "It prevents the need to read the file's contents from disk", "It avoids multiple disk reads for i-nodes and directories that have already been accessed", "It encrypts the path names"]
+answer = "It avoids multiple disk reads for i-nodes and directories that have already been accessed"
+explanations = ["Incorrect. The i-node cache stores metadata, not file data.", "Incorrect. It doesn't prevent reading file contents, but metadata.", "Correct. Without a cache, every path component requires disk reads for the directory and i-node.", "Incorrect. Caching is not about encryption."]
+
+[[questions]]
+question = "True or False: In Mills' proposal for a 10-person chief programmer team, the chief programmer does all the coding while the rest of the team supports them."
+choices = ["True", "False"]
+answer = "False"
+explanations = ["Incorrect. The chief programmer designs and writes code, but they are supported by specialized roles like testers, editors, and administrators, not necessarily doing *all* the coding alone in a strict sense, but the proposal emphasizes a highly structured support system.", "Correct. The chief programmer is the lead, but the team includes roles like a backup programmer, programmers, and support staff to maximize efficiency."]
+
+[[questions]]
+question = "In the 11 steps of making a system call like `read(fd, buffer, nbytes)`, what triggers the actual transition from user mode to kernel mode?"
+choices = ["A standard function call", "Executing a TRAP instruction", "A hardware interrupt from the disk", "A context switch initiated by the scheduler"]
+answer = "Executing a TRAP instruction"
+explanations = ["Incorrect. Standard function calls stay in the same privilege mode.", "Correct. The system call library procedure executes a TRAP instruction to switch to kernel mode and dispatch to the kernel.", "Incorrect. Hardware interrupts are asynchronous events, not triggered by the `read` call itself.", "Incorrect. The context switch happens as a result of the trap and subsequent kernel execution, not as the trigger."]
+
+[[questions]]
+question = "Which of the following best describes the concept of 'Ontogeny Recapitulates Phylogeny' in operating systems?"
+choices = ["New OS features build directly on top of older ones", "Each new species of computer goes through the same development stages as its ancestors", "Software bugs reappear in successive generations of code", "Object-oriented programming inherited features from procedural programming"]
+answer = "Each new species of computer goes through the same development stages as its ancestors"
+explanations = ["Incorrect. This describes backward compatibility, not the biological analogy.", "Correct. It means new types of computers (e.g., smart cards) often go through the same historical development phases (e.g., batch processing, multiprogramming) that mainframes did.", "Incorrect. This is a software engineering issue, not OS evolution.", "Incorrect. This is unrelated to the biological analogy used in the text."]
+
+[[questions]]
+question = "In a multiprogramming system modeling CPU utilization, if a process spends 80% of its time waiting for I/O, what is the approximate CPU utilization with 3 processes in memory?"
+choices = ["1 - (0.8)^3", "1 - (0.2)^3", "3 * 0.2", "0.8 * 3"]
+answer = "1 - (0.8)^3"
+explanations = ["Correct. CPU utilization is approximated as 1 - p^n, where p is the fraction of time waiting for I/O (0.8) and n is the number of processes (3).", "Incorrect. This uses the CPU-bound fraction (0.2) instead of the I/O wait fraction.", "Incorrect. This is a simple linear sum, which doesn't account for overlap correctly.", "Incorrect. This calculates an impossible utilization over 100%."]
+
+[[questions]]
+question = "True or False: In the classical thread model, a process with multiple threads will have multiple program counters and stacks, but only one address space."
+choices = ["True", "False"]
+answer = "True"
+explanations = ["Correct. Threads share the address space, open files, and child processes, but each thread has its own program counter, registers, and stack.", "Incorrect. This is the fundamental definition of the classical thread model."]
+
+[[questions]]
+question = "What is a 'pop-up thread' in the context of message handling?"
+choices = ["A thread that frequently polls a queue for messages", "A new thread created spontaneously in response to an incoming message", "A thread that is terminated after sending a message", "A user-level thread that blocks the kernel"]
+answer = "A new thread created spontaneously in response to an incoming message"
+explanations = ["Incorrect. Polling is not the defining characteristic of a pop-up thread.", "Correct. Pop-up threads are created on demand when a message arrives, avoiding the overhead of context switching into an existing blocked thread.", "Incorrect. Termination depends on the application logic, not the definition of a pop-up thread.", "Incorrect. Pop-up threads are typically kernel-level threads to handle system messages efficiently."]
+
+[[questions]]
+question = "Which mutual exclusion algorithm uses a combination of a `turn` variable and an `interested` array to ensure fairness and correctness?"
+choices = ["Strict Alternation", "Peterson's Solution", "The TSL Instruction", "The XCHG Instruction"]
+answer = "Peterson's Solution"
+explanations = ["Incorrect. Strict alternation only uses a `turn` variable and fails if one process is slower.", "Correct. Peterson's solution uses `interested[i]` and `turn` to guarantee mutual exclusion, progress, and bounded waiting.", "Incorrect. TSL is a hardware instruction, not a software algorithm using arrays.", "Incorrect. XCHG is also a hardware instruction."]
+
+[[questions]]
+question = "In the Producer-Consumer problem using semaphores, what happens if the order of `down(&empty)` and `down(&mutex)` is reversed by the producer?"
+choices = ["The system runs faster due to lock optimization", "A race condition occurs allowing data corruption", "A deadlock can occur if the buffer is full", "The mutex is bypassed entirely"]
+answer = "A deadlock can occur if the buffer is full"
+explanations = ["Incorrect. The order does not improve speed; it introduces a fatal flaw.", "Incorrect. Data corruption is prevented by the mutex, but the system hangs.", "Correct. If the producer grabs the mutex, then waits on a full `empty` semaphore, it holds the mutex. The consumer cannot empty the buffer because it needs the mutex, resulting in deadlock.", "Incorrect. The mutex is still held, which is the problem."]
+
+[[questions]]
+question = "Which synchronization primitive ensures that only one monitor procedure is active at a time?"
+choices = ["Semaphore", "Mutex", "Condition Variable", "Monitor Lock (Mutual Exclusion)"]
+answer = "Monitor Lock (Mutual Exclusion)"
+explanations = ["Incorrect. Semaphores are lower-level and must be used correctly by the programmer.", "Incorrect. While monitors use mutexes internally, the property of only one active procedure is the monitor's defining mutual exclusion feature.", "Incorrect. Condition variables handle waiting/signaling, not the mutual exclusion of the procedures.", "Correct. The monitor language construct automatically enforces mutual exclusion on its procedures."]
+
+[[questions]]
+question = "What is the primary advantage of Read-Copy-Update (RCU) over traditional locking for read-heavy data structures?"
+choices = ["It allows multiple writers simultaneously", "Readers do not need to acquire any locks", "It automatically compresses data structures", "It prioritizes writers over readers"]
+answer = "Readers do not need to acquire any locks"
+explanations = ["Incorrect. RCU does not allow simultaneous writers; writers copy and update.", "Correct. RCU allows readers to traverse data structures without locks, significantly improving read performance. Writers create a copy, update it, and swap pointers.", "Incorrect. RCU has nothing to do with compression.", "Incorrect. RCU is optimized for readers, not writers."]
+
+[[questions]]
+question = "In the context of scheduling, what is the potential downside of a purely Round-Robin scheduler if the quantum is set too small?"
+choices = ["Starvation of CPU-bound processes", "High context-switching overhead", "Poor response time for interactive users", "Deadlock"]
+answer = "High context-switching overhead"
+explanations = ["Incorrect. All processes get a turn, so starvation is avoided.", "Correct. If the quantum is too small, the CPU spends more time switching between processes than executing actual code.", "Incorrect. Interactive users actually prefer smaller quantums for better response time.", "Incorrect. Scheduling quantum size does not directly cause deadlock."]
+
+[[questions]]
+question = "In the Readers and Writers problem, which synchronization scheme ensures that no writer is starved by a continuous stream of readers?"
+choices = ["Writers are given higher priority than readers", "Readers are given higher priority than writers", "A FIFO queue is strictly maintained for all", "Writers use busy waiting instead of blocking"]
+answer = "Writers are given higher priority than readers"
+explanations = ["Correct. By blocking new readers when a writer is waiting, the writer will eventually get exclusive access.", "Incorrect. This would starve writers.", "Incorrect. While FIFO works, the standard solution prioritizes writers to prevent writer starvation.", "Incorrect. Busy waiting wastes CPU and doesn't solve the priority issue."]
+
+[[questions]]
+question = "When a process grows in memory and requires more space, which memory management technique allows it to grow into an adjacent hole, or requires it to be moved to a larger hole or swapped out?"
+choices = ["Bitmaps", "Base and Limit registers", "Swapping", "Paging"]
+answer = "Swapping"
+explanations = ["Incorrect. Bitmaps just track allocation, they don't handle the growth process.", "Incorrect. Base and limit registers provide isolation but don't dictate the physical movement of a growing process.", "Correct. In a swapping system, if a process needs to grow and cannot, it must be moved or swapped to disk to make room.", "Incorrect. Paging handles growth by adding new pages to the page table, not by moving the whole process."]
+
+[[questions]]
+question = "Which memory allocation algorithm scans the list of available memory segments and allocates the smallest hole that is large enough?"
+choices = ["First fit", "Next fit", "Best fit", "Worst fit"]
+answer = "Best fit"
+explanations = ["Incorrect. First fit stops at the first adequate hole.", "Incorrect. Next fit starts from where the last search left off.", "Correct. Best fit searches the entire list (or uses sorted lists) to find the smallest hole that fits, minimizing wasted space (though it can create tiny, useless fragments).", "Incorrect. Worst fit allocates the largest hole."]
+
+[[questions]]
+question = "In a paged memory system with a 32-bit address space and a 4KB page size, how many bits are used for the page number and the offset, respectively?"
+choices = ["20 bits page number, 12 bits offset", "12 bits page number, 20 bits offset", "16 bits page number, 16 bits offset", "22 bits page number, 10 bits offset"]
+answer = "20 bits page number, 12 bits offset"
+explanations = ["Correct. 4KB is 2^12 bytes, requiring 12 bits for the offset. The remaining 32 - 12 = 20 bits are for the page number.", "Incorrect. This reverses the bit allocations.", "Incorrect. This implies a 64KB page size.", "Incorrect. This implies a 1KB page size."]
+
+[[questions]]
+question = "What is the primary purpose of a Translation Lookaside Buffer (TLB)?"
+choices = ["To cache disk blocks", "To cache recently used virtual-to-physical address translations", "To store page table entries permanently", "To handle page faults"]
+answer = "To cache recently used virtual-to-physical address translations"
+explanations = ["Incorrect. Caching disk blocks is the job of the buffer cache.", "Correct. The TLB is a small, fast hardware cache inside the MMU that holds recent page table entries to avoid accessing memory for every translation.", "Incorrect. Page tables are stored in main memory, not permanently in the TLB.", "Incorrect. The OS software handles page faults, not the TLB hardware."]
+
+[[questions]]
+question = "Which page replacement algorithm suffers from Belady's Anomaly, where increasing the number of page frames actually increases the number of page faults?"
+choices = ["Optimal", "LRU", "FIFO", "Clock"]
+answer = "FIFO"
+explanations = ["Incorrect. Optimal and LRU are stack algorithms and are immune to Belady's Anomaly.", "Incorrect. LRU does not suffer from this anomaly.", "Correct. FIFO is not a stack algorithm and can exhibit Belady's Anomaly.", "Incorrect. The Clock algorithm (a variant of Second Chance) does not suffer from this."]
+
+[[questions]]
+question = "In the Second-Chance page replacement algorithm, what happens to a page whose Reference (R) bit is set when it reaches the front of the FIFO queue?"
+choices = ["It is immediately evicted", "It is given a second chance, its R bit is cleared, and it is moved to the rear of the queue", "It is written back to disk immediately", "It triggers a page fault"]
+answer = "It is given a second chance, its R bit is cleared, and it is moved to the rear of the queue"
+explanations = ["Incorrect. It is only evicted if the R bit is 0.", "Correct. A set R bit means the page was recently used, so it is spared (given a second chance) by clearing the bit and moving it to the back.", "Incorrect. Writing to disk only happens if the Modified (M) bit is set upon eviction.", "Incorrect. The algorithm operates on existing pages, it doesn't trigger a fault itself."]
+
+[[questions]]
+question = "In the Working Set model, what exactly defines the 'working set' of a process?"
+choices = ["The total memory allocated to the process", "The set of pages used by the k most recent memory references", "The pages that have been modified recently", "The pages currently loaded in the TLB"]
+answer = "The set of pages used by the k most recent memory references"
+explanations = ["Incorrect. This is the process's resident set, not the working set.", "Correct. The working set is the set of pages actively used over a specific time window (k references), used to estimate memory demands and prevent thrashing.", "Incorrect. This describes dirty pages.", "Incorrect. The TLB holds translations, not the working set of data pages."]
+
+[[questions]]
+question = "What is 'checkerboarding' (or external fragmentation) in the context of pure segmentation?"
+choices = ["Memory is divided into tiny, unusable fragments between segments", "A single segment is scattered across non-contiguous memory", "The page table becomes too large", "Two processes overwrite each other's segments"]
+answer = "Memory is divided into tiny, unusable fragments between segments"
+explanations = ["Correct. As segments are allocated and removed, the free memory between them becomes fragmented into small, non-contiguous pieces (checkerboarding).", "Incorrect. This describes paging, not segmentation.", "Incorrect. Segment tables are generally small.", "Incorrect. This is a protection violation, not fragmentation."]
+
+[[questions]]
+question = "In the MULTICS architecture, a virtual address consists of a segment number and an offset. How does the system handle large segments without wasting page table space?"
+choices = ["It uses a single massive page table for all segments", "It uses a descriptor segment that points to page tables only for segments currently in memory", "It restricts all segments to 4KB in size", "It uses inverted page tables exclusively"]
+answer = "It uses a descriptor segment that points to page tables only for segments currently in memory"
+explanations = ["Incorrect. MULTICS does not use a single flat page table.", "Correct. MULTICS uses a descriptor segment containing segment descriptors, which in turn point to individual page tables for those segments, saving space for unused segments.", "Incorrect. MULTICS allows variable and large segment sizes.", "Incorrect. MULTICS uses standard multi-level page tables for segments, not inverted tables."]
+
+[[questions]]
+question = "Which file system structure stores a file as a linked list of disk blocks, with the pointers kept entirely in a table in main memory?"
+choices = ["Contiguous allocation", "Linked list allocation (on disk)", "File Allocation Table (FAT)", "I-node allocation"]
+answer = "File Allocation Table (FAT)"
+explanations = ["Incorrect. Contiguous allocation uses a single starting block and length.", "Incorrect. On-disk linked lists store the pointer at the end of each data block.", "Correct. MS-DOS FAT keeps the linked list pointers in a dedicated table in RAM, allowing random access without reading data blocks for pointers.", "Incorrect. I-nodes store block pointers within the file's metadata structure, not a global table."]
+
+[[questions]]
+question = "What is the primary reason for implementing a 'Journaling File System'?"
+choices = ["To compress files and save disk space", "To prevent file system corruption by logging changes before committing them", "To allow multiple users to edit files simultaneously", "To encrypt file contents automatically"]
+answer = "To prevent file system corruption by logging changes before committing them"
+explanations = ["Incorrect. Journaling does not compress data.", "Correct. By writing changes to a journal log first, the system can recover gracefully from crashes during an update, preventing corruption.", "Incorrect. This is concurrency control, not journaling.", "Incorrect. Journaling tracks metadata/data changes, not content encryption."]
+
+[[questions]]
+question = "In a Virtual File System (VFS), what concept allows a specific file system implementation (like Ext3) to be treated uniformly by the kernel?"
+choices = ["System calls", "Object-oriented abstractions (like superblocks, inodes, dentries)", "Kernel modules", "Device drivers"]
+answer = "Object-oriented abstractions (like superblocks, inodes, dentries)"
+explanations = ["Incorrect. System calls are the user interface, VFS sits below them.", "Correct. VFS defines common structures (superblock, inode, file, dentry) that specific file systems must implement, allowing the kernel to treat them all the same.", "Incorrect. Modules are how drivers are loaded, not the abstraction layer itself.", "Incorrect. Device drivers handle hardware, not file system abstractions."]
+
+[[questions]]
+question = "Which disk scheduling algorithm moves the head from one end of the disk to the other, servicing requests along the way, and then jumps back to the start without servicing requests on the return trip?"
+choices = ["SCAN (Elevator)", "C-SCAN (Circular SCAN)", "Shortest Seek First (SSF)", "Look"]
+answer = "C-SCAN (Circular SCAN)"
+explanations = ["Incorrect. SCAN services requests in both directions.", "Correct. C-SCAN only services requests in one direction, providing more uniform waiting times by quickly returning to the start.", "Incorrect. SSF goes to the closest request regardless of direction.", "Incorrect. Look reverses direction when there are no more requests, rather than going to the physical end."]
+
+[[questions]]
+question = "What is the main difference between a blocking and a nonblocking send call in distributed systems?"
+choices = ["A blocking send waits for the message to be received; a nonblocking send returns immediately", "A blocking send encrypts the message; a nonblocking send does not", "A nonblocking send drops packets if the network is busy; a blocking send queues them", "There is no difference"]
+answer = "A blocking send waits for the message to be received; a nonblocking send returns immediately"
+explanations = ["Correct. Blocking (synchronous) send waits for acknowledgment or delivery, while nonblocking (asynchronous) send hands the message to the OS and continues execution.", "Incorrect. Encryption is independent of blocking behavior.", "Incorrect. Nonblocking sends rely on buffering, not dropping packets.", "Incorrect. They are distinct paradigms."]
+
+[[questions]]
+question = "In Remote Procedure Call (RPC), what is the function of 'stubs'?"
+choices = ["They route packets over the physical network", "They act as local proxies that pack parameters and unpack results", "They compile the kernel", "They manage distributed shared memory"]
+answer = "They act as local proxies that pack parameters and unpack results"
+explanations = ["Incorrect. Network hardware and low-level protocols route packets.", "Correct. Client stubs marshal parameters into a message and call the server; server stubs unmarshal them, call the actual procedure, and marshal the reply.", "Incorrect. Stubs are unrelated to kernel compilation.", "Incorrect. DSM is a separate concept from RPC mechanics."]
+
+[[questions]]
+question = "What is 'false sharing' in Distributed Shared Memory (DSM)?"
+choices = ["Two processes sharing a variable they shouldn't", "Two unrelated variables on the same page causing the page to be transferred between nodes unnecessarily", "A memory leak in a shared library", "Accessing a shared page without a lock"]
+answer = "Two unrelated variables on the same page causing the page to be transferred between nodes unnecessarily"
+explanations = ["Incorrect. This is a security/access control issue.", "Correct. DSM operates on pages. If two nodes independently access different variables that happen to share a page, the page ping-pongs between them, degrading performance.", "Incorrect. This is a standard memory leak, not false sharing.", "Incorrect. This is a race condition."]
+
+[[questions]]
+question = "Which of the following is an example of a 'Client-Server' distributed system middleware that uses tuples?"
+choices = ["CORBA", "Linda", "RPC", "NFS"]
+answer = "Linda"
+explanations = ["Incorrect. CORBA is object-based middleware.", "Correct. Linda uses tuple spaces where processes write, read, and take tuples, decoupling senders and receivers.", "Incorrect. RPC is a procedure call mechanism, not tuple-based.", "Incorrect. NFS is file-system-based middleware."]
+
+[[questions]]
+question = "In the Bell-LaPadula model, what does the '* Property' (star property) enforce?"
+choices = ["A process can read only objects at its level or lower", "A process can write only objects at its level or higher", "A process can execute only objects at its level", "A process can modify only objects at its level or lower"]
+answer = "A process can write only objects at its level or higher"
+explanations = ["Incorrect. This is the Simple Security Property (no read up).", "Correct. The * Property prevents data leakage by ensuring a process cannot write data to a lower security level (no write down).", "Incorrect. Bell-LaPadula does not focus on execution privileges.", "Incorrect. This is the inverse of the * Property."]
+
+[[questions]]
+question = "Why does UNIX use 'salt' when storing passwords?"
+choices = ["To encrypt the password file", "To prevent precomputation of password hashes (rainbow tables)", "To make passwords longer", "To compress the password file"]
+answer = "To prevent precomputation of password hashes (rainbow tables)"
+explanations = ["Incorrect. Salt does not encrypt the file; it modifies the hash input.", "Correct. Salt is a random value appended to the password before hashing. This means an attacker cannot precompute a single hash table for all common passwords, as the salt changes the hash for each user.", "Incorrect. Salt does not change the length requirement of the password itself.", "Incorrect. Salt adds data, it doesn't compress."]
+
+[[questions]]
+question = "Which type of attack involves an attacker carefully crafting a format string (like `%x%x%x%n`) in an input field to read or write arbitrary memory?"
+choices = ["Buffer overflow", "Format string attack", "Command injection", "Return-oriented programming"]
+answer = "Format string attack"
+explanations = ["Incorrect. Buffer overflows exploit boundary checks.", "Correct. If a program passes user input directly as the format string to functions like `printf()`, attackers can use format specifiers to read the stack or write to memory using `%n`.", "Incorrect. Command injection executes shell commands.", "Incorrect. ROP chains existing code gadgets, usually via buffer overflow."]
+
+[[questions]]
+question = "True or False: In Return-Oriented Programming (ROP), an attacker injects entirely new machine code into the program's memory to execute it."
+choices = ["True", "False"]
+answer = "False"
+explanations = ["Incorrect. ROP does not inject new code.", "Correct. ROP chains together small snippets of existing executable code (called 'gadgets') ending in `ret` instructions, often bypassing DEP/NX (Non-Executable) bits."]
+
+[[questions]]
+question = "Where does a 'Kernel Rootkit' hide itself?"
+choices = ["In firmware", "In a hypervisor layer below the OS", "Within the operating system kernel", "By replacing standard user-space libraries"]
+answer = "Within the operating system kernel"
+explanations = ["Incorrect. This describes a firmware rootkit.", "Incorrect. This describes a hypervisor (Virtual Machine) rootkit.", "Correct. Kernel rootkits operate in ring 0, modifying kernel data structures and system calls to hide their presence.", "Incorrect. This describes a library rootkit."]
+
+[[questions]]
+question = "Which Java security mechanism restricts untrusted applets by dividing memory into restricted regions, checking memory references against these boundaries?"
+choices = ["Code signing", "Jailing", "Sandboxing", "Interpretation"]
+answer = "Sandboxing"
+explanations = ["Incorrect. Code signing verifies the author, it doesn't restrict execution.", "Incorrect. Jailing restricts file system and process visibility (like BSD jails), not Java's memory model.", "Correct. Java applets run in a sandbox, where the verifier and class loader ensure the applet doesn't access memory outside its designated sandbox boundaries.", "Incorrect. While Java is interpreted, the specific memory protection is sandboxing."]
+
+[[questions]]
+question = "In Linux, what system call creates an exact copy of the calling process?"
+choices = ["exec()", "fork()", "clone()", "wait()"]
+answer = "fork()"
+explanations = ["Incorrect. `exec()` replaces the current process image with a new one.", "Correct. `fork()` creates a child process that is an identical copy of the parent.", "Incorrect. `clone()` is used for threads, allowing shared memory and resources.", "Incorrect. `wait()` blocks a parent until a child changes state."]
+
+[[questions]]
+question = "In Linux scheduling, how does the 'Completely Fair Scheduler (CFS)' conceptually ensure fairness?"
+choices = ["By using strict round-robin", "By maintaining a virtual runtime (vruntime) and running the task with the lowest vruntime", "By prioritizing I/O-bound tasks strictly", "By using a fixed quantum of 10ms"]
+answer = "By maintaining a virtual runtime (vruntime) and running the task with the lowest vruntime"
+explanations = ["Incorrect. CFS replaced the old O(1) round-robin variant.", "Correct. CFS tracks the CPU time a task has received (vruntime). It picks the task with the lowest vruntime, ensuring CPU time is distributed proportionally and fairly.", "Incorrect. While I/O tasks benefit, CFS is based on virtual runtime, not strict priority.", "Incorrect. CFS dynamic quantum sizes based on target latency."]
+
+[[questions]]
+question = "What is the purpose of the Linux 'buddy algorithm' in memory management?"
+choices = ["To schedule processes fairly", "To allocate and free physical memory pages efficiently by splitting and merging blocks", "To cache file system metadata", "To manage I/O request packets"]
+answer = "To allocate and free physical memory pages efficiently by splitting and merging blocks"
+explanations = ["Incorrect. Scheduling is handled by CFS.", "Correct. The buddy system splits large free blocks into smaller 'buddies' for allocation, and merges adjacent free buddies back into larger blocks, reducing fragmentation.", "Incorrect. Metadata caching is the buffer cache.", "Incorrect. IRPs are a Windows concept."]
+
+[[questions]]
+question = "In Android, how does the system handle an incoming message intended for a process that is not currently running?"
+choices = ["It drops the message", "It queues the message in the kernel indefinitely", "It uses a 'zygote' to start a new process, often killing cached processes to reclaim RAM", "It executes the message in the sender's context"]
+answer = "It uses a 'zygote' to start a new process, often killing cached processes to reclaim RAM"
+explanations = ["Incorrect. Messages must be delivered.", "Incorrect. Queuing indefinitely would cause hangs.", "Correct. Android's Activity Manager will start the target application process (via zygote fork). If RAM is low, it kills the least important cached processes first.", "Incorrect. Android isolates processes; it doesn't execute in the sender's context."]
+
+[[questions]]
+question = "Which Android component manages shared application data, such as a contact list or photo gallery?"
+choices = ["Activity", "Service", "Receiver", "Content Provider"]
+answer = "Content Provider"
+explanations = ["Incorrect. Activities manage UI.", "Incorrect. Services run in the background.", "Incorrect. Receivers handle broadcasts.", "Correct. Content Providers standardize access to structured data sets across applications."]
+
+[[questions]]
+question = "In Windows, what is the 'Registry'?"
+choices = ["A list of installed device drivers", "A centralized database of configuration settings (hives, keys, values)", "A log of security audit events", "A cache of frequently accessed files"]
+answer = "A centralized database of configuration settings (hives, keys, values)"
+explanations = ["Incorrect. While drivers are listed in the registry, it holds much more than that.", "Correct. The Registry (e.g., HKEY_LOCAL_MACHINE) is a hierarchical database storing OS and application configurations.", "Incorrect. Security logs are handled by the Event Viewer/security subsystem.", "Incorrect. File caching is the Cache Manager."]
+
+[[questions]]
+question = "In the Windows NT architecture, what is the role of the 'Object Manager'?"
+choices = ["To manage network sockets", "To create, manage, and delete executive objects (like processes, threads, events)", "To compile C code", "To handle GUI rendering"]
+answer = "To create, manage, and delete executive objects (like processes, threads, events)"
+explanations = ["Incorrect. Sockets are just one type of object.", "Correct. The Object Manager provides a uniform way to handle resources (objects) in the executive, managing naming, security, and handles.", "Incorrect. This is the compiler's job.", "Incorrect. GUI rendering is handled by the Win32 subsystem (user32.dll, gdi32.dll) and kernel drivers."]
+
+[[questions]]
+question = "Which Windows memory management concept allows two processes to map the same portion of a file into their virtual address spaces to share data?"
+choices = ["Page swapping", "Section objects (File mapping)", "Working sets", "Paging files"]
+answer = "Section objects (File mapping)"
+explanations = ["Incorrect. Swapping moves pages to disk.", "Correct. Windows uses Section Objects (known as file-mapping objects in Win32) to map files or shared memory into process address spaces.", "Incorrect. Working sets are the physical pages assigned to a process.", "Incorrect. Paging files back virtual memory, they don't map specific files for sharing."]
+
+[[questions]]
+question = "What is the fundamental difference between a process and a thread in Windows?"
+choices = ["Processes have handles; threads do not", "A process is a container of resources; a thread is the unit of execution scheduled by the kernel", "Threads are only in user mode; processes are in kernel mode", "A process can share memory; a thread cannot"]
+answer = "A process is a container of resources; a thread is the unit of execution scheduled by the kernel"
+explanations = ["Incorrect. Both processes and threads have handles.", "Correct. A process provides the virtual address space and object tables. A thread executes code within that context.", "Incorrect. Both have user and kernel modes.", "Incorrect. The opposite is true: threads within a process share memory."]
+
+[[questions]]
+question = "In operating system design, what is the main advantage of an 'Event-Driven' execution paradigm over an 'Algorithmic' one?"
+choices = ["It is always faster", "It does not require memory", "It avoids blocking by using callbacks or state machines, often used in single-threaded servers", "It allows multiple CPUs to execute one thread"]
+answer = "It avoids blocking by using callbacks or state machines, often used in single-threaded servers"
+explanations = ["Incorrect. Event-driven systems aren't strictly faster, they just handle concurrency differently.", "Incorrect. It still requires memory for state.", "Correct. Instead of blocking a thread on I/O, an event loop initiates I/O and registers a callback, allowing the single thread to handle other requests.", "Incorrect. One thread cannot run on multiple CPUs simultaneously."]
+
+[[questions]]
+question = "In the context of OS design, what is the 'Space-Time Trade-off'?"
+choices = ["Trading memory usage for CPU speed (e.g., using lookup tables to avoid calculations)", "Trading disk space for network speed", "Trading user space for kernel space", "Trading virtual memory for physical memory"]
+answer = "Trading memory usage for CPU speed (e.g., using lookup tables to avoid calculations)"
+explanations = ["Correct. Using more memory (space) to cache results or create lookup tables can significantly speed up execution (time).", "Incorrect. This is not the traditional definition of the space-time trade-off.", "Incorrect. This is privilege level separation.", "Incorrect. This is paging mechanics."]
+
+[[questions]]
+question = "According to the text, what is the primary purpose of 'Caching' in file system design?"
+choices = ["To compress files", "To avoid disk reads by keeping frequently accessed data in main memory", "To encrypt user data", "To fragment files evenly across the disk"]
+answer = "To avoid disk reads by keeping frequently accessed data in main memory"
+explanations = ["Incorrect. Caching is about speed, not compression.", "Correct. By caching disk blocks or i-nodes in RAM, the OS avoids slow disk I/O operations for repeated accesses.", "Incorrect. Caching is independent of encryption.", "Incorrect. Caching does the opposite; it reduces disk access."]
+
+[[questions]]
+question = "Which of the following is a valid critique of Mills' Chief Programmer Team structure?"
+choices = ["It requires too many managers", "It is difficult to find a chief programmer skilled enough to handle the role", "It does not allow for code reviews", "It requires specialized hardware"]
+answer = "It is difficult to find a chief programmer skilled enough to handle the role"
+explanations = ["Incorrect. The structure actually reduces management overhead.", "Correct. The success of the team relies entirely on the exceptional technical and leadership skills of one individual, which is a bottleneck in scaling.", "Incorrect. The support team acts as reviewers.", "Incorrect. It is a human organization structure, not hardware-dependent."]
+
+[[questions]]
+question = "In the Windows operating system structure, what is the primary responsibility of the 'Object Manager'?"
+choices = ["Managing physical memory allocation", "Creating, managing, and deleting executive objects (like processes, threads, and semaphores)", "Handling hardware interrupts", "Compiling the registry hives"]
+answer = "Creating, managing, and deleting executive objects (like processes, threads, and semaphores)"
+explanations = ["Incorrect. Physical memory is managed by the Memory Manager (MM).", "Correct. The Object Manager provides a uniform mechanism for managing resources (objects) used by the executive, handling naming, security, and handle allocation.", "Incorrect. Hardware interrupts are handled by the HAL and kernel trap handlers.", "Incorrect. The registry is managed by the Configuration Manager."]
+
+[[questions]]
+question = "Which Windows NT file system feature allows a file's data streams to be stored in non-contiguous runs, while small files (under ~1KB) can be stored entirely within their Master File Table (MFT) record?"
+choices = ["File Allocation Table (FAT)", "I-node block pointers", "Data runs and resident attributes", "Extents and inodes"]
+answer = "Data runs and resident attributes"
+explanations = ["Incorrect. FAT is an older file system, not the NTFS mechanism.", "Incorrect. I-nodes are used by UNIX/Linux file systems, not NTFS MFT records.", "Correct. NTFS uses MFT records containing attributes; small files can be 'resident' directly in the MFT record, while larger files use 'data runs' (logical cluster numbers and lengths).", "Incorrect. Extents are used by other file systems (like Ext4)."]
+
+[[questions]]
+question = "In Linux memory management, what is the function of the 'buddy system'?"
+choices = ["To manage process scheduling queues", "To allocate and free physical memory pages efficiently by splitting and merging blocks", "To cache directory entries", "To map virtual addresses to physical addresses"]
+answer = "To allocate and free physical memory pages efficiently by splitting and merging blocks"
+explanations = ["Incorrect. Scheduling queues are managed by the Completely Fair Scheduler (CFS).", "Correct. The buddy system maintains lists of free page blocks of specific sizes (powers of 2). When a block is freed, it is merged with its 'buddy' if available, reducing fragmentation.", "Incorrect. Directory entry caching is handled by the dentry cache.", "Incorrect. Virtual-to-physical mapping is handled by the MMU and page tables."]
+
+[[questions]]
+question = "True or False: In Linux, a process can be preempted by the scheduler even while executing in kernel mode."
+choices = ["True", "False"]
+answer = "True"
+explanations = ["Correct. Modern Linux kernels are fully preemptible, meaning a process can be preempted while running in kernel mode (with some exceptions where locks are held), improving responsiveness.", "Incorrect. Older UNIX kernels were non-preemptive, but modern Linux allows kernel preemption."]
+
+[[questions]]
+question = "Which Android component acts as a pre-initialized process that forks to create new application processes rapidly, sharing pre-loaded core libraries to avoid slow startup times?"
+choices = ["Binder Kernel Module", "Zygote", "Dalvik VM", "Init process"]
+answer = "Zygote"
+explanations = ["Incorrect. The Binder module handles Inter-Process Communication (IPC).", "Correct. The Zygote process starts at boot, pre-initializes the Java runtime and libraries, and forks itself to start new Android apps, avoiding the overhead of a cold start.", "Incorrect. Dalvik is the virtual machine itself, not the specific forking process.", "Incorrect. Init is the first user-space process, but Zygote is the specific fork source for apps."]
+
+[[questions]]
+question = "In the context of the Android Binder IPC architecture, what is an 'AIDL' file?"
+choices = ["A compiled binary library", "An interface definition language file used to generate stubs for IPC", "A low-level kernel driver configuration", "A UI layout XML file"]
+answer = "An interface definition language file used to generate stubs for IPC"
+explanations = ["Incorrect. It is a source file, not a compiled binary.", "Correct. Android Interface Definition Language (AIDL) defines the programming interface that both the client and server agree upon to perform IPC.", "Incorrect. The Binder driver is a standard kernel module, not configured by AIDL.", "Incorrect. AIDL is for backend logic, not UI layouts."]
+
+[[questions]]
+question = "Which of the following correctly describes 'Priority Inversion' in operating system scheduling?"
+choices = ["A high-priority process is preempted by a low-priority process", "A low-priority process holds a resource needed by a high-priority process, which is then blocked, allowing medium-priority processes to run", "All processes are assigned the same priority", "The scheduler randomly changes process priorities"]
+answer = "A low-priority process holds a resource needed by a high-priority process, which is then blocked, allowing medium-priority processes to run"
+explanations = ["Incorrect. High-priority processes preempt low-priority ones, not vice versa.", "Correct. Priority inversion occurs when a high-priority thread is blocked waiting for a resource held by a low-priority thread, and medium-priority threads preempt the low-priority thread, indirectly blocking the high-priority one.", "Incorrect. This is a round-robin or equal priority scenario.", "Incorrect. This is random scheduling, not priority inversion."]
+
+[[questions]]
+question = "How does the Windows operating system mitigate the 'Priority Inversion' problem?"
+choices = ["By killing the low-priority process", "By temporarily boosting the priority of the low-priority thread holding the resource (Priority Boost/Priority Inheritance)", "By disabling interrupts", "By rebooting the system"]
+answer = "By temporarily boosting the priority of the low-priority thread holding the resource (Priority Boost/Priority Inheritance)"
+explanations = ["Incorrect. Killing processes is not a standard mitigation strategy.", "Correct. Windows uses priority inheritance (or priority boosting) to temporarily elevate the low-priority thread so it can release the resource quickly, unblocking the high-priority thread.", "Incorrect. Disabling interrupts would freeze the system.", "Incorrect. This is highly disruptive and unnecessary."]
+
+[[questions]]
+question = "In a system using Inverted Page Tables, what is used as the index key for searching the table?"
+choices = ["The virtual page number", "The physical page frame number", "The process ID (PID) combined with the virtual page number", "The memory address offset"]
+answer = "The process ID (PID) combined with the virtual page number"
+explanations = ["Incorrect. In a standard page table, the virtual page number is the index. In an inverted table, we need to find the physical frame.", "Incorrect. The physical frame is what we are trying to find, so it cannot be the search key.", "Correct. Because multiple processes can have the same virtual address, the search key in an inverted page table is the combination of PID and the virtual page number.", "Incorrect. The offset is not part of the page table lookup index."]
+
+[[questions]]
+question = "Which page replacement algorithm uses a circular list and a reference bit, clearing the bit as it scans, and evicting the first page with a 0 bit?"
+choices = ["Not Recently Used (NRU)", "Second-Chance", "Clock", "Least Recently Used (LRU)"]
+answer = "Clock"
+explanations = ["Incorrect. NRU categorizes pages into classes based on R and M bits at the time of a fault.", "Incorrect. Second-chance uses a FIFO list and moves pages to the rear, which is functionally similar but structurally different from the circular list of the Clock algorithm.", "Correct. The Clock algorithm arranges pages in a circular list. The hand scans for a page with R=0, clearing R=1 pages to 0 as it passes. The first 0 page is evicted.", "Incorrect. LRU strictly tracks time of last use, requiring hardware support or complex software aging."]
+
+[[questions]]
+question = "What is the primary cause of 'thrashing' in a virtual memory system?"
+choices = ["Too much RAM is installed", "The CPU cache is too small", "A process does not have enough physical page frames to hold its working set, causing continuous page faults", "The disk is too fast"]
+answer = "A process does not have enough physical page frames to hold its working set, causing continuous page faults"
+explanations = ["Incorrect. More RAM reduces thrashing.", "Incorrect. CPU cache size affects CPU-bound performance, not memory thrashing directly.", "Correct. Thrashing occurs when the system spends more time paging (swapping pages in and out) than executing code, caused by over-allocating memory or working sets exceeding physical RAM.", "Incorrect. Disk speed affects how fast thrashing happens, but doesn't cause it."]
+
+[[questions]]
+question = "In the context of I/O software, what is 'spooling'?"
+choices = ["Caching file system metadata in RAM", "Reading data directly from a device into user space", "Saving temporary files to disk to allow concurrent access to a non-shareable device (like a printer)", "Compressing I/O packets before transmission"]
+answer = "Saving temporary files to disk to allow concurrent access to a non-shareable device (like a printer)"
+explanations = ["Incorrect. This is buffer caching.", "Incorrect. This is direct memory access (DMA) or zero-copy I/O.", "Correct. Spooling (Simultaneous Peripheral Operations On-Line) buffers output to disk so a slow device (like a printer) can process jobs at its own pace without blocking the CPU.", "Incorrect. This is data compression."]
+
+[[questions]]
+question = "Which RAID level uses block-level striping with distributed parity, requiring a minimum of three disks?"
+choices = ["RAID 0", "RAID 1", "RAID 5", "RAID 6"]
+answer = "RAID 5"
+explanations = ["Incorrect. RAID 0 is striping without parity.", "Incorrect. RAID 1 is mirroring.", "Correct. RAID 5 stripes data and distributes parity across all disks. It can survive one disk failure.", "Incorrect. RAID 6 uses double distributed parity and requires at least four disks."]
+
+[[questions]]
+question = "In a message-passing system, what is the distinction between 'blocking' (synchronous) and 'nonblocking' (asynchronous) send calls?"
+choices = ["A blocking send waits until the message is received; a nonblocking send returns immediately to the sender", "A blocking send encrypts the message; a nonblocking send does not", "A nonblocking send drops the packet if the network is busy; a blocking send queues it", "There is no difference"]
+answer = "A blocking send waits until the message is received; a nonblocking send returns immediately to the sender"
+explanations = ["Correct. Blocking send suspends the sender until an acknowledgment is received. Nonblocking send hands the message to the OS and continues processing.", "Incorrect. Encryption is independent of the blocking semantics.", "Incorrect. Nonblocking sends rely on buffering, not dropping.", "Incorrect. They represent distinct synchronization models."]
+
+[[questions]]
+question = "Which specific type of distributed system middleware uses a 'tuple space' where processes can write, read, and take tuples?"
+choices = ["Document-based (Web)", "File-system-based (NFS)", "Coordination-based (Linda)", "Object-based (CORBA)"]
+answer = "Coordination-based (Linda)"
+explanations = ["Incorrect. Document-based middleware relies on URLs and HTTP.", "Incorrect. File-system-based middleware mounts remote directories.", "Correct. Linda is a coordination language/middleware that uses a shared tuple space for decoupled communication between processes.", "Incorrect. Object-based middleware relies on remote method invocations."]
+
+[[questions]]
+question = "In the context of distributed file systems, what is 'Naming Transparency'?"
+choices = ["Files are encrypted so their names are hidden", "The file name does not reveal the physical location of the file on the network", "Users can rename files without administrator privileges", "File names are translated to IP addresses"]
+answer = "The file name does not reveal the physical location of the file on the network"
+explanations = ["Incorrect. This is encryption, not transparency.", "Correct. Naming transparency means a file path (like `/usr/ast/file`) looks identical whether the file is local or on a remote server, hiding the network location from the user.", "Incorrect. This is a permission issue, not transparency.", "Incorrect. This is DNS resolution."]
+
+[[questions]]
+question = "What is 'Steganography' in the context of computer security?"
+choices = ["Cracking a password hash using a rainbow table", "Hiding a message inside another file (like an image) so it is undetectable", "Sending an encrypted email", "Spoofing a MAC address"]
+answer = "Hiding a message inside another file (like an image) so it is undetectable"
+explanations = ["Incorrect. This is password cracking.", "Correct. Steganography conceals the existence of a message within another medium, unlike cryptography which scrambles the message but reveals its existence.", "Incorrect. This is cryptography.", "Incorrect. This is network spoofing."]
+
+[[questions]]
+question = "Which of the following is an example of an access control mechanism where rights are attached to the subjects (processes) rather than the objects (files)?"
+choices = ["Access Control Lists (ACLs)", "Capabilities (C-lists)", "Protection Domains", "Bell-LaPadula Model"]
+answer = "Capabilities (C-lists)"
+explanations = ["Incorrect. ACLs attach rights to the objects (files).", "Correct. A capability is a token held by a process that proves it has specific rights to an object. The capability list is associated with the subject.", "Incorrect. Protection domains are a broader concept grouping capabilities.", "Incorrect. Bell-LaPadula is a security model for confidentiality, not an access control mechanism type."]
+
+[[questions]]
+question = "True or False: A polymorphic virus alters its byte signature every time it infects a new file to avoid detection by simple signature-based virus scanners."
+choices = ["True", "False"]
+answer = "True"
+explanations = ["Correct. Polymorphic viruses encrypt their code and use different decryption routines, changing their signature on each infection.", "Incorrect. This is the exact definition of a polymorphic virus."]
+
+[[questions]]
+question = "Which of the following is NOT one of the three dimensions a hypervisor should score well on according to the virtualization requirements?"
+choices = ["Safety", "Fidelity", "Efficiency", "Portability"]
+answer = "Portability"
+explanations = ["Incorrect. Safety (full control of resources) is a requirement.", "Incorrect. Fidelity (identical behavior to bare hardware) is a requirement.", "Incorrect. Efficiency (running without hypervisor intervention) is a requirement.", "Correct. Portability is generally a goal of software, but the core virtualization metrics defined are Safety, Fidelity, and Efficiency."]
+
+[[questions]]
+question = "In x86 virtualization, why was binary translation historically necessary before hardware-assisted virtualization (VT-x/AMD-V)?"
+choices = ["Because x86 CPUs were too slow", "Because x86 had non-virtualizable 'sensitive' instructions that didn't trap to the hypervisor", "Because Windows did not support virtualization", "Because RAM was too expensive"]
+answer = "Because x86 had non-virtualizable 'sensitive' instructions that didn't trap to the hypervisor"
+explanations = ["Incorrect. CPU speed was not the root cause.", "Correct. Popek and Goldberg's virtualization requirements state that sensitive instructions must trap. x86 had ~17 sensitive instructions that executed silently in ring 1, breaking virtualization. Binary translation rewrote these instructions.", "Incorrect. OS support was irrelevant to the hardware instruction issue.", "Incorrect. RAM cost did not dictate the need for binary translation."]
+
+[[questions]]
+question = "Which multiprocessor scheduling technique ensures that a group of related threads are scheduled to run simultaneously on different CPUs?"
+choices = ["Space sharing", "Time sharing", "Gang scheduling", "Processor affinity"]
+answer = "Gang scheduling"
+explanations = ["Incorrect. Space sharing allocates disjoint subsets of CPUs to threads, but not necessarily simultaneously in sync.", "Incorrect. Time sharing rotates jobs in and out, which can cause synchronization issues for parallel threads.", "Correct. Gang scheduling schedules all members of a gang (related threads) at the same time across different CPUs, minimizing communication delays and blocking.", "Incorrect. Processor affinity keeps a thread on the same CPU, but doesn't coordinate multiple threads."]
+
+[[questions]]
+question = "In the context of deadlock modeling, which strategy involves 'Ignoring the problem'?"
+choices = ["Detection and Recovery", "Dynamic Avoidance", "Prevention", "The Ostrich Algorithm"]
+answer = "The Ostrich Algorithm"
+explanations = ["Incorrect. Detection and recovery actively handles deadlocks.", "Incorrect. Dynamic avoidance uses algorithms like Banker's to prevent deadlocks.", "Incorrect. Prevention negates one of the four conditions.", "Correct. The Ostrich Algorithm simply ignores deadlocks, pretending they don't exist, which is actually used in systems like UNIX where deadlocks are rare."]
+
+[[questions]]
+question = "In the Banker's Algorithm for deadlock avoidance, what must a process declare before execution?"
+choices = ["Its maximum resource needs", "Its CPU burst time", "Its memory page size", "Its network bandwidth"]
+answer = "Its maximum resource needs"
+explanations = ["Correct. The Banker's Algorithm requires each process to state its maximum resource demands so the system can determine if a state is 'safe' before granting requests.", "Incorrect. CPU burst times are for scheduling, not deadlock avoidance.", "Incorrect. Page sizes are hardware/OS configured.", "Incorrect. Network bandwidth is not relevant to the classic Banker's algorithm."]
+
+[[questions]]
+question = "Which of the following correctly defines a 'Safe State' in deadlock avoidance?"
+choices = ["A state where no deadlocks have occurred yet", "A state where there exists a sequence of processes that can finish without deadlock", "A state where all resources are free", "A state where the CPU utilization is 100%"]
+answer = "A state where there exists a sequence of processes that can finish without deadlock"
+explanations = ["Incorrect. A deadlock hasn't occurred yet in an unsafe state either.", "Correct. A safe state guarantees that the system can allocate resources to all processes in some order, allowing them to complete without entering a deadlock.", "Incorrect. Resources are usually allocated in a safe state.", "Incorrect. CPU utilization is unrelated to the safe state definition."]
+
+[[questions]]
+question = "Which of the four conditions for deadlock is negated by requiring processes to request all needed resources at once before execution?"
+choices = ["Mutual exclusion", "Hold and wait", "No preemption", "Circular wait"]
+answer = "Hold and wait"
+explanations = ["Incorrect. Mutual exclusion means resources cannot be shared.", "Correct. By requesting all resources at once, a process either holds all or none, completely eliminating the 'hold and wait' condition.", "Incorrect. Preemption involves forcibly taking resources.", "Incorrect. Circular wait is prevented by numerical ordering."]
+
+[[questions]]
+question = "What is the main difference between a monitor and a semaphore?"
+choices = ["Monitors are hardware instructions; semaphores are software", "Monitors are a high-level language construct that automatically enforces mutual exclusion; semaphores require manual signaling", "Semaphores prevent deadlocks; monitors do not", "Monitors are only used in Windows; semaphores are only in Linux"]
+answer = "Monitors are a high-level language construct that automatically enforces mutual exclusion; semaphores require manual signaling"
+explanations = ["Incorrect. Both are software concepts.", "Correct. Monitors are a programming language feature that ensures only one procedure runs at a time. Semaphores are lower-level integers requiring manual `wait` and `signal` operations, prone to errors.", "Incorrect. Both can cause deadlocks if used incorrectly.", "Incorrect. Both are general OS concepts."]
+
+[[questions]]
+question = "In the Producer-Consumer problem, what is the purpose of the 'mutex' semaphore?"
+choices = ["To count the number of empty slots in the buffer", "To count the number of items in the buffer", "To ensure mutual exclusion when accessing the buffer", "To signal the consumer that production is complete"]
+answer = "To ensure mutual exclusion when accessing the buffer"
+explanations = ["Incorrect. The 'empty' semaphore counts empty slots.", "Incorrect. The 'full' semaphore counts items.", "Correct. The 'mutex' semaphore (initialized to 1) ensures that the producer and consumer do not access the buffer data structure simultaneously, preventing race conditions.", "Incorrect. It doesn't signal completion, it protects the critical section."]
+
+[[questions]]
+question = "Which disk arm scheduling algorithm continuously moves the arm in one direction to the end of the disk, then reverses direction, servicing requests along the way?"
+choices = ["Shortest Seek First (SSF)", "SCAN (Elevator algorithm)", "C-SCAN (Circular SCAN)", "First-Come, First-Served (FCFS)"]
+answer = "SCAN (Elevator algorithm)"
+explanations = ["Incorrect. SSF goes to the closest request regardless of direction.", "Correct. The SCAN algorithm moves the head back and forth across the disk, servicing requests in the current direction, much like an elevator.", "Incorrect. C-SCAN only services in one direction and jumps back to the start.", "Incorrect. FCFS services in the order requests arrive."]
+
+[[questions]]
+question = "True or False: 'Stable Storage' is a theoretical concept that guarantees data is never lost, even if a disk sector goes bad over time."
+choices = ["True", "False"]
+answer = "False"
+explanations = ["Incorrect. Stable storage cannot protect against physical destruction of both disks.", "Correct. Stable storage uses a pair of disks and careful write protocols to guarantee data is not lost due to a *crash* during a write. It does not guarantee against hardware physical failure over time (like both disks burning up)."]
+
+[[questions]]
+question = "In file system structure, what is a 'Journaling File System'?"
+choices = ["A file system that compresses files automatically", "A file system that logs changes to a journal before committing them to the main file system", "A file system that tracks user access times for auditing", "A file system that uses solid-state drives"]
+answer = "A file system that logs changes to a journal before committing them to the main file system"
+explanations = ["Incorrect. Journaling is not about compression.", "Correct. By writing changes to a sequential log first, a journaling file system can recover quickly from crashes without needing long file system checks (fsck), as the log can be replayed.", "Incorrect. This is an audit log, not file system journaling.", "Incorrect. Journaling works on HDDs and SSDs."]
+
+[[questions]]
+question = "Which file allocation method uses an index block (i-node) that contains pointers to the actual data blocks of the file?"
+choices = ["Contiguous allocation", "Linked list allocation", "File Allocation Table (FAT)", "I-node allocation"]
+answer = "I-node allocation"
+explanations = ["Incorrect. Contiguous allocation uses a starting block and length.", "Incorrect. Linked list allocation puts pointers in the data blocks themselves.", "Incorrect. FAT puts all pointers in a central table in memory.", "Correct. Each file has an i-node containing an array of block addresses (pointers) pointing directly or indirectly to data blocks."]
+
+[[questions]]
+question = "In Linux, what is the purpose of the VFS (Virtual File System)?"
+choices = ["To encrypt file contents", "To provide a uniform interface to different file system implementations (like Ext3, FAT, NTFS)", "To compress files on the fly", "To allocate physical disk blocks"]
+answer = "To provide a uniform interface to different file system implementations (like Ext3, FAT, NTFS)"
+explanations = ["Incorrect. VFS does not encrypt data.", "Correct. VFS defines common abstractions (superblocks, inodes, dentries) so system calls like `open()` and `read()` work identically regardless of the underlying file system.", "Incorrect. VFS does not handle compression natively.", "Incorrect. Allocation is handled by the specific file system driver, not VFS."]
+
+[[questions]]
+question = "Which memory allocation algorithm searches the free list from the beginning and allocates the first hole that is large enough?"
+choices = ["Best fit", "First fit", "Worst fit", "Next fit"]
+answer = "First fit"
+explanations = ["Incorrect. Best fit searches for the smallest adequate hole.", "Correct. First fit scans from the start of the list and uses the first hole that satisfies the request, making it fast.", "Incorrect. Worst fit uses the largest hole.", "Incorrect. Next fit starts searching from where the last allocation left off."]
+
+[[questions]]
+question = "In a paging system, what hardware component is responsible for translating virtual addresses to physical addresses?"
+choices = ["Cache Controller", "Memory Management Unit (MMU)", "Direct Memory Access (DMA) Controller", "Interrupt Controller"]
+answer = "Memory Management Unit (MMU)"
+explanations = ["Incorrect. The cache stores recently accessed data.", "Correct. The MMU uses the page table to translate virtual page numbers to physical frame numbers.", "Incorrect. DMA bypasses the CPU for data transfer, it doesn't translate addresses.", "Incorrect. The interrupt controller handles hardware interrupts."]
+
+[[questions]]
+question = "Which page replacement algorithm suffers from 'Belady's Anomaly'?"
+choices = ["Optimal", "LRU", "FIFO", "Clock"]
+answer = "FIFO"
+explanations = ["Incorrect. Optimal is immune.", "Incorrect. LRU is immune.", "Correct. FIFO can exhibit Belady's Anomaly, where adding more page frames increases the number of page faults, because it is not a 'stack algorithm'.", "Incorrect. Clock (a variant of second chance) does not suffer from this."]
+
+[[questions]]
+question = "What is the primary purpose of the 'TLB (Translation Lookaside Buffer)' in memory management?"
+choices = ["To cache file system metadata", "To cache recently used virtual-to-physical address translations", "To buffer data for DMA transfers", "To store the page table permanently"]
+answer = "To cache recently used virtual-to-physical address translations"
+explanations = ["Incorrect. File metadata is cached in the dentry/inode cache.", "Correct. The TLB is a small, fast hardware cache inside the MMU that holds recent page table entries, avoiding a memory access for every translation.", "Incorrect. DMA buffers are separate.", "Incorrect. Page tables are stored in main memory, not permanently in the TLB."]
+
+[[questions]]
+question = "Which classical process synchronization problem involves multiple processes trying to access shared data, where if they execute simultaneously, the final result depends on the order of execution?"
+choices = ["Dining Philosophers", "Readers and Writers", "Race Condition", "Producer-Consumer"]
+answer = "Race Condition"
+explanations = ["Incorrect. Dining Philosophers is about deadlock/resource sharing.", "Incorrect. Readers and Writers is about concurrent read vs exclusive write access.", "Correct. A race condition occurs when multiple processes read/write shared data and the final outcome depends on the relative timing of their execution.", "Incorrect. Producer-Consumer is about buffering and synchronization."]
+
+[[questions]]
+question = "Which of the following is NOT one of the four conditions required for a resource deadlock to occur?"
+choices = ["Mutual exclusion", "Hold and wait", "Preemption", "Circular wait"]
+answer = "Preemption"
+explanations = ["Incorrect. Mutual exclusion is required.", "Incorrect. Hold and wait is required.", "Correct. The condition is 'No Preemption', meaning resources cannot be taken forcibly.", "Incorrect. Circular wait is required."]
+
+[[questions]]
+question = "In operating system design, what does 'Ontogeny Recapitulates Phylogeny' imply?"
+choices = ["New OS versions are always backward compatible", "New types of computers go through the same developmental stages as older ones", "Object-oriented programming inherited procedural concepts", "Software bugs reappear in later versions"]
+answer = "New types of computers go through the same developmental stages as older ones"
+explanations = ["Incorrect. This is backward compatibility.", "Correct. This biological analogy means that new computing platforms (e.g., smart cards, IoT) often evolve through the same historical OS stages (batch, multiprogramming, timesharing) that mainframes did.", "Incorrect. This is a software engineering observation, not OS evolution.", "Incorrect. This is a software engineering issue."]
+
+[[questions]]
+question = "What is the primary distinction between a Type 1 and Type 2 hypervisor?"
+choices = ["Type 1 runs on bare metal; Type 2 runs on a host operating system", "Type 1 is open source; Type 2 is proprietary", "Type 1 is for x86; Type 2 is for ARM", "Type 1 uses paravirtualization; Type 2 uses binary translation"]
+answer = "Type 1 runs on bare metal; Type 2 runs on a host operating system"
+explanations = ["Correct. Type 1 (bare-metal) hypervisors run directly on hardware (e.g., ESX). Type 2 (hosted) run as an application on an existing OS (e.g., VMware Workstation).", "Incorrect. Open source status does not define the type.", "Incorrect. Architecture does not define the type.", "Incorrect. The virtualization technique does not define the type."]
+
+[[questions]]
+question = "In the context of cloud computing, which NIST characteristic refers to the ability to provision resources automatically without human interaction?"
+choices = ["Broad network access", "Resource pooling", "On-demand self-service", "Rapid elasticity"]
+answer = "On-demand self-service"
+explanations = ["Incorrect. Broad network access means access over standard networks.", "Incorrect. Resource pooling is serving multiple consumers from a shared pool.", "Correct. On-demand self-service allows users to provision capabilities automatically.", "Incorrect. Rapid elasticity is scaling up and down quickly."]
+
+[[questions]]
+question = "Which scheduling algorithm is best suited for a batch system where the goal is to minimize the average turnaround time?"
+choices = ["Round Robin", "Shortest Job First (SJF)", "First-Come, First-Served (FCFS)", "Priority Scheduling"]
+answer = "Shortest Job First (SJF)"
+explanations = ["Incorrect. Round Robin is for interactive systems, optimizing response time, not turnaround time.", "Correct. SJF provably minimizes average turnaround time, though it can cause starvation for long jobs.", "Incorrect. FCFS often leads to the convoy effect, increasing average turnaround time.", "Incorrect. Priority scheduling can also cause starvation and doesn't strictly minimize turnaround time."]
+
+[[questions]]
+question = "In a system using 'Round-Robin Scheduling', what is the 'quantum'?"
+choices = ["The total time a process is allowed to run before termination", "The time slice each process gets before being preempted", "The time it takes to switch contexts", "The memory limit per process"]
+answer = "The time slice each process gets before being preempted"
+explanations = ["Incorrect. Processes can run for many quantums.", "Correct. The quantum (or time slice) is the fixed amount of CPU time allocated to a process before the scheduler preempts it and moves to the next process in the queue.", "Incorrect. This is the context switch time.", "Incorrect. This is a memory limit."]
+
+[[questions]]
+question = "True or False: In the classical thread model, threads belonging to the same process share the same stack."
+choices = ["True", "False"]
+answer = "False"
+explanations = ["Incorrect. They share the address space, but each thread MUST have its own stack to hold local variables and return addresses.", "Correct. Each thread has its own private stack. Sharing a stack would overwrite local variables and execution states."]
+
+[[questions]]
+question = "Which of the following is a disadvantage of implementing threads in user space?"
+choices = ["System calls block all threads in the process", "It requires kernel modifications", "Context switching between threads is slow", "It is difficult to manage thread scheduling"]
+answer = "System calls block all threads in the process"
+explanations = ["Correct. Because the kernel only sees the process as a single thread, if one user-level thread makes a blocking system call, the entire process (and all its threads) blocks.", "Incorrect. User-space threads do not require kernel modifications.", "Incorrect. Context switching in user space is actually faster than kernel space.", "Incorrect. Scheduling is managed by the user-level library, which is flexible."]
+
+[[questions]]
+question = "In the Windows operating system, what is a 'Fiber'?"
+choices = ["A lightweight thread managed entirely by the user-mode library", "A kernel thread that runs device drivers", "A network packet fragment", "A segment of physical memory"]
+answer = "A lightweight thread managed entirely by the user-mode library"
+explanations = ["Correct. Fibers are cooperative, user-mode scheduling units that run within a thread. They are cheaper than threads but must yield manually.", "Incorrect. Fibers are user-mode, not kernel threads.", "Incorrect. This is a network concept.", "Incorrect. This is a memory concept."]
+
+[[questions]]
+question = "Which Linux memory zone is specifically used for memory that cannot be mapped to the kernel's virtual address space on 32-bit systems?"
+choices = ["ZONE_DMA", "ZONE_NORMAL", "ZONE_HIGHMEM", "ZONE_KERNEL"]
+answer = "ZONE_HIGHMEM"
+explanations = ["Incorrect. ZONE_DMA is for legacy ISA DMA.", "Incorrect. ZONE_NORMAL is directly mapped.", "Correct. ZONE_HIGHMEM contains pages that the kernel cannot directly address via virtual memory pointers on 32-bit systems, requiring temporary mappings.", "Incorrect. ZONE_KERNEL is not a standard Linux zone name."]
+
+[[questions]]
+question = "What is the primary role of the 'Hardware Abstraction Layer' (HAL) in Windows?"
+choices = ["To manage user passwords", "To hide hardware differences from the rest of the operating system", "To compile C code into machine code", "To manage the virtual file system cache"]
+answer = "To hide hardware differences from the rest of the operating system"
+explanations = ["Incorrect. The security subsystem manages passwords.", "Correct. The HAL provides a consistent interface to hardware (timers, I/O, interrupts) so the kernel and executive don't need specific code for every motherboard.", "Incorrect. This is the compiler's job.", "Incorrect. This is the Cache Manager's job."]
+
+[[questions]]
+question = "Which security model enforces the rule 'No read down, no write up'?"
+choices = ["Biba", "Brewer-Nash", "Clark-Wilson", "Bell-LaPadula"]
+answer = "Biba"
+explanations = ["Correct. The Biba model focuses on integrity. The simple integrity principle prevents reading down (untrusted data), and the * property prevents writing up (corrupting high-integrity data).", "Incorrect. Brewer-Nash prevents conflict of interest.", "Incorrect. Clark-Wilson uses separation of duties.", "Incorrect. Bell-LaPadula enforces 'No read up, no write down' for confidentiality."]
+
+[[questions]]
+question = "In cryptography, what is a 'Digital Signature' used for?"
+choices = ["To encrypt a message so only the recipient can read it", "To verify the identity of the sender and ensure the message was not altered", "To compress a file for transmission", "To hide the existence of a message"]
+answer = "To verify the identity of the sender and ensure the message was not altered"
+explanations = ["Incorrect. This is confidentiality (encryption).", "Correct. Digital signatures use the sender's private key to sign a hash of the message. The recipient uses the public key to verify authenticity and integrity.", "Incorrect. This is compression.", "Incorrect. This is steganography."]
+
+[[questions]]
+question = "Which type of attack involves chaining together small snippets of existing executable code (called 'gadgets') ending in `ret` instructions to perform malicious actions?"
+choices = ["Buffer Overflow", "Return-Oriented Programming (ROP)", "Format String Attack", "SQL Injection"]
+answer = "Return-Oriented Programming (ROP)"
+explanations = ["Incorrect. Buffer overflow injects new code.", "Correct. ROP bypasses DEP/NX (Non-Executable) bits by reusing existing trusted code snippets ending in `ret` to execute desired logic.", "Incorrect. Format string attacks exploit `printf`-like functions.", "Incorrect. SQL injection targets databases."]
+
+[[questions]]
+question = "In Android, which component acts as a global name service for Binder objects, allowing processes to find system services?"
+choices = ["Zygote", "Service Manager", "Activity Manager", "Dalvik VM"]
+answer = "Service Manager"
+explanations = ["Incorrect. Zygote forks new processes.", "Correct. The Service Manager acts as the context manager for Binder. System services register with it, and clients query it to get Binder proxies.", "Incorrect. Activity Manager manages app lifecycles.", "Incorrect. Dalvik executes bytecode."]
+
+[[questions]]
+question = "In the context of OS design, what is the 'Space-Time Trade-off'?"
+choices = ["Trading memory usage for CPU speed (e.g., using a lookup table instead of calculating a value)", "Trading disk space for network bandwidth", "Trading user space for kernel space", "Trading security for performance"]
+answer = "Trading memory usage for CPU speed (e.g., using a lookup table instead of calculating a value)"
+explanations = ["Correct. Using more memory (space) to cache results or create lookup tables can significantly speed up execution (time), at the cost of higher memory footprint.", "Incorrect. This is not the standard definition.", "Incorrect. This is privilege level separation.", "Incorrect. While security can impact performance, this is not the space-time trade-off."]
+
+[[questions]]
+question = "Which of the following is NOT a typical layer of I/O software?"
+choices = ["Interrupt Handlers", "Device Drivers", "Device-Independent I/O Software", "Compiler"]
+answer = "Compiler"
+explanations = ["Incorrect. Interrupt handlers are the lowest layer.", "Incorrect. Device drivers sit above interrupt handlers.", "Incorrect. Device-independent software (buffering, error reporting) sits above drivers.", "Correct. Compilers translate source code to machine code; they are not part of the runtime I/O system layers."]
+
+[[questions]]
+question = "What is the primary purpose of 'Jailing' in operating system security?"
+choices = ["To encrypt user files", "To restrict a process to a specific subset of the file system tree, preventing escape", "To prevent CPU overheating", "To format disk drives"]
+answer = "To restrict a process to a specific subset of the file system tree, preventing escape"
+explanations = ["Incorrect. Jailing is not encryption.", "Correct. Jailing (like BSD jails or chroot) changes the root directory for a process, restricting its access to files outside that 'jail', isolating it.", "Incorrect. This is thermal management.", "Incorrect. This is unrelated to formatting."]

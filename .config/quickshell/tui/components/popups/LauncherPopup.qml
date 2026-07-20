@@ -156,8 +156,8 @@ CellPopup {
                     width: Cell.w(box.contentW)
                     height: Cell.h(10)
 
-                    sourceSize.width: root.monitor.width
-                    sourceSize.height: root.monitor.height
+                    sourceSize.width: root.monitor?.width ?? 0
+                    sourceSize.height: root.monitor?.height ?? 0
 
                     source: SystemInfo.homedir + WallpaperInfo.cache_path + WallpaperInfo.current + WallpaperInfo.cache_prefix
 
@@ -292,6 +292,8 @@ CellPopup {
                                     safe_mouse.visible = true
                                     safe_mouse.safe = 1
                                     LauncherInfo.search(tags, textfield.path, input)
+                                    results.reset()
+                                    textfield.selected = 0
                                 }
 
                                 onTextRemoved: (removed) => {
@@ -464,10 +466,10 @@ CellPopup {
 
                     model: debounce.data
 
-                    onModelChanged: {
-                        results.reset()
-                        textfield.selected = 0
-                    }
+                    // onModelChanged: {
+                    //     results.reset()
+                    //     textfield.selected = 0
+                    // }
 
                     delegate: Loader {
 

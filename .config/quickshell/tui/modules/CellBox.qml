@@ -65,7 +65,7 @@ Item {
 
     default property alias content: content.data
 
-    property bool optimize: true
+    property bool optimize: !SettingsInfo.purify
 
     Loader {
 

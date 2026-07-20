@@ -173,7 +173,7 @@ ColumnLayout {
                             wifi_report.report = success_wifi;
                         });
                         WifiInfo.rescanned.connect(() => {
-                            list.reset();
+                            list?.reset();
                         });
                         list.collapse.connect(name => {
                             if (!name || !wifi)
@@ -271,7 +271,7 @@ ColumnLayout {
                                 CellText {
                                     id: wifi_security
 
-                                    text: `${wifi.security == "--" ? "" : "\uf023"} ${wifi.freq >= 5 ? `[5G]  ` : `[2.4G]`}`
+                                    text: `${wifi.security == "" ? "" : "\uf023"} ${wifi.freq >= 5 ? `[5G]  ` : `[2.4G]`}`
                                     color: Colors.fgSubtle
                                 }
                             }
@@ -430,6 +430,7 @@ ColumnLayout {
                     }
 
                     MouseControl {
+                        id: wifi_mouse
 
                         visible: !WifiInfo.scanning
 
@@ -450,7 +451,7 @@ ColumnLayout {
                             if (button == "L") {
                                 if (wifi.in_use)
                                     return;
-                                if (wifi.security == "--" || WifiInfo.isSaved(wifi.name)) {
+                                if (wifi.security == "" || WifiInfo.isSaved(wifi.name)) {
                                     console.log(WifiInfo.connect(wifi.name));
                                 } else if (wifi.security == "WPA2 802.1X") {
                                     list.collapse(wifi.name);
@@ -496,7 +497,7 @@ ColumnLayout {
                                 ContextMenuManager.show([
                                     {
                                         label: "Connect",
-                                        action: () => wifi.connect()
+                                        action: () => wifi_mouse.pressed("L", null)
                                     }
                                 ], global.x, global.y, undefined, wifi.name);
                             }

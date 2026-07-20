@@ -6,7 +6,6 @@ import QtQuick.Layouts
 import QtQuick
 
 RowLayout {
-
     id: root
 
     spacing: Cell.w(0)
@@ -26,15 +25,14 @@ RowLayout {
 
         color: MediaPlayerInfo.canPrev ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
 
-        onReleased: (button) => {
-            if (button != "L") return
-            MediaPlayerInfo.prevMedia()
+        onReleased: button => {
+            if (button != "L")
+                return;
+            MediaPlayerInfo.prevMedia();
         }
-
     }
 
     CellButton {
-
         id: button
 
         text: MediaPlayerInfo.status == "playing" ? " 1 " : " 0 "
@@ -45,11 +43,11 @@ RowLayout {
 
         color: MediaPlayerInfo.activePlayer ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
 
-        onReleased: (button) => {
-            if (button != "L") return
-            MediaPlayerInfo.playPauseMedia()
+        onReleased: button => {
+            if (button != "L")
+                return;
+            MediaPlayerInfo.playPauseMedia();
         }
-
     }
 
     CellButton {
@@ -65,11 +63,11 @@ RowLayout {
 
         color: MediaPlayerInfo.canNext ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
 
-        onReleased: (button) => {
-            if (button != "L") return
-            MediaPlayerInfo.nextMedia()
+        onReleased: button => {
+            if (button != "L")
+                return;
+            MediaPlayerInfo.nextMedia();
         }
-
     }
 
     Cells {
@@ -85,7 +83,7 @@ RowLayout {
             spacing: 0
 
             CellText {
-                text: "▏"
+                text: "│ "
                 color: Colors.fgDim
                 font: Cell.fontB
                 pure: false
@@ -96,7 +94,6 @@ RowLayout {
 
                 cellw: 22
                 text: `${MediaPlayerInfo.title} - ${MediaPlayerInfo.artist}`
-
             }
 
             CellText {
@@ -106,7 +103,6 @@ RowLayout {
                 pure: false
                 lockPure: true
             }
-
         }
 
         MouseControl {
@@ -115,14 +111,11 @@ RowLayout {
 
             anchors.fill: parent
 
-            onReleased: (button) => {
+            onReleased: button => {
                 if (button == "L") {
-                    PopupManager.toggle("media_player")
+                    PopupManager.toggle("media_player");
                 }
             }
-
         }
-
     }
-
 }

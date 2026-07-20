@@ -6,7 +6,6 @@ import QtQuick.Layouts
 import QtQuick
 
 Cells {
-
     id: root
 
     w: Cell.wCount(volume.implicitWidth)
@@ -40,7 +39,6 @@ Cells {
         color: "transparent"
 
         CellText {
-
             id: text_based
 
             visible: volume.text_state
@@ -48,7 +46,7 @@ Cells {
             text: `${AudioInfo.mute ? "<s>" + root.getDynamicVolumeText(AudioInfo.volume) + "</s>" : root.getDynamicVolumeText(AudioInfo.volume)}`
             font: Cell.fontB
 
-            CellProgress {
+            CellProgressSquare {
 
                 w: parent.w
                 h: 1
@@ -57,7 +55,7 @@ Cells {
 
                 percent: AudioInfo.volume
 
-                syncDelay: 200
+                syncDelay: 1000
                 adjustOnHold: false
                 drag: false
                 wheel: !AudioInfo.mute
@@ -66,24 +64,21 @@ Cells {
                 color: "transparent"
                 fg: "transparent"
 
-                onAdjusted: (percent) => {
-                    AudioInfo.setVolume(AudioInfo.sinkDefault, percent)
+                onAdjusted: percent => {
+                    AudioInfo.setVolume(AudioInfo.sinkDefault, percent);
                 }
 
-                onReleased: (button) => {
+                onReleased: button => {
                     if (button == "L") {
-                        AudioInfo.muteVolume(AudioInfo.sinkDefault)
+                        AudioInfo.muteVolume(AudioInfo.sinkDefault);
                     } else if (button == "R") {
-                        SettingsInfo.toggle("textBasedVolume")
+                        SettingsInfo.toggle("textBasedVolume");
                     }
                 }
-
             }
-
         }
 
         RowLayout {
-
             id: slider_based
 
             visible: !volume.text_state
@@ -99,21 +94,19 @@ Cells {
                 fg: Colors.fgBase
                 color: "transparent"
 
-                onReleased: (button) => {
-                    if (button == "R") { 
-                        SettingsInfo.toggle("textBasedVolume")
-                    }
-                    else if (button == "L") {
-                        AudioInfo.muteVolume(AudioInfo.sinkDefault)
+                onReleased: button => {
+                    if (button == "R") {
+                        SettingsInfo.toggle("textBasedVolume");
+                    } else if (button == "L") {
+                        AudioInfo.muteVolume(AudioInfo.sinkDefault);
                     }
                 }
-
             }
 
             CellText {
                 text: "["
                 color: Colors.fgSubtle
-            } 
+            }
 
             CellProgressSquare {
 
@@ -126,7 +119,7 @@ Cells {
 
                 fg: AudioInfo.mute ? Colors.fgDim : Colors.fgBase
 
-                syncDelay: 200
+                syncDelay: 1000
                 adjustOnHold: false
                 wheel: !AudioInfo.mute
                 drag: !AudioInfo.mute
@@ -134,19 +127,15 @@ Cells {
 
                 cellInterval: 2
 
-                onAdjusted: (percent) => {
-                    AudioInfo.setVolume(AudioInfo.sinkDefault, percent)
+                onAdjusted: percent => {
+                    AudioInfo.setVolume(AudioInfo.sinkDefault, percent);
                 }
-
             }
 
             CellText {
                 text: "]"
                 color: Colors.fgSubtle
-            } 
-
+            }
         }
-
     }
-
 }

@@ -641,7 +641,7 @@ CellFloats {
 
                             forceFocus: true
 
-                            disabled: (root.pacmanState == "prepare" || root.pacmanState == "pre-flight" || root.pacmanState == "running" || root.pacmanState == "authentication" || root.pacmanState == "success")
+                            disabled: (root.pacmanState == "prepare" || root.pacmanState == "pre-flight" || root.pacmanState == "running" || root.pacmanState == "authentication" || root.pacmanState == "success" || PacmanInfo.fetching)
 
                             onTextChanged: {
                                 if (PacmanInfo.search_mode == 4) {
@@ -1599,13 +1599,14 @@ CellFloats {
                                         CellText {
 
                                             text: broken_deps.target
-                                            color: Colors.fgBase
+                                            font: Cell.fontB
+                                            color: Colors.warning
                                         }
 
                                         CellText {
 
                                             text: " is required by: "
-                                            color: Colors.fgSubtle
+                                            color: Colors.fgBase
                                         }
                                     }
 

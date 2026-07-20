@@ -45,7 +45,7 @@ Singleton {
 
         connect.wifi = wifi;
 
-        if (security == "--" || isSaved(wifi)) {
+        if (security == "" || isSaved(wifi)) {
             connect.exec(["nmcli", "device", "wifi", "connect", wifi]);
         } else if (security == "WPA2 802.1X") {
             connect.exec(["bash", "-c", root.fmt("nmcli connection add type wifi con-name {} ifname wlan0 ssid {} -- 802-1x.eap peap 802-1x.phase2-auth mschapv2 802-1x.identity {} 802-1x.password {} 802-1x.system-ca-certs no wifi-sec.key-mgmt wpa-eap && nmcli connection up {}", wifi, wifi, username, password, wifi)]);
