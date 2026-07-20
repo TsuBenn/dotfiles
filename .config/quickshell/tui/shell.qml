@@ -47,7 +47,7 @@ ShellRoot {
                     gaps_in =  { top = 8, left = 3, bottom = 8, right = 3 },
                     gaps_out = { top = 9, left = 5, bottom = 9, right = 5 },
 
-                    border_size = 2,
+                    border_size = ${Cell.border_width},
 
                     allow_tearing = true,
 
