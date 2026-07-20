@@ -35,7 +35,8 @@ FloatingWindow {
         }
         function onSigOpen(name) {
             if (root.name == name) {
-                HyprInfo.focusClient("org.quickshell", root.title);
+                // HyprInfo.focusClient("org.quickshell", root.title);
+                HyprInfo.moveClient(HyprInfo.matchClient("org.quickshell", root.title), HyprInfo.focusedWorkspace);
             }
         }
     }
@@ -55,8 +56,6 @@ FloatingWindow {
     function open() {
         FloatsManager.open(name);
     }
-
-    property bool active: false
 
     property string name
 

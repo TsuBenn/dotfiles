@@ -110,7 +110,7 @@ Item {
                     root.activated(index, root.items[index]?.label ?? "");
                 };
 
-                console.log(JSON.stringify(Object.keys(Window.window.data[0]), null, 2));
+                console.log(Window.isFloat ?? false);
 
                 const global = mapToGlobal(x, y);
                 DropdownManager.show(root.items, global.x, global.y - root.reversed * Cell.h(root.items.length + 1), root.w, root.h, root.selected, root.menu.padding, root.menu.color, root.menu.fg, root.menu.active, root.menu.active_invert, selectBridge);

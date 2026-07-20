@@ -108,9 +108,6 @@ Item {
                 anchors.verticalCenterOffset: ((height * scalar * WallpaperInfo.getReposition(main.current).scalar - parent.height) / 2) * WallpaperInfo.getReposition(main.current).verticalOffset
                 anchors.horizontalCenterOffset: ((width * scalar * WallpaperInfo.getReposition(main.current).scalar - parent.width) / 2) * WallpaperInfo.getReposition(main.current).horizontalOffset
 
-                sourceSize.width: root.monitor.width
-                sourceSize.height: root.monitor.height
-
                 width: sourceSize.width
                 height: sourceSize.height
 

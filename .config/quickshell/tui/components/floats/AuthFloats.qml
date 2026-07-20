@@ -126,6 +126,9 @@ CellFloats {
             CellSeparator {
                 w: root.w
                 color: Colors.accentStrong
+                bg: "transparent"
+                connectStart: true
+                connectEnd: true
             }
 
             CellText {

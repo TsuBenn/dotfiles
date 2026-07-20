@@ -10,8 +10,12 @@ Singleton {
 
     property int border_width: 2
 
+    property string default_font: "JetBrains Mono Nerd Font"
+
+    property bool antialiasing: true
+
     readonly property font font: Qt.font({
-        family: "JetBrainsMono Nerd Font",
+        family: default_font,
         pointSize: root.pointSize
     })
 
@@ -21,12 +25,12 @@ Singleton {
     })
 
     readonly property font fontB: Qt.font({
-        family: "JetBrainsMono Nerd Font",
+        family: default_font,
         pointSize: root.pointSize,
         weight: Font.Bold
     })
     readonly property font fontBB: Qt.font({
-        family: "JetBrainsMono Nerd Font",
+        family: default_font,
         pointSize: root.pointSize,
         weight: Font.Black
     })

@@ -42,7 +42,7 @@ Item {
     implicitWidth: Cell.w(vertical ? 1 : w)
     implicitHeight: Cell.h(vertical ? h : 1)
 
-    property bool optimize: true
+    property bool optimize: !SettingsInfo.purify
 
     Loader {
 
@@ -85,7 +85,7 @@ Item {
 
             CellText {
 
-                visible: root.connectStart || root.connectEnd
+                visible: (root.connectStart || root.connectEnd) && !SettingsInfo.purify
 
                 x: -Cell.w(1)
 
@@ -188,7 +188,7 @@ Item {
 
             CellText {
 
-                visible: root.connectStart || root.connectEnd
+                visible: (root.connectStart || root.connectEnd) && !SettingsInfo.purify
 
                 y: -Cell.h(1)
 

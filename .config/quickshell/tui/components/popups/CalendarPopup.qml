@@ -253,6 +253,7 @@ CellPopup {
                             text: ANSI.render(DateTime.hour12)
                             font: Cell.fontB
                             color: Colors.fgBase
+                            cellIsolated: true
                         }
 
                         CellText {
@@ -261,6 +262,7 @@ CellPopup {
                             text: ANSI.render(DateTime.minute)
                             font: Cell.fontB
                             color: Colors.fgBase
+                            cellIsolated: true
                         }
 
                         CellText {
