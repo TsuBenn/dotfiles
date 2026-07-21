@@ -211,7 +211,7 @@ Item {
             anchors.fill: parent
             sourceItem: main
             hideSource: true
-            live: root.transitionProgress < 1 || root.live
+            live: true
         }
 
         Image {
@@ -274,6 +274,6 @@ Item {
         id: screen
         anchors.fill: parent
         sourceItem: super_buffer
-        live: root.transitionProgress < 1 || root.live
+        live: true
     }
 }

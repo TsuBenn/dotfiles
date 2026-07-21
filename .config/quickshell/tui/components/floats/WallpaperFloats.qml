@@ -387,8 +387,13 @@ CellFloats {
 
                     function updateTransition(mx, my) {
                         let path = preview.configData?.transition ? "transition." : "";
-                        WallpaperInfo.setConfig(preview.currentItem, path + "posX", Math.max(Math.min(mx / preview.implicitWidth, 1), 0));
-                        WallpaperInfo.setConfig(preview.currentItem, path + "posY", Math.max(Math.min(my / preview.implicitHeight, 1), 0));
+                        if (path) {
+                            WallpaperInfo.setConfig(preview.currentItem, path + "posX", Math.max(Math.min(mx / preview.implicitWidth, 1), 0));
+                            WallpaperInfo.setConfig(preview.currentItem, path + "posY", Math.max(Math.min(my / preview.implicitHeight, 1), 0));
+                        } else {
+                            WallpaperInfo.transition.posX = Math.max(Math.min(mx / preview.implicitWidth, 1), 0);
+                            WallpaperInfo.transition.posY = Math.max(Math.min(my / preview.implicitHeight, 1), 0);
+                        }
                         pivotAnim.restart();
                     }
 

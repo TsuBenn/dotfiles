@@ -251,7 +251,7 @@ Item {
 
             ColumnLayout {
 
-                x: root.connectStart ? -Cell.w(1) / 2 : 0
+                x: (root.connectStart ? -Cell.w(1) / 2 : 0) + Cell.w(root.padding)
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 2
 
@@ -270,7 +270,7 @@ Item {
                                 return 1 * Cell.border_width;
                             }
                         }
-                        implicitWidth: Cell.w(root.w) + (root.connectStart ? Cell.w(1) / 2 : 0) + (root.connectEnd ? Cell.w(1) / 2 : 0)
+                        implicitWidth: Cell.w(root.w) + (root.connectStart ? Cell.w(1) / 2 : 0) + (root.connectEnd ? Cell.w(1) / 2 : 0) - Cell.w(root.padding * 2)
                         color: root.color
                     }
                 }
@@ -302,7 +302,7 @@ Item {
 
             RowLayout {
 
-                y: root.connectStart ? -Cell.h(1) / 2 : 0
+                y: (root.connectStart ? -Cell.h(1) / 2 : 0) + Cell.h(root.padding)
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 2
 
@@ -321,7 +321,7 @@ Item {
                                 return 1 * Cell.border_width;
                             }
                         }
-                        implicitHeight: Cell.h(root.h) + (root.connectStart ? Cell.h(1) / 2 : 0) + (root.connectEnd ? Cell.h(1) / 2 : 0)
+                        implicitHeight: Cell.h(root.h) + (root.connectStart ? Cell.h(1) / 2 : 0) + (root.connectEnd ? Cell.h(1) / 2 : 0) - Cell.h(root.padding * 2)
                         color: root.color
                     }
                 }

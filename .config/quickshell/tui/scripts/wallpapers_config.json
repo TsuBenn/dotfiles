@@ -18,12 +18,12 @@
         "verticalOffset": 1,
         "horizontalOffset": 0
       },
-      "posX": 0.6360544217687075,
-      "posY": 0.27976190476190477
+      "posX": 0,
+      "posY": 0
     },
     "minami.jpg": {
-      "posX": 0.6224489795918368,
-      "posY": 0.501984126984127
+      "posX": 0,
+      "posY": 0
     }
   },
   "live": true,

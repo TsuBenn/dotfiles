@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 VERSION = "1.5.3 (Beta)"
 
 import time
@@ -259,7 +258,7 @@ def init_colors():
 
 def wrap_text(text: str, width: int) -> list[str]:
     result = []
-    
+
     lines = text.split('\n')  # handle explicit newlines
 
     for line in lines:
@@ -972,9 +971,9 @@ def _parse_version(src: str) -> str:
             val = line.split("=", 1)[1].strip()
             return val.strip(chr(34)).strip(chr(39))
     return "unknown"
- 
+
 def check_for_updates() -> tuple[bool, str, str, str]:
- 
+
     local_src  = Path(__file__).read_text(encoding="utf-8")
     local_ver  = _parse_version(local_src)
 
@@ -986,7 +985,7 @@ def check_for_updates() -> tuple[bool, str, str, str]:
             "Expires": "0"
         }
     )
- 
+
     try:
         with urllib.request.urlopen(req, timeout=5) as r:
             remote_src = r.read().decode("utf-8")
@@ -1004,7 +1003,7 @@ def check_for_updates() -> tuple[bool, str, str, str]:
 def get_questions_raw_url(filepath: str) -> str:
     filename = Path(filepath).name
     return f"{QUESTIONS_BASE_URL}{filename}?t={int(time.time())}"
- 
+
 def check_questions_update(filepath: str) -> tuple[bool, int, int]:
     """
     Returns (update_available, local_version, remote_version).
@@ -1040,7 +1039,7 @@ def check_questions_update(filepath: str) -> tuple[bool, int, int]:
         print()
         time.sleep(0.8)
         return (False, 0, 0)
- 
+
 def prompt_update(mode: str, local_ver: str, remote_ver: str):
 
     print()
@@ -1051,11 +1050,11 @@ def prompt_update(mode: str, local_ver: str, remote_ver: str):
         choice = input().strip().lower()
     except (EOFError, KeyboardInterrupt):
         choice = "n"
- 
+
     if choice != "y":
         print("  Skipping update, continuing...\n")
         return
- 
+
     try:
         with urllib.request.urlopen(RAW_URL, timeout=5) as r:
             new_src = r.read()
@@ -1131,7 +1130,7 @@ def delete_messages(bot_token: str, message_ids: list[str]):
             urllib.request.urlopen(req, timeout=10)
             discord_log(f"Bulk deleted {len(message_ids[:100])} messages")
     except Exception as e:
-        discord_log(f"Delete error: {e}") 
+        discord_log(f"Delete error: {e}")
 
 def review_mode(stdscr, bot_token: str):
     init_colors()
@@ -1410,7 +1409,7 @@ def fetch_corrections(bot_token: str) -> list[dict]:
     discord_log(f"Total corrections parsed: {len(corrections)}")
     return corrections
 
- 
+
 def run():
     if len(sys.argv) < 2:
         print("Usage: python study.py <questions.toml or questions.json>")
@@ -1460,8 +1459,8 @@ def run():
 
     time.sleep(0.8)
 
-    curses.wrapper(lambda stdscr: main(stdscr, filepath)) 
+    curses.wrapper(lambda stdscr: main(stdscr, filepath))
 
- 
+
 if __name__ == "__main__":
     run()

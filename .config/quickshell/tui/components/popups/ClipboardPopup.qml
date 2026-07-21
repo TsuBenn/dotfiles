@@ -36,16 +36,20 @@ CellPopup {
         {
             binds: "Return",
             action: () => {
-                const to_copy = ClipboardInfo.clipboard[clipboard.selected];
-                if (to_copy.type.includes("text")) {
-                    SystemInfo.copy_clipboard(to_copy.data);
-                } else if (to_copy.type.includes("image")) {
-                    SystemInfo.runDetached(["bash", "-c", "wl-copy < " + to_copy.data]);
-                }
-                root.close();
+                copySelected();
             }
         },
     ]
+
+    function copySelected() {
+        const to_copy = ClipboardInfo.clipboard[clipboard.selected];
+        if (to_copy.type.includes("text")) {
+            SystemInfo.copy_clipboard(to_copy.data);
+        } else if (to_copy.type.includes("image")) {
+            SystemInfo.runDetached(["bash", "-c", "wl-copy < " + to_copy.data]);
+        }
+        root.close();
+    }
 
     function advance(delta: int) {
         clipboard.selected = Math.max(Math.min(clipboard.selected + delta, Math.min(199, ClipboardInfo.clipboard.length - 1)), 0);
@@ -277,8 +281,13 @@ CellPopup {
 
                     MouseControl {
                         anchors.fill: parent
-                        onPressed: {
-                            clipboard.selected = clip.index;
+                        onPressed: button => {
+                            if (button == "L") {
+                                if (clipboard.selected == clip.index)
+                                    root.copySelected();
+                                else
+                                    clipboard.selected = clip.index;
+                            }
                         }
                     }
                 }
