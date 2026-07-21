@@ -205,7 +205,7 @@ Item {
         if (SettingsInfo.purify) {
             return replacedBoxes.replace(/[^\x00-\xFF]/g, placeholder);
         } else {
-            return replacedBoxes.replace(/[^\x00-\xFF─-╿]/g, placeholder);
+            return replacedBoxes.replace(/[^\x00-\xFF─-╿▀-■]/g, placeholder);
         }
     }
 

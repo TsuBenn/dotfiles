@@ -1,25 +1,27 @@
-pragma ComponentBehavior: Bound
-
 import qs.config
-import qs.modules
 import qs.services
+import qs.modules
 
-import QtQuick.Layouts
 import QtQuick
+import QtQuick.Layouts
 
-CellPopup {
+CellFloats {
     id: root
 
     property bool optimizeMemory: SettingsInfo.optimizeMemory
 
     property bool minimal: SettingsInfo.minimal
 
+    property var monitor: HyprInfo.focusedMonitor
+
+    title: "Wallpapaer"
+
+    name: "wallpaper"
+
     w: 100
-    h: Cell.hCount(layout.implicitHeight) + 2
+    h: 41 + SettingsInfo.hints * 2 + 6 * more.yes // 49
 
-    safeMargin: 2
-
-    escapeToClose: false
+    property int number: 41 + SettingsInfo.hints * 2 + 6 * more.yes
 
     shortcuts: [
         {
@@ -47,7 +49,7 @@ CellPopup {
                     textfield.grabFocus();
                     return;
                 }
-                PopupManager.close("wallpaper");
+                root.close();
             }
         }
     ]
@@ -113,11 +115,16 @@ CellPopup {
     property bool edit: false
     property bool reposition: false
 
-    CellBox {
+    Cells {
         id: box
 
         w: root.w
         h: root.h
+
+        color: "transparent"
+
+        property int contentW: w
+        property int contentH: h
 
         ColumnLayout {
             id: layout
@@ -128,6 +135,8 @@ CellPopup {
                 id: preview
 
                 visible: root.edit || root.reposition || (HyprInfo.clientCount() > 0 && !root.minimal)
+
+                onVisibleChanged: console.log(visible)
 
                 w: box.contentW
                 h: Math.floor(root.w / 16 * 9 / 2)

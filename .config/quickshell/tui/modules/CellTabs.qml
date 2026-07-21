@@ -8,7 +8,6 @@ import QtQuick.Layouts
 import QtQuick
 
 Item {
-
     id: root
 
     property bool optimizeMemory: SettingsInfo.optimizeMemory
@@ -43,23 +42,23 @@ Item {
     implicitWidth: Cell.w(w)
     implicitHeight: {
         if (type == 1) {
-            return Cell.h(3)
+            return Cell.h(3);
         }
-        return Cell.h(2)
+        return Cell.h(2);
     }
 
     function advance(step: int) {
-        selected = (selected + items.length + step)%items.length
+        selected = (selected + items.length + step) % items.length;
     }
 
     function itemLength(): int {
-        let count = 0
+        let count = 0;
         for (const item of items) {
-            count += item.length
-            count += 2
+            count += item.length;
+            count += 2;
         }
-        count = Cell.w(Math.round((w - count)/(items.length+1)))
-        return count
+        count = Cell.w(Math.round((w - count) / (items.length + 1)));
+        return count;
     }
 
     Cells {
@@ -67,7 +66,6 @@ Item {
         anchors.fill: parent
 
         color: root.color.bg
-
     }
 
     CellSeparator {
@@ -78,7 +76,6 @@ Item {
         type: 1
         color: root.color.fg
         bg: root.color.bg
-
     }
 
     Loader {
@@ -98,7 +95,6 @@ Item {
                 model: root.items
 
                 delegate: Cells {
-
                     id: tab
 
                     required property int index
@@ -122,30 +118,36 @@ Item {
                             color: tab.active ? root.color.base : root.color.inactive
                         }
 
-                        CellText {
-                            text: ` ${tab.active ? "━".repeat(tab.label.length) : " ".repeat(tab.label.length)} `
-                            color: root.color.active
-                            bg: tab.active ? root.color.bg : "transparent"
-                        }
+                        Cells {
 
+                            w: tab.active ? tab.label.length + 2 : 0
+                            h: 1
+
+                            color: tab.active ? root.color.bg : "transparent"
+
+                            clip: true
+
+                            CellSeparator {
+                                padding: 1
+                                w: tab.label.length + 2
+                                color: root.color.active
+                                bg: "transparent"
+                            }
+                        }
                     }
 
                     MouseControl {
 
                         anchors.fill: parent
 
-                        onPressed: (button) => {
+                        onPressed: button => {
                             if (button == "L") {
-                                root.selected = tab.index
+                                root.selected = tab.index;
                             }
                         }
-
                     }
-
                 }
-
             }
-
         }
     }
 
@@ -154,7 +156,6 @@ Item {
         active: root.type == 1 && (root.visible || !root.optimizeMemory)
 
         sourceComponent: CellBox {
-
             id: box
 
             visible: root.type == 1
@@ -190,20 +191,14 @@ Item {
                         color: active ? root.color.active : "transparent"
                         fg: active ? root.color.base : root.color.inactive
 
-                        onPressed: (button) => {
+                        onPressed: button => {
                             if (button == "L") {
-                                root.selected = index
+                                root.selected = index;
                             }
                         }
-
                     }
-
                 }
-
             }
-
         }
-
     }
-
 }

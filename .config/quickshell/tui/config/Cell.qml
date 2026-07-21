@@ -6,7 +6,7 @@ import QtQuick
 Singleton {
     id: root
 
-    property real pointSize: 11
+    property real fontSize: 11
 
     property int border_width: 2
 
@@ -14,24 +14,30 @@ Singleton {
 
     property bool antialiasing: true
 
+    property bool pixelBased: false
+
     readonly property font font: Qt.font({
         family: default_font,
-        pointSize: root.pointSize
+        pointSize: pixelBased ? null : root.fontSize,
+        pixelSize: pixelBased ? root.fontSize : null
     })
 
     readonly property font fontE: Qt.font({
         family: "Apple Color Emoji",
-        pointSize: root.pointSize
+        pointSize: pixelBased ? null : root.fontSize,
+        pixelSize: pixelBased ? root.fontSize : null
     })
 
     readonly property font fontB: Qt.font({
         family: default_font,
-        pointSize: root.pointSize,
+        pointSize: pixelBased ? null : root.fontSize,
+        pixelSize: pixelBased ? root.fontSize : null,
         weight: Font.Bold
     })
     readonly property font fontBB: Qt.font({
         family: default_font,
-        pointSize: root.pointSize,
+        pointSize: pixelBased ? null : root.fontSize,
+        pixelSize: pixelBased ? root.fontSize : null,
         weight: Font.Black
     })
 

@@ -9,7 +9,7 @@
     "posY": 0.5
   },
   "wallpapers": [
-    "minami.jpg"
+    "macbook.jpg"
   ],
   "config": {
     "macbook.jpg": {
@@ -22,8 +22,8 @@
       "posY": 0.27976190476190477
     },
     "minami.jpg": {
-      "posX": 0.6224489795918368,
-      "posY": 0.501984126984127
+      "posX": 0.1621315192743764,
+      "posY": 0.25595238095238093
     }
   },
   "live": true,

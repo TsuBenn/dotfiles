@@ -453,5 +453,10 @@
     "question": "Which page replacement algorithm suffers from Belady's Anomaly, where increasing the number of page frames actually increases the number of page faults?",
     "answer": "FIFO",
     "timestamp": "2026-07-20T14:26:42.247213"
+  },
+  {
+    "question": "Which disk arm scheduling algorithm continuously moves the arm in one direction to the end of the disk, then reverses direction, servicing requests along the way?",
+    "answer": "SCAN (Elevator algorithm)",
+    "timestamp": "2026-07-21T10:18:46.184750"
   }
 ]

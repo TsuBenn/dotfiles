@@ -38,11 +38,11 @@ Singleton {
         const now = new Date();
 
         const day     = now.getDate().toString().padStart(2, "0");
-        const month   = (now.getMonth() + 1).toString().padStart(2, "0");   
-        const year    = now.getFullYear();  
-        const hours   = now.getHours().toString().padStart(2, "0");   
-        const minutes = now.getMinutes().toString().padStart(2, "0"); 
-        const seconds = now.getSeconds().toString().padStart(2, "0"); 
+        const month   = (now.getMonth() + 1).toString().padStart(2, "0");
+        const year    = now.getFullYear();
+        const hours   = now.getHours().toString().padStart(2, "0");
+        const minutes = now.getMinutes().toString().padStart(2, "0");
+        const seconds = now.getSeconds().toString().padStart(2, "0");
 
         if (!name) name = `screenshot_${day}_${month}_${year}_${hours}${minutes}${seconds}`;
 
@@ -55,7 +55,7 @@ Singleton {
         if (save && copy) {
             shellScript += ` | tee '${path}' | wl-copy`;
         } else if (save) {
-            shellScript += ` > '${path}'`; 
+            shellScript += ` > '${path}'`;
         } else if (copy) {
             shellScript += ` | wl-copy`;
         }
@@ -83,7 +83,7 @@ Singleton {
         id: cacher
 
         command: [
-            "bash", 
+            "bash",
             "-c",
             `grim -c -t ppm -o "${root.monitor.name}" ${root.cache_path_cursor} & \
             grim -t ppm -o "${root.monitor.name}" ${root.cache_path_no_cursor} & \

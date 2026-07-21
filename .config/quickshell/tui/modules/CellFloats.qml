@@ -8,14 +8,14 @@ import Quickshell
 import QtQuick
 import QtQuick.Window
 
-FloatingWindow {
+Window {
     id: root
 
     visible: FloatsManager.isOpen(name)
 
     property bool isFloat: true
 
-    onClosed: {
+    onClosing: {
         TextFieldManager.unFocusAll();
         root.close();
     }
@@ -62,8 +62,8 @@ FloatingWindow {
     property int w: 20
     property int h: 10
 
-    implicitWidth: Cell.w(w + 1)
-    implicitHeight: Cell.h(h + 1)
+    width: Cell.w(w + 1)
+    height: Cell.h(h + 1)
 
     Timer {
         id: adjustTransform
@@ -76,20 +76,33 @@ FloatingWindow {
 
     property bool showSize: true
 
-    onWindowTransformChanged: {
+    signal sizeChanged
+
+    onSizeChanged: {
         if (showSize)
             show_size.restart();
         adjustTransform.restart();
     }
 
+    onHChanged: {
+        sizeChanged();
+    }
+    onWChanged: {
+        sizeChanged();
+    }
+
     property bool noMax: false
     property bool noMin: false
+
+    // 16777215
 
     property size _maximum: noMax ? Qt.size(16777215, 16777215) : (Qt.size(maxW > 0 ? Cell.w(maxW) : Cell.w(w + 1), maxH > 0 ? Cell.h(maxH) : Cell.h(h + 1)))
     property size _minimum: noMin ? Qt.size(0, 0) : (Qt.size(minW > 0 ? Cell.w(minW) : Cell.w(w + 1), minH > 0 ? Cell.h(minH) : Cell.h(h + 1)))
 
-    maximumSize: _maximum
-    minimumSize: _minimum
+    maximumHeight: noMax ? 16777215 : (maxH > 0 ? Cell.h(maxH) : Cell.h(h + 1))
+    minimumHeight: noMin ? 0 : (minH > 0 ? Cell.h(minH) : Cell.h(h + 1))
+    maximumWidth: noMax ? 16777215 : (maxW > 0 ? Cell.w(maxW) : Cell.w(w + 1))
+    minimumWidth: noMin ? 0 : (minW > 0 ? Cell.w(minW) : Cell.w(w + 1))
 
     property int maxW: 0
     property int maxH: 0
@@ -107,7 +120,7 @@ FloatingWindow {
 
     default property alias content: cell.data
 
-    property bool _faultySize: !((root.minW == 0 || root.w + 1 >= root.minW) && (root.maxH == 0 || root.w + 1 <= root.maxW) && (root.minH == 0 || root.h + 1 >= root.minH) && (root.maxH == 0 || root.h + 1 <= root.maxH))
+    property bool _faultySize: !((root.minW == 0 || root.w + 1 >= root.minW) && (root.maxW == 0 || root.w + 1 <= root.maxW) && (root.minH == 0 || root.h + 1 >= root.minH) && (root.maxH == 0 || root.h + 1 <= root.maxH))
 
     Cells {
         id: cell

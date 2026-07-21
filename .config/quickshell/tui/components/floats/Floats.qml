@@ -19,4 +19,16 @@ Item {
     ColorFloats {
         id: color
     }
+
+    WallpaperFloats {
+        id: wallpaper
+    }
+
+    Connections {
+
+        target: SettingsInfo
+        function onDebugSig() {
+            FloatsManager.open("wallpaper");
+        }
+    }
 }

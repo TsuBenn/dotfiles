@@ -14,7 +14,7 @@ CellFloats {
     title: "Color"
 
     w: 96
-    h: 31 + SettingsInfo.hints * 1
+    h: 31 + SettingsInfo.hints * 2
 
     property bool minimal: SettingsInfo.minimal
 

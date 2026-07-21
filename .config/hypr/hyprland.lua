@@ -399,14 +399,14 @@ hl.window_rule({
     float = true,
     size = {"(monitor_w*0.5)","(monitor_h*0.5)"}
 })
-hl.window_rule({
-    match = {
-        class = ".*dolphin.*",
-    },
+-- hl.window_rule({
+--     match = {
+--         class = ".*dolphin.*",
+--     },
 
-    float = true,
-    size = {"(monitor_w*0.7)","(monitor_h*0.8)"}
-})
+--     float = true,
+--     size = {"(monitor_w*0.7)","(monitor_h*0.8)"}
+-- })
 hl.window_rule({
     match = {
         class = ".*qalculate-qt.*",
@@ -476,9 +476,9 @@ hl.window_rule({
     workspace = "2",
 })
 
-for i = 1, 5 do
-    hl.workspace_rule({workspace = '"'..i..'"', persistent = true})
-end
+-- for i = 1, 5 do
+--     hl.workspace_rule({workspace = '"'..i..'"', persistent = true})
+-- end
 
 hl.workspace_rule({workspace = "2", on_created_empty="ghostty"})
 hl.workspace_rule({workspace = "4", on_created_empty=discord})
