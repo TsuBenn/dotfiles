@@ -11,23 +11,15 @@ CellFloats {
     id: root
 
     name: "color"
-    title: "Color"
 
     w: 96
-    h: 31 + SettingsInfo.hints * 1
+    h: 32
 
     property bool minimal: SettingsInfo.minimal
 
     property var result: Object.keys(Colors.colors)
 
     property var colors: Object.keys(Colors.colors)
-
-    Connections {
-        target: SettingsInfo
-        function onHintsChanged() {
-            root.h = 31 + SettingsInfo.hints * 1;
-        }
-    }
 
     Connections {
         target: Colors
@@ -188,7 +180,7 @@ CellFloats {
 
                 property int push: 0
 
-                property int h: 28
+                property int h: 28 + !SettingsInfo.hints * 2
 
                 signal unFocusPalette
 
@@ -471,7 +463,7 @@ CellFloats {
                     visible: root.result.length > 0
 
                     w: 59
-                    h: 28
+                    h: color.h
 
                     color: "transparent"
 
@@ -594,7 +586,7 @@ CellFloats {
                             text: color.color.description
                             color: color.color.fgBase
                             preferedW: preview.w - 2
-                            preferedH: 4
+                            preferedH: 4 + !SettingsInfo.hints * 2
                             wrap: true
                             font: Cell.fontB
                         }
@@ -605,7 +597,7 @@ CellFloats {
                             Layout.leftMargin: Cell.w(1)
 
                             w: preview.w - 2
-                            h: 4
+                            h: 4 + !SettingsInfo.hints * 2
 
                             color: color.color.bgOverlay
 

@@ -355,7 +355,7 @@ Singleton {
             root.toggle("debug");
             root.debugSig();
 
-            console.log(PacmanInfo.packages.length);
+            // console.log(PacmanInfo.packages.length);
         }
     }
 

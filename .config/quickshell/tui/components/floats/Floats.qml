@@ -19,4 +19,8 @@ Item {
     ColorFloats {
         id: color
     }
+
+    WallpaperFloats {
+        id: wallpaper
+    }
 }

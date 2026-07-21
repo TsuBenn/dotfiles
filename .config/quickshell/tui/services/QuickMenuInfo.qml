@@ -434,7 +434,7 @@ Singleton {
         "open_wallpaper_menu": {
             "label": "Open Wallpaper Menu",
             "action": function () {
-                PopupManager.open("wallpaper");
+                FloatsManager.open("wallpaper");
             }
         },
         "open_calendar": {

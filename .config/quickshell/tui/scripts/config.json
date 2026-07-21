@@ -22,8 +22,8 @@
   "userLightMode": false,
   "autoLightMode": true,
   "debug": true,
-  "moveFloatOnFocus": true,
+  "moveFloatOnFocus": false,
   "purify": false,
-  "compat": true,
+  "compat": false,
   "pacmanSearchMode": 0
 }

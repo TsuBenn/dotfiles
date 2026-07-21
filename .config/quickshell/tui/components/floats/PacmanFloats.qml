@@ -11,15 +11,16 @@ CellFloats {
     id: root
     name: "pacman"
 
-    // noMax: true
-
-    title: "Pacman"
-
     w: 100
     h: 44
 
-    // minW: 100
-    // minH: 40
+    initW: 100
+    initH: 44
+
+    noMax: true
+
+    minW: 60
+    minH: 30
 
     property string pacmanState: PacmanInfo.pacmanState
 

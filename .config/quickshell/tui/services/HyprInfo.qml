@@ -164,6 +164,9 @@ Singleton {
     function clientCount(workspace = null): var {
         if (!workspace)
             return objWorkspace(focusedWorkspace)?.clients ?? 0;
+        // console.log(objWorkspace(matchWorkspace(workspace))?.clients ?? 0);
+        if (workspace instanceof HyprlandWorkspace)
+            return objWorkspace(workspace)?.clients ?? 0;
         return objWorkspace(matchWorkspace(workspace))?.clients ?? 0;
     }
 
@@ -201,7 +204,7 @@ Singleton {
     }
 
     function matchClient(wClass = "", wTitle = "") {
-        let idx = clients.findIndex(item => (wTitle != "" ? RegExp(wTitle).test(item?.title) : true) && (wClass != "" ? RegExp(wClass).test(item?.wayland.appId) : true));
+        let idx = clients.findIndex(item => (wTitle != "" ? RegExp(wTitle).test(item?.title) : true) && (wClass != "" ? RegExp(wClass).test(item?.wayland?.appId) : true));
         if (idx != -1) {
             return clients[idx];
         }
@@ -209,6 +212,9 @@ Singleton {
     }
 
     function getClient(wAddress = "") {
+        if (wAddress.startsWith("0x")) {
+            wAddress = wAddress.slice(2);
+        }
         if (wAddress != "") {
             let idx = clients.findIndex(item => item.address == wAddress);
             if (idx != -1) {
@@ -216,6 +222,14 @@ Singleton {
             }
         }
         return null;
+    }
+
+    // Address should already have prefix "0x"
+    function resizeClient(w, h, address) {
+        SystemInfo.runDetached(["hyprctl", "dispatch", `hl.dsp.window.resize({x=${w},y=${h},window="address:${address}"})`]);
+    }
+    function repositionClient(w, h, address) {
+        SystemInfo.runDetached(["hyprctl", "dispatch", `hl.dsp.window.move({x=${w},y=${h},window="address:${address}"})`]);
     }
 
     function moveClient(client: HyprlandToplevel, workspace: var): bool {
@@ -262,4 +276,5 @@ Singleton {
     //         console.log(JSON.stringify(root.listClients(), null, 2));
     //     }
     // }
+
 }

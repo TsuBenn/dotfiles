@@ -280,9 +280,12 @@ Item {
                 visible: root.title.text.trim() != ""
                 x: Math.max(root.title.centered ? Cell.centerWCell(implicitWidth, parent.implicitWidth) : Cell.w(root.title.offset), 0)
                 text: " ".repeat(root.title.padding) + root.title.text + " ".repeat(root.title.padding)
+                onTextChanged: {
+                    if (text.length > root.w - Math.abs(Cell.wCount(x)))
+                        preferedW = Math.min(text.length, root.w - Math.abs(Cell.wCount(x)));
+                }
                 color: root.title.color
                 font: root.title.font
-                preferedW: Math.min(text.length, root.w - Math.abs(Cell.wCount(x)))
                 bg: root.bg
             }
         }

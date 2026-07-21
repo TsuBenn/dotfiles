@@ -57,6 +57,10 @@ Item {
         updateText();
     }
 
+    onPreferedHChanged: {
+        updateText();
+    }
+
     onPreferedWChanged: {
         updateText();
     }
