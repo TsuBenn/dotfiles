@@ -265,7 +265,7 @@ SETTINGS = [
                 "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle_compat"],
             },
             {
-                "label": "{moveFloatOnFocus} Move Float on focus",
+                "label": "{moveFloatOnFocus} Move Float to focus",
                 "description": "Bring float to current workspace instead of focusing onto it.",
                 "category": "settings",
                 "type": "exec",

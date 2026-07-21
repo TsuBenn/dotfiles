@@ -1,703 +1,751 @@
-#!/usr/bin/env python3
-"""
-study_gui.py — A Tkinter GUI study app for multiple-choice TOML question files.
-
-Usage:
-    python study_gui.py
-    python study_gui.py path/to/questions.toml
-
-Features:
-    • Open any TOML file with a [[questions]] table
-    • Single-answer and "select all that apply" multi-answer questions
-    • Spaced re-queue: wrong answers reappear 1–4 spots later in the queue
-    • Per-choice explanations shown on the result screen (if the TOML provides them)
-    • End-of-session stats: total / correct / wrong / percentage
-    • Wrong-answer log persisted to wrong_answers.json next to the TOML file
-    • Recent-files list on the welcome screen (last 5)
-    • Resizable window with dynamic text wrapping
-    • Keyboard shortcuts: A–H select choice, Enter submit/next, Esc quit session
-
-TOML format expected:
-    version = 1
-
-    [[questions]]
-    question = "What is 2 + 2?"
-    choices = ["3", "4", "5"]
-    answer = "4"
-    explanations = ["", "Correct: 2 + 2 = 4", ""]
-
-    [[questions]]
-    question = "Which are prime?"
-    choices = ["2", "4", "7"]
-    answer = ["2", "7"]
-    explanations = ["Prime", "Composite", "Prime"]
-"""
-
-import json
+import tkinter as tk
+import tkinter.font as tkfont
+from tkinter import filedialog, messagebox, ttk
 import random
-import sys
-import tomllib
-from datetime import datetime
-from pathlib import Path
-from tkinter import Tk, Frame, Label, Button, filedialog, messagebox, font
+import os
+import json
 
-APP_NAME = "Study GUI"
-APP_VERSION = "1.0.0"
-APP_DATA_FILE = Path.home() / ".study_gui_data.json"
-WRONG_ANSWERS_FILE = "wrong_answers.json"
-LABELS = ["A", "B", "C", "D", "E", "F", "G", "H"]
+try:
+    import tomllib  # Python 3.11+
+except ImportError:
+    try:
+        import tomli as tomllib
+    except ImportError:
+        tomllib = None
 
-# ─── Dark Study Theme ─────────────────────────────────────────────────────────
-THEME = {
-    "bg":           "#1e1e2e",
-    "surface":      "#2d2d3f",
-    "surface_alt":  "#3d3d52",
-    "text":         "#e0e0e8",
-    "text_dim":     "#9090a8",
-    "accent":       "#6c8eff",
-    "accent_hover": "#8aa5ff",
-    "correct":      "#4ade80",
-    "correct_bg":   "#1f3a2a",
-    "wrong":        "#f87171",
-    "wrong_bg":     "#3a1f1f",
-    "warning":      "#fbbf24",
-    "warning_bg":   "#3a3a1f",
-    "border":       "#4a4a62",
-}
+# ===== Dark Hu Tao color theme =====
+BG          = "#1a0e12"   # deep plum-black background
+FG          = "#e8d5d5"   # warm cream foreground
+ACCENT      = "#d6405a"   # Hu Tao red
+SELECT_BG   = "#3a1a25"   # selection background
+CORRECT     = "#5fb878"   # green
+WRONG       = "#ff5566"   # bright red
+DIM         = "#8a6a6a"   # muted text
+BORDER      = "#4a2530"   # box borders
+QUESTION_BG = "#221218"   # question box bg
+MISSED      = "#e8c358"   # missed-correct highlight
+HL_CORRECT  = "#1f3a1f"
+HL_WRONG    = "#3a1f1f"
+HL_MISSED   = "#3a3a1f"
+
+CONFIG_FILE = os.path.expanduser("~/.study_session_config.json")
 
 
-def get_fonts():
-    # Cross-platform font stack: Segoe UI (Win), Helvetica (Mac), DejaVu Sans (Linux)
-    families = ["Segoe UI", "Helvetica", "DejaVu Sans", "Arial"]
-    return {
-        "title":   font.Font(family=families[0], size=22, weight="bold"),
-        "heading": font.Font(family=families[0], size=14, weight="bold"),
-        "body":    font.Font(family=families[0], size=12),
-        "choice":  font.Font(family=families[0], size=12),
-        "small":   font.Font(family=families[0], size=10),
-        "stat":    font.Font(family=families[0], size=26, weight="bold"),
-    }
-
-
-# ─── Choice Button Widget ─────────────────────────────────────────────────────
-class ChoiceButton(Frame):
-    """A clickable choice widget with selection and result states."""
-
-    def __init__(self, parent, letter, text, on_click, app, **kwargs):
-        super().__init__(parent, **kwargs)
-        self.app = app
-        self.letter = letter
-        self.text = text
-        self.on_click = on_click
-        self.index = ord(letter) - ord("A")
-        self.selected = False
-        self.state = "normal"  # normal | correct | wrong | missed
-
-        self.configure(bg=THEME["surface"], cursor="hand2", padx=14, pady=10)
-
-        self.label_letter = Label(
-            self, text=f"{letter}.", font=app.fonts["heading"],
-            bg=THEME["surface"], fg=THEME["accent"]
-        )
-        self.label_letter.pack(side="left", anchor="n", padx=(0, 12))
-
-        self.label_text = Label(
-            self, text=text, font=app.fonts["choice"],
-            bg=THEME["surface"], fg=THEME["text"],
-            wraplength=600, justify="left", anchor="w"
-        )
-        self.label_text.pack(side="left", fill="x", expand=True, anchor="w")
-
-        for w in (self, self.label_letter, self.label_text):
-            w.bind("<Button-1>", self._handle_click)
-            w.bind("<Enter>", self._handle_enter)
-            w.bind("<Leave>", self._handle_leave)
-
-    def _handle_click(self, event=None):
-        self.on_click(self.index)
-
-    def _handle_enter(self, event=None):
-        if self.state == "normal" and not self.selected:
-            self._set_bg(THEME["surface_alt"])
-
-    def _handle_leave(self, event=None):
-        if self.state == "normal" and not self.selected:
-            self._set_bg(THEME["surface"])
-
-    def _set_bg(self, color):
-        self.configure(bg=color)
-        self.label_letter.configure(bg=color)
-        self.label_text.configure(bg=color)
-
-    def set_selected(self, selected):
-        self.selected = selected
-        if self.state == "normal":
-            if selected:
-                self._set_bg(THEME["surface_alt"])
-                self.label_letter.configure(fg=THEME["accent_hover"])
+def wrap_text(text, width):
+    lines = []
+    for paragraph in text.split('\n'):
+        words = paragraph.split(' ')
+        current = ""
+        for word in words:
+            if not current:
+                current = word
+            elif len(current) + 1 + len(word) <= width:
+                current += " " + word
             else:
-                self._set_bg(THEME["surface"])
-                self.label_letter.configure(fg=THEME["accent"])
-
-    def set_result_state(self, state):
-        self.state = state
-        if state == "correct":
-            self._set_bg(THEME["correct_bg"])
-            self.label_letter.configure(fg=THEME["correct"])
-            self.label_text.configure(fg=THEME["correct"])
-        elif state == "wrong":
-            self._set_bg(THEME["wrong_bg"])
-            self.label_letter.configure(fg=THEME["wrong"])
-            self.label_text.configure(fg=THEME["wrong"])
-        elif state == "missed":
-            self._set_bg(THEME["warning_bg"])
-            self.label_letter.configure(fg=THEME["warning"])
-            self.label_text.configure(fg=THEME["warning"])
-        else:
-            self._set_bg(THEME["surface"])
-            self.label_letter.configure(fg=THEME["accent"])
-            self.label_text.configure(fg=THEME["text"])
-
-    def update_wraplength(self, width):
-        # Account for letter label + padding (~50px)
-        self.label_text.configure(wraplength=max(100, width - 50))
+                lines.append(current)
+                current = word
+        lines.append(current)
+    return lines if lines else [""]
 
 
-# ─── Main App ─────────────────────────────────────────────────────────────────
+def detect_font_family():
+    try:
+        available = set(tkfont.families())
+    except Exception:
+        return "Courier"
+    for c in ("JetBrains Mono",
+              "JetBrainsMono Nerd Font",
+              "JetBrainsMonoNL Nerd Font",
+              "JetBrainsMono NF",
+              "JetBrains Mono Regular"):
+        if c in available:
+            return c
+    return "Courier"
+
+
 class StudyApp:
     def __init__(self, root):
         self.root = root
-        self.root.title(f"{APP_NAME} v{APP_VERSION}")
-        self.root.geometry("900x650")
-        self.root.minsize(600, 500)
-        self.root.configure(bg=THEME["bg"])
+        self.root.title("Study Session")
+        self.root.configure(bg=BG)
+        self.root.geometry("900x680")
+        self.root.minsize(500, 400)
 
-        self.fonts = get_fonts()
-        self.recent_files = self._load_recent_files()
-        self.current_filepath = None
+        self.font_family = detect_font_family()
+        self.font_size = 12
+        self.font = (self.font_family, self.font_size)
+        self.tk_font = tkfont.Font(self.root, self.font)
+
+        # session state
         self.questions = []
         self.queue = []
-        self.current_idx = 0
-        self.correct_first_try = set()
-        self.wrong_log = []
-        self.session_active = False
-        self.submitted = False
-        self.selected_indices = set()
-        self.choice_buttons = []
-        self.explanation_labels = []
-        self.current_question = None
+        self.original_count = 0
+        self.first_try_correct = 0
+        self.unique_wrong = set()
+        self.attempts = 0
+        self.correct_attempts = 0
+        self.wrong_attempts = 0
+        self.questions_seen = 0
 
-        # Keyboard bindings
-        for ch in "abcdefghABCDEFGH":
-            self.root.bind(ch, lambda e, c=ch: self._on_letter(c.upper()))
-        self.root.bind("<Return>", self._on_enter)
-        self.root.bind("<KP_Enter>", self._on_enter)
-        self.root.bind("<Escape>", self._on_escape)
-        self.root.bind("<Right>", lambda e: self._on_enter() if self.submitted else None)
+        self.current = None
+        self.cursor = 0
+        self.selected = set()
+        self.state = "IDLE"
+        self.last_was_correct = False
+        self.current_orig_idx = -1
+        self.current_file = ""
 
-        self.container = Frame(root, bg=THEME["bg"])
-        self.container.pack(fill="both", expand=True)
+        self.ui_width = 80
+        self.after_id = None
 
-        # If launched with a file argument, jump straight in
-        if len(sys.argv) > 1 and Path(sys.argv[1]).exists():
-            if self._load_questions(sys.argv[1]):
-                self._start_session()
-            else:
-                self._show_welcome()
-        else:
-            self._show_welcome()
+        # Load recent files
+        self.recent_files = self.load_recent_files()
 
-    # ─── Persistence ───────────────────────────────────────────────────────────
-    def _load_recent_files(self):
-        try:
-            if APP_DATA_FILE.exists():
-                data = json.loads(APP_DATA_FILE.read_text(encoding="utf-8"))
-                return [f for f in data.get("recent_files", []) if Path(f).exists()]
-        except Exception:
-            pass
+        self.setup_ui()
+        self.bind_keys()
+
+        # Defer initial render to ensure window width is calculated
+        self.root.after(100, self.update_ui_width)
+        self.show_idle()
+
+    # ===== Config / Recent Files =====
+    def load_recent_files(self):
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, 'r') as f:
+                    return json.load(f).get('recent', [])
+            except Exception:
+                return []
         return []
 
-    def _save_recent_files(self):
+    def save_recent_files(self):
         try:
-            APP_DATA_FILE.write_text(
-                json.dumps({"recent_files": self.recent_files[:5]}, indent=2),
-                encoding="utf-8",
-            )
+            with open(CONFIG_FILE, 'w') as f:
+                json.dump({'recent': self.recent_files}, f)
         except Exception:
             pass
 
-    def _add_recent_file(self, filepath):
-        filepath = str(filepath)
-        if filepath in self.recent_files:
-            self.recent_files.remove(filepath)
-        self.recent_files.insert(0, filepath)
+    def add_to_recent(self, path):
+        if path in self.recent_files:
+            self.recent_files.remove(path)
+        self.recent_files.insert(0, path)
         self.recent_files = self.recent_files[:5]
-        self._save_recent_files()
+        self.save_recent_files()
 
-    def _load_questions(self, filepath):
-        path = Path(filepath)
-        if not path.exists():
-            messagebox.showerror("Error", f"File not found:\n{filepath}")
-            return False
-        try:
-            with open(path, "rb") as f:
-                data = tomllib.load(f)
-            self.questions = data.get("questions", [])
-            if not self.questions:
-                messagebox.showerror("Error", "No questions found in file.")
-                return False
-            self.current_filepath = filepath
-            self._add_recent_file(filepath)
-            return True
-        except Exception as e:
-            messagebox.showerror("Error", f"Failed to load TOML:\n{e}")
-            return False
+    # ===== UI setup =====
+    def setup_ui(self):
+        self.header = tk.Label(
+            self.root, text="", bg=BG, fg=ACCENT,
+            font=self.font, anchor='w', justify='left'
+        )
+        self.header.pack(fill='x', padx=20, pady=(15, 2))
 
-    def _save_wrong_answers(self):
-        if not self.wrong_log or not self.current_filepath:
-            return
-        wrong_file = Path(self.current_filepath).parent / WRONG_ANSWERS_FILE
+        # Main Text Container
+        self.text_frame = tk.Frame(self.root, bg=BG)
+        self.text_frame.pack(fill='both', expand=True, padx=20, pady=(2, 5))
+
+        # Custom themed Scrollbar
+        style = ttk.Style()
         try:
-            existing = []
-            if wrong_file.exists():
-                existing = json.loads(wrong_file.read_text(encoding="utf-8"))
-            existing.extend(self.wrong_log)
-            wrong_file.write_text(json.dumps(existing, indent=2), encoding="utf-8")
-        except Exception:
+            style.theme_use('clam')
+        except:
             pass
+        style.configure("Vertical.TScrollbar", background=BG, troughcolor=BG, arrowcolor=ACCENT, bordercolor=BG, lightcolor=BG, darkcolor=BG, gripcount=0)
+        style.map("Vertical.TScrollbar", background=[('active', SELECT_BG)])
 
-    # ─── Queue ─────────────────────────────────────────────────────────────────
-    def _build_queue(self):
-        result = []
-        for q in self.questions:
-            q_copy = dict(q)
-            q_copy["_wrong_count"] = 0
-            q_copy["_answered_correct"] = False
-            choices = list(q_copy.get("choices", []))
-            explanations = list(q_copy.get("explanations", []))
-            if explanations and len(explanations) == len(choices):
-                paired = list(zip(choices, explanations))
-                random.shuffle(paired)
-                choices, explanations = zip(*paired)
-                q_copy["choices"] = list(choices)
-                q_copy["explanations"] = list(explanations)
-            else:
-                random.shuffle(choices)
-                q_copy["choices"] = choices
-            result.append(q_copy)
-        random.shuffle(result)
-        return result
+        self.scrollbar = ttk.Scrollbar(self.text_frame, command=self.text_yview, style="Vertical.TScrollbar")
+        self.scrollbar.pack(side='right', fill='y')
 
-    # ─── Helpers ───────────────────────────────────────────────────────────────
-    def _is_multi(self, question):
-        ans = question.get("answer")
-        return isinstance(ans, list) and len(ans) > 1
+        self.text = tk.Text(
+            self.text_frame, bg=BG, fg=FG, font=self.font,
+            insertbackground=FG, wrap='none',
+            padx=20, pady=15,
+            spacing1=2, spacing3=2,
+            highlightthickness=0, bd=0,
+            cursor='arrow', takefocus=0,
+            yscrollcommand=self.scrollbar.set
+        )
+        self.text.pack(side='left', fill='both', expand=True)
 
-    def _check_answer(self, question, chosen):
-        ans = question["answer"]
-        if self._is_multi(question):
-            return set(chosen) == set(ans)
-        if isinstance(ans, list):
-            return chosen == ans[0] or chosen in ans
-        return chosen == ans
+        # Tags
+        self.text.tag_configure('accent',      foreground=ACCENT)
+        self.text.tag_configure('dim',         foreground=DIM)
+        self.text.tag_configure('correct',     foreground=CORRECT)
+        self.text.tag_configure('wrong',       foreground=WRONG)
+        self.text.tag_configure('cursor_bg',   background=SELECT_BG)
+        self.text.tag_configure('hl_correct',  background=HL_CORRECT, foreground=CORRECT)
+        self.text.tag_configure('hl_wrong',    background=HL_WRONG,   foreground=WRONG)
+        self.text.tag_configure('hl_missed',   background=HL_MISSED,  foreground=MISSED)
+        self.text.tag_configure('border',      foreground=BORDER)
+        self.text.tag_configure('question_bg', background=QUESTION_BG)
+        self.text.tag_configure('button_tag',  foreground=ACCENT)
+        self.text.tag_configure('recent_tag',  foreground=FG)
 
-    def _clear_container(self):
-        for w in self.container.winfo_children():
-            w.destroy()
+        # Bindings for choices (up to 30)
+        for i in range(30):
+            tag = f'choice_{i}'
+            self.text.tag_configure(tag)
+            self.text.tag_bind(tag, '<Button-1>', lambda e, idx=i: self.on_choice_click(idx))
+            self.text.tag_bind(tag, '<Enter>', lambda e, idx=i: self.on_choice_hover(idx, True))
+            self.text.tag_bind(tag, '<Leave>', lambda e, idx=i: self.on_choice_hover(idx, False))
 
-    # ─── Welcome Screen ────────────────────────────────────────────────────────
-    def _show_welcome(self):
-        self._clear_container()
-        self.session_active = False
+        # Bindings for recent files
+        for i in range(5):
+            tag = f'recent_{i}'
+            self.text.tag_bind(tag, '<Button-1>', lambda e, idx=i: self.open_recent(idx))
+            self.text.tag_bind(tag, '<Enter>', lambda e, t=tag: self.text.tag_config(t, foreground=ACCENT))
+            self.text.tag_bind(tag, '<Leave>', lambda e, t=tag: self.text.tag_config(t, foreground=FG))
 
-        center = Frame(self.container, bg=THEME["bg"])
-        center.pack(expand=True, fill="both", padx=40, pady=40)
+        # Bindings for buttons
+        self.text.tag_bind('button_tag', '<Button-1>', lambda e: self.browse_file())
+        self.text.tag_bind('button_tag', '<Enter>', lambda e: self.text.tag_config('button_tag', foreground=FG))
+        self.text.tag_bind('button_tag', '<Leave>', lambda e: self.text.tag_config('button_tag', foreground=ACCENT))
 
-        Label(
-            center, text=APP_NAME, font=self.fonts["title"],
-            bg=THEME["bg"], fg=THEME["text"]
-        ).pack(pady=(30, 6))
+        self.text.configure(state='disabled')
 
-        Label(
-            center, text="Multiple-choice study sessions from TOML files",
-            font=self.fonts["body"], bg=THEME["bg"], fg=THEME["text_dim"]
-        ).pack(pady=(0, 30))
+        self.footer = tk.Label(
+            self.root, text="", bg=BG, fg=DIM,
+            font=self.font, anchor='w', justify='left'
+        )
+        self.footer.pack(fill='x', padx=20, pady=(2, 15))
 
-        Button(
-            center, text="  Open TOML File…  ", font=self.fonts["heading"],
-            bg=THEME["accent"], fg="white",
-            activebackground=THEME["accent_hover"], activeforeground="white",
-            bd=0, padx=28, pady=12, cursor="hand2",
-            command=self._open_file_dialog
-        ).pack(pady=8)
+        # Bind window resize
+        self.text.bind("<Configure>", self.on_resize)
+
+    def text_yview(self, *args):
+        self.text.yview(*args)
+
+    def on_resize(self, event):
+        if self.after_id:
+            self.root.after_cancel(self.after_id)
+        self.after_id = self.root.after(50, self.update_ui_width)
+
+    def update_ui_width(self):
+        self.root.update_idletasks()
+        w = self.text.winfo_width()
+        if w <= 1: return  # Not ready yet
+
+        char_width = self.tk_font.measure("M")
+        if char_width == 0: return
+
+        # Account for padx (20 + 20) and a small safety margin
+        usable_width = w - 45
+        new_width = max(30, usable_width // char_width)
+
+        if new_width != self.ui_width:
+            self.ui_width = new_width
+            self.render_current()
+
+    def on_choice_hover(self, idx, is_enter):
+        if self.state == "QUESTION" and idx < len(self.current['choices']):
+            if is_enter and idx != self.cursor:
+                self.cursor = idx
+                self.render_question()
+
+    def bind_keys(self):
+        self.root.bind("<Up>",      lambda e: self.on_key('up'))
+        self.root.bind("<Down>",    lambda e: self.on_key('down'))
+        self.root.bind("k",         lambda e: self.on_key('up'))
+        self.root.bind("j",         lambda e: self.on_key('down'))
+        self.root.bind("<Return>",  lambda e: self.on_key('enter'))
+        self.root.bind("<space>",   lambda e: self.on_key('space'))
+
+        # File & Font bindings
+        self.root.bind("o",         lambda e: self.browse_file())
+        self.root.bind("O",         lambda e: self.browse_file())
+        self.root.bind("+",         lambda e: self.change_font(1))
+        self.root.bind("=",         lambda e: self.change_font(1))
+        self.root.bind("<KP_Add>",  lambda e: self.change_font(1))
+        self.root.bind("-",         lambda e: self.change_font(-1))
+        self.root.bind("<KP_Subtract>", lambda e: self.change_font(-1))
+
+        # Recent file shortcuts
+        self.root.bind("1",         lambda e: self.open_recent(0))
+        self.root.bind("2",         lambda e: self.open_recent(1))
+        self.root.bind("3",         lambda e: self.open_recent(2))
+        self.root.bind("4",         lambda e: self.open_recent(3))
+        self.root.bind("5",         lambda e: self.open_recent(4))
+
+        self.root.bind("r",         lambda e: self.restart_session())
+        self.root.bind("R",         lambda e: self.restart_session())
+        self.root.bind("q",         lambda e: self.quit_app())
+        self.root.bind("Q",         lambda e: self.quit_app())
+        self.root.bind("<Escape>",  lambda e: self.quit_app())
+
+    def change_font(self, delta):
+        new_size = max(8, min(22, self.font_size + delta))
+        if new_size != self.font_size:
+            self.font_size = new_size
+            self.font = (self.font_family, self.font_size)
+            self.tk_font = tkfont.Font(self.root, self.font)
+            self.text.config(font=self.font)
+            self.header.config(font=self.font)
+            self.footer.config(font=self.font)
+            self.update_ui_width()  # This will automatically trigger a re-render
+
+    def quit_app(self):
+        self.root.destroy()
+
+    # ===== Text helpers =====
+    def clear_text(self):
+        self.text.configure(state='normal')
+        self.text.delete('1.0', 'end')
+
+    def add(self, s, tag=None):
+        if tag:
+            self.text.insert('end', s, tag)
+        else:
+            self.text.insert('end', s)
+
+    def finalize(self):
+        self.text.configure(state='disabled')
+        self.text.see("1.0")
+
+    def render_current(self):
+        if self.state == "IDLE": self.show_idle()
+        elif self.state == "QUESTION": self.render_question()
+        elif self.state == "REVIEW": self.render_review()
+        elif self.state == "DONE": self.show_done()
+
+    # ===== State: IDLE =====
+    def show_idle(self):
+        self.state = "IDLE"
+        self.header.config(text=" STUDY SESSION ")
+        self.footer.config(text=" [o] Open TOML   [+/-] Font Size   [1-5] Open Recent   [q] Quit")
+
+        self.clear_text()
+        width = self.ui_width
+        self.add("┌" + "─" * (width - 2) + "┐\n", 'border')
+        self.add("│" + " STUDY SESSION ".center(width - 2) + "│\n", 'accent')
+        self.add("│" + " " * (width - 2) + "│\n", 'border')
+        self.add("│" + " Welcome. Load a TOML question file to begin. ".center(width - 2) + "│\n", 'dim')
+        self.add("│" + " " * (width - 2) + "│\n", 'border')
+
+        btn_text = " [ Open TOML File ] "
+        self.add("│" + btn_text.center(width - 2) + "│\n", 'button_tag')
+        self.add("│" + " " * (width - 2) + "│\n", 'border')
 
         if self.recent_files:
-            Label(
-                center, text="Recent Files", font=self.fonts["heading"],
-                bg=THEME["bg"], fg=THEME["text_dim"]
-            ).pack(pady=(36, 10))
+            self.add("│" + " Recent Files ".center(width - 2) + "│\n", 'accent')
+            self.add("│" + " " * (width - 2) + "│\n", 'border')
+            for i, f in enumerate(self.recent_files):
+                name = os.path.basename(f)
+                max_len = width - 12
+                if len(name) > max_len:
+                    name = "..." + name[-(max_len-3):]
+                line = f" [{i+1}] {name} "
+                self.add("│")
+                self.text.insert('end', line.ljust(width - 2), f'recent_{i}')
+                self.add("│\n")
+            self.add("│" + " " * (width - 2) + "│\n", 'border')
 
-            recent_frame = Frame(center, bg=THEME["bg"])
-            recent_frame.pack(fill="x", padx=80)
-            for f in self.recent_files:
-                p = Path(f)
-                btn = Button(
-                    recent_frame, text=f"  {p.name}  —  {p.parent}",
-                    font=self.fonts["body"],
-                    bg=THEME["surface"], fg=THEME["text"],
-                    activebackground=THEME["surface_alt"], activeforeground=THEME["text"],
-                    bd=0, padx=16, pady=10, cursor="hand2", anchor="w",
-                    command=lambda fp=f: self._open_recent(fp)
-                )
-                btn.pack(fill="x", pady=3)
-        else:
-            Label(
-                center, text="No recent files — open one to get started.",
-                font=self.fonts["small"], bg=THEME["bg"], fg=THEME["text_dim"]
-            ).pack(pady=20)
+        self.add("└" + "─" * (width - 2) + "┘\n", 'border')
+        self.finalize()
 
-        Label(
-            center,
-            text="Shortcuts:  A–H select  •  Enter submit / next  •  Esc end session",
-            font=self.fonts["small"], bg=THEME["bg"], fg=THEME["text_dim"]
-        ).pack(side="bottom", pady=20)
-
-    def _open_file_dialog(self):
-        fp = filedialog.askopenfilename(
-            title="Open study questions",
+    # ===== File loading =====
+    def browse_file(self):
+        path = filedialog.askopenfilename(
+            title="Open TOML file",
             filetypes=[("TOML files", "*.toml"), ("All files", "*.*")]
         )
-        if fp and self._load_questions(fp):
-            self._start_session()
+        if path:
+            self.load_file(path)
 
-    def _open_recent(self, filepath):
-        if self._load_questions(filepath):
-            self._start_session()
-
-    # ─── Session Screen ────────────────────────────────────────────────────────
-    def _start_session(self):
-        self.queue = self._build_queue()
-        self.current_idx = 0
-        self.correct_first_try = set()
-        self.wrong_log = []
-        self.session_active = True
-        self._show_question()
-
-    def _show_question(self):
-        self._clear_container()
-        self.submitted = False
-        self.selected_indices = set()
-        self.explanation_labels = []
-
-        if self.current_idx < 0 or self.current_idx >= len(self.queue):
-            self._show_stats()
-            return
-
-        q = self.queue[self.current_idx]
-        self.current_question = q
-        multi = self._is_multi(q)
-
-        # Progress header
-        header = Frame(self.container, bg=THEME["bg"])
-        header.pack(fill="x", padx=24, pady=(16, 6))
-
-        score = len(self.correct_first_try)
-        progress_text = f"Question {self.current_idx + 1} of {len(self.queue)}   •   Score: {score}"
-        Label(
-            header, text=progress_text, font=self.fonts["small"],
-            bg=THEME["bg"], fg=THEME["text_dim"]
-        ).pack(side="left")
-
-        if multi:
-            Label(
-                header, text="select all that apply", font=self.fonts["small"],
-                bg=THEME["bg"], fg=THEME["accent"]
-            ).pack(side="right")
-
-        # Progress bar
-        bar_frame = Frame(self.container, bg=THEME["border"], height=6)
-        bar_frame.pack(fill="x", padx=24, pady=(0, 16))
-        bar_frame.pack_propagate(False)
-        fill_pct = self.current_idx / max(1, len(self.queue))
-        fill = Frame(bar_frame, bg=THEME["accent"])
-        fill.place(x=0, y=0, relwidth=fill_pct, relheight=1)
-
-        # Content
-        content = Frame(self.container, bg=THEME["bg"])
-        content.pack(fill="both", expand=True, padx=24, pady=4)
-
-        Label(
-            content, text="Question", font=self.fonts["small"],
-            bg=THEME["bg"], fg=THEME["text_dim"]
-        ).pack(anchor="w", pady=(0, 4))
-
-        self.question_label = Label(
-            content, text=q["question"], font=self.fonts["heading"],
-            bg=THEME["bg"], fg=THEME["text"],
-            wraplength=820, justify="left", anchor="w"
-        )
-        self.question_label.pack(fill="x", pady=(0, 16))
-
-        # Choices
-        self.choice_buttons = []
-        choices = q.get("choices", [])
-        for i, choice in enumerate(choices):
-            letter = LABELS[i] if i < len(LABELS) else str(i + 1)
-            cb = ChoiceButton(content, letter, choice, self._on_choice_click, self)
-            cb.pack(fill="x", pady=3)
-            self.choice_buttons.append(cb)
-
-        # Feedback
-        self.feedback_label = Label(
-            content, text="", font=self.fonts["heading"],
-            bg=THEME["bg"], fg=THEME["text"],
-            wraplength=820, justify="left", anchor="w"
-        )
-        self.feedback_label.pack(fill="x", pady=(12, 4))
-
-        self.explanation_frame = Frame(content, bg=THEME["bg"])
-        self.explanation_frame.pack(fill="x", pady=(0, 8))
-
-        # Action button
-        self.action_btn = Button(
-            content, text="Submit", font=self.fonts["heading"],
-            bg=THEME["accent"], fg="white",
-            activebackground=THEME["accent_hover"], activeforeground="white",
-            bd=0, padx=36, pady=12, cursor="hand2",
-            command=self._on_action
-        )
-        self.action_btn.pack(pady=(8, 16))
-
-        # Resize handling
-        content.bind("<Configure>", lambda e: self._update_wraplengths())
-        self.root.after_idle(self._update_wraplengths)
-
-    def _update_wraplengths(self):
-        try:
-            width = self.container.winfo_width() - 80
-            if width < 200:
-                width = 600
-            if hasattr(self, "question_label") and self.question_label.winfo_exists():
-                self.question_label.configure(wraplength=width)
-            for cb in self.choice_buttons:
-                if cb.winfo_exists():
-                    cb.update_wraplength(width)
-            for lbl in self.explanation_labels:
-                if lbl.winfo_exists():
-                    lbl.configure(wraplength=width - 20)
-        except Exception:
-            pass
-
-    def _on_choice_click(self, index):
-        if self.submitted or not self.session_active:
-            return
-        q = self.current_question
-        multi = self._is_multi(q)
-        if multi:
-            if index in self.selected_indices:
-                self.selected_indices.discard(index)
+    def open_recent(self, idx):
+        if idx < len(self.recent_files):
+            path = self.recent_files[idx]
+            if os.path.exists(path):
+                self.load_file(path)
             else:
-                self.selected_indices.add(index)
-            self.choice_buttons[index].set_selected(index in self.selected_indices)
-        else:
-            self.selected_indices = {index}
-            for i, cb in enumerate(self.choice_buttons):
-                cb.set_selected(i in self.selected_indices)
+                messagebox.showerror("Error", "File not found. It will be removed from recent.")
+                self.recent_files.pop(idx)
+                self.save_recent_files()
+                if self.state == "IDLE":
+                    self.show_idle()
 
-    def _on_letter(self, letter):
-        if not self.session_active or self.submitted:
+    def load_file(self, path):
+        try:
+            with open(path, 'rb') as f:
+                data = tomllib.load(f)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load TOML:\n{e}")
             return
-        idx = ord(letter) - ord("A")
-        if 0 <= idx < len(self.choice_buttons):
-            self._on_choice_click(idx)
 
-    def _on_enter(self, event=None):
-        if not self.session_active:
+        if 'questions' not in data or not data['questions']:
+            messagebox.showerror("Error", "No questions found in TOML file.")
             return
-        self._on_action()
 
-    def _on_escape(self, event=None):
-        if self.session_active:
-            if messagebox.askyesno(
-                "End Session",
-                "End this study session and return to the welcome screen?"
-            ):
-                self.session_active = False
-                self._show_welcome()
+        self.questions = data['questions']
+        self.original_count = len(self.questions)
+        self.current_file = os.path.basename(path)
 
-    def _on_action(self):
-        if not self.submitted:
-            self._submit_answer()
+        self.add_to_recent(path)
+
+        prepared = []
+        for i, q in enumerate(self.questions):
+            p = self.prepare_question(q, i)
+            if p:
+                prepared.append(p)
+
+        if not prepared:
+            messagebox.showerror("Error", "No valid questions found.")
+            return
+
+        self.queue = prepared
+        random.shuffle(self.queue)
+
+        self.first_try_correct = 0
+        self.unique_wrong = set()
+        self.attempts = 0
+        self.correct_attempts = 0
+        self.wrong_attempts = 0
+        self.questions_seen = 0
+
+        self.next_question()
+
+    def prepare_question(self, q, orig_idx):
+        if 'question' not in q or 'choices' not in q or 'answer' not in q:
+            return None
+
+        choices = list(q['choices'])
+        explanations = list(q.get('explanations', [''] * len(choices)))
+        while len(explanations) < len(choices):
+            explanations.append('')
+
+        paired = list(zip(choices, explanations))
+        random.shuffle(paired)
+
+        scrambled_choices = [p[0] for p in paired]
+        scrambled_explanations = [p[1] for p in paired]
+
+        if isinstance(q['answer'], list):
+            correct_answers = set(q['answer'])
+            is_multiple = True
         else:
-            self._next_question()
+            correct_answers = {q['answer']}
+            is_multiple = False
 
-    def _submit_answer(self):
-        q = self.current_question
-        multi = self._is_multi(q)
+        correct_indices = {i for i, c in enumerate(scrambled_choices) if c in correct_answers}
 
-        if not self.selected_indices:
-            # Briefly flash a hint
-            self.feedback_label.configure(
-                text="Please select an answer first.", fg=THEME["warning"]
+        if len(correct_indices) > 1:
+            is_multiple = True
+
+        return {
+            'question':        q['question'],
+            'choices':         scrambled_choices,
+            'explanations':    scrambled_explanations,
+            'correct_indices': correct_indices,
+            'is_multiple':     is_multiple,
+            'orig_idx':        orig_idx,
+        }
+
+    # ===== State: QUESTION =====
+    def next_question(self):
+        if not self.queue:
+            self.show_done()
+            return
+
+        self.current = self.queue.pop(0)
+        self.current_orig_idx = self.current['orig_idx']
+        self.questions_seen += 1
+
+        self.cursor = 0
+        self.selected = set()
+        self.state = "QUESTION"
+        self.render_question()
+
+    def render_question(self):
+        q = self.current
+        self.clear_text()
+        width = self.ui_width
+
+        file_info = f"[{self.current_file}] " if self.current_file else ""
+        info = (f" {file_info}Q{self.questions_seen}/{self.original_count}"
+                f"  │  Queue:{len(self.queue)+1}"
+                f"  │  ✓{self.correct_attempts}"
+                f"  │  ✗{self.wrong_attempts} ")
+        self.add(info + "\n", 'accent')
+        self.add("─" * width + "\n", 'border')
+        self.add("\n")
+
+        inner_width = width - 4
+        self.add("┌" + "─" * (width - 2) + "┐\n", 'border')
+        for line in wrap_text(q['question'], inner_width):
+            self.add("│ " + line.ljust(inner_width) + " │\n", 'question_bg')
+        self.add("└" + "─" * (width - 2) + "┘\n", 'border')
+        self.add("\n")
+
+        if q['is_multiple']:
+            self.add(" ◆ Multiple answers — Space to select, Enter to submit\n\n", 'accent')
+        else:
+            self.add(" ◇ Single answer — Enter to submit selection\n\n", 'accent')
+
+        for i, choice in enumerate(q['choices']):
+            is_cursor   = (i == self.cursor)
+            is_selected = (i in self.selected)
+            cursor_marker = "▶" if is_cursor else " "
+            checkbox      = "[x]" if is_selected else "[ ]"
+            prefix = f" {cursor_marker} {checkbox} "
+
+            avail = max(10, width - len(prefix))
+            choice_lines = wrap_text(choice, avail) or [""]
+            for j, cl in enumerate(choice_lines):
+                line = (prefix + cl) if j == 0 else (" " * len(prefix) + cl)
+                line = line.ljust(width)
+                tags = [f'choice_{i}']
+                if is_cursor:
+                    tags.append('cursor_bg')
+                self.text.insert('end', line + "\n", tuple(tags))
+
+        self.add("\n")
+        self.add(" [↑↓/jk] Navigate   [Space] Select   [Enter] Submit   [+/-] Font   [o] Open   [q] Quit\n", 'dim')
+
+        if q['is_multiple']:
+            self.footer.config(text=f" Selected: {len(self.selected)}  |  [Space] toggle  [Enter] submit")
+        else:
+            self.footer.config(text=" [Enter] submits the highlighted choice")
+
+        self.finalize()
+
+    def on_choice_click(self, idx):
+        if self.state != "QUESTION":
+            return
+        if idx < 0 or idx >= len(self.current['choices']):
+            return
+        self.cursor = idx
+        q = self.current
+        if q['is_multiple']:
+            if idx in self.selected:
+                self.selected.discard(idx)
+            else:
+                self.selected.add(idx)
+        else:
+            self.selected = {idx}
+        self.render_question()
+
+    def on_key(self, key):
+        if self.state == "IDLE":
+            if key in ('enter', 'space'):
+                self.browse_file()
+        elif self.state == "QUESTION":
+            if key == 'up':
+                self.cursor = (self.cursor - 1) % len(self.current['choices'])
+                self.render_question()
+            elif key == 'down':
+                self.cursor = (self.cursor + 1) % len(self.current['choices'])
+                self.render_question()
+            elif key == 'space':
+                q = self.current
+                if q['is_multiple']:
+                    if self.cursor in self.selected:
+                        self.selected.discard(self.cursor)
+                    else:
+                        self.selected.add(self.cursor)
+                    self.render_question()
+                else:
+                    self.selected = {self.cursor}
+                    self.render_question()
+            elif key == 'enter':
+                q = self.current
+                if q['is_multiple']:
+                    if not self.selected:
+                        return
+                    self.submit_answer()
+                else:
+                    self.selected = {self.cursor}
+                    self.submit_answer()
+        elif self.state == "REVIEW":
+            if key in ('enter', 'space'):
+                self.next_question()
+        elif self.state == "DONE":
+            if key in ('enter', 'space'):
+                if self.questions:
+                    self.restart_session()
+                else:
+                    self.show_idle()
+
+    # ===== State: REVIEW =====
+    def submit_answer(self):
+        q = self.current
+        user_selected = self.selected
+        correct_indices = q['correct_indices']
+
+        is_correct = (user_selected == correct_indices)
+
+        self.attempts += 1
+        if is_correct:
+            self.correct_attempts += 1
+            if self.current_orig_idx not in self.unique_wrong:
+                self.first_try_correct += 1
+        else:
+            self.wrong_attempts += 1
+            self.unique_wrong.add(self.current_orig_idx)
+            requeued = self.prepare_question(
+                self.questions[self.current_orig_idx],
+                self.current_orig_idx
             )
-            return
+            if requeued:
+                if not self.queue:
+                    self.queue.append(requeued)
+                else:
+                    insert_pos = random.randint(min(3, len(self.queue)), len(self.queue))
+                    self.queue.insert(insert_pos, requeued)
 
-        sorted_idx = sorted(self.selected_indices)
-        chosen = [q["choices"][i] for i in sorted_idx]
-        if not multi:
-            chosen = chosen[0]
+        self.last_was_correct = is_correct
+        self.state = "REVIEW"
+        self.render_review()
 
-        correct = self._check_answer(q, chosen)
-        self.submitted = True
+    def render_review(self):
+        q = self.current
+        user_selected = self.selected
+        correct_indices = q['correct_indices']
 
-        correct_ans = q["answer"] if isinstance(q["answer"], list) else [q["answer"]]
+        self.clear_text()
+        width = self.ui_width
 
-        # Highlight choices
-        for i, cb in enumerate(self.choice_buttons):
-            choice_text = q["choices"][i]
-            if choice_text in correct_ans:
-                cb.set_result_state("correct")
-            elif i in self.selected_indices:
-                cb.set_result_state("wrong")
+        file_info = f"[{self.current_file}] " if self.current_file else ""
+        info = (f" {file_info}Q{self.questions_seen}/{self.original_count}"
+                f"  │  Queue:{len(self.queue)}"
+                f"  │  ✓{self.correct_attempts}"
+                f"  │  ✗{self.wrong_attempts} ")
+        self.add(info + "\n", 'accent')
+        self.add("─" * width + "\n", 'border')
+        self.add("\n")
 
-        # Update question state
-        q["_last_chosen"] = chosen
-        if correct:
-            q["_answered_correct"] = True
-            if q["_wrong_count"] == 0:
-                self.correct_first_try.add(id(q))
-            self.feedback_label.configure(text="✓ Correct!", fg=THEME["correct"])
+        inner_width = width - 4
+        self.add("┌" + "─" * (width - 2) + "┐\n", 'border')
+        for line in wrap_text(q['question'], inner_width):
+            self.add("│ " + line.ljust(inner_width) + " │\n", 'question_bg')
+        self.add("└" + "─" * (width - 2) + "┘\n", 'border')
+        self.add("\n")
+
+        if self.last_was_correct:
+            self.add(" ✓ CORRECT\n\n", 'correct')
         else:
-            q["_wrong_count"] += 1
-            if q["_wrong_count"] == 1:
-                self.wrong_log.append({
-                    "question": q["question"],
-                    "answer": q["answer"],
-                    "your_answer": chosen,
-                    "timestamp": datetime.now().isoformat()
-                })
-            ans_display = ", ".join(correct_ans) if isinstance(q["answer"], list) else q["answer"]
-            self.feedback_label.configure(
-                text=f"✗ Wrong. Correct answer: {ans_display}",
-                fg=THEME["wrong"]
-            )
+            self.add(" ✗ WRONG — re-queuing for recall\n\n", 'wrong')
 
-        # Show explanations if available
-        explanations = q.get("explanations", [])
-        if explanations and len(explanations) == len(q["choices"]):
-            for w in self.explanation_frame.winfo_children():
-                w.destroy()
-            self.explanation_labels = []
-            for i, exp in enumerate(explanations):
-                if not exp:
-                    continue
-                choice_text = q["choices"][i]
-                is_correct = choice_text in correct_ans
-                color = THEME["correct"] if is_correct else THEME["text_dim"]
-                letter = LABELS[i] if i < len(LABELS) else str(i + 1)
-                lbl = Label(
-                    self.explanation_frame,
-                    text=f"  {letter}. {exp}",
-                    font=self.fonts["small"],
-                    bg=THEME["bg"], fg=color,
-                    wraplength=800, justify="left", anchor="w"
-                )
-                lbl.pack(fill="x", pady=2)
-                self.explanation_labels.append(lbl)
+        for i, (choice, expl) in enumerate(zip(q['choices'], q['explanations'])):
+            is_correct_choice = (i in correct_indices)
+            user_picked       = (i in user_selected)
 
-        self.action_btn.configure(text="Next  →")
-        self._update_wraplengths()
+            checkbox = "[x]" if user_picked else "[ ]"
+            mark = "  ✓" if is_correct_choice else ("  ✗" if user_picked else "")
+            prefix = f"   {checkbox} "
 
-    def _next_question(self):
-        q = self.current_question
-        if not q["_answered_correct"]:
-            # Spaced re-queue: pop and reinsert 1–4 spots later
-            self.queue.pop(self.current_idx)
-            insert_at = min(self.current_idx + random.randint(1, 4), len(self.queue))
-            self.queue.insert(insert_at, q)
-            # current_idx now points to the next question
+            if is_correct_choice and user_picked:
+                line_tag = 'hl_correct'
+            elif is_correct_choice and not user_picked:
+                line_tag = 'hl_missed'
+            elif not is_correct_choice and user_picked:
+                line_tag = 'hl_wrong'
+            else:
+                line_tag = 'dim'
+
+            avail = max(10, width - len(prefix) - len(mark))
+            choice_lines = wrap_text(choice, avail) or [""]
+            for j, cl in enumerate(choice_lines):
+                line = (prefix + cl + mark) if j == 0 else (" " * len(prefix) + cl)
+                line = line.ljust(width)
+                self.add(line + "\n", line_tag)
+
+            if expl:
+                for el in wrap_text(expl, width - 8):
+                    color = 'correct' if is_correct_choice else 'dim'
+                    self.add("       " + el + "\n", color)
+
+        self.add("\n")
+        self.add("─" * width + "\n", 'border')
+        self.add("\n")
+
+        if self.queue:
+            self.add(" Press [Enter] for next question   [+/-] Font   [q] Quit\n", 'dim')
         else:
-            self.current_idx += 1
-        self._show_question()
+            self.add(" Press [Enter] to see session stats   [+/-] Font   [q] Quit\n", 'dim')
 
-    # ─── Stats Screen ──────────────────────────────────────────────────────────
-    def _show_stats(self):
-        self._clear_container()
-        self.session_active = False
-        self._save_wrong_answers()
+        self.footer.config(
+            text=f" {'✓ CORRECT' if self.last_was_correct else '✗ WRONG — re-queued'}"
+        )
+        self.finalize()
 
-        total = len(self.questions)
-        correct = len(self.correct_first_try)
-        wrong = total - correct
-        pct = (correct / total * 100) if total > 0 else 0
+    # ===== State: DONE =====
+    def show_done(self):
+        self.state = "DONE"
+        self.clear_text()
 
-        center = Frame(self.container, bg=THEME["bg"])
-        center.pack(expand=True, fill="both", padx=40, pady=40)
+        width = self.ui_width
+        self.add("┌" + "─" * (width - 2) + "┐\n", 'border')
+        self.add("│" + " SESSION COMPLETE ".center(width - 2) + "│\n", 'accent')
+        self.add("│" + " " * (width - 2) + "│\n", 'border')
 
-        Label(
-            center, text="Session Complete!", font=self.fonts["title"],
-            bg=THEME["bg"], fg=THEME["text"]
-        ).pack(pady=(20, 20))
-
-        stats_card = Frame(center, bg=THEME["surface"], padx=40, pady=24)
-        stats_card.pack()
-        stats_inner = Frame(stats_card, bg=THEME["surface"])
-        stats_inner.pack()
-
-        rows = [
-            ("Total Questions",     str(total),     THEME["text"]),
-            ("Correct (first try)", str(correct),   THEME["correct"]),
-            ("Wrong",               str(wrong),     THEME["wrong"]),
-            ("Score",               f"{pct:.1f}%",  THEME["accent"]),
+        stats = [
+            ("Total questions",     f"{self.original_count}"),
+            ("Total attempts",      f"{self.attempts}"),
+            ("Correct first try",   f"{self.first_try_correct}"),
+            ("Wrong (unique)",      f"{len(self.unique_wrong)}"),
+            ("Correct attempts",    f"{self.correct_attempts}"),
+            ("Wrong attempts",      f"{self.wrong_attempts}"),
         ]
-        for i, (label, value, color) in enumerate(rows):
-            Label(
-                stats_inner, text=label, font=self.fonts["body"],
-                bg=THEME["surface"], fg=THEME["text_dim"]
-            ).grid(row=i, column=0, sticky="e", padx=(20, 30), pady=6)
-            Label(
-                stats_inner, text=value, font=self.fonts["stat"],
-                bg=THEME["surface"], fg=color
-            ).grid(row=i, column=1, sticky="w", padx=(30, 20), pady=6)
+        if self.attempts > 0:
+            acc = (self.correct_attempts / self.attempts) * 100
+            stats.append(("Accuracy", f"{acc:.1f}%"))
+        if self.original_count > 0:
+            first_rate = (self.first_try_correct / self.original_count) * 100
+            stats.append(("First-try rate", f"{first_rate:.1f}%"))
 
-        btn_frame = Frame(center, bg=THEME["bg"])
-        btn_frame.pack(pady=36)
+        inner_width = width - 4
+        left_w  = inner_width // 2
+        right_w = inner_width - left_w
+        for label, value in stats:
+            left  = f" {label}:"
+            right = f"{value} "
+            line = left.ljust(left_w) + right.rjust(right_w)
+            self.add("│ " + line + " │\n", 'question_bg')
 
-        Button(
-            btn_frame, text="  Study Again  ", font=self.fonts["heading"],
-            bg=THEME["accent"], fg="white",
-            activebackground=THEME["accent_hover"], activeforeground="white",
-            bd=0, padx=24, pady=12, cursor="hand2",
-            command=self._start_session
-        ).pack(side="left", padx=6)
+        self.add("│" + " " * (width - 2) + "│\n", 'border')
+        self.add("└" + "─" * (width - 2) + "┘\n", 'border')
+        self.add("\n")
 
-        Button(
-            btn_frame, text="  Open Another File  ", font=self.fonts["heading"],
-            bg=THEME["surface"], fg=THEME["text"],
-            activebackground=THEME["surface_alt"], activeforeground=THEME["text"],
-            bd=0, padx=24, pady=12, cursor="hand2",
-            command=self._open_file_dialog
-        ).pack(side="left", padx=6)
+        if self.unique_wrong:
+            self.add(" Questions you got wrong (need review):\n\n", 'wrong')
+            for idx in sorted(self.unique_wrong):
+                q_text = self.questions[idx].get('question', '?')
+                max_len = width - 8
+                if len(q_text) > max_len:
+                    q_text = q_text[:max_len-3] + "..."
+                self.add(f"   • {q_text}\n", 'dim')
+            self.add("\n")
 
-        Button(
-            btn_frame, text="  Back to Home  ", font=self.fonts["body"],
-            bg=THEME["surface"], fg=THEME["text_dim"],
-            activebackground=THEME["surface_alt"], activeforeground=THEME["text"],
-            bd=0, padx=24, pady=12, cursor="hand2",
-            command=self._show_welcome
-        ).pack(side="left", padx=6)
+        self.add(" Press [r] to start a new session   [+/-] Font   [q] Quit\n", 'dim')
 
-        if self.wrong_log and self.current_filepath:
-            wrong_file = Path(self.current_filepath).parent / WRONG_ANSWERS_FILE
-            Label(
-                center,
-                text=f"Wrong answers logged to: {wrong_file}",
-                font=self.fonts["small"], bg=THEME["bg"], fg=THEME["text_dim"]
-            ).pack(side="bottom", pady=16)
+        self.header.config(text=" STUDY SESSION — COMPLETE ")
+        self.footer.config(text=" [r] New session   [q] Quit")
+        self.finalize()
+
+    def restart_session(self):
+        if not self.questions:
+            self.show_idle()
+            return
+        self.queue = []
+        for i, q in enumerate(self.questions):
+            p = self.prepare_question(q, i)
+            if p:
+                self.queue.append(p)
+        random.shuffle(self.queue)
+        self.first_try_correct = 0
+        self.unique_wrong = set()
+        self.attempts = 0
+        self.correct_attempts = 0
+        self.wrong_attempts = 0
+        self.questions_seen = 0
+        self.next_question()
 
 
 def main():
-    root = Tk()
+    if tomllib is None:
+        print("Error: tomllib (Python 3.11+) or 'tomli' package required.")
+        print("Install with: pip install tomli")
+        return
+    root = tk.Tk()
     StudyApp(root)
     root.mainloop()
 

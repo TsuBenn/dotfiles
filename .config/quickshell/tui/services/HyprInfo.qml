@@ -228,8 +228,22 @@ Singleton {
     function resizeClient(w, h, address) {
         SystemInfo.runDetached(["hyprctl", "dispatch", `hl.dsp.window.resize({x=${w},y=${h},window="address:${address}"})`]);
     }
+
     function repositionClient(w, h, address) {
         SystemInfo.runDetached(["hyprctl", "dispatch", `hl.dsp.window.move({x=${w},y=${h},window="address:${address}"})`]);
+    }
+
+    function maximizeClient(address, toggle = false) {
+        SystemInfo.runDetached(["hyprctl", "dispatch", `hl.dsp.window.fullscreen({window="address:${address}", action="${toggle ? "toggle" : "set"}", mode="maximize"})`]);
+    }
+
+    function fullscreenClient(address, toggle = false) {
+        SystemInfo.runDetached(["hyprctl", "dispatch", `hl.dsp.window.fullscreen({window="address:${address}", action="${toggle ? "toggle" : "set"}", mode="fullscreen"})`]);
+    }
+
+    function unMaximizeClient(address) {
+        SystemInfo.runDetached(["hyprctl", "dispatch", `hl.dsp.window.fullscreen({window="address:${address}", action="unset", mode="maximized"})`]);
+        SystemInfo.runDetached(["hyprctl", "dispatch", `hl.dsp.window.fullscreen({window="address:${address}", action="unset", mode="fullscreen"})`]);
     }
 
     function moveClient(client: HyprlandToplevel, workspace: var): bool {
@@ -252,7 +266,11 @@ Singleton {
     }
 
     function focusClient(wClass, wTitle): bool {
-        const c = matchClient(wClass, wTitle);
+        if (wClass instanceof HyprlandToplevel) {
+            wClass?.wayland.activate();
+            return;
+        }
+        const c = wClass.startsWith("0x") ? getClient(wClass) : matchClient(wClass, wTitle);
         if (!c) {
             console.warn("HyprInfo: cannot focus a null client");
             return false;

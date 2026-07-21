@@ -13,7 +13,7 @@ CellFloats {
     name: "color"
 
     w: 96
-    h: 32
+    h: 30 + SettingsInfo.hints * 2
 
     property bool minimal: SettingsInfo.minimal
 
@@ -180,7 +180,7 @@ CellFloats {
 
                 property int push: 0
 
-                property int h: 28 + !SettingsInfo.hints * 2
+                property int h: 28
 
                 signal unFocusPalette
 
@@ -586,7 +586,7 @@ CellFloats {
                             text: color.color.description
                             color: color.color.fgBase
                             preferedW: preview.w - 2
-                            preferedH: 4 + !SettingsInfo.hints * 2
+                            preferedH: 4
                             wrap: true
                             font: Cell.fontB
                         }
@@ -597,7 +597,7 @@ CellFloats {
                             Layout.leftMargin: Cell.w(1)
 
                             w: preview.w - 2
-                            h: 4 + !SettingsInfo.hints * 2
+                            h: 4
 
                             color: color.color.bgOverlay
 

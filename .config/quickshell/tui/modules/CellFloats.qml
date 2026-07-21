@@ -17,6 +17,44 @@ FloatingWindow {
 
     property bool isFloat: true
 
+    property var workspace: toplevel?.workspace
+    property var toplevel: HyprInfo.getClient(address)
+
+    property bool isMaximized: toplevel?.wayland.maximized ?? false
+
+    onIsMaximizedChanged: {
+        if (!noMax && toplevel) {
+            unMaximize();
+        }
+    }
+
+    // Connections {
+    //     target: SettingsInfo
+    //     function onDebugSig() {
+    //         root.toggleFullscreen();
+    //     }
+    // }
+
+    function unMaximize() {
+        HyprInfo.unMaximizeClient(address);
+    }
+
+    function setMaximize() {
+        HyprInfo.maximizeClient(address);
+    }
+
+    function toggleMaximize() {
+        HyprInfo.maximizeClient(address, true);
+    }
+
+    function setFullscreen() {
+        HyprInfo.fullscreenClient(address);
+    }
+
+    function toggleFullscreen() {
+        HyprInfo.fullscreenClient(address, true);
+    }
+
     onClosed: {
         TextFieldManager.unFocusAll();
         root.close();
@@ -30,11 +68,11 @@ FloatingWindow {
             }
         }
         function onSigOpen(name) {
-            if (root.name == name) {
+            if (root.name == name && root.visible) {
                 if (SettingsInfo.moveFloatOnFocus)
-                    HyprInfo.moveClient(HyprInfo.matchClient("org.quickshell", root.title), HyprInfo.focusedWorkspace);
+                    HyprInfo.moveClient(root.toplevel, HyprInfo.focusedWorkspace);
                 else
-                    HyprInfo.focusClient("org.quickshell", root.title);
+                    HyprInfo.focusClient(root.toplevel);
             }
         }
     }
@@ -61,12 +99,16 @@ FloatingWindow {
         }
     }
 
+    function init() {
+    }
+
     Timer {
         id: init
         interval: 200
         onTriggered: {
             root.maximumSize = Qt.binding(() => root._maximum);
             root.minimumSize = Qt.binding(() => root._minimum);
+            root.init();
         }
     }
 
@@ -179,6 +221,8 @@ FloatingWindow {
         color: root.color
 
         focus: !TextFieldManager.active && root.visible && Window.window.active
+
+        Keys.priority: Keys.BeforeItem
 
         Keys.onPressed: event => {
             if (root.shortcuts.length > 0) {

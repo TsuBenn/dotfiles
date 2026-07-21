@@ -12,25 +12,43 @@ CellFloats {
 
     property bool optimizeMemory: SettingsInfo.optimizeMemory
 
-    property bool minimal: SettingsInfo.minimal || desktop
+    property bool minimal: SettingsInfo.minimal || (desktop && !advanced)
 
     property var monitor: HyprInfo.focusedMonitor
 
-    property var desktop: {
-        for (const client of HyprInfo.listClients()) {
-            if (client.address == address.slice(2))
-                continue;
-            if (client.workspace == HyprInfo.focusedWorkspace.id) {
-                return true;
-            }
+    property var desktop: false
+
+    property var advanced: false
+
+    onWorkspaceChanged: eval_desktop.restart()
+
+    Timer {
+        id: eval_desktop
+        interval: 100
+        onTriggered: {
+            root.checkDesktop();
         }
-        return false;
+    }
+
+    function checkDesktop() {
+        if (HyprInfo.clientCount() <= 1) {
+            root.desktop = true;
+        } else {
+            root.desktop = false;
+            root.advanced = false;
+        }
+    }
+
+    function init() {
+        if (desktop && !advanced) {
+            HyprInfo.repositionClient((monitor.width - implicitWidth) / 2, monitor.height - implicitHeight - Cell.border_width, address);
+        }
     }
 
     name: "wallpaper"
 
-    w: 99
-    h: minimal ? 21 : 52
+    w: 96
+    h: (minimal ? 14 : 49) - !SettingsInfo.hints * 2
 
     shortcuts: [
         {
@@ -43,6 +61,20 @@ CellFloats {
             binds: ["Right", "Tab"],
             action: () => {
                 selection.advance(1);
+            }
+        },
+        {
+            binds: "Ctrl+R",
+            action: () => {
+                WallpaperInfo.rescan();
+            }
+        },
+        {
+            binds: "Ctrl+E",
+            action: () => {
+                if (desktop) {
+                    root.advanced = !root.advanced;
+                }
             }
         },
         {
@@ -96,18 +128,29 @@ CellFloats {
         edit = false;
         reposition = false;
         textfield.set("");
+        if (HyprInfo.clientCount() < 1) {
+            root.desktop = true;
+        } else {
+            root.desktop = false;
+            root.advanced = false;
+        }
     }
 
     onEditChanged: {
         if (edit) {
             pivotAnim.restart();
             reposition = false;
+        } else {
+            pivotAnimEnd.restart();
         }
     }
 
     onRepositionChanged: {
         if (reposition) {
             edit = false;
+            repoAnimStart.restart();
+        } else {
+            repoAnimEnd.restart();
         }
     }
 
@@ -149,10 +192,10 @@ CellFloats {
                 id: preview
                 Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
 
-                visible: root.edit || root.reposition || (!root.minimal)
+                visible: root.edit || root.reposition || (!root.minimal || root.advanced)
 
-                w: Math.floor(h / 9 * 16 * 2)
-                h: 28
+                w: box.w
+                h: Math.floor(w / 16 * 9 / 2)
 
                 color: "transparent"
 
@@ -261,7 +304,21 @@ CellFloats {
                 // --- ANIMATIONS ---
                 SequentialAnimation {
                     id: pivotAnim
+                    ScriptAction {
+                        script: {
+                            pivot.visible = true;
+                            pivot_bg.visible = true;
+                            crosshair.visible = true;
+                        }
+                    }
                     ParallelAnimation {
+                        NumberAnimation {
+                            target: crosshair
+                            property: "opacity"
+                            duration: 200
+                            to: 1
+                            easing.type: Easing.OutCubic
+                        }
                         NumberAnimation {
                             target: pivot
                             property: "opacity"
@@ -294,6 +351,40 @@ CellFloats {
                             duration: 500
                             to: 0
                             easing.type: Easing.InCubic
+                        }
+                    }
+                }
+
+                SequentialAnimation {
+                    id: pivotAnimEnd
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: pivot
+                            property: "opacity"
+                            duration: 200
+                            to: 0
+                            easing.type: Easing.InCubic
+                        }
+                        NumberAnimation {
+                            target: pivot_bg
+                            property: "opacity"
+                            duration: 200
+                            to: 0
+                            easing.type: Easing.InCubic
+                        }
+                        NumberAnimation {
+                            target: crosshair
+                            property: "opacity"
+                            duration: 200
+                            to: 0
+                            easing.type: Easing.InCubic
+                        }
+                    }
+                    ScriptAction {
+                        script: {
+                            pivot.visible = false;
+                            pivot_bg.visible = false;
+                            crosshair.visible = true;
                         }
                     }
                 }
@@ -339,6 +430,12 @@ CellFloats {
 
                 SequentialAnimation {
                     id: repoAnimStart
+                    ScriptAction {
+                        script: {
+                            repo_bg.visible = true;
+                            repo_hint.visible = true;
+                        }
+                    }
                     ParallelAnimation {
                         NumberAnimation {
                             target: repo_bg
@@ -359,10 +456,35 @@ CellFloats {
                     }
                 }
 
+                SequentialAnimation {
+                    id: repoAnimEnd
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: repo_bg
+                            property: "opacity"
+                            to: 0
+                            duration: 500
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            target: repo_hint
+                            property: "opacity"
+                            to: 0
+                            duration: 500
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                    ScriptAction {
+                        script: {
+                            repo_bg.visible = false;
+                            repo_hint.visible = false;
+                        }
+                    }
+                }
+
                 Cells {
                     id: repo_bg
-                    visible: root.reposition
-                    onVisibleChanged: repoAnimStart.restart()
+                    visible: false
                     w: parent.w
                     h: parent.h
                     opacity: 0.5
@@ -372,7 +494,7 @@ CellFloats {
                 CellText {
                     id: repo_hint
 
-                    visible: root.reposition
+                    visible: false
 
                     x: Cell.centerWCell(implicitWidth, repo_bg.implicitWidth)
                     y: Cell.centerHCell(implicitHeight, repo_bg.implicitHeight)
@@ -462,7 +584,7 @@ CellFloats {
                 id: thumbnails
 
                 w: box.contentW
-                h: (!root.minimal ? 9 : 7) + !SettingsInfo.hints * 2
+                h: (!root.minimal ? 7 : 6)
 
                 color: "transparent"
 
@@ -492,7 +614,7 @@ CellFloats {
 
                     visible: !WallpaperInfo.scanning
 
-                    x: Cell.centerWCell(implicitWidth, parent.implicitWidth) - Cell.w(1)
+                    x: Cell.centerWCell(implicitWidth, root.implicitWidth) - Cell.w(1)
 
                     spacing: Cell.w(5)
 
@@ -571,11 +693,11 @@ CellFloats {
 
                                 Layout.topMargin: Cell.h(1)
 
-                                w: Math.round((h - 1) / 9 * 16 * 2) - 1
+                                w: h * 3
                                 h: thumbnails.h
 
                                 footer.text: " " + value + " "
-                                footer.offset: Math.floor(contentW / 2 - value.length / 2) - 1
+                                footer.centered: true
                                 footer.color: WallpaperInfo.inSet(modelData) ? Colors.secondary : Colors.fgBase
                                 footer.font: WallpaperInfo.inSet(modelData) ? Cell.fontB : Cell.font
 
@@ -878,35 +1000,27 @@ CellFloats {
                     text: "  "
                 }
 
-                // CellButton {
-                //     id: more
+                CellButton {
+                    id: more
 
-                //     text: "More"
+                    text: "More"
 
-                //     onVisibleChanged: {
-                //         yes = false;
-                //     }
+                    clickable: root.desktop
 
-                //     onYesChanged: {
-                //         root.edit = false;
-                //     }
+                    color: clickable ? (root.advanced ? Colors.accentStrong : Colors.bgOverlay) : Colors.bgOverlay
+                    fg: clickable ? (root.advanced ? Colors.onAccent : Colors.fgBase) : Colors.fgSubtle
 
-                //     property bool yes: false
-
-                //     color: yes ? Colors.accentStrong : Colors.bgOverlay
-                //     fg: yes ? Colors.onAccent : Colors.fgBase
-
-                //     onPressed: button => {
-                //         if (button == "L") {
-                //             yes = !yes;
-                //         }
-                //     }
-                // }
+                    onPressed: button => {
+                        if (button == "L") {
+                            root.advanced = !root.advanced;
+                        }
+                    }
+                }
             }
 
             ColumnLayout {
 
-                // visible: more.yes
+                visible: root.advanced || !root.desktop
 
                 spacing: 0
 
@@ -1578,8 +1692,14 @@ CellFloats {
 
                 CellKeyHint {
                     visible: textfield.text.length == 0
-                    key: "← →"
-                    hint: "Navigate"
+                    key: "←/S-Tab"
+                    hint: "Back"
+                }
+
+                CellKeyHint {
+                    visible: textfield.text.length == 0
+                    key: "→/Tab"
+                    hint: "Next"
                 }
 
                 CellKeyHint {
@@ -1600,6 +1720,11 @@ CellFloats {
                 }
 
                 CellKeyHint {
+                    key: "C-E"
+                    hint: "Advanced"
+                }
+
+                CellKeyHint {
                     visible: !autoAdvance.auto && !WallpaperInfo.slideshow && textfield.text.length > 0
                     key: "Enter"
                     hint: "Select"
@@ -1609,11 +1734,6 @@ CellFloats {
                     visible: WallpaperInfo.slideshow && textfield.text.length > 0
                     key: "Enter"
                     hint: "Toggle"
-                }
-
-                CellKeyHint {
-                    key: "Tab"
-                    hint: "More"
                 }
             }
         }

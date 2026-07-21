@@ -20,6 +20,10 @@ CellPopup {
 
     escapeToClose: !TextFieldManager.active
 
+    onShortcutCalled: {
+        close();
+    }
+
     onVisibleChanged: {
         custom = false;
         help = false;
@@ -70,7 +74,6 @@ CellPopup {
                     bg: "transparent"
                     connectStart: true
                     connectEnd: true
-
                 }
 
                 CellScrollList {
@@ -204,7 +207,6 @@ CellPopup {
                     bg: "transparent"
                     connectStart: true
                     connectEnd: true
-
                 }
 
                 RowLayout {

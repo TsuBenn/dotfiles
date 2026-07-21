@@ -29,6 +29,8 @@ Item {
 
     signal promoted
 
+    signal shortcutCalled
+
     readonly property bool isTop: PopupManager.isTop(name)
 
     Connections {
@@ -66,9 +68,12 @@ Item {
             attemptFocus();
     } */
 
+    Keys.priority: Keys.BeforeItem
+
     Keys.onPressed: event => {
         if (root.shortcuts.length > 0)
-            ShortcutInfo.handleShortcuts(event, root.shortcuts);
+            if (ShortcutInfo.handleShortcuts(event, root.shortcuts))
+                root.shortcutCalled();
         if (ShortcutInfo.matchShortcut(event, "Escape") && escapeToClose) {
             root.close();
         }

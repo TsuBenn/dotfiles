@@ -26,6 +26,7 @@ Item {
     component Header: Item {
         property string text: ""
         property int offset: 0
+        property bool centered: true
         property font font: Cell.font
         property color color: Colors.fgBase
     }
@@ -273,7 +274,7 @@ Item {
 
             CellText {
                 visible: root.header.text.trim() != ""
-                x: Cell.w(Math.max(root.header.offset, 0) + 1)
+                x: root.header.centered ? Cell.centerWCell(implicitWidth, parent.implicitWidth) : Cell.w(Math.max(root.header.offset, 0) + 1)
                 text: root.header.text
                 color: root.header.color
                 font: root.header.font
@@ -283,7 +284,7 @@ Item {
 
             CellText {
                 visible: root.footer.text.trim() != ""
-                x: Cell.w(Math.max(root.footer.offset, 0) + 1)
+                x: root.footer.centered ? Cell.centerWCell(implicitWidth, parent.implicitWidth) : Cell.w(Math.max(root.footer.offset, 0) + 1)
                 y: Cell.h(root.h - 1)
                 text: root.footer.text
                 color: root.footer.color

@@ -62,16 +62,18 @@ Item {
     //     cellY: Cell.hCount(root.monitor.height / 2, "floor") - Math.round(h / 2)
     // }
 
-    WallpaperPopup {
-        id: wallpaper
+    // Deprecated -> Use WallpaperFloats instead
+    //
+    // WallpaperPopup {
+    //     id: wallpaper
 
-        monitor: root.monitor
+    //     monitor: root.monitor
 
-        name: "wallpaper"
+    //     name: "wallpaper"
 
-        cellX: Cell.wCount(root.monitor.width / 2) - Math.round(w / 2) - 1
-        cellY: HyprInfo.clientCount() > 0 ? Cell.hCount(root.monitor.height / 2, "floor") - Math.floor(h / 2) : Cell.hCount(root.monitor.height, "floor") - Math.floor(h) - 1
-    }
+    //     cellX: Cell.wCount(root.monitor.width / 2) - Math.round(w / 2) - 1
+    //     cellY: HyprInfo.clientCount() > 0 ? Cell.hCount(root.monitor.height / 2, "floor") - Math.floor(h / 2) : Cell.hCount(root.monitor.height, "floor") - Math.floor(h) - 1
+    // }
 
     PowerPopup {
         id: power

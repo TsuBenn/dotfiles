@@ -14,10 +14,11 @@ Singleton {
                 if (matchShortcut(event, bind)) {
                     if (shortcut.action())
                         event.accepted = true;
-                    return;
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     function normalizeBinds(binds) {
@@ -30,9 +31,27 @@ Singleton {
 
     function matchShortcut(event, shortcutStr) {
         let parts = shortcutStr.split("+");
-        let rawKey = parts.pop().trim().toLowerCase(); // Use lowercase first to clean it up
+        let rawKey = parts.pop().trim().toLowerCase();
 
-        // 1. Map common friendly names to official Qt names (matching Qt's exact case)
+        // 1. Build the target modifiers mask first
+        let targetModifiers = 0;
+        let hasShift = false;
+
+        parts.forEach(mod => {
+            mod = mod.trim().toLowerCase();
+            if (mod === "ctrl" || mod === "control")
+                targetModifiers |= Qt.ControlModifier;
+            if (mod === "shift") {
+                targetModifiers |= Qt.ShiftModifier;
+                hasShift = true; // Flag that Shift is active
+            }
+            if (mod === "alt")
+                targetModifiers |= Qt.AltModifier;
+            if (mod === "meta" || mod === "super")
+                targetModifiers |= Qt.MetaModifier;
+        });
+
+        // 2. Map common friendly names to official Qt names
         const aliasMap = {
             "esc": "Escape",
             "enter": "Return",
@@ -43,37 +62,20 @@ Singleton {
             "left": "Left",
             "right": "Right",
             "space": "Space",
-            "tab": "Tab"
+            // TRAPDOOR FIX: If Shift is held, Tab changes its identity to Backtab
+            "tab": hasShift ? "Backtab" : "Tab"
         };
 
         let targetKeyStr = "";
         if (aliasMap[rawKey]) {
             targetKeyStr = aliasMap[rawKey];
         } else {
-            // Fallback: PascalCase formatting (e.g., "a" -> "A", "home" -> "Home")
             targetKeyStr = rawKey.charAt(0).toUpperCase() + rawKey.slice(1);
         }
 
-        // 2. Build the target modifiers mask
-        let targetModifiers = 0;
-        parts.forEach(mod => {
-            mod = mod.trim().toLowerCase();
-            if (mod === "ctrl" || mod === "control")
-                targetModifiers |= Qt.ControlModifier;
-            if (mod === "shift")
-                targetModifiers |= Qt.ShiftModifier;
-            if (mod === "alt")
-                targetModifiers |= Qt.AltModifier;
-            if (mod === "meta" || mod === "super")
-                targetModifiers |= Qt.MetaModifier;
-        });
-
-        // 3. Dynamic lookup now matches Qt.Key_Escape, Qt.Key_A, etc.
         let targetKeyCode = Qt["Key_" + targetKeyStr];
-        if (targetKeyCode === undefined) {
-            console.warn("Invalid key name resolved in lookup: Qt.Key_" + targetKeyStr);
+        if (targetKeyCode === undefined)
             return false;
-        }
 
         let modifiersMatch = (event.modifiers & targetModifiers) === targetModifiers;
         let keyMatch = event.key === targetKeyCode;
