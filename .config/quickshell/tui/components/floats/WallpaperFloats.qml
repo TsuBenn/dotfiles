@@ -24,18 +24,20 @@ CellFloats {
 
     Timer {
         id: desktopCheck
-        interval: 100
+        interval: 200
         onTriggered: root.checkDesktop()
     }
 
     function checkDesktop() {
         const old = desktop;
-        if (HyprInfo.clientCount() < 2) {
-            desktop = true;
-            // advanced = false;
-        } else {
-            desktop = false;
-            // advanced = true;
+        if (!reloading) {
+            if (HyprInfo.clientCount() < 2) {
+                desktop = true;
+                advanced = false;
+            } else {
+                desktop = false;
+                advanced = true;
+            }
         }
         if (desktop && !advanced) {
             HyprInfo.repositionClient((monitor.width - implicitWidth) / 2, monitor.height - implicitHeight - Cell.border_width, address);
@@ -44,7 +46,7 @@ CellFloats {
     }
 
     function init() {
-        checkDesktop();
+        // checkDesktop(;
     }
 
     onVisibleChanged: {
@@ -55,17 +57,25 @@ CellFloats {
             checkDesktop();
     }
 
-    // function onSigOpen() {
-    //     if (HyprInfo.clientCount() < 1) {
-    //         advanced = false;
-    //     } else {
-    //         advanced = true;
-    //     }
+    function onSigOpen() {
+        // console.log("sig");
+        // console.log("reloading: " + reloading);
+        if (reloading)
+            return;
+        if (HyprInfo.clientCount() < 1) {
+            advanced = false;
+        } else {
+            advanced = true;
+        }
+    }
+
+    // onAdvancedChanged: {
+    //     console.log("advanced: " + advanced);
     // }
 
-    onReloadingChanged: {
-        console.log(reloading);
-    }
+    // onReloadingChanged: {
+    //     console.log(reloading);
+    // }
 
     name: "wallpaper"
 
