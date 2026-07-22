@@ -74,6 +74,7 @@ FloatingWindow {
                 else
                     HyprInfo.focusClient(root.toplevel);
             }
+            root.onSigOpen();
         }
     }
 
@@ -92,11 +93,17 @@ FloatingWindow {
     onHChanged: reload()
     onWChanged: reload()
 
+    property bool reloading: false
+
     function reload() {
         if (visible && maximumSize == minimumSize) {
+            reloading = true;
             FloatsManager.close(root.name);
             FloatsManager.open(root.name);
         }
+    }
+
+    function onSigOpen() {
     }
 
     function init() {
@@ -109,6 +116,7 @@ FloatingWindow {
             root.maximumSize = Qt.binding(() => root._maximum);
             root.minimumSize = Qt.binding(() => root._minimum);
             root.init();
+            root.reloading = false;
         }
     }
 

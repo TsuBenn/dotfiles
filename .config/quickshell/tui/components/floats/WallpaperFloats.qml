@@ -12,7 +12,7 @@ CellFloats {
 
     property bool optimizeMemory: SettingsInfo.optimizeMemory
 
-    property bool minimal: SettingsInfo.minimal || (desktop && !advanced)
+    property bool minimal: SettingsInfo.minimal || (!advanced)
 
     property var monitor: HyprInfo.focusedMonitor
 
@@ -20,29 +20,51 @@ CellFloats {
 
     property var advanced: false
 
-    onWorkspaceChanged: eval_desktop.restart()
+    onWorkspaceChanged: desktopCheck.restart()
 
     Timer {
-        id: eval_desktop
+        id: desktopCheck
         interval: 100
-        onTriggered: {
-            root.checkDesktop();
-        }
+        onTriggered: root.checkDesktop()
     }
 
     function checkDesktop() {
-        if (HyprInfo.clientCount() <= 1) {
-            root.desktop = true;
+        const old = desktop;
+        if (HyprInfo.clientCount() < 2) {
+            desktop = true;
+            // advanced = false;
         } else {
-            root.desktop = false;
-            root.advanced = false;
+            desktop = false;
+            // advanced = true;
         }
+        if (desktop && !advanced) {
+            HyprInfo.repositionClient((monitor.width - implicitWidth) / 2, monitor.height - implicitHeight - Cell.border_width, address);
+        } else if (desktop != old)
+            HyprInfo.repositionClient((monitor.width - implicitWidth) / 2, (monitor.height - implicitHeight) / 2, address);
     }
 
     function init() {
-        if (desktop && !advanced) {
-            HyprInfo.repositionClient((monitor.width - implicitWidth) / 2, monitor.height - implicitHeight - Cell.border_width, address);
-        }
+        checkDesktop();
+    }
+
+    onVisibleChanged: {
+        edit = false;
+        reposition = false;
+        textfield.set("");
+        if (visible)
+            checkDesktop();
+    }
+
+    // function onSigOpen() {
+    //     if (HyprInfo.clientCount() < 1) {
+    //         advanced = false;
+    //     } else {
+    //         advanced = true;
+    //     }
+    // }
+
+    onReloadingChanged: {
+        console.log(reloading);
     }
 
     name: "wallpaper"
@@ -72,9 +94,7 @@ CellFloats {
         {
             binds: "Ctrl+E",
             action: () => {
-                if (desktop) {
-                    root.advanced = !root.advanced;
-                }
+                root.advanced = !root.advanced;
             }
         },
         {
@@ -124,18 +144,6 @@ CellFloats {
         });
     }
 
-    onVisibleChanged: {
-        edit = false;
-        reposition = false;
-        textfield.set("");
-        if (HyprInfo.clientCount() < 1) {
-            root.desktop = true;
-        } else {
-            root.desktop = false;
-            root.advanced = false;
-        }
-    }
-
     onEditChanged: {
         if (edit) {
             pivotAnim.restart();
@@ -147,8 +155,8 @@ CellFloats {
 
     onRepositionChanged: {
         if (reposition) {
-            edit = false;
             repoAnimStart.restart();
+            edit = false;
         } else {
             repoAnimEnd.restart();
         }
@@ -384,7 +392,7 @@ CellFloats {
                         script: {
                             pivot.visible = false;
                             pivot_bg.visible = false;
-                            crosshair.visible = true;
+                            crosshair.visible = false;
                         }
                     }
                 }
@@ -430,12 +438,12 @@ CellFloats {
 
                 SequentialAnimation {
                     id: repoAnimStart
-                    ScriptAction {
-                        script: {
-                            repo_bg.visible = true;
-                            repo_hint.visible = true;
-                        }
-                    }
+                    // ScriptAction {
+                    //     script: {
+                    //         repo_bg.visible = true;
+                    //         repo_hint.visible = true;
+                    //     }
+                    // }
                     ParallelAnimation {
                         NumberAnimation {
                             target: repo_bg
@@ -474,27 +482,28 @@ CellFloats {
                             easing.type: Easing.OutCubic
                         }
                     }
-                    ScriptAction {
-                        script: {
-                            repo_bg.visible = false;
-                            repo_hint.visible = false;
-                        }
-                    }
+                    // ScriptAction {
+                    //     script: {
+                    //         repo_bg.visible = false;
+                    //         repo_hint.visible = false;
+                    //     }
+                    // }
                 }
 
                 Cells {
                     id: repo_bg
-                    visible: false
+                    // visible: false
                     w: parent.w
                     h: parent.h
-                    opacity: 0.5
+                    opacity: 0
                     color: "black"
                 }
 
                 CellText {
                     id: repo_hint
 
-                    visible: false
+                    // visible: false
+                    opacity: 0
 
                     x: Cell.centerWCell(implicitWidth, repo_bg.implicitWidth)
                     y: Cell.centerHCell(implicitHeight, repo_bg.implicitHeight)
@@ -1005,8 +1014,6 @@ CellFloats {
 
                     text: "More"
 
-                    clickable: root.desktop
-
                     color: clickable ? (root.advanced ? Colors.accentStrong : Colors.bgOverlay) : Colors.bgOverlay
                     fg: clickable ? (root.advanced ? Colors.onAccent : Colors.fgBase) : Colors.fgSubtle
 
@@ -1020,7 +1027,7 @@ CellFloats {
 
             ColumnLayout {
 
-                visible: root.advanced || !root.desktop
+                visible: root.advanced
 
                 spacing: 0
 

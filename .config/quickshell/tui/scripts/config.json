@@ -13,7 +13,7 @@
   "hyprAnim": true,
   "hyprBlur": true,
   "bgCava": false,
-  "bgCavaLock": false,
+  "bgCavaLock": true,
   "screenshotStay": true,
   "screenshotNotify": false,
   "screenshotCursor": false,

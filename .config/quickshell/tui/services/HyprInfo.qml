@@ -266,11 +266,13 @@ Singleton {
     }
 
     function focusClient(wClass, wTitle): bool {
+        if (!wClass)
+            return false;
         if (wClass instanceof HyprlandToplevel) {
             wClass?.wayland.activate();
             return;
         }
-        const c = wClass.startsWith("0x") ? getClient(wClass) : matchClient(wClass, wTitle);
+        const c = wClass?.startsWith("0x") ? getClient(wClass) : matchClient(wClass, wTitle);
         if (!c) {
             console.warn("HyprInfo: cannot focus a null client");
             return false;

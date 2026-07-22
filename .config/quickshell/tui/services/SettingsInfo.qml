@@ -267,80 +267,14 @@ Singleton {
             if (full)
                 PopupManager.sendSignal("screenshot", "full");
         }
+        function toggle(name: string): void {
+            root.toggle(name);
+        }
         function toggle_grids(): void {
             root.showGrid();
         }
-        function toggle_minimal(): void {
-            root.toggle("minimal");
-        }
-        function toggle_hidebar(): void {
-            root.toggle("hideBar");
-        }
-        function toggle_memory_optimize(): void {
-            root.toggle("optimizeMemory");
-        }
-        function toggle_safe_notifications(): void {
-            root.toggle("safeNotifications");
-        }
-        function toggle_hints(): void {
-            root.toggle("hints");
-        }
-        function toggle_dnd(): void {
-            root.toggle("dnd");
-        }
-        function toggle_hypranim(): void {
-            root.toggle("hyprAnim");
-        }
-        function toggle_hyprblur(): void {
-            root.toggle("hyprBlur");
-        }
-        function toggle_bgcava(): void {
-            root.toggle("bgCava");
-        }
-        function toggle_bgcava_lock(): void {
-            root.toggle("bgCavaLock");
-        }
-        function toggle_lock_screen_music(): void {
-            root.toggle("lockScreenMusic");
-        }
-        function toggle_bottom_bar(): void {
-            root.toggle("bottomBar");
-        }
-        function toggle_text_based_volume(): void {
-            root.toggle("textBasedVolume");
-        }
-        function toggle_sfx(): void {
-            root.toggle("sfx");
-        }
-        function toggle_light_mode(): void {
-            root.toggle("userLightMode");
-        }
-        function toggle_auto_light_mode(): void {
-            root.toggle("autoLightMode");
-        }
         function toggle_appearance(): void {
             root.iterateAppearance();
-        }
-        function toggle_shadow(): void {
-            root.toggle("shadow");
-        }
-        function toggle_quickstart(): void {
-            root.toggle("quickStart");
-        }
-        function toggle_screenshot_notify(): void {
-            root.toggle("screenshotNotify");
-        }
-        function toggle_wallpaper_auto_advance(): void {
-            root.toggle("wallpaperAutoAdvance");
-        }
-        function toggle_movefloatonfocus(): void {
-            root.toggle("moveFloatOnFocus");
-        }
-        function toggle_purify(): void {
-            root.toggle("purify");
-        }
-        function toggle_compat(): void {
-            root.toggle("compat");
         }
 
         function restart(): void {

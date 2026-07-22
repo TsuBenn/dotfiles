@@ -276,27 +276,6 @@ WlSessionLockSurface {
         }
     }
 
-    MouseArea {
-
-        acceptedButtons: Qt.NoButton
-        hoverEnabled: true
-
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-
-        implicitHeight: util_bar.peek ? Cell.h(3) : 1
-
-        onEntered: {
-            util_bar.peek = true;
-            unpeek_util.stop();
-        }
-
-        onExited: {
-            unpeek_util.restart();
-        }
-    }
-
     Timer {
         id: unpeek_util
         interval: 500
@@ -490,15 +469,40 @@ WlSessionLockSurface {
         }
     }
 
-    MouseControl {
-        id: mouse
+    // MouseArea {
+    //     id: mouse
 
-        x: layout.x - 200
-        y: layout.y - 200
-        height: layout.height + 400
-        width: layout.width + 400
+    //     x: layout.x - 200
+    //     y: layout.y - 200
+    //     height: layout.height + 400
+    //     width: layout.width + 400
+
+    //     acceptedButtons: Qt.NoButton
+
+    //     hoverEnabled: true
+
+    // }
+
+    MouseArea {
 
         acceptedButtons: Qt.NoButton
+        hoverEnabled: true
+
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        anchors.topMargin: util_bar.peek ? Cell.h(3) : 1
+
+        onEntered: {
+            unpeek_util.restart();
+        }
+
+        onExited: {
+            util_bar.peek = true;
+            unpeek_util.stop();
+        }
     }
 
     Timer {
