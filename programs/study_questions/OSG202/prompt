@@ -1,0 +1,94 @@
+You are a rigorous Computer Science professor designing a comprehensive practice question bank in TOML format for a specific course chapter.
+
+### Inputs Provided Below:
+1. `course.toml Snippet`: Contains the subtopic IDs, titles, and target summaries for this specific chapter.
+2. `Main Source Material`: Raw textbook pages, slides, or transcripts.
+
+### Objectives & Rules:
+1. **Exhaustive & Targeted Coverage**:
+   - Analyze the `course.toml Snippet` to understand the subtopic structure and boundaries.
+   - Use the `Main Source Material` to construct in-depth, technically accurate questions for EACH subtopic defined in the snippet.
+2. **Difficulty Distribution**:
+   - 30% Easy (Direct concepts, basic terms, syntax/definitions).
+   - 40% Medium (Applying mechanisms, comparing two concepts, evaluating code/scenarios).
+   - 30% Hard (Multi-step calculations, edge-case analysis, bit/trace tracking, complex problem-solving).
+3. **Eliminate Length & Pattern Clues**:
+   - ALL choices (correct answer and distractors) MUST be roughly equal in length and detail.
+   - NEVER make the correct answer the longest or most detailed option.
+   - Distractors MUST represent plausible student mistakes (e.g., calculation errors, misapplied logic) rather than generic filler.
+4. **Subtopic Mapping**:
+   - Every question MUST include a `subtopic_id` field matching one of the `id` values from the provided `course.toml Snippet`.
+5. **Detailed Explanations**:
+   - Every entry in `explanations` MUST explicitly justify why that choice is correct or incorrect.
+
+### Output Format Requirement:
+Output ONLY valid TOML inside a single code block.
+
+```toml
+version = 5
+
+[[questions]]
+question = "Question text goes here..."
+choices = [
+    "Choice A",
+    "Choice B",
+    "Choice C",
+    "Choice D"
+]
+answer = "Choice A"
+subtopic_id = "1.1"  # Must match an ID from the provided course.toml snippet
+explanations = [
+    "Explanation for A...",
+    "Explanation for B...",
+    "Explanation for C...",
+    "Explanation for D..."
+]
+
+
+# --- COURSE.TOML SNIPPET ---
+[[chapters]]
+id = 12
+title = "Chapter 12: Operating System Design"
+file_name = "ch12_os_design.toml"
+
+  [[chapters.subtopics]]
+  id = "12.1"
+  title = "Design Goals & Interface Design"
+  content = """
+OS Design Goals: Define abstractions, provide primitive operations, ensure isolation, manage hardware.
+Interface Design Principles:
+1. Simplicity: A small number of orthogonal concepts that do exactly what they say.
+2. Completeness: Must be able to do everything needed.
+3. Efficiency: Interface should not impose excessive overhead.
+Execution Paradigms: Algorithmic code (sequential execution) vs Event-driven code (waits for events, dispatches to handlers, highly asynchronous).
+"""
+
+  [[chapters.subtopics]]
+  id = "12.2"
+  title = "System Structure & Naming"
+  content = """
+System Structure:
+- Layered Systems: Strict hierarchy where layer N uses services of layer N-1. Hard to define boundaries.
+- Microkernel-Based Client-Server: Minimal kernel (IPC, scheduling, memory). OS services run as user-space processes communicating via IPC.
+Naming: Directories map external (human-readable) names to internal (binary) names or identifiers. Static vs Dynamic structures.
+Hiding the Hardware: Using conditional compilation or architecture-specific HALs to isolate hardware dependencies from the main OS logic.
+"""
+
+  [[chapters.subtopics]]
+  id = "12.3"
+  title = "Implementation Issues: Trade-offs & Caching"
+  content = """
+Space-Time Trade-offs: Trading memory (space) for speed (time). E.g., using lookup tables instead of computing values (macros, bit-counting tables), or compressing images (GIF) using color palettes to save space at the cost of CPU time to decompress.
+Caching: Storing frequently accessed data in fast memory. E.g., looking up `/usr/ast/mbox` requires multiple disk reads for i-nodes and directory blocks. An i-node cache and directory cache drastically reduce these disk accesses.
+"""
+
+  [[chapters.subtopics]]
+  id = "12.4"
+  title = "Project Management & Trends"
+  content = """
+Team Structure: Harlan Mills' proposal for a 10-person chief programmer team. One chief programmer writes all code; others support (testers, toolsmiths, editors). Avoids communication overhead of democratic teams.
+Role of Experience: Traditional software design progresses in rigid stages (waterfall). Alternative design produces a working (but empty) system on Day 1, iteratively adding features (agile/spiral).
+Trends in OS Design: Virtualization and the Cloud. Hypervisors running multiple virtual machines on single physical hardware, abstracting the OS from the underlying hardware entirely.
+"""
+
+# --- MAIN SOURCE MATERIAL ---

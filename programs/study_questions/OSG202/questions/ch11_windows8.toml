@@ -1,0 +1,171 @@
+version = 5
+
+[[questions]]
+question = "In the Windows kernel-mode organization, which component is strictly responsible for hiding motherboard-specific details and providing a uniform interface to the rest of the operating system?"
+choices = [
+    "The Hardware Abstraction Layer (HAL) manages these specific hardware interactions.",
+    "The Executive subsystem directly handles all underlying hardware communication.",
+    "The Win32 API directly interfaces with the motherboard and system components.",
+    "The Device Drivers abstract all motherboard communication for the kernel."
+]
+answer = "The Hardware Abstraction Layer (HAL) manages these specific hardware interactions."
+subtopic_id = "11.1"
+explanations = [
+    "This is correct. The HAL is specifically designed to hide motherboard specifics and present a uniform hardware interface to the kernel and executive.",
+    "This is incorrect. The Executive relies on the HAL and device drivers for hardware interaction; it does not directly handle motherboard specifics.",
+    "This is incorrect. The Win32 API operates in user mode and calls down to the native API and Executive, never directly interfacing with hardware.",
+    "This is incorrect. Device drivers manage specific peripherals, but the HAL provides the foundational abstraction for the motherboard itself."
+]
+
+[[questions]]
+question = "When a user-mode program opens a file using a pathname, how does the Object Manager collaborate with the I/O manager to resolve the file name?"
+choices = [
+    "The Object Manager parses the entire path itself and returns a file handle directly to the user.",
+    "The Object Manager traverses its namespace, hits a device object, and calls a parse procedure for the I/O manager to create an IRP.",
+    "The I/O manager completely takes over namespace resolution, bypassing the Object Manager for all file paths.",
+    "The Object Manager queries the registry hives to map the file path to a physical disk sector directly."
+]
+answer = "The Object Manager traverses its namespace, hits a device object, and calls a parse procedure for the I/O manager to create an IRP."
+subtopic_id = "11.1"
+explanations = [
+    "This is incorrect. The Object Manager only traverses its own namespace until it hits a device object or symbolic link pointing to a device.",
+    "This is correct. The Object Manager uses parse procedures, allowing the I/O manager to step in, create an IRP, allocate a file object, and send the request down the device stack.",
+    "This is incorrect. The Object Manager is always the starting point for name resolution, delegating to the I/O manager via parse procedures when file systems are involved.",
+    "This is incorrect. The registry is not used for mapping file paths to disk sectors; the file system driver handles this via IRPs."
+]
+
+[[questions]]
+question = "Which of the following accurately contrasts Windows process creation with UNIX process creation?"
+choices = [
+    "Windows uses a SETUID bit on the executable to change privileges, while UNIX requires explicit token passing during process creation.",
+    "Windows leaves command-line argument parsing to the new program, whereas UNIX passes a pre-parsed array of arguments to the new program.",
+    "Windows manages the current working directory as a kernel-mode concept, whereas UNIX manages it as a user-mode string.",
+    "Windows requires file descriptors to be explicitly duplicated, whereas UNIX inherits them automatically as a property of the process."
+]
+answer = "Windows leaves command-line argument parsing to the new program, whereas UNIX passes a pre-parsed array of arguments to the new program."
+subtopic_id = "11.2"
+explanations = [
+    "This is incorrect. UNIX uses the SETUID bit; Windows does not have a SETUID bit but instead allows a process to create another with a different token.",
+    "This is correct. Windows passes a single command-line string to the new process, leaving the parsing to the program, whereas UNIX parses the command line and passes an array of arguments.",
+    "This is incorrect. The reverse is true: UNIX manages the working directory as a kernel-mode concept, while Windows manages it as a user-mode string.",
+    "This is incorrect. UNIX inherits file descriptors automatically, while Windows handles inheritance as a property of the handle during process creation."
+]
+
+[[questions]]
+question = "A Windows thread running at base priority 8 is blocked on an I/O operation. Upon completion of the I/O, what is the immediate effect on the thread's priority, and how does it return to its base?"
+choices = [
+    "The thread is temporarily boosted to priority 14, and the boost decays by one level at each subsequent quantum expiration until it reaches 8.",
+    "The thread is permanently raised to priority 14 to ensure the I/O data is processed quickly, remaining there until the process terminates.",
+    "The thread is moved to the standby list with a priority of 8, and the scheduler immediately dispatches it without applying any temporary boosts.",
+    "The thread is immediately boosted to priority 14, and the boost is completely removed after one quantum, instantly returning it to priority 8."
+]
+answer = "The thread is temporarily boosted to priority 14, and the boost decays by one level at each subsequent quantum expiration until it reaches 8."
+subtopic_id = "11.2"
+explanations = [
+    "This is correct. I/O completion gives a temporary priority boost (e.g., to 14) to prevent priority inversion. The priority decays by 1 at each subsequent quantum expiration.",
+    "This is incorrect because priority boosts in Windows are temporary and decay over time, not permanently raised until process termination.",
+    "This is incorrect because I/O completion triggers a priority boost to improve responsiveness and reduce priority inversion.",
+    "This is incorrect because the boost decays gradually by one level per quantum, rather than being completely removed after a single quantum."
+]
+
+[[questions]]
+question = "A physical page in Windows is modified by a process and then marked for eviction by the working-set manager. What is the exact sequence of page list transitions this page undergoes before it can be reallocated to a different process?"
+choices = [
+    "It moves from the valid list to the modified list, is written to disk by the modified page writer, moves to the standby list, and finally to the free list.",
+    "It moves directly from the valid list to the free list, is zeroed by the zero page thread, and then remains on the zeroed list until it is ready for reallocation.",
+    "It moves from the valid list to the standby list, is written to disk by the modified page writer, and then moves directly to the zeroed list for immediate reallocation.",
+    "It moves from the valid list to the modified list, is zeroed by the zero page thread, moves to the standby list, and then finally to the free list for reallocation."
+]
+answer = "It moves from the valid list to the modified list, is written to disk by the modified page writer, moves to the standby list, and finally to the free list."
+subtopic_id = "11.3"
+explanations = [
+    "This is correct. Dirty pages are moved to the modified list, written to disk by the modified page writer, moved to the standby list, and eventually to the free list before reallocation.",
+    "This is incorrect. Only clean pages move directly to the free list; dirty pages must be written to disk first via the modified list.",
+    "This is incorrect. Pages are not moved directly from the valid list to the standby list if they are modified; they must hit the modified list first.",
+    "This is incorrect. The zero page thread zeroes pages on the free list, it does not zero them before they are written to disk and placed on the standby list."
+]
+
+[[questions]]
+question = "A developer wants to create a custom driver that intercepts all read and write requests targeting a specific disk volume, logs them, and then passes them down to the underlying file system driver. How is this implemented in the Windows I/O model?"
+choices = [
+    "The developer writes a filter driver that attaches itself to the top of the device stack for the target volume, modifying the IRPs as they pass down.",
+    "The developer writes a monolithic driver that replaces the NTFS driver object entirely, intercepting the requests before they reach the device object.",
+    "The developer modifies the HAL to route all disk interrupts directly to the custom driver before passing them to the Executive I/O manager.",
+    "The developer creates a user-mode service that polls the device stack using asynchronous I/O to intercept and log the packets before execution."
+]
+answer = "The developer writes a filter driver that attaches itself to the top of the device stack for the target volume, modifying the IRPs as they pass down."
+subtopic_id = "11.3"
+explanations = [
+    "This is correct. Windows uses device stacks. A filter driver creates a filter device object that attaches to the stack, allowing it to intercept, log, and pass IRPs down.",
+    "This is incorrect. Windows drivers are layered; replacing the monolithic NTFS driver object is not the supported method for intercepting requests on a specific volume.",
+    "This is incorrect. The HAL manages hardware interrupts, but file I/O requests are logical IRPs managed by the I/O manager and device stacks, not directly via HAL interrupts.",
+    "This is incorrect. Device stacks and IRPs operate in kernel mode; a user-mode service cannot intercept kernel IRPs directly via polling."
+]
+
+[[questions]]
+question = "In the NTFS file system, how are small files efficiently stored without requiring separate data block allocations on the disk?"
+choices = [
+    "They are stored entirely within the Master File Table (MFT) record as a resident data attribute stream.",
+    "They are compressed into 16-block units and stored directly in the directory B-tree leaf nodes.",
+    "They are assigned dedicated MFT records that point to a single shared zero-block sparse run.",
+    "They are stored as symbolic links within the MFT header pointing to the system registry hives."
+]
+answer = "They are stored entirely within the Master File Table (MFT) record as a resident data attribute stream."
+subtopic_id = "11.4"
+explanations = [
+    "This is correct. Small files can fit entirely inside their MFT record as a resident data attribute stream, avoiding the need for separate data block allocations.",
+    "This is incorrect. NTFS compression uses 16-block units, but files are not stored in directory B-tree nodes; directories just point to MFT records.",
+    "This is incorrect. Small files do not use sparse runs; they are directly resident in the MFT record itself.",
+    "This is incorrect. Files are not symbolic links to the registry; they are managed as attribute streams within the MFT."
+]
+
+[[questions]]
+question = "An NTFS file consists of 48 uncompressed blocks. The file is compressed using 16-block compression units. If the first two units compress to 10 blocks each, and the third unit compresses to 12 blocks, how is this represented in the MFT record?"
+choices = [
+    "The MFT record contains three runs: a 10-block run, a 6-block sparse run, a 10-block run, a 4-block sparse run, and a 12-block run.",
+    "The file is compressed into a single continuous 32-block run, followed by a 16-block sparse run representing the highly compressed data.",
+    "The MFT record uses three separate runs of 10, 10, and 12 blocks, with no sparse runs needed because the underlying data blocks are contiguous.",
+    "The entire file is represented as a single 48-block sparse run, with the compressed block sizes stored in the MFT record metadata directly."
+]
+answer = "The MFT record contains three runs: a 10-block run, a 6-block sparse run, a 10-block run, a 4-block sparse run, and a 12-block run."
+subtopic_id = "11.4"
+explanations = [
+    "This is correct. NTFS compression uses 16-block units. A unit compressing to 10 blocks uses a 10-block run followed by a 6-block sparse run. The second unit is 10 blocks + 6 sparse. The third is 12 blocks + 4 sparse.",
+    "This is incorrect. NTFS does not combine compressed units into a single run; each 16-block unit is treated independently.",
+    "This is incorrect. Even if the physical blocks are contiguous, NTFS inserts sparse runs to maintain the 16-block logical size mapping for each compressed unit.",
+    "This is incorrect. NTFS does not represent the entire file as a single sparse run; it uses distinct runs and sparse runs for each 16-block unit."
+]
+
+[[questions]]
+question = "In the Windows security model, what is the fundamental difference between a Discretionary Access Control List (DACL) and a System Access Control List (SACL)?"
+choices = [
+    "The DACL specifies what permissions users have on an object, while the SACL specifies what actions should be audited.",
+    "The DACL stores the user and group SIDs, while the SACL stores the default owner and group information for the object.",
+    "The DACL determines the integrity level of the object, while the SACL assigns mandatory integrity labels to user processes.",
+    "The DACL controls access to the registry hives, while the SACL controls access to the kernel object namespace."
+]
+answer = "The DACL specifies what permissions users have on an object, while the SACL specifies what actions should be audited."
+subtopic_id = "11.5"
+explanations = [
+    "This is correct. The DACL (Discretionary ACL) defines which users or groups are allowed or denied access, while the SACL (System ACL) defines which access attempts should be logged for auditing.",
+    "This is incorrect. Both the owner SID and group SID are part of the Security Descriptor itself, not exclusively stored in the DACL or SACL.",
+    "This is incorrect. Mandatory Integrity Control (MIC) uses integrity labels, which are separate from the DACL/SACL distinction, though related to security descriptors.",
+    "This is incorrect. Both DACLs and SACLs apply to securable objects across the system, not just specific components like the registry or object namespace."
+]
+
+[[questions]]
+question = "Which security mitigation technique specifically prevents exploits from reliably jumping to injected shellcode by marking certain memory regions, like the stack and heap, as non-executable?"
+choices = [
+    "Data Execution Prevention (DEP) enforces hardware non-executable bits on memory pages.",
+    "Address Space Layout Randomization (ASLR) randomizes the locations where executables are loaded.",
+    "Control Flow Guard (CFG) validates indirect branch targets at runtime to prevent bypass.",
+    "PatchGuard protects the kernel patch from being modified by third-party software."
+]
+answer = "Data Execution Prevention (DEP) enforces hardware non-executable bits on memory pages."
+subtopic_id = "11.5"
+explanations = [
+    "This is correct. Data Execution Prevention (DEP), also known as NX (No-Execute), uses hardware features to mark memory pages (like the stack) as non-executable, preventing the CPU from running code there.",
+    "This is incorrect. ASLR randomizes memory locations to make it hard to find gadgets, but it does not mark memory as non-executable.",
+    "This is incorrect. CFG validates the targets of indirect calls to prevent Return-Oriented Programming (ROP) style attacks, not by marking the stack as non-executable.",
+    "This is incorrect. PatchGuard prevents third-party drivers from patching the kernel, but it is unrelated to user-mode shellcode execution on the stack."
+]

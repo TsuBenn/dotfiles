@@ -31,7 +31,7 @@ Cells {
     property bool atMax: false
 
     readonly property int maxOffset: itemH > 0 ? root.contentH - root.h : root.model.length - 1
-    readonly property int itemsShown: Math.floor(root.h / itemH)
+    property int itemsShown: Math.floor(root.h / itemH)
 
     color: "transparent"
 
@@ -98,61 +98,56 @@ Cells {
 
     clip: true
 
-    Loader {
+    ColumnLayout {
+        id: container
+        spacing: 0
 
-        active: root.visible || !root.optimizeMemory
+        // Exact horizontal dimension tracking matching your scroll width metrics
+        width: Cell.w(root.contentW)
 
-        // asynchronous: true
+        // Sub-pixel terminal tracking alignment shifting raw offset remainders
+        y: -Cell.h(Math.floor(root.offset % (root.itemH > 0 ? root.itemH : 1)))
 
-        sourceComponent: ColumnLayout {
-            id: container
-            spacing: 0
+        Repeater {
+            // Allocate just enough view nodes to cover the visible grid matrix plus one buffer
+            model: Math.floor(root.h / (root.itemH > 0 ? root.itemH : 1)) + 1
 
-            // Exact horizontal dimension tracking matching your scroll width metrics
-            width: Cell.w(root.contentW)
+            delegate: Loader {
+                id: viewLoader
 
-            // Sub-pixel terminal tracking alignment shifting raw offset remainders
-            y: -Cell.h(Math.floor(root.offset % (root.itemH > 0 ? root.itemH : 1)))
+                required property int index
 
-            Repeater {
-                // Allocate just enough view nodes to cover the visible grid matrix plus one buffer
-                model: Math.floor(root.h / (root.itemH > 0 ? root.itemH : 1)) + 1
+                // Track item alignment calculation parameters
+                readonly property int realIndex: Math.floor(root.offset / (root.itemH > 0 ? root.itemH : 1)) + index
+                readonly property var modelData: root.model[Math.min(realIndex, root.model.length - 1)]
 
-                delegate: Loader {
-                    id: viewLoader
+                visible: realIndex < root.model.length
 
-                    required property int index
+                active: root.visible || !root.optimizeMemory
 
-                    // Track item alignment calculation parameters
-                    readonly property int realIndex: Math.floor(root.offset / (root.itemH > 0 ? root.itemH : 1)) + index
-                    readonly property var modelData: root.model[Math.min(realIndex, root.model.length - 1)]
+                sourceComponent: modelData || modelData == "" || modelData == 0 ? root.delegate : null
 
-                    visible: realIndex < root.model.length
+                // asynchronous: true
 
-                    sourceComponent: modelData || modelData == "" || modelData == 0 ? root.delegate : null
+                // Native reactive hooks implementation
+                onLoaded: {
+                    if (item) {
+                        if (item.hasOwnProperty("modelData"))
+                            item.modelData = Qt.binding(() => viewLoader.modelData ?? null);
 
-                    // asynchronous: true
-
-                    // Native reactive hooks implementation
-                    onLoaded: {
-                        if (item) {
-                            if (item.hasOwnProperty("modelData"))
-                                item.modelData = Qt.binding(() => viewLoader.modelData ?? null);
-
-                            // FIXED: Re-mapped index targets to pass true array positioning (realIndex)
-                            if (item.hasOwnProperty("index"))
-                                item.index = Qt.binding(() => viewLoader.realIndex ?? -1);
-                        }
+                        // FIXED: Re-mapped index targets to pass true array positioning (realIndex)
+                        if (item.hasOwnProperty("index"))
+                            item.index = Qt.binding(() => viewLoader.realIndex ?? -1);
                     }
+                }
 
-                    Connections {
-                        target: root
-                        function onModelChanged() {
-                            if (!root.reloadOnChanges)
-                                return;
-                            viewLoader.sourceComponent = null;
-                            viewLoader.sourceComponent = Qt.binding(() => viewLoader.modelData || viewLoader.modelData == "" || viewLoader.modelData == 0 ? root.delegate : null);
-                        }
+                Connections {
+                    target: root
+                    function onModelChanged() {
+                        if (!root.reloadOnChanges)
+                            return;
+                        viewLoader.sourceComponent = null;
+                        viewLoader.sourceComponent = Qt.binding(() => viewLoader.modelData || viewLoader.modelData == "" || viewLoader.modelData == 0 ? root.delegate : null);
                     }
                 }
             }

@@ -1,0 +1,171 @@
+version = 5
+
+[[questions]]
+question = "Which of the following scenarios correctly describes an involuntary process termination caused by a fatal error?"
+choices = [
+    "The process executes a system call to exit after successfully writing output files.",
+    "The process attempts an invalid memory access and is aborted by the kernel.",
+    "The process is terminated by a user issuing a kill command via the terminal.",
+    "The process voluntarily terminates after failing to find a required configuration file."
+]
+answer = "The process attempts an invalid memory access and is aborted by the kernel."
+subtopic_id = "2.1"
+explanations = [
+    "This is incorrect. This scenario describes a normal exit, which occurs when a process voluntarily completes its execution successfully.",
+    "This is correct. An invalid memory access triggers a fatal error, which is an involuntary process termination handled by the operating system.",
+    "This is incorrect. Being terminated by a kill command from another process or user is an involuntary termination, but it is classified as 'killed by another process', not a fatal error.",
+    "This is incorrect. Failing to find a configuration file and voluntarily exiting represents an error exit, which is voluntary rather than involuntary."
+]
+
+[[questions]]
+question = "A process is currently using the CPU when a timer interrupt occurs, indicating its quantum has expired. What state transition occurs next, and what triggers it?"
+choices = [
+    "The process transitions from Running to Blocked, triggered by the scheduler.",
+    "The process transitions from Running to Ready, triggered by the interrupt handler.",
+    "The process transitions from Ready to Running, triggered by the timer interrupt.",
+    "The process transitions from Blocked to Ready, triggered by the quantum expiration."
+]
+answer = "The process transitions from Running to Ready, triggered by the interrupt handler."
+subtopic_id = "2.1"
+explanations = [
+    "This is incorrect. A transition to the Blocked state occurs when a process waits for an external event like I/O, not when a timer interrupt occurs.",
+    "This is correct. When a quantum expires, a timer interrupt triggers the OS to move the process from Running to Ready so another process can use the CPU.",
+    "This is incorrect. The transition from Ready to Running happens when the scheduler picks a process to execute, not immediately upon a timer interrupt for the currently running process.",
+    "This is incorrect. The transition from Blocked to Ready occurs when an external event, such as an I/O completion, finishes, not when a time quantum expires."
+]
+
+[[questions]]
+question = "When an interrupt occurs, the lowest layer of the OS saves the current process state. Which combination of elements MUST be saved in the process table entry to resume the process later?"
+choices = [
+    "The program counter, stack pointer, and general registers, along with scheduling parameters.",
+    "The global variables, open file descriptors, and child process IDs, along with memory image.",
+    "The stack pointer, ready queue pointer, and kernel stack pointer, along with terminal parameters.",
+    "The program counter, memory allocation size, and priority level, along with signal masks."
+]
+answer = "The program counter, stack pointer, and general registers, along with scheduling parameters."
+subtopic_id = "2.1"
+explanations = [
+    "This is correct. To resume a process seamlessly after an interrupt, the OS must save the exact execution state, including the program counter, stack pointer, registers, and scheduling information.",
+    "This is incorrect. Global variables, file descriptors, and memory images are part of the process's address space and resources, which remain in memory; they do not need to be saved to the process table entry upon an interrupt.",
+    "This is incorrect. While the stack pointer is saved, terminal parameters and ready queue pointers are either irrelevant to the immediate execution state or managed separately by the scheduler.",
+    "This is incorrect. While the program counter is saved, memory allocation size is static during execution and does not need to be saved on every interrupt."
+]
+
+[[questions]]
+question = "In the classical thread model, which of the following resources is strictly private to each thread within a process?"
+choices = [
+    "The address space and global variables.",
+    "The open file descriptors and child processes.",
+    "The program counter and execution stack.",
+    "The accounting information and signal handlers."
+]
+answer = "The program counter and execution stack."
+subtopic_id = "2.2"
+explanations = [
+    "This is incorrect. The address space and global variables are shared among all threads in a process to facilitate communication and resource sharing.",
+    "This is incorrect. Open file descriptors and child processes are resources associated with the process itself, and thus are shared among all threads.",
+    "This is correct. Each thread must have its own program counter, registers, and stack to maintain its independent execution flow and local variables.",
+    "This is incorrect. Accounting information and signal handlers are generally maintained at the process level and shared across all threads."
+]
+
+[[questions]]
+question = "What is the primary disadvantage of implementing threads entirely in user space without kernel awareness?"
+choices = [
+    "Thread creation and switching are significantly slower due to kernel trap overhead.",
+    "Any blocking system call made by one thread will block the entire process.",
+    "The kernel cannot schedule threads fairly, leading to frequent thread starvation.",
+    "It prevents the use of pop-up threads for handling incoming network messages."
+]
+answer = "Any blocking system call made by one thread will block the entire process."
+subtopic_id = "2.2"
+explanations = [
+    "This is incorrect. User-space threads do not require kernel traps for creation or switching, making them significantly faster than kernel-space threads.",
+    "This is correct. Because the kernel is unaware of user-level threads, it blocks the entire process when any thread makes a blocking system call, preventing other threads from running.",
+    "This is incorrect. The kernel schedules the process as a whole, but user-space thread scheduling fairness depends on the user-level thread library, not the kernel.",
+    "This is incorrect. Pop-up threads can be implemented in both user-space and kernel-space thread models, though they are commonly used in kernel-space for message handling."
+]
+
+[[questions]]
+question = "In mutual exclusion using the TSL instruction, what is the exact sequence of events when a process attempts to enter a critical region that is already occupied?"
+choices = [
+    "The process reads 0, sets the lock to 1, enters the region, and resets the lock upon exit.",
+    "The process reads 1, sets the lock to 1, enters a busy-wait loop, and retries the TSL instruction.",
+    "The process reads 1, sets the lock to 0, enters a blocked queue, and awakens when cleared.",
+    "The process reads 0, sets the lock to 1, enters a busy-wait loop, and waits for exit."
+]
+answer = "The process reads 1, sets the lock to 1, enters a busy-wait loop, and retries the TSL instruction."
+subtopic_id = "2.3"
+explanations = [
+    "This is incorrect. This sequence describes the TSL execution when the critical region is empty and the process successfully acquires the lock.",
+    "This is correct. When a process executes TSL on an occupied lock, it reads the current value of 1, sets the lock to 1 again, and enters a busy-wait loop because the register indicates the lock is taken.",
+    "This is incorrect. The TSL instruction relies on busy waiting and does not inherently place processes into a blocked queue; that behavior is characteristic of higher-level primitives like semaphores.",
+    "This is incorrect. If the process reads 0, it means the lock was free, and it would immediately enter the critical region rather than entering a busy-wait loop."
+]
+
+[[questions]]
+question = "Which of the following is a strict requirement for preventing race conditions using critical regions?"
+choices = [
+    "Processes must assume the presence of multiple CPUs and strictly alternate execution turns.",
+    "No two processes may be simultaneously inside their critical regions for shared memory.",
+    "A process running outside its critical region must block other processes from entering theirs.",
+    "Critical regions must be limited to a fixed maximum execution time to prevent deadlocks."
+]
+answer = "No two processes may be simultaneously inside their critical regions for shared memory."
+subtopic_id = "2.3"
+explanations = [
+    "This is incorrect. Critical regions must function correctly regardless of the number of CPUs or execution speeds, and strict alternation violates this by enforcing a specific turn order.",
+    "This is correct. The fundamental requirement to prevent race conditions is that no two processes can be inside their critical regions simultaneously for the same shared memory.",
+    "This is incorrect. A process running outside its critical region must not block other processes from entering theirs, ensuring progress is maintained.",
+    "This is incorrect. While bounded waiting is a requirement to prevent starvation, critical regions do not inherently require a fixed maximum execution time."
+]
+
+[[questions]]
+question = "Three batch jobs arrive simultaneously. Job A requires 12 milliseconds, Job B requires 3 milliseconds, and Job C requires 6 milliseconds. Using non-preemptive Shortest Job First (SJF) scheduling, what is the average turnaround time?"
+choices = [
+    "The average turnaround time is 7 milliseconds.",
+    "The average turnaround time is 11 milliseconds.",
+    "The average turnaround time is 16 milliseconds.",
+    "The average turnaround time is 21 milliseconds."
+]
+answer = "The average turnaround time is 11 milliseconds."
+subtopic_id = "2.4"
+explanations = [
+    "This is incorrect. The average turnaround time is 7 milliseconds, which might result from incorrectly averaging just the execution times without considering wait times.",
+    "This is correct. With SJF, Job B runs first (3ms), then Job C (6ms), then Job A (12ms). The turnaround times are 3ms, 9ms, and 21ms, yielding an average of (3+9+21)/3 = 11ms.",
+    "This is incorrect. The average turnaround time is 16 milliseconds, which is the result if First-Come First-Served (FCFS) scheduling is used instead of SJF.",
+    "This is incorrect. 21 milliseconds is only the turnaround time for the longest job (Job A), not the average turnaround time for all three jobs."
+]
+
+[[questions]]
+question = "A real-time system must handle three periodic events: Event A occurs every 30ms and requires 10ms; Event B occurs every 40ms and requires 15ms; Event C occurs every 50ms and requires 5ms. Is this system schedulable?"
+choices = [
+    "The system is schedulable because the total CPU utilization is strictly less than 100 percent.",
+    "The system is unschedulable because the execution times exceed the duration of the shortest period.",
+    "The system is schedulable because all three periodic events can execute sequentially without any overlap.",
+    "The system is unschedulable because the period of Event A is not a multiple of Event C."
+]
+answer = "The system is schedulable because the total CPU utilization is strictly less than 100 percent."
+subtopic_id = "2.4"
+explanations = [
+    "This is correct. The schedulability condition for periodic events requires that the sum of CPU utilization (10/30 + 15/40 + 5/50 = 0.808) is strictly less than 1 (100%), which it is.",
+    "This is incorrect. The combined execution times (30ms) do not exceed the shortest period (30ms), and the schedulability relies on total utilization, not just raw execution time.",
+    "This is incorrect. While they might execute sequentially initially, periodic events will eventually overlap in their scheduling windows; they are schedulable because of the low utilization rate.",
+    "This is incorrect. The divisibility of periods is not a strict requirement for schedulability; the system is schedulable as long as the total utilization is below the theoretical bound."
+]
+
+[[questions]]
+question = "In the Dining Philosophers problem, what is the primary flaw in the simple solution where every philosopher immediately grabs their left fork and waits for their right fork?"
+choices = [
+    "It violates mutual exclusion because two philosophers can hold the same fork simultaneously.",
+    "It leads to a deadlock state because all philosophers can hold one fork and wait forever.",
+    "It causes a race condition because philosophers do not use semaphores to signal when finished eating.",
+    "It results in starvation because the philosophers on the ends of the table have unfair advantages."
+]
+answer = "It leads to a deadlock state because all philosophers can hold one fork and wait forever."
+subtopic_id = "2.5"
+explanations = [
+    "This is incorrect. Mutual exclusion is maintained because each fork is treated as a binary semaphore, preventing two philosophers from holding the same fork.",
+    "This is correct. If all philosophers simultaneously grab their left fork, they will all wait forever for their right fork, resulting in a classic circular wait deadlock.",
+    "This is incorrect. The primary issue is not a race condition but a deadlock, as the processes are stuck waiting for resources held by each other.",
+    "This is incorrect. The symmetrical nature of the problem means all philosophers have equal advantage; the issue is systemic deadlock, not localized starvation."
+]

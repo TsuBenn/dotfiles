@@ -1,0 +1,171 @@
+version = 5
+
+[[questions]]
+question = "Which set of requirements must a hypervisor satisfy according to the Popek and Goldberg criteria to effectively manage virtual machines?"
+choices = [
+    "The hypervisor must ensure safety, fidelity, and efficiency.",
+    "The hypervisor must ensure security, functionality, and elasticity.",
+    "The hypervisor must ensure isolation, transparency, and modularity.",
+    "The hypervisor must ensure compatibility, performance, and isolation."
+]
+answer = "The hypervisor must ensure safety, fidelity, and efficiency."
+subtopic_id = "7.1"
+explanations = [
+    "This is correct. Popek and Goldberg established that a hypervisor must provide safety (full control of resources), fidelity (identical behavior to bare hardware), and efficiency (running most code without intervention).",
+    "This is incorrect. While security and functionality are important, they are not the specific terms used in the Popek and Goldberg requirements.",
+    "This is incorrect. Isolation and transparency are related concepts but do not constitute the formal Popek and Goldberg virtualization requirements.",
+    "This is incorrect. These are attributes often desired in x86 virtualization challenges, but not the formal Popek and Goldberg criteria."
+]
+
+[[questions]]
+question = "How does a Type 2 hypervisor fundamentally differ from a Type 1 hypervisor in its system architecture?"
+choices = [
+    "A Type 2 hypervisor runs as a user process on top of a host operating system, whereas a Type 1 runs on bare metal.",
+    "A Type 1 hypervisor relies on a host OS for device drivers, whereas a Type 2 runs entirely on bare metal.",
+    "A Type 2 hypervisor manages hardware directly using custom drivers, whereas a Type 1 relies on host OS services.",
+    "A Type 1 hypervisor executes guest code in ring 0, whereas a Type 2 executes guest code in ring 3 exclusively."
+]
+answer = "A Type 2 hypervisor runs as a user process on top of a host operating system, whereas a Type 1 runs on bare metal."
+subtopic_id = "7.1"
+explanations = [
+    "This is correct. Type 2 hypervisors (e.g., VMware Workstation) are hosted on top of a host OS, whereas Type 1 hypervisors (e.g., ESX Server) run directly on the physical hardware.",
+    "This is incorrect. It reverses the roles; Type 1 runs on bare metal and Type 2 relies on the host OS.",
+    "This is incorrect. It reverses the fundamental definitions of Type 1 and Type 2 hypervisors.",
+    "This is incorrect. Both types of hypervisors handle privilege levels via trapping or translation; the defining difference is their position relative to the hardware and host OS."
+]
+
+[[questions]]
+question = "Under the classic trap-and-emulate virtualization model, what specific condition must the instruction set architecture (ISA) satisfy to guarantee efficiency without binary translation?"
+choices = [
+    "All sensitive instructions must be privileged, ensuring they trap to the hypervisor when executed in user mode.",
+    "All privileged instructions must be sensitive, ensuring they execute correctly without trapping in user mode.",
+    "The ISA must support nested paging in hardware, allowing the hypervisor to avoid shadow page tables.",
+    "The ISA must provide a root mode and non-root mode, allowing guest kernels to run in ring 0 securely."
+]
+answer = "All sensitive instructions must be privileged, ensuring they trap to the hypervisor when executed in user mode."
+subtopic_id = "7.1"
+explanations = [
+    "This is correct. For trap-and-emulate to work, any instruction that behaves differently in kernel vs user mode (sensitive) must automatically trap to the hypervisor (privileged).",
+    "This is incorrect. If privileged instructions are sensitive but do not trap, they will execute silently and break virtualization.",
+    "This is incorrect. Hardware nested paging is a memory management acceleration feature, not a requirement for basic trap-and-emulate instruction virtualization.",
+    "This is incorrect. Root/non-root modes are modern hardware virtualization assists (Intel VT-x/AMD-V), not the classic ISA requirement for trap-and-emulate."
+]
+
+[[questions]]
+question = "Which x86 instruction famously broke the classic trap-and-emulate virtualization model because it is sensitive but fails to trap in user mode?"
+choices = [
+    "The POPF instruction, which pops the flags register from the stack.",
+    "The MOV instruction, which moves data between memory and registers.",
+    "The HLT instruction, which halts the processor until an interrupt occurs.",
+    "The IRET instruction, which returns from an interrupt handler routine."
+]
+answer = "The POPF instruction, which pops the flags register from the stack."
+subtopic_id = "7.2"
+explanations = [
+    "This is correct. The POPF instruction behaves differently in user mode (where it silently ignores changes to interrupt flags) versus kernel mode, but it does not trap, breaking trap-and-emulate.",
+    "This is incorrect. MOV is a standard data transfer instruction and is not considered a sensitive instruction that breaks virtualization.",
+    "This is incorrect. HLT is a privileged instruction that properly traps to the hypervisor when executed in user mode.",
+    "This is incorrect. IRET is a privileged instruction used for returning from interrupts and properly traps in user mode."
+]
+
+[[questions]]
+question = "What is the primary distinction between paravirtualization and binary translation in handling unvirtualizable instructions?"
+choices = [
+    "Paravirtualization modifies the guest OS source code to use hypercalls, while binary translation dynamically rewrites guest kernel code.",
+    "Paravirtualization dynamically rewrites guest code at runtime, while binary translation modifies the guest OS source code directly.",
+    "Paravirtualization relies on hardware root/non-root modes, while binary translation uses shadow page tables for memory.",
+    "Paravirtualization requires hardware-assisted virtualization, while binary translation runs entirely in user space."
+]
+answer = "Paravirtualization modifies the guest OS source code to use hypercalls, while binary translation dynamically rewrites guest kernel code."
+subtopic_id = "7.2"
+explanations = [
+    "This is correct. Paravirtualization (e.g., Xen) alters the guest OS to explicitly call the hypervisor, while binary translation (e.g., early VMware) dynamically intercepts and rewrites sensitive instructions on the fly.",
+    "This is incorrect. It reverses the definitions of paravirtualization and binary translation.",
+    "This is incorrect. Both techniques can function without modern hardware assists; they are software solutions to the same problem.",
+    "This is incorrect. Neither strictly requires hardware-assisted virtualization, as they were developed prior to or independently of such features."
+]
+
+[[questions]]
+question = "Consider a 2-level guest page table and a 2-level nested page table (NPT) system. How many memory accesses are required to translate a single virtual address to a physical address?"
+choices = [
+    "12 memory accesses are required to walk the combined guest and nested page tables.",
+    "9 memory accesses are required to walk the combined guest and nested page tables.",
+    "4 memory accesses are required to walk the combined guest and nested page tables.",
+    "16 memory accesses are required to walk the combined guest and nested page tables."
+]
+answer = "12 memory accesses are required to walk the combined guest and nested page tables."
+subtopic_id = "7.2"
+explanations = [
+    "This is correct. 4 accesses are needed for the guest page table walk (P1, P2, Data). Each of these 3 memory accesses requires an NPT walk (N1, N2, Target). 4 x 3 = 12 total accesses.",
+    "This is incorrect. This assumes only one level of NPT (4 x 2 = 8) or misses the final data access (3 x 3 = 9).",
+    "This is incorrect. This assumes the NPT walk is zero-cost or only uses a single level without considering the recursive nature of the translation.",
+    "This is incorrect. This overcounts the memory accesses, perhaps by multiplying the total levels incorrectly (4 x 4)."
+]
+
+[[questions]]
+question = "According to the NIST definition, which of the following is a core characteristic of cloud computing?"
+choices = [
+    "On-demand self-service, broad network access, and measured service.",
+    "Dedicated hardware access, strict resource isolation, and flat pricing.",
+    "Centralized management, local network access, and fixed capacity.",
+    "Volunteer resource pooling, delayed elasticity, and free service tiers."
+]
+answer = "On-demand self-service, broad network access, and measured service."
+subtopic_id = "7.3"
+explanations = [
+    "This is correct. NIST defines cloud computing as having on-demand self-service, broad network access, resource pooling, rapid elasticity, and measured service.",
+    "This is incorrect. Dedicated hardware and flat pricing contradict the resource pooling and measured service characteristics of the cloud.",
+    "This is incorrect. Local network access and fixed capacity contradict the broad network access and rapid elasticity characteristics.",
+    "This is incorrect. Delayed elasticity and free service tiers are not part of the NIST definition for cloud computing."
+]
+
+[[questions]]
+question = "In the VMware hosted architecture, what is the specific role of the VMM driver and the VMX process?"
+choices = [
+    "The VMX process handles user interface and configuration, while the VMM driver loads the VMM into the kernel to execute guest code.",
+    "The VMM driver handles user interface interactions, while the VMX process executes guest instructions directly in user space.",
+    "The VMX process manages physical hardware devices directly, while the VMM driver translates virtual device I/O requests.",
+    "The VMM driver schedules CPU time for the guest, while the VMX process handles memory allocation and ballooning."
+]
+answer = "The VMX process handles user interface and configuration, while the VMM driver loads the VMM into the kernel to execute guest code."
+subtopic_id = "7.3"
+explanations = [
+    "This is correct. The VMX runs as a user process for UI/config, and it uses the VMM driver (a kernel module) to load the actual Virtual Machine Monitor (VMM) that runs the guest.",
+    "This is incorrect. It reverses the roles; the VMM driver is the kernel component, and the VMX is the user process.",
+    "This is incorrect. The VMX process does not manage physical hardware directly; it relies on the host OS and the VMM driver.",
+    "This is incorrect. The VMX process does not handle memory ballooning; that is a feature of the hypervisor or VMM itself."
+]
+
+[[questions]]
+question = "How does a 'world switch' in VMware's hosted architecture differ from a standard operating system context switch?"
+choices = [
+    "A world switch transitions between the host OS context and the VMM context, swapping CPU control and memory mappings.",
+    "A world switch transitions between two user processes within the guest OS, updating page tables and TLB entries.",
+    "A world switch transitions between different virtual machines, reallocating entire hardware resources instantaneously.",
+    "A world switch transitions between ring 0 and ring 3 within the guest OS, trapping privileged instructions instantly."
+]
+answer = "A world switch transitions between the host OS context and the VMM context, swapping CPU control and memory mappings."
+subtopic_id = "7.3"
+explanations = [
+    "This is correct. A world switch is the context switch between the host operating system and the Virtual Machine Monitor (VMM), completely changing the execution context.",
+    "This is incorrect. This describes a standard context switch inside the guest OS, not a world switch between host and VMM.",
+    "This is incorrect. Switching between virtual machines is a VM migration or scheduling operation, not the definition of a world switch.",
+    "This is incorrect. Transitioning between privilege rings inside the guest is a trap or context switch, not a world switch."
+]
+
+[[questions]]
+question = "In VMware ESX Server, how do the techniques of ballooning and page sharing fundamentally differ in their approach to memory management?"
+choices = [
+    "Ballooning coerces the guest OS into reclaiming its own pages, while page sharing eliminates redundant copies of identical pages across VMs.",
+    "Ballooning compresses inactive memory pages, while page sharing swaps identical pages to disk to free up physical RAM.",
+    "Ballooning duplicates memory pages for fault tolerance, while page sharing allocates contiguous physical pages to the guest.",
+    "Ballooning prevents guest OS memory allocation leaks, while page sharing encrypts memory pages to prevent unauthorized access."
+]
+answer = "Ballooning coerces the guest OS into reclaiming its own pages, while page sharing eliminates redundant copies of identical pages across VMs."
+subtopic_id = "7.3"
+explanations = [
+    "This is correct. Ballooning makes the guest think it is low on memory so it voluntarily gives up pages. Page sharing uses copy-on-write to consolidate identical pages (like OS code) across VMs.",
+    "This is incorrect. Ballooning does not compress pages, and page sharing keeps identical pages in memory rather than swapping them to disk.",
+    "This is incorrect. Ballooning is not for fault tolerance, and page sharing specifically reduces the need for separate contiguous allocations for identical data.",
+    "This is incorrect. Neither technique is designed to prevent application memory leaks or encrypt memory pages."
+]

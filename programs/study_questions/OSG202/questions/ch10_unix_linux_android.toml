@@ -1,0 +1,188 @@
+version = 5
+
+[[questions]]
+question = "How does Linux implement threads at the kernel level without distinguishing them from standard processes?"
+choices = [
+    "Processes sharing resources via clone() with specific flags",
+    "Kernel threads mapped directly to user-level pthreads",
+    "Shared memory segments without distinct thread structs",
+    "Lightweight wrappers around standard fork() calls"
+]
+answer = "Processes sharing resources via clone() with specific flags"
+subtopic_id = "10.1"
+explanations = [
+    "This is correct. Linux does not have a separate thread concept; threads are simply processes that share resources (like memory and file descriptors) using the clone() system call with flags like CLONE_VM.",
+    "This is incorrect. Linux does not map kernel threads directly to user-level pthreads; it creates kernel-managed processes that share specific resources.",
+    "This is incorrect. While threads share memory, Linux still maintains distinct task_structs (process descriptors) for each thread to track their execution state.",
+    "This is incorrect. fork() creates a copy of the process with separate resources, whereas threads require clone() to share those resources."
+]
+
+[[questions]]
+question = "Contrast the O(1) scheduler and the Completely Fair Scheduler (CFS) in Linux regarding their core data structures."
+choices = [
+    "O(1) uses active/expired priority arrays, while CFS uses a red-black tree ordered by virtual runtime.",
+    "O(1) uses a red-black tree ordered by virtual runtime, while CFS uses active/expired priority arrays.",
+    "O(1) uses a round-robin queue per priority level, while CFS uses a hashed wait queue for I/O.",
+    "O(1) relies on strict time slices per process, while CFS dynamically adjusts quantum based on priority."
+]
+answer = "O(1) uses active/expired priority arrays, while CFS uses a red-black tree ordered by virtual runtime."
+subtopic_id = "10.1"
+explanations = [
+    "This is correct. The O(1) scheduler maintained run queues with active and expired arrays based on priority. CFS replaced this with a red-black tree keyed by virtual runtime to ensure fair CPU distribution.",
+    "This is incorrect. It reverses the data structures used by the two schedulers.",
+    "This is incorrect. While priorities and round-robin concepts exist, the defining structural difference is the priority arrays versus the red-black tree.",
+    "This is incorrect. Both schedulers adjust time slices, but this does not describe their fundamental structural difference."
+]
+
+[[questions]]
+question = "Why does Linux divide physical memory into distinct zones such as ZONE_DMA, ZONE_NORMAL, and ZONE_HIGHMEM?"
+choices = [
+    "To accommodate legacy hardware addressing limits and handle memory not permanently mapped by the kernel.",
+    "To segregate user-space allocations from kernel-space allocations and prevent direct memory access.",
+    "To optimize page replacement algorithms by grouping frequently accessed pages into DMA zones.",
+    "To facilitate the buddy algorithm by ensuring power-of-two allocations do not cross zone boundaries."
+]
+answer = "To accommodate legacy hardware addressing limits and handle memory not permanently mapped by the kernel."
+subtopic_id = "10.2"
+explanations = [
+    "This is correct. ZONE_DMA exists for older ISA devices that cannot address memory above 16MB. ZONE_HIGHMEM exists for memory that the kernel cannot permanently map in 32-bit systems.",
+    "This is incorrect. User-space and kernel-space separation is handled by virtual memory mechanisms, not physical zones.",
+    "This is incorrect. Page replacement algorithms operate across zones based on LRU variants, not by grouping active pages into DMA.",
+    "This is incorrect. The buddy algorithm operates within zones, but zones were not created to enforce power-of-two boundaries."
+]
+
+[[questions]]
+question = "A 64KB block is requested. The free list contains only a 512KB block. Assuming 4KB pages, how many splits occur, and what are the sizes of the remaining buddy blocks added to the free list?"
+choices = [
+    "Three splits occur; 256KB, 128KB, and 64KB blocks are added to the free list.",
+    "Two splits occur; 256KB and 128KB blocks are added to the free list.",
+    "Four splits occur; 256KB, 128KB, 64KB, and 32KB blocks are added to the free list.",
+    "Three splits occur; 128KB, 64KB, and 32KB blocks are added to the free list."
+]
+answer = "Three splits occur; 256KB, 128KB, and 64KB blocks are added to the free list."
+subtopic_id = "10.2"
+explanations = [
+    "This is correct. 512KB splits into two 256KB. One 256KB splits into two 128KB. One 128KB splits into two 64KB. One 64KB is allocated, leaving the other 64KB, plus the unused 256KB and 128KB.",
+    "This is incorrect. It misses the final split required to obtain the 64KB block.",
+    "This is incorrect. It overcounts the splits; you stop splitting once you reach the requested size.",
+    "This is incorrect. It lists incorrect block sizes resulting from the splits."
+]
+
+[[questions]]
+question = "In the ext2 file system, what is the standard sequence of structures located within a block group on the disk?"
+choices = [
+    "Superblock, block group descriptor, block bitmap, inode bitmap, inode table, data blocks.",
+    "Boot block, superblock, block group descriptor, inode table, block bitmap, data blocks.",
+    "Superblock, inode table, block group descriptor, block bitmap, inode bitmap, data blocks.",
+    "Boot block, block group descriptor, superblock, inode bitmap, inode table, data blocks."
+]
+answer = "Superblock, block group descriptor, block bitmap, inode bitmap, inode table, data blocks."
+subtopic_id = "10.3"
+explanations = [
+    "This is correct. An ext2 block group contains the superblock, group descriptors, block bitmaps, inode bitmaps, inode tables, and finally the data blocks.",
+    "This is incorrect. The boot block is a standalone structure at the very beginning of the disk, not inside every block group.",
+    "This is incorrect. The block group descriptor comes before the bitmaps and inode table.",
+    "This is incorrect. The boot block is not inside the block group, and the superblock precedes the group descriptor."
+]
+
+[[questions]]
+question = "An ext2 inode has 12 direct pointers, 1 single-indirect, 1 double-indirect, and 1 triple-indirect pointer. Block size is 4KB, and pointers are 4 bytes. What is the maximum file size, assuming no filesystem limits restrict it further?"
+choices = [
+    "12 + 1024 + 1024^2 + 1024^3 blocks, totaling approximately 4.0 TB.",
+    "12 + 2048 + 4096^2 + 8192^3 blocks, totaling approximately 32.0 TB.",
+    "12 + 512 + 512^2 + 512^3 blocks, totaling approximately 0.5 TB.",
+    "12 + 4096 + 4096^2 + 4096^3 blocks, totaling approximately 64.0 TB."
+]
+answer = "12 + 1024 + 1024^2 + 1024^3 blocks, totaling approximately 4.0 TB."
+subtopic_id = "10.3"
+explanations = [
+    "This is correct. A 4KB block holds 1024 4-byte pointers. The max size is (12 + 1024 + 1024*1024 + 1024*1024*1024) blocks, which is roughly 4TB.",
+    "This is incorrect. It uses incorrect pointer counts per block.",
+    "This is incorrect. It assumes 512 pointers per block, which would require 8-byte pointers.",
+    "This is incorrect. It assumes 4096 pointers per block, which is impossible since the block itself is 4096 bytes and pointers take space."
+]
+
+[[questions]]
+question = "In Android, how does the Zygote process optimize the startup time and memory footprint of new applications?"
+choices = [
+    "It pre-initializes the Dalvik VM and core libraries, sharing memory pages via copy-on-write when forking.",
+    "It compiles application bytecode into native machine code ahead of time using a just-in-time compiler.",
+    "It maintains a pool of idle background processes that are rapidly assigned new application intents.",
+    "It utilizes a custom kernel module to preload application resources directly into the framebuffer."
+]
+answer = "It pre-initializes the Dalvik VM and core libraries, sharing memory pages via copy-on-write when forking."
+subtopic_id = "10.4"
+explanations = [
+    "This is correct. Zygote starts up early, preloads necessary classes and resources, and then forks itself to start new apps, avoiding cold starts and sharing memory pages efficiently.",
+    "This is incorrect. Ahead-of-time compilation is a feature of ART (Android Runtime), not the Zygote process itself.",
+    "This is incorrect. Android does not maintain a pool of idle app processes; it creates them dynamically via Zygote.",
+    "This is incorrect. Zygote does not interact with the framebuffer directly; it focuses on VM and library initialization."
+]
+
+[[questions]]
+question = "When an Android client makes a remote method call to a system service via Binder IPC, how does the kernel facilitate the thread execution and data transfer?"
+choices = [
+    "The kernel copies the Parcel data from the client to the service and wakes a waiting thread in the service's thread pool.",
+    "The kernel maps the client's Parcel memory directly into the service's address space using shared memory and triggers an interrupt.",
+    "The kernel suspends the client process, executes the requested method within kernel space using the service's code, and copies the result back.",
+    "The kernel forwards the transaction via a standard TCP socket to the service process, which decodes the data in its main UI thread."
+]
+answer = "The kernel copies the Parcel data from the client to the service and wakes a waiting thread in the service's thread pool."
+subtopic_id = "10.4"
+explanations = [
+    "This is correct. The Binder kernel module manages a thread pool for each service. It copies the Parcel data from the caller to the callee's user space and dispatches it to an available thread.",
+    "This is incorrect. Binder does not use shared memory for the Parcel payload; it performs a copy operation managed by the kernel module.",
+    "This is incorrect. Binder does not execute service code in kernel space; it wakes a user-space thread in the target process.",
+    "This is incorrect. Binder is a kernel-level IPC mechanism, not a network socket, and it does not use the main UI thread for processing transactions."
+]
+
+[[questions]]
+question = "In Android's Binder IPC, what is the primary purpose of the Android Interface Definition Language (AIDL)?"
+choices = [
+    "To define the programming interface that the compiler uses to generate stubs for IPC.",
+    "To compile Dalvik bytecode into native machine code for improved runtime performance.",
+    "To specify the layout of XML resources used by the UI rendering pipeline.",
+    "To describe the security permissions required for accessing system hardware features."
+]
+answer = "To define the programming interface that the compiler uses to generate stubs for IPC."
+subtopic_id = "10.4"
+explanations = [
+    "This is correct. AIDL is used to define the interface for inter-process communication. The build system generates Java/C++ stubs and proxies based on the AIDL file.",
+    "This is incorrect. Bytecode compilation is handled by the runtime environment (Dalvik/ART), not AIDL.",
+    "This is incorrect. XML resources define UI layouts, not inter-process communication interfaces.",
+    "This is incorrect. Security permissions are defined in the AndroidManifest.xml, not AIDL files."
+]
+
+[[questions]]
+question = "Under Android's process lifecycle management, the system is experiencing extreme memory pressure. Which process category is killed immediately before the 'Empty' processes?"
+choices = [
+    "Background processes that are not currently visible and have no running services.",
+    "Visible processes that are on screen but do not have user input focus currently.",
+    "Service processes that are executing long-running background operations.",
+    "Foreground processes that are actively interacting with the user at that moment."
+]
+answer = "Background processes that are not currently visible and have no running services."
+subtopic_id = "10.5"
+explanations = [
+    "This is correct. The Low Memory Killer follows an importance hierarchy. Background processes are killed before Empty processes, as Empty processes hold no active app components.",
+    "This is incorrect. Visible processes are higher in the hierarchy and are killed after Background and Service processes.",
+    "This is incorrect. Service processes are killed after Background processes.",
+    "This is incorrect. Foreground processes are the last to be killed, only if absolutely necessary."
+]
+
+[[questions]]
+question = "An app needs to share a large database of contacts with another app, but they are in separate sandboxes. Which Android component and mechanism must the developer use to securely expose this data?"
+choices = [
+    "Implement a Content Provider, exposing a URI that the receiving app queries via a ContentResolver.",
+    "Implement a Broadcast Receiver, sending the database file within a PendingIntent payload.",
+    "Implement an AIDL Service, binding the receiving app and transmitting the database via a Parcel.",
+    "Implement a background Service, writing the database to external storage shared by both apps."
+]
+answer = "Implement a Content Provider, exposing a URI that the receiving app queries via a ContentResolver."
+subtopic_id = "10.5"
+explanations = [
+    "This is correct. Content Providers are specifically designed to securely share structured data between application sandboxes using URIs and ContentResolvers.",
+    "This is incorrect. Broadcast Receivers are for sending system-wide messages or notifications, not for sharing large structured databases.",
+    "This is incorrect. While AIDL Services can handle IPC, they are meant for remote method calls, not the standardized querying of structured data like Content Providers.",
+    "This is incorrect. Writing to external storage is insecure, deprecated for app data sharing, and bypasses the Android sandboxing model."
+]

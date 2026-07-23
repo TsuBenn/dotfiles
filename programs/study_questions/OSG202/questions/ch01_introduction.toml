@@ -1,0 +1,171 @@
+version = 5
+
+[[questions]]
+question = "Which of the following operating system generations is correctly matched with its primary technological driver and defining OS characteristic?"
+choices = [
+    "The first generation (1945-55) is defined by vacuum tubes and the complete absence of operating systems.",
+    "The second generation (1955-65) is defined by integrated circuits and the introduction of multiprogramming.",
+    "The third generation (1965-80) is defined by transistors and the widespread use of batch systems.",
+    "The fourth generation (1980-present) is defined by personal computers and the reliance on vacuum tubes."
+]
+answer = "The first generation (1945-55) is defined by vacuum tubes and the complete absence of operating systems."
+subtopic_id = "1.1"
+explanations = [
+    "This is correct. The first generation of computers (1945-55) utilized vacuum tubes and did not have operating systems.",
+    "This is incorrect. The second generation (1955-65) was defined by transistors and batch systems, not integrated circuits and multiprogramming.",
+    "This is incorrect. The third generation (1965-80) was defined by integrated circuits (ICs) and multiprogramming, not transistors and batch systems.",
+    "This is incorrect. The fourth generation (1980-present) is defined by personal computers, but vacuum tubes were obsolete by this era."
+]
+
+[[questions]]
+question = "In the context of operating system perspectives, how does the 'top-down' view differ from the 'bottom-up' view, and which view aligns with the OS acting as a resource manager?"
+choices = [
+    "The top-down view manages hardware resources directly, while the bottom-up view provides abstractions; the resource manager role aligns with the top-down view.",
+    "The top-down view provides abstractions for applications, while the bottom-up view manages hardware; the resource manager role aligns with the bottom-up view.",
+    "The top-down view focuses on orderly allocation of resources, while the bottom-up view handles extended machine abstractions; the resource manager aligns with the top-down view.",
+    "The top-down view abstracts physical hardware components, while the bottom-up view handles process scheduling; the resource manager role aligns with both equally."
+]
+answer = "The top-down view provides abstractions for applications, while the bottom-up view manages hardware; the resource manager role aligns with the bottom-up view."
+subtopic_id = "1.1"
+explanations = [
+    "This is incorrect. The top-down view provides abstractions (extended machine), not direct hardware management.",
+    "This is correct. The top-down view provides beautiful abstractions over ugly hardware, while the bottom-up view manages the complex hardware and allocates resources orderly.",
+    "This is incorrect. Resource management is the bottom-up view, not the top-down view.",
+    "This is incorrect. The views are distinct, and resource management distinctly aligns with the bottom-up perspective."
+]
+
+[[questions]]
+question = "The principle 'Ontogeny recapitulates phylogeny' suggests that new species of computers go through the same development phases as their ancestors. Which scenario best exemplifies this principle in modern operating system development?"
+choices = [
+    "A modern mainframe immediately implements advanced multiprogramming and virtual memory, bypassing earlier batch processing phases due to inherited software architectures.",
+    "A new sensor node operating system is designed with complex hierarchical file systems and heavy virtual memory from its inception to match server capabilities.",
+    "A new wearable device initially lacks an OS, later adopts a simple batch system, and finally implements a full multiprogramming OS as its hardware improves.",
+    "A newly introduced smartphone operating system skips the extended machine abstraction phase and focuses exclusively on direct hardware resource management."
+]
+answer = "A new wearable device initially lacks an OS, later adopts a simple batch system, and finally implements a full multiprogramming OS as its hardware improves."
+subtopic_id = "1.1"
+explanations = [
+    "This is incorrect. Bypassing earlier phases contradicts the principle, which states that new species go through the same development phases as ancestors.",
+    "This is incorrect. Sensor nodes starting with complex server-like features skips the historical evolutionary phases of OS development.",
+    "This is correct. It traces the historical evolution (no OS -> batch -> multiprogramming) applied to a new species of computer (wearable device) as technology improves.",
+    "This is incorrect. The extended machine abstraction is a fundamental OS concept that is not skipped in OS development."
+]
+
+[[questions]]
+question = "When designing a caching system within the memory hierarchy, which of the following is NOT one of the four fundamental caching system issues that must be addressed?"
+choices = [
+    "Determining the specific conditions for when to put a new item into the cache memory.",
+    "Selecting which specific cache line to put the newly fetched item into.",
+    "Deciding which item to remove from the cache when a necessary slot is needed.",
+    "Calculating the precise rotational latency of the disk drive to synchronize cache fetches."
+]
+answer = "Calculating the precise rotational latency of the disk drive to synchronize cache fetches."
+subtopic_id = "1.2"
+explanations = [
+    "This is incorrect because determining when to put a new item into the cache is the first fundamental caching issue.",
+    "This is incorrect because selecting which cache line to use is the second fundamental caching issue.",
+    "This is incorrect because deciding which item to evict is the third fundamental caching issue.",
+    "This is correct. Rotational latency is a disk hardware performance metric, not one of the four fundamental caching system issues."
+]
+
+[[questions]]
+question = "A modern CPU utilizes a three-stage pipeline and a superscalar architecture. How do these two features fundamentally differ in their approach to executing instructions?"
+choices = [
+    "A pipeline executes multiple instructions simultaneously using duplicate units, while a superscalar architecture overlaps the stages of a single instruction.",
+    "A pipeline uses a single execution unit to process instructions sequentially, while a superscalar architecture fetches instructions from the cache in parallel.",
+    "A pipeline divides the main memory into distinct hierarchical levels, while a superscalar architecture manages the allocation of multiple I/O device interrupts.",
+    "A pipeline overlaps the stages of instruction execution, while a superscalar architecture employs multiple execution units to execute instructions simultaneously."
+]
+answer = "A pipeline overlaps the stages of instruction execution, while a superscalar architecture employs multiple execution units to execute instructions simultaneously."
+subtopic_id = "1.2"
+explanations = [
+    "This is incorrect because it reverses the definitions of a pipeline and a superscalar architecture.",
+    "This is incorrect because a pipeline overlaps instruction stages (it does not process them sequentially), and superscalar refers to execution units, not cache fetching.",
+    "This is incorrect because it conflates CPU execution features with memory hierarchy and I/O device interrupt handling.",
+    "This is correct. Pipelining overlaps execution stages (like fetch, decode, execute) for a stream of instructions, while superscalar architectures have multiple execution units to process multiple instructions in the same clock cycle."
+]
+
+[[questions]]
+question = "Consider a system executing an I/O operation. If the CPU initiates the I/O device and proceeds to execute other processes, what is the precise sequence of events upon the device completion, and how does the CPU resume the original program?"
+choices = [
+    "The CPU actively polls the device status register, detects completion, directly executes the next instruction of the original program without saving state.",
+    "The device sends an interrupt signal, the CPU finishes its current instruction, saves state, runs the interrupt handler, and returns to the original program.",
+    "The device places the data directly into the L1 cache, triggering a hardware fault that forces the CPU to immediately halt all processes and reboot.",
+    "The device sends a high-priority system call to the kernel, which pauses the scheduler, executes a context switch, and permanently terminates the original program."
+]
+answer = "The device sends an interrupt signal, the CPU finishes its current instruction, saves state, runs the interrupt handler, and returns to the original program."
+subtopic_id = "1.2"
+explanations = [
+    "This is incorrect because it describes a polling mechanism, not an interrupt-driven mechanism where the CPU is free to execute other processes.",
+    "This is correct. This perfectly describes interrupt processing: the device signals, the CPU finishes its current instruction, saves its state, handles the interrupt, and returns.",
+    "This is incorrect because I/O completion does not place data directly into L1 cache or trigger a system reboot via hardware fault.",
+    "This is incorrect because devices do not send system calls, and interrupt handling does not permanently terminate the original program."
+]
+
+[[questions]]
+question = "In operating system terminology, what is the most accurate definition of a 'process', and what primary elements are associated with it?"
+choices = [
+    "A process is a compiled binary file on a disk, associated with a set of hardware interrupts and a fixed memory cache allocation block.",
+    "A process is a specific type of file system directory, associated with a hierarchical tree of mounting points and a dedicated I/O controller.",
+    "A process is a program in execution, associated with an address space and a set of resources, acting as a container for necessary information.",
+    "A process is a passive set of instructions waiting in the cache, associated with a pipeline stage and a superscalar execution unit."
+]
+answer = "A process is a program in execution, associated with an address space and a set of resources, acting as a container for necessary information."
+subtopic_id = "1.3"
+explanations = [
+    "This is incorrect. A compiled binary file on a disk is a program, not a process. A process is a program in execution.",
+    "This is incorrect. A process is not a file system directory, nor is it associated with mounting points and I/O controllers in this manner.",
+    "This is correct. This is the exact textbook definition of a process, including its association with an address space, resources, and its role as a container.",
+    "This is incorrect. A process is an active entity (in execution), not a passive set of instructions, and it is not defined by pipeline stages."
+]
+
+[[questions]]
+question = "Before the invention of advanced networking, two processes needed to communicate. Which OS abstraction directly facilitates this communication, and what is its primary mechanism?"
+choices = [
+    "Pipes facilitate this by connecting two processes, allowing them to communicate by routing data between them.",
+    "Mounting facilitates this by physically connecting two separate disk drives into a single unified memory address space.",
+    "Directories facilitate this by providing a hierarchical tree structure where process executable files can be stored and retrieved.",
+    "Caching facilitates this by storing the memory address spaces of both processes in the same L2 cache line for concurrent access."
+]
+answer = "Pipes facilitate this by connecting two processes, allowing them to communicate by routing data between them."
+subtopic_id = "1.3"
+explanations = [
+    "This is correct. Pipes are the OS abstraction specifically designed to connect two processes and allow them to communicate.",
+    "This is incorrect. Mounting is an abstraction used to integrate file systems from separate media into the directory hierarchy, not for process communication.",
+    "This is incorrect. Directories are used for organizing files, not for facilitating direct communication between running processes.",
+    "This is incorrect. Caching is a memory hierarchy performance feature, not a logical inter-process communication abstraction."
+]
+
+[[questions]]
+question = "During the execution of a system call like `read(fd, buffer, nbytes)`, the system undergoes an 11-step process. Which of the following sequences accurately captures the critical transition steps in this process?"
+choices = [
+    "The program traps to the kernel, executes the read in user mode, saves registers, dispatches to the handler, and returns to the caller.",
+    "The program traps to the kernel, saves registers, dispatches to the correct handler, executes the read, and returns to the caller.",
+    "The program dispatches the handler in user mode, traps to the kernel, executes the read, saves registers, and returns to the caller.",
+    "The program saves registers in the kernel, traps to the handler, executes the read in user mode, dispatches, and returns to the caller."
+]
+answer = "The program traps to the kernel, saves registers, dispatches to the correct handler, executes the read, and returns to the caller."
+subtopic_id = "1.4"
+explanations = [
+    "This is incorrect because the read operation is executed in kernel mode, not user mode.",
+    "This is correct. The sequence properly follows the 11-step system call mechanism: trapping to the kernel, saving state, dispatching, executing, and returning.",
+    "This is incorrect because the handler cannot be dispatched in user mode prior to the trap; the trap must happen first.",
+    "This is incorrect because registers are saved after the trap to the kernel, and execution does not occur in user mode."
+]
+
+[[questions]]
+question = "Contrast the architectural structures of the MINIX 3 operating system and a traditional monolithic system. What is the primary trade-off resulting from MINIX 3's structural design?"
+choices = [
+    "MINIX 3 moves services to user space to maximize execution speed, while a monolithic system keeps services in the kernel to ensure fault isolation.",
+    "MINIX 3 uses a layered structure where layers depend on lower ones, whereas a monolithic system uses a client-server model over a network.",
+    "MINIX 3 moves services to user space to improve fault isolation, while a monolithic system keeps services in the kernel for faster execution.",
+    "MINIX 3 relies on a single address space containing main and utility procedures, whereas a monolithic system uses a type 1 hypervisor."
+]
+answer = "MINIX 3 moves services to user space to improve fault isolation, while a monolithic system keeps services in the kernel for faster execution."
+subtopic_id = "1.4"
+explanations = [
+    "This is incorrect. It reverses the trade-off: moving services to user space generally decreases execution speed due to message passing overhead, but improves fault isolation.",
+    "This is incorrect. MINIX 3 is a microkernel, not merely a layered system, and monolithic systems do not inherently use a client-server model over a network.",
+    "This is correct. MINIX 3 (a microkernel) achieves high fault isolation by running services in user space, at the cost of the performance overhead of inter-process communication. Monolithic systems prioritize performance by keeping services in the kernel.",
+    "This is incorrect. A single address space containing main and utility procedures describes a monolithic system, not MINIX 3, and monolithic systems do not use hypervisors."
+]

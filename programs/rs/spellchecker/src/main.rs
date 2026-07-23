@@ -1,26 +1,24 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::io::{self, BufRead};
 
-// Bake the dictionary into the binary at compile time.
-// Make sure `words.txt` is in the same folder as main.rs!
-const DICT_DATA: &str = include_str!("/usr/share/dict/words");
+const DICT_DATA: &str = include_str!("../words.txt");
 
 #[derive(Debug, PartialEq)]
 enum DiffOp {
     Match(char),
-    Replace(char, char), // (user_char, target_char)
-    Delete(char),        // User typed an extra char
-    Insert(char),        // User missed a char
+    Replace(char, char),
+    Delete(char),
+    Insert(char),
+    Transpose(char, char), // (target_first, target_second)
 }
 
-// 1. Calculate character-by-character diffs using Levenshtein backtracking
-fn diff_words(query: &str, target: &str) -> Vec<DiffOp> {
-    let q_chars: Vec<char> = query.chars().collect();
-    let t_chars: Vec<char> = target.chars().collect();
-    let (m, n) = (q_chars.len(), t_chars.len());
+// Damerau-Levenshtein distance only (fast, no backtrack table needed)
+fn damerau_distance(a: &str, b: &str) -> usize {
+    let a_chars: Vec<char> = a.chars().collect();
+    let b_chars: Vec<char> = b.chars().collect();
+    let (m, n) = (a_chars.len(), b_chars.len());
 
     let mut dp = vec![vec![0; n + 1]; m + 1];
-
     for i in 0..=m {
         dp[i][0] = i;
     }
@@ -30,12 +28,50 @@ fn diff_words(query: &str, target: &str) -> Vec<DiffOp> {
 
     for i in 1..=m {
         for j in 1..=n {
-            if q_chars[i - 1] == t_chars[j - 1] {
-                dp[i][j] = dp[i - 1][j - 1];
+            let cost = if a_chars[i - 1] == b_chars[j - 1] {
+                0
             } else {
-                dp[i][j] = 1 + dp[i - 1][j - 1]
-                    .min(dp[i - 1][j]) // Delete
-                    .min(dp[i][j - 1]); // Insert
+                1
+            };
+            dp[i][j] = (dp[i - 1][j] + 1)
+                .min(dp[i][j - 1] + 1)
+                .min(dp[i - 1][j - 1] + cost);
+
+            if i > 1
+                && j > 1
+                && a_chars[i - 1] == b_chars[j - 2]
+                && a_chars[i - 2] == b_chars[j - 1]
+            {
+                dp[i][j] = dp[i][j].min(dp[i - 2][j - 2] + 1);
+            }
+        }
+    }
+    dp[m][n]
+}
+
+// Same recurrence, but keeps the full table so we can backtrack for highlighting
+fn diff_words(query: &str, target: &str) -> Vec<DiffOp> {
+    let q: Vec<char> = query.chars().collect();
+    let t: Vec<char> = target.chars().collect();
+    let (m, n) = (q.len(), t.len());
+
+    let mut dp = vec![vec![0; n + 1]; m + 1];
+    for i in 0..=m {
+        dp[i][0] = i;
+    }
+    for j in 0..=n {
+        dp[0][j] = j;
+    }
+
+    for i in 1..=m {
+        for j in 1..=n {
+            let cost = if q[i - 1] == t[j - 1] { 0 } else { 1 };
+            dp[i][j] = (dp[i - 1][j] + 1)
+                .min(dp[i][j - 1] + 1)
+                .min(dp[i - 1][j - 1] + cost);
+
+            if i > 1 && j > 1 && q[i - 1] == t[j - 2] && q[i - 2] == t[j - 1] {
+                dp[i][j] = dp[i][j].min(dp[i - 2][j - 2] + 1);
             }
         }
     }
@@ -44,19 +80,28 @@ fn diff_words(query: &str, target: &str) -> Vec<DiffOp> {
     let (mut i, mut j) = (m, n);
 
     while i > 0 || j > 0 {
-        if i > 0 && j > 0 && q_chars[i - 1] == t_chars[j - 1] {
-            ops.push(DiffOp::Match(q_chars[i - 1]));
+        if i > 0 && j > 0 && q[i - 1] == t[j - 1] {
+            ops.push(DiffOp::Match(q[i - 1]));
             i -= 1;
             j -= 1;
+        } else if i > 1
+            && j > 1
+            && q[i - 1] == t[j - 2]
+            && q[i - 2] == t[j - 1]
+            && dp[i][j] == dp[i - 2][j - 2] + 1
+        {
+            ops.push(DiffOp::Transpose(t[j - 2], t[j - 1]));
+            i -= 2;
+            j -= 2;
         } else if i > 0 && j > 0 && dp[i][j] == dp[i - 1][j - 1] + 1 {
-            ops.push(DiffOp::Replace(q_chars[i - 1], t_chars[j - 1]));
+            ops.push(DiffOp::Replace(q[i - 1], t[j - 1]));
             i -= 1;
             j -= 1;
-        } else if i > 0 && dp[i][j] == dp[i - 1][j.max(0)] + 1 {
-            ops.push(DiffOp::Delete(q_chars[i - 1]));
+        } else if i > 0 && dp[i][j] == dp[i - 1][j] + 1 {
+            ops.push(DiffOp::Delete(q[i - 1]));
             i -= 1;
         } else {
-            ops.push(DiffOp::Insert(t_chars[j - 1]));
+            ops.push(DiffOp::Insert(t[j - 1]));
             j -= 1;
         }
     }
@@ -65,53 +110,18 @@ fn diff_words(query: &str, target: &str) -> Vec<DiffOp> {
     ops
 }
 
-// 2. Format diff ops with ANSI escape sequences
 fn format_highlight(ops: &[DiffOp]) -> String {
     let mut out = String::new();
-
     for op in ops {
         match op {
-            DiffOp::Match(c) => {
-                // Green for matching characters
-                out.push_str(&format!("\x1b[32m{}\x1b[0m", c));
-            }
-            DiffOp::Replace(user_c, target_c) => {
-                // Red for wrong char, showing correct char in grey brackets
-                out.push_str(&format!(
-                    "\x1b[31;1m{}\x1b[0m\x1b[90m[{}]\x1b[0m",
-                    user_c, target_c
-                ));
-            }
-            DiffOp::Delete(user_c) => {
-                // Strikethrough red for extra character
-                out.push_str(&format!("\x1b[31;9m{}\x1b[0m", user_c));
-            }
-            DiffOp::Insert(target_c) => {
-                // Dimmed grey bracket for missing character
-                out.push_str(&format!("\x1b[90m[{}]\x1b[0m", target_c));
-            }
+            DiffOp::Match(c) => out.push(*c),
+            DiffOp::Replace(u, t) => out.push_str(&format!("~~{}->{}~~", u, t)),
+            DiffOp::Delete(u) => out.push_str(&format!("--{}--", u)),
+            DiffOp::Insert(t) => out.push_str(&format!("++{}++", t)),
+            DiffOp::Transpose(a, b) => out.push_str(&format!("<>{}{}<>", a, b)),
         }
     }
-
     out
-}
-
-fn levenshtein(a: &str, b: &str) -> usize {
-    let mut costs: Vec<usize> = (0..=b.len()).collect();
-    for (i, ca) in a.chars().enumerate() {
-        let mut last_diag = costs[0];
-        costs[0] = i + 1;
-        for (j, cb) in b.chars().enumerate() {
-            let old_diag = last_diag;
-            last_diag = costs[j + 1];
-            costs[j + 1] = if ca == cb {
-                old_diag
-            } else {
-                1 + old_diag.min(costs[j + 1]).min(costs[j])
-            };
-        }
-    }
-    costs[b.len()]
 }
 
 fn common_prefix_len(a: &str, b: &str) -> usize {
@@ -121,11 +131,42 @@ fn common_prefix_len(a: &str, b: &str) -> usize {
         .count()
 }
 
+fn collapse_duplicates(s: &str) -> String {
+    let mut result = String::new();
+    let mut last_char = None;
+    for c in s.chars() {
+        if Some(c) != last_char {
+            result.push(c);
+            last_char = Some(c);
+        }
+    }
+    result
+}
+
 fn main() {
-    let dict: HashSet<String> = DICT_DATA
-        .lines()
-        .map(|line| line.trim().to_lowercase())
-        .collect();
+    // --- Build everything ONCE at startup ---
+    let mut dict_words: Vec<(String, String)> = Vec::new(); // (original, lowercase)
+    let mut freq_map: HashMap<String, u64> = HashMap::new();
+    let mut dict_set: HashSet<String> = HashSet::new();
+
+    for line in DICT_DATA.lines() {
+        if let Some((word, freq_str)) = line.trim().rsplit_once('\t') {
+            let lower = word.to_lowercase();
+            let freq: u64 = freq_str.trim().parse().unwrap_or(1);
+            freq_map.insert(lower.clone(), freq);
+            dict_set.insert(lower.clone());
+            dict_words.push((word.to_string(), lower));
+        }
+    }
+
+    // Bucket dictionary indices by word length
+    let mut dict_by_len: HashMap<usize, Vec<usize>> = HashMap::new();
+    for (idx, (_, lower)) in dict_words.iter().enumerate() {
+        dict_by_len
+            .entry(lower.chars().count())
+            .or_default()
+            .push(idx);
+    }
 
     let stdin = io::stdin();
     for line in stdin.lock().lines() {
@@ -135,48 +176,64 @@ fn main() {
                 continue;
             }
 
-            if dict.contains(&query) {
+            if dict_set.contains(&query) {
                 println!("*");
+                continue;
+            }
+
+            let collapsed_query = collapse_duplicates(&query);
+            let query_len = query.chars().count();
+
+            let mut candidates: Vec<(i64, &str)> = Vec::new();
+
+            let lo = query_len.saturating_sub(4);
+            let hi = query_len + 4;
+
+            for len in lo..=hi {
+                let Some(indices) = dict_by_len.get(&len) else {
+                    continue;
+                };
+
+                for &idx in indices {
+                    let (orig, lower_w) = &dict_words[idx];
+
+                    let dist = damerau_distance(&query, lower_w);
+                    let collapsed_w = collapse_duplicates(lower_w);
+                    let phonetic_match = collapsed_query == collapsed_w
+                        || damerau_distance(&collapsed_query, &collapsed_w) <= 1;
+
+                    if dist <= 3 || phonetic_match {
+                        let prefix_len = common_prefix_len(&query, lower_w);
+                        let freq = *freq_map.get(lower_w).unwrap_or(&1);
+                        let freq_score = (freq as f64).log10();
+
+                        let mut score = (dist as f64) * 50.0;
+                        if phonetic_match {
+                            score -= 80.0;
+                        }
+                        score -= (prefix_len as f64) * 12.0;
+                        score -= freq_score * 10.0;
+
+                        candidates.push((score as i64, orig.as_str()));
+                    }
+                }
+            }
+
+            candidates.sort_by_key(|(score, _)| *score);
+
+            if candidates.is_empty() {
+                println!("#");
             } else {
-                let mut candidates: Vec<(i32, &str)> = DICT_DATA
-                    .lines()
-                    .filter_map(|w| {
-                        let lower_w = w.to_lowercase();
-
-                        let len_diff = lower_w.len().abs_diff(query.len());
-                        if len_diff > 3 && !lower_w.starts_with(&query) {
-                            return None;
-                        }
-
-                        let dist = levenshtein(&query, &lower_w);
-                        let prefix_len = common_prefix_len(&query, &lower_w);
-
-                        if dist <= 2 || prefix_len >= 3 {
-                            let score = (dist as i32 * 10) - (prefix_len as i32);
-                            Some((score, w))
-                        } else {
-                            None
-                        }
+                let highlighted: Vec<String> = candidates
+                    .into_iter()
+                    .take(5)
+                    .map(|(_, w)| {
+                        let ops = diff_words(&query, &w.to_lowercase());
+                        format_highlight(&ops)
                     })
                     .collect();
 
-                candidates.sort_by_key(|(score, _)| *score);
-
-                if candidates.is_empty() {
-                    println!("#");
-                } else {
-                    // Map EVERY candidate to a highlighted string
-                    let highlighted_suggestions: Vec<String> = candidates
-                        .into_iter()
-                        .take(5)
-                        .map(|(_, w)| {
-                            let ops = diff_words(&query, &w.to_lowercase());
-                            format_highlight(&ops)
-                        })
-                        .collect();
-
-                    println!("{}", highlighted_suggestions.join(" "));
-                }
+                println!("{}", highlighted.join(" "));
             }
         }
     }

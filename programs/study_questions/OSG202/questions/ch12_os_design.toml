@@ -1,0 +1,188 @@
+version = 5
+
+[[questions]]
+question = "Which of the following accurately describes the principle of 'Simplicity' in operating system interface design?"
+choices = [
+    "A small number of orthogonal concepts that do exactly what they say without hidden side effects.",
+    "A complete set of features ensuring all necessary tasks can be performed without external tools.",
+    "An implementation that avoids excessive overhead and does not impose unnecessary CPU burdens.",
+    "A rigid hierarchical structure where layer N only uses services provided by layer N-1."
+]
+answer = "A small number of orthogonal concepts that do exactly what they say without hidden side effects."
+subtopic_id = "12.1"
+explanations = [
+    "This is correct. Simplicity in interface design means providing a small number of orthogonal concepts that perform their stated function cleanly.",
+    "This is incorrect. This describes the principle of 'Completeness', which ensures the interface can do everything needed.",
+    "This is incorrect. This describes the principle of 'Efficiency', which dictates that the interface should not impose excessive overhead.",
+    "This is incorrect. This describes a 'Layered System' structure, not an interface design principle."
+]
+
+[[questions]]
+question = "A developer is building a GUI subsystem for an operating system. The code must wait for user inputs, network packets, and hardware signals, dispatching them to appropriate handler functions asynchronously. Which execution paradigm is most appropriate?"
+choices = [
+    "Event-driven code, because it naturally handles asynchronous occurrences by dispatching to specific handlers.",
+    "Algorithmic code, because it executes sequentially and is easier to debug when handling complex state machines.",
+    "Layered code, because it isolates the hardware dependencies from the user interface logic systematically.",
+    "Microkernel code, because it minimizes the kernel size and pushes GUI drivers strictly into user space."
+]
+answer = "Event-driven code, because it naturally handles asynchronous occurrences by dispatching to specific handlers."
+subtopic_id = "12.1"
+explanations = [
+    "This is correct. Event-driven code is designed to wait for events and dispatch them to handlers, making it ideal for asynchronous GUI environments.",
+    "This is incorrect. Algorithmic code is sequential and not well-suited for waiting on multiple asynchronous events.",
+    "This is incorrect. Layered code is a system structure, not an execution paradigm for handling asynchronous inputs.",
+    "This is incorrect. Microkernel code is a system structure, not an execution paradigm."
+]
+
+[[questions]]
+question = "A new feature requires processes to share a memory region. However, an engineer notes that allowing this directly violates a fundamental OS design goal. Which goal is most directly threatened, and how can it be preserved?"
+choices = [
+    "Isolation is threatened; it can be preserved by providing primitive operations that manage the shared boundaries safely.",
+    "Efficiency is threatened; it can be preserved by using conditional compilation to optimize the memory mapping routines.",
+    "Completeness is threatened; it can be preserved by ensuring the memory region is backed by a physical swap file.",
+    "Simplicity is threatened; it can be preserved by forcing all shared memory accesses through a democratic team review."
+]
+answer = "Isolation is threatened; it can be preserved by providing primitive operations that manage the shared boundaries safely."
+subtopic_id = "12.1"
+explanations = [
+    "This is correct. Sharing memory threatens process isolation. The OS preserves isolation by defining abstractions and primitive operations (like secure IPC or mapped sections) to manage it safely.",
+    "This is incorrect. Efficiency relates to overhead, not the security and separation of processes.",
+    "This is incorrect. Completeness refers to the interface's ability to perform necessary tasks, not process safety.",
+    "This is incorrect. Simplicity refers to interface design, and team review is a project management concept, not a design goal mechanism."
+]
+
+[[questions]]
+question = "In a microkernel-based client-server operating system structure, which components are strictly required to remain inside the kernel mode?"
+choices = [
+    "Interprocess communication (IPC), basic scheduling, and memory management.",
+    "Device drivers, file systems, and core networking protocols.",
+    "The graphical user interface, process manager, and hardware abstraction layer.",
+    "The window manager, system call interface, and boot loader."
+]
+answer = "Interprocess communication (IPC), basic scheduling, and memory management."
+subtopic_id = "12.2"
+explanations = [
+    "This is correct. A microkernel runs only the essentials in kernel mode: IPC, scheduling, and basic memory management. Other services run as user-space processes.",
+    "This is incorrect. In a microkernel, device drivers, file systems, and networking run as user-space processes (servers).",
+    "This is incorrect. The GUI and higher-level process management are pushed to user space in a microkernel architecture.",
+    "This is incorrect. Window managers and system call interfaces are handled outside the minimal microkernel."
+]
+
+[[questions]]
+question = "How does conditional compilation specifically aid in hiding hardware dependencies in an operating system?"
+choices = [
+    "It allows the compiler to select architecture-specific code blocks based on predefined macros, isolating dependencies.",
+    "It dynamically translates generic hardware calls into specific machine code instructions during runtime execution.",
+    "It forces the operating system to rely strictly on a user-space HAL to manage all motherboard and CPU differences.",
+    "It prevents the kernel from executing hardware-specific instructions by encapsulating them in separate user processes."
+]
+answer = "It allows the compiler to select architecture-specific code blocks based on predefined macros, isolating dependencies."
+subtopic_id = "12.2"
+explanations = [
+    "This is correct. Conditional compilation uses macros (like #ifdef) to include or exclude hardware-specific code at compile time, keeping the main logic clean.",
+    "This is incorrect. Conditional compilation happens at compile time, not dynamically during runtime execution.",
+    "This is incorrect. A Hardware Abstraction Layer (HAL) is a separate concept; conditional compilation handles it at the source code level.",
+    "This is incorrect. Encapsulating instructions in user processes is a microkernel concept, not conditional compilation."
+]
+
+[[questions]]
+question = "An OS uses a static process table with a maximum of 1000 entries. A developer proposes changing this to a dynamic linked list to allow unlimited processes. What is a critical operational trade-off of this dynamic structure?"
+choices = [
+    "Searching for a specific PID becomes O(N) instead of O(1) because direct array indexing is no longer possible.",
+    "The system will no longer be able to map external names to internal names, breaking the user interface completely.",
+    "The process table will require hardware abstraction layers to compile correctly on different CPU architectures.",
+    "The dynamic structure prevents the use of microkernel IPC, forcing all processes to communicate via shared memory."
+]
+answer = "Searching for a specific PID becomes O(N) instead of O(1) because direct array indexing is no longer possible."
+subtopic_id = "12.2"
+explanations = [
+    "This is correct. A static array allows direct O(1) indexing by PID. A dynamic linked list requires traversal, making lookups O(N).",
+    "This is incorrect. Naming and external-to-internal mapping are handled by directories, independent of process table structure.",
+    "This is incorrect. The data structure choice for process tables is unrelated to hardware abstraction layers.",
+    "This is incorrect. The IPC mechanism is independent of whether the process table is a static array or dynamic list."
+]
+
+[[questions]]
+question = "A system designer decides to use a lookup table to count the number of set bits in a byte instead of writing a loop to calculate it. Which trade-off does this represent?"
+choices = [
+    "Trading memory space for execution speed by precomputing values into a static array.",
+    "Trading execution speed for memory space by compressing the lookup table on disk.",
+    "Trading CPU time for memory space by decompressing the algorithm at runtime.",
+    "Trading memory space for execution speed by compressing bit patterns into GIF formats."
+]
+answer = "Trading memory space for execution speed by precomputing values into a static array."
+subtopic_id = "12.3"
+explanations = [
+    "This is correct. Using a table lookup consumes memory (space) to avoid the CPU cycles (time) required to compute the result algorithmically.",
+    "This is incorrect. The table is stored in memory, not compressed on disk, and the goal is to increase speed, not trade it away.",
+    "This is incorrect. This describes the opposite trade-off (trading time for space), and lookup tables do not use decompression.",
+    "This is incorrect. GIF compression is a separate example of a space-time trade-off, not related to bit-counting lookup tables."
+]
+
+[[questions]]
+question = "Without any caching, resolving the path `/usr/ast/mbox` requires 6 disk accesses (alternating i-node and directory block reads). If the system implements an i-node cache but NO directory cache, how many disk accesses are required on the second lookup of the exact same path?"
+choices = [
+    "3 disk accesses, as all i-nodes are cached but the directory blocks must still be read from disk.",
+    "0 disk accesses, as the final path string is fully resolved and stored in the i-node cache.",
+    "6 disk accesses, because directory block reads inherently invalidate the i-node cache entries.",
+    "2 disk accesses, because only the final directory block and the target file i-node need to be read."
+]
+answer = "3 disk accesses, as all i-nodes are cached but the directory blocks must still be read from disk."
+subtopic_id = "12.3"
+explanations = [
+    "This is correct. The path requires reading 3 i-nodes and 3 directory blocks. With an i-node cache, the 3 i-node reads are cache hits, leaving 3 directory block reads.",
+    "This is incorrect. The i-node cache only stores i-nodes, not directory block data or resolved path strings.",
+    "This is incorrect. Directory reads do not invalidate i-node caches; they are independent caching mechanisms.",
+    "This is incorrect. All 3 directory blocks (`/`, `/usr`, `/usr/ast`) must still be read from disk if they are not cached."
+]
+
+[[questions]]
+question = "According to Harlan Mills' proposal, what is the primary reason for utilizing a chief programmer team structure in large software projects?"
+choices = [
+    "It avoids the communication overhead of democratic teams by having one chief programmer write all code.",
+    "It ensures that all team members write equal amounts of code to maximize parallel programming speed.",
+    "It allows the team to rotate the chief programmer role daily, ensuring everyone learns the entire system.",
+    "It focuses on rigorous documentation first, with code only being written after the design is fully approved."
+]
+answer = "It avoids the communication overhead of democratic teams by having one chief programmer write all code."
+subtopic_id = "12.4"
+explanations = [
+    "This is correct. Mills' proposal eliminates the communication overhead of peer teams by having a single chief programmer do all the coding, supported by testers and toolsmiths.",
+    "This is incorrect. The chief programmer team specifically centralizes coding to one person, rather than distributing it equally.",
+    "This is incorrect. The chief programmer role is not rotated; it remains fixed to maintain consistency and avoid overhead.",
+    "This is incorrect. This describes a rigid waterfall approach, not the organizational structure of a chief programmer team."
+]
+
+[[questions]]
+question = "An OS development team decides to use the 'alternative design' approach where a working system is produced on Day 1. How is this system typically structured initially?"
+choices = [
+    "The system is completely empty of features but runs, with functionality iteratively added over time.",
+    "The system contains all planned features but lacks any user interface, which is added in the final stage.",
+    "The system is fully documented in a rigid waterfall model before any actual code is written on Day 1.",
+    "The system runs strictly in user space, with kernel modules being swapped in dynamically as they are completed."
+]
+answer = "The system is completely empty of features but runs, with functionality iteratively added over time."
+subtopic_id = "12.4"
+explanations = [
+    "This is correct. The alternative design (agile/spiral) approach starts with a minimal, working (but empty) system on Day 1 and iteratively adds features.",
+    "This is incorrect. The alternative approach builds features incrementally, not all at once without a UI.",
+    "This is incorrect. This describes the traditional rigid waterfall model, which the alternative design seeks to avoid.",
+    "This is incorrect. This describes a specific microkernel architecture, not the alternative design methodology."
+]
+
+[[questions]]
+question = "How does the trend of virtualization and the cloud fundamentally alter the role of the traditional operating system?"
+choices = [
+    "It abstracts the OS from the underlying hardware, allowing multiple OS instances to run concurrently via a hypervisor.",
+    "It forces the OS to become a monolithic structure to handle the increased load of managing multiple distributed nodes.",
+    "It removes the need for an OS entirely, allowing user applications to run directly on the hypervisor without abstraction.",
+    "It shifts all OS responsibilities to the network, turning the local machine into a thin client that only processes inputs."
+]
+answer = "It abstracts the OS from the underlying hardware, allowing multiple OS instances to run concurrently via a hypervisor."
+subtopic_id = "12.4"
+explanations = [
+    "This is correct. Virtualization uses a hypervisor to abstract the hardware, allowing multiple independent OS instances to share a single physical machine.",
+    "This is incorrect. Virtualization does not force the OS to become monolithic; it decouples it from the hardware.",
+    "This is incorrect. The OS is still required to manage resources for user applications; the hypervisor just manages the OS.",
+    "This is incorrect. While cloud computing involves networks, local machines still run full operating systems within virtual machines."
+]

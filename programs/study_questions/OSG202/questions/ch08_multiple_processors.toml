@@ -1,0 +1,171 @@
+version = 5
+
+[[questions]]
+question = "How do NUMA multiprocessors fundamentally differ from traditional UMA bus-based multiprocessors in terms of memory access and scalability?"
+choices = [
+    "NUMA provides each CPU with local memory for faster access and uses directory-based coherence to scale beyond bus limits.",
+    "NUMA enforces a single global bus for all memory accesses, whereas UMA partitions memory evenly among all processors.",
+    "UMA allows remote memory access via LOAD and STORE instructions, whereas NUMA requires explicit message passing for remote access.",
+    "UMA utilizes crossbar switches to connect all CPUs to a shared memory pool, whereas NUMA relies exclusively on multistage Omega networks."
+]
+answer = "NUMA provides each CPU with local memory for faster access and uses directory-based coherence to scale beyond bus limits."
+subtopic_id = "8.1"
+explanations = [
+    "This is correct. NUMA (Non-Uniform Memory Access) architectures provide each CPU with local memory for faster access, using directory-based cache coherence to avoid the scalability limits of bus snooping.",
+    "This is incorrect. UMA (Uniform Memory Access) uses a shared bus, whereas NUMA avoids a single global bus to improve scalability.",
+    "This is incorrect. Both UMA and NUMA provide a single address space where remote memory is accessed via LOAD and STORE instructions; message passing is used in multicomputers, not NUMA.",
+    "This is incorrect. Both UMA and NUMA can utilize crossbars or Omega networks; the defining difference is the non-uniform access time of local vs. remote memory in NUMA."
+]
+
+[[questions]]
+question = "When comparing an 8x8 crossbar switch to a multistage Omega network for connecting 8 CPUs to 8 memory modules, what is the fundamental trade-off?"
+choices = [
+    "Crossbars provide non-blocking connections with O(N^2) complexity, while Omega networks offer lower hardware cost with O(N log N) switches but may encounter contention.",
+    "Crossbars use O(N log N) switches and require complex routing algorithms, while Omega networks use O(N^2) crosspoints and guarantee non-blocking transmission.",
+    "Crossbars broadcast memory requests to all modules simultaneously to ensure consistency, while Omega networks route packets sequentially using store-and-forward switching.",
+    "Crossbars are limited to a single active memory request per cycle due to bus arbitration, while Omega networks allow unlimited concurrent requests without collision detection."
+]
+answer = "Crossbars provide non-blocking connections with O(N^2) complexity, while Omega networks offer lower hardware cost with O(N log N) switches but may encounter contention."
+subtopic_id = "8.1"
+explanations = [
+    "This is correct. Crossbars are simple and non-blocking but scale poorly due to O(N^2) hardware cost. Omega networks use O(N log N) switches, making them cheaper and more scalable, but they can suffer from contention.",
+    "This is incorrect. It reverses the hardware complexity and scaling properties of crossbars and Omega networks.",
+    "This is incorrect. Crossbars do not broadcast requests; they establish dedicated point-to-point paths. Omega networks route packets, but this isn't the primary architectural trade-off regarding cost.",
+    "This is incorrect. Crossbars allow multiple simultaneous non-blocking connections, not a single active request per cycle."
+]
+
+[[questions]]
+question = "Which of the following correctly distinguishes a shared-memory multiprocessor from a message-passing multicomputer?"
+choices = [
+    "A shared-memory multiprocessor provides a single physical address space accessible by all CPUs, whereas a message-passing multicomputer has private memory per node.",
+    "A shared-memory multiprocessor relies on explicit network messages for all communication, whereas a message-passing multicomputer uses standard LOAD and STORE instructions.",
+    "A shared-memory multiprocessor scales infinitely without any cache coherence issues, whereas a message-passing multicomputer is strictly limited by bus bandwidth constraints.",
+    "A shared-memory multiprocessor requires each CPU to run a separate OS instance, whereas a message-passing multicomputer runs a single unified distributed OS."
+]
+answer = "A shared-memory multiprocessor provides a single physical address space accessible by all CPUs, whereas a message-passing multicomputer has private memory per node."
+subtopic_id = "8.1"
+explanations = [
+    "This is correct. Shared-memory multiprocessors (UMA/NUMA) have a single address space accessible by all CPUs, while multicomputers have private memory per node and communicate via messages.",
+    "This is incorrect. It reverses the communication models; multicomputers use messages, while shared-memory multiprocessors use LOAD/STORE.",
+    "This is incorrect. Shared-memory multiprocessors face severe cache coherence and scalability limits, whereas message-passing multicomputers generally scale much better.",
+    "This is incorrect. Both architectures can run various OS types (SMP, distributed OS, etc.); this is not the defining hardware difference."
+]
+
+[[questions]]
+question = "In a master-slave multiprocessor operating system architecture, how are operating system functions and user processes typically distributed among the CPUs?"
+choices = [
+    "A single master CPU executes all operating system code and handles system calls, while the remaining slave CPUs execute only user-space processes.",
+    "Each CPU runs its own independent copy of the operating system, handling its own system calls and managing a private partition of the physical memory.",
+    "Any CPU can execute operating system code, but user processes are strictly pinned to specific CPUs to avoid cache coherence overhead.",
+    "The operating system runs entirely in user space on all CPUs, while a dedicated kernel CPU handles hardware interrupts and memory allocation."
+]
+answer = "A single master CPU executes all operating system code and handles system calls, while the remaining slave CPUs execute only user-space processes."
+subtopic_id = "8.2"
+explanations = [
+    "This is correct. In a master-slave configuration, one CPU is designated as the master and runs the OS kernel, handling all system calls and I/O, while the slave CPUs exclusively run user code.",
+    "This is incorrect. This describes the 'Each CPU has its own OS' model, where memory and OS data structures are strictly partitioned.",
+    "This is incorrect. This describes a variation of a Symmetric Multiprocessor (SMP) with process pinning, not a master-slave architecture.",
+    "This is incorrect. Operating systems do not run entirely in user space in standard monolithic or microkernel multiprocessor architectures."
+]
+
+[[questions]]
+question = "Two threads belonging to the same process are scheduled on different CPUs in a multiprocessor system. Thread 1 runs on CPU A and Thread 2 runs on CPU B. They are scheduled out of phase (when one runs, the other is blocked). What is the primary consequence, and how does gang scheduling resolve it?"
+choices = [
+    "It causes high communication latency as threads block waiting for responses from non-running peers; gang scheduling runs them simultaneously to overlap execution.",
+    "It leads to severe memory fragmentation as out-of-phase threads allocate and deallocate stack space unpredictably; gang scheduling synchronizes memory allocations.",
+    "It results in priority inversion where the blocked thread holds a spinlock required by the running thread; gang scheduling assigns identical priorities to all threads.",
+    "It causes severe cache thrashing because threads continuously overwrite each other's cache lines; gang scheduling isolates threads into completely private L2 caches."
+]
+answer = "It causes high communication latency as threads block waiting for responses from non-running peers; gang scheduling runs them simultaneously to overlap execution."
+subtopic_id = "8.2"
+explanations = [
+    "This is correct. If communicating threads are scheduled out of phase, they constantly miss each other, causing delays. Gang scheduling ensures they run simultaneously, allowing immediate communication.",
+    "This is incorrect. Memory fragmentation is not caused by the out-of-phase scheduling of threads, and gang scheduling does not synchronize memory allocations.",
+    "This is incorrect. Priority inversion is a scheduling anomaly unrelated to out-of-phase gang scheduling, and gang scheduling does not specifically resolve it by assigning identical priorities.",
+    "This is incorrect. Out-of-phase threads do not continuously overwrite cache lines because they are not running at the same time; cache thrashing is not the primary issue here."
+]
+
+[[questions]]
+question = "In a Symmetric Multiprocessor (SMP) operating system, what is the primary purpose of using a spinlock with exponential backoff when accessing shared OS data structures?"
+choices = [
+    "It prevents excessive bus traffic and cache thrashing by delaying retry attempts, while still maintaining CPU availability for quick lock acquisition.",
+    "It ensures that lower-priority processes do not starve by exponentially increasing their priority until they successfully acquire the requested lock.",
+    "It completely avoids the waste of CPU cycles by putting the waiting process to sleep immediately and waking it via an interrupt upon release.",
+    "It guarantees strict fairness by enforcing a first-in, first-out queue order for CPUs attempting to acquire the contended lock simultaneously."
+]
+answer = "It prevents excessive bus traffic and cache thrashing by delaying retry attempts, while still maintaining CPU availability for quick lock acquisition."
+subtopic_id = "8.2"
+explanations = [
+    "This is correct. Spinlocks waste CPU cycles, and on a multiprocessor bus, continuous polling (busy waiting) causes heavy bus traffic. Exponential backoff delays retries, reducing contention.",
+    "This is incorrect. Spinlocks do not alter process priorities; they are a low-level busy-waiting mechanism.",
+    "This is incorrect. Putting a process to sleep is the opposite of a spinlock, which continuously polls. Spinlocks are used precisely when sleep overhead is too high.",
+    "This is incorrect. Basic spinlocks, even with backoff, do not guarantee strict FIFO fairness; they rely on atomic test-and-set operations where any CPU can win."
+]
+
+[[questions]]
+question = "In the context of Distributed Shared Memory (DSM), what is the phenomenon of 'false sharing,' and why is it detrimental to system performance?"
+choices = [
+    "False sharing occurs when two unrelated variables reside on the same memory page; accessing them on different machines triggers unnecessary page migrations over the network.",
+    "False sharing occurs when multiple threads intentionally share a single variable, causing the DSM system to replicate the page unnecessarily across all nodes.",
+    "False sharing happens when a page is marked as read-only, but a process attempts to write to it, resulting in a fatal segmentation fault across the distributed system.",
+    "False sharing occurs when the network interface hardware uses copy-on-write, forcing the DSM software to serialize all memory accesses to maintain strict consistency."
+]
+answer = "False sharing occurs when two unrelated variables reside on the same memory page; accessing them on different machines triggers unnecessary page migrations over the network."
+subtopic_id = "8.3"
+explanations = [
+    "This is correct. DSM operates at the page granularity. If two unrelated variables share a page and are accessed by different nodes, the page bounces back and forth, causing severe network overhead despite no actual data sharing.",
+    "This is incorrect. Intentionally sharing a single variable across multiple nodes is 'true sharing,' not false sharing.",
+    "This is incorrect. Writing to a read-only page in DSM triggers a page fault and a migration/update protocol, not a fatal segmentation fault.",
+    "This is incorrect. Copy-on-write is a mechanism used for message passing or memory sharing, but it is not the definition of false sharing in DSM."
+]
+
+[[questions]]
+question = "A system implements a nonblocking send primitive for interprocess communication. If the system chooses to use a 'copy-on-write' strategy for the message buffer, what is the expected sequence of events and its primary trade-off?"
+choices = [
+    "The send call returns immediately without copying; the OS maps the buffer as read-only, and an extra copy is made only if the sender modifies the buffer prematurely.",
+    "The send call blocks indefinitely until the network interface acknowledges receipt; the OS then safely overwrites the buffer, trading significantly higher latency for zero-copy memory usage.",
+    "The send call copies the buffer into kernel space immediately and returns; the sender can modify the buffer freely, trading additional CPU time for strict memory isolation.",
+    "The send call returns immediately after transmitting the packet via DMA; the original buffer is deallocated instantly, trading memory safety for extremely high transmission throughput."
+]
+answer = "The send call returns immediately without copying; the OS maps the buffer as read-only, and an extra copy is made only if the sender modifies the buffer prematurely."
+subtopic_id = "8.3"
+explanations = [
+    "This is correct. Copy-on-write allows the send to return instantly. The OS protects the buffer. If the sender writes to it, a page fault occurs, and the OS makes a copy then, trading potential latency for average speed.",
+    "This is incorrect. This describes a blocking send, not a nonblocking send. Copy-on-write specifically avoids blocking.",
+    "This is incorrect. This describes a nonblocking send with an immediate copy, not copy-on-write.",
+    "This is incorrect. Deallocating the buffer immediately would lead to data corruption as the network interface might still be reading it via DMA."
+]
+
+[[questions]]
+question = "In file-system-based middleware, how does the 'remote access model' fundamentally differ from the 'upload/download model' when a client application opens and reads a file?"
+choices = [
+    "The remote access model sends individual read requests across the network for each operation, whereas the upload/download model transfers the entire file to the client first.",
+    "The remote access model transfers the entire file to the client before any operations occur, whereas the upload/download model fetches only specific blocks requested by the client.",
+    "The remote access model mounts the remote file system directly into the local namespace without network traffic, whereas the upload/download model uses FTP to fetch files manually.",
+    "The remote access model requires the client to download a stub executable that runs locally, whereas the upload/download model streams the file contents as needed dynamically."
+]
+answer = "The remote access model sends individual read requests across the network for each operation, whereas the upload/download model transfers the entire file to the client first."
+subtopic_id = "8.4"
+explanations = [
+    "This is correct. In the remote access model, operations are sent to the server. In the upload/download model, the entire file is moved to the client before local operations begin.",
+    "This is incorrect. This reverses the definitions of the two models.",
+    "This is incorrect. Both models involve network traffic; mounting is a namespace operation, not a file transfer model.",
+    "This is incorrect. Downloading stub executables is characteristic of remote procedure call (RPC) or object-based middleware, not file-system-based middleware."
+]
+
+[[questions]]
+question = "Which of the following correctly describes the 'Linda' coordination-based middleware architecture?"
+choices = [
+    "It uses a shared tuple space where processes communicate by executing 'out' to insert tuples, 'in' to remove tuples, and 'read' to inspect them.",
+    "It uses a publish/subscribe architecture where publishers send messages to topics, and subscribers register interest in specific topics asynchronously without direct coupling.",
+    "It uses a distributed directory hierarchy where clients download documents via HTTP requests, and servers respond with HTML-formatted files containing hyperlinks to other resources.",
+    "It uses remote method invocation where clients invoke methods on server-side objects using interface definition languages and marshaled parameters transmitted over the network."
+]
+answer = "It uses a shared tuple space where processes communicate by executing 'out' to insert tuples, 'in' to remove tuples, and 'read' to inspect them."
+subtopic_id = "8.4"
+explanations = [
+    "This is correct. Linda is a coordination language/middleware that uses a shared tuple space. Processes add ('out'), remove ('in'), and read ('read') tuples to communicate decoupledly.",
+    "This is incorrect. This describes Publish/Subscribe middleware architectures.",
+    "This is incorrect. This describes Document-based middleware, specifically the World Wide Web.",
+    "This is incorrect. This describes Object-based middleware, such as CORBA or DCOM."
+]

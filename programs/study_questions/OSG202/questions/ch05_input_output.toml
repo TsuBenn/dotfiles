@@ -1,0 +1,205 @@
+version = 5
+
+[[questions]]
+question = "Which combination correctly distinguishes a block device from a character device in modern operating systems?"
+choices = [
+    "A disk drive operates as a block device, while a keyboard acts as a character device.",
+    "A network interface operates as a block device, while a tape drive acts as a character device.",
+    "A printer operates as a block device, while a disk drive acts as a character device.",
+    "A keyboard operates as a block device, while a network interface acts as a character device."
+]
+answer = "A disk drive operates as a block device, while a keyboard acts as a character device."
+subtopic_id = "5.1"
+explanations = [
+    "This is correct. Block devices, like disk drives, store information in fixed-size blocks and are addressable. Character devices, like keyboards, deliver or accept a stream of characters without block structure.",
+    "This is incorrect. A network interface is typically a character/stream device, while a tape drive is often treated as a block device.",
+    "This is incorrect. A printer is a character device because it accepts a stream of characters, whereas a disk drive is a block device.",
+    "This is incorrect. A keyboard is a character device, not a block device, and a network interface is generally stream-oriented."
+]
+
+[[questions]]
+question = "How does Direct Memory Access (DMA) fundamentally alter the interaction between the CPU, memory, and high-speed I/O devices during data transfers?"
+choices = [
+    "The DMA controller takes control of the system bus to transfer data directly between the device and memory, sending an interrupt to the CPU only upon completion.",
+    "The CPU delegates the execution of LOAD/STORE instructions to the DMA controller, which polls the device continuously until the entire block is transferred.",
+    "The DMA controller bypasses main memory entirely, routing data directly from the high-speed device into the CPU cache to minimize bus contention and latency.",
+    "The CPU relinquishes control of the program counter to the DMA controller, allowing the device to execute dedicated memory transfer instructions autonomously."
+]
+answer = "The DMA controller takes control of the system bus to transfer data directly between the device and memory, sending an interrupt to the CPU only upon completion."
+subtopic_id = "5.1"
+explanations = [
+    "This is correct. DMA bypasses the CPU by having the DMA controller manage the bus and transfer data directly between memory and the device, interrupting the CPU only when the entire block transfer is finished.",
+    "This is incorrect. The DMA controller does not execute CPU instructions like LOAD/STORE; it directly controls the bus cycles.",
+    "This is incorrect. DMA transfers data directly to main memory, not into the CPU cache, as the CPU is bypassed entirely during the transfer.",
+    "This is incorrect. The CPU does not give up its program counter; it continues executing other processes while the DMA controller handles the bus."
+]
+
+[[questions]]
+question = "In a superscalar processor utilizing pipelining, an interrupt occurs. Which scenario accurately describes an imprecise interrupt?"
+choices = [
+    "Instructions before the faulting instruction have completed, but several instructions after it have also partially completed, making the exact state ambiguous.",
+    "The program counter is saved in a known location, and the instruction pointed to by the PC is fully executed before the interrupt handler takes over control.",
+    "All instructions prior to the faulting instruction have fully completed, and no instructions beyond the faulting instruction have started their execution cycles.",
+    "The CPU immediately halts all pipelined instructions upon detecting the interrupt, reverting the state of the faulting instruction to its initial pre-execution values."
+]
+answer = "Instructions before the faulting instruction have completed, but several instructions after it have also partially completed, making the exact state ambiguous."
+subtopic_id = "5.1"
+explanations = [
+    "This is correct. Imprecise interrupts occur in superscalar/pipelined CPUs where multiple instructions are in flight. The state is ambiguous because instructions after the faulting PC may have partially executed.",
+    "This is incorrect. This describes a precise interrupt where the state is clean and the faulting instruction is clearly isolated.",
+    "This is incorrect. This is the definition of a precise interrupt, where a strict boundary exists between executed and unexecuted instructions.",
+    "This is incorrect. Superscalar processors cannot easily revert state for in-flight instructions, which is why imprecise interrupts occur."
+]
+
+[[questions]]
+question = "Which layer of the I/O software system is strictly responsible for translating standard operating system requests into device-specific commands?"
+choices = [
+    "The device driver layer directly interfaces with hardware controllers to issue device-specific commands.",
+    "The interrupt handler layer intercepts hardware signals and translates them into generic system calls.",
+    "The device-independent software layer provides uniform interfaces and handles buffering for all devices.",
+    "The user-space I/O software layer formats data and manages spooling daemons for hardware devices."
+]
+answer = "The device driver layer directly interfaces with hardware controllers to issue device-specific commands."
+subtopic_id = "5.2"
+explanations = [
+    "This is correct. Device drivers contain the device-specific code necessary to translate standard OS requests into the actual hardware commands understood by the device controller.",
+    "This is incorrect. Interrupt handlers respond to hardware signals but do not translate OS requests into device commands.",
+    "This is incorrect. The device-independent layer focuses on uniform interfaces (like open/read/write) and buffering, leaving device specifics to the drivers.",
+    "This is incorrect. User-space I/O software handles libraries (like printf) and spooling, not direct hardware commands."
+]
+
+[[questions]]
+question = "A system uses double buffering for reading data from a slow I/O device into a user process. How does this mechanism specifically improve performance compared to single buffering?"
+choices = [
+    "The kernel can fill one buffer while the user process concurrently drains the other, keeping the process running continuously while data is available.",
+    "The kernel uses two buffers to store data twice, ensuring that if one buffer is corrupted by a hardware fault, the second buffer retains the correct data.",
+    "The user process can read directly from the hardware device into the first buffer while the kernel simultaneously copies data from the second buffer to disk.",
+    "The kernel allocates buffers in both user space and kernel space, eliminating the need for context switches when the user process requests more data."
+]
+answer = "The kernel can fill one buffer while the user process concurrently drains the other, keeping the process running continuously while data is available."
+subtopic_id = "5.2"
+explanations = [
+    "This is correct. Double buffering allows the kernel to fill one buffer while the user process consumes data from the other, eliminating wait times for the I/O device to fill the buffer.",
+    "This is incorrect. Double buffering is for performance (concurrent reading/processing), not hardware fault tolerance or data redundancy.",
+    "This is incorrect. User processes do not read directly from hardware devices into buffers; the kernel mediates this.",
+    "This is incorrect. Context switches are still required to switch between user mode and kernel mode during I/O operations, even with double buffering."
+]
+
+[[questions]]
+question = "During an interrupt-driven I/O operation to print a string, the printer issues an interrupt signaling it is ready for the next character. What is the exact sequence of steps taken by the interrupt handler?"
+choices = [
+    "Save registers, acknowledge the interrupt controller, extract the next character, write it to the device, select the next process, restore registers.",
+    "Acknowledge the interrupt controller, write the next character to the device, extract the current character, save registers, select the next process, restore registers.",
+    "Extract the next character, write it to the device, save registers, acknowledge the interrupt controller, select the next process, restore registers.",
+    "Save registers, select the next process, acknowledge the interrupt controller, extract the next character, write it to the device, restore registers."
+]
+answer = "Save registers, acknowledge the interrupt controller, extract the next character, write it to the device, select the next process, restore registers."
+subtopic_id = "5.2"
+explanations = [
+    "This is correct. The standard sequence involves saving context, acknowledging the interrupt to prevent repeats, processing the interrupt (extracting and writing the character), and then restoring context/switching processes.",
+    "This is incorrect. Acknowledging the controller before saving registers risks losing CPU state, and writing to the device before extracting the character is logically impossible.",
+    "This is incorrect. Extracting and writing the character before saving registers or acknowledging the interrupt violates standard interrupt handling protocols.",
+    "This is incorrect. Selecting the next process before acknowledging the interrupt or writing the character leaves the device hanging and the interrupt unhandled."
+]
+
+[[questions]]
+question = "Which RAID level utilizes block-level striping with distributed parity, offering a balance of performance and redundancy without a dedicated parity disk?"
+choices = [
+    "RAID Level 5 distributes parity blocks across all drives, eliminating the single bottleneck of a dedicated parity drive.",
+    "RAID Level 4 utilizes block-level striping but stores all parity information on a single dedicated drive to simplify recovery.",
+    "RAID Level 1 mirrors data completely across two drives, providing high reliability but offering no striping for performance.",
+    "RAID Level 0 stripes data across multiple drives at the block level, maximizing performance but providing zero fault tolerance."
+]
+answer = "RAID Level 5 distributes parity blocks across all drives, eliminating the single bottleneck of a dedicated parity drive."
+subtopic_id = "5.3"
+explanations = [
+    "This is correct. RAID 5 uses block-level striping and distributes the parity blocks across all disks in the array, which removes the write bottleneck inherent in RAID 4.",
+    "This is incorrect. RAID 4 uses a dedicated parity disk, which creates a bottleneck during write operations.",
+    "This is incorrect. RAID 1 is purely mirroring and does not use striping or parity.",
+    "This is incorrect. RAID 0 offers striping for performance but contains no parity or mirroring, meaning it has no fault tolerance."
+]
+
+[[questions]]
+question = "A disk arm is currently at cylinder 50. Pending requests are for cylinders: 40, 20, 70, 90. Using the Shortest Seek First (SSF) algorithm, what is the sequence of requests serviced and the total distance traveled?"
+choices = [
+    "The arm moves to 40, then 20, then 70, then 90, resulting in a total distance of 100 cylinders.",
+    "The arm moves to 70, then 40, then 20, then 90, resulting in a total distance of 100 cylinders.",
+    "The arm moves to 40, then 70, then 20, then 90, resulting in a total distance of 160 cylinders.",
+    "The arm moves to 20, then 40, then 70, then 90, resulting in a total distance of 90 cylinders."
+]
+answer = "The arm moves to 40, then 20, then 70, then 90, resulting in a total distance of 100 cylinders."
+subtopic_id = "5.3"
+explanations = [
+    "This is correct. From 50, closest is 40 (dist 10). From 40, closest is 20 (dist 20). From 20, closest is 70 (dist 50). From 70, closest is 90 (dist 20). Total: 10+20+50+20 = 100.",
+    "This is incorrect. From 50, 70 is a distance of 20, not the shortest. The math is also incorrect (20+30+20+70 = 140, not 100).",
+    "This is incorrect. While the math is correct for this wrong path (10+30+50+70 = 160), SSF would never jump from 40 to 70 while 20 is pending.",
+    "This is incorrect. Moving to 20 first is a distance of 30, violating SSF. The math is also incorrect (30+20+30+20 = 100, not 90)."
+]
+
+[[questions]]
+question = "Stable storage guarantees data survival against CPU crashes by using a pair of disks. During a stable write, the system writes to Disk 1, verifies it, then writes to Disk 2. If a crash occurs immediately after Disk 1 is verified and written, but before Disk 2 is written, what is the recovery procedure?"
+choices = [
+    "Upon recovery, the system reads Disk 1 and Disk 2; seeing both are readable but differ, it copies the new block from Disk 1 to Disk 2 to complete the stable write.",
+    "Upon recovery, the system reads Disk 1 and Disk 2; seeing both are readable but differ, it copies the old block from Disk 2 to Disk 1 to revert the stable write.",
+    "Upon recovery, the system reads Disk 1 and Disk 2; seeing Disk 1 is corrupted, it discards the block and allocates a spare sector on both disks.",
+    "Upon recovery, the system reads Disk 1 and Disk 2; seeing Disk 2 is corrupted, it copies the old block from Disk 1 to Disk 2 to complete the write."
+]
+answer = "Upon recovery, the system reads Disk 1 and Disk 2; seeing both are readable but differ, it copies the new block from Disk 1 to Disk 2 to complete the stable write."
+subtopic_id = "5.3"
+explanations = [
+    "This is correct. In stable storage, Disk 1 is always written and verified first. If a crash leaves them differing but readable, Disk 1 is assumed to hold the correct new data, and it is copied to Disk 2.",
+    "This is incorrect. Disk 2 contains the old data. Reverting Disk 1 to the old data undoes the verified write that occurred before the crash.",
+    "This is incorrect. The scenario states Disk 1 was verified, meaning it is not corrupted. Corruption handling is a separate edge case.",
+    "This is incorrect. Disk 2 wasn't written yet, so it holds the old data, not the new block. Disk 1 holds the new block."
+]
+
+[[questions]]
+question = "What is the primary mechanism by which 'soft timers' in an operating system reduce the need for dedicated hardware clock interrupts?"
+choices = [
+    "They check pending timers during regular kernel entries, such as system calls and page faults, piggybacking on necessary context switches.",
+    "They utilize a dedicated coprocessor to handle timer interrupts autonomously, preventing the main CPU from ever handling time-related events.",
+    "They disable hardware clock interrupts entirely, relying strictly on the user-space processes to poll the system time when required.",
+    "They increase the frequency of the hardware clock but mask the interrupts from the CPU, polling them only when the system is idle."
+]
+answer = "They check pending timers during regular kernel entries, such as system calls and page faults, piggybacking on necessary context switches."
+subtopic_id = "5.4"
+explanations = [
+    "This is correct. Soft timers avoid dedicated hardware interrupts by checking if timers have expired whenever the kernel is entered for other reasons (system calls, TLB misses, etc.).",
+    "This is incorrect. Soft timers do not use a dedicated coprocessor; they rely on software checks during standard kernel entries.",
+    "This is incorrect. Hardware clock interrupts are not disabled entirely; soft timers simply reduce the frequency at which they are needed.",
+    "This is incorrect. Increasing hardware clock frequency would cause more interrupts, defeating the purpose of soft timers, which aim to reduce overhead."
+]
+
+[[questions]]
+question = "In the X Window System architecture, how are the roles of the client and server uniquely distributed, and how do they communicate?"
+choices = [
+    "The local display and input devices act as the server, while applications (potentially remote) act as clients sending drawing commands and receiving events.",
+    "The local applications act as the server managing input devices, while the remote display machine acts as the client receiving drawing commands.",
+    "The local display acts as the client capturing input, while the remote application acts as the server processing events and returning rendered bitmaps.",
+    "The local kernel acts as the server mediating between applications, while the display hardware acts as the client receiving raw pixel data directly."
+]
+answer = "The local display and input devices act as the server, while applications (potentially remote) act as clients sending drawing commands and receiving events."
+subtopic_id = "5.4"
+explanations = [
+    "This is correct. In X Window, the machine with the display and keyboard is the server, and the applications (local or remote) are clients that send drawing commands and receive user events.",
+    "This is incorrect. This reverses the X11 model. The display machine is the server, not the application machine.",
+    "This is incorrect. The display machine is the server, not the client. Applications do not return rendered bitmaps; they send drawing primitives.",
+    "This is incorrect. The X server (user-space process) manages the display, not the kernel directly, and hardware does not act as a client."
+]
+
+[[questions]]
+question = "An X Window application needs to draw a circle, determine the current window size, and respond to a mouse click. Which sequence of message types and directions correctly describes this interaction?"
+choices = [
+    "The client sends a drawing command, the client sends a query receiving a reply from the server, and the server sends an event announcement.",
+    "The server sends a drawing command, the server sends a query receiving a reply from the client, and the client sends an event announcement.",
+    "The client sends a query receiving a reply from the server, the server sends a drawing command, and the server sends an error message.",
+    "The server sends an event announcement, the client sends a drawing command, and the client sends an error message to the server."
+]
+answer = "The client sends a drawing command, the client sends a query receiving a reply from the server, and the server sends an event announcement."
+subtopic_id = "5.4"
+explanations = [
+    "This is correct. Clients send drawing commands and queries to the server. The server replies to queries and sends asynchronous events (like mouse clicks) to the client.",
+    "This is incorrect. The server does not send drawing commands to the client, nor does the client send event announcements (like mouse clicks) to the server.",
+    "This is incorrect. While the client can send a query, the server does not send drawing commands, and no error is inherent to this standard interaction.",
+    "This is incorrect. While the server does send event announcements, the client does not send error messages to the server (errors flow server-to-client)."
+]

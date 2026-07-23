@@ -1,0 +1,205 @@
+version = 5
+
+[[questions]]
+question = "What is the primary function of the base and limit registers in a memory management system without virtual memory?"
+choices = [
+    "They map virtual addresses to physical addresses by adding the base, and trap if the limit is exceeded.",
+    "They track free memory holes using a bitmap and allocate fixed units when processes arrive.",
+    "They swap processes to a backing store when main memory is full, creating holes in memory.",
+    "They divide the physical memory into equal-sized page frames and map them to virtual pages."
+]
+answer = "They map virtual addresses to physical addresses by adding the base, and trap if the limit is exceeded."
+subtopic_id = "3.1"
+explanations = [
+    "This is correct. The base register holds the starting physical address, and the MMU adds it to the virtual address. The limit register checks for overflow.",
+    "This is incorrect. Bitmaps are a memory management data structure for tracking free holes, not the function of base and limit registers.",
+    "This is incorrect. Swapping moves processes to disk; base/limit registers provide address space protection in memory.",
+    "This is incorrect. Paging maps virtual pages to physical frames, which is a different abstraction than simple base/limit registers."
+]
+
+[[questions]]
+question = "When managing free memory holes using linked lists, which allocation algorithm scans from the beginning of the list and allocates the first hole that is large enough, often leaving small remnants?"
+choices = [
+    "Best fit, which searches the entire list and leaves the smallest possible fragments.",
+    "First fit, which stops searching as soon as a sufficiently large hole is found.",
+    "Worst fit, which allocates the largest hole to avoid creating tiny fragments.",
+    "Quick fit, which maintains separate lists for common sizes to speed up allocation."
+]
+answer = "First fit, which stops searching as soon as a sufficiently large hole is found."
+subtopic_id = "3.1"
+explanations = [
+    "This is incorrect. Best fit searches the whole list for the smallest hole that is large enough, which often creates tiny unusable fragments.",
+    "This is correct. First fit allocates the first hole it finds that is large enough, which is fast but can leave small fragments near the start of the list.",
+    "This is incorrect. Worst fit allocates the largest available hole to leave a large enough remainder for other processes.",
+    "This is incorrect. Quick fit uses separate lists for specific sizes, making allocation O(1) for those sizes."
+]
+
+[[questions]]
+question = "A memory manager uses a linked list sorted by addresses. A process X terminates, freeing its memory segment. The adjacent segments in the list are an allocated process (lower address) and a free hole (higher address). How is the linked list updated?"
+choices = [
+    "Process X is merged with the higher hole, while the lower allocated process entry remains entirely unchanged.",
+    "Process X is merged with the lower allocated process, creating a single large allocated memory block.",
+    "Process X remains as a separate free entry, but its status is changed to free alongside the others.",
+    "Process X is removed completely, and the lower process entry is extended to cover its memory region."
+]
+answer = "Process X is merged with the higher hole, while the lower allocated process entry remains entirely unchanged."
+subtopic_id = "3.1"
+explanations = [
+    "This is correct. When a process terminates, its memory is freed. Since the higher neighbor is a hole, they merge. The lower neighbor is allocated, so it cannot merge.",
+    "This is incorrect. The lower neighbor is an allocated process, so it cannot be merged with the newly freed space.",
+    "This is incorrect. The newly freed space should merge with the adjacent free hole (higher address), so they become one entry rather than remaining separate.",
+    "This is incorrect. The lower neighbor is an allocated process, so extending it into the freed space violates memory boundaries."
+]
+
+[[questions]]
+question = "What is the fundamental purpose of virtual memory in modern operating systems?"
+choices = [
+    "It allows programs to be larger than physical memory by breaking address spaces into pages.",
+    "It speeds up memory access by caching frequently used data in the Translation Lookaside Buffer.",
+    "It prevents processes from accessing each other's memory by using strict base and limit registers.",
+    "It avoids external fragmentation by physically dividing memory into fixed-size page frames."
+]
+answer = "It allows programs to be larger than physical memory by breaking address spaces into pages."
+subtopic_id = "3.2"
+explanations = [
+    "This is correct. Virtual memory allows programs to be larger than physical memory by breaking address spaces into chunks called pages.",
+    "This is incorrect. The TLB speeds up paging, but it is not the fundamental purpose of virtual memory itself.",
+    "This is incorrect. Base and limit registers provide protection, but virtual memory uses page tables and protection bits.",
+    "This is incorrect. Paging does avoid external fragmentation, but the fundamental purpose of virtual memory is the abstraction of an unlimited address space."
+]
+
+[[questions]]
+question = "In a typical Page Table Entry (PTE), what is the role of the modified (dirty) bit and the referenced bit?"
+choices = [
+    "The modified bit indicates if the page has been written to; the referenced bit indicates if it has been accessed recently.",
+    "The modified bit indicates if the page is currently in memory; the referenced bit indicates if it has been written to.",
+    "The modified bit tracks the physical frame number accurately; the referenced bit tracks the virtual page number.",
+    "The modified bit prevents any unauthorized access; the referenced bit allows shared library mapping."
+]
+answer = "The modified bit indicates if the page has been written to; the referenced bit indicates if it has been accessed recently."
+subtopic_id = "3.2"
+explanations = [
+    "This is correct. The modified (dirty) bit is set when a page is written to, indicating it must be saved before eviction. The referenced bit is set when a page is read or written.",
+    "This is incorrect. The Present/Absent bit indicates if the page is in memory, not the modified bit.",
+    "This is incorrect. The frame number is stored in the PTE, but the modified and referenced bits are status flags.",
+    "This is incorrect. Protection bits prevent unauthorized access; the modified and referenced bits are for replacement algorithms."
+]
+
+[[questions]]
+question = "An operating system implements an inverted page table. What is the primary trade-off of this design compared to a traditional multilevel page table?"
+choices = [
+    "It drastically reduces the memory footprint of the page table but complicates lookups, requiring a hash function.",
+    "It speeds up virtual-to-physical translation by eliminating the TLB but increases the overall memory footprint.",
+    "It simplifies the lookup process by sorting entries by virtual page number but significantly wastes physical memory.",
+    "It allows multiple processes to share physical frames easily but severely prevents the use of protection bits."
+]
+answer = "It drastically reduces the memory footprint of the page table but complicates lookups, requiring a hash function."
+subtopic_id = "3.2"
+explanations = [
+    "This is correct. Inverted page tables map physical frames to virtual pages, saving memory, but require a hash table to find the entry for a given virtual address.",
+    "This is incorrect. Inverted page tables still rely on the TLB to speed up translations, and they reduce the memory footprint.",
+    "This is incorrect. Inverted page tables are sorted by physical frame number, not virtual page number, which complicates lookups.",
+    "This is incorrect. Sharing frames and using protection bits are independent of the choice between traditional or inverted page tables."
+]
+
+[[questions]]
+question = "Which page replacement algorithm is known to suffer from Belady's anomaly, where increasing the number of page frames can increase the number of page faults?"
+choices = [
+    "First-In, First-Out (FIFO)",
+    "Least Recently Used (LRU)",
+    "Optimal page replacement",
+    "Not Recently Used (NRU)"
+]
+answer = "First-In, First-Out (FIFO)"
+subtopic_id = "3.3"
+explanations = [
+    "This is correct. FIFO can suffer from Belady's anomaly because older pages are evicted regardless of future access patterns.",
+    "This is incorrect. LRU is a stack algorithm and does not suffer from Belady's anomaly.",
+    "This is incorrect. The Optimal algorithm is a stack algorithm and does not suffer from Belady's anomaly.",
+    "This is incorrect. NRU is not explicitly known for Belady's anomaly in the same deterministic way as FIFO."
+]
+
+[[questions]]
+question = "How does the Clock page replacement algorithm efficiently implement the logic of the Second-Chance algorithm?"
+choices = [
+    "It uses a circular list for pages, moving a hand pointer instead of strictly maintaining a sorted FIFO queue.",
+    "It periodically shifts a counter bit to the right for all active pages, simulating an aging mechanism.",
+    "It inspects the R and M bits to classify active pages into four distinct priority classes for eviction.",
+    "It tracks the exact time of the last memory reference to evict the page unused for the longest time."
+]
+answer = "It uses a circular list for pages, moving a hand pointer instead of strictly maintaining a sorted FIFO queue."
+subtopic_id = "3.3"
+explanations = [
+    "This is correct. The Clock algorithm uses a circular list and a hand pointer, moving the hand and clearing R bits, which is functionally equivalent to Second-Chance.",
+    "This is incorrect. Shifting a counter bit periodically describes the Aging algorithm, which simulates LRU.",
+    "This is incorrect. Inspecting R and M bits to classify into four classes describes the Not Recently Used (NRU) algorithm.",
+    "This is incorrect. Tracking the exact time of the last reference describes true Least Recently Used (LRU), which is expensive to implement."
+]
+
+[[questions]]
+question = "In the WSClock algorithm, when the hand points to a page where R=0 and the current virtual time minus the last use time is greater than tau (the working set window), what happens next if the page is clean (M=0)?"
+choices = [
+    "The page is immediately evicted from memory and replaced by the incoming faulting page.",
+    "The page is scheduled for a write to the disk, and the hand advances to the next page.",
+    "The R bit is set to 1, and the hand advances to the next page without evicting the page.",
+    "The page is retained in memory, and its time of last use is updated to the current virtual time."
+]
+answer = "The page is immediately evicted from memory and replaced by the incoming faulting page."
+subtopic_id = "3.3"
+explanations = [
+    "This is correct. If R=0, the page is not in the working set (time > tau), and it is clean (M=0), it can be safely evicted immediately.",
+    "This is incorrect. Scheduling a write to disk happens if the page is dirty (M=1). Since M=0 here, it is evicted directly.",
+    "This is incorrect. Setting R=1 would happen if R was already 1, but here R=0 and it is outside the working set.",
+    "This is incorrect. The page is evicted because it is outside the working set; its time of last use is not updated."
+]
+
+[[questions]]
+question = "During page fault handling, what occurs immediately after the operating system determines the virtual address that caused the fault and verifies its validity?"
+choices = [
+    "The system checks if the selected frame is dirty and schedules a disk write if necessary.",
+    "The hardware traps to the kernel immediately and saves the program counter on the stack.",
+    "The faulting instruction is backed up entirely to the state it had when it began.",
+    "The system reloads all general registers and returns to user space to continue execution."
+]
+answer = "The system checks if the selected frame is dirty and schedules a disk write if necessary."
+subtopic_id = "3.4"
+explanations = [
+    "This is correct. After verifying the address, the OS selects a frame to evict. If it is dirty, it schedules a write to disk.",
+    "This is incorrect. Trapping to the kernel and saving the program counter is the very first step of page fault handling.",
+    "This is incorrect. Backing up the faulting instruction occurs after the new page is loaded and updated, right before returning to user space.",
+    "This is incorrect. Reloading registers and returning to user space is the final step after the page is brought in."
+]
+
+[[questions]]
+question = "What is a key structural difference between pure segmentation and paging in memory management?"
+choices = [
+    "Segmentation divides memory into logical units like code and data, while paging divides memory into fixed-size physical frames.",
+    "Segmentation eliminates external fragmentation completely, while paging inherently suffers from severe checkerboarding.",
+    "Segmentation requires a Translation Lookaside Buffer, while paging can only function using inverted page tables.",
+    "Segmentation uses multilevel page tables to map virtual addresses, while paging relies on segment descriptors."
+]
+answer = "Segmentation divides memory into logical units like code and data, while paging divides memory into fixed-size physical frames."
+subtopic_id = "3.4"
+explanations = [
+    "This is correct. Segmentation groups memory by logical components (code, data, stack) that vary in size, whereas paging uses fixed-size chunks.",
+    "This is incorrect. Pure segmentation suffers from external fragmentation (checkerboarding), while paging eliminates it.",
+    "This is incorrect. Both segmentation and paging systems can utilize a TLB to speed up address translation.",
+    "This is incorrect. Segmentation uses segment descriptors, whereas paging uses page tables to map addresses."
+]
+
+[[questions]]
+question = "In the Intel x86 architecture, how is a logical address translated into a physical address when both segmentation and paging are enabled?"
+choices = [
+    "The selector indexes a descriptor table to form a linear address, which the MMU then translates into a physical address.",
+    "The virtual page number is hashed into an inverted page table, which then points directly to the segment descriptor.",
+    "The segment offset is added directly to the page frame number, completely bypassing the segment descriptor entirely.",
+    "The linear address is initially generated by the TLB and then passed to the segment register for physical mapping."
+]
+answer = "The selector indexes a descriptor table to form a linear address, which the MMU then translates into a physical address."
+subtopic_id = "3.4"
+explanations = [
+    "This is correct. The selector points to a segment descriptor, which yields a linear address. The paging unit then translates this linear address into a physical address.",
+    "This is incorrect. Inverted page tables are not a standard feature of the x86 segmentation with paging mechanism described.",
+    "This is incorrect. The segment offset is part of the logical address, but it does not bypass the segment descriptor or directly add to the frame number.",
+    "This is incorrect. The TLB caches physical addresses; it does not generate the linear address, nor does the segment register map to physical memory."
+]

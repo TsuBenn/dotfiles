@@ -1,0 +1,171 @@
+version = 5
+
+[[questions]]
+question = "Which of the following lists all four necessary conditions for resource deadlock to occur?"
+choices = [
+    "Mutual exclusion, hold and wait, no preemption, and circular wait.",
+    "Mutual exclusion, resource sharing, preemptive scheduling, and circular wait.",
+    "Mutual exclusion, race conditions, no preemption, and starvation.",
+    "Hold and wait, race conditions, resource sharing, and starvation."
+]
+answer = "Mutual exclusion, hold and wait, no preemption, and circular wait."
+subtopic_id = "6.1"
+explanations = [
+    "This is correct. These four conditions must all hold simultaneously for a resource deadlock to occur.",
+    "This is incorrect. Resource sharing negates mutual exclusion, and preemptive scheduling negates no preemption.",
+    "This is incorrect. Race conditions and starvation are related concurrency issues but are not among the four deadlock conditions.",
+    "This is incorrect. It completely misses mutual exclusion, no preemption, and circular wait, replacing them with unrelated concepts."
+]
+
+[[questions]]
+question = "In deadlock modeling using resource allocation graphs, when does a cycle definitively indicate a deadlock?"
+choices = [
+    "Only when each resource type in the graph has exactly a single instance available.",
+    "When the graph contains multiple instances of at least one resource type.",
+    "Only when processes are allowed to request resources simultaneously.",
+    "When the total number of processes exceeds the total number of resource instances."
+]
+answer = "Only when each resource type in the graph has exactly a single instance available."
+subtopic_id = "6.1"
+explanations = [
+    "This is correct. For single-instance resources, a cycle in the resource allocation graph is both necessary and sufficient for deadlock.",
+    "This is incorrect. If resources have multiple instances, a cycle does not necessarily mean a deadlock has occurred.",
+    "This is incorrect. Simultaneous requests do not determine whether a cycle implies deadlock; the number of resource instances does.",
+    "This is incorrect. The ratio of processes to resource instances does not dictate whether a cycle guarantees a deadlock."
+]
+
+[[questions]]
+question = "Consider a system with 3 processes (P1, P2, P3) and two resource types: R1 (2 instances) and R2 (2 instances). Current allocation: P1(1,0), P2(0,1), P3(1,1). Available: (0,0). Requests: P1(0,1), P2(1,0), P3(0,1). Is the system deadlocked?"
+choices = [
+    "The system is deadlocked because no process can have its request vector satisfied by the available vector.",
+    "The system is not deadlocked because P1 can release its resources to satisfy P3's request vector.",
+    "The system is deadlocked because the total number of requests exceeds the total resources in the system.",
+    "The system is not deadlocked because P2 can preempt P1's resources to satisfy its own request vector."
+]
+answer = "The system is deadlocked because no process can have its request vector satisfied by the available vector."
+subtopic_id = "6.2"
+explanations = [
+    "This is correct. The available vector is (0,0). No process's request vector (which all require at least one instance) is less than or equal to (0,0).",
+    "This is incorrect. P1 cannot release its resources because it is blocked waiting for an R2 instance to finish its task.",
+    "This is incorrect. Total requests exceeding total resources does not strictly imply deadlock; the current available resources being insufficient for any single process does.",
+    "This is incorrect. The deadlock detection algorithm assumes no preemption; resources must be released voluntarily."
+]
+
+[[questions]]
+question = "When recovering from a deadlock via rollback, what is the primary mechanism used to restore system state?"
+choices = [
+    "Processes are returned to a previously saved safe state and restart execution from that point.",
+    "Processes are terminated entirely and must be restarted from the very beginning of execution.",
+    "Resources are temporarily preempted from processes and given to higher priority processes.",
+    "Processes are suspended to disk while the system reconfigures the resource allocation matrices."
+]
+answer = "Processes are returned to a previously saved safe state and restart execution from that point."
+subtopic_id = "6.2"
+explanations = [
+    "This is correct. Rollback involves resetting a process to a prior safe state, releasing its resources so others can proceed.",
+    "This is incorrect. Terminating a process entirely is the 'killing processes' recovery method, not rollback.",
+    "This is incorrect. Temporarily taking resources is the 'preemption' recovery method, not rollback.",
+    "This is incorrect. Suspending processes to disk is a swapping mechanism, not a standard deadlock rollback strategy."
+]
+
+[[questions]]
+question = "What is the defining difference between a safe state and an unsafe state in deadlock avoidance?"
+choices = [
+    "A safe state guarantees a sequence exists to finish all processes; an unsafe state does not.",
+    "An unsafe state means a deadlock has already occurred; a safe state means no deadlock exists.",
+    "A safe state requires all processes to release resources immediately; an unsafe state allows holding.",
+    "An unsafe state prevents any process from requesting additional resources until resources are freed."
+]
+answer = "A safe state guarantees a sequence exists to finish all processes; an unsafe state does not."
+subtopic_id = "6.3"
+explanations = [
+    "This is correct. A safe state means there is at least one sequence of processes that can finish without causing a deadlock.",
+    "This is incorrect. An unsafe state does not guarantee deadlock; it simply means the system cannot guarantee a safe sequence.",
+    "This is incorrect. Releasing resources immediately is a prevention strategy, not the definition of a safe state.",
+    "This is incorrect. An unsafe state does not prevent requests; it just means granting a specific request could lead to deadlock."
+]
+
+[[questions]]
+question = "A system has 10 instances of Resource X and 5 of Resource Y. Process A holds (4,1) and needs (2,1). Process B holds (2,2) and needs (3,2). Process C holds (2,1) and needs (3,1). Current available is (2,1). Is the current state safe?"
+choices = [
+    "The state is safe because process A can finish first, followed by B and C, using available resources.",
+    "The state is safe because process C can finish first, followed by A and B, using available resources.",
+    "The state is unsafe because the total remaining needs exceed the currently available resource vectors.",
+    "The state is unsafe because process B cannot finish first with the current available resources."
+]
+answer = "The state is safe because process A can finish first, followed by B and C, using available resources."
+subtopic_id = "6.3"
+explanations = [
+    "This is correct. Available is (2,1). A's need (2,1) is <= (2,1). A finishes, Avail becomes (6,2). B's need (3,2) <= (6,2). B finishes, Avail becomes (8,4). C's need (3,1) <= (8,4). C finishes. The state is safe.",
+    "This is incorrect. Process C needs (3,1), but the available vector is only (2,1). C cannot finish first.",
+    "This is incorrect. While the available vector alone cannot satisfy all remaining needs immediately, the state is safe because resources are returned to the available pool as processes finish.",
+    "This is incorrect. An unsafe state means no safe sequence exists at all. The fact that B cannot finish first does not make the state unsafe, as A can finish first and free up enough resources for B."
+]
+
+[[questions]]
+question = "In the Banker's Algorithm for a single resource type, what is the specific criteria for a process to be included in the safe sequence?"
+choices = [
+    "Its remaining resource need must be less than or equal to the sum of available resources and resources held by previous processes.",
+    "Its total resource need must be strictly less than the total number of resources existing in the entire system.",
+    "Its currently allocated resources must be greater than or equal to the resources held by all remaining unmarked processes.",
+    "Its remaining resource need must be strictly greater than the available resources to ensure future preemption is possible."
+]
+answer = "Its remaining resource need must be less than or equal to the sum of available resources and resources held by previous processes."
+subtopic_id = "6.3"
+explanations = [
+    "This is correct. The algorithm checks if a process's remaining need can be met by the current available resources plus what previous processes in the sequence have released.",
+    "This is incorrect. The total resource need does not dictate the safe sequence; the current remaining need relative to available resources does.",
+    "This is incorrect. The resources held by a process do not need to be greater than those held by unmarked processes.",
+    "This is incorrect. A process's remaining need must be satisfiable by available resources, not strictly greater than them."
+]
+
+[[questions]]
+question = "Attacking which of the four deadlock conditions involves assigning a global numerical order to all resources and requiring processes to request them in increasing order?"
+choices = [
+    "The circular wait condition is negated by enforcing this strict numerical resource ordering.",
+    "The mutual exclusion condition is negated by enforcing this strict numerical resource ordering.",
+    "The hold and wait condition is negated by enforcing this strict numerical resource ordering.",
+    "The no preemption condition is negated by enforcing this strict numerical resource ordering."
+]
+answer = "The circular wait condition is negated by enforcing this strict numerical resource ordering."
+subtopic_id = "6.4"
+explanations = [
+    "This is correct. By requiring processes to request resources in a global numerical order, cycles in the resource graph are structurally impossible.",
+    "This is incorrect. Mutual exclusion is negated by making resources sharable, such as spooling print jobs.",
+    "This is incorrect. Hold and wait is negated by requiring processes to request all resources at once before starting.",
+    "This is incorrect. No preemption is negated by allowing the OS to forcibly take resources away from processes."
+]
+
+[[questions]]
+question = "To prevent deadlocks by negating the hold and wait condition, which specific strategy must the operating system enforce?"
+choices = [
+    "Processes must request all required resources in a single batch system call before execution begins.",
+    "Processes must be assigned a strict numerical priority order when requesting new resources.",
+    "Processes must be forced to preempt resources from other waiting processes if resources are unavailable.",
+    "Processes must share all physical hardware devices by utilizing spooling techniques on the disk."
+]
+answer = "Processes must request all required resources in a single batch system call before execution begins."
+subtopic_id = "6.4"
+explanations = [
+    "This is correct. If a process must request everything it needs at once, it cannot hold a resource while waiting for another, negating hold and wait.",
+    "This is incorrect. Numerical priority ordering is a strategy to negate the circular wait condition.",
+    "This is incorrect. Forcing preemption negates the no preemption condition, not hold and wait.",
+    "This is incorrect. Sharing hardware via spooling negates the mutual exclusion condition."
+]
+
+[[questions]]
+question = "Two processes are attempting to acquire two locks, A and B. Process 1 acquires A, Process 2 acquires B. Both detect a potential conflict, release their locks, wait a random time, and retry simultaneously, failing again repeatedly. What is this scenario an example of?"
+choices = [
+    "Livelock, because the processes are not blocked but continuously change state without making progress.",
+    "Deadlock, because the processes are permanently blocked waiting for resources held by each other.",
+    "Starvation, because the processes are continuously denied access to resources due to unfair scheduling.",
+    "Race condition, because the outcome depends on the relative timing of the lock release events."
+]
+answer = "Livelock, because the processes are not blocked but continuously change state without making progress."
+subtopic_id = "6.4"
+explanations = [
+    "This is correct. In livelock, processes are actively executing and releasing/reacquiring resources, but no forward progress is made.",
+    "This is incorrect. In a deadlock, processes are blocked and waiting indefinitely; they are not actively executing or releasing resources.",
+    "This is incorrect. Starvation involves a process waiting indefinitely while other processes acquire resources, not both failing repeatedly.",
+    "This is incorrect. A race condition involves unexpected execution order leading to incorrect data, not a repetitive retry loop without progress."
+]

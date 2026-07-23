@@ -1,0 +1,256 @@
+version = 5
+
+[[questions]]
+question = "How do capabilities fundamentally differ from Access Control Lists (ACLs) in a protection matrix?"
+choices = [
+    "Capabilities are tokens held by domains, while ACLs are lists stored with objects.",
+    "Capabilities are lists stored with objects, while ACLs are tokens held by domains.",
+    "Capabilities enforce integrity models, while ACLs enforce confidentiality models.",
+    "Capabilities require hardware support, while ACLs are implemented purely in software."
+]
+answer = "Capabilities are tokens held by domains, while ACLs are lists stored with objects."
+subtopic_id = "9.1"
+explanations = [
+    "This is correct. Capabilities are rows in the protection matrix associated with domains (processes), acting as unforgeable tokens. ACLs are columns, stored with the objects, listing which domains can access them.",
+    "This is incorrect. It reverses the definitions. Capabilities are associated with domains, while ACLs are associated with objects.",
+    "This is incorrect. Both capabilities and ACLs are generic access control mechanisms, not specifically tied to integrity or confidentiality models like Biba or Bell-LaPadula.",
+    "This is incorrect. Neither strictly requires hardware support over the other; both are data structures managed by the operating system."
+]
+
+[[questions]]
+question = "Which set of properties must a Trusted Computing Base's Reference Monitor satisfy to enforce system security effectively?"
+choices = [
+    "It must be tamper-proof, unbreachable, and small enough to be analyzed rigorously.",
+    "It must be hardware-based, globally distributed, and updated via network patches.",
+    "It must be software-based, user-configurable, and transparent to all applications.",
+    "It must be kernel-resident, context-switched, and synchronized across all cores."
+]
+answer = "It must be tamper-proof, unbreachable, and small enough to be analyzed rigorously."
+subtopic_id = "9.1"
+explanations = [
+    "This is correct. The Reference Monitor must be tamper-proof (cannot be modified), always invoked (unbreachable), and small enough to be verified for correctness.",
+    "This is incorrect. The Reference Monitor is not globally distributed or updated via network patches; it is a core local TCB component.",
+    "This is incorrect. The Reference Monitor is not user-configurable; it enforces policy strictly at the system level.",
+    "This is incorrect. While it operates in the kernel, synchronization across cores is an implementation detail, not a defining property of the Reference Monitor."
+]
+
+[[questions]]
+question = "A system uses cryptographically protected capabilities. If an attacker intercepts a capability token but does not possess the system's secret key, what prevents them from modifying the token to grant themselves write access?"
+choices = [
+    "The cryptographic hash appended to the token will mismatch if the rights field is altered.",
+    "The object identifier is encrypted with a public key, preventing the attacker from parsing it.",
+    "The token is digitally signed by the user, so modifying it invalidates the user's identity.",
+    "The operating system intercepts the modified token and drops it via the reference monitor."
+]
+answer = "The cryptographic hash appended to the token will mismatch if the rights field is altered."
+subtopic_id = "9.1"
+explanations = [
+    "This is correct. Cryptographically protected capabilities include a hash of the object, rights, and other fields. Modifying the rights field invalidates the hash.",
+    "This is incorrect. The object identifier is typically plain text within the capability; it is the hash that protects the integrity of the entire token.",
+    "This is incorrect. The capability is signed or hashed by the trusted system, not the user, so modifying it invalidates the system's integrity check, not the user's identity.",
+    "This is incorrect. The reference monitor checks the cryptographic validity of the token; it does not 'intercept' modifications, as the mathematical hash failure prevents forgery."
+]
+
+[[questions]]
+question = "Which security model focuses strictly on data integrity by enforcing 'No Write Up' and 'No Read Down' rules?"
+choices = [
+    "The Biba model enforces these rules to preserve data integrity.",
+    "The Bell-LaPadula model enforces these rules to preserve data integrity.",
+    "The Biba model enforces these rules to preserve data confidentiality.",
+    "The Bell-LaPadula model enforces these rules to preserve data confidentiality."
+]
+answer = "The Biba model enforces these rules to preserve data integrity."
+subtopic_id = "9.2"
+explanations = [
+    "This is correct. The Biba model focuses on integrity. Its rules are: Simple Integrity (No Write Up) and Integrity * Property (No Read Down).",
+    "This is incorrect. The Bell-LaPadula model focuses on confidentiality, not integrity.",
+    "This is incorrect. While Biba enforces these rules, it does so for integrity, not confidentiality.",
+    "This is incorrect. The Bell-LaPadula model enforces 'No Read Up' and 'No Write Down' for confidentiality, not the rules stated in the question."
+]
+
+[[questions]]
+question = "A malicious process wants to exfiltrate data to a colluding process but cannot use any network sockets or IPC mechanisms. Instead, it creates and deletes a specific file repeatedly, which the colluding process checks. What type of vulnerability does this represent?"
+choices = [
+    "This is a covert channel utilizing file system state modulations.",
+    "This is a buffer overflow attack utilizing race conditions in the kernel.",
+    "This is a format string attack utilizing file descriptor leaks.",
+    "This is a side-channel attack utilizing CPU cache evictions."
+]
+answer = "This is a covert channel utilizing file system state modulations."
+subtopic_id = "9.2"
+explanations = [
+    "This is correct. Covert channels use system resources (like file locks or existence) not intended for communication to transmit information between processes.",
+    "This is incorrect. A buffer overflow involves overwriting memory, not modulating file system states to signal another process.",
+    "This is incorrect. A format string attack involves exploiting printf-like functions to read/write memory, not file system states.",
+    "This is incorrect. While CPU cache evictions can be a side-channel, the scenario explicitly describes using the file system."
+]
+
+[[questions]]
+question = "Alice wants to send Bob a confidential message and ensure he can verify it came from her. She encrypts the message with Bob's public key, then signs the ciphertext with her private key. How does Bob decrypt and verify the message?"
+choices = [
+    "Bob decrypts the signature with Alice's public key, then decrypts the message with his private key.",
+    "Bob decrypts the message with Alice's public key, then decrypts the signature with his private key.",
+    "Bob decrypts the message with his public key, then verifies the signature with Alice's private key.",
+    "Bob decrypts the signature with his private key, then decrypts the message with Alice's public key."
+]
+answer = "Bob decrypts the signature with Alice's public key, then decrypts the message with his private key."
+subtopic_id = "9.2"
+explanations = [
+    "This is correct. To verify the signature, Bob uses Alice's public key. To decrypt the confidential message, Bob uses his own private key.",
+    "This is incorrect. Bob cannot decrypt the message with Alice's public key, nor can he decrypt the signature with his private key.",
+    "This is incorrect. Bob cannot decrypt the message with his public key, and he does not possess Alice's private key to verify the signature.",
+    "This is incorrect. Bob cannot decrypt the signature with his private key, nor can he decrypt the message with Alice's public key."
+]
+
+[[questions]]
+question = "What is the primary security purpose of appending a random 'salt' value to a password before hashing and storing it in UNIX systems?"
+choices = [
+    "It prevents attackers from using precomputed rainbow tables to crack the hashes.",
+    "It increases the computational time required for the legitimate user to log in.",
+    "It encrypts the password file so only the root user can read the plaintext.",
+    "It ensures that two users with the same password receive the same hash."
+]
+answer = "It prevents attackers from using precomputed rainbow tables to crack the hashes."
+subtopic_id = "9.3"
+explanations = [
+    "This is correct. Salt adds randomness to the password before hashing, making precomputed dictionary or rainbow tables useless because the hash changes for every user.",
+    "This is incorrect. Salting does not significantly increase login time; it merely changes the input to the hash function.",
+    "This is incorrect. Salting does not encrypt the password file; the passwords are hashes, and the file permissions (like /etc/shadow) protect them.",
+    "This is incorrect. Salting ensures that two users with the same password receive different hashes."
+]
+
+[[questions]]
+question = "In a challenge-response authentication system, why does the server send a randomly generated nonce (challenge) to the client instead of simply asking for a hashed password?"
+choices = [
+    "The random nonce ensures that an eavesdropper cannot replay a previously captured valid hash response.",
+    "The random nonce acts as an encryption key to securely transmit the plaintext password.",
+    "The random nonce prevents the server from ever knowing the user's actual password hash.",
+    "The random nonce guarantees the connection is immune to man-in-the-middle attacks."
+]
+answer = "The random nonce ensures that an eavesdropper cannot replay a previously captured valid hash response."
+subtopic_id = "9.3"
+explanations = [
+    "This is correct. Because the nonce changes every session, an attacker capturing the response cannot reuse it later, defeating replay attacks.",
+    "This is incorrect. The nonce is not used as an encryption key for the password; it is concatenated with the password hash.",
+    "This is incorrect. The server usually stores the password hash (or has access to it) to verify the client's response to the challenge.",
+    "This is incorrect. While challenge-response prevents replay, it does not inherently prevent man-in-the-middle attacks without additional mechanisms."
+]
+
+[[questions]]
+question = "A biometric authentication system has a False Acceptance Rate (FAR) of 1% and a False Rejection Rate (FRR) of 5%. If 10,000 unauthorized attempts and 10,000 authorized attempts are made, what is the expected total number of authentication errors?"
+choices = [
+    "600 errors, comprising 100 unauthorized users accepted and 500 authorized users rejected.",
+    "600 errors, comprising 500 unauthorized users accepted and 100 authorized users rejected.",
+    "1500 errors, comprising 1000 unauthorized users accepted and 500 authorized users rejected.",
+    "6000 errors, comprising 1000 unauthorized users accepted and 5000 authorized users rejected."
+]
+answer = "600 errors, comprising 100 unauthorized users accepted and 500 authorized users rejected."
+subtopic_id = "9.3"
+explanations = [
+    "This is correct. 1% of 10,000 unauthorized attempts = 100 False Accepts. 5% of 10,000 authorized attempts = 500 False Rejects. Total errors = 600.",
+    "This is incorrect. It swaps the rates, assuming 5% FAR and 1% FRR, which contradicts the problem statement.",
+    "This is incorrect. It miscalculates the 1% FAR as 1000 instead of 100.",
+    "This is incorrect. It miscalculates both rates by a factor of 10."
+]
+
+[[questions]]
+question = "What is the primary function of a stack canary in preventing buffer overflow attacks?"
+choices = [
+    "It acts as a random value placed on the stack to detect if the return address has been overwritten before executing the return instruction.",
+    "It marks the memory page as non-executable, preventing the CPU from running injected shellcode on the stack.",
+    "It encrypts the return address so that an attacker cannot redirect execution to arbitrary memory locations.",
+    "It restricts the process to a specific memory region, preventing it from accessing other parts of the address space."
+]
+answer = "It acts as a random value placed on the stack to detect if the return address has been overwritten before executing the return instruction."
+subtopic_id = "9.4"
+explanations = [
+    "This is correct. A stack canary is placed between local variables and the return address. If a buffer overflow overwrites the canary, the program aborts before returning.",
+    "This is incorrect. Marking memory as non-executable is the NX (No-Execute) bit, not a stack canary.",
+    "This is incorrect. Encrypting the return address is a separate mitigation technique (like ASLR or pointer encryption), not a canary.",
+    "This is incorrect. Restricting a process to a specific memory region is sandboxing or jailing, not a canary."
+]
+
+[[questions]]
+question = "How does Return-Oriented Programming (ROP) successfully bypass Non-Executable (NX) bit protections during a buffer overflow attack?"
+choices = [
+    "ROP chains together existing snippets of code already present in executable memory, ending each snippet with a RET instruction.",
+    "ROP dynamically decrypts the injected shellcode in memory before executing it from the stack.",
+    "ROP modifies the NX bit of the stack page using a privilege escalation exploit before running shellcode.",
+    "ROP overwrites the stack canary with a known value, allowing the attacker to jump directly to kernel space."
+]
+answer = "ROP chains together existing snippets of code already present in executable memory, ending each snippet with a RET instruction."
+subtopic_id = "9.4"
+explanations = [
+    "This is correct. ROP bypasses NX bits by reusing existing executable code (gadgets) rather than injecting new, non-executable code.",
+    "This is incorrect. ROP does not inject or decrypt shellcode; it relies entirely on existing code.",
+    "This is incorrect. ROP does not modify hardware NX bits; it works within the constraints of existing executable pages.",
+    "This is incorrect. ROP does not bypass stack canaries; it assumes the attacker has already achieved control of the return pointer."
+]
+
+[[questions]]
+question = "A virus scanner uses a database of static byte signatures to detect malware. How does a polymorphic virus successfully evade this specific detection mechanism?"
+choices = [
+    "It encrypts its main payload body with a different key on each infection, altering its byte signature while mutating the decryption routine.",
+    "It hides its presence by modifying OS kernel structures to filter out its own files from directory listings.",
+    "It injects its malicious code into legitimate system processes, avoiding detection by file-based signature scanning.",
+    "It alters its network communication ports dynamically to prevent intrusion detection systems from matching traffic patterns."
+]
+answer = "It encrypts its main payload body with a different key on each infection, altering its byte signature while mutating the decryption routine."
+subtopic_id = "9.4"
+explanations = [
+    "This is correct. Polymorphic viruses change their appearance (byte signature) by encrypting the payload and altering the decryptor, evading static signature matching.",
+    "This is incorrect. Modifying kernel structures to hide files is the behavior of a rootkit, not a polymorphic virus.",
+    "This is incorrect. Injecting code into legitimate processes is process hollowing or AppInit DLLs, not polymorphism.",
+    "This is incorrect. Altering network ports is network-level evasion, irrelevant to a virus scanner checking file signatures."
+]
+
+[[questions]]
+question = "Which defense mechanism restricts a process's file system and network access to a specific isolated namespace, preventing it from affecting the rest of the system?"
+choices = [
+    "Jailing confines the process to a restricted directory and network interface, preventing access to outside resources.",
+    "Sandboxing divides memory into isolated regions, preventing code from jumping outside its assigned physical memory bounds.",
+    "Code Signing verifies the digital signature of an executable, ensuring it has not been tampered with since the developer compiled it.",
+    "Model-Based Intrusion Detection monitors system calls to ensure they match a predefined finite state machine of normal program behavior."
+]
+answer = "Jailing confines the process to a restricted directory and network interface, preventing access to outside resources."
+subtopic_id = "9.5"
+explanations = [
+    "This is correct. Jailing (like chroot or FreeBSD jails) restricts a process's view of the file system and network to a specific namespace.",
+    "This is incorrect. Sandboxing focuses on memory bounds and execution isolation, not specifically file system namespaces.",
+    "This is incorrect. Code signing ensures authenticity and integrity but does not restrict runtime file system access.",
+    "This is incorrect. Intrusion detection monitors behavior but does not inherently restrict file system access proactively."
+]
+
+[[questions]]
+question = "How does a Model-Based Intrusion Detection System (IDS) identify a potential attack on a specific running process?"
+choices = [
+    "It monitors the process's system calls and triggers an alert if the sequence deviates from a predefined graph of normal behavior.",
+    "It scans the process's memory space for byte signatures matching known malware or exploit payloads.",
+    "It intercepts incoming network packets and drops any that contain shellcode targeting the process's listening port.",
+    "It requires the process to run inside an interpreter that checks every instruction for validity before execution."
+]
+answer = "It monitors the process's system calls and triggers an alert if the sequence deviates from a predefined graph of normal behavior."
+subtopic_id = "9.5"
+explanations = [
+    "This is correct. Model-based IDS builds a finite state machine or graph of valid system call sequences; deviations indicate an attack.",
+    "This is incorrect. Scanning memory for byte signatures is the function of a virus scanner, not a model-based IDS.",
+    "This is incorrect. Intercepting network packets is the function of a firewall or network IDS, not a model-based host IDS.",
+    "This is incorrect. Running inside an interpreter with instruction checks is the definition of interpretation (like Java applets), not IDS."
+]
+
+[[questions]]
+question = "A system divides memory into 16-MB isolated sandboxes. An attacker exploits a vulnerability in a process running in Sandbox 1. If the attacker attempts to inject and execute code that jumps to an absolute memory address located in Sandbox 3, what hardware mechanism prevents this?"
+choices = [
+    "The hardware validates the target address against the process's assigned sandbox bounds, trapping the illegal cross-sandbox jump.",
+    "The hardware decrypts the instructions in Sandbox 3, revealing that they are not signed by the same vendor as Sandbox 1.",
+    "The hardware checks the stack canary at the boundary of Sandbox 1, detecting the buffer overflow before the jump can occur.",
+    "The hardware utilizes a stateful firewall to block the execution request as it attempts to cross the virtual network bridge between sandboxes."
+]
+answer = "The hardware validates the target address against the process's assigned sandbox bounds, trapping the illegal cross-sandbox jump."
+subtopic_id = "9.5"
+explanations = [
+    "This is correct. Sandboxing requires hardware memory bounds checking. If an instruction attempts to jump outside the assigned sandbox, the hardware traps it.",
+    "This is incorrect. Decryption and vendor signatures relate to code signing, not memory sandboxing.",
+    "This is incorrect. Stack canaries protect return addresses on the stack; they do not prevent absolute memory jumps across sandbox boundaries.",
+    "This is incorrect. Firewalls operate at the network level, not at the memory execution level."
+]

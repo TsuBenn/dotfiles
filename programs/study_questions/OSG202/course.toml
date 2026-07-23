@@ -1,0 +1,705 @@
+version = 1
+course_title = "Modern Operating Systems"
+
+[[chapters]]
+id = 1
+title = "Chapter 1: Introduction"
+file_name = "ch01_introduction.toml"
+
+  [[chapters.subtopics]]
+  id = "1.1"
+  title = "OS Fundamentals & History"
+  content = """
+An Operating System (OS) acts as an extended machine by providing beautiful abstractions over ugly hardware, and as a resource manager by providing orderly, controlled allocation of resources (top-down view: provide abstractions; bottom-up view: manage hardware).
+History of OS generations:
+1. First generation (1945-55): Vacuum tubes, no OS.
+2. Second generation (1955-65): Transistors and batch systems (e.g., FMS job structure, bringing cards to 1401, computing on 7094).
+3. Third generation (1965-80): ICs and multiprogramming (keeping multiple jobs in memory simultaneously to overlap CPU and I/O).
+4. Fourth generation (1980-present): Personal computers.
+5. Fifth generation (1990-present): Mobile computers.
+The OS Zoo includes mainframe, server, multiprocessor, personal computer, handheld, embedded, sensor node, real-time, and smart card operating systems. "Ontogeny recapitulates phylogeny" implies new species of computers go through the same development phases as ancestors due to technological changes.
+"""
+
+  [[chapters.subtopics]]
+  id = "1.2"
+  title = "Hardware Components & Caching"
+  content = """
+Modern computer components include processors, main memory, disks, printers, keyboards, displays, network interfaces, and I/O devices.
+Processors: Feature pipelines (e.g., three-stage pipeline) and superscalar architectures (multiple execution units).
+Memory: Organized in a hierarchy (registers, cache, main memory, disk). Caching system issues involve: 1) When to put a new item into the cache. 2) Which cache line to put the new item in. 3) Which item to remove (evict) when a slot is needed. 4) Where to put a newly evicted item in the larger memory.
+Disks: Consist of platters, tracks, sectors, and arms.
+I/O Devices: Utilize interrupts to signal the CPU upon task completion.
+Buses: Structure system communication (e.g., large x86 system bus architectures).
+"""
+
+  [[chapters.subtopics]]
+  id = "1.3"
+  title = "OS Abstractions: Processes & Files"
+  content = """
+Processes: A process is a program in execution. It is associated with an address space (memory locations it can access) and a set of resources. Processes form a tree structure (parent-child relationships) where a process acts as a container holding all information needed to run a program.
+Files: The OS abstracts disks into files. File systems organize files into hierarchical directory trees (e.g., university department file system). Before mounting, files on separate media (like a CD-ROM) are inaccessible; after mounting, they integrate into the directory hierarchy. Pipes are abstractions allowing two processes to communicate by connecting them.
+"""
+
+  [[chapters.subtopics]]
+  id = "1.4"
+  title = "System Calls & APIs"
+  content = """
+System calls provide the interface between user programs and the OS. Making a system call (e.g., read(fd, buffer, nbytes)) involves 11 steps: trapping to the kernel, saving registers, dispatching to the correct handler, executing, and returning.
+POSIX defines standard system calls for process management (fork, exec, wait, exit), file management (open, close, read, write, stat), and directory management (mkdir, link, mount).
+The Windows Win32 API provides a similar but distinct interface. OS structures can be monolithic (main program, service procedures, utility procedures), layered (e.g., THE operating system), microkernels (e.g., MINIX 3, moving services to user space), client-server models, or virtual machines (Type 1 and Type 2 hypervisors).
+"""
+
+[[chapters]]
+id = 2
+title = "Chapter 2: Processes and Threads"
+file_name = "ch02_processes_threads.toml"
+
+  [[chapters.subtopics]]
+  id = "2.1"
+  title = "Process Model & States"
+  content = """
+A process is a program in execution. Multiprogramming conceptualizes multiple independent, sequential processes running concurrently (though only one is active at once on a single core).
+Process Creation: Caused by system initialization, a process creation system call, a user request, or batch job initiation.
+Process Termination: Caused by normal exit (voluntary), error exit (voluntary), fatal error (involuntary), or killed by another process (involuntary).
+Process States: 1) Running (using CPU). 2) Ready (runnable, stopped temporarily). 3) Blocked (waiting for external event). Transitions: Running->Blocked (I/O wait), Running->Ready (quantum expires), Ready->Running (scheduler picks), Blocked->Ready (I/O completes).
+Implementation: The OS maintains a process table containing process entries (scheduling parameters, memory image, registers, signals, file descriptors, kernel stack). The lowest OS layer handles interrupts and scheduling.
+Modeling Multiprogramming: CPU utilization increases roughly exponentially with the number of processes in memory.
+"""
+
+  [[chapters.subtopics]]
+  id = "2.2"
+  title = "Threads & Implementation"
+  content = """
+Threads allow multiple execution streams within a single process, sharing the address space and resources but maintaining private program counters, registers, and stacks. Usage examples: word processors (UI, auto-save, spell-check), multithreaded web servers (dispatcher/worker threads).
+Classical Thread Model: Items shared by threads include address space, global variables, open files, and child processes. Items private include PC, registers, and stack.
+POSIX Threads (Pthreads): Standard API for threads (pthread_create, pthread_join, pthread_exit).
+Implementations:
+- User Space: Fast thread creation/switching, no kernel involvement, but blocking system calls block the entire process.
+- Kernel Space: Kernel manages threads, allowing blocking calls, but slower.
+- Hybrid: Multiplexing user-level threads onto kernel-level threads.
+- Pop-up Threads: Created on-demand when messages arrive, having no history to restore.
+Multithreaded code requires care with global variables, which can be made private to threads.
+"""
+
+  [[chapters.subtopics]]
+  id = "2.3"
+  title = "Interprocess Communication (IPC)"
+  content = """
+Race Conditions: Occur when multiple processes access shared memory concurrently, and the final result depends on execution timing.
+Critical Regions: Code segments accessing shared memory. To avoid race conditions: 1) No two processes may be simultaneously inside critical regions. 2) No assumptions about speeds or CPU count. 3) Processes outside critical regions cannot block others. 4) No process waits forever to enter.
+Mutual Exclusion with Busy Waiting: Strict Alternation (alternating turns), Peterson's Solution (using turn and interest variables), TSL/XCHG (hardware instructions atomically testing and setting a lock).
+Sleep and Wakeup: Producer-Consumer problem. Avoids busy waiting but can suffer from race conditions if interrupts occur between checking a condition and sleeping.
+Semaphores: Atomic down (P) and up (V) operations. Solves producer-consumer safely.
+Mutexes: Simplified semaphore (0 or 1), used for mutual exclusion. Pthreads provide mutexes and condition variables.
+Monitors: High-level synchronization primitive with mutual exclusion intrinsic to the monitor; only one process active inside. Uses condition variables for waiting.
+Message Passing: Uses send/receive primitives, useful for distributed systems.
+Barriers: Synchronization points where processes block until a certain number arrive.
+Read-Copy-Update (RCU): Lock-free synchronization for read-heavy data structures; readers proceed without locks, writers copy and update pointers.
+"""
+
+  [[chapters.subtopics]]
+  id = "2.4"
+  title = "Scheduling Algorithms"
+  content = """
+Process Behavior: CPU-bound (long CPU bursts, infrequent I/O) vs I/O-bound (short CPU bursts, frequent I/O).
+Scheduling Categories: 1) Batch (no user interaction). 2) Interactive (user interaction, preemption required). 3) Real-time (strict deadlines).
+Goals: Fairness, efficiency, response time, throughput, turnaround time.
+Batch Systems:
+- First-Come First-Served (FCFS): Non-preemptive, simple, convoy effect.
+- Shortest Job First (SJF): Non-preemptive, optimal average turnaround time.
+- Shortest Remaining Time Next (SRTN): Preemptive SJF.
+Interactive Systems:
+- Round-Robin (RR): Preemptive, fixed time quantum.
+- Priority Scheduling: Highest priority runs first (can lead to starvation; solved by aging).
+- Multiple Queues: Partition processes into priority classes.
+- Shortest Process Next: SJF for interactive.
+- Guaranteed Scheduling: Guarantee CPU fraction.
+- Lottery Scheduling: Probabilistic priority via tickets.
+- Fair-Share Scheduling: Allocate CPU among users, not just processes.
+Real-Time Systems: Hard real-time (deadlines strictly met) vs Soft real-time. Periodic vs Aperiodic events. Schedulability condition checks.
+Thread Scheduling: User-level vs Kernel-level thread scheduling impacts quantum usage.
+"""
+
+  [[chapters.subtopics]]
+  id = "2.5"
+  title = "Classic IPC Problems"
+  content = """
+The Dining Philosophers Problem: Five philosophers sit around a table with five forks. Each needs two forks to eat. Simple solutions lead to deadlock (everyone grabs left fork). Solutions involve breaking symmetry (e.g., odd philosopher picks right first) or a waiter (arbiter) approach.
+The Readers and Writers Problem: Multiple readers can read a shared database concurrently, but writers need exclusive access. Various solutions exist balancing reader priority vs writer priority to prevent starvation.
+"""
+
+[[chapters]]
+id = 3
+title = "Chapter 3: Memory Management"
+file_name = "ch03_memory_management.toml"
+
+  [[chapters.subtopics]]
+  id = "3.1"
+  title = "Memory Abstraction & Swapping"
+  content = """
+No Memory Abstraction: Programs directly access physical memory, causing relocation problems (programs must be loaded at the same address).
+Base and Limit Registers: Hardware provides each process with a separate address space. The base register holds the starting physical address, the limit holds the size. MMU adds base to virtual address.
+Swapping: Moving processes between main memory and backing store (disk). Creates holes in memory. Memory can be managed using Bitmaps (allocating fixed units) or Linked Lists (tracking processes and holes).
+Allocation Algorithms: First fit (first hole large enough), Next fit (continues from last search), Best fit (smallest hole large enough, creates tiny fragments), Worst fit (largest hole), Quick fit (separate lists for common sizes).
+"""
+
+  [[chapters.subtopics]]
+  id = "3.2"
+  title = "Virtual Memory & Paging"
+  content = """
+Virtual Memory: Allows programs to be larger than physical memory by breaking address spaces into chunks called pages.
+Paging: The Memory Management Unit (MMU) maps virtual addresses to physical addresses. Virtual address space is divided into virtual pages; physical memory into page frames. The page table maps virtual page numbers to page frame numbers.
+Page Table Entry (PTE): Contains the frame number, Present/Absent bit, Modified (dirty) bit, Referenced bit, and Protection bits.
+Speeding Up Paging:
+1. TLB (Translation Lookaside Buffer): Hardware cache inside MMU mapping virtual pages to frames, avoiding memory lookups for frequent pages.
+2. Multilevel Page Tables: Avoids keeping huge page tables in memory by chaining them (e.g., two-level page tables).
+3. Inverted Page Tables: Maps physical frames to virtual pages, sorted by frame number, reducing memory footprint but complicating lookups (hashed).
+"""
+
+  [[chapters.subtopics]]
+  id = "3.3"
+  title = "Page Replacement Algorithms"
+  content = """
+When memory is full, a page must be evicted to bring in a new page. If the evicted page is dirty, it must be written to disk.
+Optimal Algorithm: Evicts the page not used for the longest time in the future. Unimplementable but serves as a benchmark.
+Not Recently Used (NRU): Pages classified by R and M bits (Class 0-3). Evicts lowest class.
+First-In, First-Out (FIFO): Evicts oldest page. Suffers from Belady's anomaly.
+Second-Chance: FIFO with a reference bit. If oldest page's R bit is 1, clear it and move to back; if 0, evict.
+Clock Algorithm: Circular list implementation of Second-Chance.
+Least Recently Used (LRU): Evicts page unused for longest time in the past. Accurate but expensive to implement in hardware.
+Aging Algorithm: Software simulation of LRU using counter bits shifted right periodically.
+Working Set Algorithm: Tracks the set of pages used in the last k memory references. Evicts pages not in the working set.
+WSClock Algorithm: Combines clock algorithm with working set logic, checking reference bits and time of last use.
+Local vs Global Allocation: Local replaces only pages of the faulting process; Global replaces any page (usually better).
+"""
+
+  [[chapters.subtopics]]
+  id = "3.4"
+  title = "Implementation Issues & Segmentation"
+  content = """
+Page Fault Handling: 1) Hardware traps to kernel. 2) Saves registers. 3) OS determines faulting virtual address. 4) Checks validity. 5) If dirty frame selected, schedule write to disk and context switch. 6) Reads needed page from disk. 7) Updates page tables, marks frame normal. 8) Backs up PC, restores registers, returns to user space.
+Instruction Backup: Hardware must be able to restart instructions that fault mid-execution (e.g., instructions spanning page boundaries).
+Separate Instruction (I) and Data (D) Spaces: Allows sharing of text pages among processes.
+Shared Libraries: Shared code mapped into multiple address spaces, saving memory.
+Separation of Policy and Mechanism: Memory management divided into low-level MMU handler, kernel page fault handler, and external pager in user space.
+Segmentation: Address space divided into logical segments (e.g., code, data, stack) that can grow/shrink independently. Requires segment tables. Pure segmentation leads to checkerboarding (external fragmentation), solved by compaction.
+Segmentation with Paging: MULTICS used segmented memory pointing to page tables. Intel x86 uses selectors pointing to segment descriptors, which map to linear addresses, which are then paged.
+"""
+
+[[chapters]]
+id = 4
+title = "Chapter 4: File Systems"
+file_name = "ch04_file_systems.toml"
+
+  [[chapters.subtopics]]
+  id = "4.1"
+  title = "Files & Directories"
+  content = """
+Long-term storage must store vast amounts of info, survive process termination, and allow concurrent access. A disk is viewed as a linear sequence of fixed-size blocks supporting read block k and write block k.
+File Naming: Extensions indicate file types (e.g., .exe, .txt).
+File Structure: Byte sequence, record sequence, or tree.
+File Types: Executable files, archives.
+File Attributes: Metadata like size, creation time, permissions.
+File Operations: Create, delete, open, close, read, write, append, seek, get/set attributes, rename.
+Directories: Single-level (one directory for all files), Hierarchical (tree structure with directories and files). Path names can be absolute (from root) or relative (from working directory). Directory operations mirror file operations.
+"""
+
+  [[chapters.subtopics]]
+  id = "4.2"
+  title = "File System Implementation"
+  content = """
+File System Layout: Disk divided into boot block, superblock, free block management, i-nodes, and root directory.
+Implementing Files:
+1. Contiguous Allocation: Files occupy consecutive blocks. Fast but suffers from fragmentation.
+2. Linked List Allocation: Blocks contain data and a pointer to the next block. No fragmentation but random access is slow.
+3. Linked List with Table in Memory (FAT): File Allocation Table in memory holds pointers. Fast random access.
+4. I-nodes: Index nodes containing pointers to data blocks, indirect blocks, and double-indirect blocks.
+Implementing Directories: Directory entries map file names to i-nodes. Long file names are handled in-line or via heaps.
+"""
+
+  [[chapters.subtopics]]
+  id = "4.3"
+  title = "Shared Files, Journaling & VFS"
+  content = """
+Shared Files: Hard links (multiple directory entries point to same i-node). Symbolic links (special file containing path to target). If the original owner removes a file, hard links keep it alive, while symbolic links become dangling.
+Journaling File Systems: To prevent file system corruption from crashes, updates are written to a log (journal) as transactions before being applied. E.g., removing a file requires: 1) Remove from directory. 2) Release i-node. 3) Free disk blocks.
+Virtual File Systems (VFS): Provides a unified interface (open, read, write, close) abstracting multiple concrete file systems (ext2, FAT, NTFS) using common data structures like superblocks, i-nodes, and dentries.
+"""
+
+  [[chapters.subtopics]]
+  id = "4.4"
+  title = "Disk Space Management & Performance"
+  content = """
+Block Size: Trade-off between data rate (larger blocks) and space efficiency (smaller blocks avoid wasted space in partially filled blocks).
+Tracking Free Blocks: Linked list of free blocks or Bitmaps (bit arrays).
+Disk Quotas: Track block and i-node usage per user to prevent monopolization.
+Backups: Physical dump (copies entire disk blocks) vs Logical dump (starts at directories, dumps changed files and directories).
+File System Consistency: Checks for missing blocks, duplicate free lists, and duplicate data blocks (fsck).
+Performance: Buffer cache in kernel stores recently used blocks. Modified LRU considers if a block will be needed soon (e.g., data block) or is critical for consistency (e.g., directory, i-node). Reducing disk arm motion involves placing i-nodes in cylinder groups across the disk.
+"""
+
+  [[chapters.subtopics]]
+  id = "4.5"
+  title = "File System Examples"
+  content = """
+MS-DOS: Uses FAT. Directory entry contains file name, attributes, and starting block number. Partition size depends on block size.
+UNIX V7: Uses i-nodes. Directory entries are simple mappings of file names to i-node numbers. I-nodes contain metadata and 13 block pointers (direct, indirect, double-indirect).
+ISO 9660: Standard for CD-ROMs. Uses fixed directory entries.
+Rock Ridge Extensions: Adds POSIX attributes, long names, and deep directory nesting to ISO 9660 for UNIX.
+Joliet Extensions: Adds Unicode long file names and directory nesting for Windows.
+"""
+
+[[chapters]]
+id = 5
+title = "Chapter 5: Input/Output"
+file_name = "ch05_input_output.toml"
+
+  [[chapters.subtopics]]
+  id = "5.1"
+  title = "I/O Hardware Principles"
+  content = """
+I/O Devices: Block devices (fixed-size blocks, addressable, e.g., disks) and Character devices (stream of characters, non-addressable, e.g., keyboards, printers).
+Memory-Mapped I/O: Device registers are mapped into the standard address space. CPU communicates using standard LOAD/STORE instructions. Hybrid approaches use dedicated I/O ports.
+Direct Memory Access (DMA): Used for high-speed block transfers. The DMA controller takes control of the bus, transferring data directly between device and memory, bypassing the CPU, sending an interrupt only when the entire block is done.
+Interrupts: Hardware signals that pause CPU execution to run an interrupt handler.
+Precise Interrupts: 1) PC saved in known place. 2) All instructions before PC fully executed. 3) No instructions beyond PC executed. 4) State of faulting instruction is known. Imprecise interrupts occur in superscalar/pipelined CPUs where multiple instructions are in flight.
+"""
+
+  [[chapters.subtopics]]
+  id = "5.2"
+  title = "I/O Software Layers"
+  content = """
+Goals of I/O Software: Device independence (access any device uniformly), Uniform naming, Error handling, Synchronous vs Asynchronous operations, and Buffering.
+I/O Software Layers (Bottom to Top):
+1. Interrupt Handlers: Hardware triggers, software responds. Hides interrupts from higher layers.
+2. Device Drivers: Device-specific code that translates standard OS requests into device-specific commands. Communicates with device controllers via registers.
+3. Device-Independent I/O Software: Provides uniform interfaces (e.g., standard driver interface), buffering, error reporting, and allocating device names.
+4. User-Space I/O Software: Libraries (e.g., printf formatting) and spooling daemons.
+Programmed I/O: CPU continuously polls device status (busy waiting).
+Interrupt-Driven I/O: CPU requests I/O, device interrupts on completion.
+Buffering: Unbuffered (data read directly), Single buffer (kernel buffer copied to user), Double buffer (one fills while other drains).
+"""
+
+  [[chapters.subtopics]]
+  id = "5.3"
+  title = "Disks & RAID"
+  content = """
+Magnetic Disks: Consist of platters, tracks, cylinders, and sectors. Physical geometry (zoned bit recording) differs from virtual geometry reported to OS.
+RAID (Redundant Array of Independent Disks): Improves performance and reliability.
+- Level 0: Striping (performance, no redundancy).
+- Level 1: Mirroring (reliability, 2 disks).
+- Level 2: Bit-level striping with Hamming code ECC.
+- Level 3: Byte-level striping with dedicated parity.
+- Level 4: Block-level striping with dedicated parity.
+- Level 5: Block-level striping with distributed parity.
+- Level 6: Block-level striping with P+Q redundancy (double parity).
+Disk Formatting: Low-level formatting writes sector headers and gaps. Cylinder skew and Interleaving optimize sequential and rotational reading speeds.
+Disk Arm Scheduling:
+- FCFS: First come, first served.
+- SSF (Shortest Seek First): Minimizes arm movement, can cause starvation.
+- Elevator (SCAN): Sweeps back and forth across disk servicing requests in path.
+Error Handling: Bad sectors are remapped to spare sectors.
+Stable Storage: Uses paired disks to guarantee data survives CPU crashes via stable writes (write to both, verify) and stable reads.
+"""
+
+  [[chapters.subtopics]]
+  id = "5.4"
+  title = "Clocks & User Interfaces"
+  content = """
+Clocks: Programmable hardware timers generate interrupts.
+Clock Software Duties: Maintain time of day, prevent processes exceeding time limits, account CPU usage, handle alarms, provide watchdog timers, profiling.
+Soft Timers: Rely on kernel entries for other reasons (system calls, TLB misses, I/O interrupts) to check pending timers, reducing dedicated hardware interrupts.
+Keyboards: Hardware debouncing, character mapping. Canonical mode handles line editing (backspace).
+Text Windows: Terminal drivers emulate ANSI escape sequences for cursor movement.
+X Window System: Client-server model. Display server manages screen/input; client applications send drawing commands.
+Graphical User Interfaces (GUIs): Event-driven programming, windows, menus. Uses bitmaps (BitBlt operations for copying pixels) and fonts (character outlines).
+"""
+
+[[chapters]]
+id = 6
+title = "Chapter 6: Deadlocks"
+file_name = "ch06_deadlocks.toml"
+
+  [[chapters.subtopics]]
+  id = "6.1"
+  title = "Deadlock Fundamentals"
+  content = """
+Resources: Preemptable (can be taken away, e.g., CPU, memory) vs Nonpreemptable (must be released voluntarily, e.g., printer). Resource acquisition sequence: Request, Use, Release.
+Deadlock Definition: A set of processes is deadlocked if each process in the set is waiting for an event that only another process in the set can cause.
+Four Conditions for Resource Deadlock:
+1. Mutual Exclusion: Resources cannot be shared.
+2. Hold and Wait: Process holds resources while waiting for others.
+3. No Preemption: Resources must be released voluntarily.
+4. Circular Wait: A cycle of processes waiting for each other's resources.
+Deadlock Modeling: Resource allocation graphs. Nodes are processes (circles) and resources (squares). Arrows indicate request and hold. A cycle implies deadlock (for single-instance resources).
+Strategies: 1) Ignore (Ostrich algorithm). 2) Detection and recovery. 3) Dynamic avoidance. 4) Prevention.
+"""
+
+  [[chapters.subtopics]]
+  id = "6.2"
+  title = "Deadlock Detection & Recovery"
+  content = """
+Detection with One Resource of Each Type: Look for cycles in the resource allocation graph using a depth-first search algorithm.
+Detection with Multiple Resources of Each Type: Uses four matrices: Existing resources, Available resources, Current allocation matrix, Request matrix. Algorithm: Find an unmarked process whose request row is <= available row. If found, assume it finishes, add its allocation to available, mark it. Repeat. If unmarked processes remain, they are deadlocked.
+Recovery Methods:
+1. Preemption: Temporarily take a resource (often difficult).
+2. Rollback: Return processes to a safe saved state.
+3. Killing Processes: Terminate processes in the cycle (may need to kill multiple).
+"""
+
+  [[chapters.subtopics]]
+  id = "6.3"
+  title = "Deadlock Avoidance"
+  content = """
+Avoidance uses dynamic resource allocation checks to ensure the system never enters an unsafe state.
+Resource Trajectories: Graphs showing execution paths of two processes. Safe paths avoid regions where both processes hold resources the other needs.
+Safe vs Unsafe State: A state is safe if there exists a sequence of processes that can finish without deadlock. An unsafe state does not guarantee deadlock, but deadlock is possible.
+Banker's Algorithm (Single Resource): Uses declared max needs. A state is safe if there is a sequence of processes whose remaining needs can be met by the available resource plus resources held by earlier processes in the sequence.
+Banker's Algorithm (Multiple Resources): Same logic applied to vectors and matrices. Look for a process whose remaining needs vector <= available vector. Assume it runs, add its allocation to available. Repeat.
+"""
+
+  [[chapters.subtopics]]
+  id = "6.4"
+  title = "Deadlock Prevention & Livelock"
+  content = """
+Prevention negates one of the four deadlock conditions:
+1. Mutual Exclusion: Make resources sharable (e.g., spooling printers, though the spool disk can still deadlock).
+2. Hold and Wait: Request all resources at once before starting.
+3. No Preemption: Make resources preemptable (rarely practical).
+4. Circular Wait: Assign a global numerical order to resources; processes must request resources in increasing order.
+Communication Deadlocks: Processes waiting for network messages from each other.
+Livelock: Processes are not blocked, but continuously change state in response to each other without making progress (e.g., two people stepping side-to-side in a hallway, or busy-waiting processes releasing and reacquiring locks simultaneously).
+"""
+
+[[chapters]]
+id = 7
+title = "Chapter 7: Virtualization and the Cloud"
+file_name = "ch07_virtualization_cloud.toml"
+
+  [[chapters.subtopics]]
+  id = "7.1"
+  title = "Virtualization Requirements & Hypervisors"
+  content = """
+Virtualization allows multiple Virtual Machines (VMs) to run on a single physical machine.
+Hypervisor Requirements (Popek and Goldberg):
+1. Safety: Hypervisor has full control of virtualized resources.
+2. Fidelity: VM behavior is identical to bare hardware.
+3. Efficiency: Much of the VM code must run without hypervisor intervention.
+Type 1 Hypervisors: Run on bare metal (e.g., ESX Server, Xen).
+Type 2 Hypervisors: Run as a process on a host OS (e.g., VMware Workstation).
+Techniques for Efficient Virtualization: Trap-and-Emulate. Guest OS runs in user mode; privileged instructions trap to hypervisor, which emulates them.
+"""
+
+  [[chapters.subtopics]]
+  id = "7.2"
+  title = "Virtualization Techniques & Paravirtualization"
+  content = """
+Virtualizing the Unvirtualizable: The x86 architecture has instructions (e.g., POPF) that do not trap in user mode but behave differently in kernel mode, breaking trap-and-emulate.
+Binary Translation: Hypervisor dynamically rewrites guest kernel code, replacing sensitive instructions with trap-generating or safe equivalents.
+Paravirtualization: The guest OS is modified to be "virtualization-aware" (e.g., Xen, VMI Linux), making explicit hypercalls to the hypervisor instead of executing privileged instructions.
+Hardware Support: Intel VT-x and AMD-V add root/non-root modes, allowing guest OSs to run in ring 0 and trap properly to the hypervisor. Extended/Nested Page Tables (NPT) hardware accelerates virtual-to-physical address translation for VMs.
+Hypervisors vs Microkernels: Both move services out of the kernel, but hypervisors focus on abstracting hardware for full OSs, while microkernels aim to minimize kernel functionality for native applications.
+"""
+
+  [[chapters.subtopics]]
+  id = "7.3"
+  title = "Cloud Computing & x86 Virtualization"
+  content = """
+Clouds (NIST Definition): On-demand self-service, broad network access, resource pooling, rapid elasticity, measured service.
+Challenges in x86 Virtualization: Non-virtualizable architecture, daunting complexity, diverse peripherals, and need for simple user experience.
+VMware Case Study:
+- Virtual Hardware Platform: Provides consistent, emulated devices (e.g., IDE disks) to the guest, decoupling it from physical hardware.
+- Hosted Architecture (Type 2): VMX process (user interface), VMM driver (kernel module), and VMM (executes guest code).
+- World Switch: Context switching between host OS context and VMM context.
+- ESX Server (Type 1): Bare-metal hypervisor with custom CPU scheduler, memory manager (ballooning, page sharing), and I/O subsystem for high performance.
+"""
+
+[[chapters]]
+id = 8
+title = "Chapter 8: Multiple Processor Systems"
+file_name = "ch08_multiple_processors.toml"
+
+  [[chapters.subtopics]]
+  id = "8.1"
+  title = "Multiprocessor Hardware"
+  content = """
+Shared-Memory Multiprocessors: All CPUs share a single physical address space.
+- UMA (Uniform Memory Access): All CPUs access memory in the same time. Bus-based (snooping caches, write-through/write-back), Crossbar switches (fast, expensive, NxN matrix), Multistage switching networks (Omega networks using 2x2 switches).
+- NUMA (Non-Uniform Memory Access): CPUs have local memory, faster to access. Access to remote memory is slower. Requires directory-based cache coherence to avoid bus snooping limits.
+Message-Passing Multicomputers: Each node has private memory; communication via explicit messages. Scales better than shared memory. Uses interconnection topologies (ring, grid, torus, hypercube).
+"""
+
+  [[chapters.subtopics]]
+  id = "8.2"
+  title = "Multiprocessor OS Types & Scheduling"
+  content = """
+Multiprocessor OS Types:
+1. Each CPU has its own OS: Partitioning memory, sharing OS code but private data. No true sharing.
+2. Master-Slave: One CPU (master) handles all system calls and scheduling; others run user code. Bottleneck at master.
+3. Symmetric Multiprocessor (SMP): Any CPU can run any OS function. Requires locks to protect shared OS structures.
+Multiprocessor Synchronization: TSL instruction requires bus locking. Spinlocks waste CPU cycles; mitigated by caching locks locally or using exponential backoff.
+Scheduling:
+- Time Sharing: Single ready queue shared by all CPUs.
+- Space Sharing: CPUs divided among processes that need multiple CPUs simultaneously.
+- Gang Scheduling: Scheduling related threads to run simultaneously on different CPUs, reducing communication delays.
+"""
+
+  [[chapters.subtopics]]
+  id = "8.3"
+  title = "Multicomputers & Distributed Shared Memory"
+  content = """
+Interconnection Technology: Store-and-forward packet switching vs. Circuit switching.
+Network Interfaces: Hardware boards handling packet send/receive, often via DMA.
+Blocking vs Nonblocking Calls: Blocking send waits for receipt. Nonblocking send returns immediately (requires copy or copy-on-write).
+Remote Procedure Call (RPC): Stubs on client and server marshal/unmarshal parameters and handle network transmission.
+Distributed Shared Memory (DSM): Implements shared memory abstraction over physically distributed multicomputers. Can be hardware, OS, or user-level. Pages migrate between machines. False sharing occurs when two unrelated variables fall on the same page, causing unnecessary page migrations.
+"""
+
+  [[chapters.subtopics]]
+  id = "8.4"
+  title = "Distributed Systems & Middleware"
+  content = """
+Distributed Systems: Independent computers appearing as a single coherent system. Middleware sits above OS and below applications to provide transparency.
+Network Hardware: Ethernet (classic CSMA/CD vs switched point-to-point), Internet (IP protocol).
+Network Services: Connection-oriented (TCP) vs Connectionless (UDP).
+Middleware Types:
+1. Document-Based: The Web. HTTP requests retrieve HTML documents.
+2. File-System-Based: NFS, AFS. Upload/download vs remote access models. Naming transparency (machine + path, mounting, single namespace).
+3. Object-Based: CORBA, DCOM. Remote method invocation.
+4. Coordination-Based: Linda tuplespaces (in, out, read operations), Publish/Subscribe architectures.
+"""
+
+[[chapters]]
+id = 9
+title = "Chapter 9: Security"
+file_name = "ch09_security.toml"
+
+  [[chapters.subtopics]]
+  id = "9.1"
+  title = "Security Fundamentals & Access Control"
+  content = """
+Security Environment: Threats include data leakage (interception), data tampering (modification), and denial of service.
+Trusted Computing Base (TCB): The set of hardware and software responsible for enforcing security policy. The Reference Monitor is the core TCB component checking all access.
+Protection Domains: A domain defines a set of access rights. A protection matrix maps domains (rows) to objects (columns).
+Access Control Lists (ACLs): Stored with objects; lists which domains/users can access the object and how.
+Capabilities: Stored with domains; tokens proving the domain has access to an object. Cannot be forged. Cryptographically protected capabilities include object, rights, and a hash.
+"""
+
+  [[chapters.subtopics]]
+  id = "9.2"
+  title = "Multilevel Security & Cryptography"
+  content = """
+Multilevel Security: Models for handling classified data.
+- Bell-LaPadula Model: Focuses on confidentiality. Rule 1 (Simple Security): No Read Up. Rule 2 (* Property): No Write Down.
+- Biba Model: Focuses on integrity. Rule 1 (Simple Integrity): No Write Up. Rule 2 (Integrity *): No Read Down.
+Covert Channels: Communication paths not intended for communication (e.g., modulating CPU load, file locking, disk arm position). Difficult to eliminate entirely.
+Steganography: Hiding the existence of messages within other data (e.g., least significant bits of images).
+Cryptography: Symmetric (Secret-Key, e.g., AES) uses one key for encryption/decryption. Asymmetric (Public-Key, e.g., RSA) uses public key to encrypt and private key to decrypt. Digital Signatures use private keys to sign and public keys to verify.
+"""
+
+  [[chapters.subtopics]]
+  id = "9.3"
+  title = "Authentication Mechanisms"
+  content = """
+Authentication Factors: 1) Something you know (passwords). 2) Something you have (smart cards). 3) Something you are (biometrics).
+UNIX Password Security: Uses salt (random value appended to password) to defeat precomputed dictionary attacks. Stored as hashed values in /etc/shadow.
+Challenge-Response: Server sends a random challenge; user must encrypt/hash it with their password, preventing replay attacks.
+Physical Objects: Smart cards require possession of hardware.
+Biometrics: Fingerprints, retina scans, finger length. Must balance false positives (FAR) and false negatives (FRR).
+"""
+
+  [[chapters.subtopics]]
+  id = "9.4"
+  title = "Attacks & Malware"
+  content = """
+Buffer Overflow Attacks: Overwriting buffers on the stack to alter return addresses, executing injected shellcode. Mitigated by stack canaries (random values checked before return) and Non-Executable (NX) bits.
+Code Reuse Attacks: Return-Oriented Programming (ROP) chains together existing snippets of code ("gadgets") ending in RET instructions to bypass NX bits.
+Format String Attacks: Using `%n` or `%x` in printf-like functions to read/write arbitrary memory.
+Command Injection: Exploiting shell commands that concatenate untrusted user input.
+Malware:
+- Viruses: Attach to executables. Boot sector viruses capture interrupt vectors. Polymorphic viruses encrypt their code to evade signature detection.
+- Spyware: Modifies browser settings, generates pop-ups, tracks users.
+- Rootkits: Hide deep in the system (Firmware, Hypervisor, Kernel, Library, Application). Modify OS internals to hide processes/files.
+"""
+
+  [[chapters.subtopics]]
+  id = "9.5"
+  title = "System Defenses"
+  content = """
+Firewalls: Hardware or software filtering packets based on rules (packet filters, stateful firewalls).
+Virus Scanners: Check files against signature databases or heuristic behavior.
+Code Signing: Digitally signing executables to verify origin and integrity.
+Jailing: Restricting a process's file system and network access to a restricted namespace.
+Model-Based Intrusion Detection: Monitoring system calls to ensure they match a predefined finite state machine or graph of normal program behavior.
+Sandboxing: Dividing memory into isolated regions (sandboxes) where code cannot jump outside. Requires hardware support for memory bounds.
+Interpretation: Running untrusted code (like Java applets) in an interpreter that checks every instruction for validity (no pointer forging, access restriction checks, stack bounds).
+"""
+
+[[chapters]]
+id = 10
+title = "Chapter 10: Case Study 1: UNIX, Linux, and Android"
+file_name = "ch10_unix_linux_android.toml"
+
+  [[chapters.subtopics]]
+  id = "10.1"
+  title = "Linux Overview & Processes"
+  content = """
+Linux History: UNICS -> PDP-11 UNIX -> Portable UNIX (C) -> Berkeley UNIX -> Standard UNIX -> MINIX -> Linux. Linux goals: simplicity, power, flexibility.
+Linux Interfaces: Kernel, Shell (command line, pipes, filters, scripts), Utility Programs (POSIX standard tools).
+Kernel Structure: System call interface, kernel services, architecture-dependent code.
+Processes: Created via fork() (copies parent). Exec() replaces memory image. Wait() blocks for child. Exit() terminates.
+Implementation: Process descriptors (task_struct) hold scheduling parameters, memory image, signals, registers, file descriptors, accounting, kernel stack.
+Threads in Linux: Implemented as processes that share resources via clone() system call with sharing flags (CLONE_VM, CLONE_FILES, etc.).
+Scheduling: Three classes: Real-time FIFO, Real-time Round-Robin, Timesharing. O(1) scheduler uses run queues per CPU. Completely Fair Scheduler (CFS) uses red-black trees for fair time division.
+"""
+
+  [[chapters.subtopics]]
+  id = "10.2"
+  title = "Linux Memory & I/O"
+  content = """
+Memory Management: Virtual memory uses 4-level page tables. Memory divided into Zones: ZONE_DMA (legacy ISA), ZONE_NORMAL (direct mapped), ZONE_HIGHMEM (unmapped).
+Memory Allocation: Buddy algorithm allocates power-of-two blocks. Slab allocator handles smaller objects.
+Page Replacement: Uses an LRU variant tracking active/inactive lists based on accessed bits.
+I/O: Everything is a file. Networking uses sockets (TCP/IP streams, UDP packets). Character and Block devices handled by VFS.
+"""
+
+  [[chapters.subtopics]]
+  id = "10.3"
+  title = "Linux File Systems"
+  content = """
+VFS (Virtual File System): Abstraction layer allowing multiple file systems (ext2, FAT, NFS) to coexist. Common objects: superblock, inode, dentry, file.
+Ext2 File System: Disk layout: Boot block, superblocks, block group descriptors, block bitmaps, inode bitmaps, inode tables, data blocks. Inodes contain 12 direct, 1 indirect, 1 double-indirect, 1 triple-indirect pointers.
+Directories: Stored as files containing lists of (filename, inode) pairs. Hard links add entries to this list.
+NFS (Network File System): Allows mounting remote file systems. Uses RPC and XDR (External Data Representation). Stateless server protocol.
+Security: Standard UNIX permissions (User, Group, Other: rwx). Uses UIDs and GIDs.
+"""
+
+  [[chapters.subtopics]]
+  id = "10.4"
+  title = "Android Architecture & Binder IPC"
+  content = """
+Android Goals: Open-source mobile platform, robust API, apps compete on level playing field, apps isolated (sandboxed), apps managed by system, full general-purpose OS.
+Architecture: Linux kernel provides drivers (Binder, Power Management). Dalvik VM runs .dex bytecode, optimized for mobile (low memory, multiple instances).
+Wake Locks: Mechanisms to keep CPU or screen awake, preventing true sleep during background tasks.
+Dalvik: Zygote process pre-initializes VM; forks new app processes to avoid startup latency.
+Binder IPC: Android's primary IPC mechanism. Kernel module manages thread pools per process. User-space API uses IBinder, Binder, and Parcel objects. AIDL (Android Interface Definition Language) generates stubs for remote method calls between apps and system services.
+"""
+
+  [[chapters.subtopics]]
+  id = "10.5"
+  title = "Android Application Components"
+  content = """
+APK Contents: Manifest, resources, code, signing info.
+Components:
+1. Activities: UI screens with a lifecycle (onCreate, onStart, onResume, onPause). Back stack manages activity navigation.
+2. Services: Background operations without UI. Can be started (long-running) or bound (interaction interface).
+3. Receivers: Respond to system-wide broadcast intents.
+4. Content Providers: Standardized API for sharing data between app sandboxes (using URIs).
+Process Lifecycle: System kills processes based on importance hierarchy: Foreground > Visible > Service > Background > Empty. Low Memory Killer (LMK) reclaims memory starting from empty processes.
+Security: Application Sandboxing (unique UID per app). Permissions requested in manifest protect access to system features and other apps' components.
+"""
+
+[[chapters]]
+id = 11
+title = "Chapter 11: Case Study 2: Windows 8"
+file_name = "ch11_windows8.toml"
+
+  [[chapters.subtopics]]
+  id = "11.1"
+  title = "Windows OS Structure"
+  content = """
+History: Evolved from VMS (Dave Cutler) to NT. Win32 API provides compatibility across NT-based Windows.
+Programming Layers: Win32 API wraps Native NT API. Subsystems (like POSIX) use native API.
+Registry: Centralized configuration database storing system, hardware, and application settings (Hives like HKLM, HKCU).
+Kernel Mode Organization: HAL (Hardware Abstraction Layer) hides motherboard specifics. Kernel (scheduling, interrupts). Executive (object manager, memory manager, I/O manager, IPC).
+Object Manager: Manages kernel objects (processes, threads, files, events). Objects have a header (security, naming) and a body.
+Handles: Processes reference objects via handles stored in handle tables (single or multi-level).
+Object Name Space: Hierarchical namespace using parse procedures to extend lookups into file systems and devices.
+"""
+
+  [[chapters.subtopics]]
+  id = "11.2"
+  title = "Windows Processes, Threads & Scheduling"
+  content = """
+Execution Units: Jobs (contain processes), Processes (contain threads), Threads (basic execution unit), Fibers (user-mode lightweight threads managed by thread).
+User-Mode Scheduling (UMS): Allows user-mode code to schedule its own threads without kernel transitions.
+Process/Thread Differences from UNIX: Windows leaves argument parsing to the program, uses handle inheritance rather than fd duplication, working directory is user-mode string, no SETUID bit (uses explicit token passing).
+Scheduling: Priority-based preemptive. 32 priority levels mapped from Win32 priority classes. Priority inversion handled by priority boosting. Scheduler triggered by blocking, signaling, quantum expiration, or I/O completion.
+"""
+
+  [[chapters.subtopics]]
+  id = "11.3"
+  title = "Windows Memory & I/O"
+  content = """
+Memory Management: Virtual address space layout (user space vs system space). Shared memory via mapped sections.
+Page Fault Handling: Categories include page not committed, protection violation, copy-on-write, stack growth, and page not in memory.
+Page Replacement: Working-set manager. Maintains working sets per process. Uses a modified page writer to flush dirty pages to disk, moving them to a standby list before free list.
+Physical Memory Management: PFN (Page Frame Number) database tracks state of every physical page (valid, standby, modified, free, zeroed).
+I/O System: Uses I/O Request Packets (IRPs) passed down Device Stacks. Device objects represent specific instances, driver objects contain code. Drivers can filter, modify, or complete IRPs.
+"""
+
+  [[chapters.subtopics]]
+  id = "11.4"
+  title = "Windows NTFS File System"
+  content = """
+NTFS (New Technology File System): Uses Master File Table (MFT). Each file is an attribute stream.
+MFT Records: Contain attributes like Standard Information, Filename, Data, Security Descriptor. Small files fit entirely inside the MFT record.
+Storage Allocation: Uses runs (extents) defined by (length, starting cluster). Large files require multiple MFT records pointing to data runs.
+Directories: Implemented as B-trees for fast lookups.
+File Compression: NTFS supports transparent compression by dividing files into 16-block compression units, storing sparse runs for empty compressed blocks.
+"""
+
+  [[chapters.subtopics]]
+  id = "11.5"
+  title = "Windows Security"
+  content = """
+Security Concepts: Secure login (SAS/CTRL+ALT+DELETE), Discretionary Access Control (ACLs), Privileged Access (Administrators), Address Space Protection, Zeroed pages, Security Auditing.
+Access Tokens: Contain user SID, group SIDs, privileges, and default DACL. Attached to processes upon login.
+Security Descriptors: Contain Owner SID, Group SID, DACL (Discretionary ACL - what users can do), SACL (System ACL - what to audit).
+Security Mitigations: Address Space Layout Randomization (ASLR), Data Execution Prevention (DEP/NX), Control Flow Guard (CFG), Stack Canaries, Heap hardening, PatchGuard (kernel patch protection).
+"""
+
+[[chapters]]
+id = 12
+title = "Chapter 12: Operating System Design"
+file_name = "ch12_os_design.toml"
+
+  [[chapters.subtopics]]
+  id = "12.1"
+  title = "Design Goals & Interface Design"
+  content = """
+OS Design Goals: Define abstractions, provide primitive operations, ensure isolation, manage hardware.
+Interface Design Principles:
+1. Simplicity: A small number of orthogonal concepts that do exactly what they say.
+2. Completeness: Must be able to do everything needed.
+3. Efficiency: Interface should not impose excessive overhead.
+Execution Paradigms: Algorithmic code (sequential execution) vs Event-driven code (waits for events, dispatches to handlers, highly asynchronous).
+"""
+
+  [[chapters.subtopics]]
+  id = "12.2"
+  title = "System Structure & Naming"
+  content = """
+System Structure:
+- Layered Systems: Strict hierarchy where layer N uses services of layer N-1. Hard to define boundaries.
+- Microkernel-Based Client-Server: Minimal kernel (IPC, scheduling, memory). OS services run as user-space processes communicating via IPC.
+Naming: Directories map external (human-readable) names to internal (binary) names or identifiers. Static vs Dynamic structures.
+Hiding the Hardware: Using conditional compilation or architecture-specific HALs to isolate hardware dependencies from the main OS logic.
+"""
+
+  [[chapters.subtopics]]
+  id = "12.3"
+  title = "Implementation Issues: Trade-offs & Caching"
+  content = """
+Space-Time Trade-offs: Trading memory (space) for speed (time). E.g., using lookup tables instead of computing values (macros, bit-counting tables), or compressing images (GIF) using color palettes to save space at the cost of CPU time to decompress.
+Caching: Storing frequently accessed data in fast memory. E.g., looking up `/usr/ast/mbox` requires multiple disk reads for i-nodes and directory blocks. An i-node cache and directory cache drastically reduce these disk accesses.
+"""
+
+  [[chapters.subtopics]]
+  id = "12.4"
+  title = "Project Management & Trends"
+  content = """
+Team Structure: Harlan Mills' proposal for a 10-person chief programmer team. One chief programmer writes all code; others support (testers, toolsmiths, editors). Avoids communication overhead of democratic teams.
+Role of Experience: Traditional software design progresses in rigid stages (waterfall). Alternative design produces a working (but empty) system on Day 1, iteratively adding features (agile/spiral).
+Trends in OS Design: Virtualization and the Cloud. Hypervisors running multiple virtual machines on single physical hardware, abstracting the OS from the underlying hardware entirely.
+"""

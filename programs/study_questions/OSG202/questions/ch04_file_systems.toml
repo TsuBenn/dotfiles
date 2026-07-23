@@ -1,0 +1,256 @@
+version = 5
+
+[[questions]]
+question = "What are the three essential requirements for long-term information storage in an operating system?"
+choices = [
+    "Store vast amounts, survive termination, allow concurrent access.",
+    "Fast access speed, survive power loss, prevent concurrent access.",
+    "Sequential access, survive process termination, allow exclusive access.",
+    "Random access, survive system reboot, prevent unauthorized access."
+]
+answer = "Store vast amounts, survive termination, allow concurrent access."
+subtopic_id = "4.1"
+explanations = [
+    "This is correct. Long-term storage must store vast amounts of information, survive the termination of the process using it, and allow multiple processes to access it concurrently.",
+    "This is incorrect. While fast access is nice, it is not an essential requirement for long-term storage, and concurrent access is permitted rather than prevented.",
+    "This is incorrect. Sequential access is a limitation, not a requirement, and concurrent access is a core requirement, not exclusive access.",
+    "This is incorrect. Preventing unauthorized access is a security feature, but the core requirements focus on capacity, persistence, and concurrent accessibility."
+]
+
+[[questions]]
+question = "In a hierarchical directory system, how does an absolute path name differ from a relative path name?"
+choices = [
+    "Absolute paths start from the root, while relative paths start from the working directory.",
+    "Absolute paths start from the working directory, while relative paths start from the root directory.",
+    "Absolute paths use dot-dot to navigate up, while relative paths use slashes to navigate down.",
+    "Absolute paths are resolved by the hardware, while relative paths are resolved by the file system."
+]
+answer = "Absolute paths start from the root, while relative paths start from the working directory."
+subtopic_id = "4.1"
+explanations = [
+    "This is correct. An absolute path begins at the root directory (e.g., /usr/ast), whereas a relative path begins from the current working directory.",
+    "This is incorrect. This statement reverses the definitions of absolute and relative paths.",
+    "This is incorrect. Both path types use slashes and dot-dot notation for navigation; the difference is the starting point.",
+    "This is incorrect. Both absolute and relative paths are resolved by the operating system's file system, not by hardware."
+]
+
+[[questions]]
+question = "A file system models files as a tree structure rather than a simple byte sequence. What is the primary implication of this design choice for file operations?"
+choices = [
+    "The system must enforce a specific logical structure on the file, making generic reads dependent on tree parsing.",
+    "The system allows random access to any byte instantly, but restricts sequential reads to predefined tree paths.",
+    "The system treats the file as unstructured bytes, delegating tree interpretation entirely to user-space applications.",
+    "The system optimizes block allocation automatically, preventing external fragmentation within the tree leaves."
+]
+answer = "The system must enforce a specific logical structure on the file, making generic reads dependent on tree parsing."
+subtopic_id = "4.1"
+explanations = [
+    "This is correct. Unlike a byte sequence which is unstructured, a tree-structured file enforces a logical record hierarchy, meaning the OS must understand this structure to process read operations correctly.",
+    "This is incorrect. A tree structure does not inherently restrict sequential reads, nor does it provide instant random access to bytes.",
+    "This is incorrect. If the OS models the file as a tree, it interprets the structure itself; it does not delegate this to user-space applications (unlike a byte sequence).",
+    "This is incorrect. The logical file structure (tree) is independent of physical block allocation strategies, which handle fragmentation."
+]
+
+[[questions]]
+question = "Which file allocation strategy stores a file as a linked list of disk blocks with an in-memory table of pointers?"
+choices = [
+    "The File Allocation Table (FAT) method.",
+    "The contiguous allocation method.",
+    "The I-node block pointer method.",
+    "The linked list on disk method."
+]
+answer = "The File Allocation Table (FAT) method."
+subtopic_id = "4.2"
+explanations = [
+    "This is correct. FAT (File Allocation Table) keeps the linked list pointers in a table stored in main memory, allowing fast random access without reading disk blocks for pointers.",
+    "This is incorrect. Contiguous allocation stores files in consecutive blocks, not as a linked list.",
+    "This is incorrect. I-nodes store pointers directly in an index node structure, not as a linked list table in memory.",
+    "This is incorrect. A standard linked list on disk stores the pointers within the data blocks themselves on the disk, not in an in-memory table."
+]
+
+[[questions]]
+question = "How do I-nodes efficiently represent very large files without requiring massive metadata structures in memory?"
+choices = [
+    "By using direct pointers for small files, and single/double-indirect pointers that point to blocks of pointers.",
+    "By storing the entire file sequentially on disk and only keeping the starting block in the I-node.",
+    "By linking disk blocks dynamically and storing the linked list head inside the I-node entry.",
+    "By mapping the file to a virtual address space using multilevel page tables in memory."
+]
+answer = "By using direct pointers for small files, and single/double-indirect pointers that point to blocks of pointers."
+subtopic_id = "4.2"
+explanations = [
+    "This is correct. I-nodes use a mix of direct pointers for quick access, and indirect/double-indirect pointers to scale up for large files dynamically, keeping the I-node size fixed.",
+    "This is incorrect. Storing files sequentially is contiguous allocation, which suffers from fragmentation and is not how I-nodes work.",
+    "This is incorrect. I-nodes do not use a linked list head; they use an array of block pointers within the node itself.",
+    "This is incorrect. Virtual address spaces and page tables are memory management concepts, not file system I-node mechanisms."
+]
+
+[[questions]]
+question = "Consider a file system using I-nodes with 12 direct pointers, 1 single-indirect, and 1 double-indirect pointer. If block pointers are 4 bytes and block size is 4 KB, what is the maximum file size?"
+choices = [
+    "12 direct blocks plus 1024 indirect blocks plus 1,048,576 double-indirect blocks.",
+    "12 direct blocks plus 2048 indirect blocks plus 4,194,304 double-indirect blocks.",
+    "12 direct blocks plus 512 indirect blocks plus 262,144 double-indirect blocks.",
+    "12 direct blocks plus 4096 indirect blocks plus 16,777,216 double-indirect blocks."
+]
+answer = "12 direct blocks plus 1024 indirect blocks plus 1,048,576 double-indirect blocks."
+subtopic_id = "4.2"
+explanations = [
+    "This is correct. A 4 KB block holds 1024 4-byte pointers. Single-indirect gives 1024 blocks. Double-indirect gives 1024 * 1024 = 1,048,576 blocks. Plus the 12 direct blocks.",
+    "This is incorrect. It assumes 2048 pointers per block, which would require 8-byte pointers or an 8 KB block size.",
+    "This is incorrect. It assumes 512 pointers per block, which would require 8-byte pointers or a 2 KB block size.",
+    "This is incorrect. It assumes 4096 pointers per block, which is impossible since a 4 KB block cannot hold 4096 4-byte pointers."
+]
+
+[[questions]]
+question = "What is the primary purpose of a journaling file system?"
+choices = [
+    "To prevent file system corruption from crashes by writing updates to a log first.",
+    "To improve disk read performance by caching directory entries in memory.",
+    "To reduce disk arm motion by placing related blocks in cylinder groups.",
+    "To allow multiple operating systems to mount the same partition simultaneously."
+]
+answer = "To prevent file system corruption from crashes by writing updates to a log first."
+subtopic_id = "4.3"
+explanations = [
+    "This is correct. Journaling prevents corruption by recording updates as transactions in a log before applying them to the actual file system structures.",
+    "This is incorrect. Caching directory entries is a performance feature of the buffer cache, not the purpose of journaling.",
+    "This is incorrect. Reducing disk arm motion is a disk scheduling and layout optimization, unrelated to journaling.",
+    "This is incorrect. Multiple OS mounting is handled by file system compatibility and the Virtual File System (VFS), not journaling."
+]
+
+[[questions]]
+question = "If User A creates a file and User B creates a link to it, what happens to the file data if User A deletes the file?"
+choices = [
+    "If the link is hard, the data remains accessible; if symbolic, the link becomes dangling.",
+    "If the link is hard, the data is destroyed; if symbolic, the data remains accessible.",
+    "The data is immediately destroyed in both cases, as the original owner removed the file.",
+    "The data remains accessible in both cases, but the original path becomes a symbolic link."
+]
+answer = "If the link is hard, the data remains accessible; if symbolic, the link becomes dangling."
+subtopic_id = "4.3"
+explanations = [
+    "This is correct. A hard link points directly to the I-node, so the data remains until all links are removed. A symbolic link points to the path, so if the original is deleted, the link breaks (dangles).",
+    "This is incorrect. This reverses the behavior of hard and symbolic links.",
+    "This is incorrect. Hard links prevent the data from being destroyed when the original path is removed, as the I-node link count remains above zero.",
+    "This is incorrect. The data does not remain accessible in both cases; symbolic links will break if the target is removed."
+]
+
+[[questions]]
+question = "During the removal of a file, a journaling file system writes a transaction to the log. If a crash occurs immediately after committing the transaction, but before any modifications are applied to the disk, what happens on reboot?"
+choices = [
+    "The system reads the log, identifies the committed transaction, and applies the changes to the disk.",
+    "The system reads the log, identifies the incomplete transaction, and rolls back the changes safely.",
+    "The system ignores the unapplied log entries and marks the file system as consistent and clean.",
+    "The system prompts the user for manual recovery because the disk state is now unrecoverable."
+]
+answer = "The system reads the log, identifies the committed transaction, and applies the changes to the disk."
+subtopic_id = "4.3"
+explanations = [
+    "This is correct. In journaling, if a crash occurs after a transaction is committed to the log but before applied, the system simply replays the log during recovery to complete the operation.",
+    "This is incorrect. The transaction was committed, so it is not considered incomplete; it will be applied rather than rolled back.",
+    "This is incorrect. The system does not ignore committed log entries; it must apply them to ensure the file system state matches the journal.",
+    "This is incorrect. The entire purpose of journaling is to automate recovery and prevent unrecoverable states without manual intervention."
+]
+
+[[questions]]
+question = "When selecting a block size for a file system, what is the primary trade-off between large and small block sizes?"
+choices = [
+    "Large blocks improve data rates, while small blocks improve space efficiency for small files.",
+    "Large blocks improve space efficiency, while small blocks improve sequential data rates.",
+    "Large blocks reduce disk arm motion, while small blocks increase random access speed.",
+    "Large blocks increase I-node overhead, while small blocks decrease buffer cache hits."
+]
+answer = "Large blocks improve data rates, while small blocks improve space efficiency for small files."
+subtopic_id = "4.4"
+explanations = [
+    "This is correct. Larger blocks allow reading more data per I/O operation (higher data rate), but waste space (internal fragmentation) if a file doesn't fill the block. Small blocks waste less space but reduce data rates.",
+    "This is incorrect. This reverses the trade-off; large blocks waste space for small files, and small blocks have lower data rates.",
+    "This is incorrect. Disk arm motion is related to physical block placement (e.g., cylinder groups), not block size itself.",
+    "This is incorrect. I-node overhead is fixed per file regardless of block size, and block size doesn't inherently decrease cache hits."
+]
+
+[[questions]]
+question = "Why does a buffer cache use a modified Least Recently Used (LRU) scheme instead of a strict LRU scheme?"
+choices = [
+    "To prioritize keeping critical blocks for consistency, even if they are accessed less frequently.",
+    "To ensure that data blocks are always evicted before directory blocks to prevent system crashes.",
+    "To guarantee that recently modified blocks are immediately written back to the disk drive.",
+    "To prioritize keeping sequentially read blocks in memory longer than randomly accessed blocks."
+]
+answer = "To prioritize keeping critical blocks for consistency, even if they are accessed less frequently."
+subtopic_id = "4.4"
+explanations = [
+    "This is correct. Strict LRU might evict critical blocks (like I-nodes or directories) that are rarely accessed but essential for consistency. Modified LRU protects these blocks.",
+    "This is incorrect. Data blocks are actually good candidates for eviction if they won't be needed soon, and evicting them first isn't a strict rule to prevent crashes.",
+    "This is incorrect. Modified LRU is about cache eviction policy, not immediate write-backs (which is a write policy like write-through or write-back).",
+    "This is incorrect. While sequential blocks might be evicted quickly (since they won't be reread), this is a specific heuristic, not the core definition of modifying LRU for consistency."
+]
+
+[[questions]]
+question = "A file system consistency checker (fsck) discovers a block that is present in the free list but is also claimed by an active file's I-node. How should fsck resolve this duplicate data block safely?"
+choices = [
+    "Remove the block from the free list and leave it allocated to the active file's I-node.",
+    "Remove the block from the active file's I-node and leave it allocated to the free list.",
+    "Allocate a new block, copy the data over, and update the active file's I-node pointer.",
+    "Format the block entirely and add it back to the end of the linked list of free blocks."
+]
+answer = "Remove the block from the free list and leave it allocated to the active file's I-node."
+subtopic_id = "4.4"
+explanations = [
+    "This is correct. If a block is actively part of a file (claimed by an I-node), it should not be in the free list. The safest fix is to remove it from the free list to prevent it from being overwritten.",
+    "This is incorrect. Removing the block from the I-node would corrupt the active file by losing its data.",
+    "This is incorrect. Allocating a new block is unnecessary and inefficient; the block already correctly belongs to the file.",
+    "This is incorrect. Formatting the block would destroy the file's data, which is highly unsafe."
+]
+
+[[questions]]
+question = "Which file system extension was specifically designed to add POSIX attributes and long file names to ISO 9660 for UNIX systems?"
+choices = [
+    "The Rock Ridge extensions for POSIX attributes and deep directory nesting.",
+    "The Joliet extensions for Unicode character sets and long file names.",
+    "The MS-DOS FAT32 extensions for larger partition sizes and cluster maps.",
+    "The UNIX V7 extensions for I-node tracking and indirect block pointers."
+]
+answer = "The Rock Ridge extensions for POSIX attributes and deep directory nesting."
+subtopic_id = "4.5"
+explanations = [
+    "This is correct. Rock Ridge was designed specifically to bring UNIX POSIX features (like long names, permissions, and deep nesting) to the ISO 9660 CD-ROM standard.",
+    "This is incorrect. Joliet was designed by Microsoft to add Unicode long file names and moderate nesting to ISO 9660 for Windows systems.",
+    "This is incorrect. FAT32 is a completely different file system, not an extension to ISO 9660.",
+    "This is incorrect. UNIX V7 is an older native file system, not an extension to the CD-ROM standard."
+]
+
+[[questions]]
+question = "How does the UNIX V7 directory entry structure fundamentally differ from the MS-DOS directory entry structure?"
+choices = [
+    "UNIX V7 entries map names to I-node numbers, whereas MS-DOS entries contain starting block numbers.",
+    "UNIX V7 entries contain direct block pointers, whereas MS-DOS entries map names to I-node numbers.",
+    "UNIX V7 entries store all file attributes inline, whereas MS-DOS entries only store file names.",
+    "UNIX V7 entries support variable length names inline, whereas MS-DOS entries use a heap system."
+]
+answer = "UNIX V7 entries map names to I-node numbers, whereas MS-DOS entries contain starting block numbers."
+subtopic_id = "4.5"
+explanations = [
+    "This is correct. UNIX V7 directories are simple mappings from file names to I-node numbers (where metadata is stored). MS-DOS directories store metadata and the starting block directly in the entry.",
+    "This is incorrect. This reverses the structures; UNIX uses I-nodes, MS-DOS does not.",
+    "This is incorrect. UNIX V7 does not store attributes inline; it stores them in the I-node. MS-DOS stores many attributes inline.",
+    "This is incorrect. UNIX V7 had fixed-length names (14 bytes), whereas MS-DOS also used fixed lengths. Modern systems use heaps, not these legacy ones."
+]
+
+[[questions]]
+question = "An administrator needs to burn a CD-ROM using the ISO 9660 standard that must be readable by both legacy Windows 95 and modern UNIX systems, supporting long file names and deep nesting. Which combination of extensions must be applied?"
+choices = [
+    "Both Joliet and Rock Ridge extensions must be applied simultaneously to the ISO 9660 image.",
+    "Only Joliet extensions are needed, as modern UNIX systems can natively read Windows formats.",
+    "Only Rock Ridge extensions are needed, as legacy Windows can parse POSIX attributes natively.",
+    "Neither extension is needed, as ISO 9660 natively supports Unicode and deep directory nesting."
+]
+answer = "Both Joliet and Rock Ridge extensions must be applied simultaneously to the ISO 9660 image."
+subtopic_id = "4.5"
+explanations = [
+    "This is correct. Joliet provides long file names for Windows, while Rock Ridge provides long names and deep nesting for UNIX. Both can coexist on the same ISO 9660 image.",
+    "This is incorrect. While UNIX can sometimes read Joliet, the requirement specifically asks for deep nesting and POSIX features, which require Rock Ridge.",
+    "This is incorrect. Legacy Windows 95 cannot natively parse Rock Ridge extensions; it requires Joliet for long file names.",
+    "This is incorrect. Base ISO 9660 has severe limitations on file names (8.3 format) and directory depth (8 levels), necessitating these extensions."
+]
