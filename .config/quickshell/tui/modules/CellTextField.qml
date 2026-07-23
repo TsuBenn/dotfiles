@@ -301,10 +301,9 @@ Item {
                     id: text_input
                     spacing: 0
 
-                    Component.onCompleted: {
-                        root.cursorPosChanged.connect(() => {
-                            if (!root)
-                                return;
+                    Connections {
+                        target: root
+                        function onCursorPosChanged() {
                             if (!root?.wrap && root?.scroll) {
                                 let current_col = root.cursorPos;
                                 if (current_col >= root.colOffset + text.w) {
@@ -320,7 +319,7 @@ Item {
                                     root.rowOffset = current_row;
                                 }
                             }
-                        });
+                        }
                     }
 
                     Repeater {

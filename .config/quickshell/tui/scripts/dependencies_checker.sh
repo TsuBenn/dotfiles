@@ -5,6 +5,7 @@ PACMAN_DEPS=(
     "hyprland|Hyprland|The core Wayland compositor and window manager."
     "quickshell|Quickshell|The flexible desktop shell framework driving this UI repo."
     "fastfetch|Fastfetch|System information fetching tool for the dashboard."
+    "polkit|Polkit|Application authorization framework for privilege escalation."
     "python-numpy|Python Numpy|Used for calculating wallpaper theme colors."
     "python-pillow|Python Pillow|Used for calculating wallpaper theme colors."
     "qt6-multimedia|Qt6 Multimedia|Qt module for audio and video playback features."
@@ -18,7 +19,7 @@ PACMAN_DEPS=(
     "networkmanager|NetworkManager|Network connection management daemon and tools."
     "cava|CAVA|Console-based Audio Visualizer for the desktop backdrop."
     "wl-clipboard|WL Clipboard|Command-line copy/paste utilities for Wayland."
-    "clipvault|Clipvault|Mananging clipboard history."
+    # "clipvault|Clipvault|Mananging clipboard history."
     "wtype|WType|Wayland keystroke simulator tool used for typing emojis."
     "grim|Grim|Grab images from a Wayland compositor to take screenshots."
     "dolphin|Dolphin|The desktop graphical file manager application."
@@ -37,34 +38,45 @@ AUR_DEPS=(
     "ttf-apple-emoji|Apple Color Emoji|Apple style color emojis for layout elements."
 )
 
+# Parse mode from the first argument (default to "stream" if not specified)
+MODE="${1:-stream}"
+
+# Populate hash map of installed packages once for O(1) lookups
+declare -A INSTALLED_MAP
+while read -r pkg; do
+    [[ -n "$pkg" ]] && INSTALLED_MAP["$pkg"]=1
+done < <(pacman -Qq)
+
 check_list() {
     local type="$1"
     shift
     local list=("$@")
 
     for item in "${list[@]}"; do
-        # Split the string using internal field separator '|'
         IFS="|" read -r pkg title desc <<< "$item"
 
-        # Stream out everything packed into a single colon-separated line
-        # Format: ACTION:TYPE:PKG:TITLE:DESCRIPTION
-        echo "START:$type:$pkg:$title:$desc"
-        fflush /dev/stdout 2>/dev/null
-
-        sleep 0.009
-
-        if pacman -Qi "$pkg" &> /dev/null; then
-            echo "OK:$type:$pkg:$title:$desc"
+        if [[ "$MODE" == "fast" || "$MODE" == "parallel" ]]; then
+            # Fast Mode: Only output missing packages instantly
+            if [[ -z "${INSTALLED_MAP[$pkg]}" ]]; then
+                echo "MISSING:$type:$pkg:$title:$desc"
+            fi
         else
-            echo "MISSING:$type:$pkg:$title:$desc"
+            # Stream Mode: Emits START and progress delay for animated UIs
+            echo "START:$type:$pkg:$title:$desc"
+            sleep 0.009
+
+            if [[ -n "${INSTALLED_MAP[$pkg]}" ]]; then
+                echo "OK:$type:$pkg:$title:$desc"
+            else
+                echo "MISSING:$type:$pkg:$title:$desc"
+            fi
+
+            sleep 0.009
         fi
-
-        sleep 0.009
-
-        fflush /dev/stdout 2>/dev/null
     done
 }
 
 check_list "pacman" "${PACMAN_DEPS[@]}"
 check_list "aur" "${AUR_DEPS[@]}"
+
 echo "TERMINATE"

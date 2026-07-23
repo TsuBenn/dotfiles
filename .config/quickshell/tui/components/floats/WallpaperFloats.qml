@@ -29,15 +29,14 @@ CellFloats {
     }
 
     function checkDesktop() {
+        // console.log("bruh");
         const old = desktop;
-        if (!reloading) {
-            if (HyprInfo.clientCount() < 2) {
-                desktop = true;
-                advanced = false;
-            } else {
-                desktop = false;
-                advanced = true;
-            }
+        if (HyprInfo.clientCount() < 2) {
+            desktop = true;
+            // advanced = false;
+        } else {
+            desktop = false;
+            // advanced = true;
         }
         if (desktop && !advanced) {
             HyprInfo.repositionClient((monitor.width - implicitWidth) / 2, monitor.height - implicitHeight - Cell.border_width, address);
@@ -46,25 +45,25 @@ CellFloats {
     }
 
     function init() {
-        // checkDesktop(;
+        // checkDesktop();
     }
 
     onVisibleChanged: {
         edit = false;
         reposition = false;
         textfield.set("");
-        if (visible)
-            checkDesktop();
+        // checkDesktop();
     }
 
     function onSigOpen() {
-        // console.log("sig");
-        // console.log("reloading: " + reloading);
+        // console.log("first");
         if (reloading)
             return;
         if (HyprInfo.clientCount() < 1) {
+            desktop = true;
             advanced = false;
         } else {
+            desktop = false;
             advanced = true;
         }
     }

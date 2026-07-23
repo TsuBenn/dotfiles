@@ -184,7 +184,7 @@ FloatingWindow {
                                 spacing: 0
 
                                 CellText {
-                                    text: ` Install by: ${dependency.manager == "pacman" ? "sudo pacman -S" : "yay -S"} ${dependency.pkg}`
+                                    text: ` Install by: ${dependency.manager == "pacman" ? "sudo pacman -S" : "yay/paru -S"} ${dependency.pkg}`
                                     preferedW: list.contentW
                                     color: Colors.fgDim
                                 }
@@ -302,7 +302,7 @@ FloatingWindow {
     Process {
         id: checker
 
-        command: [SystemInfo.configdir + (SettingsInfo.quickStart ? "/scripts/quick_dependencies_checker.sh" : "/scripts/dependencies_checker.sh")]
+        command: [SystemInfo.configdir + "/scripts/dependencies_checker.sh", SettingsInfo.quickStart ? "fast" : "stream"]
 
         stdout: SplitParser {
             onRead: text => {

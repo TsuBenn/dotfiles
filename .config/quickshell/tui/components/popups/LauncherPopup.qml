@@ -311,22 +311,22 @@ CellPopup {
                                 }
 
                                 onTextInput: (input) => {
-                                    if (input == ">") {
+                                    if (input.startsWith(">")) {
                                         tab.selected = 2
                                         clear()
                                         search("")
                                         return
-                                    } else if (input == "=") {
+                                    } else if (input.startsWith("=")) {
                                         tab.selected = 3
                                         clear()
                                         search("")
                                         return
-                                    } else if (input == "/") {
+                                    } else if (input.startsWith("/")) {
                                         tab.selected = 4
                                         clear()
                                         search("")
                                         return
-                                    } else if (input == "@") {
+                                    } else if (input.startsWith("@")) {
                                         tab.selected = 1
                                         clear()
                                         search("")
@@ -410,8 +410,11 @@ CellPopup {
 
                 w: box.contentW
                 h: 15
+                // h: textfield.text.length > 0 ? 15 : 0
 
                 color: "transparent"
+
+                clip: true
 
                 ColumnLayout {
 

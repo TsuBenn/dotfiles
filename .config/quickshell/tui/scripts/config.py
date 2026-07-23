@@ -27,15 +27,15 @@ SETTINGS = [
         "category": "settings",
         "type": "menu",
         "value": [
-            *[
-                {
-                    "label": COLORS[color]["name"],
-                    "description": COLORS[color]["description"],
-                    "category": "settings",
-                    "type": "exec",
-                    "value": ["qs", "-c", "tui", "ipc", "call", "config", "set_color_theme", color],
-                } for color in COLORS
-            ],
+            # *[
+            #     {
+            #         "label": COLORS[color]["name"],
+            #         "description": COLORS[color]["description"],
+            #         "category": "settings",
+            #         "type": "exec",
+            #         "value": ["qs", "-c", "tui", "ipc", "call", "config", "set_color_theme", color],
+            #     } for color in COLORS
+            # ],
             {
                 "label": "Sleep",
                 "description": "(aka. Suspend) Put your PC to sleep.",
@@ -276,7 +276,7 @@ SETTINGS = [
                 "description": "Run dependencies check procedure at maximum speed.",
                 "category": "settings",
                 "type": "exec",
-                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle", "quickstart"],
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle", "quickStart"],
             },
         ],
     },
