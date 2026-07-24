@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import qs.components.popups.ControlPanel
+import qs.components.popups.System
 import qs.components.popups
 import qs.config
 import qs.modules

@@ -69,7 +69,7 @@ CellPopup {
                 Timer {
                     id: debounce
                     property string query: ""
-                    interval: 200
+                    interval: 500
                     onTriggered: {
                         SpellCheckerInfo.check(query);
                     }
@@ -92,7 +92,7 @@ CellPopup {
                             SpellCheckerInfo.results = [];
                             return;
                         }
-                        debounce.query = input.trim();
+                        debounce.query = input.trim().split(" ").pop();
                         debounce.restart();
                         SpellCheckerInfo.correct = false;
                     }
@@ -112,7 +112,7 @@ CellPopup {
                 CellScrollList {
                     id: list
                     w: box.contentW
-                    h: model.length > 0 ? 6 : 0
+                    h: Math.min(model.length * itemH, 8)
                     model: SpellCheckerInfo.results
 
                     property int selected: -1

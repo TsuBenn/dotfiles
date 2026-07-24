@@ -33,6 +33,7 @@ Item {
 
         property color inactive: Colors.fgSubtle
         property color active: Colors.accentStrong
+        property color onActive: Colors.onAccent
     }
 
     property Color color: Color {}
@@ -73,7 +74,7 @@ Item {
         w: root.w
         y: Cell.h(1)
         padding: root.padding
-        type: 1
+        // type: 1
         color: root.color.fg
         bg: root.color.bg
     }
@@ -86,7 +87,7 @@ Item {
 
             visible: root.type == 0
 
-            x: Cell.centerWCell(implicitWidth, Cell.w(root.w))
+            x: root.centered ? Cell.centerWCell(implicitWidth, Cell.w(root.w)) : Cell.w(1)
 
             spacing: root.distributed && root.centered ? root.itemLength() : Cell.w(root.spacing)
 
@@ -168,7 +169,7 @@ Item {
 
             RowLayout {
 
-                x: Cell.centerWCell(implicitWidth, Cell.w(box.contentW))
+                x: root.centered ? Cell.centerWCell(implicitWidth, Cell.w(box.contentW)) : 0
 
                 spacing: root.distributed && root.centered ? root.itemLength() : Cell.w(root.spacing)
 
@@ -189,7 +190,7 @@ Item {
                         text: label
                         font: active ? Cell.fontB : Cell.font
                         color: active ? root.color.active : "transparent"
-                        fg: active ? root.color.base : root.color.inactive
+                        fg: active ? root.color.onActive : root.color.inactive
 
                         onPressed: button => {
                             if (button == "L") {
