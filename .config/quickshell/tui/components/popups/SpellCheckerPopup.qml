@@ -208,7 +208,9 @@ CellPopup {
                                                 case "delete":
                                                     return "<i>" + parent.char + "</i>";
                                                 case "replace":
-                                                    return "<u><i>" + parent.from + "</i></u>";
+                                                    return /* "<u><i>" + parent.from + "</i></u>"; */ "";
+                                                case "transpose":
+                                                    return "<b>" + parent.from + "</b>";
                                                 }
                                                 return parent.char;
                                             }
@@ -219,9 +221,11 @@ CellPopup {
                                                 case "insert":
                                                     return Colors.success;
                                                 case "delete":
-                                                    return Colors.danger;
+                                                    return Colors.fgSubtle;
                                                 case "replace":
                                                     return Colors.fgSubtle;
+                                                case "transpose":
+                                                    return Colors.warning;
                                                 }
                                                 return Colors.fgBase;
                                             }
@@ -229,7 +233,7 @@ CellPopup {
                                         }
                                         CellText {
                                             text: parent.to
-                                            color: Colors.info
+                                            color: parent.type == "transpose" ? Colors.warning : Colors.info
                                             font: Cell.fontB
                                         }
                                     }
@@ -242,6 +246,49 @@ CellPopup {
                                 bg: "transparent"
                             }
                         }
+                    }
+                }
+
+                CellSeparator {
+                    visible: SettingsInfo.hints
+                    w: box.contentW
+                    color: Colors.accentStrong
+                    bg: "transparent"
+                    connectStart: true
+                    connectEnd: true
+                }
+
+                RowLayout {
+
+                    visible: SettingsInfo.hints
+
+                    Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+
+                    spacing: Cell.w(2)
+
+                    CellText {
+                        text: "Matched"
+                        color: Colors.fgBase
+                    }
+
+                    CellText {
+                        text: "<b>Add</b>"
+                        color: Colors.success
+                    }
+
+                    CellText {
+                        text: "<i>Remove</i>"
+                        color: Colors.fgSubtle
+                    }
+
+                    CellText {
+                        text: "<b>Replace</b>"
+                        color: Colors.info
+                    }
+
+                    CellText {
+                        text: "<b>Swap</b>"
+                        color: Colors.warning
                     }
                 }
             }

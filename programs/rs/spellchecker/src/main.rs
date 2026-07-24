@@ -118,7 +118,7 @@ fn format_highlight(ops: &[DiffOp]) -> String {
             DiffOp::Replace(u, t) => out.push_str(&format!("~~{}->{}~~", u, t)),
             DiffOp::Delete(u) => out.push_str(&format!("--{}--", u)),
             DiffOp::Insert(t) => out.push_str(&format!("++{}++", t)),
-            DiffOp::Transpose(a, b) => out.push_str(&format!("<>{}{}<>", a, b)),
+            DiffOp::Transpose(a, b) => out.push_str(&format!("~~{}<->{}~~", a, b)),
         }
     }
     out
