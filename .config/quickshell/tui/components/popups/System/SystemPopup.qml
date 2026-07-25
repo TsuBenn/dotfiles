@@ -20,10 +20,10 @@ CellPopup {
     //   - general
     //   - process
 
-    property string mode: "general"
+    property string mode: tab.selected == 0 ? "general" : "process"
 
-    w: box.eW * 3 + 3 + 2
-    h: minimal ? 23 : 29
+    w: box.eW * 3 + 3 + 1
+    h: minimal ? 25 : 31
 
     CellBox {
         id: box
@@ -46,28 +46,45 @@ CellPopup {
 
             spacing: 0
 
-            Loader {
+            CellTabs {
+                id: tab
+                w: box.contentW
+                items: ["General", "Process"]
+                centered: false
+                padding: 0
+                spacing: 1
+                offset: 2
+                color.active: Colors.fgBase
+                color.inactive: Colors.fgSubtle
+                color.fg: Colors.accentStrong
+                connect: true
 
-                active: (root.visible || !root.optimizeMemory) && root.mode == "general"
-
-                asynchronous: true
-
-                sourceComponent: General {
-                    box: box
-                    minimal: root.minimal
+                CellText {
+                    text: "SYSTEM INFO"
+                    font: Cell.fontBB
+                    color: Colors.secondary
+                    preferedW: box.contentW
+                    centered: true
                 }
             }
 
             Loader {
 
-                active: (root.visible || !root.optimizeMemory) && root.mode == "process"
+                active: (root.visible || !root.optimizeMemory)
 
                 asynchronous: true
 
-                sourceComponent: General {
+                property Component general_comp: General {
                     box: box
                     minimal: root.minimal
                 }
+
+                property Component process_comp: Process {
+                    box: box
+                    minimal: root.minimal
+                }
+
+                sourceComponent: root.mode == "general" ? general_comp : process_comp
             }
         }
     }

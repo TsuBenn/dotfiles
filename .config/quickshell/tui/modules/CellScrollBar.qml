@@ -113,9 +113,9 @@ Item {
                     CellSeparator {
                         vertical: true
                         h: parent.h
+                        type: root.type.fg
                         color: root.color
                     }
-
                 }
             }
 

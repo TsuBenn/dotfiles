@@ -136,6 +136,14 @@ CellFloats {
             }
         },
         {
+            binds: "Ctrl+U",
+            action: () => {
+                if (!PacmanInfo.fetching && !PacmanInfo.checking_updates && root.pacmanState != "prepare") {
+                    PacmanInfo.check_updates();
+                }
+            }
+        },
+        {
             binds: "Return",
             action: () => {
                 if (PacmanInfo.fetching)
@@ -429,7 +437,7 @@ CellFloats {
         h: root.h
 
         property int contentW: w
-        property int contentH: h
+        property int contentH: h /* - SettingsInfo.hints * (Cell.hCount(hints.implicitHeight) + 1) */
 
         color: "transparent"
 
@@ -2272,6 +2280,95 @@ CellFloats {
                     onConfirmed: PacmanInfo.confirmRemoval()
                 }
             }
+
+            /* CellSeparator {
+                visible: SettingsInfo.hints
+                w: box.contentW
+                color: Colors.accentStrong
+                bg: "transparent"
+                connectStart: true
+                connectEnd: true
+            }
+
+            Cells {
+                visible: SettingsInfo.hints
+                w: box.contentW
+                h: Cell.hCount(hints.implicitHeight)
+                color: "transparent"
+
+                Flow {
+                    id: hints
+                    anchors.fill: parent
+                    anchors.leftMargin: Cell.w(1)
+                    anchors.rightMargin: Cell.w(1)
+                    spacing: Cell.w(2)
+
+                    CellKeyHint {
+                        key: "↑/S-Tab"
+                        hint: "Up"
+                    }
+
+                    CellKeyHint {
+                        key: "↓/Tab"
+                        hint: "Down"
+                    }
+
+                    CellKeyHint {
+                        visible: (root.pacmanState == "idle" || root.pacmanState == "pre-flight" || root.pacmanState == "fetching" || root.pacmanState == "checking_updates") && (root.selected_pkg != "" || root.multi_selected_pkg.length > 0)
+                        key: "Enter"
+                        disabled: confirm_install.countdown > 0 || confirm_remove.countdown > 0 || PacmanInfo.fetching || (root.selected_pkgs == "" && root.multi_selected_pkg.length == 0)
+                        hint: {
+                            if ((root.pacmanState == "pre-flight" && PacmanInfo.pacmanMode == "install" || PacmanInfo.pacmanMode == "remove")) {
+                                return "Confirm";
+                            } else if ((root.pacmanState == "idle" || root.pacmanState == "prepare" || root.pacmanState == "fetching" || root.pacmanState == "checking_updates") && PacmanInfo.isInstalled(root.selected_pkg)) {
+                                return "Uninstall";
+                            } else if ((root.pacmanState == "idle" || root.pacmanState == "prepare" || root.pacmanState == "fetching" || root.pacmanState == "checking_updates") && !PacmanInfo.isInstalled(root.selected_pkg)) {
+                                return root.multi_selected_pkg.length > 0 ? "Install all" : "Install";
+                            }
+                            return "";
+                        }
+                    }
+
+                    CellKeyHint {
+                        visible: hint != ""
+                        key: "Esc"
+                        hint: {
+                            if (root.pacmanState == "running") {
+                                return "Hide";
+                            } else if (root.pacmanState == "pre-flight") {
+                                return "Cancel";
+                            } else {
+                                return "Exit";
+                            }
+                            return "";
+                        }
+                    }
+
+                    CellKeyHint {
+                        visible: root.pacmanState == "idle"
+                        key: "C-R"
+                        hint: "Refresh"
+                    }
+
+                    CellKeyHint {
+                        visible: root.pacmanState == "idle"
+                        key: "C-S"
+                        hint: "Search mode"
+                    }
+
+                    CellKeyHint {
+                        visible: root.pacmanState == "idle"
+                        key: "C-U"
+                        hint: "Check updates"
+                    }
+
+                    CellKeyHint {
+                        visible: root.pacmanState == "running"
+                        key: "C-C"
+                        hint: "Cancel"
+                    }
+                }
+            } */
         }
     }
 

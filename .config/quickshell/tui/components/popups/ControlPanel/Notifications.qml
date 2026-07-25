@@ -274,7 +274,7 @@ ColumnLayout {
                                     onReleased: (button) => {
                                         if (button == "L") {
                                             if (a.expandable) {
-                                                a.expanded ? list.collapse_app(a.app) : list.expand_app(a.app) 
+                                                a.expanded ? list.collapse_app(a.app) : list.expand_app(a.app)
                                             } else {
                                                 NotificationsInfo.action(a.object)
                                             }
@@ -638,7 +638,7 @@ ColumnLayout {
                                 padding: 0
                                 type: 2
                                 w: list.contentW - 1
-                                color: Qt.darker(Colors.fgSubtle,2)
+                                color: Colors.bgOverlay
                             }
 
                         }

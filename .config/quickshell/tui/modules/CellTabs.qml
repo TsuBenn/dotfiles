@@ -19,11 +19,15 @@ Item {
 
     property int spacing: 2
 
+    property int offset: 0
+
     property int type: 0
 
     property var items: []
 
     property int selected: 0
+
+    property bool connect: false
 
     component Color: Item {
         property color bg: Colors.bgSurface
@@ -77,6 +81,8 @@ Item {
         // type: 1
         color: root.color.fg
         bg: root.color.bg
+        connectStart: root.connect
+        connectEnd: root.connect
     }
 
     Loader {
@@ -87,7 +93,7 @@ Item {
 
             visible: root.type == 0
 
-            x: root.centered ? Cell.centerWCell(implicitWidth, Cell.w(root.w)) : Cell.w(1)
+            x: root.centered ? Cell.centerWCell(implicitWidth, Cell.w(root.w)) : Cell.w(1) * root.offset
 
             spacing: root.distributed && root.centered ? root.itemLength() : Cell.w(root.spacing)
 

@@ -5,10 +5,27 @@ import qs.services
 
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 import QtQuick
 
 Singleton {
     id: root
+
+    IdleMonitor {
+        id: im
+        timeout: 30
+    }
+
+    property bool idle: im.isIdle
+    property bool idle_timeout: im.isIdle
+
+    onIdleChanged: {
+        if (idle) {
+            console.log("SystemInfo: IDLE MODE STARTED");
+        } else {
+            console.log("SystemInfo: IDLE MODE STOPPED");
+        }
+    }
 
     //OS level
     property string username: "user"
@@ -24,6 +41,7 @@ Singleton {
 
     property bool polkit_active: PolkitInfo.active
     property var active_floats: FloatsManager.active_floats
+    property var process: ScreenTimeInfo.sessions
 
     signal auth(string prompt)
 
@@ -41,6 +59,8 @@ Singleton {
     property int cputotalprev
     property int cpuidleprev
     property real cpuusage
+
+    property var cpustats: [] // individual cores usage
 
     property real memtotal
     property real memused
@@ -222,14 +242,20 @@ Singleton {
     property real diskwrotespeed
     property int diskused
 
+    property int polling_time: SettingsInfo.systemPolling ?? 1000
+    onPolling_timeChanged: {
+        cpustat.running = false;
+    }
+
     Timer {
         id: timer
-        interval: root.onbattery ? 2000 : 1000 // Reduce polling speed on hardware ran on battery, idk if it really make any difference lol
+        interval: root.polling_time
         running: true
         repeat: true
         triggeredOnStart: true
         onTriggered: {
-            cpustat.reload();
+            // cpustat.reload();
+            cpustat.running = true;
             network.reload();
             disk.reload();
             fastfetch.running = true;
@@ -415,28 +441,51 @@ Singleton {
         }
     }
 
-    //get CPU STAT
-    FileView {
+    // //get CPU STAT
+    // FileView {
+    //     id: cpustat
+
+    //     path: "/proc/stat"
+
+    //     onLoaded: {
+    //         const data = text().match(/^cpu\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/);
+    //         const cpudata = data.slice(1).map(x => parseInt(x, 10));
+    //         if (data) {
+    //             root.cputotal = cpudata.reduce((acc, cur) => acc + cur, 0);
+
+    //             root.cpuidle = cpudata[3] + cpudata[4];
+
+    //             const totald = root.cputotal - (root.cputotalprev ?? 0);
+    //             const idled = root.cpuidle - (root.cpuidleprev ?? 0);
+
+    //             root.cpuusage = ((totald - idled) / totald) * 100;
+    //             root.cpuusage = root.cpuusage.toFixed(2);
+
+    //             root.cpuidleprev = root.cpuidle;
+    //             root.cputotalprev = root.cputotal;
+    //         }
+    //     }
+    // }
+
+    // New get CPU STAT
+    Process {
         id: cpustat
 
-        path: "/proc/stat"
+        command: [root.configdir + "/scripts/cpustats", root.polling_time]
 
-        onLoaded: {
-            const data = text().match(/^cpu\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/);
-            const cpudata = data.slice(1).map(x => parseInt(x, 10));
-            if (data) {
-                root.cputotal = cpudata.reduce((acc, cur) => acc + cur, 0);
-
-                root.cpuidle = cpudata[3] + cpudata[4];
-
-                const totald = root.cputotal - (root.cputotalprev ?? 0);
-                const idled = root.cpuidle - (root.cpuidleprev ?? 0);
-
-                root.cpuusage = ((totald - idled) / totald) * 100;
-                root.cpuusage = root.cpuusage.toFixed(2);
-
-                root.cpuidleprev = root.cpuidle;
-                root.cputotalprev = root.cputotal;
+        stdout: SplitParser {
+            splitMarker: ""
+            onRead: text => {
+                if (text) {
+                    const data = JSON.parse(text);
+                    let cpustats = data.cores;
+                    let total = 0;
+                    for (const cpu of cpustats) {
+                        total += cpu;
+                    }
+                    root.cpuusage = total / data.count;
+                    root.cpustats = cpustats;
+                }
             }
         }
     }

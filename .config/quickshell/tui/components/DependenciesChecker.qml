@@ -131,6 +131,9 @@ FloatingWindow {
                 w: box.w
                 type: 2
                 color: Colors.accentStrong
+                bg: "transparent"
+                connectEnd: true
+                connectStart: true
             }
 
             CellScrollList {

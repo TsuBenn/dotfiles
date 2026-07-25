@@ -387,7 +387,10 @@ RowLayout {
     CellSeparator {
         vertical: true
         h: root.box.contentH - 2
-        color: Colors.bgOverlay
+        color: Colors.accentStrong
+        bg: "transparent"
+        connectEnd: true
+        connectStart: true
     }
 
     ColumnLayout {
@@ -735,7 +738,10 @@ RowLayout {
     CellSeparator {
         vertical: true
         h: root.box.contentH - 2
-        color: Colors.bgOverlay
+        color: Colors.accentStrong
+        bg: "transparent"
+        connectEnd: true
+        connectStart: true
     }
 
     ColumnLayout {

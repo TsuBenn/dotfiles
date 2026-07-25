@@ -51,7 +51,10 @@ FloatingWindow {
 
             CellSeparator {
                 w: box.w
+                color: Colors.accentStrong
                 bg: "transparent"
+                connectEnd: true
+                connectStart: true
             }
 
             CellScrollList {
@@ -107,6 +110,9 @@ FloatingWindow {
             CellSeparator {
                 w: box.w
                 bg: "transparent"
+                color: Colors.accentStrong
+                connectEnd: true
+                connectStart: true
             }
 
             CellText {

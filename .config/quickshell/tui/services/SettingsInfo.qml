@@ -84,6 +84,8 @@ Singleton {
 
     property int pacmanSearchMode: 0
 
+    property int systemPolling: 1000
+
     signal debugSig
 
     property var toggles: ["hints", "quickStart", "minimal", "textBasedVolume", "hideBar", "bottomBar", "optimizeMemory", "safeNotifications", "dnd", "wallpaperAutoAdvance", "shadow", "hyprAnim", "hyprBlur", "bgCava", "bgCavaLock", "screenshotStay", "screenshotNotify", "screenshotCursor", "lockScreenMusic", "sfx", "userLightMode", "autoLightMode", "debug", "moveFloatOnFocus", "purify", "compat"]

@@ -6,7 +6,6 @@ import QtQuick.Layouts
 import QtQuick
 
 Cells {
-
     id: root
 
     w: Cell.wCount(layout.implicitWidth)
@@ -41,17 +40,16 @@ Cells {
             type: 0
 
             fg: {
-                if (percent > 90) return Colors.danger
-                if (percent > 80) return Colors.warning
-                return Colors.fgBase
+                if (percent > 90)
+                    return Colors.danger;
+                if (percent > 80)
+                    return Colors.warning;
+                return Colors.fgBase;
             }
-
         }
-
     }
 
     RowLayout {
-
         id: layout
 
         spacing: Cell.w(2)
@@ -61,11 +59,11 @@ Cells {
             font: Cell.fontBB
             color: {
                 if (SettingsInfo.fps > 50) {
-                    return Colors.success
+                    return Colors.success;
                 } else if (SettingsInfo.fps > 30) {
-                    return Colors.warning
+                    return Colors.warning;
                 } else {
-                    return Colors.danger
+                    return Colors.danger;
                 }
             }
         }
@@ -86,7 +84,6 @@ Cells {
             stat: "VRAM"
             percent: SystemInfo.gpumemusage
         }
-
     }
 
     MouseControl {
@@ -112,16 +109,15 @@ Cells {
                 CellText {
                     text: `${Math.round(SystemInfo.cpuusage)}%`
                     color: {
-                        const usage = Math.round(SystemInfo.cpuusage)
+                        const usage = Math.round(SystemInfo.cpuusage);
                         if (usage >= 90) {
-                            return Colors.danger
+                            return Colors.danger;
                         } else if (usage >= 70) {
-                            return Colors.warning
+                            return Colors.warning;
                         }
-                        return Colors.fgBase
+                        return Colors.fgBase;
                     }
                 }
-
             }
 
             RowLayout {
@@ -136,20 +132,19 @@ Cells {
                 CellText {
                     text: `${SystemInfo.ktoG(SystemInfo.memused).toFixed(1)}GB`
                     color: {
-                        const usage = Math.round(SystemInfo.memusage)
+                        const usage = Math.round(SystemInfo.memusage);
                         if (usage >= 90) {
-                            return Colors.danger
+                            return Colors.danger;
                         } else if (usage >= 80) {
-                            return Colors.warning
+                            return Colors.warning;
                         }
-                        return Colors.fgBase
+                        return Colors.fgBase;
                     }
                 }
                 CellText {
                     text: `/${SystemInfo.ktoG(SystemInfo.memtotal).toFixed(1)}GB`
                     color: Colors.fgBase
                 }
-
             }
 
             RowLayout {
@@ -165,16 +160,15 @@ Cells {
                 CellText {
                     text: `${Math.round(SystemInfo.gpuusage)}%`
                     color: {
-                        const usage = Math.round(SystemInfo.gpuusage)
+                        const usage = Math.round(SystemInfo.gpuusage);
                         if (usage >= 90) {
-                            return Colors.danger
+                            return Colors.danger;
                         } else if (usage >= 70) {
-                            return Colors.warning
+                            return Colors.warning;
                         }
-                        return Colors.fgBase
+                        return Colors.fgBase;
                     }
                 }
-
             }
 
             RowLayout {
@@ -189,35 +183,27 @@ Cells {
                 CellText {
                     text: `${SystemInfo.ktoG(SystemInfo.gpumemused).toFixed(1)}GB`
                     color: {
-                        const usage = Math.round(SystemInfo.memusage)
+                        const usage = Math.round(SystemInfo.memusage);
                         if (usage >= 90) {
-                            return Colors.danger
+                            return Colors.danger;
                         } else if (usage >= 80) {
-                            return Colors.warning
+                            return Colors.warning;
                         }
-                        return Colors.fgBase
+                        return Colors.fgBase;
                     }
                 }
                 CellText {
                     text: `/${SystemInfo.ktoG(SystemInfo.gpumemtotal).toFixed(1)}GB`
                     color: Colors.fgBase
                 }
-
             }
-
         }
 
-        onReleased: (button) => {
-            const global = mapToGlobal(mouseX, mouseY)
+        onReleased: button => {
+            const global = mapToGlobal(mouseX, mouseY);
             if (button == "L") {
-                PopupManager.toggle("system")
-            } else if (button == "R") {
-                if (PopupManager.isOpen("system")) PopupManager.close("system")
-                HintManager.hint = hint
-                HintManager.show(global.x, global.y, 4, "", 0)
+                PopupManager.toggle("system");
             }
         }
-
     }
-
 }

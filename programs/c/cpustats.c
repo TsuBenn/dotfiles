@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 #define MAX_CORES 64
 
@@ -36,7 +37,23 @@ void read_cpu_data(CPUData *data, int *core_count) {
     fclose(fp);
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+    int interval_ms = 1000; // Default: 1000ms (1 second)
+
+    // Check if the user passed a custom interval argument
+    if (argc > 1) {
+        interval_ms = atoi(argv[1]);
+        if (interval_ms < 50) {
+            fprintf(stderr, "Warning: Interval too small. Setting minimum to 50ms.\n");
+            interval_ms = 50;
+        }
+    }
+
+    // Convert milliseconds to seconds and nanoseconds for nanosleep
+    struct timespec sleep_time;
+    sleep_time.tv_sec = interval_ms / 1000;
+    sleep_time.tv_nsec = (interval_ms % 1000) * 1000000L;
+
     CPUData prev[MAX_CORES] = {0};
     CPUData curr[MAX_CORES] = {0};
     int core_count = 0;
@@ -44,10 +61,9 @@ int main() {
     read_cpu_data(prev, &core_count);
 
     while (1) {
-        sleep(1);
+        nanosleep(&sleep_time, NULL);
         read_cpu_data(curr, &core_count);
 
-        // Open JSON object and array
         printf("{\"count\":%d,\"cores\":[", core_count);
 
         for (int i = 0; i < core_count; i++) {
@@ -59,14 +75,10 @@ int main() {
                 usage = (double)(total_diff - idle_diff) / total_diff * 100.0;
             }
 
-            // Print float value, append comma for all except the last item
             printf("%.2f%s", usage, (i < core_count - 1) ? "," : "");
         }
 
-        // Close JSON object with a newline
         printf("]}\n");
-
-        // Force immediate buffer flush for IPC streaming
         fflush(stdout);
 
         memcpy(prev, curr, sizeof(CPUData) * core_count);

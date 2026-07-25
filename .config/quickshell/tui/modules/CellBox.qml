@@ -68,6 +68,30 @@ Item {
 
     property bool optimize: !SettingsInfo.purify
 
+    Cells {
+        id: border_optimize
+
+        w: root.w
+        h: root.h
+
+        x: -Cell.w(1)
+        y: -Cell.h(1)
+
+        grid: root.grid
+
+        color: root.color
+
+        layer.enabled: true
+    }
+
+    Rectangle {
+        id: content
+
+        anchors.fill: parent
+
+        color: "transparent"
+    }
+
     Loader {
 
         active: (root.visible || !root.optimizeMemory) && !root.optimize
@@ -81,9 +105,7 @@ Item {
             x: -Cell.w(1)
             y: -Cell.h(1)
 
-            grid: root.grid
-
-            color: root.color
+            color: "transparent"
 
             CellText {
                 clip: true
@@ -222,7 +244,7 @@ Item {
 
             grid: root.grid
 
-            color: root.color
+            color: "transparent"
 
             layer.enabled: true
 
@@ -293,13 +315,5 @@ Item {
                 bg: root.color
             }
         }
-    }
-
-    Rectangle {
-        id: content
-
-        anchors.fill: parent
-
-        color: "transparent"
     }
 }
