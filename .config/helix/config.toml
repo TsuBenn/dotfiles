@@ -210,7 +210,8 @@ cursor-line = "warning"
 
     s = "global_search"
 
-    e = [":sh tmux display-popup -E -d \"#{pane_current_path}\" -w 50%% -h 80%% python3 ~/dotfiles/.config/helix/mininetrw.py \"$TMUX_PANE\" \"%{buffer_name}\""]
+    # e = [":sh tmux display-popup -E -d \"#{pane_current_path}\" -w 50%% -h 80%% python3 ~/dotfiles/.config/helix/mininetrw.py \"$TMUX_PANE\" \"%{buffer_name}\""]
+    e = [":sh tmux display-popup -E -d \"#{pane_current_path}\" -w 50%% -h 80%% bash -c 'FILE=$(python3 ~/dotfiles/.config/helix/miniex.py \"%{buffer_name}\"); if [ -n \"$FILE\" ]; then tmux send-keys -t \"$TMUX_PANE\" \":o $FILE\" Enter; fi'"]
 
 [keys.normal.W]
 

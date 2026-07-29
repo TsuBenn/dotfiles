@@ -30,7 +30,7 @@ Singleton {
     property HyprlandWorkspace focusedWorkspace: Hyprland.focusedWorkspace
     property HyprlandWorkspace focusedSpecialWorkspace: null
 
-    property HyprlandToplevel focusedClient: Hyprland.activeToplevel
+    property HyprlandToplevel focusedClient: focusedWorkspace.toplevels.values.length > 0 ? Hyprland.activeToplevel : null
 
     signal hyprEvent(event: string)
 

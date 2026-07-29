@@ -1,4 +1,4 @@
-pragma ComponentBehavior: Bound
+// pragma ComponentBehavior: Bound
 
 import qs.config
 import qs.modules
@@ -68,8 +68,8 @@ Cells {
         enabled: true
         toScale: true
         thumbH: 1
-        bg: 1
-        fg: 1
+        bg: 0
+        fg: 0
         arrow: 0
     }
 

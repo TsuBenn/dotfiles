@@ -26,6 +26,13 @@ Singleton {
         onTriggered: root.fps = fpsMonitor.smoothFrameTime > 0 ? Math.round(1.0 / fpsMonitor.smoothFrameTime) : 0
     }
 
+    // Initializer for Isolated Singletons
+
+    property var db: initialized ? DBInfo.path : 0
+    property var screentime: initialized ? ScreenTimeInfo.sessions : 0
+
+    //
+
     property bool initialized: dependenciesChecked && colorsLoaded && wallpaperCached
     property bool dependenciesChecked: false // Use to initiallize the bar
     property bool colorsLoaded: false // Use to initiallize the bar
@@ -292,6 +299,7 @@ Singleton {
             root.debugSig();
 
             // console.log(PacmanInfo.packages.length);
+            // console.log(JSON.stringify(DesktopEntries.applications.values.filter(item => item.icon.includes("dolphin")), null, 2));
         }
     }
 

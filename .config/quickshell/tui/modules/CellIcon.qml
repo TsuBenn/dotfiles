@@ -2,14 +2,16 @@ pragma ComponentBehavior: Bound
 import qs.config
 import qs.modules
 import qs.services
+
 import QtQuick
+import Quickshell
 
 Item {
+    id: root
 
     property bool optimizeMemory: SettingsInfo.optimizeMemory
 
     visible: !SettingsInfo.minimal
-    id: root
 
     property var icon: []
     property string image: ""
@@ -17,7 +19,13 @@ Item {
     property int w: 5
     property int h: 2
 
-    property string ze_icon: IconInfo.fetch(icon)
+    property string ze_icon: {
+        let icon = DesktopInfo.fetchIcon(root.icon, 2);
+        if (icon)
+            return Quickshell.iconPath(icon, true);
+        else
+            return "";
+    }
 
     // success is determined at root level
     property bool imageVisible: image != ""
@@ -28,7 +36,7 @@ Item {
     implicitHeight: Cell.h(h)
 
     function getW(): int {
-        return success ? w : 0
+        return success ? w : 0;
     }
 
     Loader {

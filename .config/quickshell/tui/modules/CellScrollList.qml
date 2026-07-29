@@ -30,6 +30,8 @@ Cells {
 
     property bool atMax: false
 
+    property bool ignoreMod: true
+
     readonly property int maxOffset: itemH > 0 ? root.contentH - root.h : root.model.length - 1
     property int itemsShown: Math.floor(root.h / itemH)
 
@@ -91,63 +93,69 @@ Cells {
         enabled: true
         toScale: root.itemH > 0 ? true : false
         thumbH: root.itemH > 0 ? 0 : 1
-        bg: 1
-        fg: 1
+        bg: 0
+        fg: 0
         arrow: 0
     }
 
-    clip: true
+    // clip: true
+    //
+    Cells {
+        w: root.w
+        h: root.h
+        color: "transparent"
+        clip: true
+        ColumnLayout {
+            id: container
+            spacing: 0
 
-    ColumnLayout {
-        id: container
-        spacing: 0
+            // Exact horizontal dimension tracking matching your scroll width metrics
+            width: Cell.w(root.contentW)
 
-        // Exact horizontal dimension tracking matching your scroll width metrics
-        width: Cell.w(root.contentW)
+            // Sub-pixel terminal tracking alignment shifting raw offset remainders
+            y: -Cell.h(Math.floor(root.offset % (root.itemH > 0 ? root.itemH : 1)))
 
-        // Sub-pixel terminal tracking alignment shifting raw offset remainders
-        y: -Cell.h(Math.floor(root.offset % (root.itemH > 0 ? root.itemH : 1)))
+            Repeater {
+                // Allocate just enough view nodes to cover the visible grid matrix plus one buffer
+                model: Math.floor(root.h / (root.itemH > 0 ? root.itemH : 1)) + 1
 
-        Repeater {
-            // Allocate just enough view nodes to cover the visible grid matrix plus one buffer
-            model: Math.floor(root.h / (root.itemH > 0 ? root.itemH : 1)) + 1
+                delegate: Loader {
+                    id: viewLoader
 
-            delegate: Loader {
-                id: viewLoader
+                    required property int index
 
-                required property int index
+                    // Track item alignment calculation parameters
+                    readonly property int realIndex: Math.floor(root.offset / (root.itemH > 0 ? root.itemH : 1)) + index
+                    readonly property var modelData: root.model[Math.min(realIndex, root.model.length - 1)]
 
-                // Track item alignment calculation parameters
-                readonly property int realIndex: Math.floor(root.offset / (root.itemH > 0 ? root.itemH : 1)) + index
-                readonly property var modelData: root.model[Math.min(realIndex, root.model.length - 1)]
+                    visible: realIndex < root.model.length
 
-                visible: realIndex < root.model.length
+                    active: root.visible || !root.optimizeMemory
 
-                active: root.visible || !root.optimizeMemory
+                    sourceComponent: modelData || modelData == "" || modelData == 0 ? root.delegate : null
 
-                sourceComponent: modelData || modelData == "" || modelData == 0 ? root.delegate : null
+                    // asynchronous: true
 
-                // asynchronous: true
+                    // Native reactive hooks implementation
+                    onLoaded: {
+                        if (item) {
+                            if (item.hasOwnProperty("modelData"))
+                                item.modelData = Qt.binding(() => viewLoader.modelData ?? null);
 
-                // Native reactive hooks implementation
-                onLoaded: {
-                    if (item) {
-                        if (item.hasOwnProperty("modelData"))
-                            item.modelData = Qt.binding(() => viewLoader.modelData ?? null);
-
-                        // FIXED: Re-mapped index targets to pass true array positioning (realIndex)
-                        if (item.hasOwnProperty("index"))
-                            item.index = Qt.binding(() => viewLoader.realIndex ?? -1);
+                            // FIXED: Re-mapped index targets to pass true array positioning (realIndex)
+                            if (item.hasOwnProperty("index"))
+                                item.index = Qt.binding(() => viewLoader.realIndex ?? -1);
+                        }
                     }
-                }
 
-                Connections {
-                    target: root
-                    function onModelChanged() {
-                        if (!root.reloadOnChanges)
-                            return;
-                        viewLoader.sourceComponent = null;
-                        viewLoader.sourceComponent = Qt.binding(() => viewLoader.modelData || viewLoader.modelData == "" || viewLoader.modelData == 0 ? root.delegate : null);
+                    Connections {
+                        target: root
+                        function onModelChanged() {
+                            if (!root.reloadOnChanges)
+                                return;
+                            viewLoader.sourceComponent = null;
+                            viewLoader.sourceComponent = Qt.binding(() => viewLoader.modelData || viewLoader.modelData == "" || viewLoader.modelData == 0 ? root.delegate : null);
+                        }
                     }
                 }
             }
@@ -188,6 +196,7 @@ Cells {
         anchors.fill: parent
         acceptedButtons: Qt.NoButton
         hoverEnabled: false
+        ignoreModifiers: root.ignoreMod
 
         onWheel: delta => {
             root.offset = Math.max(Math.min(root.offset - delta, root.maxOffset), 0);

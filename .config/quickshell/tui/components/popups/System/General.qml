@@ -387,10 +387,10 @@ RowLayout {
     CellSeparator {
         vertical: true
         h: root.box.contentH - 2
-        color: Colors.accentStrong
+        color: Colors.accentDim
         bg: "transparent"
-        connectEnd: true
-        connectStart: true
+        // connectEnd: true
+        // connectStart: true
     }
 
     ColumnLayout {
@@ -738,10 +738,10 @@ RowLayout {
     CellSeparator {
         vertical: true
         h: root.box.contentH - 2
-        color: Colors.accentStrong
+        color: Colors.accentDim
         bg: "transparent"
-        connectEnd: true
-        connectStart: true
+        // connectEnd: true
+        // connectStart: true
     }
 
     ColumnLayout {
@@ -992,7 +992,7 @@ RowLayout {
             font: Cell.fontBB
             color: root.box.head
         }
-        color: Colors.accentDim
+        color: Colors.fgSubtle
     }
 
     component Stat: Cells {

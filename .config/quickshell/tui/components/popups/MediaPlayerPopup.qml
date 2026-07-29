@@ -6,44 +6,41 @@ import QtQuick.Layouts
 import QtQuick
 
 CellPopup {
-
     id: root
 
     property bool minimal: SettingsInfo.minimal
 
-    w: 51 - Cell.wCount(Cell.h(6),"ceil")*root.minimal + 2
+    w: 51 - Cell.wCount(Cell.h(6), "ceil") * root.minimal + 2
     h: Cell.hCount(layout.implicitHeight) + 2
 
     shortcuts: [
         {
             binds: "Space",
             action: () => {
-                MediaPlayerInfo.playPauseMedia()
+                MediaPlayerInfo.playPauseMedia();
             }
         },
         {
-            binds: ["D", "L","Right"],
+            binds: ["D", "L", "Right"],
             action: () => {
-                MediaPlayerInfo.nextMedia()
+                MediaPlayerInfo.nextMedia();
             }
         },
         {
-            binds: ["A", "J","Left"],
+            binds: ["A", "J", "Left"],
             action: () => {
-                MediaPlayerInfo.prevMedia()
+                MediaPlayerInfo.prevMedia();
             }
         },
     ]
 
     CellBox {
-
         id: box
 
         w: root.w
         h: root.h
 
         ColumnLayout {
-
             id: layout
 
             spacing: 0
@@ -57,21 +54,19 @@ CellPopup {
                 }
 
                 Cells {
-
                     id: art
 
                     visible: thumbnail.source != "" && !root.minimal
 
-                    w: Cell.wCount(Cell.h(6),"ceil")
+                    w: Cell.wCount(Cell.h(6), "ceil")
                     h: 6
 
                     color: "transparent"
 
                     Image {
+                        id: thumbnail
 
                         y: sourceSize.width != sourceSize.height ? Cell.h(1) : 0
-
-                        id: thumbnail
 
                         width: Cell.h(parent.h)
                         height: sourceSize.width == sourceSize.height ? Cell.h(parent.h) : Cell.h(3)
@@ -79,9 +74,7 @@ CellPopup {
                         source: MediaPlayerInfo.artUrl ?? ""
 
                         fillMode: Image.PreserveAspectCrop
-
                     }
-
                 }
 
                 CellText {
@@ -100,7 +93,7 @@ CellPopup {
                     CellText {
                         text: MediaPlayerInfo.title
                         font: Cell.fontBB
-                        preferedW: box.contentW - 2 - 13*art.visible
+                        preferedW: box.contentW - 2 - 13 * art.visible
                     }
 
                     CellText {
@@ -108,18 +101,18 @@ CellPopup {
                         text: MediaPlayerInfo.artist
                         font: Cell.fontB
                         color: Colors.fgDim
-                        preferedW: box.contentW - 2 - 13*art.visible
+                        preferedW: box.contentW - 2 - 13 * art.visible
                     }
 
                     CellSeparator {
-                        w: box.contentW - 2 - 13*art.visible
+                        w: box.contentW - 2 - 13 * art.visible
                         type: 0
                         color: Colors.accentDim
                     }
 
                     Cells {
 
-                        w: box.contentW - 2 - 13*art.visible
+                        w: box.contentW - 2 - 13 * art.visible
                         h: 1
 
                         color: "transparent"
@@ -131,25 +124,27 @@ CellPopup {
                             selected: {
                                 for (const i in MediaPlayerInfo.players) {
                                     if (MediaPlayerInfo.players[i]?.dbusName == MediaPlayerInfo.activePlayer?.dbusName) {
-                                        return i
+                                        return i;
                                     }
                                 }
-                                return 0
+                                return 0;
                             }
                             items: {
-                                let items = []
+                                let items = [];
                                 for (const i in MediaPlayerInfo.players) {
                                     items.push({
                                         label: MediaPlayerInfo.players[i]?.desktopEntry.toUpperCase(),
                                         action: () => {
-                                            MediaPlayerInfo.pauseMedia()
-                                            MediaPlayerInfo.activePlayer = MediaPlayerInfo.players[i]
+                                            MediaPlayerInfo.pauseMedia();
+                                            MediaPlayerInfo.activePlayer = MediaPlayerInfo.players[i];
                                         }
-                                    })
+                                    });
                                 }
-                                return items
+                                return items;
                             }
-
+                            onActivated: index => {
+                                items[index].action();
+                            }
                         }
 
                         RowLayout {
@@ -165,13 +160,12 @@ CellPopup {
                                 color: Colors.fgDim
                             }
                         }
-
                     }
 
                     CellProgressSquare {
-                        w: box.contentW - 2 - 13*art.visible
+                        w: box.contentW - 2 - 13 * art.visible
                         type: 2
-                        percent: (MediaPlayerInfo.pos/MediaPlayerInfo.length)*100
+                        percent: (MediaPlayerInfo.pos / MediaPlayerInfo.length) * 100
                         cellInterval: 10
 
                         syncDelay: 200
@@ -180,13 +174,13 @@ CellPopup {
 
                         wheel: false
 
-                        onAdjusted: (percent) => {
-                            MediaPlayerInfo.setPos(MediaPlayerInfo.length*(percent/100))
+                        onAdjusted: percent => {
+                            MediaPlayerInfo.setPos(MediaPlayerInfo.length * (percent / 100));
                         }
 
                         onVisibleChanged: {
                             if (visible) {
-                                MediaPlayerInfo.requestPos()
+                                MediaPlayerInfo.requestPos();
                             }
                         }
 
@@ -196,15 +190,14 @@ CellPopup {
                             repeat: true
                             interval: 1000
                             onTriggered: {
-                                MediaPlayerInfo.requestPos()
+                                MediaPlayerInfo.requestPos();
                             }
-
                         }
                     }
 
                     RowLayout {
 
-                        Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW - 2 - 15*art.visible))
+                        Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(box.contentW - 2 - 15 * art.visible))
 
                         spacing: Cell.w(2)
 
@@ -219,11 +212,11 @@ CellPopup {
 
                             color: MediaPlayerInfo.canShuffle && MediaPlayerInfo.shuffleStatus ? Colors.accentStrong : Colors.bgOverlay
 
-                            onReleased: (button) => {
-                                if (button != "L") return
-                                MediaPlayerInfo.toggleShuffle()
+                            onReleased: button => {
+                                if (button != "L")
+                                    return;
+                                MediaPlayerInfo.toggleShuffle();
                             }
-
                         }
 
                         CellButton {
@@ -239,15 +232,14 @@ CellPopup {
 
                             color: MediaPlayerInfo.canPrev ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
 
-                            onReleased: (button) => {
-                                if (button != "L") return
-                                MediaPlayerInfo.prevMedia()
+                            onReleased: button => {
+                                if (button != "L")
+                                    return;
+                                MediaPlayerInfo.prevMedia();
                             }
-
                         }
 
                         CellButton {
-
                             id: button
 
                             text: MediaPlayerInfo.status == "playing" ? " 1 " : " 0 "
@@ -258,11 +250,11 @@ CellPopup {
 
                             color: MediaPlayerInfo.activePlayer ? [Colors.fgBase, Colors.bgOverlay] : Colors.bgOverlay
 
-                            onReleased: (button) => {
-                                if (button != "L") return
-                                MediaPlayerInfo.playPauseMedia()
+                            onReleased: button => {
+                                if (button != "L")
+                                    return;
+                                MediaPlayerInfo.playPauseMedia();
                             }
-
                         }
 
                         CellButton {
@@ -278,11 +270,11 @@ CellPopup {
 
                             color: MediaPlayerInfo.canNext ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
 
-                            onReleased: (button) => {
-                                if (button != "L") return
-                                MediaPlayerInfo.nextMedia()
+                            onReleased: button => {
+                                if (button != "L")
+                                    return;
+                                MediaPlayerInfo.nextMedia();
                             }
-
                         }
 
                         CellButton {
@@ -296,18 +288,14 @@ CellPopup {
 
                             color: MediaPlayerInfo.canLoop && MediaPlayerInfo.loopStatus != "none" ? Colors.accentStrong : Colors.bgOverlay
 
-                            onReleased: (button) => {
-                                if (button != "L") return
-                                MediaPlayerInfo.itterateLoop()
+                            onReleased: button => {
+                                if (button != "L")
+                                    return;
+                                MediaPlayerInfo.itterateLoop();
                             }
-
                         }
-
-
                     }
-
                 }
-
             }
 
             CellSeparator {
@@ -317,22 +305,21 @@ CellPopup {
                 w: box.contentW
                 type: 0
                 color: Colors.accentStrong
-                    bg: "transparent"
-                    connectStart: true
-                    connectEnd: true
+                bg: "transparent"
+                connectStart: true
+                connectEnd: true
             }
 
             CellAudioVisual {
 
                 visible: !root.minimal
 
-                w: box.contentW-1
+                w: box.contentW - 1
                 h: 5
                 spacing: 1
                 barW: 1
 
                 color: [Colors.secondary, Colors.warning, Colors.danger]
-
             }
 
             CellSeparator {
@@ -342,10 +329,9 @@ CellPopup {
                 w: box.contentW
                 type: 0
                 color: Colors.accentStrong
-                    bg: "transparent"
-                    connectStart: true
-                    connectEnd: true
-
+                bg: "transparent"
+                connectStart: true
+                connectEnd: true
             }
 
             RowLayout {
@@ -373,12 +359,7 @@ CellPopup {
                     key: "→"
                     hint: "Next"
                 }
-
             }
-
         }
-
-
     }
-
 }

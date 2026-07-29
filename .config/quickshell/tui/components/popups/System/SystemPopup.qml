@@ -53,7 +53,7 @@ CellPopup {
                 centered: false
                 padding: 0
                 spacing: 1
-                offset: 2
+                offset: 1
                 color.active: Colors.fgBase
                 color.inactive: Colors.fgSubtle
                 color.fg: Colors.accentStrong

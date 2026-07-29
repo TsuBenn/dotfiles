@@ -1,50 +1,6178 @@
 [
   {
-    "class": "com.mitchellh.ghostty",
-    "title": "Ghostty",
-    "name": "Ghostty",
-    "date": "2026-07-25",
-    "start_time": 1784961505623,
-    "duration": 36
+    "class": "desktop",
+    "title": "Desktop",
+    "name": "Desktop",
+    "date": "2026-07-26",
+    "start_time": 1785046811628,
+    "duration": 19
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785046831130,
+    "duration": 5
+  },
+  {
+    "class": "vesktop",
+    "title": "(80) Discord | @KhanG073003",
+    "name": "Vesktop",
+    "date": "2026-07-26",
+    "start_time": 1785046836874,
+    "duration": 4
+  },
+  {
+    "class": "vesktop",
+    "title": "(80) Discord | @KhanG073003",
+    "name": "Vesktop",
+    "date": "2026-07-26",
+    "start_time": 1785046843146,
+    "duration": 7
   },
   {
     "class": "com.mitchellh.ghostty",
     "title": "Ghostty",
     "name": "Ghostty",
-    "date": "2026-07-25",
-    "start_time": 1784961635257,
-    "duration": 15
+    "date": "2026-07-26",
+    "start_time": 1785046857166,
+    "duration": 33
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785046911948,
+    "duration": 18
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785046930147,
+    "duration": 61
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785047303818,
+    "duration": 48
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785047379239,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785047382631,
+    "duration": 30
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785047551202,
+    "duration": 95
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785047646879,
+    "duration": 12
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785047660191,
+    "duration": 18
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785047678751,
+    "duration": 35
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785047724047,
+    "duration": 89
   },
   {
     "class": "zen",
-    "title": "Quickshell - DesktopEntries — Zen Browser",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
     "name": "Zen Browser",
-    "date": "2026-07-25",
-    "start_time": 1784961650364,
-    "duration": 17
+    "date": "2026-07-26",
+    "start_time": 1785047814026,
+    "duration": 28
   },
   {
     "class": "com.mitchellh.ghostty",
     "title": "Ghostty",
     "name": "Ghostty",
-    "date": "2026-07-25",
-    "start_time": 1784961667634,
-    "duration": 34
+    "date": "2026-07-26",
+    "start_time": 1785047842890,
+    "duration": 3
   },
   {
     "class": "com.mitchellh.ghostty",
     "title": "Ghostty",
     "name": "Ghostty",
-    "date": "2026-07-25",
-    "start_time": 1784961796233,
+    "date": "2026-07-26",
+    "start_time": 1785047847193,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785047855438,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785047862269,
+    "duration": 36
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785047898911,
+    "duration": 12
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785048555563,
+    "duration": 7
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785048564586,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785048569625,
+    "duration": 29
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785048599024,
+    "duration": 36
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785048713412,
     "duration": 6
   },
   {
     "class": "com.mitchellh.ghostty",
     "title": "Ghostty",
     "name": "Ghostty",
-    "date": "2026-07-25",
-    "start_time": 1784961873213,
+    "date": "2026-07-26",
+    "start_time": 1785048720320,
+    "duration": 37
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785048758208,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785048762879,
+    "duration": 12
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785048774976,
+    "duration": 7
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785048785218,
+    "duration": 30
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785048843798,
+    "duration": 16
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785048863051,
+    "duration": 21
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785048884907,
+    "duration": 32
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785049033666,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785049037130,
+    "duration": 178
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785049222011,
+    "duration": 13
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785049235474,
+    "duration": 10
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785049246386,
+    "duration": 111
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785049366115,
+    "duration": 17
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785049485165,
+    "duration": 41
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785049535772,
+    "duration": 56
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785049591994,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785049595337,
+    "duration": 69
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785050761354,
+    "duration": 35
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785050796826,
+    "duration": 15
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785050812970,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785050818282,
+    "duration": 8
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785050828410,
+    "duration": 7
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785050835946,
+    "duration": 6
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785050842682,
+    "duration": 15
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785050858107,
+    "duration": 15
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785050875274,
+    "duration": 7
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785050883754,
+    "duration": 22
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785050906474,
+    "duration": 15
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785050922634,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785050930042,
+    "duration": 10
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785050942202,
+    "duration": 15
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785050959754,
+    "duration": 8
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785050978522,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785050989354,
+    "duration": 39
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785051033285,
+    "duration": 18
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785051053605,
+    "duration": 16
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785051071720,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785051075976,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785051079687,
+    "duration": 10
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785051095112,
+    "duration": 7
+  },
+  {
+    "class": "zen",
+    "title": "Fixing ScreenTime.qml bindings and calculations - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785051103944,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785051107941,
+    "duration": 9
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785052231192,
+    "duration": 203
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "/usr/sbin/helix",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785053888004,
+    "duration": 78
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785053966939,
+    "duration": 6
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785053979531,
+    "duration": 22
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785054002235,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785054006812,
+    "duration": 11
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785054023803,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785054029163,
+    "duration": 34
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785054141763,
+    "duration": 28
+  },
+  {
+    "class": "zen",
+    "title": "Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785054169860,
+    "duration": 20
+  },
+  {
+    "class": "desktop",
+    "title": "Desktop",
+    "name": "Desktop",
+    "date": "2026-07-26",
+    "start_time": 1785054194899,
+    "duration": 4
+  },
+  {
+    "class": "vesktop",
+    "title": "(82) Discord | @KhanG073003",
+    "name": "Vesktop",
+    "date": "2026-07-26",
+    "start_time": 1785054199374,
+    "duration": 9
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785054208909,
+    "duration": 17
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785054226810,
+    "duration": 17
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785054244825,
+    "duration": 15
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785054260425,
+    "duration": 8
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785054269770,
+    "duration": 14
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785054283770,
+    "duration": 23
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785054306771,
+    "duration": 14
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785054665075,
+    "duration": 11
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785054676747,
+    "duration": 146
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785054824467,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785054829878,
+    "duration": 15
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785056171790,
+    "duration": 10
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785056181805,
+    "duration": 15
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785056197117,
+    "duration": 10
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785056207228,
+    "duration": 94
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785056348993,
+    "duration": 2
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785056735311,
+    "duration": 179
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785058474045,
+    "duration": 359
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785058989116,
+    "duration": 19
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785059008764,
+    "duration": 20
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785059028957,
+    "duration": 10
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785059041996,
+    "duration": 33
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "studyforge — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785059096396,
+    "duration": 11
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785059108109,
+    "duration": 13
+  },
+  {
+    "class": "zen",
+    "title": "Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785059121852,
+    "duration": 7
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785059129420,
+    "duration": 45
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785059531932,
+    "duration": 123
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785059921108,
+    "duration": 50
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785060630218,
+    "duration": 61
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": ".studyforge_checkpoints — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785067718161,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "/usr/sbin/helix",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785067722951,
+    "duration": 11
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785067734566,
+    "duration": 29
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785067771451,
+    "duration": 30
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785068111377,
+    "duration": 22
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785068133392,
+    "duration": 24
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "/usr/sbin/helix",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785068163176,
+    "duration": 26
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785068347270,
     "duration": 31
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785068554687,
+    "duration": 39
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785068593816,
+    "duration": 7
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785068604135,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785068610840,
+    "duration": 20
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785068632584,
+    "duration": 72
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785068881473,
+    "duration": 13
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785068895639,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785068900008,
+    "duration": 10
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785068910784,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785069085292,
+    "duration": 40
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785069125990,
+    "duration": 36
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785069409743,
+    "duration": 40
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785069450596,
+    "duration": 139
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785069593124,
+    "duration": 76
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785070131282,
+    "duration": 38
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785070183915,
+    "duration": 56
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785070251241,
+    "duration": 30
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785070444605,
+    "duration": 7
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785070452743,
+    "duration": 12
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785070465831,
+    "duration": 45
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785070602114,
+    "duration": 22
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785070864999,
+    "duration": 164
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785071030827,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785071033955,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785071042099,
+    "duration": 2
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785072100238,
+    "duration": 102
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785072225871,
+    "duration": 18
+  },
+  {
+    "class": "desktop",
+    "title": "Desktop",
+    "name": "Desktop",
+    "date": "2026-07-26",
+    "start_time": 1785072243889,
+    "duration": 3
+  },
+  {
+    "class": "org.quickshell",
+    "title": "Color",
+    "name": "Quickshell",
+    "date": "2026-07-26",
+    "start_time": 1785072248798,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785072253981,
+    "duration": 26
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785072552313,
+    "duration": 12
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785072567314,
+    "duration": 53
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785072646607,
+    "duration": 4
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785072651936,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785072656472,
+    "duration": 8
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785072666848,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785072675472,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785072683184,
+    "duration": 100
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785072785849,
+    "duration": 7
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785072800360,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785072807640,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785072815960,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785072822249,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785073071091,
+    "duration": 7
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785073079187,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785073083475,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785073088115,
+    "duration": 23
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785073112543,
+    "duration": 11
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785073123999,
+    "duration": 11
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785073135279,
+    "duration": 9
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785073148095,
+    "duration": 6
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785073154719,
+    "duration": 7
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785073161951,
+    "duration": 31
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785073346351,
+    "duration": 36
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785073559183,
+    "duration": 31
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785073863952,
+    "duration": 3
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785073867488,
+    "duration": 16
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785073887457,
+    "duration": 4
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785073893568,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785073899809,
+    "duration": 3
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785073909408,
+    "duration": 6
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785073916369,
+    "duration": 8
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785073924897,
+    "duration": 4
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785073930353,
+    "duration": 5
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785073936337,
+    "duration": 12
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785073948737,
+    "duration": 3
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785073952145,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785073958305,
+    "duration": 3
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785073961345,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785073965968,
+    "duration": 7
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785073973057,
+    "duration": 14
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785073987937,
+    "duration": 25
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074013473,
+    "duration": 8
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074022001,
+    "duration": 9
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074031713,
+    "duration": 3
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074035521,
+    "duration": 5
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074041169,
+    "duration": 14
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074057553,
+    "duration": 5
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074064080,
+    "duration": 9
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074073121,
+    "duration": 10
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074085537,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074090433,
+    "duration": 3
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074096593,
+    "duration": 7
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074104775,
+    "duration": 17
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074121880,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074128680,
+    "duration": 18
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074147176,
+    "duration": 10
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074157688,
+    "duration": 12
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074171432,
+    "duration": 8
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074179480,
+    "duration": 17
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074196585,
+    "duration": 6
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074205272,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074210648,
+    "duration": 4
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074216392,
+    "duration": 14
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074232596,
+    "duration": 28
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074261032,
+    "duration": 3
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074269144,
+    "duration": 11
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074280616,
+    "duration": 12
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074295224,
+    "duration": 4
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074300088,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074304728,
+    "duration": 4
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074309720,
+    "duration": 13
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074322935,
+    "duration": 13
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074342040,
+    "duration": 7
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074350951,
+    "duration": 9
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074360775,
+    "duration": 3
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074363821,
+    "duration": 15
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074379735,
+    "duration": 51
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074432071,
+    "duration": 53
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074485335,
+    "duration": 7
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074492822,
+    "duration": 5
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074497847,
+    "duration": 5
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074503351,
+    "duration": 52
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074560843,
+    "duration": 37
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074602918,
+    "duration": 24
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074627159,
+    "duration": 8
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074636071,
+    "duration": 55
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074691959,
+    "duration": 4
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074699350,
+    "duration": 5
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074704822,
+    "duration": 4
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074709639,
+    "duration": 53
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074763655,
+    "duration": 15
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074781463,
+    "duration": 13
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074795430,
+    "duration": 6
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074802343,
+    "duration": 123
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074925911,
+    "duration": 7
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074933559,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785074938406,
+    "duration": 4
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074943399,
+    "duration": 27
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785074971622,
+    "duration": 40
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075014039,
+    "duration": 6
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075020231,
+    "duration": 3
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075023990,
+    "duration": 38
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075062822,
+    "duration": 14
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075077399,
+    "duration": 23
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075102215,
+    "duration": 41
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075144567,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075149543,
+    "duration": 9
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075160934,
+    "duration": 7
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075168887,
+    "duration": 29
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075198182,
+    "duration": 11
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075209206,
+    "duration": 38
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075248662,
+    "duration": 5
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075256502,
+    "duration": 3
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075261926,
+    "duration": 39
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075301030,
+    "duration": 52
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075359958,
+    "duration": 10
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075370326,
+    "duration": 41
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075411558,
+    "duration": 43
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075458407,
+    "duration": 39
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075498759,
+    "duration": 13
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075513078,
+    "duration": 14
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075528022,
+    "duration": 16
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075544104,
+    "duration": 32
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075577030,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075581399,
+    "duration": 4
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075590630,
+    "duration": 5
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075595751,
+    "duration": 3
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075598950,
+    "duration": 6
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075605158,
+    "duration": 21
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075630502,
+    "duration": 6
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075636919,
+    "duration": 10
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075647335,
+    "duration": 15
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075666471,
+    "duration": 19
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075688151,
+    "duration": 34
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075723126,
+    "duration": 4
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075728406,
+    "duration": 58
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075789175,
+    "duration": 20
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075810519,
+    "duration": 4
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075815527,
+    "duration": 28
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075844983,
+    "duration": 25
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075872838,
+    "duration": 18
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075891638,
+    "duration": 8
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075900567,
+    "duration": 10
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075912518,
+    "duration": 12
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075925511,
+    "duration": 12
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075938262,
+    "duration": 18
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785075960246,
+    "duration": 8
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785075968791,
+    "duration": 39
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785076008406,
+    "duration": 3
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076012246,
+    "duration": 167
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076180071,
+    "duration": 24
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076206054,
+    "duration": 8
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076215591,
+    "duration": 5
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785076221511,
+    "duration": 5
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076227447,
+    "duration": 13
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785076242822,
+    "duration": 9
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785076253607,
+    "duration": 6
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076262358,
+    "duration": 12
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076280007,
+    "duration": 6
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076286774,
+    "duration": 3
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076292359,
+    "duration": 9
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785076309168,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "@KhanG073003 - Discord",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785076315149,
+    "duration": 6
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076323704,
+    "duration": 35
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785076359368,
+    "duration": 6
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076365768,
+    "duration": 9
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785076377351,
+    "duration": 25
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076408169,
+    "duration": 4
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076413640,
+    "duration": 10
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076425799,
+    "duration": 5
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076432136,
+    "duration": 14
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076448072,
+    "duration": 8
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076457079,
+    "duration": 33
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785076490776,
+    "duration": 3
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076494024,
+    "duration": 7
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076505704,
+    "duration": 6
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076513288,
+    "duration": 17
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076530968,
+    "duration": 3
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785076534536,
+    "duration": 6
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076540536,
+    "duration": 10
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076551560,
+    "duration": 25
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076577560,
+    "duration": 50
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076628914,
+    "duration": 22
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076654978,
+    "duration": 113
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076768987,
+    "duration": 37
+  },
+  {
+    "class": "steam_app_4162040",
+    "title": "ZenlessZoneZero",
+    "name": "ZenlessZoneZero",
+    "date": "2026-07-26",
+    "start_time": 1785076807106,
+    "duration": 77
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785076885329,
+    "duration": 34
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785077048887,
+    "duration": 16
+  },
+  {
+    "class": "zen",
+    "title": "HoverHandler QML Type | Qt Quick | Qt 6.11.1 — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077065010,
+    "duration": 52
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "studyforge — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785077121442,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077126850,
+    "duration": 3
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "studyforge — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785077130387,
+    "duration": 6
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "Create New Folder — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785077137209,
+    "duration": 5
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "curriculums — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785077143272,
+    "duration": 8
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "Compress to Archive — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785077151728,
+    "duration": 3
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "studyforge — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785077156543,
+    "duration": 8
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "studyforge — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785077170640,
+    "duration": 18
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077192479,
+    "duration": 151
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077345627,
+    "duration": 15
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "studyforge — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785077363504,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077368833,
+    "duration": 15
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077389695,
+    "duration": 142
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077536527,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077545312,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077558864,
+    "duration": 26
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785077585697,
+    "duration": 19
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077608591,
+    "duration": 6
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077615344,
+    "duration": 7
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785077623200,
+    "duration": 11
+  },
+  {
+    "class": "spotify",
+    "title": "Spotify Free",
+    "name": "Spotify",
+    "date": "2026-07-26",
+    "start_time": 1785077634656,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785077643467,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077647148,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785077651450,
+    "duration": 14
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785077667019,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077672252,
+    "duration": 8
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077684235,
+    "duration": 15
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785077700267,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077704075,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785077708091,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077712635,
+    "duration": 15
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785077727644,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077733051,
+    "duration": 12
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785077745291,
+    "duration": 6
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077751531,
+    "duration": 39
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785077790875,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077794475,
+    "duration": 46
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785077841356,
+    "duration": 10
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077852299,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077859499,
+    "duration": 7
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077867642,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077871707,
+    "duration": 47
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785077919339,
+    "duration": 7
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077926379,
+    "duration": 30
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785077958331,
+    "duration": 15
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785077973979,
+    "duration": 36
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078022992,
+    "duration": 9
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078032155,
+    "duration": 3
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078035211,
+    "duration": 7
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078043051,
+    "duration": 9
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078054314,
+    "duration": 6
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078061099,
+    "duration": 11
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078072251,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078076747,
+    "duration": 9
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078086075,
+    "duration": 20
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078106283,
+    "duration": 20
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078126555,
+    "duration": 8
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078140139,
+    "duration": 7
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078147851,
+    "duration": 30
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078201563,
+    "duration": 14
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078220363,
+    "duration": 6
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078229435,
+    "duration": 7
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078239482,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078254186,
+    "duration": 9
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078263531,
+    "duration": 8
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078271739,
+    "duration": 30
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078321275,
+    "duration": 6
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078330747,
+    "duration": 8
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078338763,
+    "duration": 10
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078349530,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078357274,
+    "duration": 5
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078363371,
+    "duration": 22
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078385963,
+    "duration": 9
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078396011,
+    "duration": 5
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078407163,
+    "duration": 13
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078421819,
+    "duration": 35
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078457659,
+    "duration": 18
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078476284,
+    "duration": 30
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078524458,
+    "duration": 18
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078542603,
+    "duration": 37
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078579867,
+    "duration": 19
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078599356,
+    "duration": 19
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078623259,
+    "duration": 6
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078629723,
+    "duration": 6
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078637226,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078641818,
+    "duration": 19
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078663323,
+    "duration": 12
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078675979,
+    "duration": 46
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078722685,
+    "duration": 30
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078787199,
+    "duration": 75
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078863035,
+    "duration": 12
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078877323,
+    "duration": 30
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078923658,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785078928170,
+    "duration": 11
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785078939404,
+    "duration": 30
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079041898,
+    "duration": 12
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079055579,
+    "duration": 8
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079064420,
+    "duration": 6
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079071371,
+    "duration": 63
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079135067,
+    "duration": 13
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079150555,
+    "duration": 6
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079160395,
+    "duration": 9
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079171387,
+    "duration": 3
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079174923,
+    "duration": 31
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079251039,
+    "duration": 14
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079265275,
+    "duration": 26
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079291339,
+    "duration": 31
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079323163,
+    "duration": 9
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079332572,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079340203,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079344892,
+    "duration": 29
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079374444,
+    "duration": 8
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785079382955,
+    "duration": 12
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079395602,
+    "duration": 3
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079398672,
+    "duration": 7
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079406064,
+    "duration": 11
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079417792,
+    "duration": 40
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079458466,
+    "duration": 12
+  },
+  {
+    "class": "zen",
+    "title": "Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079472160,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079476769,
+    "duration": 28
+  },
+  {
+    "class": "zen",
+    "title": "Python Textual: Building Terminal UIs - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079507360,
+    "duration": 13
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079522304,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079527105,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079533057,
+    "duration": 3
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079536113,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079539361,
+    "duration": 5
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079545328,
+    "duration": 33
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079580656,
+    "duration": 3
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079583744,
+    "duration": 35
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079619088,
+    "duration": 11
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079631073,
+    "duration": 10
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079642528,
+    "duration": 45
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079734064,
+    "duration": 17
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079751857,
+    "duration": 36
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079787958,
+    "duration": 9
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079797793,
+    "duration": 20
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079820305,
+    "duration": 16
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785079837136,
+    "duration": 3
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079842048,
+    "duration": 112
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785079961904,
+    "duration": 72
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080034680,
+    "duration": 94
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080130896,
+    "duration": 24
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080157427,
+    "duration": 17
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080174672,
+    "duration": 6
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080184302,
+    "duration": 10
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080194638,
+    "duration": 7
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080201935,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080205887,
+    "duration": 7
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080222734,
+    "duration": 45
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080269598,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080275422,
+    "duration": 9
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080286118,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080298230,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080302982,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080306933,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785080309974,
+    "duration": 3
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080313307,
+    "duration": 3
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080320824,
+    "duration": 30
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080363832,
+    "duration": 30
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080400439,
+    "duration": 8
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080411560,
+    "duration": 6
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080418281,
+    "duration": 5
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080423945,
+    "duration": 8
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080432409,
+    "duration": 11
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080444318,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080447659,
+    "duration": 14
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080464705,
+    "duration": 11
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080475745,
+    "duration": 6
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785080486417,
+    "duration": 27
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080513794,
+    "duration": 12
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080527553,
+    "duration": 8
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080537601,
+    "duration": 16
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080555457,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785080560369,
+    "duration": 13
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080573578,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080580005,
+    "duration": 9
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080590806,
+    "duration": 19
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080611157,
+    "duration": 7
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785080619031,
+    "duration": 14
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785080634181,
+    "duration": 15
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080649947,
+    "duration": 8
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785080658086,
+    "duration": 13
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "example_11_proper — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785080671526,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785080680085,
+    "duration": 7
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785080694837,
+    "duration": 16
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785080716117,
+    "duration": 11
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785080734741,
+    "duration": 16
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785080752052,
+    "duration": 22
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080774439,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785080778182,
+    "duration": 43
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080822315,
+    "duration": 4
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080827802,
+    "duration": 26
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080855035,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080861418,
+    "duration": 13
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080876059,
+    "duration": 8
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080885530,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080890188,
+    "duration": 13
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080904683,
+    "duration": 13
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785080918636,
+    "duration": 7
+  },
+  {
+    "class": "zen",
+    "title": "Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080926411,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080932459,
+    "duration": 42
+  },
+  {
+    "class": "zen",
+    "title": "Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080978319,
+    "duration": 16
+  },
+  {
+    "class": "zen",
+    "title": "Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785080998198,
+    "duration": 55
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785081053597,
+    "duration": 14
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "/usr/sbin/helix",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785081071996,
+    "duration": 19
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785081092108,
+    "duration": 11
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785081104620,
+    "duration": 19
+  },
+  {
+    "class": "discord",
+    "title": "KhanG073003",
+    "name": "Discord",
+    "date": "2026-07-26",
+    "start_time": 1785081126508,
+    "duration": 13
+  },
+  {
+    "class": "zen",
+    "title": "Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785081139869,
+    "duration": 30
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785081172696,
+    "duration": 18
+  },
+  {
+    "class": "zen",
+    "title": "Textual Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785081190857,
+    "duration": 42
+  },
+  {
+    "class": "zen",
+    "title": "Textual Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785081285668,
+    "duration": 92
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785081378665,
+    "duration": 11
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "example_11_proper — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785081389897,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785081395528,
+    "duration": 30
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785081430984,
+    "duration": 63
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785081494505,
+    "duration": 12
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "studyforge — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785081509878,
+    "duration": 6
+  },
+  {
+    "class": "zen",
+    "title": "Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785081518966,
+    "duration": 56
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785081575846,
+    "duration": 14
+  },
+  {
+    "class": "zen",
+    "title": "Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785081590326,
+    "duration": 8
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785081602054,
+    "duration": 51
+  },
+  {
+    "class": "zen",
+    "title": "Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785081653719,
+    "duration": 208
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785081861734,
+    "duration": 44
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785081905750,
+    "duration": 40
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785081948636,
+    "duration": 55
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082004276,
+    "duration": 9
+  },
+  {
+    "class": "zen",
+    "title": "Python TUI File Picker for Neovim - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785082013284,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082016329,
+    "duration": 6
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082023272,
+    "duration": 20
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "helix — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785082044121,
+    "duration": 23
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082067244,
+    "duration": 9
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "helix — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785082076443,
+    "duration": 11
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "File Already Exists — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785082088491,
+    "duration": 4
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "helix — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785082092555,
+    "duration": 9
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082101615,
+    "duration": 5
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "bin — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785082107551,
+    "duration": 3
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "Properties for miniex — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785082110831,
+    "duration": 6
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082120414,
+    "duration": 15
+  },
+  {
+    "class": "zen",
+    "title": "Python TUI File Picker for Neovim - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785082136399,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082140751,
+    "duration": 11
+  },
+  {
+    "class": "zen",
+    "title": "Python TUI File Picker for Neovim - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785082152335,
+    "duration": 12
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082164735,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Python TUI File Picker for Neovim - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785082168055,
+    "duration": 60
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082228247,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785082233894,
+    "duration": 14
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082248785,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785082253280,
+    "duration": 9
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082263188,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785082266612,
+    "duration": 11
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082278045,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785082281757,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785082288856,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082293737,
+    "duration": 19
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "bin — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785082312937,
+    "duration": 27
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785082342312,
+    "duration": 6
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082348728,
+    "duration": 32
+  },
+  {
+    "class": "zen",
+    "title": "Python TUI File Picker for Neovim - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785082381529,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Python TUI File Picker for Neovim - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785082387671,
+    "duration": 32
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082420328,
+    "duration": 11
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785082437079,
+    "duration": 11
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785082996789,
+    "duration": 179
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083313096,
+    "duration": 60
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083375520,
+    "duration": 51
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083426656,
+    "duration": 90
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083516783,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083520734,
+    "duration": 19
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083539861,
+    "duration": 40
+  },
+  {
+    "class": "zen",
+    "title": "Ratatui TUI Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083580452,
+    "duration": 12
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083592999,
+    "duration": 12
+  },
+  {
+    "class": "zen",
+    "title": "Ratatui TUI Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083605079,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083609293,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Ratatui TUI Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083614093,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Ratatui TUI Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083618768,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083624088,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Ratatui TUI Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083629527,
+    "duration": 6
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083636052,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Ratatui TUI Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083641348,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083644612,
+    "duration": 23
+  },
+  {
+    "class": "zen",
+    "title": "Ratatui TUI Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083667985,
+    "duration": 11
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083679472,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Ratatui TUI Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083685312,
+    "duration": 13
+  },
+  {
+    "class": "zen",
+    "title": "Ratatui TUI Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083699728,
+    "duration": 35
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083737221,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Ratatui TUI Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083743572,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083746626,
+    "duration": 10
+  },
+  {
+    "class": "zen",
+    "title": "Ratatui TUI Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083756914,
+    "duration": 6
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083763865,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083769881,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083776872,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Ratatui TUI Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083782553,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083787102,
+    "duration": 9
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083798045,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Ratatui TUI Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083802062,
+    "duration": 6
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083808670,
+    "duration": 26
+  },
+  {
+    "class": "zen",
+    "title": "Ratatui TUI Study App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083835230,
+    "duration": 74
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083909843,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083913027,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083919427,
+    "duration": 43
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083962922,
+    "duration": 13
+  },
+  {
+    "class": "zen",
+    "title": "StudyForge TUI App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785083984224,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083987920,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083994047,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785083999104,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084007184,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "StudyForge TUI App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084011408,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "StudyForge TUI App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084021707,
+    "duration": 17
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084039444,
+    "duration": 24
+  },
+  {
+    "class": "zen",
+    "title": "StudyForge TUI App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084064004,
+    "duration": 9
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084073603,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "StudyForge TUI App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084077619,
+    "duration": 20
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084098232,
+    "duration": 6
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084106007,
+    "duration": 12
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084120792,
+    "duration": 20
+  },
+  {
+    "class": "zen",
+    "title": "StudyForge TUI App Development - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084141727,
+    "duration": 65
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084206937,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084212440,
+    "duration": 35
+  },
+  {
+    "class": "zen",
+    "title": "Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084287556,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084292269,
+    "duration": 20
+  },
+  {
+    "class": "zen",
+    "title": "Building a Terminal Study App - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084313197,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084317431,
+    "duration": 14
+  },
+  {
+    "class": "zen",
+    "title": "Building a Terminal Study App - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084331655,
+    "duration": 69
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084400999,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Building a Terminal Study App - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084406199,
+    "duration": 163
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084569654,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Building a Terminal Study App - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084572951,
+    "duration": 50
+  },
+  {
+    "class": "zen",
+    "title": "Building a Terminal Study App - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084625654,
+    "duration": 74
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084700638,
+    "duration": 55
+  },
+  {
+    "class": "zen",
+    "title": "Building a Terminal Study App - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084755854,
+    "duration": 56
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084812125,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084816350,
+    "duration": 58
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084875231,
+    "duration": 13
+  },
+  {
+    "class": "zen",
+    "title": "Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084888493,
+    "duration": 20
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084909313,
+    "duration": 24
+  },
+  {
+    "class": "zen",
+    "title": "Building a Terminal Study App - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785084934289,
+    "duration": 25
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785084959936,
+    "duration": 58
+  },
+  {
+    "class": "zen",
+    "title": "Python TUI File Picker for Neovim - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785085018433,
+    "duration": 9
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785085028067,
+    "duration": 6
+  },
+  {
+    "class": "zen",
+    "title": "Building a spaced repetition quiz TUI - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785085034737,
+    "duration": 19
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "Downloads — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-26",
+    "start_time": 1785085054305,
+    "duration": 10
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785085068069,
+    "duration": 35
+  },
+  {
+    "class": "zen",
+    "title": "Building a spaced repetition quiz TUI - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785085103302,
+    "duration": 22
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785085126262,
+    "duration": 4
+  },
+  {
+    "class": "zen",
+    "title": "Building a spaced repetition quiz TUI - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785085130358,
+    "duration": 28
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-26",
+    "start_time": 1785085158929,
+    "duration": 35
+  },
+  {
+    "class": "zen",
+    "title": "Python TUI File Picker for Neovim - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-26",
+    "start_time": 1785085193956,
+    "duration": 6
+  },
+  {
+    "class": "zen",
+    "title": "Python TUI File Picker for Neovim - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785085202338,
+    "duration": 15
+  },
+  {
+    "class": "zen",
+    "title": "Python TUI File Picker for Neovim - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785085221729,
+    "duration": 38
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785085260530,
+    "duration": 14
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785085277445,
+    "duration": 17
+  },
+  {
+    "class": "zen",
+    "title": "Python TUI File Picker for Neovim - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785085295204,
+    "duration": 21
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785085317013,
+    "duration": 47
+  },
+  {
+    "class": "zen",
+    "title": "Python TUI File Picker for Neovim - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785085364967,
+    "duration": 8
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785085372968,
+    "duration": 37
+  },
+  {
+    "class": "zen",
+    "title": "Python TUI File Picker for Neovim - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785085410199,
+    "duration": 12
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "Downloads — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-27",
+    "start_time": 1785085424935,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785085436351,
+    "duration": 141
+  },
+  {
+    "class": "zen",
+    "title": "Building a spaced repetition quiz TUI - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785085577755,
+    "duration": 18
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785085595979,
+    "duration": 162
+  },
+  {
+    "class": "zen",
+    "title": "Building a spaced repetition quiz TUI - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785085758897,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785085764464,
+    "duration": 9
+  },
+  {
+    "class": "zen",
+    "title": "Building a spaced repetition quiz TUI - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785085773919,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785085779680,
+    "duration": 9
+  },
+  {
+    "class": "zen",
+    "title": "Building a spaced repetition quiz TUI - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785085789360,
+    "duration": 20
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "Downloads — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-27",
+    "start_time": 1785085809818,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785085816010,
+    "duration": 6
+  },
+  {
+    "class": "zen",
+    "title": "Building a spaced repetition quiz TUI - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785085822586,
+    "duration": 32
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785085854826,
+    "duration": 14
+  },
+  {
+    "class": "zen",
+    "title": "Python TUI File Picker for Neovim - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785085869482,
+    "duration": 38
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "Downloads — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-27",
+    "start_time": 1785085907931,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785085916761,
+    "duration": 40
+  },
+  {
+    "class": "zen",
+    "title": "Building a spaced repetition quiz TUI - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785085956905,
+    "duration": 139
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785086096215,
+    "duration": 11
+  },
+  {
+    "class": "zen",
+    "title": "Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785086107608,
+    "duration": 62
+  },
+  {
+    "class": "zen",
+    "title": "Catching shutdown signals on Arch Linux - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785086173284,
+    "duration": 37
+  },
+  {
+    "class": "zen",
+    "title": "Evaluating features for a desktop environment - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785086212407,
+    "duration": 128
+  },
+  {
+    "class": "zen",
+    "title": "Evaluating features for a desktop environment - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785086342036,
+    "duration": 14
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "study — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-27",
+    "start_time": 1785086357284,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "/usr/sbin/helix",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785086365716,
+    "duration": 11
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "/usr/sbin/helix",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785086378260,
+    "duration": 5
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "/usr/sbin/helix",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785086384548,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "/usr/sbin/helix",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785086388916,
+    "duration": 7
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "/usr/sbin/helix",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785086400276,
+    "duration": 23
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785086423844,
+    "duration": 7
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "/usr/sbin/helix",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785086435652,
+    "duration": 13
+  },
+  {
+    "class": "zen",
+    "title": "Evaluating features for a desktop environment - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785086453286,
+    "duration": 87
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": ".studyforge_checkpoints — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-27",
+    "start_time": 1785086541063,
+    "duration": 6
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785086549286,
+    "duration": 20
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785086576072,
+    "duration": 71
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "studyforge — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-27",
+    "start_time": 1785086648042,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "/usr/sbin/helix",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785086652345,
+    "duration": 11
+  },
+  {
+    "class": "zen",
+    "title": "Evaluating features for a desktop environment - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785086665993,
+    "duration": 42
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785086708542,
+    "duration": 6
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785086714955,
+    "duration": 8
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785086723473,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785086729627,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Evaluating features for a desktop environment - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785086885253,
+    "duration": 9
+  },
+  {
+    "class": "zen",
+    "title": "Evaluating features for a desktop environment - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785086897484,
+    "duration": 10
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785086907579,
+    "duration": 8
+  },
+  {
+    "class": "zen",
+    "title": "Evaluating features for a desktop environment - Claude — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785086915708,
+    "duration": 104
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "tui — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-27",
+    "start_time": 1785087029755,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785087034204,
+    "duration": 277
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785087492195,
+    "duration": 179
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785087792502,
+    "duration": 21
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785087813666,
+    "duration": 4
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "services — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-27",
+    "start_time": 1785087817730,
+    "duration": 6
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "/usr/sbin/helix",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785087824147,
+    "duration": 56
+  },
+  {
+    "class": "zen",
+    "title": "Building a Custom Arch Linux OS - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785087880933,
+    "duration": 54
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "/usr/sbin/helix",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785087935924,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785087939381,
+    "duration": 15
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "/usr/sbin/helix",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785087958724,
+    "duration": 13
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "/usr/sbin/helix",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785087974773,
+    "duration": 7
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785088001621,
+    "duration": 16
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785088021508,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785088032229,
+    "duration": 79
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785088113317,
+    "duration": 6
+  },
+  {
+    "class": "org.kde.dolphin",
+    "title": "session_5da89363cb — Dolphin",
+    "name": "Dolphin",
+    "date": "2026-07-27",
+    "start_time": 1785088119797,
+    "duration": 5
+  },
+  {
+    "class": "zen",
+    "title": "Agent Studio | Build with the latest models – Agent Platform – My First Project – Google Cloud console — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785088125764,
+    "duration": 217
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785088394209,
+    "duration": 78
+  },
+  {
+    "class": "zen",
+    "title": "Quickshell.Io - FileView — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785088474639,
+    "duration": 3
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785088478624,
+    "duration": 4
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785117376285,
+    "duration": 42
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785118000190,
+    "duration": 95
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785121756667,
+    "duration": 61
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785121873524,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Nguyễn Minh Khang | Messenger — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785121879975,
+    "duration": 14
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785121898119,
+    "duration": 26
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785121929623,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "(20+) Facebook — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785121932968,
+    "duration": 102
+  },
+  {
+    "class": "zen",
+    "title": "(609) BSD & Linux Are Fundamentally Different Philosophies - YouTube — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785122221196,
+    "duration": 35
+  },
+  {
+    "class": "zen",
+    "title": "(609) BSD & Linux Are Fundamentally Different Philosophies - YouTube — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785122258397,
+    "duration": 38
+  },
+  {
+    "class": "com.mitchellh.ghostty",
+    "title": "Ghostty",
+    "name": "Ghostty",
+    "date": "2026-07-27",
+    "start_time": 1785122362936,
+    "duration": 3
+  },
+  {
+    "class": "zen",
+    "title": "Screen Time Data Storage Strategy - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785122365944,
+    "duration": 12
+  },
+  {
+    "class": "zen",
+    "title": "Screen Time Data Storage Strategy - Google Gemini — Zen Browser",
+    "name": "Zen Browser",
+    "date": "2026-07-27",
+    "start_time": 1785122385798,
+    "duration": 337
   }
 ]

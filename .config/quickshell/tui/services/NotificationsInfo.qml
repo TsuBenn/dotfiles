@@ -46,7 +46,7 @@ Singleton {
                  // Only append new subgroup if the object of the previous is still alive
              ]
          }
-     ] 
+     ]
 
      flattened = [ // For performance
          { // For apps headers
@@ -127,7 +127,7 @@ Singleton {
                 "body"    : app.notifications[0]?.group[0]?.body ?? "",
                 "time"    : app.notifications[0]?.group[0]?.time ?? 0,
                 "image"   : app.notifications[0]?.group[0]?.image ?? "",
-            }) 
+            })
             if (app.notifications[0]?.group.length > 1 || app.notifications.length > 1) {
                 for (const group of app.notifications) {
                     results.push({
@@ -221,7 +221,7 @@ Singleton {
     function clear() {
 
 
-        let ids = [] 
+        let ids = []
 
         for (const noti of notifications) {
             ids.push(noti.id)
@@ -266,7 +266,7 @@ Singleton {
 
         for (const i in buffer) {
             buffer[i].notifications = buffer[i].notifications.filter(item => {
-                return exists(item.object) 
+                return exists(item.object)
             })
         }
 
@@ -341,7 +341,7 @@ Singleton {
                      // Only append new subgroup if the object of the previous is still alive
                  ]
              }
-         ] 
+         ]
 
          */
 
@@ -364,7 +364,7 @@ Singleton {
                 subgroup
             ],
             toJSON() {
-                return { 
+                return {
                     object: this.object,
                     group: this.group,
                 }
@@ -387,7 +387,7 @@ Singleton {
             // Check if the newest notification group's object is still alive, if yes then append new notification group
             if (exists(group.notifications[0].object)) {
                 group.notifications.unshift(notif)
-            } 
+            }
             // If the newest notifications group's object is dead then merge it with the new group
             else {
                 group.notifications[0].object = object.id // replacing the object with the available one
@@ -437,7 +437,7 @@ Singleton {
              "urgency": urgency,
              "group": [subgroup],
              toJSON() {
-                 return { 
+                 return {
                      object: this.object,
                      group: this.group,
                  }
@@ -452,8 +452,8 @@ Singleton {
 
          const index = buffer.findIndex(item => item.app == app)
 
-         if (index != -1) { 
-             const group = buffer.splice(index, 1)[0] 
+         if (index != -1) {
+             const group = buffer.splice(index, 1)[0]
 
              if (exists(group.notifications[0].object)) {
                  // Check if the exact message text already exists in this active notification group
@@ -471,7 +471,7 @@ Singleton {
                      if (dupItem) dupItem.time = root.timer
                      group.notifications[0].object = object.id
                  }
-             } 
+             }
              else {
                  // CRITICAL REPETITION FIX HERE:
                  // If the old notification object died but we are recycling the slot,
@@ -482,7 +482,7 @@ Singleton {
 
                  if (!isDuplicate) {
                      // Not a duplicate? Safe to append as a new history row
-                     group.notifications[0].object = object.id 
+                     group.notifications[0].object = object.id
                      group.notifications[0].urgency = urgency
                      group.notifications[0].group.unshift(subgroup)
                  } else {

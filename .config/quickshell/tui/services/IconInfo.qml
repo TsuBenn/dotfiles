@@ -37,7 +37,6 @@ import QtQuick
 // ─────────────────────────────────────────────────────────────────
 
 Singleton {
-
     id: root
 
     // ── Raw data from cache file ──
@@ -74,14 +73,14 @@ Singleton {
 
         onLoaded: {
             try {
-                const data = JSON.parse(text())
-                _loadFromData(data)
+                const data = JSON.parse(text());
+                _loadFromData(data);
             } catch (e) {
-                console.warn("IconInfo: failed to parse icon_cache.json: " + e)
-                root.icons = {}
-                root.binaryAliases = {}
-                root.appAliases = {}
-                root._rebuildIndex()
+                console.warn("IconInfo: failed to parse icon_cache.json: " + e);
+                root.icons = {};
+                root.binaryAliases = {};
+                root.appAliases = {};
+                root._rebuildIndex();
             }
         }
     }
@@ -89,71 +88,71 @@ Singleton {
     function _loadFromData(data) {
         // Old format: list of {name, icon} objects
         if (Array.isArray(data)) {
-            const dict = {}
+            const dict = {};
             for (const item of data) {
                 if (item && item.name && item.icon) {
-                    dict[item.name] = item.icon
+                    dict[item.name] = item.icon;
                 }
             }
-            root.icons = dict
-            root.binaryAliases = {}
-            root.appAliases = {}
-        }
+            root.icons = dict;
+            root.binaryAliases = {};
+            root.appAliases = {};
+        } else
         // New format: dict with icons + aliases
-        else if (data && typeof data === "object") {
-            const icons = data.icons
+        if (data && typeof data === "object") {
+            const icons = data.icons;
             if (Array.isArray(icons)) {
                 // icons field is a list (shouldn't happen with new format,
                 // but defensive) — convert to dict
-                const dict = {}
+                const dict = {};
                 for (const item of icons) {
                     if (item && item.name && item.icon) {
-                        dict[item.name] = item.icon
+                        dict[item.name] = item.icon;
                     }
                 }
-                root.icons = dict
+                root.icons = dict;
             } else {
-                root.icons = icons || {}
+                root.icons = icons || {};
             }
-            const aliases = data.aliases || {}
-            root.binaryAliases = aliases.binary || {}
-            root.appAliases = aliases.app || {}
+            const aliases = data.aliases || {};
+            root.binaryAliases = aliases.binary || {};
+            root.appAliases = aliases.app || {};
         } else {
-            root.icons = {}
-            root.binaryAliases = {}
-            root.appAliases = {}
+            root.icons = {};
+            root.binaryAliases = {};
+            root.appAliases = {};
         }
-        root._rebuildIndex()
+        root._rebuildIndex();
     }
 
     function _rebuildIndex() {
         // Case-insensitive icon name index
-        const idx = {}
+        const idx = {};
         for (const name in root.icons) {
-            idx[name.toLowerCase()] = root.icons[name]
+            idx[name.toLowerCase()] = root.icons[name];
         }
-        root._index = idx
+        root._index = idx;
 
         // Combined alias index (binary + app), lowercased keys
-        const aIdx = {}
+        const aIdx = {};
         for (const k in root.binaryAliases) {
-            aIdx[k.toLowerCase()] = root.binaryAliases[k]
+            aIdx[k.toLowerCase()] = root.binaryAliases[k];
         }
         for (const k in root.appAliases) {
-            const kl = k.toLowerCase()
+            const kl = k.toLowerCase();
             if (!(kl in aIdx)) {  // don't overwrite binary aliases
-                aIdx[kl] = root.appAliases[k]
+                aIdx[kl] = root.appAliases[k];
             }
         }
-        root._aliasIndex = aIdx
+        root._aliasIndex = aIdx;
 
         // Invalidate the negative cache — old misses might now be hits
         // after a cache refresh.
-        root._missCache = {}
+        root._missCache = {};
     }
 
     function reload() {
-        cache.reload()
+        cache.reload();
     }
 
     // ── fetch(queries) ──
@@ -175,66 +174,67 @@ Singleton {
     // edge cases, but only fires when layers 1-3 all miss — rare for
     // well-named apps with .desktop files.
     function fetch(queries) {
-        let qs
+        let qs;
         if (Array.isArray(queries)) {
-            qs = queries
+            qs = queries;
         } else if (typeof queries === "string") {
-            qs = [queries]
+            qs = [queries];
         } else {
-            return ""
+            return "";
         }
 
         for (let q of qs) {
-            if (!q) continue
+            if (!q)
+                continue;
 
             // Strip extension if present ("firefox.png" → "firefox")
-            const dot = q.lastIndexOf('.')
-            if (dot > 0) {
-                q = q.substring(0, dot)
-            }
-            if (!q) continue
+            // const dot = q.lastIndexOf('.')
+            // if (dot > 0) {
+            //     q = q.substring(0, dot)
+            // }
+            // if (!q) continue
 
-            const qLower = q.toLowerCase()
+            const qLower = q.toLowerCase();
 
             // 0. Negative cache check
             if (root._missCache[qLower]) {
-                continue
+                continue;
             }
 
             // 1. Direct case-sensitive hit
             if (root.icons[q]) {
-                return root.icons[q]
+                return root.icons[q];
             }
 
             // 2. Case-insensitive hit
             if (root._index[qLower]) {
-                return root._index[qLower]
+                return root._index[qLower];
             }
 
             // 3. Alias lookup (binary or app name → icon name → path)
-            const aliased = root._aliasIndex[qLower]
+            const aliased = root._aliasIndex[qLower];
             if (aliased) {
                 // Resolve the alias to an actual icon path
                 if (root.icons[aliased]) {
-                    return root.icons[aliased]
+                    return root.icons[aliased];
                 }
                 // The aliased name might itself need case-insensitive lookup
-                const aliasedLower = aliased.toLowerCase()
+                const aliasedLower = aliased.toLowerCase();
                 if (root._index[aliasedLower]) {
-                    return root._index[aliasedLower]
+                    return root._index[aliasedLower];
                 }
             }
 
             // 4. Substring fallback (last resort)
-            const subMatch = _substringLookup(qLower)
+            const subMatch = _substringLookup(qLower);
             if (subMatch) {
-                return subMatch
+                return subMatch;
             }
 
             // Record the miss so future calls skip the lookups
-            _missCacheAdd(qLower)
+            _missCacheAdd(qLower);
         }
-        return ""
+        return "";
     }
 
     // Bidirectional substring lookup with "longest match wins".
@@ -253,40 +253,40 @@ Singleton {
     //
     // Returns the path for the best match, or "" if no match.
     function _substringLookup(qLower) {
-        if (!qLower || qLower.length < 2) return ""
+        if (!qLower || qLower.length < 2)
+            return "";
 
-        let bestName = ""
-        let bestLen = 0
+        let bestName = "";
+        let bestLen = 0;
 
         for (const name in root._index) {
-            const nLower = name.toLowerCase()
+            const nLower = name.toLowerCase();
             // Skip very short names — high false-positive rate
-            if (nLower.length < 2) continue
-
-            const matches = nLower.includes(qLower) || qLower.includes(nLower)
-            if (!matches) continue
+            if (nLower.length < 2)
+                continue;
+            const matches = nLower.includes(qLower) || qLower.includes(nLower);
+            if (!matches)
+                continue;
 
             // Prefer the longest matching name (more specific)
             if (nLower.length > bestLen) {
-                bestLen = nLower.length
-                bestName = name
+                bestLen = nLower.length;
+                bestName = name;
             }
         }
 
-        return bestName ? root._index[bestName] : ""
+        return bestName ? root._index[bestName] : "";
     }
 
     function _missCacheAdd(key) {
         if (Object.keys(root._missCache).length >= root._missCacheMax) {
             // Evict half (oldest first — dict preserves insertion order)
-            const keys = Object.keys(root._missCache)
-            const evictCount = Math.floor(keys.length / 2)
+            const keys = Object.keys(root._missCache);
+            const evictCount = Math.floor(keys.length / 2);
             for (let i = 0; i < evictCount; i++) {
-                delete root._missCache[keys[i]]
+                delete root._missCache[keys[i]];
             }
         }
-        root._missCache[key] = true
+        root._missCache[key] = true;
     }
-
 }
-

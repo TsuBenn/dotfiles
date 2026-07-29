@@ -40,6 +40,8 @@ Item {
     property bool safeRelease: true
     property bool interactive: false
 
+    property bool flipped: false
+
     property var sections_data: root.sections(root.w, root.percent)
 
     property int cellInterval: 1
@@ -51,6 +53,13 @@ Item {
     property int syncDelay: 5000 // recommend 5s
 
     property bool purify: SettingsInfo.purify
+
+    transform: Scale {
+        origin.x: !root.vertical && root.flipped ? Cell.w(root.w) / 2 : 0
+        origin.y: root.vertical && root.flipped ? Cell.h(root.h) / 2 : 0
+        xScale: !root.vertical && root.flipped ? -1 : 1
+        yScale: root.vertical && root.flipped ? -1 : 1
+    }
 
     Behavior on percent {
         NumberAnimation {

@@ -19,6 +19,8 @@ Singleton {
     property bool idle: im.isIdle
     property bool idle_timeout: im.isIdle
 
+    property int session
+
     onIdleChanged: {
         if (idle) {
             console.log("SystemInfo: IDLE MODE STARTED");
@@ -37,11 +39,8 @@ Singleton {
     property string architecture: "x86_64"
     property string systemUTF: "\udb82\udcc7"
     property string uptime: "0h0m0s"
+    property int uptime_raw: 0
     property string wm: "n/a"
-
-    property bool polkit_active: PolkitInfo.active
-    property var active_floats: FloatsManager.active_floats
-    property var process: ScreenTimeInfo.sessions
 
     signal auth(string prompt)
 
@@ -60,7 +59,9 @@ Singleton {
     property int cpuidleprev
     property real cpuusage
 
-    property var cpustats: [] // individual cores usage
+    property var cpustats: ({}) // individual cores usage
+
+    property var procstats: ({}) // individual cores usage
 
     property real memtotal
     property real memused
@@ -255,7 +256,10 @@ Singleton {
         triggeredOnStart: true
         onTriggered: {
             // cpustat.reload();
-            cpustat.running = true;
+            if (!cpustat.running)
+                cpustat.running = true;
+            if (!procstats.running && root.cputhreads)
+                procstats.running = true;
             network.reload();
             disk.reload();
             fastfetch.running = true;
@@ -308,6 +312,7 @@ Singleton {
                 const uptime_minutes = Math.floor((datas[4].result.uptime - uptime_hours * 3600000) / 60000);
                 const uptime_seconds = Math.floor((datas[4].result.uptime - uptime_hours * 3600000 - uptime_minutes * 60000) / 1000);
                 root.uptime = `${uptime_hours}h${uptime_minutes}m${uptime_seconds}s`;
+                root.uptime_raw = datas[4].result.uptime / 1000 ?? 0;
 
                 // WM
                 root.wm = datas[6].result.prettyName;
@@ -467,24 +472,57 @@ Singleton {
     //     }
     // }
 
-    // New get CPU STAT
     Process {
-        id: cpustat
+        id: procstats
 
-        command: [root.configdir + "/scripts/cpustats", root.polling_time]
+        // running: true
+        command: [root.configdir + "/scripts/procstats" // 0. program
+            , "5"     // top_n
+            , 50 * root.cputhreads  // cpu_spike_threshold (%)
+            , "500.0" // ram_spike_threshold (MB)
+            , "500.0" // gpu_spike_threshold (%)
+            , "500.0" // vram_spike_threshold (MB)
+            , "1000"   // interval (ms)
+            , "300"   // milestone_sec (s)
+            , 80 * root.cputhreads   // high_cpu_thresh (%)
+            , "80"   // high_gpu_thresh (%)
+        ]
 
         stdout: SplitParser {
             splitMarker: ""
             onRead: text => {
                 if (text) {
                     const data = JSON.parse(text);
-                    let cpustats = data.cores;
-                    let total = 0;
-                    for (const cpu of cpustats) {
-                        total += cpu;
+                    // console.log(JSON.stringify(data, null, 2));
+                    root.procstats = data;
+                }
+            }
+        }
+    }
+
+    // New get CPU STAT
+    Process {
+        id: cpustat
+
+        // running: true
+        command: [root.configdir + "/scripts/cpustats", root.polling_time]
+
+        stdout: SplitParser {
+            splitMarker: ""
+            onRead: text => {
+                if (text) {
+                    try {
+                        const data = JSON.parse(text);
+                        let cpustats = data.cores;
+                        let total = 0;
+                        for (const cpu of cpustats) {
+                            total += cpu;
+                        }
+                        root.cpuusage = total / data.count;
+                        root.cpustats = cpustats;
+                    } catch (e) {
+                        console.log("SystemInfo (cpustat): Can't parse data!");
                     }
-                    root.cpuusage = total / data.count;
-                    root.cpustats = cpustats;
                 }
             }
         }

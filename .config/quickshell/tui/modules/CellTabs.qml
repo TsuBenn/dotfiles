@@ -25,7 +25,24 @@ Item {
 
     property var items: []
 
+    // [2, 0] Disables item 0 and 2
+    property var disabled: []
+
     property int selected: 0
+
+    onDisabledChanged: {
+        if (disabled.length == items.length) {
+            console.warn("CellTabs: Cannot disable all tabs, at least 1 tab must be available!");
+            disabled = [];
+            return;
+        }
+        while (disabled.includes(selected)) {
+            selected -= 1;
+            if (selected == 0) {
+                selected = items.length - 1;
+            }
+        }
+    }
 
     property bool connect: false
 
@@ -35,6 +52,7 @@ Item {
 
         property color base: Colors.fgBase
 
+        property color disabled: Colors.bgOverlay
         property color inactive: Colors.fgSubtle
         property color active: Colors.accentStrong
         property color onActive: Colors.onAccent
@@ -109,8 +127,9 @@ Item {
 
                     property string label: modelData
                     property bool active: root.selected == index
+                    property bool disabled: root.disabled.includes(index)
 
-                    w: label.length + 2
+                    w: label_text.w + 2
                     h: 2
 
                     color: "transparent"
@@ -120,14 +139,16 @@ Item {
                         spacing: 0
 
                         CellText {
-                            text: ` ${tab.label} `
+                            id: label_text
+                            Layout.leftMargin: Cell.w(1)
+                            text: tab.label
                             font: tab.active ? Cell.fontB : Cell.font
-                            color: tab.active ? root.color.base : root.color.inactive
+                            color: tab.disabled ? Colors.bgOverlay : (tab.active ? root.color.base : root.color.inactive)
                         }
 
                         Cells {
 
-                            w: tab.active ? tab.label.length + 2 : 0
+                            w: tab.active ? label_text.w + 2 : 0
                             h: 1
 
                             color: tab.active ? root.color.bg : "transparent"
@@ -136,7 +157,7 @@ Item {
 
                             CellSeparator {
                                 padding: 1
-                                w: tab.label.length + 2
+                                w: label_text.w + 2
                                 color: root.color.active
                                 bg: "transparent"
                             }
@@ -144,6 +165,8 @@ Item {
                     }
 
                     MouseControl {
+
+                        visible: !tab.disabled
 
                         anchors.fill: parent
 
