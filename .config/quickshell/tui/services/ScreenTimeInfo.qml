@@ -18,10 +18,7 @@ Singleton {
     Connections {
         target: SettingsInfo
         function onDebugSig() {
-            DBInfo.select("sessions", {
-                orderBy: "id DESC",
-                limit: 2
-            }, function (d) {
+            root.getDayDistribution(root.getDay(-2), function (d) {
                 console.log(JSON.stringify(d));
             });
         }
@@ -30,47 +27,7 @@ Singleton {
     property int count: 0
 
     Component.onCompleted: {
-        initDatabase();
-        loadSessionsFromDb();
         root.switchSession();
-    }
-
-    function initDatabase() {
-        // Opens local sqlite db file automatically handled by Qt
-        db = LocalStorage.openDatabaseSync("ScreenTimeDB", "1.0", "Screen Time Tracker", 5000000);
-        db.transaction(function (tx) {
-            tx.executeSql(`
-                CREATE TABLE IF NOT EXISTS sessions (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    app_class TEXT,
-                    title TEXT,
-                    name TEXT,
-                    date TEXT,
-                    start_time INTEGER,
-                    duration INTEGER
-                )
-            `);
-        });
-    }
-
-    function loadSessionsFromDb() {
-        let loaded = [];
-        db.readTransaction(function (tx) {
-            // Load history. For performance over months, you could scope this or load dynamically.
-            let rs = tx.executeSql("SELECT app_class, title, name, date, start_time, duration FROM sessions ORDER BY start_time ASC");
-            for (let i = 0; i < rs.rows.length; i++) {
-                let row = rs.rows.item(i);
-                loaded.push({
-                    "app_class": row.app_class,
-                    "title": row.title,
-                    "name": row.name,
-                    "date": row.date,
-                    "start_time": row.start_time,
-                    "duration": row.duration
-                });
-            }
-        });
-        root.sessions = loaded;
     }
 
     Connections {
@@ -118,6 +75,81 @@ Singleton {
         switchSession();
     }
 
+    function getDay(delta = 0) {
+        // 0 means today, 1 means tomorrow and -1 means yesterday and so on
+        const d = new Date();
+        d.setDate(d.getDate() + delta);
+        return d;
+    }
+
+    function getWeek(delta = 0) {
+        // 0 means today of this week, 1 means this day of next week and -1 means this day of last week and so on
+        const d = new Date();
+        d.setDate(d.getDate() + (delta * 7));
+        return d;
+    }
+
+    function getMonth(delta = 0) {
+        // 0 means today of this month, 1 means this day of next month and -1 means this day of last month and so on
+        const d = new Date();
+        d.setMonth(d.getMonth() + delta);
+        return d;
+    }
+
+    function getStartDay(date = new Date()) {
+        const d = new Date(date);
+        d.setHours(0, 0, 0, 0);
+        return d;
+    }
+
+    function getEndDay(date = new Date()) {
+        const d = new Date(date);
+        d.setHours(23, 59, 59, 999);
+        return d;
+    }
+
+    function getStartMonth(date = new Date()) {
+        const d = new Date(date);
+        return new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0, 0);
+    }
+
+    function getEndMonth(date = new Date()) {
+        const d = new Date(date);
+        // Passing 0 as the day rolls us back to the last day of the previous month,
+        // so we look at month + 1 and day 0 to get the actual end of this month.
+        return new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
+    }
+
+    function getStartWeek(date = new Date()) {
+        const d = new Date(date);
+        const dayOfWeek = d.getDay();
+        const distanceToMonday = (dayOfWeek === 0 ? 7 : dayOfWeek) - 1;
+
+        d.setDate(d.getDate() - distanceToMonday);
+        d.setHours(0, 0, 0, 0);
+        return d;
+    }
+
+    function getEndWeek(date = new Date()) {
+        const d = new Date(date);
+        const dayOfWeek = d.getDay();
+        const distanceToSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+
+        d.setDate(d.getDate() + distanceToSunday);
+        d.setHours(23, 59, 59, 999);
+        return d;
+    }
+
+    function getStartYear(date = new Date()) {
+        const d = new Date(date);
+        return new Date(d.getFullYear(), 0, 1, 0, 0, 0, 0);
+    }
+
+    function getEndYear(date = new Date()) {
+        const d = new Date(date);
+        return new Date(d.getFullYear(), 11, 31, 23, 59, 59, 999);
+    }
+
     Timer {
         id: switching_delay
         interval: 100
@@ -140,36 +172,33 @@ Singleton {
         }
     }
 
-    function getTotalScreenTime(sessionsList) {
-        if (!sessionsList || sessionsList.length === 0)
-            return 0;
-        return sessionsList.reduce((total, session) => total + session.duration, 0);
+    function getTotalScreenTime(start = getStartDay(), end = getEndDay(), callback) {
+        DBInfo.query(`SELECT SUM(duration) AS total FROM sessions WHERE start_time BETWEEN ? AND ?`, [start.getTime(), end.getTime()], callback);
     }
 
-    function calculateTimeDivisions(daysModel, steps = 4) {
-        if (!daysModel || daysModel.length === 0) {
-            return {
-                axisMaxSeconds: 3600
-            };
+    function getDayDistribution(app_class = "all", date = getDay(), callback) {
+        let dist = [];
+        let splits = 6;
+        let slot = ["00-04", "04-08", "08-12", "12-16", "16-20", "20-24"];
+        let start = getStartDay(date).getTime();
+        let end = getEndDay(date).getTime();
+        let interval = (end - start) / splits;
+        for (let i = 0; i < splits; i++) {
+            dist.push(`SUM(CASE WHEN start_time BETWEEN ${start + (i * interval)} AND ${start + ((i + 1) * interval)} THEN duration ELSE 0 END) AS "${slot[i]}"`);
         }
-        let realMax = Math.max(...daysModel.map(d => d.duration || 0));
-        if (realMax === 0)
-            return {
-                axisMaxSeconds: 3600
-            };
+        DBInfo.query(`SELECT ${dist.join(", ")} FROM sessions WHERE app_class = 'com.mitchellh.ghostty'`, [], function (d) {
+            let result = [];
+            for (const slot in d[0]) {
+                result.push({
+                    slot: slot,
+                    duration: d[0][slot]
+                });
+            }
+            callback(result);
+        });
+    }
 
-        let paddedMax = realMax * 1.15;
-        let axisMaxSeconds;
-
-        if (paddedMax <= 3600) {
-            axisMaxSeconds = Math.ceil(paddedMax / 900) * 900;
-        } else {
-            let stepInSeconds = 7200;
-            axisMaxSeconds = Math.ceil(paddedMax / stepInSeconds) * stepInSeconds;
-        }
-        return {
-            axisMaxSeconds
-        };
+    function getWeekDistribution() {
     }
 
     function getPeriodDayCount(range, date = new Date()) {

@@ -185,7 +185,7 @@ SETTINGS = [
                 "description": "Hide status bar, hover to peek at it.",
                 "category": "settings",
                 "type": "exec",
-                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle", "hidebar"],
+                "value": ["qs", "-c", "tui", "ipc", "call", "config", "toggle", "hideBar"],
             },
             {
                 "label": "{optimizeMemory} Memory optimization mode",
