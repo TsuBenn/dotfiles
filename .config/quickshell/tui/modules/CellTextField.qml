@@ -535,8 +535,8 @@ Item {
             return false;
         }
         let rm = root.text[cursorPos - 1];
-        root.text = root.text.slice(0, cursorPos - 1) + root.text.slice(cursorPos);
-        root.cursorPos;
+        root.cursorPos--;
+        root.text = root.text.slice(0, cursorPos) + root.text.slice(cursorPos + 1);
         if (track)
             root.textRemoved(rm);
         return true;

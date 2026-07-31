@@ -29,7 +29,8 @@ Singleton {
     // Initializer for Isolated Singletons
 
     property var db: initialized ? DBInfo.path : 0
-    property var screentime: initialized ? ScreenTimeInfo.sessions : 0
+    property var screentime: initialized ? ScreenTimeInfo.db : 0
+    property var procstats: initialized ? ProcessInfo.procstats : 0
 
     //
 

@@ -353,7 +353,7 @@ Scope {
                                         {
                                             label: "Manage wallpapers",
                                             action: () => {
-                                                PopupManager.open("wallpaper");
+                                                FloatsManager.open("wallpaper");
                                             }
                                         },
                                         {

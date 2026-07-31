@@ -1,68 +1,4 @@
 {
-  "MO": [
-    {
-      "title": "UNI-MAD101 (P.421)",
-      "body": "Discrete Mathematics",
-      "span": 1,
-      "urgency": 0,
-      "time": "15:00"
-    },
-    {
-      "title": "UNI-PRO192 (P.126)",
-      "body": "Object Oriented Programming",
-      "span": 1,
-      "urgency": 0,
-      "time": "12:30"
-    }
-  ],
-  "TU": [
-    {
-      "title": "UNI-NWC204 (P.231)",
-      "body": "Computer Networking",
-      "span": 1,
-      "urgency": 0,
-      "time": "12:30"
-    },
-    {
-      "title": "UNI-OSG202 (P.125)",
-      "body": "Operating Systems",
-      "span": 1,
-      "urgency": 0,
-      "time": "15:00"
-    }
-  ],
-  "TH": [
-    {
-      "title": "UNI-PRO192 (P.126)",
-      "body": "Object Oriented Programming",
-      "span": 1,
-      "urgency": 0,
-      "time": "12:30"
-    },
-    {
-      "title": "UNI-MAD101 (P.421)",
-      "body": "Discrete Mathematics",
-      "span": 1,
-      "urgency": 0,
-      "time": "15:00"
-    }
-  ],
-  "FR": [
-    {
-      "title": "UNI-NWC204 (P.231)",
-      "body": "Computer Networking",
-      "span": 1,
-      "urgency": 0,
-      "time": "12:30"
-    },
-    {
-      "title": "UNI-OSG202 (P.125)",
-      "body": "Operating System",
-      "span": 1,
-      "urgency": 0,
-      "time": "15:00"
-    }
-  ],
   "15-05-2026": [
     {
       "title": "UNI-OSG202 (P.125)",
@@ -79,31 +15,6 @@
       "span": 1,
       "urgency": 0,
       "time": "19:30"
-    }
-  ],
-  "29-07-2026": [
-    {
-      "title": "MAD101-FE (P.121)",
-      "body": "Discrete Mathematics Final Exam",
-      "span": 1,
-      "urgency": 2,
-      "time": "12:50"
-    }
-  ],
-  "30-07-2026": [
-    {
-      "title": "NWC204-FE (P.420)",
-      "body": "Computer Networking Final Exam",
-      "span": 1,
-      "urgency": 2,
-      "time": "07:30"
-    },
-    {
-      "title": "NWC204-FE (P.420)",
-      "body": "Computer Networking Final Exam",
-      "span": 1,
-      "urgency": 2,
-      "time": "07:30"
     }
   ],
   "01-08-2026": [
@@ -131,15 +42,6 @@
       "span": 1,
       "urgency": 0,
       "time": "14:15"
-    }
-  ],
-  "19-07-2026": [
-    {
-      "title": "PRO192-PE (P.234)",
-      "body": "Object Oriented Programming Practical Exam",
-      "span": 1,
-      "urgency": 2,
-      "time": "09:10"
     }
   ]
 }

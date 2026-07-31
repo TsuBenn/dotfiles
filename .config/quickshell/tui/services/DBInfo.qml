@@ -9,38 +9,58 @@ import QtQuick
 Singleton {
     id: root
 
+    property bool active: process.running
     property string path: "/scripts/db_worker.py"
     property string db_path: "/scripts/system_data.db"
 
     property int _nextId: 1
     property var _callbacks: ({})
 
+    function sql(strings, ...values) {
+        let text = strings.reduce((acc, str, i) => acc + str + (i < values.length ? "?" : ""), "");
+        return {
+            sql: text.replace(/\s+/g, " ").trim(),
+            params: values
+        };
+    }
+
     // Fire-and-forget execution (CREATE TABLE, INSERT, UPDATE, DELETE)
-    function exec(sql, params, callback) {
+    function exec(query, callback) {
         let id = root._nextId++;
 
         if (callback) {
             root._callbacks[id] = callback;
         }
 
-        let paramStr = params ? JSON.stringify(params) : "";
-        // Protocol: <id>|<action>|<sql>|[params_json]\n
-        let payload = `${id}|exec|${sql}|${paramStr}\n`;
+        let paramStr = query.params && query.params.length ? JSON.stringify(query.params) : "";
+        let payload = `${id}|exec|${query.sql}|${paramStr}\n`;
 
         process.write(payload);
     }
 
     // Query on demand with direct data callback (SELECT)
-    function query(sql, params, callback) {
+    function query(query, callback) {
         let id = root._nextId++;
 
         if (callback) {
             root._callbacks[id] = callback;
         }
 
-        let paramStr = params ? JSON.stringify(params) : "";
-        // Protocol: <id>|<action>|<sql>|[params_json]\n
-        let payload = `${id}|query|${sql}|${paramStr}\n`;
+        let paramStr = query.params && query.params.length ? JSON.stringify(query.params) : "";
+        let payload = `${id}|query|${query.sql}|${paramStr}\n`;
+
+        process.write(payload);
+    }
+
+    function execMany(statements, callback) {
+        let id = root._nextId++;
+
+        if (callback) {
+            root._callbacks[id] = callback;
+        }
+
+        let payload_array = statements.map(s => [s.sql, s.params || []]);
+        let payload = `${id}|exec_many|${JSON.stringify(payload_array)}|\n`;
 
         process.write(payload);
     }
@@ -59,7 +79,7 @@ Singleton {
         command: ["python", SystemInfo.configdir + root.path, "--db", SystemInfo.configdir + root.db_path]
 
         stdout: SplitParser {
-            splitMarker: ""
+            splitMarker: "\n"
             onRead: data => {
                 if (!data || data.trim() === "")
                     return;
@@ -83,13 +103,14 @@ Singleton {
                         cb(res.data !== undefined ? res.data : null);
                     } else {
                         console.error(`DBInfo: Error on request #${reqId}:`, res.message);
+                        cb(null); // or cb(undefined, res.message) if you want to pass the error through
                     }
                 }
             }
         }
 
         stderr: SplitParser {
-            splitMarker: ""
+            splitMarker: "\n"
             onRead: data => console.error("DBInfo error: ", data)
         }
     }

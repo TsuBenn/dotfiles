@@ -258,8 +258,6 @@ Singleton {
             // cpustat.reload();
             if (!cpustat.running)
                 cpustat.running = true;
-            if (!procstats.running && root.cputhreads)
-                procstats.running = true;
             network.reload();
             disk.reload();
             fastfetch.running = true;
@@ -471,34 +469,6 @@ Singleton {
     //         }
     //     }
     // }
-
-    Process {
-        id: procstats
-
-        // running: true
-        command: [root.configdir + "/scripts/procstats" // 0. program
-            , "5"     // top_n
-            , 50 * root.cputhreads  // cpu_spike_threshold (%)
-            , "500.0" // ram_spike_threshold (MB)
-            , "500.0" // gpu_spike_threshold (%)
-            , "500.0" // vram_spike_threshold (MB)
-            , "1000"   // interval (ms)
-            , "300"   // milestone_sec (s)
-            , 80 * root.cputhreads   // high_cpu_thresh (%)
-            , "80"   // high_gpu_thresh (%)
-        ]
-
-        stdout: SplitParser {
-            splitMarker: ""
-            onRead: text => {
-                if (text) {
-                    const data = JSON.parse(text);
-                    // console.log(JSON.stringify(data, null, 2));
-                    root.procstats = data;
-                }
-            }
-        }
-    }
 
     // New get CPU STAT
     Process {

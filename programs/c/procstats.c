@@ -19,9 +19,6 @@ typedef struct {
     double gpu_usage;
     unsigned long long ram_bytes;
     unsigned long long vram_bytes;
-    int sustained_cpu_sec;
-    int sustained_gpu_sec;
-    int sustained_vram_sec;
 } ProcessInfo;
 
 typedef struct {
@@ -194,9 +191,6 @@ static void capture_snapshot(ProcessSnapshot *snap) {
         proc->vram_bytes = 0;
         proc->cpu_usage = 0.0;
         proc->gpu_usage = 0.0;
-        proc->sustained_cpu_sec = 0;
-        proc->sustained_gpu_sec = 0;
-        proc->sustained_vram_sec = 0;
 
         snap->count++;
     }
@@ -213,12 +207,8 @@ static inline ProcessInfo *find_proc_by_pid(ProcessSnapshot *snap, int pid) {
     return NULL;
 }
 
-static void calculate_cpu_and_sustained(ProcessSnapshot *curr, ProcessSnapshot *prev,
-                                         int interval_ms, double high_cpu_thresh,
-                                         double high_gpu_thresh, double vram_thresh_mb) __attribute__((hot));
-static void calculate_cpu_and_sustained(ProcessSnapshot *curr, ProcessSnapshot *prev,
-                                         int interval_ms, double high_cpu_thresh,
-                                         double high_gpu_thresh, double vram_thresh_mb) {
+static void calculate_cpu_usage(ProcessSnapshot *curr, ProcessSnapshot *prev) __attribute__((hot));
+static void calculate_cpu_usage(ProcessSnapshot *curr, ProcessSnapshot *prev) {
     if (prev->total_system_time == 0) return;
 
     unsigned long long system_delta = curr->total_system_time - prev->total_system_time;
@@ -230,9 +220,6 @@ static void calculate_cpu_and_sustained(ProcessSnapshot *curr, ProcessSnapshot *
         if (num_cores < 1) num_cores = 1;
     }
 
-    int tick_sec = interval_ms / 1000;
-    if (tick_sec < 1) tick_sec = 1;
-
     for (int i = 0; i < curr->count; i++) {
         ProcessInfo *c = &curr->procs[i];
         ProcessInfo *p = find_proc_by_pid(prev, c->pid);
@@ -240,25 +227,6 @@ static void calculate_cpu_and_sustained(ProcessSnapshot *curr, ProcessSnapshot *
         if (p) {
             unsigned long long proc_delta = (c->utime + c->stime) - (p->utime + p->stime);
             c->cpu_usage = ((double)proc_delta / (double)system_delta) * 100.0 * num_cores;
-
-            if (c->cpu_usage >= high_cpu_thresh) {
-                c->sustained_cpu_sec = p->sustained_cpu_sec + tick_sec;
-            } else {
-                c->sustained_cpu_sec = 0;
-            }
-
-            if (c->gpu_usage >= high_gpu_thresh) {
-                c->sustained_gpu_sec = p->sustained_gpu_sec + tick_sec;
-            } else {
-                c->sustained_gpu_sec = 0;
-            }
-
-            double vram_mb = (double)c->vram_bytes / (1024.0 * 1024.0);
-            if (vram_mb >= vram_thresh_mb) {
-                c->sustained_vram_sec = p->sustained_vram_sec + tick_sec;
-            } else {
-                c->sustained_vram_sec = 0;
-            }
         }
     }
 }
@@ -268,7 +236,6 @@ static int compare_cpu(const void *a, const void *b) {
     return (diff > 0) - (diff < 0);
 }
 
-// nvtop-style sorting: primary by GPU %, secondary by VRAM
 static int compare_gpu(const void *a, const void *b) {
     const ProcessInfo *pa = (const ProcessInfo *)a;
     const ProcessInfo *pb = (const ProcessInfo *)b;
@@ -295,7 +262,7 @@ static int compare_vram(const void *a, const void *b) {
 static void emit_json_frame(ProcessSnapshot *curr, ProcessSnapshot *prev, int top_n,
                             double cpu_spike_thresh, double ram_thresh_mb,
                             double gpu_spike_thresh, double vram_thresh_mb,
-                            int milestone_sec, long num_cores) {
+                            long num_cores) {
     static ProcessInfo sorted_cpu[MAX_PROCS];
     static ProcessInfo sorted_gpu[MAX_PROCS];
     static ProcessInfo sorted_ram[MAX_PROCS];
@@ -424,26 +391,6 @@ static void emit_json_frame(ProcessSnapshot *curr, ProcessSnapshot *prev, int to
             first = false;
         }
     }
-    printf("],");
-
-    // 9. sustained_alerts
-    printf("\"sustained_alerts\":[");
-    first = true;
-    for (int i = 0; i < curr->count; i++) {
-        ProcessInfo *c = &curr->procs[i];
-
-        bool cpu_hit = (c->sustained_cpu_sec > 0 && c->sustained_cpu_sec % milestone_sec == 0);
-        bool gpu_hit = (c->sustained_gpu_sec > 0 && c->sustained_gpu_sec % milestone_sec == 0);
-        bool vram_hit = (c->sustained_vram_sec > 0 && c->sustained_vram_sec % milestone_sec == 0);
-
-        if (cpu_hit || gpu_hit || vram_hit) {
-            if (!first) printf(",");
-            printf("{\"pid\":%d,\"name\":\"%s\",\"cpu_sec\":%d,\"gpu_sec\":%d,\"vram_sec\":%d,\"cpu\":%.1f,\"gpu\":%.1f,\"vram_mb\":%.1f}",
-                   c->pid, c->name, c->sustained_cpu_sec, c->sustained_gpu_sec, c->sustained_vram_sec,
-                   c->cpu_usage, c->gpu_usage, (double)c->vram_bytes / (1024.0 * 1024.0));
-            first = false;
-        }
-    }
     printf("]}\n");
     fflush(stdout);
 }
@@ -455,9 +402,6 @@ int main(int argc, char *argv[]) {
     double gpu_spike_thresh = 30.0;
     double vram_spike_thresh = 500.0;
     int interval_ms = 1000;
-    int milestone_sec = 300;
-    double high_cpu_thresh = 80.0;
-    double high_gpu_thresh = 80.0;
 
     if (argc > 1) top_n = atoi(argv[1]);
     if (argc > 2) cpu_spike_thresh = atof(argv[2]);
@@ -465,12 +409,8 @@ int main(int argc, char *argv[]) {
     if (argc > 4) gpu_spike_thresh = atof(argv[4]);
     if (argc > 5) vram_spike_thresh = atof(argv[5]);
     if (argc > 6) interval_ms = atoi(argv[6]);
-    if (argc > 7) milestone_sec = atoi(argv[7]);
-    if (argc > 8) high_cpu_thresh = atof(argv[8]);
-    if (argc > 9) high_gpu_thresh = atof(argv[9]);
 
     if (interval_ms < 100) interval_ms = 100;
-    if (milestone_sec < 1) milestone_sec = 1;
 
     useconds_t sleep_us = (useconds_t)interval_ms * 1000;
 
@@ -481,14 +421,13 @@ int main(int argc, char *argv[]) {
 
     while (1) {
         capture_snapshot(&current_snapshot);
-        calculate_cpu_and_sustained(&current_snapshot, &prev_snapshot, interval_ms,
-                                     high_cpu_thresh, high_gpu_thresh, vram_spike_thresh);
+        calculate_cpu_usage(&current_snapshot, &prev_snapshot);
 
         if (prev_snapshot.total_system_time != 0) {
             emit_json_frame(&current_snapshot, &prev_snapshot, top_n,
                             cpu_spike_thresh, ram_spike_thresh,
                             gpu_spike_thresh, vram_spike_thresh,
-                            milestone_sec, num_cores);
+                            num_cores);
         }
 
         prev_snapshot = current_snapshot;

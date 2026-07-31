@@ -25,30 +25,39 @@ ColumnLayout {
         repeat: true
         triggeredOnStart: true
         onTriggered: {
-            let sessions = [];
             if (screentime_range.selected == 0) {
-                sessions = ScreenTimeInfo.getDaySessions(date_tk.date.getFullYear(), date_tk.date.getMonth() + 1, date_tk.date.getDate());
+                ScreenTimeInfo.getDaySessions(date_tk.date, d => {
+                    screentime_list.model = d;
+                    total_screentime.text = DateTime.formatDuration(d.reduce((acc, s) => acc + s.total, 0));
+                });
+                ScreenTimeInfo.getDayDistribution(date_tk.date, d => {
+                    screentime_dist_list.model = d;
+                });
+                ScreenTimeInfo.getDayTimeline(date_tk.date, d => {
+                    screentime_timeline_list.model = d;
+                });
             } else if (screentime_range.selected == 1) {
-                sessions = ScreenTimeInfo.getWeekSessions(date_tk.date.getFullYear(), date_tk.date.getMonth() + 1, date_tk.date.getDate());
+                ScreenTimeInfo.getAverageScreenTime(date_tk.date, "week", d => {
+                    avg_screentime.text = DateTime.formatDuration(d);
+                });
+                ScreenTimeInfo.getWeekSessions(date_tk.date, d => {
+                    screentime_list.model = d;
+                    total_screentime.text = DateTime.formatDuration(d.reduce((acc, s) => acc + s.total, 0));
+                });
+                ScreenTimeInfo.getWeekDistribution(date_tk.date, d => {
+                    screentime_dist_list.model = d;
+                });
             } else if (screentime_range.selected == 2) {
-                sessions = ScreenTimeInfo.getMonthSessions(date_tk.date.getFullYear(), date_tk.date.getMonth() + 1);
-            }
-
-            total_screentime.text = ScreenTimeInfo.formatDuration(ScreenTimeInfo.getTotalScreenTime(sessions));
-            avg_screentime.text = ScreenTimeInfo.formatDuration(ScreenTimeInfo.getAverageScreenTime(sessions, screentime_range.selected, date_tk.date));
-
-            if (screentime_mode.selected == 0)
-                screentime_list.model = ScreenTimeInfo.normalizeSessions(sessions);
-            else if (screentime_mode.selected == 1) {
-                screentime_dist_list.model = ScreenTimeInfo.normalizeSessions(sessions);
-                // screentime_dist.model and .maxDuration are declarative bindings now (see below) —
-                // they recalc themselves automatically once screentime_dist_list.model changes above.
-                // No manual assignment needed here anymore.
-            } else if (screentime_mode.selected == 2 && screentime_range.selected == 0) {
-                screentime_timeline_list.model = ScreenTimeInfo.getDayTimelineByApp(date_tk.date);
-                screentime_timeline.startMs = ScreenTimeInfo.getDayStartMs(date_tk.date);
-                screentime_timeline.endMs = ScreenTimeInfo.getDayEndMs(date_tk.date);
-                screentime_timeline.currentTime_offset = Math.floor(screentime_timeline.timeline_w * ((Date.now() - screentime_timeline.startMs) / screentime_timeline.dayMs));
+                ScreenTimeInfo.getAverageScreenTime(date_tk.date, "month", d => {
+                    avg_screentime.text = DateTime.formatDuration(d);
+                });
+                ScreenTimeInfo.getMonthSessions(date_tk.date, d => {
+                    screentime_list.model = d;
+                    total_screentime.text = DateTime.formatDuration(d.reduce((acc, s) => acc + s.total, 0));
+                });
+                ScreenTimeInfo.getMonthDistribution(date_tk.date, d => {
+                    screentime_dist_list.model = d;
+                });
             }
         }
     }
@@ -176,6 +185,7 @@ ColumnLayout {
                 date_tk.offset = 0;
                 date_tk.date = new Date();
                 screentime_timer.restart();
+                screentime_dist_list.model = [];
             }
         }
         CellTabs {
@@ -213,7 +223,7 @@ ColumnLayout {
 
             model: []
 
-            property int maxDuration: model.length ? Math.max(...model.map(s => s.duration)) : 1
+            property int maxDuration: model.length ? Math.max(...model.map(s => s.total)) : 1
 
             itemH: 2
 
@@ -253,12 +263,12 @@ ColumnLayout {
                         w: 2
                         h: 1
                         hideOnFail: false
-                        icon: [screentime_bar.modelData.name, screentime_bar.modelData.app_class]
+                        icon: [screentime_bar.modelData.app_class]
                     }
 
                     CellText {
                         id: screentime_app
-                        text: screentime_bar.modelData.name ?? ""
+                        text: DesktopInfo.fetchEntry(screentime_bar.modelData.app_class) ?? screentime_bar.modelData.app_class
                         font: Cell.fontB
                         color: Colors.fgBase
                         preferedW: 20
@@ -266,7 +276,7 @@ ColumnLayout {
 
                     CellProgressSquare {
                         id: screentime_progress
-                        percent: (screentime_bar.modelData.duration / screentime_list.maxDuration) * 100
+                        percent: (screentime_bar.modelData.total / screentime_list.maxDuration) * 100
                         w: screentime_list.w - screentime_app.w - 15
                         fg: Colors.secondary
                         percentSmoother: 0
@@ -274,7 +284,7 @@ ColumnLayout {
 
                     CellText {
                         Layout.leftMargin: Cell.w(1)
-                        text: ScreenTimeInfo.formatDuration(screentime_bar.modelData.duration)
+                        text: DateTime.formatDuration(screentime_bar.modelData.total)
                         font: Cell.fontB
                         preferedW: 6
                         alignRight: true
@@ -296,27 +306,54 @@ ColumnLayout {
             property int selected: -1
 
             property var model: {
-                const app_class = screentime_dist.selected == -1 ? "all" : screentime_dist_list.model[screentime_dist.selected]?.app_class;
-                if (!app_class)
+                if (screentime_dist_list.model.length == 0)
                     return [];
-
-                if (screentime_range.selected === 0) {
-                    // Day mode -> hourly buckets (2h chunks)
-                    return ScreenTimeInfo.getAppDayBuckets(app_class, date_tk.date, 4);
-                } else if (screentime_range.selected === 2) {
-                    // Month mode -> W1..W5 buckets
-                    return ScreenTimeInfo.getAppMonthlyWeeks(app_class, date_tk.date.getFullYear(), date_tk.date.getMonth() + 1);
+                if (selected > -1) {
+                    return screentime_dist_list.model[selected]?.blocks;
                 }
 
-                // Week mode -> Mon..Sun buckets
-                return ScreenTimeInfo.getAppWeeklyDays(app_class, date_tk.date);
+                let result = screentime_dist_list.model.reduce((acc, item) => {
+                    item.blocks.forEach(block => {
+                        if (!acc[block.label]) {
+                            acc[block.label] = 0;
+                        }
+                        acc[block.label] += block.duration;
+                    });
+                    return acc;
+                }, {});
+
+                return Object.entries(result).map(([label, duration]) => ({
+                            label,
+                            duration
+                        }));
             }
 
-            // onModelChanged: {
-            //     console.log(JSON.stringify(model, null, 2));
-            // }
+            onVisibleChanged: {
+                selected = -1;
+            }
 
-            property int maxDuration: ScreenTimeInfo.calculateTimeDivisions(screentime_dist.model, 4).axisMaxSeconds
+            onModelChanged: {
+                if (selected > model.length - 1)
+                    selected = -1;
+                // console.log(JSON.stringify(model, null, 2));
+            }
+
+            property int maxDuration: {
+                const NICE_TIME_STEPS_MS = [1, 5, 10, 15, 30              // 1s, 5s, 10s, 15s, 30s
+                    , 60, 5 * 60, 10 * 60, 15 * 60, 30 * 60               // 1m, 5m, 10m, 15m, 30m
+                    , 3600, 2 * 3600, 3 * 3600, 6 * 3600, 12 * 3600       // 1h, 2h, 3h, 6h, 12h
+                    , 86400, 2 * 86400, 7 * 86400, 14 * 86400, 30 * 86400 // 1d, 2d, 1wk, 2wk, ~1mo
+                ];
+                let maxValue = Math.max(...model.map(s => s.duration));
+                let divisions = 4;
+                if (maxValue <= 0)
+                    return NICE_TIME_STEPS_MS[0] * divisions;
+
+                let roughStep = maxValue / divisions;
+                let step = NICE_TIME_STEPS_MS.find(s => s >= roughStep) ?? NICE_TIME_STEPS_MS[NICE_TIME_STEPS_MS.length - 1];
+
+                return step * divisions;
+            }
 
             onSelectedChanged: {
                 screentime_timer.restart();
@@ -326,6 +363,7 @@ ColumnLayout {
                 id: screentime_dist_list
                 h: screentime.h
                 w: 26
+
                 model: []
 
                 onModelChanged: {
@@ -362,7 +400,7 @@ ColumnLayout {
                         w: screentime_dist_list.contentW
                         h: 1
                         centered: false
-                        text: "   " + (parent.modelData.name ?? "")
+                        text: "   " + (DesktopInfo.fetchEntry(screentime_dist_item.modelData.app_class) ?? screentime_dist_item.modelData.app_class)
                         font: Cell.fontB
                         color: parent.selected ? Colors.accentStrong : ["transparent", Colors.bgOverlay, Colors.bgOverlay]
                         fg: parent.selected ? Colors.onAccent : Colors.fgBase
@@ -379,7 +417,7 @@ ColumnLayout {
                             w: 2
                             h: 1
                             hideOnFail: false
-                            icon: screentime_dist_item.modelData.app_class == "all" ? "" : [screentime_dist_item.modelData.app_class, screentime_dist_item.modelData.name]
+                            icon: screentime_dist_item.modelData.app_class
                         }
                     }
 
@@ -447,7 +485,9 @@ ColumnLayout {
 
                     delegate: RowLayout {
                         id: dist_day
+
                         Layout.alignment: Qt.AlignBottom
+
                         required property int index
                         required property var modelData
 
@@ -468,7 +508,7 @@ ColumnLayout {
                             spacing: 0
 
                             Cells {
-                                w: 6
+                                w: dist_day.w
                                 h: screentime.h - 2
                                 color: "transparent"
 
@@ -504,9 +544,8 @@ ColumnLayout {
                                         onHoveredChanged: {
                                             if (hovered && screentime_dist.model[dist_day.index].duration > 0) {
                                                 timeline_status.name = screentime_dist.selected == -1 ? "All" : screentime_dist_list.model[screentime_dist.selected]?.name;
-                                                timeline_status.time = ScreenTimeInfo.formatDuration(screentime_dist.model[dist_day.index].duration);
-                                                const d = screentime_dist.model[dist_day.index]?.day ?? "";
-                                                timeline_status.status = "(" + (screentime_range.selected === 1 ? d.slice(0, 2).toUpperCase() : d) + ")";
+                                                timeline_status.time = DateTime.formatDuration(screentime_dist.model[dist_day.index].duration);
+                                                timeline_status.status = "(" + screentime_dist.model[dist_day.index]?.label + ")";
                                             }
                                         }
                                     }
@@ -522,10 +561,7 @@ ColumnLayout {
                             }
 
                             CellText {
-                                text: {
-                                    const d = screentime_dist.model[dist_day.index]?.day ?? "";
-                                    return screentime_range.selected === 1 ? d.slice(0, 2).toUpperCase() : d;
-                                }
+                                text: screentime_dist.model[dist_day.index]?.label
                                 color: Colors.bgOverlay
                                 font: Cell.fontB
                                 preferedW: dist_day.w
@@ -555,7 +591,7 @@ ColumnLayout {
                         delegate: CellText {
                             required property int index
                             opacity: (index == 0 || index == 2) && (text.length <= 3 || text.includes("d"))
-                            text: ScreenTimeInfo.formatDuration(screentime_dist.maxDuration * ((4 - index) / 4))
+                            text: DateTime.formatDuration(screentime_dist.maxDuration * ((4 - index) / 4))
                             color: Colors.fgSubtle
                             preferedW: {
                                 if (text.includes("d")) {
@@ -582,8 +618,8 @@ ColumnLayout {
 
             property int mergeIntensity: 2
 
-            property var startMs: ScreenTimeInfo.getDayStartMs(date_tk.date)
-            property var endMs: ScreenTimeInfo.getDayEndMs(date_tk.date)
+            property var startMs: DateTime.getStartDay(date_tk.date).getTime()
+            property var endMs: DateTime.getEndDay(date_tk.date).getTime()
             property var dayMs: endMs - startMs
 
             property int scaler: 2 + screentime_timeline.timeline_scale
@@ -621,11 +657,12 @@ ColumnLayout {
                 timeline_offset = Math.max(0, Math.min(targetOffset, timeline_maxOffset));
             }
 
-            function setScaleKeepFocus(newScale) {
+            function setScaleKeepFocus(newScale, offset) {
+                let o = timeline_scale == 0 ? 1 : 0;
                 newScale = Math.max(Math.min(newScale, timeline_scaler.max), timeline_scaler.min);
                 // 1. Calculate the current visual center (in cell units) on screen
                 const viewWidth = timeline_viewWidth; // Your visible viewport cell width
-                const currentCenterPos = timeline_offset + viewWidth / 2;
+                const currentCenterPos = timeline_offset + Cell.wCount(offset) - o;
 
                 // 2. Determine what percentage of the TOTAL timeline width this center represents (0.0 to 1.0)
                 const centerRatio = currentCenterPos / timeline_w;
@@ -637,7 +674,7 @@ ColumnLayout {
                 const newCenterPos = centerRatio * timeline_w;
 
                 // 5. Shift offset back so that new center point aligns with the screen center
-                const newOffset = Math.round(newCenterPos - (viewWidth / 2));
+                const newOffset = Math.round(newCenterPos - Cell.wCount(offset) - o);
 
                 // 6. Clamp to valid bounds (prevent scrolling past 0 or maxOffset)
                 timeline_offset = Math.max(0, Math.min(newOffset, timeline_maxOffset));
@@ -764,11 +801,11 @@ ColumnLayout {
                                         w: 2
                                         h: 1
                                         hideOnFail: false
-                                        icon: [app_timeline.modelData.app_class, app_timeline.modelData.name]
+                                        icon: app_timeline.modelData.app_class
                                     }
 
                                     CellText {
-                                        text: app_timeline.modelData.name
+                                        text: DesktopInfo.fetchEntry(app_timeline.modelData.app_class) ?? app_timeline.modelData.app_class
                                         font: Cell.fontB
                                         preferedW: root.w - screentime_timeline.timeline_viewWidth - 7
                                         color: timeline_block_mouse.hovered ? Colors.onAccent : Colors.fgBase
@@ -828,7 +865,7 @@ ColumnLayout {
                                     color: "transparent"
 
                                     Repeater {
-                                        model: ScreenTimeInfo.mergeAdjacentBlocks(app_timeline.modelData.blocks, (screentime_timeline.dayMs / screentime_timeline.timeline_w) + screentime_timeline.mergeIntensity * 5000)
+                                        model: ScreenTimeInfo.compressBlocks(app_timeline.modelData.blocks, (screentime_timeline.dayMs / screentime_timeline.timeline_w) + screentime_timeline.mergeIntensity * 5000)
 
                                         delegate: Item {
                                             id: timeline_block
@@ -838,8 +875,8 @@ ColumnLayout {
                                             // Timestamps in float cell coordinates across the timeline
                                             // e.g., if a cell is 10 mins, 00:05 is cell 0.5
                                             readonly property real msPerCell: screentime_timeline.dayMs / screentime_timeline.timeline_w
-                                            readonly property real startCellFloat: (modelData.start - screentime_timeline.startMs) / msPerCell
-                                            readonly property real endCellFloat: (modelData.end - screentime_timeline.startMs) / msPerCell
+                                            readonly property real startCellFloat: (modelData.start_time - screentime_timeline.startMs) / msPerCell
+                                            readonly property real endCellFloat: (modelData.end_time - screentime_timeline.startMs) / msPerCell
 
                                             // Discrete cell indices
                                             readonly property int startCellIndex: Math.floor(startCellFloat)
@@ -850,7 +887,7 @@ ColumnLayout {
 
                                             // Active usage density (0.0 to 1.0) inside the usage block itself
                                             readonly property real blockDensity: {
-                                                const duration = modelData.end - modelData.start;
+                                                const duration = modelData.end_time - modelData.start_time;
                                                 const active = modelData.activeTime !== undefined ? modelData.activeTime : duration;
                                                 return duration > 0 ? Math.min(1.0, Math.max(0.2, active / duration)) : 1.0;
                                             }
@@ -898,9 +935,9 @@ ColumnLayout {
 
                                                 onHoveredChanged: {
                                                     if (hovered) {
-                                                        timeline_status.name = app_timeline.modelData.name + ":";
-                                                        timeline_status.time = ScreenTimeInfo.formatTimestampToHHMM(timeline_block.modelData.start) + " - " + ScreenTimeInfo.formatTimestampToHHMM(timeline_block.modelData.end);
-                                                        timeline_status.status = timeline_block.modelData.sessionCount > 1 ? "(Merged: " + timeline_block.modelData.sessionCount + ")" : "";
+                                                        timeline_status.name = (DesktopInfo.fetchEntry(app_timeline.modelData.app_class) ?? app_timeline.modelData.app_class) + ":";
+                                                        timeline_status.time = DateTime.formatTimestampToHHMM(timeline_block.modelData.start_time) + " - " + DateTime.formatTimestampToHHMM(timeline_block.modelData.end_time);
+                                                        timeline_status.status = "";
                                                     }
                                                 }
                                             }
@@ -934,13 +971,31 @@ ColumnLayout {
 
                         propagateComposedEvents: true
 
+                        property int oX
+                        property int oY
+                        property int oO
+
+                        onPressed: (button, event) => {
+                            if (button == "L" && screentime_timeline.timeline_scale > 0) {
+                                oX = event.x;
+                                oY = event.y;
+                                oO = screentime_timeline.timeline_offset;
+                            }
+                        }
+
+                        onMoved: (x, y) => {
+                            if (buttonDown == "L" && screentime_timeline.timeline_scale > 0) {
+                                screentime_timeline.timeline_offset = Math.min(Math.max(oO - Cell.wCount(x - oX), 0), screentime_timeline.timeline_maxOffset);
+                            }
+                        }
+
                         onWheel: (delta, event) => {
                             if (event.modifiers & Qt.ShiftModifier) {
                                 screentime_timeline.timeline_offset = Math.max(Math.min(screentime_timeline.timeline_offset - delta * 2, screentime_timeline.timeline_maxOffset), 0);
                                 event.accepted = true;
                                 return;
                             } else if ((event.modifiers & Qt.ControlModifier)) {
-                                screentime_timeline.setScaleKeepFocus(screentime_timeline.timeline_scale + delta);
+                                screentime_timeline.setScaleKeepFocus(screentime_timeline.timeline_scale + delta, event.x);
                                 event.accepted = true;
                                 return;
                             }

@@ -5,23 +5,16 @@ import json
 import os
 import argparse
 
-# Default database path
 DEFAULT_DB_PATH = os.path.expanduser("~/.config/quickshell/tui/scripts/system_data.db")
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Persistent SQLite IPC Worker")
-    parser.add_argument(
-        "--db",
-        type=str,
-        default=DEFAULT_DB_PATH,
-        help="Path to SQLite database file (default: ~/.config/quickshell/system_data.db)"
-    )
+    parser.add_argument("--db", type=str, default=DEFAULT_DB_PATH)
     return parser.parse_args()
 
 def init_db(db_path):
     resolved_path = os.path.expanduser(db_path)
     os.makedirs(os.path.dirname(resolved_path), exist_ok=True)
-
     conn = sqlite3.connect(resolved_path)
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.execute("PRAGMA synchronous=NORMAL;")
@@ -40,19 +33,29 @@ def main():
 
         req_id = None
         try:
-            # Protocol: <id>|<action>|<sql>|[params_json]
             parts = line.split("|", 3)
-
             req_id = int(parts[0])
             action = parts[1]
             sql = parts[2]
-
             params = json.loads(parts[3]) if len(parts) > 3 and parts[3] else []
 
             if action == "exec":
                 cursor.execute(sql, params)
                 conn.commit()
-                response = {"id": req_id, "status": "ok"}
+                response = {"id": req_id, "status": "ok", "data": cursor.lastrowid}
+
+            elif action == "exec_many":
+                statements = json.loads(sql)
+                last_id = None
+                try:
+                    for stmt_sql, stmt_params in statements:
+                        cursor.execute(stmt_sql, stmt_params)
+                        last_id = cursor.lastrowid
+                    conn.commit()
+                    response = {"id": req_id, "status": "ok", "data": last_id}
+                except Exception:
+                    conn.rollback()
+                    raise
 
             elif action == "query":
                 cursor.execute(sql, params)
