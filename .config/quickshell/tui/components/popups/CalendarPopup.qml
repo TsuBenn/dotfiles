@@ -1811,6 +1811,9 @@ CellPopup {
                                     action: () => selected = 2
                                 },
                             ]
+                            onActivated: index => {
+                                items[index].action();
+                            }
                         }
                     }
 

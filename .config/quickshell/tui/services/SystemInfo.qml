@@ -31,7 +31,7 @@ Singleton {
 
     //OS level
     property string username: "user"
-    property string homedir: "/home/user"
+    property string homedir
     property string configdir: homedir + "/.config/quickshell/tui"
     property string hostname: "host"
     property string os: "Linux"
@@ -61,7 +61,7 @@ Singleton {
 
     property var cpustats: ({}) // individual cores usage
 
-    property var procstats: ({}) // individual cores usage
+    property var process: [] // individual process usage
 
     property real memtotal
     property real memused
@@ -255,9 +255,13 @@ Singleton {
         repeat: true
         triggeredOnStart: true
         onTriggered: {
+            if (!root.homedir)
+                return;
             // cpustat.reload();
             if (!cpustat.running)
                 cpustat.running = true;
+            if (!procstat.running)
+                procstat.running = true;
             network.reload();
             disk.reload();
             fastfetch.running = true;
@@ -492,6 +496,29 @@ Singleton {
                         root.cpustats = cpustats;
                     } catch (e) {
                         console.log("SystemInfo (cpustat): Can't parse data!");
+                    }
+                }
+            }
+        }
+    }
+
+    // New get CPU STAT
+    Process {
+        id: procstat
+
+        // running: true
+        command: [root.configdir + "/scripts/procstats", root.polling_time, "json"]
+
+        stdout: SplitParser {
+            splitMarker: "\n"
+            onRead: text => {
+                if (text) {
+                    // console.log(text);
+                    try {
+                        const data = JSON.parse(text);
+                        root.process = data;
+                    } catch (e) {
+                        console.log("SystemInfo (procstat): Can't parse data!");
                     }
                 }
             }

@@ -1,438 +1,335 @@
+#include </opt/cuda/targets/x86_64-linux/include/nvml.h>
+#include <ctype.h>
+#include <dirent.h>
+#include <errno.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <dirent.h>
 #include <unistd.h>
-#include <ctype.h>
-#include <stdbool.h>
 
-#define MAX_PROCS 1024
-#define PATH_MAX_LEN 512
-#define COMM_MAX_LEN 256
+#define MAX_PIDS 2048
 
 typedef struct {
-    int pid;
-    char name[COMM_MAX_LEN];
-    unsigned long long utime;
-    unsigned long long stime;
-    double cpu_usage;
-    double gpu_usage;
-    unsigned long long ram_bytes;
-    unsigned long long vram_bytes;
-} ProcessInfo;
+  unsigned int pid;
+  unsigned long total_proc_ticks;
+} CpuSnap;
+
+CpuSnap prev_cpu_snaps[MAX_PIDS];
+int prev_cpu_count = 0;
 
 typedef struct {
-    ProcessInfo procs[MAX_PROCS];
-    int count;
-    unsigned long long total_system_time;
-} ProcessSnapshot;
+  unsigned int pid;
+  unsigned long long vram_bytes;
+  unsigned int gpu_util_pct;
+} GpuProcInfo;
 
-static ProcessSnapshot prev_snapshot = {0};
+GpuProcInfo gpu_procs[MAX_PIDS];
+int gpu_proc_count = 0;
 
-static inline unsigned long long get_total_cpu_time(void) __attribute__((always_inline));
-static inline unsigned long long get_total_cpu_time(void) {
-    FILE *fp = fopen("/proc/stat", "r");
-    if (!fp) return 0;
+unsigned long long last_seen_ts =
+    0; // Tracks newest NVML util sample seen so far
 
-    char line[256];
-    if (!fgets(line, sizeof(line), fp)) {
-        fclose(fp);
-        return 0;
-    }
-    fclose(fp);
+typedef enum { MODE_TABLE, MODE_JSON } OutputMode;
 
-    unsigned long long user, nice, system, idle, iowait, irq, softirq, steal;
-    if (sscanf(line, "cpu %llu %llu %llu %llu %llu %llu %llu %llu",
-               &user, &nice, &system, &idle, &iowait, &irq, &softirq, &steal) < 8) {
-        return 0;
-    }
+unsigned long long get_system_cpu_ticks() {
+  FILE *f = fopen("/proc/stat", "r");
+  if (!f)
+    return 0;
 
-    return user + nice + system + idle + iowait + irq + softirq + steal;
+  char line[256];
+  if (!fgets(line, sizeof(line), f)) {
+    fclose(f);
+    return 0;
+  }
+  fclose(f);
+
+  unsigned long long user, nice, system, idle, iowait, irq, softirq, steal;
+  sscanf(line, "cpu %llu %llu %llu %llu %llu %llu %llu %llu", &user, &nice,
+         &system, &idle, &iowait, &irq, &softirq, &steal);
+
+  return user + nice + system + idle + iowait + irq + softirq + steal;
 }
 
-static inline unsigned long long get_proc_ram_bytes(int pid) __attribute__((always_inline));
-static inline unsigned long long get_proc_ram_bytes(int pid) {
-    char path[PATH_MAX_LEN];
+unsigned long get_prev_proc_ticks(unsigned int pid) {
+  for (int i = 0; i < prev_cpu_count; i++) {
+    if (prev_cpu_snaps[i].pid == pid) {
+      return prev_cpu_snaps[i].total_proc_ticks;
+    }
+  }
+  return 0;
+}
+
+int get_or_create_gpu_proc(unsigned int pid) {
+  for (int i = 0; i < gpu_proc_count; i++) {
+    if (gpu_procs[i].pid == pid)
+      return i;
+  }
+  if (gpu_proc_count < MAX_PIDS) {
+    gpu_procs[gpu_proc_count].pid = pid;
+    gpu_procs[gpu_proc_count].vram_bytes = 0;
+    gpu_procs[gpu_proc_count].gpu_util_pct = 0;
+    return gpu_proc_count++;
+  }
+  return -1;
+}
+
+// Checks whether a PID still exists, without actually sending it a signal.
+// kill(pid, 0) does no harm — it just asks the kernel "does this PID exist
+// and am I allowed to signal it?" ESRCH means "no such process".
+int pid_alive(unsigned int pid) {
+  return kill((pid_t)pid, 0) == 0 || errno != ESRCH;
+}
+
+// Removes entries for PIDs that have exited, so gpu_procs doesn't grow
+// forever. Compacts the array in place (like sliding surviving elements
+// down over the gaps left by dead ones).
+void evict_dead_gpu_procs() {
+  int write_idx = 0;
+  for (int i = 0; i < gpu_proc_count; i++) {
+    if (pid_alive(gpu_procs[i].pid)) {
+      if (write_idx != i) {
+        gpu_procs[write_idx] = gpu_procs[i];
+      }
+      write_idx++;
+    }
+  }
+  gpu_proc_count = write_idx;
+}
+
+void fetch_gpu_data(nvmlDevice_t device) {
+  evict_dead_gpu_procs();
+
+  // NOTE: gpu_procs is no longer wiped every call. VRAM is refreshed in
+  // full each round (NVML gives us the complete list), but gpu_util_pct
+  // must persist across calls that don't get a fresh sample, otherwise
+  // a still-active process reads as 0% whenever NVML's sampling window
+  // hasn't produced new data yet.
+  unsigned int count = MAX_PIDS;
+  nvmlProcessInfo_t infos[MAX_PIDS];
+  int vram_seen[MAX_PIDS] = {0};
+
+  // 1. Graphics processes
+  if (nvmlDeviceGetGraphicsRunningProcesses(device, &count, infos) ==
+      NVML_SUCCESS) {
+    for (unsigned int i = 0; i < count; i++) {
+      int idx = get_or_create_gpu_proc(infos[i].pid);
+      if (idx != -1) {
+        gpu_procs[idx].vram_bytes = infos[i].usedGpuMemory;
+        vram_seen[idx] = 1;
+      }
+    }
+  }
+
+  // 2. Compute processes
+  count = MAX_PIDS;
+  if (nvmlDeviceGetComputeRunningProcesses(device, &count, infos) ==
+      NVML_SUCCESS) {
+    for (unsigned int i = 0; i < count; i++) {
+      int idx = get_or_create_gpu_proc(infos[i].pid);
+      if (idx != -1) {
+        gpu_procs[idx].vram_bytes = infos[i].usedGpuMemory;
+        vram_seen[idx] = 1;
+      }
+    }
+  }
+
+  // Any tracked process NOT reported by either list above is no longer
+  // holding GPU memory, so its VRAM is cleared. gpu_util_pct is left
+  // untouched here on purpose.
+  for (int i = 0; i < gpu_proc_count; i++) {
+    if (!vram_seen[i]) {
+      gpu_procs[i].vram_bytes = 0;
+    }
+  }
+
+  // 3. Process GPU utilization — only overwrite when a NEW sample exists
+  unsigned int util_count = MAX_PIDS;
+  nvmlProcessUtilizationSample_t util_samples[MAX_PIDS];
+  if (nvmlDeviceGetProcessUtilization(device, util_samples, &util_count,
+                                      last_seen_ts) == NVML_SUCCESS) {
+    unsigned long long max_ts_this_call = last_seen_ts;
+
+    for (unsigned int i = 0; i < util_count; i++) {
+      int idx = get_or_create_gpu_proc(util_samples[i].pid);
+      if (idx != -1) {
+        gpu_procs[idx].gpu_util_pct = util_samples[i].smUtil;
+      }
+      if (util_samples[i].timeStamp > max_ts_this_call) {
+        max_ts_this_call = util_samples[i].timeStamp;
+      }
+    }
+
+    last_seen_ts = max_ts_this_call;
+  }
+}
+
+void get_gpu_info_for_pid(unsigned int pid, unsigned long long *vram_bytes,
+                          unsigned int *gpu_util) {
+  *vram_bytes = 0;
+  *gpu_util = 0;
+  for (int i = 0; i < gpu_proc_count; i++) {
+    if (gpu_procs[i].pid == pid) {
+      *vram_bytes = gpu_procs[i].vram_bytes;
+      *gpu_util = gpu_procs[i].gpu_util_pct;
+      return;
+    }
+  }
+}
+
+void track_processes(unsigned long long system_ticks_delta, int num_cores,
+                     OutputMode mode) {
+  DIR *dir = opendir("/proc");
+  if (!dir)
+    return;
+
+  struct dirent *entry;
+  CpuSnap next_cpu_snaps[MAX_PIDS];
+  int next_cpu_count = 0;
+
+  if (mode == MODE_TABLE) {
+    printf("\033[H\033[J");
+    printf("%-8s %-20s %-10s %-10s %-10s %-8s\n", "PID", "NAME", "CPU(%)",
+           "RAM(MB)", "VRAM(MB)", "GPU(%)");
+    printf("-------------------------------------------------------------------"
+           "----\n");
+  } else {
+    printf("[");
+  }
+
+  int printed_json_count = 0;
+
+  while ((entry = readdir(dir)) != NULL) {
+    if (!isdigit(entry->d_name[0]))
+      continue;
+
+    int pid = atoi(entry->d_name);
+    char path[256], comm[256] = "Unknown";
+    unsigned long utime = 0, stime = 0;
+    long rss_pages = 0;
+
+    snprintf(path, sizeof(path), "/proc/%d/stat", pid);
+    FILE *fstat = fopen(path, "r");
+    if (fstat) {
+      fscanf(
+          fstat,
+          "%*d (%255[^)]) %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %lu %lu",
+          comm, &utime, &stime);
+      fclose(fstat);
+    } else {
+      continue;
+    }
+
     snprintf(path, sizeof(path), "/proc/%d/statm", pid);
-    FILE *fp = fopen(path, "r");
-    if (!fp) return 0;
-
-    unsigned long size, resident;
-    if (fscanf(fp, "%lu %lu", &size, &resident) != 2) {
-        fclose(fp);
-        return 0;
-    }
-    fclose(fp);
-
-    static long page_size = 0;
-    if (page_size == 0) {
-        page_size = sysconf(_SC_PAGESIZE);
-        if (page_size <= 0) page_size = 4096;
-    }
-    return (unsigned long long)resident * page_size;
-}
-
-static void update_gpu_and_vram_via_smi(ProcessSnapshot *snap) __attribute__((hot));
-static void update_gpu_and_vram_via_smi(ProcessSnapshot *snap) {
-    // 1. Fetch GPU compute utilization (%) per PID via nvidia-smi pmon
-    FILE *fp_gpu = popen("nvidia-smi pmon -c 1 -s u 2>/dev/null", "r");
-    if (fp_gpu) {
-        char line[256];
-        while (fgets(line, sizeof(line), fp_gpu)) {
-            if (line[0] == '#' || line[0] == '\n') continue;
-            int idx, pid;
-            char type[16], sm_str[16];
-            if (sscanf(line, "%d %d %15s %15s", &idx, &pid, type, sm_str) >= 4) {
-                if (pid <= 0) continue;
-                double sm_val = (sm_str[0] != '-') ? atof(sm_str) : 0.0;
-                for (int i = 0; i < snap->count; i++) {
-                    if (snap->procs[i].pid == pid) {
-                        snap->procs[i].gpu_usage = sm_val;
-                        break;
-                    }
-                }
-            }
-        }
-        pclose(fp_gpu);
+    FILE *fstatm = fopen(path, "r");
+    if (fstatm) {
+      fscanf(fstatm, "%*d %ld", &rss_pages);
+      fclose(fstatm);
     }
 
-    // 2. Fetch exact VRAM usage for ALL (C + G) processes directly from nvidia-smi table
-    FILE *fp_vram = popen("nvidia-smi 2>/dev/null", "r");
-    if (fp_vram) {
-        char line[256];
-        bool in_process_table = false;
+    unsigned long total_proc_ticks = utime + stime;
 
-        while (fgets(line, sizeof(line), fp_vram)) {
-            if (strstr(line, "Processes:")) {
-                in_process_table = true;
-                continue;
-            }
-            if (!in_process_table) continue;
-
-            char *mib_ptr = strstr(line, "MiB");
-            if (!mib_ptr) continue;
-
-            // Extract VRAM (digits right before "MiB")
-            char *p = mib_ptr - 1;
-            while (p > line && isspace((unsigned char)*p)) p--;
-            while (p > line && isdigit((unsigned char)*p)) p--;
-            unsigned long long vram_mb = strtoull(p + 1, NULL, 10);
-
-            // Extract PID by anchoring on Type column ('G', 'C', or 'C+G')
-            int pid = 0;
-            char *type_ptr = strstr(line, " G ");
-            if (!type_ptr) type_ptr = strstr(line, " C ");
-            if (!type_ptr) type_ptr = strstr(line, " C+G ");
-
-            if (type_ptr) {
-                char *pid_p = type_ptr - 1;
-                while (pid_p > line && isspace((unsigned char)*pid_p)) pid_p--;
-                while (pid_p > line && isdigit((unsigned char)*pid_p)) pid_p--;
-                pid = atoi(pid_p + 1);
-            }
-
-            if (pid > 0) {
-                for (int i = 0; i < snap->count; i++) {
-                    if (snap->procs[i].pid == pid) {
-                        snap->procs[i].vram_bytes = vram_mb * 1024ULL * 1024ULL;
-                        break;
-                    }
-                }
-            }
-        }
-        pclose(fp_vram);
-    }
-}
-
-static void capture_snapshot(ProcessSnapshot *snap) __attribute__((hot));
-static void capture_snapshot(ProcessSnapshot *snap) {
-    snap->count = 0;
-    snap->total_system_time = get_total_cpu_time();
-
-    DIR *dir = opendir("/proc");
-    if (!dir) return;
-
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL && snap->count < MAX_PROCS) {
-        if (!isdigit((unsigned char)entry->d_name[0])) continue;
-
-        int pid = atoi(entry->d_name);
-        char stat_path[PATH_MAX_LEN];
-        snprintf(stat_path, sizeof(stat_path), "/proc/%d/stat", pid);
-
-        FILE *fp = fopen(stat_path, "r");
-        if (!fp) continue;
-
-        char buffer[1024];
-        if (!fgets(buffer, sizeof(buffer), fp)) {
-            fclose(fp);
-            continue;
-        }
-        fclose(fp);
-
-        char *open_paren = strchr(buffer, '(');
-        char *close_paren = strrchr(buffer, ')');
-        if (!open_paren || !close_paren || open_paren >= close_paren) continue;
-
-        ProcessInfo *proc = &snap->procs[snap->count];
-        proc->pid = pid;
-
-        int name_len = close_paren - open_paren - 1;
-        if (name_len >= COMM_MAX_LEN) name_len = COMM_MAX_LEN - 1;
-        memcpy(proc->name, open_paren + 1, name_len);
-        proc->name[name_len] = '\0';
-
-        unsigned long long utime = 0, stime = 0;
-        sscanf(close_paren + 2, "%*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %llu %llu", &utime, &stime);
-
-        proc->utime = utime;
-        proc->stime = stime;
-        proc->ram_bytes = get_proc_ram_bytes(pid);
-        proc->vram_bytes = 0;
-        proc->cpu_usage = 0.0;
-        proc->gpu_usage = 0.0;
-
-        snap->count++;
-    }
-    closedir(dir);
-
-    update_gpu_and_vram_via_smi(snap);
-}
-
-static inline ProcessInfo *find_proc_by_pid(ProcessSnapshot *snap, int pid) __attribute__((always_inline));
-static inline ProcessInfo *find_proc_by_pid(ProcessSnapshot *snap, int pid) {
-    for (int i = 0; i < snap->count; i++) {
-        if (snap->procs[i].pid == pid) return &snap->procs[i];
-    }
-    return NULL;
-}
-
-static void calculate_cpu_usage(ProcessSnapshot *curr, ProcessSnapshot *prev) __attribute__((hot));
-static void calculate_cpu_usage(ProcessSnapshot *curr, ProcessSnapshot *prev) {
-    if (prev->total_system_time == 0) return;
-
-    unsigned long long system_delta = curr->total_system_time - prev->total_system_time;
-    if (system_delta == 0) return;
-
-    static long num_cores = 0;
-    if (num_cores == 0) {
-        num_cores = sysconf(_SC_NPROCESSORS_ONLN);
-        if (num_cores < 1) num_cores = 1;
+    if (next_cpu_count < MAX_PIDS) {
+      next_cpu_snaps[next_cpu_count].pid = pid;
+      next_cpu_snaps[next_cpu_count].total_proc_ticks = total_proc_ticks;
+      next_cpu_count++;
     }
 
-    for (int i = 0; i < curr->count; i++) {
-        ProcessInfo *c = &curr->procs[i];
-        ProcessInfo *p = find_proc_by_pid(prev, c->pid);
-
-        if (p) {
-            unsigned long long proc_delta = (c->utime + c->stime) - (p->utime + p->stime);
-            c->cpu_usage = ((double)proc_delta / (double)system_delta) * 100.0 * num_cores;
-        }
-    }
-}
-
-static int compare_cpu(const void *a, const void *b) {
-    double diff = ((ProcessInfo *)b)->cpu_usage - ((ProcessInfo *)a)->cpu_usage;
-    return (diff > 0) - (diff < 0);
-}
-
-static int compare_gpu(const void *a, const void *b) {
-    const ProcessInfo *pa = (const ProcessInfo *)a;
-    const ProcessInfo *pb = (const ProcessInfo *)b;
-
-    double gpu_diff = pb->gpu_usage - pa->gpu_usage;
-    if (gpu_diff != 0.0) {
-        return (gpu_diff > 0) - (gpu_diff < 0);
+    double cpu_pct = 0.0;
+    if (system_ticks_delta > 0) {
+      unsigned long prev_proc_ticks = get_prev_proc_ticks(pid);
+      if (prev_proc_ticks > 0 && total_proc_ticks >= prev_proc_ticks) {
+        unsigned long proc_ticks_delta = total_proc_ticks - prev_proc_ticks;
+        cpu_pct =
+            ((double)proc_ticks_delta / system_ticks_delta) * 100.0 * num_cores;
+      }
     }
 
-    long long vram_diff = (long long)pb->vram_bytes - (long long)pa->vram_bytes;
-    return (vram_diff > 0) - (vram_diff < 0);
-}
+    long page_size_kb = sysconf(_SC_PAGESIZE) / 1024;
+    double ram_mb = (rss_pages * page_size_kb) / 1024.0;
 
-static int compare_ram(const void *a, const void *b) {
-    long long diff = (long long)((ProcessInfo *)b)->ram_bytes - (long long)((ProcessInfo *)a)->ram_bytes;
-    return (diff > 0) - (diff < 0);
-}
+    unsigned long long vram_bytes = 0;
+    unsigned int gpu_util = 0;
+    get_gpu_info_for_pid(pid, &vram_bytes, &gpu_util);
+    double vram_mb = vram_bytes / (1024.0 * 1024.0);
 
-static int compare_vram(const void *a, const void *b) {
-    long long diff = (long long)((ProcessInfo *)b)->vram_bytes - (long long)((ProcessInfo *)a)->vram_bytes;
-    return (diff > 0) - (diff < 0);
-}
-
-static void emit_json_frame(ProcessSnapshot *curr, ProcessSnapshot *prev, int top_n,
-                            double cpu_spike_thresh, double ram_thresh_mb,
-                            double gpu_spike_thresh, double vram_thresh_mb,
-                            long num_cores) {
-    static ProcessInfo sorted_cpu[MAX_PROCS];
-    static ProcessInfo sorted_gpu[MAX_PROCS];
-    static ProcessInfo sorted_ram[MAX_PROCS];
-    static ProcessInfo sorted_vram[MAX_PROCS];
-
-    memcpy(sorted_cpu, curr->procs, sizeof(ProcessInfo) * curr->count);
-    memcpy(sorted_gpu, curr->procs, sizeof(ProcessInfo) * curr->count);
-    memcpy(sorted_ram, curr->procs, sizeof(ProcessInfo) * curr->count);
-    memcpy(sorted_vram, curr->procs, sizeof(ProcessInfo) * curr->count);
-
-    qsort(sorted_cpu, curr->count, sizeof(ProcessInfo), compare_cpu);
-    qsort(sorted_gpu, curr->count, sizeof(ProcessInfo), compare_gpu);
-    qsort(sorted_ram, curr->count, sizeof(ProcessInfo), compare_ram);
-    qsort(sorted_vram, curr->count, sizeof(ProcessInfo), compare_vram);
-
-    printf("{");
-    printf("\"core_count\":%ld,", num_cores);
-
-    // 1. top_cpu
-    printf("\"top_cpu\":[");
-    int limit_cpu = curr->count < top_n ? curr->count : top_n;
-    for (int i = 0; i < limit_cpu; i++) {
-        printf("{\"pid\":%d,\"name\":\"%s\",\"cpu\":%.1f}",
-               sorted_cpu[i].pid, sorted_cpu[i].name, sorted_cpu[i].cpu_usage);
-        if (i < limit_cpu - 1) printf(",");
+    if (ram_mb > 0.1 || vram_mb > 0.0 || gpu_util > 0 || cpu_pct > 0.1) {
+      if (mode == MODE_JSON) {
+        if (printed_json_count > 0)
+          printf(",");
+        printf("{\"pid\":%d,\"name\":\"%s\",\"cpu_pct\":%.1f,\"ram_mb\":%.2f,"
+               "\"vram_mb\":%.2f,\"gpu_pct\":%u}",
+               pid, comm, cpu_pct, ram_mb, vram_mb, gpu_util);
+        printed_json_count++;
+      } else {
+        printf("%-8d %-20s %-10.1f %-10.2f %-10.2f %-8u\n", pid, comm, cpu_pct,
+               ram_mb, vram_mb, gpu_util);
+      }
     }
-    printf("],");
+  }
+  closedir(dir);
 
-    // 2. top_gpu
-    printf("\"top_gpu\":[");
-    int limit_gpu = curr->count < top_n ? curr->count : top_n;
-    for (int i = 0; i < limit_gpu; i++) {
-        printf("{\"pid\":%d,\"name\":\"%s\",\"gpu\":%.1f}",
-               sorted_gpu[i].pid, sorted_gpu[i].name, sorted_gpu[i].gpu_usage);
-        if (i < limit_gpu - 1) printf(",");
-    }
-    printf("],");
+  if (mode == MODE_JSON) {
+    printf("]\n");
+  }
 
-    // 3. top_ram
-    printf("\"top_ram\":[");
-    int limit_ram = curr->count < top_n ? curr->count : top_n;
-    for (int i = 0; i < limit_ram; i++) {
-        double ram_mb = (double)sorted_ram[i].ram_bytes / (1024.0 * 1024.0);
-        printf("{\"pid\":%d,\"name\":\"%s\",\"ram_mb\":%.1f}",
-               sorted_ram[i].pid, sorted_ram[i].name, ram_mb);
-        if (i < limit_ram - 1) printf(",");
-    }
-    printf("],");
+  memcpy(prev_cpu_snaps, next_cpu_snaps, sizeof(CpuSnap) * next_cpu_count);
+  prev_cpu_count = next_cpu_count;
 
-    // 4. top_vram
-    printf("\"top_vram\":[");
-    int limit_vram = curr->count < top_n ? curr->count : top_n;
-    for (int i = 0; i < limit_vram; i++) {
-        double vram_mb = (double)sorted_vram[i].vram_bytes / (1024.0 * 1024.0);
-        printf("{\"pid\":%d,\"name\":\"%s\",\"vram_mb\":%.1f}",
-               sorted_vram[i].pid, sorted_vram[i].name, vram_mb);
-        if (i < limit_vram - 1) printf(",");
-    }
-    printf("],");
-
-    // 5. cpu_spikes
-    printf("\"cpu_spikes\":[");
-    bool first = true;
-    for (int i = 0; i < curr->count; i++) {
-        ProcessInfo *c = &curr->procs[i];
-        ProcessInfo *p = find_proc_by_pid(prev, c->pid);
-        double prev_cpu = p ? p->cpu_usage : 0.0;
-        double delta_cpu = c->cpu_usage - prev_cpu;
-
-        if (delta_cpu >= cpu_spike_thresh) {
-            if (!first) printf(",");
-            printf("{\"pid\":%d,\"name\":\"%s\",\"delta_cpu\":%.1f}", c->pid, c->name, delta_cpu);
-            first = false;
-        }
-    }
-    printf("],");
-
-    // 6. ram_spikes
-    printf("\"ram_spikes\":[");
-    first = true;
-    for (int i = 0; i < curr->count; i++) {
-        ProcessInfo *c = &curr->procs[i];
-        ProcessInfo *p = find_proc_by_pid(prev, c->pid);
-        double prev_ram_mb = p ? (double)p->ram_bytes / (1024.0 * 1024.0) : 0.0;
-        double curr_ram_mb = (double)c->ram_bytes / (1024.0 * 1024.0);
-        double delta_ram = curr_ram_mb - prev_ram_mb;
-
-        if (delta_ram >= ram_thresh_mb) {
-            if (!first) printf(",");
-            printf("{\"pid\":%d,\"name\":\"%s\",\"delta_ram_mb\":%.1f}", c->pid, c->name, delta_ram);
-            first = false;
-        }
-    }
-    printf("],");
-
-    // 7. gpu_spikes
-    printf("\"gpu_spikes\":[");
-    first = true;
-    for (int i = 0; i < curr->count; i++) {
-        ProcessInfo *c = &curr->procs[i];
-        ProcessInfo *p = find_proc_by_pid(prev, c->pid);
-        double prev_gpu = p ? p->gpu_usage : 0.0;
-        double delta_gpu = c->gpu_usage - prev_gpu;
-
-        if (delta_gpu >= gpu_spike_thresh) {
-            if (!first) printf(",");
-            printf("{\"pid\":%d,\"name\":\"%s\",\"delta_gpu\":%.1f}", c->pid, c->name, delta_gpu);
-            first = false;
-        }
-    }
-    printf("],");
-
-    // 8. vram_spikes
-    printf("\"vram_spikes\":[");
-    first = true;
-    for (int i = 0; i < curr->count; i++) {
-        ProcessInfo *c = &curr->procs[i];
-        ProcessInfo *p = find_proc_by_pid(prev, c->pid);
-        double prev_vram_mb = p ? (double)p->vram_bytes / (1024.0 * 1024.0) : 0.0;
-        double curr_vram_mb = (double)c->vram_bytes / (1024.0 * 1024.0);
-        double delta_vram = curr_vram_mb - prev_vram_mb;
-
-        if (delta_vram >= vram_thresh_mb) {
-            if (!first) printf(",");
-            printf("{\"pid\":%d,\"name\":\"%s\",\"delta_vram_mb\":%.1f}", c->pid, c->name, delta_vram);
-            first = false;
-        }
-    }
-    printf("]}\n");
-    fflush(stdout);
+  fflush(stdout);
 }
 
 int main(int argc, char *argv[]) {
-    int top_n = 5;
-    double cpu_spike_thresh = 40.0;
-    double ram_spike_thresh = 500.0;
-    double gpu_spike_thresh = 30.0;
-    double vram_spike_thresh = 500.0;
-    int interval_ms = 1000;
+  int interval_ms = 1000;
+  OutputMode mode = MODE_TABLE; // Default mode
 
-    if (argc > 1) top_n = atoi(argv[1]);
-    if (argc > 2) cpu_spike_thresh = atof(argv[2]);
-    if (argc > 3) ram_spike_thresh = atof(argv[3]);
-    if (argc > 4) gpu_spike_thresh = atof(argv[4]);
-    if (argc > 5) vram_spike_thresh = atof(argv[5]);
-    if (argc > 6) interval_ms = atoi(argv[6]);
-
-    if (interval_ms < 100) interval_ms = 100;
-
-    useconds_t sleep_us = (useconds_t)interval_ms * 1000;
-
-    long num_cores = sysconf(_SC_NPROCESSORS_ONLN);
-    if (num_cores < 1) num_cores = 1;
-
-    static ProcessSnapshot current_snapshot;
-
-    while (1) {
-        capture_snapshot(&current_snapshot);
-        calculate_cpu_usage(&current_snapshot, &prev_snapshot);
-
-        if (prev_snapshot.total_system_time != 0) {
-            emit_json_frame(&current_snapshot, &prev_snapshot, top_n,
-                            cpu_spike_thresh, ram_spike_thresh,
-                            gpu_spike_thresh, vram_spike_thresh,
-                            num_cores);
-        }
-
-        prev_snapshot = current_snapshot;
-        usleep(sleep_us);
+  if (argc > 1) {
+    interval_ms = atoi(argv[1]);
+    if (interval_ms <= 0) {
+      fprintf(stderr, "Usage: %s [interval_ms] [table|json]\n", argv[0]);
+      return 1;
     }
+  }
 
-    return 0;
+  if (argc > 2) {
+    if (strcmp(argv[2], "json") == 0) {
+      mode = MODE_JSON;
+    } else if (strcmp(argv[2], "table") == 0) {
+      mode = MODE_TABLE;
+    } else {
+      fprintf(stderr, "Invalid mode: '%s'. Use 'table' or 'json'.\n", argv[2]);
+      return 1;
+    }
+  }
+
+  int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
+
+  if (nvmlInit() != NVML_SUCCESS) {
+    fprintf(stderr, "Failed to initialize NVML\n");
+    return 1;
+  }
+
+  nvmlDevice_t device;
+  if (nvmlDeviceGetHandleByIndex(0, &device) != NVML_SUCCESS) {
+    fprintf(stderr, "Failed to get GPU handle\n");
+    nvmlShutdown();
+    return 1;
+  }
+
+  useconds_t sleep_us = (useconds_t)interval_ms * 1000;
+  unsigned long long prev_sys_ticks = get_system_cpu_ticks();
+
+  while (1) {
+    usleep(sleep_us);
+
+    unsigned long long current_sys_ticks = get_system_cpu_ticks();
+    unsigned long long system_ticks_delta = current_sys_ticks - prev_sys_ticks;
+    prev_sys_ticks = current_sys_ticks;
+
+    fetch_gpu_data(device);
+    track_processes(system_ticks_delta, num_cores, mode);
+  }
+
+  nvmlShutdown();
+  return 0;
 }

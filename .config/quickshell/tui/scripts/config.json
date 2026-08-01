@@ -21,9 +21,9 @@
   "sfx": false,
   "userLightMode": false,
   "autoLightMode": true,
-  "debug": true,
+  "debug": false,
   "moveFloatOnFocus": false,
   "purify": false,
   "compat": false,
-  "pacmanSearchMode": 1
+  "pacmanSearchMode": 4
 }

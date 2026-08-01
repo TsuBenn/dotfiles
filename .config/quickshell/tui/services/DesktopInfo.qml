@@ -56,10 +56,10 @@ Singleton {
         return null;
     }
 
-    Connections {
-        target: SettingsInfo
-        function onDebugSig() {
-            console.log(JSON.stringify(root.apps, null, 2));
-        }
-    }
+    // Connections {
+    //     target: SettingsInfo
+    //     function onDebugSig() {
+    //         console.log(JSON.stringify(root.apps, null, 2));
+    //     }
+    // }
 }
