@@ -11,6 +11,12 @@
 
 #define MAX_PIDS 2048
 
+typedef enum {
+  GPU_VENDOR_NONE = 0,
+  GPU_VENDOR_NVIDIA,
+  GPU_VENDOR_AMD
+} GpuVendor;
+
 typedef struct {
   unsigned int pid;
   unsigned long total_proc_ticks;
@@ -22,107 +28,66 @@ int prev_cpu_count = 0;
 typedef struct {
   unsigned int pid;
   unsigned long long vram_bytes;
-  unsigned int gpu_util_pct;   // smUtil    — compute core (SM) occupancy
-  unsigned int mem_util_pct;   // memUtil   — memory controller/bandwidth usage
-  unsigned int enc_util_pct;   // encUtil   — video encoder engine usage
-  unsigned int dec_util_pct;   // decUtil   — video decoder engine usage
+  unsigned int gpu_util_pct;   // smUtil / GFX engine
+  unsigned int mem_util_pct;   // memUtil
+  unsigned int enc_util_pct;   // encUtil
+  unsigned int dec_util_pct;   // decUtil
 } GpuProcInfo;
 
 GpuProcInfo gpu_procs[MAX_PIDS];
 int gpu_proc_count = 0;
 
-unsigned long long last_seen_ts =
-    0; // Tracks newest NVML util sample seen so far
+unsigned long long last_seen_ts = 0; // NVML timestamp tracking
 
 typedef enum { MODE_TABLE, MODE_JSON } OutputMode;
 
-// ---------------------------------------------------------------------
-// Dynamic NVML loading. We deliberately do NOT link against
-// libnvidia-ml.so at compile time (no -lnvidia-ml). Instead we dlopen it
-// at runtime and resolve each function we need via dlsym. If the library
-// isn't present at all (e.g. an AMD-only laptop), dlopen just returns
-// NULL and we fall back to CPU/RAM-only mode instead of crashing.
-// ---------------------------------------------------------------------
+// Global state
+GpuVendor active_gpu_vendor = GPU_VENDOR_NONE;
+int gpu_available = 0;
 
+// ---------------------------------------------------------------------
+// Dynamic NVML Function Pointers
+// ---------------------------------------------------------------------
 typedef nvmlReturn_t (*nvmlInit_fn)(void);
 typedef nvmlReturn_t (*nvmlShutdown_fn)(void);
-typedef nvmlReturn_t (*nvmlDeviceGetHandleByIndex_fn)(unsigned int,
-                                                       nvmlDevice_t *);
-typedef nvmlReturn_t (*nvmlDeviceGetGraphicsRunningProcesses_fn)(
-    nvmlDevice_t, unsigned int *, nvmlProcessInfo_t *);
-typedef nvmlReturn_t (*nvmlDeviceGetComputeRunningProcesses_fn)(
-    nvmlDevice_t, unsigned int *, nvmlProcessInfo_t *);
-typedef nvmlReturn_t (*nvmlDeviceGetProcessUtilization_fn)(
-    nvmlDevice_t, nvmlProcessUtilizationSample_t *, unsigned int *,
-    unsigned long long);
+typedef nvmlReturn_t (*nvmlDeviceGetHandleByIndex_fn)(unsigned int, nvmlDevice_t *);
+typedef nvmlReturn_t (*nvmlDeviceGetGraphicsRunningProcesses_fn)(nvmlDevice_t, unsigned int *, nvmlProcessInfo_t *);
+typedef nvmlReturn_t (*nvmlDeviceGetComputeRunningProcesses_fn)(nvmlDevice_t, unsigned int *, nvmlProcessInfo_t *);
+typedef nvmlReturn_t (*nvmlDeviceGetProcessUtilization_fn)(nvmlDevice_t, nvmlProcessUtilizationSample_t *, unsigned int *, unsigned long long);
 
 static void *nvml_handle = NULL;
 static nvmlInit_fn p_nvmlInit = NULL;
 static nvmlShutdown_fn p_nvmlShutdown = NULL;
 static nvmlDeviceGetHandleByIndex_fn p_nvmlDeviceGetHandleByIndex = NULL;
-static nvmlDeviceGetGraphicsRunningProcesses_fn
-    p_nvmlDeviceGetGraphicsRunningProcesses = NULL;
-static nvmlDeviceGetComputeRunningProcesses_fn
-    p_nvmlDeviceGetComputeRunningProcesses = NULL;
-static nvmlDeviceGetProcessUtilization_fn p_nvmlDeviceGetProcessUtilization =
-    NULL;
-
-// gpu_available is decided ONCE at startup and gates every GPU code path
-// for the rest of the program's life. This is what the UI-facing output
-// (JSON's "gpu_available" field / table mode's fallback message) reflects.
-int gpu_available = 0;
+static nvmlDeviceGetGraphicsRunningProcesses_fn p_nvmlDeviceGetGraphicsRunningProcesses = NULL;
+static nvmlDeviceGetComputeRunningProcesses_fn p_nvmlDeviceGetComputeRunningProcesses = NULL;
+static nvmlDeviceGetProcessUtilization_fn p_nvmlDeviceGetProcessUtilization = NULL;
 static nvmlDevice_t nvml_device;
 
-// Tries each candidate symbol name in order, returns the first one that
-// resolves. NVML's real ELF-exported names are versioned
-// (e.g. "nvmlInit_v2"); the header's plain "nvmlInit" is just a macro
-// that only exists at compile time, so dlsym needs the real name.
 static void *resolve_symbol(const char *names[], int count) {
   for (int i = 0; i < count; i++) {
     void *sym = dlsym(nvml_handle, names[i]);
-    if (sym)
-      return sym;
+    if (sym) return sym;
   }
   return NULL;
 }
 
-// Attempts to bring up NVML end-to-end: load the library, resolve every
-// function we need, call nvmlInit, and grab device 0's handle. Returns 1
-// only if ALL of that succeeded — any failure anywhere means "no usable
-// NVIDIA GPU" and we cleanly fall back to gpu_available = 0.
 int init_nvml_dynamic() {
   nvml_handle = dlopen("libnvidia-ml.so.1", RTLD_NOW);
   if (!nvml_handle) {
-    return 0; // no NVIDIA driver installed — not an error, just absence
+    nvml_handle = dlopen("libnvidia-ml.so", RTLD_NOW);
+    if (!nvml_handle) return 0;
   }
 
-  p_nvmlInit = (nvmlInit_fn)resolve_symbol(
-      (const char *[]){"nvmlInit_v2", "nvmlInit"}, 2);
-  p_nvmlShutdown = (nvmlShutdown_fn)resolve_symbol(
-      (const char *[]){"nvmlShutdown"}, 1);
-  p_nvmlDeviceGetHandleByIndex = (nvmlDeviceGetHandleByIndex_fn)resolve_symbol(
-      (const char *[]){"nvmlDeviceGetHandleByIndex_v2",
-                       "nvmlDeviceGetHandleByIndex"},
-      2);
-  p_nvmlDeviceGetGraphicsRunningProcesses =
-      (nvmlDeviceGetGraphicsRunningProcesses_fn)resolve_symbol(
-          (const char *[]){"nvmlDeviceGetGraphicsRunningProcesses_v3",
-                           "nvmlDeviceGetGraphicsRunningProcesses_v2",
-                           "nvmlDeviceGetGraphicsRunningProcesses"},
-          3);
-  p_nvmlDeviceGetComputeRunningProcesses =
-      (nvmlDeviceGetComputeRunningProcesses_fn)resolve_symbol(
-          (const char *[]){"nvmlDeviceGetComputeRunningProcesses_v3",
-                           "nvmlDeviceGetComputeRunningProcesses_v2",
-                           "nvmlDeviceGetComputeRunningProcesses"},
-          3);
-  p_nvmlDeviceGetProcessUtilization =
-      (nvmlDeviceGetProcessUtilization_fn)resolve_symbol(
-          (const char *[]){"nvmlDeviceGetProcessUtilization"}, 1);
+  p_nvmlInit = (nvmlInit_fn)resolve_symbol((const char *[]){"nvmlInit_v2", "nvmlInit"}, 2);
+  p_nvmlShutdown = (nvmlShutdown_fn)resolve_symbol((const char *[]){"nvmlShutdown"}, 1);
+  p_nvmlDeviceGetHandleByIndex = (nvmlDeviceGetHandleByIndex_fn)resolve_symbol((const char *[]){"nvmlDeviceGetHandleByIndex_v2", "nvmlDeviceGetHandleByIndex"}, 2);
+  p_nvmlDeviceGetGraphicsRunningProcesses = (nvmlDeviceGetGraphicsRunningProcesses_fn)resolve_symbol((const char *[]){"nvmlDeviceGetGraphicsRunningProcesses_v3", "nvmlDeviceGetGraphicsRunningProcesses_v2", "nvmlDeviceGetGraphicsRunningProcesses"}, 3);
+  p_nvmlDeviceGetComputeRunningProcesses = (nvmlDeviceGetComputeRunningProcesses_fn)resolve_symbol((const char *[]){"nvmlDeviceGetComputeRunningProcesses_v3", "nvmlDeviceGetComputeRunningProcesses_v2", "nvmlDeviceGetComputeRunningProcesses"}, 3);
+  p_nvmlDeviceGetProcessUtilization = (nvmlDeviceGetProcessUtilization_fn)resolve_symbol((const char *[]){"nvmlDeviceGetProcessUtilization"}, 1);
 
   if (!p_nvmlInit || !p_nvmlShutdown || !p_nvmlDeviceGetHandleByIndex ||
-      !p_nvmlDeviceGetGraphicsRunningProcesses ||
-      !p_nvmlDeviceGetComputeRunningProcesses ||
+      !p_nvmlDeviceGetGraphicsRunningProcesses || !p_nvmlDeviceGetComputeRunningProcesses ||
       !p_nvmlDeviceGetProcessUtilization) {
     dlclose(nvml_handle);
     nvml_handle = NULL;
@@ -145,10 +110,99 @@ int init_nvml_dynamic() {
   return 1;
 }
 
+// ---------------------------------------------------------------------
+// AMD GPU Detection & /proc/<pid>/fdinfo Scanner
+// ---------------------------------------------------------------------
+int detect_amd_gpu() {
+  DIR *dir = opendir("/sys/class/drm");
+  if (!dir) return 0;
+
+  struct dirent *entry;
+  int found = 0;
+  while ((entry = readdir(dir)) != NULL) {
+    if (strncmp(entry->d_name, "card", 4) == 0 && !strchr(entry->d_name, '-')) {
+      char path[256];
+      snprintf(path, sizeof(path), "/sys/class/drm/%s/device/vendor", entry->d_name);
+      FILE *f = fopen(path, "r");
+      if (f) {
+        char vendor[32];
+        if (fgets(vendor, sizeof(vendor), f)) {
+          if (strstr(vendor, "0x1002")) { // 0x1002 is AMD PCI Vendor ID
+            found = 1;
+            fclose(f);
+            break;
+          }
+        }
+        fclose(f);
+      }
+    }
+  }
+  closedir(dir);
+  return found;
+}
+
+// Scans /proc/<pid>/fdinfo to sum allocated VRAM on AMDGPU driver file descriptors
+unsigned long long get_amd_vram_for_pid(unsigned int pid) {
+  char fdinfo_dir[256];
+  snprintf(fdinfo_dir, sizeof(fdinfo_dir), "/proc/%u/fdinfo", pid);
+
+  DIR *dir = opendir(fdinfo_dir);
+  if (!dir) return 0;
+
+  struct dirent *entry;
+  unsigned long long total_vram_bytes = 0;
+
+  while ((entry = readdir(dir)) != NULL) {
+    if (entry->d_name[0] == '.') continue;
+
+    char filepath[512];
+    snprintf(filepath, sizeof(filepath), "%s/%s", fdinfo_dir, entry->d_name);
+
+    FILE *f = fopen(filepath, "r");
+    if (!f) continue;
+
+    char line[256];
+    int is_amdgpu = 0;
+    unsigned long long vram_kb = 0;
+
+    while (fgets(line, sizeof(line), f)) {
+      if (strncmp(line, "drm-driver:", 11) == 0) {
+        if (strstr(line, "amdgpu")) {
+          is_amdgpu = 1;
+        }
+      } else if (strncmp(line, "drm-memory-vram:", 16) == 0) {
+        sscanf(line, "drm-memory-vram:\t%llu", &vram_kb);
+      }
+    }
+    fclose(f);
+
+    if (is_amdgpu) {
+      total_vram_bytes += vram_kb * 1024;
+    }
+  }
+  closedir(dir);
+
+  return total_vram_bytes;
+}
+
+// Unified GPU Initializer: Checks NVML first, then falls back to AMD DRM
+void init_gpu_system() {
+  if (init_nvml_dynamic()) {
+    active_gpu_vendor = GPU_VENDOR_NVIDIA;
+    gpu_available = 1;
+  } else if (detect_amd_gpu()) {
+    active_gpu_vendor = GPU_VENDOR_AMD;
+    gpu_available = 1;
+  } else {
+    active_gpu_vendor = GPU_VENDOR_NONE;
+    gpu_available = 0;
+  }
+}
+
+// System CPU ticks from /proc/stat
 unsigned long long get_system_cpu_ticks() {
   FILE *f = fopen("/proc/stat", "r");
-  if (!f)
-    return 0;
+  if (!f) return 0;
 
   char line[256];
   if (!fgets(line, sizeof(line), f)) {
@@ -175,8 +229,7 @@ unsigned long get_prev_proc_ticks(unsigned int pid) {
 
 int get_or_create_gpu_proc(unsigned int pid) {
   for (int i = 0; i < gpu_proc_count; i++) {
-    if (gpu_procs[i].pid == pid)
-      return i;
+    if (gpu_procs[i].pid == pid) return i;
   }
   if (gpu_proc_count < MAX_PIDS) {
     gpu_procs[gpu_proc_count].pid = pid;
@@ -190,16 +243,10 @@ int get_or_create_gpu_proc(unsigned int pid) {
   return -1;
 }
 
-// Checks whether a PID still exists, without actually sending it a signal.
-// kill(pid, 0) does no harm — it just asks the kernel "does this PID exist
-// and am I allowed to signal it?" ESRCH means "no such process".
 int pid_alive(unsigned int pid) {
   return kill((pid_t)pid, 0) == 0 || errno != ESRCH;
 }
 
-// Removes entries for PIDs that have exited, so gpu_procs doesn't grow
-// forever. Compacts the array in place (like sliding surviving elements
-// down over the gaps left by dead ones).
 void evict_dead_gpu_procs() {
   int write_idx = 0;
   for (int i = 0; i < gpu_proc_count; i++) {
@@ -213,21 +260,15 @@ void evict_dead_gpu_procs() {
   gpu_proc_count = write_idx;
 }
 
-void fetch_gpu_data(nvmlDevice_t device) {
+void fetch_nvidia_gpu_data(nvmlDevice_t device) {
   evict_dead_gpu_procs();
 
-  // NOTE: gpu_procs is no longer wiped every call. VRAM is refreshed in
-  // full each round (NVML gives us the complete list), but gpu_util_pct
-  // must persist across calls that don't get a fresh sample, otherwise
-  // a still-active process reads as 0% whenever NVML's sampling window
-  // hasn't produced new data yet.
   unsigned int count = MAX_PIDS;
   nvmlProcessInfo_t infos[MAX_PIDS];
   int vram_seen[MAX_PIDS] = {0};
 
   // 1. Graphics processes
-  if (p_nvmlDeviceGetGraphicsRunningProcesses(device, &count, infos) ==
-      NVML_SUCCESS) {
+  if (p_nvmlDeviceGetGraphicsRunningProcesses(device, &count, infos) == NVML_SUCCESS) {
     for (unsigned int i = 0; i < count; i++) {
       int idx = get_or_create_gpu_proc(infos[i].pid);
       if (idx != -1) {
@@ -239,8 +280,7 @@ void fetch_gpu_data(nvmlDevice_t device) {
 
   // 2. Compute processes
   count = MAX_PIDS;
-  if (p_nvmlDeviceGetComputeRunningProcesses(device, &count, infos) ==
-      NVML_SUCCESS) {
+  if (p_nvmlDeviceGetComputeRunningProcesses(device, &count, infos) == NVML_SUCCESS) {
     for (unsigned int i = 0; i < count; i++) {
       int idx = get_or_create_gpu_proc(infos[i].pid);
       if (idx != -1) {
@@ -250,20 +290,16 @@ void fetch_gpu_data(nvmlDevice_t device) {
     }
   }
 
-  // Any tracked process NOT reported by either list above is no longer
-  // holding GPU memory, so its VRAM is cleared. gpu_util_pct is left
-  // untouched here on purpose.
   for (int i = 0; i < gpu_proc_count; i++) {
     if (!vram_seen[i]) {
       gpu_procs[i].vram_bytes = 0;
     }
   }
 
-  // 3. Process GPU utilization — only overwrite when a NEW sample exists
+  // 3. Process GPU utilization
   unsigned int util_count = MAX_PIDS;
   nvmlProcessUtilizationSample_t util_samples[MAX_PIDS];
-  if (p_nvmlDeviceGetProcessUtilization(device, util_samples, &util_count,
-                                        last_seen_ts) == NVML_SUCCESS) {
+  if (p_nvmlDeviceGetProcessUtilization(device, util_samples, &util_count, last_seen_ts) == NVML_SUCCESS) {
     unsigned long long max_ts_this_call = last_seen_ts;
 
     for (unsigned int i = 0; i < util_count; i++) {
@@ -278,7 +314,6 @@ void fetch_gpu_data(nvmlDevice_t device) {
         max_ts_this_call = util_samples[i].timeStamp;
       }
     }
-
     last_seen_ts = max_ts_this_call;
   }
 }
@@ -291,53 +326,56 @@ void get_gpu_info_for_pid(unsigned int pid, unsigned long long *vram_bytes,
   *mem_util = 0;
   *enc_util = 0;
   *dec_util = 0;
-  for (int i = 0; i < gpu_proc_count; i++) {
-    if (gpu_procs[i].pid == pid) {
-      *vram_bytes = gpu_procs[i].vram_bytes;
-      *gpu_util = gpu_procs[i].gpu_util_pct;
-      *mem_util = gpu_procs[i].mem_util_pct;
-      *enc_util = gpu_procs[i].enc_util_pct;
-      *dec_util = gpu_procs[i].dec_util_pct;
-      return;
+
+  if (active_gpu_vendor == GPU_VENDOR_NVIDIA) {
+    for (int i = 0; i < gpu_proc_count; i++) {
+      if (gpu_procs[i].pid == pid) {
+        *vram_bytes = gpu_procs[i].vram_bytes;
+        *gpu_util = gpu_procs[i].gpu_util_pct;
+        *mem_util = gpu_procs[i].mem_util_pct;
+        *enc_util = gpu_procs[i].enc_util_pct;
+        *dec_util = gpu_procs[i].dec_util_pct;
+        return;
+      }
     }
+  } else if (active_gpu_vendor == GPU_VENDOR_AMD) {
+    *vram_bytes = get_amd_vram_for_pid(pid);
   }
 }
 
 void track_processes(unsigned long long system_ticks_delta, int num_cores,
                      OutputMode mode, int gpu_avail) {
   DIR *dir = opendir("/proc");
-  if (!dir)
-    return;
+  if (!dir) return;
 
   struct dirent *entry;
   CpuSnap next_cpu_snaps[MAX_PIDS];
   int next_cpu_count = 0;
 
+  const char *vendor_str = (active_gpu_vendor == GPU_VENDOR_NVIDIA) ? "NVIDIA" :
+                           (active_gpu_vendor == GPU_VENDOR_AMD)    ? "AMD" : "None";
+
   if (mode == MODE_TABLE) {
     printf("\033[H\033[J");
     if (gpu_avail) {
       printf("%-8s %-20s %-10s %-10s %-10s %-8s %-8s %-8s %-8s\n", "PID",
-             "NAME", "CPU(%)", "RAM(MB)", "VRAM(MB)", "SM(%)", "MEM(%)",
+             "NAME", "CPU(%)", "RAM(MB)", "VRAM(MB)", "SM/GFX%", "MEM(%)",
              "ENC(%)", "DEC(%)");
-      printf(
-          "-------------------------------------------------------------------"
-          "---------------------------\n");
+      printf("----------------------------------------------------------------------------------------------\n");
     } else {
       printf("%-8s %-20s %-10s %-10s\n", "PID", "NAME", "CPU(%)", "RAM(MB)");
-      printf("(GPU stats unavailable on this device — no supported NVIDIA "
-             "driver found)\n");
+      printf("(GPU stats unavailable — no supported NVIDIA or AMD GPU found)\n");
       printf("--------------------------------------------------\n");
     }
   } else {
-    printf("{\"gpu_available\":%s,\"processes\":[",
-           gpu_avail ? "true" : "false");
+    printf("{\"gpu_available\":%s,\"gpu_vendor\":\"%s\",\"processes\":[",
+           gpu_avail ? "true" : "false", vendor_str);
   }
 
   int printed_json_count = 0;
 
   while ((entry = readdir(dir)) != NULL) {
-    if (!isdigit(entry->d_name[0]))
-      continue;
+    if (!isdigit(entry->d_name[0])) continue;
 
     int pid = atoi(entry->d_name);
     char path[256], comm[256] = "Unknown";
@@ -347,10 +385,8 @@ void track_processes(unsigned long long system_ticks_delta, int num_cores,
     snprintf(path, sizeof(path), "/proc/%d/stat", pid);
     FILE *fstat = fopen(path, "r");
     if (fstat) {
-      fscanf(
-          fstat,
-          "%*d (%255[^)]) %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %lu %lu",
-          comm, &utime, &stime);
+      fscanf(fstat, "%*d (%255[^)]) %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %lu %lu",
+             comm, &utime, &stime);
       fclose(fstat);
     } else {
       continue;
@@ -376,8 +412,7 @@ void track_processes(unsigned long long system_ticks_delta, int num_cores,
       unsigned long prev_proc_ticks = get_prev_proc_ticks(pid);
       if (prev_proc_ticks > 0 && total_proc_ticks >= prev_proc_ticks) {
         unsigned long proc_ticks_delta = total_proc_ticks - prev_proc_ticks;
-        cpu_pct =
-            ((double)proc_ticks_delta / system_ticks_delta) * 100.0 * num_cores;
+        cpu_pct = ((double)proc_ticks_delta / system_ticks_delta) * 100.0 * num_cores;
       }
     }
 
@@ -387,8 +422,7 @@ void track_processes(unsigned long long system_ticks_delta, int num_cores,
     unsigned long long vram_bytes = 0;
     unsigned int gpu_util = 0, mem_util = 0, enc_util = 0, dec_util = 0;
     if (gpu_avail) {
-      get_gpu_info_for_pid(pid, &vram_bytes, &gpu_util, &mem_util, &enc_util,
-                           &dec_util);
+      get_gpu_info_for_pid(pid, &vram_bytes, &gpu_util, &mem_util, &enc_util, &dec_util);
     }
     double vram_mb = vram_bytes / (1024.0 * 1024.0);
 
@@ -399,25 +433,19 @@ void track_processes(unsigned long long system_ticks_delta, int num_cores,
 
     if (worth_printing) {
       if (mode == MODE_JSON) {
-        if (printed_json_count > 0)
-          printf(",");
+        if (printed_json_count > 0) printf(",");
         if (gpu_avail) {
-          printf("{\"pid\":%d,\"name\":\"%s\",\"cpu_pct\":%.1f,\"ram_mb\":%."
-                 "2f,\"vram_mb\":%.2f,\"gpu_pct\":%u,\"mem_pct\":%u,\"enc_"
-                 "pct\":%u,\"dec_pct\":%u}",
-                 pid, comm, cpu_pct, ram_mb, vram_mb, gpu_util, mem_util,
-                 enc_util, dec_util);
+          printf("{\"pid\":%d,\"name\":\"%s\",\"cpu_pct\":%.1f,\"ram_mb\":%.2f,\"vram_mb\":%.2f,\"gpu_pct\":%u,\"mem_pct\":%u,\"enc_pct\":%u,\"dec_pct\":%u}",
+                 pid, comm, cpu_pct, ram_mb, vram_mb, gpu_util, mem_util, enc_util, dec_util);
         } else {
-          printf("{\"pid\":%d,\"name\":\"%s\",\"cpu_pct\":%.1f,\"ram_mb\":%."
-                 "2f}",
+          printf("{\"pid\":%d,\"name\":\"%s\",\"cpu_pct\":%.1f,\"ram_mb\":%.2f}",
                  pid, comm, cpu_pct, ram_mb);
         }
         printed_json_count++;
       } else {
         if (gpu_avail) {
           printf("%-8d %-20s %-10.1f %-10.2f %-10.2f %-8u %-8u %-8u %-8u\n",
-                 pid, comm, cpu_pct, ram_mb, vram_mb, gpu_util, mem_util,
-                 enc_util, dec_util);
+                 pid, comm, cpu_pct, ram_mb, vram_mb, gpu_util, mem_util, enc_util, dec_util);
         } else {
           printf("%-8d %-20s %-10.1f %-10.2f\n", pid, comm, cpu_pct, ram_mb);
         }
@@ -438,7 +466,7 @@ void track_processes(unsigned long long system_ticks_delta, int num_cores,
 
 int main(int argc, char *argv[]) {
   int interval_ms = 1000;
-  OutputMode mode = MODE_TABLE; // Default mode
+  OutputMode mode = MODE_TABLE;
 
   if (argc > 1) {
     interval_ms = atoi(argv[1]);
@@ -461,14 +489,17 @@ int main(int argc, char *argv[]) {
 
   int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
 
-  // Try to bring up NVML dynamically. Failure here is NOT fatal — it just
-  // means we run in CPU/RAM-only mode for the rest of the program's life.
-  gpu_available = init_nvml_dynamic();
+  // Detect and initialize active GPU subsystem
+  init_gpu_system();
 
-  if (mode == MODE_TABLE && !gpu_available) {
-    fprintf(stderr,
-            "Note: no supported NVIDIA GPU/driver found — running in "
-            "CPU/RAM-only mode.\n");
+  if (mode == MODE_TABLE) {
+    if (active_gpu_vendor == GPU_VENDOR_NVIDIA) {
+      fprintf(stderr, "Note: Active GPU -> NVIDIA (via NVML)\n");
+    } else if (active_gpu_vendor == GPU_VENDOR_AMD) {
+      fprintf(stderr, "Note: Active GPU -> AMD (via /proc/fdinfo DRM parser)\n");
+    } else {
+      fprintf(stderr, "Note: No supported GPU found — running CPU/RAM mode.\n");
+    }
   }
 
   useconds_t sleep_us = (useconds_t)interval_ms * 1000;
@@ -481,13 +512,14 @@ int main(int argc, char *argv[]) {
     unsigned long long system_ticks_delta = current_sys_ticks - prev_sys_ticks;
     prev_sys_ticks = current_sys_ticks;
 
-    if (gpu_available) {
-      fetch_gpu_data(nvml_device);
+    if (active_gpu_vendor == GPU_VENDOR_NVIDIA) {
+      fetch_nvidia_gpu_data(nvml_device);
     }
+
     track_processes(system_ticks_delta, num_cores, mode, gpu_available);
   }
 
-  if (gpu_available) {
+  if (active_gpu_vendor == GPU_VENDOR_NVIDIA && p_nvmlShutdown) {
     p_nvmlShutdown();
   }
   if (nvml_handle) {
