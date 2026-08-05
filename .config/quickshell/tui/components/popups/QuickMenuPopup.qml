@@ -403,7 +403,6 @@ CellPopup {
                         CellSeparator {
                             w: custom_list.contentW
                             color: Qt.lighter(Colors.bgOverlay, 1.5)
-                            type: 1
                         }
                     }
 

@@ -9,7 +9,7 @@ import QtQuick
 Singleton {
     id: root
 
-    property bool active: process.running
+    property bool active: false
     property string path: "/scripts/db_worker.py"
     property string db_path: "/scripts/system_data.db"
 
@@ -111,7 +111,12 @@ Singleton {
 
         stderr: SplitParser {
             splitMarker: "\n"
-            onRead: data => console.error("DBInfo error: ", data)
+            onRead: data => {
+                if (data.includes("init"))
+                    root.active = true;
+                else
+                    console.error("DBInfo error: ", data);
+            }
         }
     }
 }

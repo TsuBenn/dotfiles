@@ -49,6 +49,7 @@ ColumnLayout {
             CellText {
                 text: "-"
                 color: Colors.fgSubtle
+                font: Cell.fontB
             }
             CellText {
                 text: SystemInfo.cputemp.toFixed(0) + "°C"
@@ -65,31 +66,6 @@ ColumnLayout {
             }
         }
     }
-
-    // RowLayout {
-    //     Layout.leftMargin: Cell.centerWCell(implicitWidth, Cell.w(parent.w + 1))
-    //     spacing: 0
-    //     CellText {
-    //         text: SystemInfo.cpucores
-    //         color: Colors.info
-    //         font: Cell.fontB
-    //     }
-    //     CellText {
-    //         text: " cores - "
-    //         color: Colors.fgSubtle
-    //         font: Cell.fontB
-    //     }
-    //     CellText {
-    //         text: SystemInfo.cputhreads
-    //         color: Colors.info
-    //         font: Cell.fontB
-    //     }
-    //     CellText {
-    //         text: " threads"
-    //         color: Colors.fgSubtle
-    //         font: Cell.fontB
-    //     }
-    // }
 
     CellSeparator {
         w: cpu_spike.w

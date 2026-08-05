@@ -15,9 +15,22 @@ def parse_args():
 def init_db(db_path):
     resolved_path = os.path.expanduser(db_path)
     os.makedirs(os.path.dirname(resolved_path), exist_ok=True)
+
     conn = sqlite3.connect(resolved_path)
-    conn.execute("PRAGMA journal_mode=WAL;")
-    conn.execute("PRAGMA synchronous=NORMAL;")
+
+    # Enable Foreign Keys
+    conn.execute("PRAGMA foreign_keys = ON;")
+
+    # Attach RAM database for uptime process ticks
+    conn.execute("ATTACH DATABASE '/tmp/process_uptime.db' AS uptime;")
+
+    # Configure Pragmas for both main (SSD) and uptime (RAM)
+    conn.execute("PRAGMA main.journal_mode=WAL;")
+    conn.execute("PRAGMA uptime.journal_mode=WAL;")
+
+    conn.execute("PRAGMA main.synchronous=NORMAL;")
+    conn.execute("PRAGMA uptime.synchronous=OFF;")  # Zero disk-sync wait for RAM ticks
+
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -25,6 +38,8 @@ def main():
     args = parse_args()
     conn = init_db(args.db)
     cursor = conn.cursor()
+
+    print("init", file=sys.stderr)
 
     for line in sys.stdin:
         line = line.strip()
@@ -39,6 +54,10 @@ def main():
             sql = parts[2]
             params = json.loads(parts[3]) if len(parts) > 3 and parts[3] else []
 
+            # Ensure params is a list/tuple for sqlite3 driver
+            if not isinstance(params, (list, tuple)):
+                params = [params]
+
             if action == "exec":
                 cursor.execute(sql, params)
                 conn.commit()
@@ -48,9 +67,22 @@ def main():
                 statements = json.loads(sql)
                 last_id = None
                 try:
-                    for stmt_sql, stmt_params in statements:
+                    for stmt in statements:
+                        # Unpack statement SQL and parameters safely
+                        if isinstance(stmt, list):
+                            stmt_sql = stmt[0]
+                            stmt_params = stmt[1] if len(stmt) > 1 else []
+                        else:
+                            stmt_sql = stmt
+                            stmt_params = []
+
+                        # Ensure params is passed as a tuple/list to sqlite3
+                        if not isinstance(stmt_params, (list, tuple)):
+                            stmt_params = [stmt_params]
+
                         cursor.execute(stmt_sql, stmt_params)
                         last_id = cursor.lastrowid
+
                     conn.commit()
                     response = {"id": req_id, "status": "ok", "data": last_id}
                 except Exception:

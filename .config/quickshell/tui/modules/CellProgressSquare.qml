@@ -268,7 +268,7 @@ Item {
             root.exited();
             root.hovered = false;
         }
-        onPressed: {
+        onPressed: (button, event) => {
             if (!root.drag) {
                 root.pressed(buttonDown);
                 return;
@@ -278,22 +278,22 @@ Item {
             if (!root.adjustOnPress)
                 sync.restart();
             if (!root.vertical) {
-                root.raw_percent = mouseX / Cell.w(root.w) * 100;
+                root.raw_percent = event.x / Cell.w(root.w) * 100;
             } else {
-                root.raw_percent = 100 - mouseY / Cell.h(root.h) * 100;
+                root.raw_percent = 100 - event.y / Cell.h(root.h) * 100;
             }
             root.raw_percent = root.clamp(root.raw_percent);
             root.adjusted(root.raw_percent);
         }
-        onMoved: (x, y) => {
+        onMoved: (x, y, event) => {
             if (!root.drag)
                 return;
             if (buttonDown != "L")
                 return;
             if (!root.vertical) {
-                root.raw_percent = x / Cell.w(root.w) * 100;
+                root.raw_percent = event.x / Cell.w(root.w) * 100;
             } else {
-                root.raw_percent = 100 - y / Cell.h(root.h) * 100;
+                root.raw_percent = 100 - event.y / Cell.h(root.h) * 100;
             }
             root.raw_percent = root.clamp(root.raw_percent);
             root.adjusted(root.raw_percent);

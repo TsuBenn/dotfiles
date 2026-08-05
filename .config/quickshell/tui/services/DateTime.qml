@@ -102,6 +102,10 @@ Singleton {
         return new Date(d.getFullYear(), 11, 31, 23, 59, 59, 999);
     }
 
+    function getDuration(start_time: int): int {
+        return Date.now() - start_time;
+    }
+
     function formatDuration(totalSeconds) {
         if (!totalSeconds || totalSeconds < 1)
             return "0s";
@@ -120,13 +124,19 @@ Singleton {
         return `${seconds}s`;
     }
 
-    function formatTimestampToHHMM(timestampMs = Date.now()) {
-        if (!timestampMs)
-            return "00:00";
-        const date = new Date(timestampMs);
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
-        return (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes);
+    function formatTimestamp(timestamp, precision = 4) {
+        // 1. Convert Unix timestamp into a JavaScript Date object
+        const date = new Date(timestamp);
+
+        // 2. Extract local time units directly from the Date object
+        const hh = String(date.getHours()).padStart(2, '0');
+        const mm = String(date.getMinutes()).padStart(2, '0');
+        const ss = String(date.getSeconds()).padStart(2, '0');
+        const mss = String(date.getMilliseconds()).padStart(3, '0');
+
+        // 3. Collect units and slice by precision level
+        const units = [hh, mm, ss, mss];
+        return units.slice(0, precision).join(':');
     }
 
     function monthNumToShort(month) {

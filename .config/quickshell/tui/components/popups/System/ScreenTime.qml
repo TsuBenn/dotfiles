@@ -936,7 +936,7 @@ ColumnLayout {
                                                 onHoveredChanged: {
                                                     if (hovered) {
                                                         timeline_status.name = (DesktopInfo.fetchEntry(app_timeline.modelData.app_class) ?? app_timeline.modelData.app_class) + ":";
-                                                        timeline_status.time = DateTime.formatTimestampToHHMM(timeline_block.modelData.start_time) + " - " + DateTime.formatTimestampToHHMM(timeline_block.modelData.end_time);
+                                                        timeline_status.time = DateTime.formatTimestamp(timeline_block.modelData.start_time, 3) + " - " + DateTime.formatTimestamp(timeline_block.modelData.end_time, 3);
                                                         timeline_status.status = "";
                                                     }
                                                 }

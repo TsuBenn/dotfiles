@@ -70,6 +70,9 @@ Singleton {
         return usage.toFixed(2);
     }
 
+    property bool hasgpu: false
+    property string gpuvendor: ""
+
     property var gpumodels: []
     property real gpuusage
     property real gputemp
@@ -516,7 +519,9 @@ Singleton {
                     // console.log(text);
                     try {
                         const data = JSON.parse(text);
-                        root.process = data;
+                        root.process = data.processes;
+                        root.hasgpu = data.gpu_available;
+                        root.gpuvendor = data.gpu_vendor;
                     } catch (e) {
                         console.log("SystemInfo (procstat): Can't parse data!");
                     }

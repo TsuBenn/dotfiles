@@ -6,7 +6,6 @@ import Quickshell
 import Quickshell.Io
 
 Singleton {
-
     id: root
 
     property string cache_path: SystemInfo.configdir + "/scripts/screenshot_cache" + (SettingsInfo.screenshotCursor ? "_cursor" : "") + ".ppm"
@@ -24,27 +23,28 @@ Singleton {
     property int w: 0
     property int h: 0
 
-    signal cached()
+    signal cached
 
     function clear_cache() {
-        cache_remover.running = true
+        cache_remover.running = true;
     }
 
     function requestCache() {
-        cacher.running = true
+        cacher.running = true;
     }
 
     function screenshot(x: int, y: int, w: int, h: int, name = "", copy = true, save = true) {
         const now = new Date();
 
-        const day     = now.getDate().toString().padStart(2, "0");
-        const month   = (now.getMonth() + 1).toString().padStart(2, "0");
-        const year    = now.getFullYear();
-        const hours   = now.getHours().toString().padStart(2, "0");
+        const day = now.getDate().toString().padStart(2, "0");
+        const month = (now.getMonth() + 1).toString().padStart(2, "0");
+        const year = now.getFullYear();
+        const hours = now.getHours().toString().padStart(2, "0");
         const minutes = now.getMinutes().toString().padStart(2, "0");
         const seconds = now.getSeconds().toString().padStart(2, "0");
 
-        if (!name) name = `screenshot_${day}_${month}_${year}_${hours}${minutes}${seconds}`;
+        if (!name)
+            name = `screenshot_${day}_${month}_${year}_${hours}${minutes}${seconds}`;
 
         const path = `${root.path}${name}.png`; // Added a slash to prevent folder name mashup
 
@@ -79,33 +79,25 @@ Singleton {
     }
 
     Process {
-
         id: cacher
 
-        command: [
-            "bash",
-            "-c",
-            `grim -c -t ppm -o "${root.monitor.name}" ${root.cache_path_cursor} & \
+        command: ["bash", "-c", `grim -c -t ppm -o "${root.monitor.name}" ${root.cache_path_cursor} & \
             grim -t ppm -o "${root.monitor.name}" ${root.cache_path_no_cursor} & \
             wait`]
 
         stderr: StdioCollector {
             onStreamFinished: {
                 if (text) {
-                    return
+                    return;
                 }
-                root.cached()
+                root.cached();
             }
         }
-
     }
 
     Process {
-
         id: cache_remover
 
-        command: ["bash", "-c",`rm ${root.cache_path_no_cursor} ${root.cache_path_cursor}`]
-
+        command: ["bash", "-c", `rm ${root.cache_path_no_cursor} ${root.cache_path_cursor}`]
     }
-
 }

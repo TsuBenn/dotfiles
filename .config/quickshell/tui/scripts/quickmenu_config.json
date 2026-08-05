@@ -43,5 +43,10 @@
       "action": "open_system_info"
     }
   ],
-  "custom_actions": {}
+  "custom_actions": {
+    "custom_action": {
+      "label": "Custom action",
+      "cmd": "echo \"Custom action\""
+    }
+  }
 }
