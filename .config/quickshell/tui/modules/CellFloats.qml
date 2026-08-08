@@ -17,6 +17,9 @@ FloatingWindow {
 
     property bool isFloat: true
 
+    property bool hideCursor: false
+    property bool centered: false
+
     property var workspace: toplevel?.workspace
     property var toplevel: HyprInfo.getClient(address)
 
@@ -69,7 +72,7 @@ FloatingWindow {
         }
         function onSigOpen(name) {
             if (root.name == name && root.visible) {
-                if (SettingsInfo.moveFloatOnFocus)
+                if ((SettingsInfo.moveFloatOnFocus || root.forceMoveClient) && !root.forceFocusClient)
                     HyprInfo.moveClient(root.toplevel, HyprInfo.focusedWorkspace);
                 else
                     HyprInfo.focusClient(root.toplevel);
@@ -77,6 +80,9 @@ FloatingWindow {
             root.onSigOpen();
         }
     }
+
+    property bool forceMoveClient: false
+    property bool forceFocusClient: false
 
     onVisibleChanged: {
         if (!visible) {} else {
@@ -217,6 +223,7 @@ FloatingWindow {
     property bool _faultySize: !((root.minW == 0 || root.w + 1 >= root.minW) && (root.maxW == 0 || root.w + 1 <= root.maxW) && (root.minH == 0 || root.h + 1 >= root.minH) && (root.maxH == 0 || root.h + 1 <= root.maxH))
 
     Cells {
+        anchors.centerIn: root.centered ? parent : undefined
         id: cell
         visible: root.visible && !root._faultySize
 
@@ -237,6 +244,32 @@ FloatingWindow {
                 ShortcutInfo.handleShortcuts(event, root.shortcuts);
             }
         }
+    }
+
+    MouseControl {
+        anchors.fill: parent
+
+        propagateComposedEvents: true
+
+        hoverEnabled: false
+
+        onPressed: (button, event) => {
+            TextFieldManager.unFocusAll();
+            event.accepted = false;
+        }
+
+        onReleased: (button, event) => {
+            TextFieldManager.unFocusAll();
+            event.accepted = false;
+        }
+
+        onWheel: (button, event) => {
+            event.accepted = false;
+        }
+    }
+
+    HoverHandler {
+        cursorShape: root.hideCursor ? Qt.BlankCursor : undefined
     }
 
     Cells {

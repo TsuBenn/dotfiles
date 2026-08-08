@@ -23,4 +23,8 @@ Item {
     WallpaperFloats {
         id: wallpaper
     }
+
+    WSAuthFloat {
+        id: ws_auth
+    }
 }

@@ -60,6 +60,14 @@ Singleton {
 
     property bool active: true
 
+    function dispatch(val: string) {
+        Hyprland.dispatch(val);
+    }
+
+    function exec(val: string) {
+        SystemInfo.runDetached(["hyprctl", "eval", val]);
+    }
+
     function isFocusedMonitor(monitor: var): bool {
         if (!monitor)
             return false;
@@ -226,24 +234,24 @@ Singleton {
 
     // Address should already have prefix "0x"
     function resizeClient(w, h, address) {
-        SystemInfo.runDetached(["hyprctl", "dispatch", `hl.dsp.window.resize({x=${w},y=${h},window="address:${address}"})`]);
+        dispatch(`hl.dsp.window.resize({x=${w},y=${h},window="address:${address}"})`);
     }
 
     function repositionClient(w, h, address) {
-        SystemInfo.runDetached(["hyprctl", "dispatch", `hl.dsp.window.move({x=${w},y=${h},window="address:${address}"})`]);
+        dispatch(`hl.dsp.window.move({x=${w},y=${h},window="address:${address}"})`);
     }
 
     function maximizeClient(address, toggle = false) {
-        SystemInfo.runDetached(["hyprctl", "dispatch", `hl.dsp.window.fullscreen({window="address:${address}", action="${toggle ? "toggle" : "set"}", mode="maximize"})`]);
+        dispatch(`hl.dsp.window.fullscreen({window="address:${address}", action="${toggle ? "toggle" : "set"}", mode="maximize"})`);
     }
 
     function fullscreenClient(address, toggle = false) {
-        SystemInfo.runDetached(["hyprctl", "dispatch", `hl.dsp.window.fullscreen({window="address:${address}", action="${toggle ? "toggle" : "set"}", mode="fullscreen"})`]);
+        dispatch(`hl.dsp.window.fullscreen({window="address:${address}", action="${toggle ? "toggle" : "set"}", mode="fullscreen"})`);
     }
 
     function unMaximizeClient(address) {
-        SystemInfo.runDetached(["hyprctl", "dispatch", `hl.dsp.window.fullscreen({window="address:${address}", action="unset", mode="maximized"})`]);
-        SystemInfo.runDetached(["hyprctl", "dispatch", `hl.dsp.window.fullscreen({window="address:${address}", action="unset", mode="fullscreen"})`]);
+        dispatch(`hl.dsp.window.fullscreen({window="address:${address}", action="unset", mode="maximized"})`);
+        dispatch(`hl.dsp.window.fullscreen({window="address:${address}", action="unset", mode="fullscreen"})`);
     }
 
     function moveClient(client: HyprlandToplevel, workspace: var): bool {
@@ -261,7 +269,7 @@ Singleton {
             console.warn("HyprInfo: cannot move client to something that's not a workspace");
             return false;
         }
-        Hyprland.dispatch(root.fmt("hl.dsp.window.move({workspace = \"{}\", window = \"address:0x{}\"})", workspace, objClient(client).address));
+        dispatch(root.fmt("hl.dsp.window.move({workspace = \"{}\", window = \"address:0x{}\"})", workspace, objClient(client).address));
         return true;
     }
 

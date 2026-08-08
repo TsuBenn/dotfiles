@@ -321,7 +321,7 @@ WlSessionLockSurface {
         }
 
         CellText {
-            text: "\n\n\n"
+            text: "\n\n"
         }
 
         CellText {

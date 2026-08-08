@@ -41,12 +41,18 @@
         "S"
       ],
       "action": "open_system_info"
+    },
+    {
+      "binds": [
+        "C-S"
+      ],
+      "action": "hyprshader"
     }
   ],
   "custom_actions": {
-    "custom_action": {
-      "label": "Custom action",
-      "cmd": "echo \"Custom action\""
+    "hyprshader": {
+      "label": "Hyprshader",
+      "cmd": "hyprshade toggle ~/color_depth.frag"
     }
   }
 }

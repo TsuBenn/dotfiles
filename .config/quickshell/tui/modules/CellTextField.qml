@@ -67,7 +67,7 @@ Item {
     property int rowOffset: 0
     property int colOffset: 0
 
-    signal entered(text: string)
+    signal entered(text: string, mod: string)
     signal textInput(text: string, change: string, mode: string)
     signal textAdded(text: string)
     signal textCopied(text: string)
@@ -249,89 +249,95 @@ Item {
         resetCursor();
     }
 
-    Loader {
-        active: root.visible || !root.optimizeMemory
+    RowLayout {
+        spacing: Cell.w(1)
 
-        sourceComponent: RowLayout {
-            spacing: Cell.w(1)
+        // Connections {
+        //     target: root
+        //     function onWChanged() {
+        //         text.w = root.w - unit.w - (unit.w ? 1 : 0);
+        //         text.h = root.h;
+        //     }
+        // }
 
-            // Connections {
-            //     target: root
-            //     function onWChanged() {
-            //         text.w = root.w - unit.w - (unit.w ? 1 : 0);
-            //         text.h = root.h;
-            //     }
-            // }
+        Cells {
+            id: text
+            clip: true
+            w: Math.max(root.w - unit.w - (unit.w ? 1 : 0), 0)
+            h: root.h
+            color: "transparent"
 
-            Cells {
-                id: text
-                clip: true
-                w: Math.max(root.w - unit.w - (unit.w ? 1 : 0), 0)
-                h: root.h
-                color: "transparent"
-
-                SequentialAnimation {
-                    id: copy_anim
-                    ColorAnimation {
-                        target: text
-                        property: "color"
-                        duration: 0
-                        to: root.color
-                        easing.type: Easing.OutCubic
-                    }
-                    ColorAnimation {
-                        target: text
-                        property: "color"
-                        duration: 500
-                        to: "transparent"
-                        easing.type: Easing.OutCubic
-                    }
+            SequentialAnimation {
+                id: copy_anim
+                ColorAnimation {
+                    target: text
+                    property: "color"
+                    duration: 0
+                    to: root.color
+                    easing.type: Easing.OutCubic
                 }
-
-                CellText {
-                    visible: root.text.length == 0
-                    text: root.placeholder
-                    color: root.disabled_color
-                    preferedH: text.h
-                    preferedW: text.w
-                    wrap: true
+                ColorAnimation {
+                    target: text
+                    property: "color"
+                    duration: 500
+                    to: "transparent"
+                    easing.type: Easing.OutCubic
                 }
+            }
 
-                ColumnLayout {
-                    id: text_input
-                    spacing: 0
+            CellText {
+                visible: root.text.length == 0
+                text: root.placeholder
+                color: root.disabled_color
+                preferedH: text.h
+                preferedW: text.w
+                wrap: true
+            }
 
-                    Connections {
-                        target: root
-                        function onCursorPosChanged() {
-                            if (!root?.wrap && root?.scroll) {
-                                let current_col = root.cursorPos;
-                                if (current_col >= root.colOffset + text.w) {
-                                    root.colOffset = current_col - text.w + 1;
-                                } else if (current_col < root.colOffset) {
-                                    root.colOffset = current_col;
-                                }
-                            } else if (root?.wrap && root?.scroll) {
-                                let current_row = Math.floor(root.cursorPos / text.w);
-                                if (current_row >= root.rowOffset + text.h) {
-                                    root.rowOffset = current_row - text.h + 1;
-                                } else if (current_row < root.rowOffset) {
-                                    root.rowOffset = current_row;
-                                }
+            ColumnLayout {
+                id: text_input
+                spacing: 0
+
+                Connections {
+                    target: root
+                    function onCursorPosChanged() {
+                        if (!root?.wrap && root?.scroll) {
+                            let current_col = root.cursorPos;
+                            if (current_col >= root.colOffset + text.w) {
+                                root.colOffset = current_col - text.w + 1;
+                            } else if (current_col < root.colOffset) {
+                                root.colOffset = current_col;
+                            }
+                        } else if (root?.wrap && root?.scroll) {
+                            let current_row = Math.floor(root.cursorPos / text.w);
+                            if (current_row >= root.rowOffset + text.h) {
+                                root.rowOffset = current_row - text.h + 1;
+                            } else if (current_row < root.rowOffset) {
+                                root.rowOffset = current_row;
                             }
                         }
                     }
+                }
 
-                    Repeater {
-                        model: root.h // Fixed rows count based on viewport height
+                Repeater {
+                    model: root.h // Fixed rows count based on viewport height
 
-                        delegate: RowLayout {
+                    delegate: Loader {
+                        id: text_loader
+
+                        required property int index
+                        readonly property int virtualRow: index + root.rowOffset
+                        readonly property var lineData: root.processed_text[virtualRow] ?? ""
+
+                        active: root.visible || !root.optimizeMemory
+
+                        sourceComponent: RowLayout {
                             id: text_line
-                            required property int index
-                            spacing: 0
 
-                            readonly property int virtualRow: index + root.rowOffset
-                            readonly property var lineData: root.processed_text[virtualRow] ?? ""
+                            property int index: text_loader.index
+                            readonly property int virtualRow: text_loader.virtualRow
+                            readonly property var lineData: text_loader.lineData
+                            spacing: 0
 
                             Repeater {
                                 model: text.w // Fixed columns count based on viewport width
@@ -355,40 +361,40 @@ Item {
                         }
                     }
                 }
-
-                CellText {
-                    visible: !root.disabled && root.showCursor && root.focus
-
-                    // Calculate position relative to fixed layout frame
-                    x: root.wrap ? Cell.w(root.cursorPos % text.w) : Cell.w(root.cursorPos - root.colOffset)
-
-                    y: root.wrap ? Cell.h(Math.floor(root.cursorPos / text.w) - root.rowOffset) : 0
-
-                    color: root.invert
-                    bg: root.color
-                    font: root.fontB
-                    text: root.text[root.cursorPos] ? (root.hidden ? "*" : root.text[root.cursorPos]) : " "
-                }
-
-                MouseControl {
-                    anchors.fill: parent
-                    onPressed: button => {
-                        if (button == "L") {
-                            root.grabFocus();
-                        } else if (button == "R") {
-                            root.grabFocus();
-                            root.select_all();
-                        }
-                    }
-                }
             }
 
             CellText {
-                id: unit
-                Layout.alignment: Qt.AlignTop
-                text: root.unit
-                color: root.disable ? root.disabled_color : root.color
+                visible: !root.disabled && root.showCursor && root.focus
+
+                // Calculate position relative to fixed layout frame
+                x: root.wrap ? Cell.w(root.cursorPos % text.w) : Cell.w(root.cursorPos - root.colOffset)
+
+                y: root.wrap ? Cell.h(Math.floor(root.cursorPos / text.w) - root.rowOffset) : 0
+
+                color: root.invert
+                bg: root.color
+                font: root.fontB
+                text: root.text[root.cursorPos] ? (root.hidden ? "*" : root.text[root.cursorPos]) : " "
             }
+
+            MouseControl {
+                anchors.fill: parent
+                onPressed: button => {
+                    if (button == "L") {
+                        root.grabFocus();
+                    } else if (button == "R") {
+                        root.grabFocus();
+                        root.select_all();
+                    }
+                }
+            }
+        }
+
+        CellText {
+            id: unit
+            Layout.alignment: Qt.AlignTop
+            text: root.unit
+            color: root.disabled ? root.disabled_color : root.color
         }
     }
 
@@ -613,10 +619,10 @@ Item {
             type(to_paste.data);
     }
 
-    function enter() {
+    function enter(mod: string) {
         if (unfocusOnEntered && focus)
             unFocus();
-        entered(root.text);
+        entered(root.text, mod);
     }
 
     function cut_selections() {
@@ -639,9 +645,14 @@ Item {
             else
                 root.delete_char_left();
         } else if (event.key == Qt.Key_Return) {
-            if (root.canEnter)
-                root.enter();
-            else
+            if (root.canEnter) {
+                let modi = "";
+                if (mod & shift)
+                    modi += "s";
+                if (mod & ctrl)
+                    modi += "c";
+                root.enter(modi);
+            } else
                 return;
         } else if (event.key == Qt.Key_Escape) {
             if (root.escapeToUnFocus && !root.forceFocus)

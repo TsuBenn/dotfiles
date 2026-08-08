@@ -300,7 +300,7 @@ Singleton {
             root.toggle("debug");
             root.debugSig();
 
-            SystemInfo.runDetached(["bash", "-c", "hyprshade toggle ~/color_depth.frag"]);
+            // SystemInfo.runDetached(["bash", "-c", "hyprshade toggle ~/color_depth.frag"]);
             // console.log(PacmanInfo.packages.length);
             // console.log(JSON.stringify(DesktopEntries.applications.values.filter(item => item.icon.includes("dolphin")), null, 2));
         }

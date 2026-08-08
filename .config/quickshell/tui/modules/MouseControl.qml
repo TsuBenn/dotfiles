@@ -17,6 +17,8 @@ Item {
 
     property bool hoverEnabled: true
 
+    property bool hideCursor: false
+
     property bool holdEnabled: false
     property int holdInterval: 100
     property int holdOffset: 0
@@ -77,6 +79,8 @@ Item {
         anchors.fill: parent
 
         acceptedButtons: root.acceptedButtons
+
+        cursorShape: root.hideCursor ? Qt.BlankCursor : undefined
 
         // Automatically enable composed event propagation if passThrough is active
         propagateComposedEvents: root.propagateComposedEvents || root.passThrough

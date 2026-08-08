@@ -508,3 +508,8 @@ hl.window_rule({
     match = { class = "^(steam_app_.*)$" },
     immediate = true
 })
+
+hl.window_rule({
+    match = { class = ".*" },
+    focus_on_activate = true
+})

@@ -351,6 +351,8 @@ CellFloats {
                                 focusOnVisible: !color.edit
                                 escapeToUnFocus: false
 
+                                forceFocus: !color.edit
+
                                 onVisibleChanged: {
                                     if (visible) {
                                         root.result = root.colors;

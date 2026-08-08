@@ -88,16 +88,16 @@ Singleton {
 
     property var high_usage: ({})
 
-    Connections {
-        target: SettingsInfo
-        function onDebugSig() {
-            // console.log(JSON.stringify(root.getSortedCPU(5), null, 2));
-            // console.log(JSON.stringify(root.sustained_data, null, 2));
-            // console.log(Object.values({}));
-            console.log(DateTime.getStartDay().getTime());
-            console.log(DateTime.getEndDay().getTime());
-        }
-    }
+    // Connections {
+    //     target: SettingsInfo
+    //     function onDebugSig() {
+    //         // console.log(JSON.stringify(root.getSortedCPU(5), null, 2));
+    //         // console.log(JSON.stringify(root.sustained_data, null, 2));
+    //         // console.log(Object.values({}));
+    //         console.log(DateTime.getStartDay().getTime());
+    //         console.log(DateTime.getEndDay().getTime());
+    //     }
+    // }
 
     Connections {
         target: DBInfo
