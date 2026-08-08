@@ -51,7 +51,7 @@ Cells {
     signal applied(string key, string value)
 
     // ---- Sizing ------------------------------------------------------------
-    w: 38
+    w: 36
     h: 28
     color: "transparent"
 

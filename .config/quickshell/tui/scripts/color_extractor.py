@@ -152,14 +152,14 @@ def extract_colors(image_path, debug=False):
 
 def scale_to_pastel(lch, is_light_mode):
     L, C, H = lch
-    
+
     # Allow chroma to drop completely if the image is grayscale
     min_C = min(C, 0.08 if is_light_mode else 0.10)
     max_C = 0.14 if is_light_mode else 0.16
-    
+
     new_L = clamp(L, 0.55, 0.70) if is_light_mode else clamp(L, 0.45, 0.60)
     new_C = clamp(C, min_C, max_C)
-    
+
     return (new_L, new_C, H)
 
 def generate_palette(image_path, is_light_mode=False, debug=False):
@@ -193,7 +193,7 @@ def generate_palette(image_path, is_light_mode=False, debug=False):
     onAccent = (0.98, 0.005, base_hue) if accent_strong[0] < 0.65 else (0.18, 0.030, base_hue)
 
     accentDim = (
-        clamp(accent_strong[0] - 0.10, 0.30, 0.90),
+        clamp(accent_strong[0] - 0.20, 0.30, 0.90),
         accent_strong[1] * 0.9,
         accent_strong[2],
     )

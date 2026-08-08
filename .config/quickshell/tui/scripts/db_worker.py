@@ -1,30 +1,35 @@
 #!/usr/bin/env python3
-import sys
-import sqlite3
+import argparse
 import json
 import os
-import argparse
+import sqlite3
+import sys
 
 DEFAULT_DB_PATH = os.path.expanduser("~/.config/quickshell/tui/scripts/system_data.db")
+DEFAULT_UPTIME_DB_PATH = "/tmp/process_uptime.db"
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Persistent SQLite IPC Worker")
     parser.add_argument("--db", type=str, default=DEFAULT_DB_PATH)
+    parser.add_argument("--uptime-db", type=str, default=DEFAULT_UPTIME_DB_PATH)
     return parser.parse_args()
 
-def init_db(db_path):
+def init_db(db_path, uptime_db_path):
     resolved_path = os.path.expanduser(db_path)
     os.makedirs(os.path.dirname(resolved_path), exist_ok=True)
 
+    # 1. Connect to main database first
     conn = sqlite3.connect(resolved_path)
 
-    # Enable Foreign Keys
+    # 2. Attach RAM/Uptime database using parameterized query
+    resolved_uptime_path = os.path.expanduser(uptime_db_path)
+    os.makedirs(os.path.dirname(resolved_uptime_path), exist_ok=True)
+    conn.execute("ATTACH DATABASE ? AS uptime;", (resolved_uptime_path,))
+
+    # 3. Enable Foreign Keys AFTER attaching both databases
     conn.execute("PRAGMA foreign_keys = ON;")
 
-    # Attach RAM database for uptime process ticks
-    conn.execute("ATTACH DATABASE '/tmp/process_uptime.db' AS uptime;")
-
-    # Configure Pragmas for both main (SSD) and uptime (RAM)
+    # 4. Configure Pragmas for both main (SSD) and uptime (RAM)
     conn.execute("PRAGMA main.journal_mode=WAL;")
     conn.execute("PRAGMA uptime.journal_mode=WAL;")
 
@@ -36,7 +41,7 @@ def init_db(db_path):
 
 def main():
     args = parse_args()
-    conn = init_db(args.db)
+    conn = init_db(args.db, args.uptime_db)
     cursor = conn.cursor()
 
     print("init", file=sys.stderr)
@@ -68,7 +73,6 @@ def main():
                 last_id = None
                 try:
                     for stmt in statements:
-                        # Unpack statement SQL and parameters safely
                         if isinstance(stmt, list):
                             stmt_sql = stmt[0]
                             stmt_params = stmt[1] if len(stmt) > 1 else []
@@ -76,7 +80,6 @@ def main():
                             stmt_sql = stmt
                             stmt_params = []
 
-                        # Ensure params is passed as a tuple/list to sqlite3
                         if not isinstance(stmt_params, (list, tuple)):
                             stmt_params = [stmt_params]
 

@@ -106,15 +106,83 @@ RowLayout {
             }
         }
 
-        Stat {
-            key: "Freq:"
-            value: root.fmt("<b>{}MHz</b>", parseInt(SystemInfo.cpubase))
+        RowLayout {
+
+            spacing: 0
+
+            Stat {
+                key: "Power:"
+                value: SystemInfo.cpurapl ? root.fmt("<b>{}W</b>", parseFloat(SystemInfo.cpupower).toFixed(1)) : ""
+
+                w: root.box.eW - pow.w
+
+                value_color: {
+                    if (SystemInfo.cpumaxpower == 0)
+                        return root.box.dyn;
+                    const value = (parseInt(SystemInfo.cpupower) / parseInt(SystemInfo.cpumaxpower)) * 100;
+                    if (value > root.box.danger_thres) {
+                        return Colors.blend(Colors.warning, Colors.danger, Math.min(value - root.box.danger_thres, 10) / 10);
+                    } else if (value > root.box.warning_thres) {
+                        return Colors.blend(root.box.dyn, Colors.warning, Math.min(value - root.box.warning_thres, 10) / 10);
+                    }
+                    return root.box.dyn;
+                }
+
+                CellButton {
+                    visible: !SystemInfo.cpurapl
+                    anchors.right: parent.right
+                    anchors.rightMargin: Cell.w(1)
+                    text: "Activate"
+                    font: Cell.fontB
+                    fg: [Colors.fgBase, Colors.bgSurface]
+                    color: [Colors.bgOverlay, Colors.fgBase]
+                    onPressed: button => {
+                        if (button == "L") {
+                            SystemInfo.activate();
+                        }
+                    }
+                }
+            }
+
+            CellText {
+                id: pow
+
+                Layout.leftMargin: -Cell.w(root.box.p)
+
+                text: SystemInfo.cpurapl && SystemInfo.cpumaxpower > 0 ? root.fmt(" / {}W", parseFloat(SystemInfo.cpumaxpower).toFixed(1)) : ""
+                color: root.box.stc
+            }
         }
 
-        Stat {
-            key: "Boost:"
-            value: root.fmt("{}MHz", parseInt(SystemInfo.cpuboost))
-            stc: true
+        RowLayout {
+
+            spacing: 0
+
+            Stat {
+                key: "Freq:"
+                value: root.fmt("<b>{}MHz</b>", parseInt(SystemInfo.cpubase))
+
+                w: root.box.eW - freq.w
+
+                value_color: {
+                    const value = (parseInt(SystemInfo.cpubase) / parseInt(SystemInfo.cpuboost)) * 100;
+                    if (value > 90) {
+                        return Colors.blend(Colors.warning, Colors.danger, Math.min(value - 90, 10) / 10);
+                    } else if (value > 80) {
+                        return Colors.blend(root.box.dyn, Colors.warning, Math.min(value - 80, 10) / 10);
+                    }
+                    return root.box.dyn;
+                }
+            }
+
+            CellText {
+                id: freq
+
+                Layout.leftMargin: -Cell.w(root.box.p)
+
+                text: root.fmt(" / {}Mhz", parseInt(SystemInfo.cpuboost))
+                color: root.box.stc
+            }
         }
 
         Stat {
@@ -223,6 +291,39 @@ RowLayout {
             }
         }
 
+        RowLayout {
+
+            spacing: 0
+
+            Stat {
+                key: "Power:"
+                value: root.fmt("<b>{}W</b>", gpu.model.power)
+
+                w: root.box.eW - power.w
+
+                value_color: {
+                    if (gpu.model.maxpower == 0)
+                        return root.box.dyn;
+                    const value = (gpu.model.power / gpu.model.maxpower) * 100;
+                    if (value > root.box.danger_thres) {
+                        return Colors.blend(Colors.warning, Colors.danger, Math.min(value - root.box.danger_thres, 10) / 10);
+                    } else if (value > root.box.warning_thres) {
+                        return Colors.blend(root.box.dyn, Colors.warning, Math.min(value - root.box.warning_thres, 10) / 10);
+                    }
+                    return root.box.dyn;
+                }
+            }
+
+            CellText {
+                id: power
+
+                Layout.leftMargin: -Cell.w(root.box.p)
+
+                text: gpu.model.maxpower > 0 ? root.fmt(" / {}W", gpu.model.maxpower) : ""
+                color: root.box.stc
+            }
+        }
+
         Stat {
             key: "Type:"
             value: gpu.model.type
@@ -261,7 +362,7 @@ RowLayout {
 
                 Layout.leftMargin: -Cell.w(root.box.p)
 
-                text: root.fmt("/{}G", SystemInfo.ktoG(gpu.model.memorytotal).toFixed(1))
+                text: root.fmt(" / {}G", SystemInfo.ktoG(gpu.model.memorytotal).toFixed(1))
                 color: root.box.stc
             }
         }
@@ -368,10 +469,6 @@ RowLayout {
             }
         }
 
-        CellText {
-            text: ""
-        }
-
         Header {
 
             text: "Motherboard"
@@ -419,7 +516,7 @@ RowLayout {
 
                 Layout.leftMargin: -Cell.w(root.box.p)
 
-                text: root.fmt("/{}G", SystemInfo.ktoG(SystemInfo.memtotal).toFixed(1))
+                text: root.fmt(" / {}G", SystemInfo.ktoG(SystemInfo.memtotal).toFixed(1))
                 color: root.box.stc
             }
         }
@@ -473,7 +570,7 @@ RowLayout {
 
                 Layout.leftMargin: -Cell.w(root.box.p)
 
-                text: root.fmt("/{}G", SystemInfo.ktoG(SystemInfo.swaptotal).toFixed(1))
+                text: root.fmt(" / {}G", SystemInfo.ktoG(SystemInfo.swaptotal).toFixed(1))
                 color: root.box.stc
             }
         }
@@ -566,14 +663,14 @@ RowLayout {
                             CellText {
                                 id: diskused
 
-                                text: root.fmt("<b>{}G</b>", SystemInfo.ktoG(disks.used))
+                                text: root.fmt("<b>{}G</b>", SystemInfo.ktoG(disks.used).toFixed(1))
                                 color: root.box.dyn
                             }
 
                             CellText {
                                 id: disktotal
 
-                                text: root.fmt("<b>/{}G</b>", SystemInfo.ktoG(disks.total))
+                                text: root.fmt("<b> / {}G</b>", SystemInfo.ktoG(disks.total).toFixed(1))
                                 color: root.box.stc
                             }
                         }
@@ -780,7 +877,7 @@ RowLayout {
 
         Stat {
             key: "Frequency:"
-            value: root.fmt("{}G", (SystemInfo.wifi["freq"] / 1000).toFixed(1))
+            value: root.fmt("{}G", (SystemInfo.wifi["freq"]))
             stc: true
         }
 

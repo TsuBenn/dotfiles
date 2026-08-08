@@ -554,13 +554,13 @@ void get_process_cmdline(int pid, char *out_buf, size_t max_len,
 const char *get_proc_type_str(GpuProcType type) {
   switch (type) {
   case PROC_TYPE_GRAPHICS:
-    return "GFX";
+    return "G";
   case PROC_TYPE_COMPUTE:
-    return "COMP";
+    return "C";
   case PROC_TYPE_BOTH:
-    return "BOTH";
+    return "G+C";
   default:
-    return "N/A";
+    return "";
   }
 }
 
@@ -735,7 +735,7 @@ void track_processes(unsigned long long system_ticks_delta, int num_cores,
           printf("\",\"cmdline\":\"");
           print_json_escaped(cmdline);
           printf("\",\"cpu_pct\":%.1f,\"ram_mb\":%.2f,\"gpu_type\":\"%s\","
-                 "\"vram_mb\":%.2f,\"gpu_pct\":%u,\"mem_pct\":%u,\"enc_pct\":%"
+                 "\"vram_mb\":%.2f,\"sm_pct\":%u,\"mem_pct\":%u,\"enc_pct\":%"
                  "u,\"dec_pct\":%u}",
                  cpu_pct, ram_mb, get_proc_type_str(gpu_type), vram_mb,
                  gpu_util, mem_util, enc_util, dec_util);

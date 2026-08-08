@@ -49,7 +49,7 @@ Item {
         property bool hidden: false
 
         Connections {
-            target: PopupManager
+            target: FloatsManager
             function onOpened(name) {
                 if (name == "pacman") {
                     root.hidden = false;
@@ -144,7 +144,7 @@ Item {
                 font: hovered ? Cell.fontB : Cell.font
                 onReleased: button => {
                     if (button == "L") {
-                        PopupManager.open("pacman");
+                        FloatsManager.open("pacman");
                     }
                 }
             }
@@ -398,7 +398,7 @@ Item {
                         font: hovered ? Cell.fontB : Cell.font
                         onReleased: button => {
                             if (button == "L") {
-                                PopupManager.open("pacman");
+                                FloatsManager.open("pacman");
                             }
                         }
                     }

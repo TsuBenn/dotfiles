@@ -249,6 +249,13 @@ Item {
 
             color: root.bg
 
+            Rectangle {
+                anchors.verticalCenter: parent.verticalCenter
+                implicitWidth: Cell.w(root.w)
+                implicitHeight: 2
+                color: Colors.bgSurface
+            }
+
             ColumnLayout {
 
                 x: (root.connectStart ? -Cell.w(1) / 2 : 0) + Cell.w(root.padding)

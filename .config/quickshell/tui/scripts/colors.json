@@ -84,7 +84,7 @@
     "name": "Furina de Fontaine",
     "description": "Oceanic navy, brilliant spotlight cyans - Best director.",
     "bgBase": "#0F1724",
-    "bgSurface": "#182336",
+    "bgSurface": "#162032",
     "bgOverlay": "#26354D",
     "fgBase": "#E0F2FE",
     "onAccent": "#0F1724",
@@ -98,7 +98,8 @@
     "warning": "#FB923C",
     "danger": "#F87171",
     "borderActive": "#38BDF8",
-    "borderInactive": "#1E293B"
+    "borderInactive": "#1E293B",
+    "generated": false
   },
   "nahida": {
     "name": "Nahida",

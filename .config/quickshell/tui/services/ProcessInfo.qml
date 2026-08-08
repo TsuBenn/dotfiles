@@ -36,35 +36,41 @@ Singleton {
     property int high_usage_milestone: 5 * 60 // seconds
 
     // How long does it take to consider a process to be sustained high usage
-    property int sustained_high_usage_threshold: 30 // seconds
+    property int sustained_high_usage_threshold: 10 // seconds
 
     property int sustained_grace_ticks: 10
 
     signal spiked(spike_data: var)
     signal sustained(sustained_data: var)
     signal sustainEnded(sustained_data: var)
+    signal updated
 
     onSpiked: data => {
-        NotificationsInfo.send("", "", "SPIKED!", `${data.program} ${JSON.stringify(data.spikes)} `, 0, true, "echo hello");
+        // NotificationsInfo.send("", "", "SPIKED!", `${data.program} ${JSON.stringify(data.spikes)} `, 0, true, "echo hello");
+        logSpike(data);
     }
     onSustained: data => {
-        NotificationsInfo.send("", "", "SUSTAINED!", `${data.program} ${JSON.stringify(data.metrics)} ${JSON.stringify(DateTime.getDuration(data.startTime) / 1000)}`, 0, true, "echo hello");
+    // NotificationsInfo.send("", "", "SUSTAINED!", `${data.program} ${JSON.stringify(data.metrics)} ${JSON.stringify(DateTime.getDuration(data.startTime) / 1000)}`, 0, true, "echo hello");
     }
 
     onSustainEnded: data => {
+        logSustained(data);
     // console.log(JSON.stringify(data, null, 2));
     }
 
     property bool spike_detection: true
     property bool sustained_detection: true
 
+    property var system: ({})
     property var process: SystemInfo.process
+    property var clean_process: ({})
 
     onProcessChanged: {
         index();
         spikeCheck();
         sustainedCheck();
-        // logTick();
+        logTick();
+        updated();
     }
 
     property var sustained_data: ({})
@@ -88,21 +94,8 @@ Singleton {
             // console.log(JSON.stringify(root.getSortedCPU(5), null, 2));
             // console.log(JSON.stringify(root.sustained_data, null, 2));
             // console.log(Object.values({}));
-            // DBInfo.execMany([DBInfo.sql`
-            //     CREATE TABLE IF NOT EXISTS uptime.process_ticks (
-            //         timestamp INTEGER DEFAULT (CAST(unixepoch('subsec')*1000 AS INTEGER)),
-            //         program TEXT NOT NULL,
-            //         pid TEXT NOT NULL,
-            //         cpu_pct REAL DEFAULT 0,
-            //         ram_mb REAL DEFAULT 0,
-            //         vram_mb REAL DEFAULT 0,
-            //         gpu_type TEXT DEFAULT 'N/A',
-            //         sm_pct REAL DEFAULT 0,
-            //         mem_pct REAL DEFAULT 0,
-            //         enc_pct REAL DEFAULT 0,
-            //         dec_pct REAL DEFAULT 0
-            //     )
-            // `]);
+            console.log(DateTime.getStartDay().getTime());
+            console.log(DateTime.getEndDay().getTime());
         }
     }
 
@@ -110,33 +103,45 @@ Singleton {
         target: DBInfo
         function onActiveChanged() {
             if (DBInfo.active) {
-                root.initDB(() => console.log("bruh"));
+                root.initDB();
+                screentime_timeline.updateCur();
             }
         }
     }
 
     function initDB(callback) {
         DBInfo.execMany([DBInfo.sql`
-            -- Tracking every tick in memory
-            CREATE TABLE IF NOT EXISTS uptime.process_ticks (
-                timestamp INTEGER DEFAULT (CAST(unixepoch('subsec')*1000 AS INTEGER)),
-                program TEXT NOT NULL,
-                pid TEXT NOT NULL,
-                cpu_pct REAL DEFAULT 0,
-                ram_mb REAL DEFAULT 0,
-                vram_mb REAL DEFAULT 0,
-                gpu_type TEXT DEFAULT 'N/A',
-                sm_pct REAL DEFAULT 0,
-                mem_pct REAL DEFAULT 0,
-                enc_pct REAL DEFAULT 0,
-                dec_pct REAL DEFAULT 0
-            )
+                CREATE TABLE IF NOT EXISTS uptime.system_ticks (
+                    timestamp INTEGER DEFAULT (CAST(unixepoch('subsec')*1000 AS INTEGER)),
+                    cpu_pct REAL DEFAULT 0,
+                    ram_mb REAL DEFAULT 0,
+                    vram_mb REAL DEFAULT 0,
+                    sm_pct REAL DEFAULT 0,
+                    mem_pct REAL DEFAULT 0,
+                    enc_pct REAL DEFAULT 0,
+                    dec_pct REAL DEFAULT 0
+                )
         `, DBInfo.sql`
-            CREATE INDEX IF NOT EXISTS idx_ticks_name ON uptime.process_ticks(program)
+            CREATE INDEX IF NOT EXISTS uptime.idx_ticks_time ON system_ticks(timestamp)
         `, DBInfo.sql`
-            CREATE INDEX IF NOT EXISTS idx_ticks_time ON uptime.process_ticks(timestamp)
+                CREATE TABLE IF NOT EXISTS uptime.process_ticks (
+                    timestamp INTEGER DEFAULT (CAST(unixepoch('subsec')*1000 AS INTEGER)),
+                    program TEXT NOT NULL,
+                    pid TEXT NOT NULL,
+                    cpu_pct REAL DEFAULT 0,
+                    ram_mb REAL DEFAULT 0,
+                    vram_mb REAL DEFAULT 0,
+                    gpu_type TEXT DEFAULT 'N/A',
+                    sm_pct REAL DEFAULT 0,
+                    mem_pct REAL DEFAULT 0,
+                    enc_pct REAL DEFAULT 0,
+                    dec_pct REAL DEFAULT 0
+                )
         `, DBInfo.sql`
-            -- Tracking spikes
+            CREATE INDEX IF NOT EXISTS uptime.idx_ticks_name ON process_ticks(program)
+        `, DBInfo.sql`
+            CREATE INDEX IF NOT EXISTS uptime.idx_ticks_time ON process_ticks(timestamp)
+        `, DBInfo.sql`
             CREATE TABLE IF NOT EXISTS spikes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 start_time INTEGER NOT NULL,
@@ -158,7 +163,6 @@ Singleton {
         `, DBInfo.sql`
             CREATE INDEX IF NOT EXISTS idx_spikes_prog_time ON spikes(program, start_time)
         `, DBInfo.sql`
-            -- Tracking sustained high usage
             CREATE TABLE IF NOT EXISTS sustained (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 start_time INTEGER NOT NULL,
@@ -196,12 +200,12 @@ Singleton {
     }
 
     function getSortedCPU(max: int): var {
-        if (!process || !Array.isArray(process))
+        if (!clean_process || !Array.isArray(clean_process))
             return [];
 
         const getGpuPeak = p => Math.max(p.sm_pct || 0, p.mem_pct || 0, p.enc_pct || 0, p.dec_pct || 0);
 
-        return process.slice().sort((a, b) => {
+        return clean_process.slice().sort((a, b) => {
             const cpuDiff = (b.cpu_pct || 0) - (a.cpu_pct || 0);
             if (Math.abs(cpuDiff) > 0.001)
                 return cpuDiff;
@@ -215,39 +219,16 @@ Singleton {
                 return vramDiff;
 
             return getGpuPeak(b) - getGpuPeak(a);
-        }).slice(0, max == 0 ? process.length : max);
-    }
-
-    function getSortedGPU(max: int): var {
-        if (!process || !Array.isArray(process))
-            return [];
-
-        const getGpuPeak = p => Math.max(p.sm_pct || 0, p.mem_pct || 0, p.enc_pct || 0, p.dec_pct || 0);
-
-        return process.slice().sort((a, b) => {
-            const gpuDiff = getGpuPeak(b) - getGpuPeak(a);
-            if (Math.abs(gpuDiff) > 0.001)
-                return gpuDiff;
-
-            const vramDiff = (b.vram_mb || 0) - (a.vram_mb || 0);
-            if (vramDiff !== 0)
-                return vramDiff;
-
-            const cpuDiff = (b.cpu_pct || 0) - (a.cpu_pct || 0);
-            if (Math.abs(cpuDiff) > 0.001)
-                return cpuDiff;
-
-            return (b.ram_mb || 0) - (a.ram_mb || 0);
         }).slice(0, max == 0 ? process.length : max);
     }
 
     function getSortedRAM(max: int): var {
-        if (!process || !Array.isArray(process))
+        if (!clean_process || !Array.isArray(clean_process))
             return [];
 
         const getGpuPeak = p => Math.max(p.sm_pct || 0, p.mem_pct || 0, p.enc_pct || 0, p.dec_pct || 0);
 
-        return process.slice().sort((a, b) => {
+        return clean_process.slice().sort((a, b) => {
             const ramDiff = (b.ram_mb || 0) - (a.ram_mb || 0);
             if (ramDiff !== 0)
                 return ramDiff;
@@ -261,16 +242,16 @@ Singleton {
                 return cpuDiff;
 
             return getGpuPeak(b) - getGpuPeak(a);
-        }).slice(0, max == 0 ? process.length : max);
+        }).slice(0, max == 0 ? clean_process.length : max);
     }
 
     function getSortedVRAM(max: int): var {
-        if (!process || !Array.isArray(process))
+        if (!clean_process || !Array.isArray(clean_process))
             return [];
 
         const getGpuPeak = p => Math.max(p.sm_pct || 0, p.mem_pct || 0, p.enc_pct || 0, p.dec_pct || 0);
 
-        return process.slice().sort((a, b) => {
+        return clean_process.slice().sort((a, b) => {
             const vramDiff = (b.vram_mb || 0) - (a.vram_mb || 0);
             if (vramDiff !== 0)
                 return vramDiff;
@@ -284,14 +265,14 @@ Singleton {
                 return ramDiff;
 
             return (b.cpu_pct || 0) - (a.cpu_pct || 0);
-        }).slice(0, max == 0 ? process.length : max);
+        }).slice(0, max == 0 ? clean_process.length : max);
     }
 
     function getSortedSM(max: int): var {
-        if (!process || !Array.isArray(process))
+        if (!clean_process || !Array.isArray(clean_process))
             return [];
 
-        return process.slice().sort((a, b) => {
+        return clean_process.slice().sort((a, b) => {
             const smDiff = (b.sm_pct || 0) - (a.sm_pct || 0);
             if (Math.abs(smDiff) > 0.001)
                 return smDiff;
@@ -305,14 +286,14 @@ Singleton {
                 return cpuDiff;
 
             return (b.ram_mb || 0) - (a.ram_mb || 0);
-        }).slice(0, max == 0 ? process.length : max);
+        }).slice(0, max == 0 ? clean_process.length : max);
     }
 
     function getSortedMEM(max: int): var {
-        if (!process || !Array.isArray(process))
+        if (!clean_process || !Array.isArray(clean_process))
             return [];
 
-        return process.slice().sort((a, b) => {
+        return clean_process.slice().sort((a, b) => {
             const memDiff = (b.mem_pct || 0) - (a.mem_pct || 0);
             if (Math.abs(memDiff) > 0.001)
                 return memDiff;
@@ -326,14 +307,14 @@ Singleton {
                 return cpuDiff;
 
             return (b.ram_mb || 0) - (a.ram_mb || 0);
-        }).slice(0, max == 0 ? process.length : max);
+        }).slice(0, max == 0 ? clean_process.length : max);
     }
 
     function getSortedENC(max: int): var {
-        if (!process || !Array.isArray(process))
+        if (!clean_process || !Array.isArray(clean_process))
             return [];
 
-        return process.slice().sort((a, b) => {
+        return clean_process.slice().sort((a, b) => {
             const encDiff = (b.enc_pct || 0) - (a.enc_pct || 0);
             if (Math.abs(encDiff) > 0.001)
                 return encDiff;
@@ -347,14 +328,14 @@ Singleton {
                 return cpuDiff;
 
             return (b.vram_mb || 0) - (a.vram_mb || 0);
-        }).slice(0, max == 0 ? process.length : max);
+        }).slice(0, max == 0 ? clean_process.length : max);
     }
 
     function getSortedDEC(max: int): var {
-        if (!process || !Array.isArray(process))
+        if (!clean_process || !Array.isArray(clean_process))
             return [];
 
-        return process.slice().sort((a, b) => {
+        return clean_process.slice().sort((a, b) => {
             const decDiff = (b.dec_pct || 0) - (a.dec_pct || 0);
             if (Math.abs(decDiff) > 0.001)
                 return decDiff;
@@ -368,7 +349,7 @@ Singleton {
                 return cpuDiff;
 
             return (b.vram_mb || 0) - (a.vram_mb || 0);
-        }).slice(0, max == 0 ? process.length : max);
+        }).slice(0, max == 0 ? clean_process.length : max);
     }
 
     /*
@@ -529,7 +510,7 @@ Singleton {
 
         let high_usage_keys = Object.keys(high_usage);
         for (const d of Object.keys(sustained_data)) {
-            if (!high_usage_keys.includes(d) && sustained_data[d].milestone > 0) {
+            if (!high_usage_keys.includes(d) && DateTime.getDuration(sustained_data[d].startTime) / 1000 > sustained_high_usage_threshold) {
                 // console.log(JSON.stringify(sustained_data, null, 2));
                 root.sustainEnded(sustained_data[d]);
             }
@@ -708,23 +689,156 @@ Singleton {
         }
     }
 
+    function logSustained(data, callback) {
+        if (!data || !data.program) {
+            if (callback)
+                callback(null);
+            return;
+        }
+
+        let avg = data.avg_metrics || {};
+        let now = Date.now();
+        let durationMs = data.startTime ? (now - data.startTime) : 0;
+        let pidsJson = Array.isArray(data.pid) ? JSON.stringify(data.pid) : JSON.stringify([data.pid]);
+
+        let stmt = DBInfo.sql`
+        INSERT INTO sustained (
+            start_time,
+            duration,
+            program,
+            pid,
+            milestone,
+            avg_cpu,
+            avg_ram,
+            avg_vram,
+            gpu_type,
+            avg_sm,
+            avg_mem,
+            avg_enc,
+            avg_dec
+        ) VALUES (
+            ${data.startTime || now},
+            ${durationMs},
+            ${data.program},
+            ${pidsJson},
+            ${data.milestone || 0},
+            ${avg.cpu !== undefined ? avg.cpu : null},
+            ${avg.ram !== undefined ? avg.ram : null},
+            ${avg.vram !== undefined ? avg.vram : null},
+            ${data.current?.gpu_type || 'N/A'},
+            ${avg.sm !== undefined ? avg.sm : null},
+            ${avg.mem !== undefined ? avg.mem : null},
+            ${avg.enc !== undefined ? avg.enc : null},
+            ${avg.dec !== undefined ? avg.dec : null}
+        )
+    `;
+
+        DBInfo.exec(stmt, callback);
+    }
+
+    function logSpike(data, callback) {
+        if (!data || !data.program) {
+            if (callback)
+                callback(null);
+            return;
+        }
+
+        let s = data.spikes || {};
+        let pidsJson = Array.isArray(data.pid) ? JSON.stringify(data.pid) : JSON.stringify([data.pid]);
+
+        let stmt = DBInfo.sql`
+        INSERT INTO spikes (
+            start_time,
+            program,
+            pid,
+            severity,
+            severity_score,
+            cpu_delta,
+            ram_delta,
+            vram_delta,
+            gpu_type,
+            sm_delta,
+            mem_delta,
+            enc_delta,
+            dec_delta
+        ) VALUES (
+            ${data.startTime || Date.now()},
+            ${data.program},
+            ${pidsJson},
+            ${data.severity || 'normal'},
+            ${data.peakSeverityScore || 1},
+            ${s.cpu !== undefined ? s.cpu : null},
+            ${s.ram !== undefined ? s.ram : null},
+            ${s.vram !== undefined ? s.vram : null},
+            ${data.current?.gpu_type || 'N/A'},
+            ${s.sm !== undefined ? s.sm : null},
+            ${s.mem !== undefined ? s.mem : null},
+            ${s.enc !== undefined ? s.enc : null},
+            ${s.dec !== undefined ? s.dec : null}
+        )
+    `;
+
+        DBInfo.exec(stmt, callback);
+    }
+
     // Just logging no calculations until requested
     function logTick(callback) {
-        let statements = [];
-        for (const p of Object.entries(name_process)) {
-            let program = p[0];
-            let data = p[1];
-            statements.push(DBInfo.sql`
-                INSERT INTO uptime.process_ticks
-                (program, pid, cpu_pct, ram_mb, vram_mb, gpu_type, sm_pct, mem_pct, enc_pct, dec_pct)
-                VALUES (${program}, ${JSON.stringify(data.pid)}, ${data.cpu_pct}, ${data.ram_mb}, ${data.vram_mb}, ${data.gpu_type}, ${data.sm_pct}, ${data.mem_pct}, ${data.enc_pct}, ${data.dec_pct})
+        if (!clean_process || clean_process.length === 0)
+            return;
+
+        // 1. Helper to score GPU impact
+        const getGpuScore = p => (p.vram_mb || 0) + ((p.sm_pct || 0) * 10);
+
+        // 2. Sort by CPU
+        let topCpu = clean_process.slice().sort((a, b) => (b.cpu_pct || 0) - (a.cpu_pct || 0)).slice(0, 3);
+
+        // 3. Sort by GPU/VRAM
+        let topGpu = clean_process.slice().sort((a, b) => getGpuScore(b) - getGpuScore(a)).slice(0, 3);
+
+        // 4. Merge and deduplicate by program name
+        let selectedMap = {};
+        [...topCpu, ...topGpu].forEach(p => {
+            if (p.cpu_pct > 0.0 || p.vram_mb > 100 || p.sm_pct > 5) {
+                selectedMap[p.name || p.program] = p;
+            }
+        });
+
+        let topProcesses = Object.values(selectedMap);
+
+        // 5. Convert to SQL statements
+        let statements = topProcesses.map(p => DBInfo.sql`
+            INSERT INTO uptime.process_ticks
+            (program, pid, cpu_pct, ram_mb, vram_mb, gpu_type, sm_pct, mem_pct, enc_pct, dec_pct)
+            VALUES (
+                ${p.name || p.program},
+                ${JSON.stringify(p.pid)},
+                ${p.cpu_pct || 0},
+                ${p.ram_mb || 0},
+                ${p.vram_mb || 0},
+                ${p.gpu_type || ''},
+                ${p.sm_pct || 0},
+                ${p.mem_pct || 0},
+                ${p.enc_pct || 0},
+                ${p.dec_pct || 0}
+            )
         `);
-        }
-        if (statements.length > 0) {
-            DBInfo.execMany(statements, callback);
-        } else if (callback) {
-            callback(null);
-        }
+
+        // 6. Always include total system usage
+        statements.push(DBInfo.sql`
+            INSERT INTO uptime.system_ticks
+            (cpu_pct, ram_mb, vram_mb, sm_pct, mem_pct, enc_pct, dec_pct)
+            VALUES (
+                ${SystemInfo.cpuusage},
+                ${SystemInfo.memused / 1024},
+                ${SystemInfo.gpumemused / 1024},
+                ${SystemInfo.gpusm},
+                ${SystemInfo.gpumem},
+                ${SystemInfo.gpuenc},
+                ${SystemInfo.gpudec},
+            )
+        `);
+
+        DBInfo.execMany(statements, callback);
     }
 
     function index() {
@@ -734,12 +848,13 @@ Singleton {
         for (const p of process) {
             if (!ps[p.name]) {
                 ps[p.name] = {
+                    program: p.name,
                     pid: [p.pid],
                     cpu_pct: p.cpu_pct,
                     ram_mb: p.ram_mb,
                     vram_mb: p.vram_mb,
-                    gpu_type: (p.gpu_type == "N/A" ? "" : (p.gpu_type == "GFX" ? "G" : (p.gpu_type == "COMP" ? "C" : (p.gpu_type == "BOTH" ? "G+C" : "")))),
-                    gpu_pct: Math.max(p.sm_pct + p.mem_pct + p.enc_pct + p.dec_pct),
+                    gpu_type: p.gpu_type,
+                    gpu_pct: Math.max(p.sm_pct, p.mem_pct, p.enc_pct, p.dec_pct),
                     sm_pct: p.sm_pct,
                     mem_pct: p.mem_pct,
                     enc_pct: p.enc_pct,
@@ -751,13 +866,13 @@ Singleton {
                 ps[p.name].cpu_pct += p.cpu_pct;
                 ps[p.name].ram_mb += p.ram_mb;
                 ps[p.name].vram_mb += p.vram_mb;
-                ps[p.name].gpu_pct += Math.max(p.sm_pct + p.mem_pct + p.enc_pct + p.dec_pct);
                 ps[p.name].sm_pct += p.sm_pct;
                 ps[p.name].mem_pct += p.mem_pct;
                 ps[p.name].enc_pct += p.enc_pct;
                 ps[p.name].dec_pct += p.dec_pct;
             }
         }
+        clean_process = Object.values(ps);
         name_process = ps;
         programs = name;
     }

@@ -26,6 +26,7 @@ Singleton {
     onDateChanged: nextDay()
 
     property var months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    property var days: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
     function getDay(delta = 0) {
         // 0 means today, 1 means tomorrow and -1 means yesterday and so on
@@ -106,22 +107,41 @@ Singleton {
         return Date.now() - start_time;
     }
 
-    function formatDuration(totalSeconds) {
-        if (!totalSeconds || totalSeconds < 1)
+    function formatDuration(totalSeconds, precision = 2) {
+        if (totalSeconds <= 0)
             return "0s";
 
-        let days = Math.floor(totalSeconds / 86400);
-        let hours = Math.floor((totalSeconds % 86400) / 3600);
-        let minutes = Math.floor((totalSeconds % 3600) / 60);
-        let seconds = Math.floor(totalSeconds % 60);
+        const units = [
+            {
+                label: "d",
+                seconds: 86400
+            },
+            {
+                label: "h",
+                seconds: 3600
+            },
+            {
+                label: "m",
+                seconds: 60
+            },
+            {
+                label: "s",
+                seconds: 1
+            }
+        ];
 
-        if (days > 0)
-            return hours > 0 ? `${days}d${hours}h` : `${days}d`;
-        if (hours > 0)
-            return minutes > 0 ? `${hours}h${minutes}m` : `${hours}h`;
-        if (minutes > 0)
-            return seconds > 0 ? `${minutes}m${seconds}s` : `${minutes}m`;
-        return `${seconds}s`;
+        let remaining = totalSeconds;
+        const result = [];
+
+        for (const unit of units) {
+            const value = Math.floor(remaining / unit.seconds);
+            if (value > 0) {
+                result.push(`${value}${unit.label}`);
+                remaining %= unit.seconds;
+            }
+        }
+
+        return result.slice(0, precision).join("") || "0s";
     }
 
     function formatTimestamp(timestamp, precision = 4) {
@@ -141,6 +161,10 @@ Singleton {
 
     function monthNumToShort(month) {
         return months[month - 1];
+    }
+
+    function dayNumToShort(day) {
+        return days[day];
     }
 
     SystemClock {

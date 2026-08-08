@@ -8,16 +8,23 @@ import QtQuick
 import QtQuick.Layouts
 
 ColumnLayout {
-    id: cpu_spike
+    id: root
 
     property int w
     property var box
 
     spacing: 0
 
+    function fmt(str, ...args) {
+        return str.replace(/{}/g, () => args.shift());
+    }
+    function strip(str: string): string {
+        return str.trim().replace(/<[^>]*>/g, "");
+    }
+
     Cells {
 
-        w: cpu_spike.w
+        w: root.w
         h: 1
 
         color: Colors.bgSurface
@@ -55,12 +62,12 @@ ColumnLayout {
                 text: SystemInfo.cputemp.toFixed(0) + "°C"
                 color: {
                     const value = SystemInfo.cputemp;
-                    if (value > cpu_spike.box.warning_thres) {
-                        return Colors.blend(Colors.warning, Colors.danger, Math.min(value - cpu_spike.box.danger_thres, 10) / 10);
+                    if (value > root.box.warning_thres) {
+                        return Colors.blend(Colors.warning, Colors.danger, Math.min(value - root.box.danger_thres, 10) / 10);
                     } else if (value > 70) {
-                        return Colors.blend(cpu_spike.box.dyn, Colors.warning, Math.min(value - cpu_spike.box.warning_thres, 10) / 10);
+                        return Colors.blend(root.box.dyn, Colors.warning, Math.min(value - root.box.warning_thres, 10) / 10);
                     }
-                    return cpu_spike.box.dyn;
+                    return root.box.dyn;
                 }
                 font: Cell.fontB
             }
@@ -68,13 +75,13 @@ ColumnLayout {
     }
 
     CellSeparator {
-        w: cpu_spike.w
+        w: root.w
         color: Colors.accentDim
     }
 
     CellScrollView {
         id: cpu_list
-        w: cpu_spike.w
+        w: root.w
         h: 6
         scrollbar.enabled: Cell.hCount(contentH) > h
         source: GridLayout {
@@ -107,21 +114,21 @@ ColumnLayout {
                         w: (cpu_list.contentW - 8) / 2
 
                         value_color: {
-                            if (value > cpu_spike.box.danger_thres) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - cpu_spike.box.danger_thres, 10) / 10);
-                            } else if (value > cpu_spike.box.warning_thres) {
-                                return Colors.blend(cpu_spike.box.bar, Colors.warning, Math.min(value - cpu_spike.box.warning_thres, 10) / 10);
+                            if (value > root.box.danger_thres) {
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - root.box.danger_thres, 10) / 10);
+                            } else if (value > root.box.warning_thres) {
+                                return Colors.blend(root.box.bar, Colors.warning, Math.min(value - root.box.warning_thres, 10) / 10);
                             }
-                            return cpu_spike.box.bar;
+                            return root.box.bar;
                         }
 
                         key_color: {
-                            if (value > cpu_spike.box.danger_thres) {
-                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - cpu_spike.box.danger_thres, 10) / 10);
-                            } else if (value > cpu_spike.box.warning_thres) {
-                                return Colors.blend(cpu_spike.box.dyn, Colors.warning, Math.min(value - cpu_spike.box.warning_thres, 10) / 10);
+                            if (value > root.box.danger_thres) {
+                                return Colors.blend(Colors.warning, Colors.danger, Math.min(value - root.box.danger_thres, 10) / 10);
+                            } else if (value > root.box.warning_thres) {
+                                return Colors.blend(root.box.dyn, Colors.warning, Math.min(value - root.box.warning_thres, 10) / 10);
                             }
-                            return cpu_spike.box.dyn;
+                            return root.box.dyn;
                         }
                     }
                 }
@@ -130,7 +137,7 @@ ColumnLayout {
     }
 
     CellSeparator {
-        w: cpu_spike.w
+        w: root.w
         color: Colors.accentDim
     }
 
@@ -151,22 +158,96 @@ ColumnLayout {
             value: SystemInfo.cpuusage
 
             value_color: {
-                if (value > cpu_spike.box.danger_thres) {
-                    return Colors.blend(Colors.warning, Colors.danger, Math.min(value - cpu_spike.box.danger_thres, 10) / 10);
-                } else if (value > cpu_spike.box.warning_thres) {
-                    return Colors.blend(cpu_spike.box.bar, Colors.warning, Math.min(value - cpu_spike.box.warning_thres, 10) / 10);
+                if (value > root.box.danger_thres) {
+                    return Colors.blend(Colors.warning, Colors.danger, Math.min(value - root.box.danger_thres, 10) / 10);
+                } else if (value > root.box.warning_thres) {
+                    return Colors.blend(root.box.bar, Colors.warning, Math.min(value - root.box.warning_thres, 10) / 10);
                 }
-                return cpu_spike.box.bar;
+                return root.box.bar;
             }
 
             key_color: {
-                if (value > cpu_spike.box.danger_thres) {
-                    return Colors.blend(Colors.warning, Colors.danger, Math.min(value - cpu_spike.box.danger_thres, 10) / 10);
-                } else if (value > cpu_spike.box.warning_thres) {
-                    return Colors.blend(cpu_spike.box.dyn, Colors.warning, Math.min(value - cpu_spike.box.warning_thres, 10) / 10);
+                if (value > root.box.danger_thres) {
+                    return Colors.blend(Colors.warning, Colors.danger, Math.min(value - root.box.danger_thres, 10) / 10);
+                } else if (value > root.box.warning_thres) {
+                    return Colors.blend(root.box.dyn, Colors.warning, Math.min(value - root.box.warning_thres, 10) / 10);
                 }
-                return cpu_spike.box.dyn;
+                return root.box.dyn;
             }
+        }
+    }
+
+    CellSeparator {
+        w: root.w
+        color: Colors.bgOverlay
+        padding: 1
+    }
+
+    RowLayout {
+
+        spacing: 0
+
+        Stat {
+            key: "<b>CLOCK:</b>"
+            value: root.fmt("<b>{}MHz</b>", SystemInfo.cpubase.toFixed(0))
+
+            key_color: Colors.secondary
+
+            w: root.w - clock.w
+
+            value_color: {
+                const value = SystemInfo.cpubase / SystemInfo.cpuboost * 100;
+                if (value > root.box.danger_thres) {
+                    return Colors.blend(Colors.warning, Colors.danger, Math.min(value - root.box.danger_thres, 10) / 10);
+                } else if (value > root.box.warning_thres) {
+                    return Colors.blend(root.box.dyn, Colors.warning, Math.min(value - root.box.warning_thres, 10) / 10);
+                }
+                return root.box.dyn;
+            }
+        }
+
+        CellText {
+            id: clock
+
+            Layout.leftMargin: -Cell.w(root.box.p)
+
+            text: root.fmt(" / {}Mhz", SystemInfo.cpuboost.toFixed(0))
+            color: root.box.stc
+        }
+    }
+
+    RowLayout {
+
+        spacing: 0
+
+        Stat {
+            key: "<b>POWER:</b>"
+            value: root.fmt("<b>{}W</b>", SystemInfo.cpupower)
+
+            key_color: Colors.secondary
+
+            w: root.w - power.w
+
+            value_color: {
+                if (SystemInfo.cpumaxpower == 0)
+                    return root.box.dyn;
+                const value = SystemInfo.cpupower / SystemInfo.cpumaxpower * 100;
+                if (value > root.box.danger_thres) {
+                    return Colors.blend(Colors.warning, Colors.danger, Math.min(value - root.box.danger_thres, 10) / 10);
+                } else if (value > root.box.warning_thres) {
+                    return Colors.blend(root.box.dyn, Colors.warning, Math.min(value - root.box.warning_thres, 10) / 10);
+                }
+                return root.box.dyn;
+            }
+        }
+
+        CellText {
+            id: power
+
+            Layout.leftMargin: -Cell.w(root.box.p)
+
+            text: SystemInfo.cpumaxpower > 0 ? root.fmt(" / {}W", SystemInfo.cpumaxpower.toFixed(1)) : ""
+            color: root.box.stc
         }
     }
 
@@ -188,9 +269,9 @@ ColumnLayout {
             id: bar_bar
 
             anchors.left: bar.left
-            anchors.leftMargin: Cell.w(cpu_spike.box.p)
+            anchors.leftMargin: Cell.w(root.box.p)
 
-            w: bar.w - 2 * cpu_spike.box.p - bar_value.w - 2
+            w: bar.w - 2 * root.box.p - bar_value.w - 2
 
             percent: bar.value
 
@@ -201,7 +282,7 @@ ColumnLayout {
             id: bar_value
 
             anchors.right: bar.right
-            anchors.rightMargin: Cell.w(cpu_spike.box.p + 1)
+            anchors.rightMargin: Cell.w(root.box.p + 1)
 
             text: bar.key
             font: Cell.fontB
@@ -209,10 +290,51 @@ ColumnLayout {
 
         CellText {
             anchors.right: bar.right
-            anchors.rightMargin: Cell.w(cpu_spike.box.p)
+            anchors.rightMargin: Cell.w(root.box.p)
 
             text: "%"
             color: Colors.fgDim
+        }
+    }
+
+    component Stat: Cells {
+        id: stat
+
+        property string key: "Name:"
+        property string value: "Ryzen R5 7600"
+
+        property color key_color: root.box.key
+        property color value_color: stc ? root.box.stc : root.box.dyn
+
+        property bool stc: false
+        property bool debug: false
+
+        w: root.box.eW
+        h: 1
+
+        color: "transparent"
+
+        CellText {
+            id: stat_key
+
+            anchors.left: stat.left
+            anchors.leftMargin: Cell.w(root.box.p)
+
+            text: stat.key
+            color: stat.key_color
+            debug: stat.debug
+        }
+
+        MarqueeCellText {
+            id: stat_value
+
+            anchors.right: stat.right
+            anchors.rightMargin: Cell.w(root.box.p)
+
+            text: stat.value
+            fg: stat.value_color
+            cellw: stat.w - root.strip(stat.key).length - root.box.p * 2 - 1
+            alignRight: true
         }
     }
 }

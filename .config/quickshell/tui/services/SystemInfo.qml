@@ -55,6 +55,9 @@ Singleton {
     property int cputotal
     property int cpuidle
     property real cputemp
+    property real cpupower
+    property real cpumaxpower
+    property bool cpurapl
     property int cputotalprev
     property int cpuidleprev
     property real cpuusage
@@ -74,8 +77,19 @@ Singleton {
     property string gpuvendor: ""
 
     property var gpumodels: []
+    property real gpuname
     property real gpuusage
+    property real gpusm
+    property real gpumem
+    property real gpuenc
+    property real gpudec
     property real gputemp
+    property real gpupower
+    property real gpumaxpower
+    property real gpufreq
+    property real gpumaxfreq
+    property real gpumemoryfreq
+    property real gpumemorymaxfreq
     property real gpumemtotal
     property real gpumemused
     property real gpumemusage: {
@@ -87,8 +101,9 @@ Singleton {
 
     property var wifi: {
         "enabled": false,
-        "ethernet": false,
-        "device": "wlan0",
+        "type": "Ethernet" // Wifi, Ethernet
+        ,
+        // "device": "wlan0",
         "name": "Wifi",
         "localip": "0.0.0.0",
         "signal": 0,
@@ -217,13 +232,7 @@ Singleton {
     }
 
     function runDetached(command = []) {
-        run.command = command;
-        run.startDetached();
-        run.command = [];
-    }
-
-    function notifyerr(error: string) {
-        run.exec(["bash", "-c", "notify-send --urgency=critical 'System Error!' '" + error.trim() + "'"]);
+        Quickshell.execDetached(command);
     }
 
     // IO stuff
@@ -247,8 +256,13 @@ Singleton {
     property int diskused
 
     property int polling_time: SettingsInfo.systemPolling ?? 1000
-    onPolling_timeChanged: {
-        cpustat.running = false;
+
+    // onPolling_timeChanged: {
+    //     cpustat.running = false;
+    // }
+
+    function activate() {
+        activator.exec(["pkexec", configdir + "/scripts/setup.sh", configdir]);
     }
 
     Timer {
@@ -261,14 +275,18 @@ Singleton {
             if (!root.homedir)
                 return;
             // cpustat.reload();
-            if (!cpustat.running)
-                cpustat.running = true;
-            if (!procstat.running)
-                procstat.running = true;
-            network.reload();
-            disk.reload();
-            fastfetch.running = true;
-            batterystat.running = true;
+            // if (!cpustat.running)
+            //     cpustat.running = true;
+            if (!sysprocstats.running)
+                sysprocstats.running = true;
+            // if (!procstat.running)
+            //     procstat.running = true;
+            // if (!sysstats.running)
+            //     sysstats.running = true;
+            // network.reload();
+            // disk.reload();
+            // fastfetch.running = true;
+            // batterystat.running = true;
         }
     }
 
@@ -288,344 +306,160 @@ Singleton {
         id: power
     }
 
+    // UNIFIED SYSTEM STATS
     Process {
-        id: fastfetch
+        id: sysprocstats
+        running: true
+        command: [root.configdir + "/scripts/sysprocstats", root.polling_time]
 
-        command: ["bash", "-c", "fastfetch -c quick.jsonc --format json"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const datas = JSON.parse(text);
-
-                const unit = 1024;
-
-                // Titles
-                root.username = datas[0].result.userName;
-                root.hostname = datas[0].result.hostName;
-
-                // OS
-                root.os = datas[1].result.prettyName;
-
-                // Motherboard
-                root.board = datas[2].result.name;
-
-                // Kernel
-                root.kernel = datas[3].result.release;
-                root.architecture = datas[3].result.architecture;
-
-                // Uptime
-                const uptime_hours = Math.floor(datas[4].result.uptime / 3600000);
-                const uptime_minutes = Math.floor((datas[4].result.uptime - uptime_hours * 3600000) / 60000);
-                const uptime_seconds = Math.floor((datas[4].result.uptime - uptime_hours * 3600000 - uptime_minutes * 60000) / 1000);
-                root.uptime = `${uptime_hours}h${uptime_minutes}m${uptime_seconds}s`;
-                root.uptime_raw = datas[4].result.uptime / 1000 ?? 0;
-
-                // WM
-                root.wm = datas[6].result.prettyName;
-
-                // CPU
-                root.cpumodel = datas[7].result.cpu;
-                root.cpucores = datas[7].result.cores.physical;
-                root.cputhreads = datas[7].result.cores.logical;
-                root.cpubase = datas[7].result.frequency.base;
-                root.cpuboost = datas[7].result.frequency.max;
-                root.cputemp = datas[7].result.temperature;
-
-                // GPU
-                var gpumodels = [];
-                for (const gpu of datas[8].result) {
-                    gpumodels.push({
-                        "type": gpu.type,
-                        "name": gpu.name,
-                        "memorytotal": gpu.memory.dedicated.total / unit,
-                        "memoryused": gpu.memory.dedicated.used / unit,
-                        "cores": gpu.coreCount,
-                        "usage": gpu.coreUsage,
-                        "temp": gpu.temperature
-                    });
-                }
-                var hasGPU = false;
-                for (const gpu of gpumodels) {
-                    if (gpu.type == "Discrete") {
-                        root.gputemp = gpu.temp;
-                        root.gpuusage = gpu.usage;
-                        root.gpumemtotal = gpu.memorytotal;
-                        root.gpumemused = gpu.memoryused;
-                        hasGPU = true;
-                        break;
-                    }
-                }
-                for (const i in gpumodels) {
-                    if (gpumodels[i].type == "Discrete") {
-                        const mainGpu = gpumodels[i];
-                        gpumodels.splice(i, 1);
-                        gpumodels.unshift(mainGpu);
-                        break;
-                    }
-                }
-                if (!hasGPU) {
-                    for (const gpu of gpumodels) {
-                        if (gpu.type == "Integrated") {
-                            root.gputemp = gpu.temp;
-                            root.gpuusage = gpu.usage;
-                            root.gpumemtotal = gpu.memorytotal;
-                            root.gpumemused = gpu.memoryused;
-                            break;
-                        }
-                    }
-                }
-                root.gpumodels = gpumodels;
-
-                // RAM
-                root.memtotal = datas[9].result.total / unit;
-                root.memused = datas[9].result.used / unit;
-
-                // SWAP
-                var swaptotal = 0;
-                var swapused = 0;
-                for (const swap of datas[10].result) {
-                    swaptotal += swap.total / unit;
-                    swapused += swap.used / unit;
-                }
-                root.swaptotal = swaptotal;
-                root.swapused = swapused;
-
-                // DISKS
-                var disks = [];
-                for (const disk of datas[11].result) {
-                    if (disk.mountpoint == "/") {
-                        root.rootstoragetotal = disk.bytes.total / unit;
-                        root.rootstorageused = disk.bytes.used / unit;
-                    }
-
-                    disks.push({
-                        "name": disk.mountpoint == "/" ? "ROOT" : disk.name,
-                        "mountpoint": disk.mountpoint,
-                        "mountfrom": disk.mountFrom,
-                        "total": disk.bytes.total / unit,
-                        "used": disk.bytes.used / unit,
-                        "filesystem": disk.filesystem
-                    });
-                }
-                root.disks = disks;
-
-                // WIFI
-                root.wifi = {
-                    "device": datas[13]?.result[0]?.inf.description ?? "None",
-                    "name": datas[13]?.result[0]?.conn.ssid ?? "Disconnected",
-                    "localip": datas[12]?.result[0]?.ipv4 ?? "None",
-                    "signal": datas[13]?.result[0]?.conn.signalQuality ?? 0,
-                    "channel": datas[13]?.result[0]?.conn.channel ?? 0,
-                    "freq": datas[13]?.result[0]?.conn.frequency ?? 0,
-                    "ethernet": datas[12]?.result[0]?.name.startsWith("en"),
-                    "enabled": datas[13]?.result[0]?.inf.status == "up"
-                };
-
-                // PHYSICAL DISKS
-                var phydisks = [];
-                for (const disk of datas[14].result) {
-                    const name = disk.name;
-                    const size = disk.size / unit;
-                    const type = disk.interconnect;
-                    if (type.toLowerCase() == "usb") {
-                        phydisks.push({
-                            "name": name,
-                            "size": size,
-                            "type": type
-                        });
-                    } else {
-                        phydisks.unshift({
-                            "name": name,
-                            "size": size,
-                            "type": type
-                        });
-                    }
-                }
-
-                root.bluetooth = {
-                    "enabled": datas[16].result[0]?.enabled,
-                    "devices": datas[15].result
-                };
-
-                root.phydisks = phydisks;
-            }
+        function cleanCpuModel(model) {
+            if (!model)
+                return "CPU";
+            return model.replace(/\((R|TM)\)/gi, "")                          // Removes (R) and (TM)
+            .replace(/\b\d+-(Core|Cores|Thread|Threads)\b/gi, "") // Removes "6-Cores", "8-Core", etc.
+            .replace(/\bCPU\s*@\s*[\d\.]+\s*GHz\b/gi, "")         // Removes "CPU @ 3.80GHz"
+            .replace(/\bProcessor\b/gi, "")                       // Removes "Processor"
+            .replace(/\bCPU\b/gi, "")                             // Removes "CPU"
+            .replace(/\s+/g, " ")                                 // Collapses multiple spaces
+            .trim();
         }
-    }
 
-    // //get CPU STAT
-    // FileView {
-    //     id: cpustat
-
-    //     path: "/proc/stat"
-
-    //     onLoaded: {
-    //         const data = text().match(/^cpu\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/);
-    //         const cpudata = data.slice(1).map(x => parseInt(x, 10));
-    //         if (data) {
-    //             root.cputotal = cpudata.reduce((acc, cur) => acc + cur, 0);
-
-    //             root.cpuidle = cpudata[3] + cpudata[4];
-
-    //             const totald = root.cputotal - (root.cputotalprev ?? 0);
-    //             const idled = root.cpuidle - (root.cpuidleprev ?? 0);
-
-    //             root.cpuusage = ((totald - idled) / totald) * 100;
-    //             root.cpuusage = root.cpuusage.toFixed(2);
-
-    //             root.cpuidleprev = root.cpuidle;
-    //             root.cputotalprev = root.cputotal;
-    //         }
-    //     }
-    // }
-
-    // New get CPU STAT
-    Process {
-        id: cpustat
-
-        // running: true
-        command: [root.configdir + "/scripts/cpustats", root.polling_time]
-
-        stdout: SplitParser {
-            splitMarker: ""
-            onRead: text => {
-                if (text) {
-                    try {
-                        const data = JSON.parse(text);
-                        let cpustats = data.cores;
-                        let total = 0;
-                        for (const cpu of cpustats) {
-                            total += cpu;
-                        }
-                        root.cpuusage = total / data.count;
-                        root.cpustats = cpustats;
-                    } catch (e) {
-                        console.log("SystemInfo (cpustat): Can't parse data!");
-                    }
-                }
+        function cleanBoardModel(model) {
+            if (!model)
+                return "Motherboard";
+            if (/To be filled|Default string|System Product|Base Board/i.test(model)) {
+                return "Motherboard";
             }
+            return model.replace(/Micro-Star\s+International\s+Co\.,?\s*Ltd\.?\s*(\[MSI\])?/gi, "MSI").replace(/ASUSTeK\s+COMPUTER\s+INC\.?/gi, "ASUS").replace(/Gigabyte\s+Technology\s+Co\.,?\s*Ltd\.?/gi, "Gigabyte").replace(/EVGA\s+Corporation/gi, "EVGA").replace(/\(MS-\w+\)/gi, "").replace(/\b(ASUS|MSI|Gigabyte|ASRock)\s+\1\b/gi, "$1").replace(/\s+/g, " ").trim();
         }
-    }
-
-    // New get CPU STAT
-    Process {
-        id: procstat
-
-        // running: true
-        command: [root.configdir + "/scripts/procstats", root.polling_time, "json"]
 
         stdout: SplitParser {
             splitMarker: "\n"
             onRead: text => {
-                if (text) {
-                    // console.log(text);
-                    try {
-                        const data = JSON.parse(text);
-                        root.process = data.processes;
-                        root.hasgpu = data.gpu_available;
-                        root.gpuvendor = data.gpu_vendor;
-                    } catch (e) {
-                        console.log("SystemInfo (procstat): Can't parse data!");
-                    }
+                if (!text)
+                    return;
+
+                // try {
+                const data = JSON.parse(text);
+
+                // OS & Meta
+                root.username = data.os.username;
+                root.hostname = data.os.hostname;
+                root.os = data.os.name;
+                root.architecture = data.os.arch;
+                root.kernel = data.os.kernel;
+                root.uptime = DateTime.formatDuration(data.os.uptime, 3);
+                root.uptime_raw = data.os.uptime;
+                root.wm = data.os.wm;
+
+                // Motherboard
+                root.board = sysprocstats.cleanBoardModel(data.board.model);
+
+                // CPU
+                root.cpumodel = sysprocstats.cleanCpuModel(data.cpu.model);
+                root.cpucores = data.cpu.cores;
+                root.cputhreads = data.cpu.threads;
+                root.cpubase = data.cpu.cur_freq_mhz;
+                root.cpuboost = data.cpu.max_freq_mhz;
+                root.cputemp = data.cpu.temp_c;
+                root.cpupower = data.cpu.power_w;
+                root.cpumaxpower = data.cpu.power_max_w;
+                root.cpurapl = !data.cpu.rapl_restricted;
+                root.cpuusage = data.cpu.total_usage_pct;
+                root.cpustats = data.cpu.core_usage_pct;
+
+                // GPU
+                root.hasgpu = data.gpu_available ?? (data.gpus.length > 0);
+                root.gpuvendor = data.gpu_vendor ?? "";
+                root.gpumodels = data.gpus.map(g => ({
+                            name: g.name,
+                            type: g.type,
+                            temp: g.temp_c,
+                            power: g.power_cur_w,
+                            maxpower: g.power_max_w,
+                            freq: g.cur_freq_mhz,
+                            maxfreq: g.max_freq_mhz,
+                            memoryfreq: g.cur_mem_freq_mhz,
+                            memorymaxfreq: g.max_mem_freq_mhz,
+                            usage: g.gpu_util_pct,
+                            sm: g.gpu_util_pct,
+                            mem: g.mem_util_pct,
+                            enc: g.enc_util_pct,
+                            dec: g.dec_util_pct,
+                            memorytotal: g.vram_total_bytes / 1024,
+                            memoryused: g.vram_used_bytes / 1024,
+                            cores: g.cores
+                        }));
+
+                if (data.gpus.length > 0) {
+                    const primaryGpu = root.gpumodels[0];
+                    root.gpuname = primaryGpu.name;
+                    root.gputemp = primaryGpu.temp;
+                    root.gpupower = primaryGpu.power;
+                    root.gpumaxpower = primaryGpu.maxpower;
+                    root.gpuusage = primaryGpu.usage;
+                    root.gpusm = primaryGpu.sm;
+                    root.gpumem = primaryGpu.mem;
+                    root.gpuenc = primaryGpu.enc;
+                    root.gpudec = primaryGpu.dec;
+                    root.gpufreq = primaryGpu.freq;
+                    root.gpumaxfreq = primaryGpu.maxfreq;
+                    root.gpumemoryfreq = primaryGpu.memoryfreq;
+                    root.gpumemorymaxfreq = primaryGpu.memorymaxfreq;
+                    root.gpumemtotal = primaryGpu.memorytotal;
+                    root.gpumemused = primaryGpu.memoryused;
                 }
-            }
-        }
-    }
 
-    //get NETWORK STAT
-    FileView {
-        id: network
+                // Memory & Swap (KB)
+                root.memtotal = data.memory.ram_total_bytes / 1024;
+                root.memused = data.memory.ram_used_bytes / 1024;
+                root.swaptotal = data.memory.swap_total_bytes / 1024;
+                root.swapused = data.memory.swap_used_bytes / 1024;
 
-        path: "/proc/net/dev"
+                // Disks & Disk IO
+                root.disks = data.disks.map(d => ({
+                            name: d.label || d.name   // Prefers filesystem label ("ROOT", "storage")
+                            ,
+                            mountpoint: d.mountpoint,
+                            mountfrom: d.name,
+                            total: d.total_bytes / 1024,
+                            used: d.used_bytes / 1024,
+                            filesystem: d.filesystem
+                        }));
 
-        onLoaded: {
-            const data = text().split("\n").slice(2);
-            let bytesin = 0;
-            let bytesout = 0;
-            //console.log(data[3].trim().match(/\w+:\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+/))
-            for (const wifi of data) {
-                if (wifi) {
-                    let bytes = wifi.trim().match(/\w+:\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+/);
-                    bytesin += parseInt(bytes[1], 10);
-                    bytesout += parseInt(bytes[2], 10);
-                }
-            }
+                root.phydisks = data.physical_disks.map(pd => ({
+                            name: pd.name,
+                            type: pd.type,
+                            size: pd.total_bytes / 1024
+                        }));
 
-            const din = bytesin - (root.receivedbytes ?? 0);
-            const dout = bytesout - (root.transmitedbytes ?? 0);
+                root.diskreadspeed = data.disk_io.read_bytes_sec;
+                root.diskwritespeed = data.disk_io.write_bytes_sec;
 
-            root.networkreceive = din / (timer.interval / 1000);
-            root.networktransmit = dout / (timer.interval / 1000);
+                // Network & Network IO
+                root.wifi = {
+                    enabled: data.network.enabled,
+                    type: data.network.type,
+                    name: data.network.name,
+                    localip: data.network.local_ip,
+                    signal: data.network.signal_pct,
+                    freq: data.network.freq_ghz,
+                    channel: data.network.channel
+                };
+                root.networkreceive = data.network_io.rx_bytes_sec;
+                root.networktransmit = data.network_io.tx_bytes_sec;
 
-            root.receivedbytes = bytesin;
-            root.transmitedbytes = bytesout;
+                // Power
+                root.battery = data.power.battery_pct;
+                root.batteryhealth = data.power.health_pct;
+                root.batterystate = data.power.state;
+                root.onbattery = data.power.on_battery;
 
-            //console.log(root.storageRounder(root.networkreceive, 2) + " " + root.storageRounder(root.networktransmit, 2))
-        }
-    }
-
-    //get DISK STAT
-    FileView {
-        id: disk
-
-        path: "/proc/diskstats"
-
-        onLoaded: {
-            const data = text().split("\n");
-            let read = 0;
-            let readms = 0;
-            let write = 0;
-            let writems = 0;
-            let ioms = 0;
-            for (const device of data) {
-                let minidata = device.trim().match(/\d+\s+\d+\s+\w+\s+\d+\s+\d+\s+(\d+)\s+(\d+)\s+\d+\s+\d+\s+(\d+)\s+(\d+)\s+\d+\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+/);
-                if (minidata) {
-                    read += parseInt(minidata[1]);
-                    readms += parseInt(minidata[2]);
-                    write += parseInt(minidata[3]);
-                    writems += parseInt(minidata[4]);
-                    ioms += parseInt(minidata[5]);
-                }
-            }
-
-            const dread = (read - root.diskreaded) ?? 0;
-            const dreadusage = (readms - root.diskreadedspeed) ?? 0;
-            const dwrite = (write - root.diskwrote) ?? 0;
-            const dwriteusage = (writems - root.diskwrotespeed) ?? 0;
-            const dusage = (ioms - root.diskused) ?? 0;
-
-            root.diskread = dread * 512;
-            root.diskreadspeed = dread * 512 / (timer.interval / 1000);
-            root.diskwrite = dwrite * 512;
-            root.diskwritespeed = dwrite * 512 / (timer.interval / 1000);
-            root.diskusage = dusage / timer.interval;
-
-            root.diskreaded = read;
-            root.diskreadedspeed = readms;
-            root.diskwrote = write;
-            root.diskwrotespeed = writems;
-            root.diskused = ioms;
-
-            //console.log(root.storageRounder(root.diskwritespeed, 2))
-
-        }
-    }
-
-    Process {
-        id: batterystat
-        running: true
-
-        command: ["bash", "-c", "upower -i $(upower -e | grep BAT)"]
-        stdout: StdioCollector {
-            onStreamFinished: {
-                if (!text.match(/^Failed/)) {
-                    root.battery = text.match(/^\s+percentage:\s+(\d+%)/m)[1];
-                    root.batterystate = text.match(/^\s+state:\s+(.*)\s+/m)[1];
-                    root.batteryhealth = text.match(/^\s+capacity:\s+(.*%)/m)[1];
-                    root.onbattery = true;
-                } else {
-                    root.battery = "inf";
-                    root.batterystate = "PSU";
-                    root.onbattery = false;
-                }
+                // Processes (From merged sysprocstats binary)
+                root.process = data.processes || [];
+            // } catch (e) {
+            //     console.log("SystemInfo (sysprocstats): JSON Parse Error!", e);
+            // }
             }
         }
     }
@@ -644,13 +478,18 @@ Singleton {
     }
 
     Process {
-        id: run
+        id: activator
 
-        stderr: StdioCollector {
+        stdout: StdioCollector {
             onStreamFinished: {
                 if (text) {
-                    console.log("SystemInfo: " + text);
+                    SettingsInfo.restart();
                 }
+            }
+        }
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text) {}
             }
         }
     }

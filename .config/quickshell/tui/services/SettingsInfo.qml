@@ -31,6 +31,7 @@ Singleton {
     property var db: initialized ? DBInfo.path : 0
     property var screentime: initialized ? ScreenTimeInfo.db : 0
     property var procstats: initialized ? ProcessInfo.process : 0
+    property var ws: initialized ? WorkspaceInfo.active : 0
 
     //
 
@@ -299,7 +300,7 @@ Singleton {
             root.toggle("debug");
             root.debugSig();
 
-            // SystemInfo.runDetached(["bash", "-c", "hyprshade toggle ~/color_depth.frag"]);
+            SystemInfo.runDetached(["bash", "-c", "hyprshade toggle ~/color_depth.frag"]);
             // console.log(PacmanInfo.packages.length);
             // console.log(JSON.stringify(DesktopEntries.applications.values.filter(item => item.icon.includes("dolphin")), null, 2));
         }

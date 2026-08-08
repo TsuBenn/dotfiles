@@ -6,7 +6,6 @@ import QtQuick.Layouts
 import QtQuick
 
 RowLayout {
-
     id: root
 
     spacing: Cell.w(0)
@@ -19,13 +18,12 @@ RowLayout {
         color: Colors.bgOverlay
 
         RowLayout {
-
             id: time
 
             spacing: 0
 
             property var futureDeadlines: {
-                return CalendarInfo.forseeDeadlines(DateTime.date, DateTime.month_numeral, DateTime.year, 10)
+                return CalendarInfo.forseeDeadlines(DateTime.date, DateTime.month_numeral, DateTime.year, 10);
             }
 
             CellText {
@@ -33,9 +31,9 @@ RowLayout {
                 font: Cell.fontB
                 color: {
                     if (blinking.on && time.futureDeadlines.length > 0) {
-                        return Colors.warning
+                        return Colors.warning;
                     }
-                    return Colors.fgBase
+                    return Colors.fgBase;
                 }
             }
 
@@ -48,7 +46,6 @@ RowLayout {
             CellText {
 
                 Timer {
-
                     id: blinking
 
                     property bool on: false
@@ -59,78 +56,73 @@ RowLayout {
                     repeat: true
 
                     onTriggered: {
-                        on = !on
+                        on = !on;
                     }
-
                 }
 
                 property var reminders: CalendarInfo.getReminders(DateTime.date, DateTime.month_numeral, DateTime.year)
                 property var events: CalendarInfo.getEvents(DateTime.date, DateTime.month_numeral, DateTime.year)
 
                 property bool hasReminders: {
-                    return reminders.length > 0 || events.length > 0
+                    return reminders.length > 0 || events.length > 0;
                 }
 
                 property bool hasEvents: {
-                    return events.length > 0
+                    return events.length > 0;
                 }
 
                 property bool hasDeadline: {
-
                     for (const reminder of reminders) {
                         if (reminder.urgency == 2) {
-                            return true
+                            return true;
                         }
                     }
                     for (const reminder of events) {
                         if (reminder.urgency == 2) {
-                            return true
+                            return true;
                         }
                     }
-                    return false
+                    return false;
                 }
 
                 property bool hasImportant: {
-
                     for (const reminder of reminders) {
                         if (reminder.urgency == 1) {
-                            return true
+                            return true;
                         }
                     }
                     for (const reminder of events) {
                         if (reminder.urgency == 1) {
-                            return true
+                            return true;
                         }
                     }
-                    return false
+                    return false;
                 }
 
                 text: {
-
                     if (hasDeadline && blinking.on) {
-                        return " ! "
+                        return " ! ";
                     } else if (hasReminders && blinking.on) {
-                        return " ▪ "
+                        return " ▪ ";
                     } else if (hasReminders && !blinking.on) {
-                        return "   "
+                        return "   ";
                     }
 
-                    return " - " 
+                    return " - ";
                 }
 
                 color: {
                     if (hasDeadline) {
-                        return Colors.danger
+                        return Colors.danger;
                     } else if (hasImportant) {
-                        return Colors.warning
+                        return Colors.warning;
                     } else if (hasEvents) {
-                        return Colors.success
+                        return Colors.success;
                     }
-                    return Colors.fgBase
+                    return Colors.fgBase;
                 }
 
                 font: Cell.fontBB
-
             }
 
             CellText {
@@ -144,25 +136,22 @@ RowLayout {
                 font: Cell.fontB
                 color: {
                     if (blinking.on && time.futureDeadlines.length > 0) {
-                        return Colors.warning
+                        return Colors.warning;
                     }
-                    return Colors.fgBase
+                    return Colors.fgBase;
                 }
             }
-
         }
 
         MouseControl {
 
             anchors.fill: parent
 
-            onPressed: (button) => {
+            onPressed: button => {
                 if (button == "L") {
-                    PopupManager.toggle("calendar")
+                    PopupManager.toggle("calendar");
                 }
             }
-
         }
-
     }
 }
