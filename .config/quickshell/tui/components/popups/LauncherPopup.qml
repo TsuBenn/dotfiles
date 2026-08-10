@@ -608,7 +608,7 @@ CellPopup {
 
                                     onReleased: (button) => {
                                         if (button == "L") {
-                                            textfield.entered(textfield.text)
+                                            textfield.entered(textfield.text, "")
                                         }
                                     }
 

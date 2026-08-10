@@ -812,6 +812,10 @@ CellFloats {
                                                 }
                                             },
                                         ]
+
+                                        onActivated: index => {
+                                            items[index].action();
+                                        }
                                     }
                                 }
 

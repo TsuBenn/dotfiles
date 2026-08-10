@@ -110,10 +110,8 @@ Item {
                     root.activated(index, root.items[index]?.label ?? "");
                 };
 
-                console.log(Window.isFloat ?? false);
-
                 const global = mapToGlobal(x, y);
-                DropdownManager.show(root.items, global.x, global.y - root.reversed * Cell.h(root.items.length + 1), root.w, root.h, root.selected, root.menu.padding, root.menu.color, root.menu.fg, root.menu.active, root.menu.active_invert, selectBridge);
+                DropdownManager.show(root.items, global.x, global.y - root.reversed * Cell.h(root.items.length + 1), root.w, root.h, root.selected, root.menu.padding, root.menu.color, root.menu.fg, root.menu.active, root.menu.active_invert, selectBridge, Window.window.isFloat ?? false);
             }
         }
     }

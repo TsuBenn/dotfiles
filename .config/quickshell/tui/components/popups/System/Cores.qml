@@ -222,16 +222,16 @@ ColumnLayout {
 
         Stat {
             key: "<b>POWER:</b>"
-            value: root.fmt("<b>{}W</b>", SystemInfo.cpupower)
+            value: SystemInfo.cpurapl ? root.fmt("<b>{}W</b>", parseFloat(SystemInfo.cpupower).toFixed(1)) : ""
 
             key_color: Colors.secondary
 
-            w: root.w - power.w
+            w: root.w - pow.w
 
             value_color: {
                 if (SystemInfo.cpumaxpower == 0)
                     return root.box.dyn;
-                const value = SystemInfo.cpupower / SystemInfo.cpumaxpower * 100;
+                const value = (parseInt(SystemInfo.cpupower) / parseInt(SystemInfo.cpumaxpower)) * 100;
                 if (value > root.box.danger_thres) {
                     return Colors.blend(Colors.warning, Colors.danger, Math.min(value - root.box.danger_thres, 10) / 10);
                 } else if (value > root.box.warning_thres) {
@@ -239,14 +239,29 @@ ColumnLayout {
                 }
                 return root.box.dyn;
             }
+
+            CellButton {
+                visible: !SystemInfo.cpurapl
+                anchors.right: parent.right
+                anchors.rightMargin: Cell.w(1)
+                text: "Activate"
+                font: Cell.fontB
+                fg: [Colors.fgBase, Colors.bgSurface]
+                color: [Colors.bgOverlay, Colors.fgBase]
+                onPressed: button => {
+                    if (button == "L") {
+                        SystemInfo.activate();
+                    }
+                }
+            }
         }
 
         CellText {
-            id: power
+            id: pow
 
             Layout.leftMargin: -Cell.w(root.box.p)
 
-            text: SystemInfo.cpumaxpower > 0 ? root.fmt(" / {}W", SystemInfo.cpumaxpower.toFixed(1)) : ""
+            text: SystemInfo.cpurapl && SystemInfo.cpumaxpower > 0 ? root.fmt(" / {}W", parseFloat(SystemInfo.cpumaxpower).toFixed(1)) : ""
             color: root.box.stc
         }
     }

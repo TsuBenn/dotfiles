@@ -10,7 +10,7 @@ import QtQuick.Window
 
 // DISCLAIMER: It's best not to programmically change "w" or "h"
 
-FloatingWindow {
+Window {
     id: root
 
     visible: FloatsManager.isOpen(name)
@@ -31,12 +31,12 @@ FloatingWindow {
         }
     }
 
-    // Connections {
-    //     target: SettingsInfo
-    //     function onDebugSig() {
-    //         root.toggleFullscreen();
-    //     }
-    // }
+    Connections {
+        target: SettingsInfo
+        function onDebugSig() {
+            // root.toggleFullscreen();
+        }
+    }
 
     function unMaximize() {
         HyprInfo.unMaximizeClient(address);
@@ -58,7 +58,8 @@ FloatingWindow {
         HyprInfo.fullscreenClient(address, true);
     }
 
-    onClosed: {
+    // onClosed: {
+    onClosing: {
         TextFieldManager.unFocusAll();
         root.close();
     }
@@ -152,8 +153,12 @@ FloatingWindow {
     property int w: 20
     property int h: 10
 
-    implicitWidth: Cell.w(w + 1)
-    implicitHeight: Cell.h(h + 1)
+    // implicitWidth: Cell.w(w + 1)
+    property int implicitWidth: width
+    width: Cell.w(w + 1)
+    // implicitHeight: Cell.h(h + 1)
+    property int implicitHeight: height
+    height: Cell.h(h + 1)
 
     property bool showSize: false
 
@@ -200,8 +205,14 @@ FloatingWindow {
     property size _maximum: noMax ? Qt.size(16777215, 16777215) : (Qt.size(maxW > 0 ? Cell.w(maxW) : Cell.w(w + 1), maxH > 0 ? Cell.h(maxH) : Cell.h(h + 1)))
     property size _minimum: noMin ? Qt.size(0, 0) : (Qt.size(minW > 0 ? Cell.w(minW) : Cell.w(w + 1), minH > 0 ? Cell.h(minH) : Cell.h(h + 1)))
 
-    maximumSize: _maximum
-    minimumSize: _minimum
+    property var maximumSize: _maximum
+    property var minimumSize: _minimum
+    maximumHeight: maximumSize.height
+    maximumWidth: maximumSize.width
+    minimumHeight: minimumSize.height
+    minimumWidth: minimumSize.width
+    // maximumSize: _maximum
+    // minimumSize: _minimum
 
     // Setting custom max/min size would break the "w" and "h" bindings
     property int maxW: 0
@@ -223,8 +234,8 @@ FloatingWindow {
     property bool _faultySize: !((root.minW == 0 || root.w + 1 >= root.minW) && (root.maxW == 0 || root.w + 1 <= root.maxW) && (root.minH == 0 || root.h + 1 >= root.minH) && (root.maxH == 0 || root.h + 1 <= root.maxH))
 
     Cells {
-        anchors.centerIn: root.centered ? parent : undefined
         id: cell
+        anchors.centerIn: root.centered ? parent : undefined
         visible: root.visible && !root._faultySize
 
         w: root.w
@@ -243,6 +254,25 @@ FloatingWindow {
             if (root.shortcuts.length > 0) {
                 ShortcutInfo.handleShortcuts(event, root.shortcuts);
             }
+        }
+    }
+
+    Item {
+        x: Cell.w(0.5)
+        y: Cell.h(1.5)
+        implicitWidth: Cell.w(root.w)
+        implicitHeight: Cell.h(root.h)
+
+        MouseControl {
+            visible: dropdown.visible
+            anchors.fill: parent
+            onPressed: {
+                DropdownManager.hide();
+            }
+        }
+
+        CellDropdownMenu {
+            id: dropdown
         }
     }
 

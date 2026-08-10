@@ -9,7 +9,7 @@ import QtQuick
 CellPopup {
     id: root
 
-    visible: DropdownManager.visible
+    visible: DropdownManager.visible && (Window.window.isFloat ?? false) == DropdownManager.isFloat
 
     w: DropdownManager.w
     h: DropdownManager.h > 0 ? DropdownManager.h : menu.h

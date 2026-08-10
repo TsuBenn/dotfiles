@@ -250,10 +250,11 @@ Item {
             color: root.bg
 
             Rectangle {
+                visible: root.type == 2
                 anchors.verticalCenter: parent.verticalCenter
                 implicitWidth: Cell.w(root.w)
                 implicitHeight: 2
-                color: Colors.bgSurface
+                color: root.bg
             }
 
             ColumnLayout {

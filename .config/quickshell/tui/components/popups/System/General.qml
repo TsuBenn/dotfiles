@@ -1089,7 +1089,7 @@ RowLayout {
             font: Cell.fontBB
             color: root.box.head
         }
-        color: Colors.fgSubtle
+        color: Colors.bgOverlay
     }
 
     component Stat: Cells {

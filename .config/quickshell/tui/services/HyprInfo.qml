@@ -305,4 +305,7 @@ Singleton {
     //     }
     // }
 
+    Process {
+        id: exec
+    }
 }

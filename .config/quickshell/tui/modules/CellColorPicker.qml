@@ -473,7 +473,7 @@ Cells {
                 bindText: slider_root.value.toFixed(1)
                 placeholder: slider_root.placeholder
 
-                onEntered: input => slider_root.entered(input)
+                onEntered: input => slider_root.entered(input, "")
 
                 // Use `onTabPressed` (not `onPressed`) so we don't clobber
                 // CellTextField's internal key handling – typing into the
@@ -526,7 +526,7 @@ Cells {
             placeholder: detail_root.placeholder
             bindText: detail_root.bindText
 
-            onEntered: input => detail_root.entered(input)
+            onEntered: input => detail_root.entered(input, "")
 
             // See ChannelSlider: `onTabPressed` avoids breaking typing.
             Keys.onTabPressed: event => {

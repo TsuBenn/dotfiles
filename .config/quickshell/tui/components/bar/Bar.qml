@@ -50,6 +50,8 @@ Scope {
                         root.shield = false;
                 });
                 DropdownManager.opened.connect(name => {
+                    if (DropdownManager.isFloat)
+                        return;
                     HintManager.hide();
                     ContextMenuManager.hide();
                     root.shield = true;

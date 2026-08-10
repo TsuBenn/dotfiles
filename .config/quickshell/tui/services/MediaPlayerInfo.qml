@@ -8,112 +8,126 @@ import Quickshell.Io
 import QtQuick
 
 Singleton {
-
     id: root
 
     property list<MprisPlayer> players: Mpris.players.values
     property MprisPlayer activePlayer: Mpris.players.values[0] ?? null
 
-    property string title         : activePlayer?.trackTitle ?? ""
-    property string artist        : activePlayer?.trackArtist ?? ""
-    property string album         : activePlayer?.trackAlbum ?? ""
-    property string artUrl        : activePlayer?.trackArtUrl ?? ""
-    property bool   shuffleStatus : activePlayer ? (activePlayer?.shuffleSupported && activePlayer?.shuffle) : false
-    property string status        : {
-        if (!activePlayer?.playbackState) return ""
-        if (!activePlayer?.canControl) return "stopped"
+    property string title: activePlayer?.trackTitle ?? ""
+    property string artist: activePlayer?.trackArtist ?? ""
+    property string album: activePlayer?.trackAlbum ?? ""
+    property string artUrl: activePlayer?.trackArtUrl ?? ""
+    property bool shuffleStatus: activePlayer ? (activePlayer?.shuffleSupported && activePlayer?.shuffle) : false
+    property string status: {
+        if (!activePlayer?.playbackState)
+            return "";
+        if (!activePlayer?.canControl)
+            return "stopped";
         switch (activePlayer?.playbackState) {
-            case MprisPlaybackState.Playing: return "playing"
-            case MprisPlaybackState.Paused: return "paused"
-            case MprisPlaybackState.Stopped: return "stopped"
+        case MprisPlaybackState.Playing:
+            return "playing";
+        case MprisPlaybackState.Paused:
+            return "paused";
+        case MprisPlaybackState.Stopped:
+            return "stopped";
         }
     }
-    property string loopStatus        : {
+    property string loopStatus: {
         if (activePlayer?.loopSupported) {
-            if (activePlayer.loopState == MprisLoopState.None) return "none"
-            else if (activePlayer.loopState == MprisLoopState.Track) return "track"
-            else if (activePlayer.loopState == MprisLoopState.Playlist) return "playlist"
+            if (activePlayer.loopState == MprisLoopState.None)
+                return "none";
+            else if (activePlayer.loopState == MprisLoopState.Track)
+                return "track";
+            else if (activePlayer.loopState == MprisLoopState.Playlist)
+                return "playlist";
         }
-        return "none"
+        return "none";
     }
-    property string entry         : activePlayer?.desktopEntry ?? ""
-    property string dbusName      : activePlayer?.dbusName ?? ""
-    property real   length        : activePlayer?.lengthSupported ? activePlayer.length : null
-    property real   pos           : activePlayer?.positionSupported ? activePlayer.position : null
-    property real   volume        : activePlayer?.volumeSupported ? activePlayer.volume : null
+    property string entry: activePlayer?.desktopEntry ?? ""
+    property string dbusName: activePlayer?.dbusName ?? ""
+    property real length: activePlayer?.lengthSupported ? activePlayer.length : null
+    property real pos: activePlayer?.positionSupported ? activePlayer.position : null
+    property real volume: activePlayer?.volumeSupported ? activePlayer.volume : null
 
-    property bool   canPlay       : activePlayer?.canPlay ?? false
-    property bool   canPause      : activePlayer?.canPause ?? false
-    property bool   canNext       : activePlayer?.canGoNext ?? false
-    property bool   canPrev       : activePlayer?.canGoPrevious ?? false
-    property bool   canLoop       : activePlayer?.loopSupported ?? false
-    property bool   canShuffle    : activePlayer?.shuffleSupported ?? false
-    property bool   canVolume     : activePlayer?.volumeSupported ?? false
-    property bool   canPos        : activePlayer?.positionSupported ?? false
+    property bool canPlay: activePlayer?.canPlay ?? false
+    property bool canPause: activePlayer?.canPause ?? false
+    property bool canNext: activePlayer?.canGoNext ?? false
+    property bool canPrev: activePlayer?.canGoPrevious ?? false
+    property bool canLoop: activePlayer?.loopSupported ?? false
+    property bool canShuffle: activePlayer?.shuffleSupported ?? false
+    property bool canVolume: activePlayer?.volumeSupported ?? false
+    property bool canPos: activePlayer?.positionSupported ?? false
 
-    signal adjusted()
+    signal adjusted
 
     function formatTime(num): string {
-        const hour = Math.floor(num/3600)
-        const minute = Math.floor(num/60) - hour*60
-        const second = Math.floor(num) - minute*60 - hour*3600
+        const hour = Math.floor(num / 3600);
+        const minute = Math.floor(num / 60) - hour * 60;
+        const second = Math.floor(num) - minute * 60 - hour * 3600;
 
-        return (hour > 0 ? hour + ":" : "") + (minute || minute == 0 ? minute.toString().padStart(2, '0') : "--") + ":" + (second || second == 0 ? second.toString().padStart(2, '0') : "--" )
+        return (hour > 0 ? hour + ":" : "") + (minute || minute == 0 ? minute.toString().padStart(2, '0') : "--") + ":" + (second || second == 0 ? second.toString().padStart(2, '0') : "--");
     }
 
     function setVolume(num) {
         if (activePlayer)
-        activePlayer.volume = num
+            activePlayer.volume = num;
     }
 
     function requestPos() {
         if (activePlayer)
-        activePlayer.positionChanged()
+            activePlayer.positionChanged();
     }
 
     function setPos(num) {
-        if (activePlayer)
-        activePlayer.position = num
+        if (activePlayer && canPos)
+            activePlayer.position = num;
     }
 
     function playPauseMedia() {
-        if (activePlayer)
-        activePlayer.togglePlaying()
-        autoSelect()
+        if (activePlayer && canPlay && canPause)
+            activePlayer.togglePlaying();
+        autoSelect();
     }
 
     function playMedia() {
-        if (activePlayer)
-        activePlayer.play()
-        autoSelect()
+        if (activePlayer && canPlay)
+            activePlayer.play();
+        autoSelect();
     }
 
     function pauseMedia() {
-        if (activePlayer)
-        activePlayer.pause()
-        autoSelect()
+        if (activePlayer && canPause)
+            activePlayer.pause();
+        autoSelect();
     }
 
     function nextMedia() {
-        if (activePlayer)
-        activePlayer.next()
+        if (activePlayer && canNext)
+            activePlayer.next();
     }
 
     function prevMedia() {
-        if (activePlayer)
-        activePlayer.previous()
+        if (activePlayer && canPrev)
+            activePlayer.previous();
     }
 
     function toggleShuffle() {
         if (activePlayer)
-        activePlayer.shuffle = !activePlayer.shuffle
+            activePlayer.shuffle = !activePlayer.shuffle;
     }
 
     function itterateLoop() {
         if (activePlayer) {
-            if (root.loopStatus == "none") {activePlayer.loopState = MprisLoopState.Playlist; root.loopStatus = "playlist"}
-            else if (root.loopStatus == "track") {activePlayer.loopState = MprisLoopState.None; root.loopStatus = "none"}
-            else if (root.loopStatus == "playlist") {activePlayer.loopState = MprisLoopState.Track; root.loopStatus = "track"}
+            if (root.loopStatus == "none") {
+                activePlayer.loopState = MprisLoopState.Playlist;
+                root.loopStatus = "playlist";
+            } else if (root.loopStatus == "track") {
+                activePlayer.loopState = MprisLoopState.None;
+                root.loopStatus = "none";
+            } else if (root.loopStatus == "playlist") {
+                activePlayer.loopState = MprisLoopState.Track;
+                root.loopStatus = "track";
+            }
         }
     }
 
@@ -124,14 +138,14 @@ Singleton {
     function autoSelect() {
         for (const player of root.players) {
             if (player.playbackState == MprisPlaybackState.Playing) {
-                root.activePlayer = player
+                root.activePlayer = player;
             }
         }
     }
 
     Component.onCompleted: {
-        SystemInfo.onbattery ? refresh.interval = 2000 : refresh.interval = 1000
-        autoSelect()
+        SystemInfo.onbattery ? refresh.interval = 2000 : refresh.interval = 1000;
+        autoSelect();
     }
 
     Timer {
@@ -141,8 +155,7 @@ Singleton {
         repeat: true
 
         onTriggered: {
-            root.autoSelect()
+            root.autoSelect();
         }
     }
-
 }

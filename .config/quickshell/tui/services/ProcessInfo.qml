@@ -104,7 +104,6 @@ Singleton {
         function onActiveChanged() {
             if (DBInfo.active) {
                 root.initDB();
-                screentime_timeline.updateCur();
             }
         }
     }
@@ -197,6 +196,41 @@ Singleton {
             enc_pct: src.enc_pct || 0,
             dec_pct: src.dec_pct || 0
         };
+    }
+
+    function getRealTimeTicks(callback) {
+        DBInfo.query(DBInfo.sql`
+            SELECT
+                timestamp,
+                cpu_pct,
+                ram_mb,
+                vram_mb,
+                sm_pct,
+                mem_pct,
+                enc_pct,
+                dec_pct
+            FROM system_ticks
+            ORDER BY timestamp DESC
+        `, callback);
+    }
+
+    function getProcessTicks(timestamp, callback) {
+        DBInfo.query(DBInfo.sql`
+            SELECT
+                timestamp,
+                program,
+                pid,
+                cpu_pct,
+                ram_mb,
+                vram_mb,
+                sm_pct,
+                mem_pct,
+                enc_pct,
+                dec_pct
+            FROM process_ticks
+            WHERE timestamp = ${timestamp}
+            ORDER BY timestamp DESC
+        `, callback);
     }
 
     function getSortedCPU(max: int): var {
@@ -786,55 +820,54 @@ Singleton {
         if (!clean_process || clean_process.length === 0)
             return;
 
-        // 1. Helper to score GPU impact
-        const getGpuScore = p => (p.vram_mb || 0) + ((p.sm_pct || 0) * 10);
+        let topCPU = getSortedCPU(5).map(p => p.program);
+        let topGPU = getSortedSM(5).map(p => p.program);
+        let topRAM = getSortedRAM(5).map(p => p.program);
+        let topVRAM = getSortedVRAM(5).map(p => p.program);
 
-        // 2. Sort by CPU
-        let topCpu = clean_process.slice().sort((a, b) => (b.cpu_pct || 0) - (a.cpu_pct || 0)).slice(0, 3);
+        let topProcesses = new Set();
 
-        // 3. Sort by GPU/VRAM
-        let topGpu = clean_process.slice().sort((a, b) => getGpuScore(b) - getGpuScore(a)).slice(0, 3);
+        topCPU.forEach(p => topProcesses.add(p));
+        topGPU.forEach(p => topProcesses.add(p));
+        topRAM.forEach(p => topProcesses.add(p));
+        topVRAM.forEach(p => topProcesses.add(p));
 
-        // 4. Merge and deduplicate by program name
-        let selectedMap = {};
-        [...topCpu, ...topGpu].forEach(p => {
-            if (p.cpu_pct > 0.0 || p.vram_mb > 100 || p.sm_pct > 5) {
-                selectedMap[p.name || p.program] = p;
-            }
-        });
+        let now = Date.now();
 
-        let topProcesses = Object.values(selectedMap);
+        console.log(JSON.stringify(name_process[[...topProcesses][0]]));
 
         // 5. Convert to SQL statements
-        let statements = topProcesses.map(p => DBInfo.sql`
+        let statements = [...topProcesses].map(p => DBInfo.sql`
             INSERT INTO uptime.process_ticks
-            (program, pid, cpu_pct, ram_mb, vram_mb, gpu_type, sm_pct, mem_pct, enc_pct, dec_pct)
+            (timestamp, program, pid, cpu_pct, ram_mb, vram_mb, gpu_type, sm_pct, mem_pct, enc_pct, dec_pct)
             VALUES (
-                ${p.name || p.program},
-                ${JSON.stringify(p.pid)},
-                ${p.cpu_pct || 0},
-                ${p.ram_mb || 0},
-                ${p.vram_mb || 0},
-                ${p.gpu_type || ''},
-                ${p.sm_pct || 0},
-                ${p.mem_pct || 0},
-                ${p.enc_pct || 0},
-                ${p.dec_pct || 0}
+                ${now},
+                ${name_process[p].name || name_process[p].program},
+                ${JSON.stringify(name_process[p].pid)},
+                ${name_process[p].cpu_pct || 0},
+                ${name_process[p].ram_mb || 0},
+                ${name_process[p].vram_mb || 0},
+                ${name_process[p].gpu_type || ''},
+                ${name_process[p].sm_pct || 0},
+                ${name_process[p].mem_pct || 0},
+                ${name_process[p].enc_pct || 0},
+                ${name_process[p].dec_pct || 0}
             )
         `);
 
         // 6. Always include total system usage
         statements.push(DBInfo.sql`
             INSERT INTO uptime.system_ticks
-            (cpu_pct, ram_mb, vram_mb, sm_pct, mem_pct, enc_pct, dec_pct)
+            (timestamp, cpu_pct, ram_mb, vram_mb, sm_pct, mem_pct, enc_pct, dec_pct)
             VALUES (
+                ${now},
                 ${SystemInfo.cpuusage},
                 ${SystemInfo.memused / 1024},
                 ${SystemInfo.gpumemused / 1024},
                 ${SystemInfo.gpusm},
                 ${SystemInfo.gpumem},
                 ${SystemInfo.gpuenc},
-                ${SystemInfo.gpudec},
+                ${SystemInfo.gpudec}
             )
         `);
 

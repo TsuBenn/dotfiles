@@ -69,8 +69,6 @@ Item {
     property bool optimize: !SettingsInfo.purify
 
     Cells {
-        id: border_optimize
-
         w: root.w
         h: root.h
 
@@ -272,6 +270,8 @@ Item {
                     }
                     color: root.border.color
                 }
+
+                radius: root.border.type == 4 ? Cell.w(0.5) : 0
 
                 color: "transparent"
             }

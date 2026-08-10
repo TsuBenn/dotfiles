@@ -58,8 +58,6 @@ Singleton {
     property real cpupower
     property real cpumaxpower
     property bool cpurapl
-    property int cputotalprev
-    property int cpuidleprev
     property real cpuusage
 
     property var cpustats: ({}) // individual cores usage
@@ -239,21 +237,8 @@ Singleton {
     property double networktransmit // transmit speed
     property double networkreceive // receive speed
 
-    property double receivedbytes
-    property double transmitedbytes
-    // Used double for network cause it gets crazy big
-
-    property int diskread
     property real diskreadspeed // read speed
-    property int diskwrite
     property real diskwritespeed // read speed
-    property int diskusage
-
-    property int diskreaded
-    property real diskreadedspeed
-    property int diskwrote
-    property real diskwrotespeed
-    property int diskused
 
     property int polling_time: SettingsInfo.systemPolling ?? 1000
 
@@ -483,7 +468,7 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 if (text) {
-                    SettingsInfo.restart();
+                    // SettingsInfo.restart();
                 }
             }
         }

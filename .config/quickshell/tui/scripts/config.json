@@ -21,7 +21,7 @@
   "sfx": false,
   "userLightMode": false,
   "autoLightMode": true,
-  "debug": false,
+  "debug": true,
   "moveFloatOnFocus": true,
   "purify": false,
   "compat": false,

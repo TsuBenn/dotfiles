@@ -86,10 +86,11 @@ RowLayout {
             items: ["Day", "Week", "Month"]
 
             property var screentime_disabled: []
+            property var performance_disabled: []
 
             w: top_screentime.w
             distributed: false
-            disabled: mode.selected == 0 ? screentime_disabled : []
+            disabled: mode.selected == 0 ? screentime_disabled : performance_disabled
             centered: false
             offset: 1
             spacing: 1
@@ -115,6 +116,8 @@ RowLayout {
                 property var date: new Date()
                 property int offset: 0 // Track step distance relative to current period (0 = current)
 
+                property bool lock: false
+
                 signal preUpdate
                 signal update
 
@@ -139,8 +142,10 @@ RowLayout {
 
                 CellButton {
                     text: "<"
-                    color: ["transparent", Colors.bgOverlay, Colors.fgBase]
-                    fg: [Colors.fgBase, Colors.bgSurface]
+
+                    clickable: !parent.lock
+                    color: clickable ? ["transparent", Colors.bgOverlay, Colors.fgBase] : "transparent"
+                    fg: clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
                     font: Cell.fontBB
                     onPressed: button => {
                         if (button === "L") {
@@ -232,8 +237,13 @@ RowLayout {
         }
 
         Loader {
-            active: mode.selected == 0
-            sourceComponent: ScreenTime {
+            onSourceComponentChanged: {
+                if (mode.selected == 0) {
+                    date_tk.lock = false;
+                }
+            }
+            sourceComponent: mode.selected == 0 ? screentime_model : performance_model
+            property Component screentime_model: ScreenTime {
                 id: screentime
                 Connections {
                     target: date_tk
@@ -257,11 +267,22 @@ RowLayout {
                     date_range.select(i);
                 }
             }
-        }
-
-        Loader {
-            active: mode.selected == 1
-            sourceComponent: Performance {}
+            property Component performance_model: Performance {
+                onDisabledChanged: {
+                    date_range.performance_disabled = disabled;
+                }
+                onTodayOnlyChanged: {
+                    if (todayOnly) {
+                        date_tk.offset = 0;
+                        date_tk.lock = true;
+                    } else {
+                        date_tk.lock = false;
+                    }
+                }
+                w: top_screentime.w
+                h: root.box.contentH - 15
+                range: date_range.selected
+            }
         }
     }
 

@@ -141,7 +141,6 @@ ShellRoot {
                         opacity = "0.0 override",
                         no_focus = true,
                         no_shortcuts_inhibit = true,
-                        no_screen_share = true
                       })
                     end
                   end
@@ -156,12 +155,15 @@ ShellRoot {
                 match = { class = "^org.quickshell$", title = "^Workspace Authenticator$"},
                 float = true,
                 size = {"monitor_w", "monitor_h"},
+                suppress_event = "fullscreen maximize",
                 center = true,
                 confine_pointer = true,
-                focus_on_activate = true,
                 no_close_for = 86400000,
-                stay_focused = true,
-                pin = true
+                decorate = false,
+                -- animation = "popin 50%",
+                render_unfocused = true,
+                -- stay_focused = true,
+                -- pin = true
             })
 
             hl.unbind("SUPER + space")

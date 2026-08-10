@@ -9,7 +9,7 @@ import QtQuick.Layouts
 CellFloats {
     id: root
 
-    w: 50
+    w: 55
     h: Cell.hCount(layout.implicitHeight)
 
     name: "ws_auth"
@@ -36,6 +36,12 @@ CellFloats {
     //     noMin: true
     //     forceMoveClient: true
     // }
+
+    onWorkspaceChanged: {
+        if (!WorkspaceInfo.isLocked(workspace)) {
+            close();
+        }
+    }
 
     forceMoveClient: true
 

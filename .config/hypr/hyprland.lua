@@ -5,7 +5,7 @@ local fileManager = "dolphin"
 local menu = "rofi -show drun"
 local emoji = "rofi -mode emoji -show emoji"
 local browser = "zen-browser"
-local discord = "vesktop"
+local discord = "discord"
 local spotify = "LD_PRELOAD=/usr/local/lib/spotify-adblock.so spotify"
 
 -- Monitor

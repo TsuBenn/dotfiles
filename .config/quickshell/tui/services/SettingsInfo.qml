@@ -32,6 +32,7 @@ Singleton {
     property var screentime: initialized ? ScreenTimeInfo.db : 0
     property var procstats: initialized ? ProcessInfo.process : 0
     property var ws: initialized ? WorkspaceInfo.active : 0
+    property var screenshare: initialized && ws != 0 ? ScreenshareInfo.active : 0
 
     //
 

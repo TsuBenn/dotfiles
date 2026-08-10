@@ -16,7 +16,7 @@ Singleton {
         id: switching_delay
         interval: 100
         onTriggered: {
-            root.startSession(HyprInfo.focusedClient?.wayland.appId ?? "desktop");
+            root.startSession(HyprInfo.focusedClient?.wayland?.appId ?? "desktop");
         }
     }
 

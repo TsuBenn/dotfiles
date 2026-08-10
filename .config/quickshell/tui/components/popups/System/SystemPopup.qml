@@ -72,7 +72,7 @@ CellPopup {
 
                 active: (root.visible || !root.optimizeMemory)
 
-                asynchronous: true
+                // asynchronous: true
 
                 property Component general_comp: General {
                     box: box

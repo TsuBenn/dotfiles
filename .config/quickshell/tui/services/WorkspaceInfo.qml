@@ -16,10 +16,24 @@ Singleton {
 
     property bool _temp: false
 
+    signal event(event: string)
+
     function requestAuth() {
-        if (root.isLocked(HyprInfo.focusedWorkspace)) {
+        if (root.isLocked(HyprInfo.focusedWorkspace) && HyprInfo.focusedSpecialWorkspace == null) {
+            close_delay.stop();
+            // if (FloatsManager.isOpen("ws_auth"))
+            //     FloatsManager.close("ws_auth");
             FloatsManager.open("ws_auth");
         } else {
+            close_delay.restart();
+            // FloatsManager.close("ws_auth");
+        }
+    }
+
+    Timer {
+        id: close_delay
+        interval: 500
+        onTriggered: {
             FloatsManager.close("ws_auth");
         }
     }
@@ -31,6 +45,15 @@ Singleton {
                 root.update();
                 return;
             }
+            root.update();
+            root.requestAuth();
+        }
+        function onFocusedSpecialWorkspaceChanged() {
+            if (root._temp) {
+                root.update();
+                return;
+            }
+            root.update();
             root.requestAuth();
         }
     }
@@ -60,24 +83,37 @@ Singleton {
     }
 
     function getId(ws) {
-        return ws instanceof HyprlandWorkspace ? ws.id : ws;
+        return ws instanceof HyprlandWorkspace ? (ws.id?.toString() ?? null) : (ws?.toString() ?? null);
     }
 
     function toggle(workspace) {
         const id = getId(workspace);
+        if (!id)
+            return;
         if (!locked.delete(id)) {
             locked.add(id);
+            event("lock," + workspace);
+        } else {
+            event("unlock," + workspace);
         }
         update();
     }
 
     function lock(workspace) {
-        locked.add(getId(workspace));
+        const id = getId(workspace);
+        if (!id)
+            return;
+        locked.add(id);
+        event("lock," + workspace);
         update();
     }
 
     function unlock(workspace) {
-        locked.delete(getId(workspace));
+        const id = getId(workspace);
+        if (!id)
+            return;
+        locked.delete(id);
+        event("unlock," + workspace);
         update();
     }
 }
