@@ -820,10 +820,10 @@ Singleton {
         if (!clean_process || clean_process.length === 0)
             return;
 
-        let topCPU = getSortedCPU(5).map(p => p.program);
-        let topGPU = getSortedSM(5).map(p => p.program);
-        let topRAM = getSortedRAM(5).map(p => p.program);
-        let topVRAM = getSortedVRAM(5).map(p => p.program);
+        let topCPU = getSortedCPU(10).map(p => p.program);
+        let topGPU = getSortedSM(10).map(p => p.program);
+        let topRAM = getSortedRAM(10).map(p => p.program);
+        let topVRAM = getSortedVRAM(10).map(p => p.program);
 
         let topProcesses = new Set();
 
@@ -834,7 +834,7 @@ Singleton {
 
         let now = Date.now();
 
-        console.log(JSON.stringify(name_process[[...topProcesses][0]]));
+        // console.log(JSON.stringify(name_process[[...topProcesses][0]]));
 
         // 5. Convert to SQL statements
         let statements = [...topProcesses].map(p => DBInfo.sql`

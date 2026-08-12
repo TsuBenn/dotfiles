@@ -6,8 +6,8 @@ font-feature = calt
 font-feature = liga
 
 # Window
-background = 000000
-background-opacity = 0.8
+background = #000000
+background-opacity = 0.9
 
 foreground = EDE6E8
 

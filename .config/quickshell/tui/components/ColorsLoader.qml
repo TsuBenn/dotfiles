@@ -94,7 +94,7 @@ FloatingWindow {
                                     return " Loading palette " + item.target;
                                 }
                             }
-                            color: "white"
+                            color: Colors.fgBase
                             preferedW: box.w - 2
                         }
 

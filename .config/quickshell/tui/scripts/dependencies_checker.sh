@@ -4,8 +4,9 @@
 PACMAN_DEPS=(
     "hyprland|Hyprland|The core Wayland compositor and window manager."
     "quickshell|Quickshell|The flexible desktop shell framework driving this UI repo."
-    "fastfetch|Fastfetch|System information fetching tool for the dashboard."
+    # "fastfetch|Fastfetch|System information fetching tool for the dashboard."
     "polkit|Polkit|Application authorization framework for privilege escalation."
+    "python|Python|Interpreter required to run optimized helper scripts."
     "python-numpy|Python Numpy|Used for calculating wallpaper theme colors."
     "python-pillow|Python Pillow|Used for calculating wallpaper theme colors."
     "qt6-multimedia|Qt6 Multimedia|Qt module for audio and video playback features."
@@ -23,7 +24,6 @@ PACMAN_DEPS=(
     "wtype|WType|Wayland keystroke simulator tool used for typing emojis."
     "grim|Grim|Grab images from a Wayland compositor to take screenshots."
     "dolphin|Dolphin|The desktop graphical file manager application."
-    "python|Python|Interpreter required to run optimized helper scripts."
     "ffmpeg|FFmpeg|Audio and video streaming, recording, and processing tool."
     "imagemagick|ImageMagick|Command-line software suite for creating and editing images."
     "fd|FD|A simple, fast, and user-friendly alternative to find."

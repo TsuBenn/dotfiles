@@ -64,6 +64,8 @@ CellPopup {
 
                         padding: 1
 
+                        color: Colors.bgOverlay
+
                         CellText {
 
                             x: Cell.centerWCell(implicitWidth, parent.implicitWidth)

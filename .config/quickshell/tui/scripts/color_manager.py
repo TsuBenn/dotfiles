@@ -344,13 +344,13 @@ def scale_to_pastel(lch, is_light, cf=0.0):
     if is_light:
         min_C = min(C, 0.05 + 0.03*cf)   # 0.05 → 0.08
         max_C = 0.10 + 0.08*cf           # 0.10 → 0.18
-        L_lo  = 0.55 - 0.05*cf           # 0.55 → 0.50 (allow deeper accent for vivid)
-        L_hi  = 0.68 + 0.02*cf           # 0.68 → 0.70
+        L_lo  = 0.45 - 0.05*cf           # 0.55 → 0.50 (allow deeper accent for vivid)
+        L_hi  = 0.60 + 0.02*cf           # 0.68 → 0.70
     else:
         min_C = min(C, 0.06 + 0.04*cf)   # 0.06 → 0.10
         max_C = 0.12 + 0.10*cf           # 0.12 → 0.22
-        L_lo  = 0.45 - 0.03*cf           # 0.45 → 0.42
-        L_hi  = 0.60 + 0.05*cf           # 0.60 → 0.65
+        L_lo  = 0.55 - 0.03*cf           # 0.45 → 0.42
+        L_hi  = 0.68 + 0.05*cf           # 0.60 → 0.65
     new_L = clamp(L, L_lo, L_hi)
     new_C = clamp(C, min_C, max_C)
     return (new_L, new_C, H)
@@ -363,7 +363,7 @@ def generate_palette(base_hue, accent_lch, secondary_lch, is_light, contrast=0.1
         # bgBase anchored at 0.70; bgSurface lifts to ~0.90 (cream, not bleached).
         bg_surf_L = 0.88 + 0.04 * cf   # 0.88 → 0.92
         bg_over_L = 0.78 + 0.06 * cf   # 0.80 → 0.86  (stays ~0.06 below bgSurface)
-        bgBase    = (0.70, max(0.008, 0.020*bg_C_scale), base_hue)
+        bgBase    = (0.80, max(0.008, 0.020*bg_C_scale), base_hue)
         bgSurface = (bg_surf_L, max(0.010, 0.025*bg_C_scale), base_hue)
         bgOverlay = (bg_over_L, max(0.012, 0.030*bg_C_scale), base_hue)
         fgBase    = (0.22, 0.030*bg_C_scale, base_hue)
@@ -385,10 +385,10 @@ def generate_palette(base_hue, accent_lch, secondary_lch, is_light, contrast=0.1
         offset = -0.05 if is_light else 0.05
         secondary = (clamp(secondary[0]+offset, 0.45, 0.75), secondary[1], secondary[2])
     onAccent = (0.98, 0.005, base_hue) if accent_strong[0] < 0.65 else (0.18, 0.030, base_hue)
-    accentDim = (clamp(accent_strong[0]-0.22, 0.30, 0.90), accent_strong[1]*0.9, accent_strong[2])
+    accentDim = (clamp(accent_strong[0] + (+0.22 if is_light else -0.22), 0.40, 0.90), accent_strong[1]*0.9, accent_strong[2])
     borderInactive = (0.74 + 0.04*cf, 0.020, base_hue) if is_light else (0.22 + 0.04*cf, 0.035, base_hue)
     H_RED, H_YEL, H_GRN, H_BLU = 0.50, 1.50, 2.40, 4.20
-    util_L = 0.65 if is_light else 0.70
+    util_L = 0.60 if is_light else 0.70
     # Utility chroma also scales — soft signals for pastel, punchy for vivid.
     util_C = (0.16 + 0.06*cf) if is_light else (0.12 + 0.08*cf)
     danger  = (util_L-0.07, util_C+0.15, blend_hue(H_RED, base_hue))

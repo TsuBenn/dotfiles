@@ -19,11 +19,11 @@
   "screenshotCursor": false,
   "lockScreenMusic": true,
   "sfx": false,
-  "userLightMode": false,
-  "autoLightMode": true,
+  "userLightMode": true,
+  "autoLightMode": false,
   "debug": true,
   "moveFloatOnFocus": true,
   "purify": false,
   "compat": false,
-  "pacmanSearchMode": 4
+  "pacmanSearchMode": 0
 }

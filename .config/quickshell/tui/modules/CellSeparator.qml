@@ -254,7 +254,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 implicitWidth: Cell.w(root.w)
                 implicitHeight: 2
-                color: root.bg
+                color: Colors.bgSurface
             }
 
             ColumnLayout {

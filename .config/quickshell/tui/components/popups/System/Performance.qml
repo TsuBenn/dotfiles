@@ -147,6 +147,7 @@ ColumnLayout {
         property int maxOffset: Math.max(model.length - (root.w - 24), 0)
 
         property var selected: 0 // Selected timestamp
+        property var selected_index: 0 // Selected index
 
         onSelectedChanged: {
             root.update();
@@ -181,8 +182,8 @@ ColumnLayout {
             CellScrollList {
                 id: realtime_list
 
-                w: 26
-                h: root.h - 6
+                w: 30
+                h: root.h - 4
 
                 model: realtime.process_model
 
@@ -224,31 +225,38 @@ ColumnLayout {
                 }
             }
             CellSeparator {
-                w: 26
+                w: 30
                 color: Colors.accentDim
             }
 
             RowLayout {
-                spacing: Cell.w(2)
+                Layout.leftMargin: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                spacing: Cell.w(1)
 
                 CellText {
                     text: realtime.selected == 0 ? "Real-time" : DateTime.formatTimestamp(realtime.selected, 3)
-                    preferedW: 26
                     font: Cell.fontB
                     color: Colors.secondary
                     centered: true
+                    preferedW: 18
                 }
 
                 CellButton {
-                    text: "Real-time"
-                    color: [Colors.bgOverlay, Colors.fgBase]
-                    fg: [Colors.bgOverlay, Colors.fgBase]
+                    visible: clickable
+                    text: "Return"
+                    clickable: realtime.selected != 0
+                    color: clickable ? [Colors.bgOverlay, Colors.fgBase] : Colors.bgOverlay
+                    fg: clickable ? [Colors.fgBase, Colors.bgSurface] : Colors.fgSubtle
+                    onReleased: button => {
+                        if (button == "L")
+                            realtime.selected = 0;
+                    }
                 }
             }
         }
 
         CellSeparator {
-            h: root.h - 4
+            h: root.h - 2
             vertical: true
             color: Colors.bgOverlay
             bg: "transparent"
@@ -258,8 +266,8 @@ ColumnLayout {
 
         Cells {
             id: real_time_chart
-            w: root.w - 28
-            h: root.h - 4
+            w: root.w - 32
+            h: root.h - 2
             color: "transparent"
 
             ColumnLayout {
@@ -289,28 +297,23 @@ ColumnLayout {
                                     if (col_mouse.hovered) {
                                         if (realtime.selected == real_time_col.timestamp) {
                                             realtime.selected = 0;
+                                            realtime.selected_index = 0;
                                         } else {
                                             realtime.selected = real_time_col.timestamp;
+                                            realtime.selected_index = realtime_col.index + realtime.offset;
                                         }
                                     }
                                 }
                             }
 
                             w: 1
-                            h: root.h - 5
+                            h: root.h - 3
 
                             color: "transparent"
 
-                            CellText {
-                                visible: real_time_col.isMarked
-                                x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
-                                text: DateTime.formatTimestamp(real_time_col.timestamp, 3)
-                                color: Colors.fgSubtle
-                            }
-
                             CellProgressSquare {
                                 vertical: true
-                                y: Cell.h(4)
+                                y: Cell.h(5)
                                 w: 1
                                 h: 1
                                 percent: 7
@@ -342,7 +345,7 @@ ColumnLayout {
                                 anchors.bottom: parent.bottom
                                 y: Cell.h(2)
                                 w: parent.w
-                                h: Math.ceil((parent.h) * (real_time_usage.percent / 100))
+                                h: Math.ceil((parent.h - 1) * (real_time_usage.percent / 100))
                                 color: Colors.bgSurface
                             }
 
@@ -378,6 +381,14 @@ ColumnLayout {
                                 percent: value * ((h - 0.5) / (h)) ?? 0
                                 fg: realtime.selected == parent.timestamp ? Colors.fgBase : root.getGradientColor(Colors.secondary, percent, 0, 70, 90)
                                 color: "transparent"
+                            }
+
+                            CellText {
+                                visible: real_time_col.isMarked
+                                x: Cell.centerWCell(implicitWidth, parent.implicitWidth)
+                                text: DateTime.formatTimestamp(real_time_col.timestamp, 3)
+                                color: Colors.fgSubtle
+                                bg: Colors.bgSurface
                             }
 
                             HoverHandler {
@@ -452,13 +463,5 @@ ColumnLayout {
             connectStart: true
             connectEnd: true
         }
-    }
-
-    CellSeparator {
-        w: root.w
-        color: Colors.bgOverlay
-        bg: "transparent"
-        // connectStart: true
-        // connectEnd: true
     }
 }

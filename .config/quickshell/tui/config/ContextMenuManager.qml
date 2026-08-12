@@ -1,4 +1,4 @@
-pragma Singleton 
+pragma Singleton
 
 import qs.config
 import qs.services
@@ -7,7 +7,6 @@ import Quickshell
 import QtQuick
 
 Singleton {
-
     id: root
 
     property bool visible: false
@@ -17,24 +16,23 @@ Singleton {
     property string header: ""
     property var items: []
 
-    signal opened()
-    signal closed()
+    signal opened
+    signal closed
 
-    function show(itemList, mx, my, mw = 20, mheader = "") {
-        items = itemList
-        w = mw
-        x = Cell.wCount(mx - HyprInfo.focusedMonitor.x, "floor")
-        y = Cell.hCount(my - HyprInfo.focusedMonitor.y,"floor")
-        header = mheader
-        visible = true
-        root.opened()
+    function show(itemList, mx, my, mw = 22, mheader = "") {
+        items = itemList;
+        w = mw;
+        x = Cell.wCount(mx - HyprInfo.focusedMonitor.x, "floor");
+        y = Cell.hCount(my - HyprInfo.focusedMonitor.y, "floor");
+        header = mheader;
+        visible = true;
+        root.opened();
     }
 
     function hide() {
-        visible = false
-        items = []
-        header = ""
-        root.closed()
+        visible = false;
+        items = [];
+        header = "";
+        root.closed();
     }
-
 }

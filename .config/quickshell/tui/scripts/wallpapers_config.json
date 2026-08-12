@@ -9,7 +9,7 @@
     "posY": 0.5
   },
   "wallpapers": [
-    "furina_burn.jpeg"
+    "aod_kawai.jpg"
   ],
   "config": {
     "macbook.jpg": {
@@ -24,6 +24,27 @@
     "minami.jpg": {
       "posX": 0,
       "posY": 0
+    },
+    "double_aria.jpg": {
+      "reposition": {
+        "scalar": 1,
+        "verticalOffset": -0.0015519072122845978,
+        "horizontalOffset": 0
+      }
+    },
+    "aod_kawai.jpg": {
+      "reposition": {
+        "scalar": 1,
+        "verticalOffset": 1,
+        "horizontalOffset": 0
+      }
+    },
+    "aria_vtuber.jpg": {
+      "reposition": {
+        "scalar": 1,
+        "verticalOffset": 1,
+        "horizontalOffset": 0
+      }
     }
   },
   "live": true,

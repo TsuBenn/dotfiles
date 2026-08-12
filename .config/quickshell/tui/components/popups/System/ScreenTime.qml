@@ -1020,7 +1020,7 @@ ColumnLayout {
                                             return (h < 10 ? "0" + h : h) + ":00";
                                         }
                                         font: Cell.fontB
-                                        color: Qt.lighter(Colors.bgOverlay, 1.5)
+                                        color: Colors.blend(Colors.bgOverlay, Colors.fgBase, 0.5)
                                         // Hide the text instead of omitting the item entirely
                                         // so the grid spacing remains perfectly aligned.
                                         visible: parent.shouldShow

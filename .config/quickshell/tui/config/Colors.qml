@@ -159,7 +159,7 @@ Singleton {
         fgSubtle = theme.fgSubtle;
 
         accentStrong = theme.accentStrong;
-        accentDim = theme.accentDim;
+        accentDim = Colors.blend(theme.accentStrong, theme.bgSurface, 0.5);
         secondary = theme.secondary;
         info = theme.info;
 
