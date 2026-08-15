@@ -33,9 +33,23 @@
       "span": 1,
       "urgency": 0,
       "time": "14:15"
+    },
+    {
+      "title": "UNI-VOV134 (F.5-1)",
+      "body": "Vovinam Season 3",
+      "span": 1,
+      "urgency": 0,
+      "time": "14:15"
+    },
+    {
+      "title": "UNI-VOV134 2 (F.5-1)",
+      "body": "Vovinam Season 3",
+      "span": 1,
+      "urgency": 0,
+      "time": "04:00"
     }
   ],
-  "15-08-2026": [
+  "22-08-2026": [
     {
       "title": "WED201c-FE (P.422)",
       "body": "Web Design Final Exam",

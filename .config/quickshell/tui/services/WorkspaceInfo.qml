@@ -24,9 +24,9 @@ Singleton {
             // if (FloatsManager.isOpen("ws_auth"))
             //     FloatsManager.close("ws_auth");
             FloatsManager.open("ws_auth");
-        } else {
-            close_delay.restart();
-            // FloatsManager.close("ws_auth");
+        } else if (locked.length == 0) {
+            // close_delay.restart();
+            FloatsManager.close("ws_auth");
         }
     }
 
@@ -45,6 +45,7 @@ Singleton {
                 root.update();
                 return;
             }
+            console.log(FloatsManager.isOpen("ws_auth"));
             root.update();
             root.requestAuth();
         }
@@ -92,9 +93,9 @@ Singleton {
             return;
         if (!locked.delete(id)) {
             locked.add(id);
-            event("lock," + workspace);
+            event("lock," + id);
         } else {
-            event("unlock," + workspace);
+            event("unlock," + id);
         }
         update();
     }
@@ -104,7 +105,7 @@ Singleton {
         if (!id)
             return;
         locked.add(id);
-        event("lock," + workspace);
+        event("lock," + id);
         update();
     }
 
@@ -113,7 +114,7 @@ Singleton {
         if (!id)
             return;
         locked.delete(id);
-        event("unlock," + workspace);
+        event("unlock," + id);
         update();
     }
 }

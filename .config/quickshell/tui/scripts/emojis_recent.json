@@ -1,6 +1,35 @@
 [
   {
     "category": "emoji",
+    "description": "Melting face <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-smiling",
+      "melting face",
+      "disappear",
+      "dissolve",
+      "embarrassed",
+      "face",
+      "haha",
+      "heat",
+      "hot",
+      "liquid",
+      "lol",
+      "melt",
+      "melting",
+      "sarcasm",
+      "sarcastic"
+    ],
+    "label": "🫠",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 🫠"
+    ]
+  },
+  {
+    "category": "emoji",
     "description": "Loudly crying face <i>Smileys & Emotion</i>",
     "group": "Smileys & Emotion",
     "keywords": [

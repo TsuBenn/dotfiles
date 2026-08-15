@@ -81,7 +81,7 @@ CellPopup {
                 property bool focused: false
 
                 function close() {
-                    let notif = root.notif 
+                    let notif = root.notif
                     root.notif = notif.slice(1)
                 }
 
@@ -101,7 +101,7 @@ CellPopup {
                     anchors.fill: parent
 
                     onEntered: {
-                        timer.stop() 
+                        timer.stop()
                     }
                     onExited: {
                         timer.restart()
@@ -155,7 +155,7 @@ CellPopup {
 
                             CellText {
                                 text: popup.summary
-                                preferedW: SettingsInfo.safeNotifications && popup.app != "" ? 2 : root.w - 8 - 6*icon.success
+                                preferedW: SettingsInfo.safeNotifications && popup.app != "REMINDERS & EVENTS" && popup.app != "" ? 2 : root.w - 8 - 6*icon.success
                                 font: Cell.fontB
                                 color: {
                                     if (popup.urgency == 2) {
@@ -169,7 +169,7 @@ CellPopup {
 
                             CellText {
                                 id: body
-                                text: SettingsInfo.safeNotifications ? "[Safe notification is ON]" : popup.body
+                                text: SettingsInfo.safeNotifications && popup.app != "REMINDERS & EVENTS" ? "[Safe notification is ON]" : popup.body
                                 preferedW: root.w - 14
                                 wrap: true
                                 color: {
@@ -205,7 +205,7 @@ CellPopup {
                         fg: [Colors.fgBase, Colors.bgSurface]
 
                         onReleased: (button) => {
-                            let notif = root.notif 
+                            let notif = root.notif
                             root.notif = notif.filter((_, i) => i != popup.index)
                         }
                     }

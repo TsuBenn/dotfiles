@@ -1,0 +1,12 @@
+[language-server.godot]
+command = "nc"
+args = ["127.0.0.1", "6005"]
+
+[[language]]
+name = "gdscript"
+scope = "source.gdscript"
+file-types = ["gd"]
+roots = ["project.godot"]
+language-servers = ["godot"]
+formatter = { command = "gdformat", args = ["-"] }
+auto-format = true

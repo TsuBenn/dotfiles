@@ -257,7 +257,7 @@ ColumnLayout {
             }
 
             onModelChanged: {
-                if (selected > model.length - 1)
+                if (selected > screentime_dist_list.model.length - 1)
                     selected = -1;
                 // console.log(JSON.stringify(model, null, 2));
             }

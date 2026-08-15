@@ -399,14 +399,14 @@ hl.window_rule({
     float = true,
     size = {"(monitor_w*0.5)","(monitor_h*0.5)"}
 })
--- hl.window_rule({
---     match = {
---         class = ".*dolphin.*",
---     },
+hl.window_rule({
+    match = {
+        class = ".*dolphin.*",
+    },
 
---     float = true,
---     size = {"(monitor_w*0.7)","(monitor_h*0.8)"}
--- })
+    float = true,
+    -- size = {"(monitor_w*0.7)","(monitor_h*0.8)"}
+})
 hl.window_rule({
     match = {
         class = ".*qalculate-qt.*",
