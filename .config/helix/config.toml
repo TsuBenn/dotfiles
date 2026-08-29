@@ -240,6 +240,9 @@ cursor-line = "warning"
     K = "@3k"
     L = "extend_next_word_start"
 
+    A-l = "extend_next_sub_word_start"
+    A-j = "extend_prev_sub_word_start"
+
     C-l = "extend_next_long_word_start"
     C-j = "extend_prev_long_word_start"
 

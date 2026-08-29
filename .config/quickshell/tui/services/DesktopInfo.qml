@@ -18,12 +18,13 @@ Singleton {
             qs = queries;
         }
         for (let q of qs) {
+            q = q.toLowerCase();
             if (q == "")
                 continue;
             if (/^steam_app_\d+$/.test(q)) {
                 q = q.replace("steam_app_", "steam_icon_");
             }
-            let icon = apps.find(s => s.icon == q || s.id == q)?.icon ?? null;
+            let icon = apps.find(s => s.icon.toLowerCase() == q || s.id.toLowerCase() == q)?.icon ?? null;
             if (icon) {
                 return icon;
             }

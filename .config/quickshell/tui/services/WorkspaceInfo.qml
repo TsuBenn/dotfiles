@@ -45,7 +45,7 @@ Singleton {
                 root.update();
                 return;
             }
-            console.log(FloatsManager.isOpen("ws_auth"));
+            // console.log(FloatsManager.isOpen("ws_auth"));
             root.update();
             root.requestAuth();
         }

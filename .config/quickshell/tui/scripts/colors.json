@@ -920,5 +920,26 @@
     "danger": "#d05878",
     "borderActive": "#8858e8",
     "borderInactive": "#221e3c"
+  },
+  "auto_1": {
+    "name": "<i>Let me cook</i>",
+    "description": "Let the computer pick the best palette for your current wallpaper.",
+    "bgBase": "#00060e",
+    "bgSurface": "#00131b",
+    "bgOverlay": "#11262d",
+    "fgBase": "#e8f0f3",
+    "onAccent": "#f5f9fb",
+    "fgDim": "#aebabf",
+    "fgSubtle": "#66747a",
+    "accentStrong": "#a8473b",
+    "accentDim": "#7a281f",
+    "secondary": "#0086ff",
+    "info": "#00a4ff",
+    "success": "#2abd51",
+    "warning": "#f2ab00",
+    "danger": "#ff0000",
+    "borderActive": "#a8473b",
+    "borderInactive": "#0d272f",
+    "generated": true
   }
 }

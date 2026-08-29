@@ -353,7 +353,7 @@ ColumnLayout {
                             w: 2
                             h: 1
                             hideOnFail: false
-                            icon: screentime_dist_item.modelData.app_class
+                            icon: [screentime_dist_item.modelData.app_class]
                         }
                     }
 
@@ -749,7 +749,7 @@ ColumnLayout {
                                         w: 2
                                         h: 1
                                         hideOnFail: false
-                                        icon: app_timeline.modelData.app_class
+                                        icon: [app_timeline.modelData.app_class]
                                     }
 
                                     CellText {
