@@ -17,36 +17,13 @@
       "time": "19:30"
     }
   ],
-  "WE": [
+  "05-09-2026": [
     {
-      "title": "UNI-VOV134 (F.5-1)",
-      "body": "Vovinam Season 3",
+      "title": "VOV134 FINALS",
+      "body": "",
       "span": 1,
-      "urgency": 0,
-      "time": "14:15"
-    }
-  ],
-  "SA": [
-    {
-      "title": "UNI-VOV134 (F.5-1)",
-      "body": "Vovinam Season 3",
-      "span": 1,
-      "urgency": 0,
-      "time": "14:15"
-    },
-    {
-      "title": "UNI-VOV134 (F.5-1)",
-      "body": "Vovinam Season 3",
-      "span": 1,
-      "urgency": 0,
-      "time": "14:15"
-    },
-    {
-      "title": "UNI-VOV134 2 (F.5-1)",
-      "body": "Vovinam Season 3",
-      "span": 1,
-      "urgency": 0,
-      "time": "04:00"
+      "urgency": 2,
+      "time": ""
     }
   ]
 }

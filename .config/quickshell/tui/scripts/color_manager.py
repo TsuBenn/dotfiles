@@ -363,7 +363,7 @@ def generate_palette(base_hue, accent_lch, secondary_lch, is_light, contrast=0.1
         # bgBase anchored at 0.70; bgSurface lifts to ~0.90 (cream, not bleached).
         bg_surf_L = 0.88 + 0.04 * cf   # 0.88 → 0.92
         bg_over_L = 0.78 + 0.06 * cf   # 0.80 → 0.86  (stays ~0.06 below bgSurface)
-        bgBase    = (0.80, max(0.008, 0.020*bg_C_scale), base_hue)
+        bgBase    = (0.11, max(0.008, 0.020*bg_C_scale), base_hue)
         bgSurface = (bg_surf_L, max(0.010, 0.025*bg_C_scale), base_hue)
         bgOverlay = (bg_over_L, max(0.012, 0.030*bg_C_scale), base_hue)
         fgBase    = (0.22, 0.030*bg_C_scale, base_hue)
@@ -437,7 +437,7 @@ def transform_palette(palette, target_mode, contrast=None):
         # Warm cream/paper tones — bright enough to read, enough chroma to not feel washed out.
         bg_surf_L = 0.88 + 0.04 * cf
         bg_over_L = 0.78 + 0.06 * cf
-        bgBase    = (0.70, max(0.008, 0.020*bg_C_scale), base_hue)
+        bgBase    = (0.11, max(0.008, 0.020*bg_C_scale), base_hue)
         bgSurface = (bg_surf_L, max(0.010, 0.025*bg_C_scale), base_hue)
         bgOverlay = (bg_over_L, max(0.012, 0.030*bg_C_scale), base_hue)
         fgBase    = (0.22, 0.030*bg_C_scale, base_hue)

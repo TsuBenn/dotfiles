@@ -178,7 +178,7 @@ CellPopup {
 
         property int selected: 0
         property color select_color: Colors.blend(Colors.accentStrong, Colors.secondary, 0.5)
-        property color base_color: Colors.fgBase
+        property color base_color: SettingsInfo.lightMode ? Colors.fgSubtle : Colors.fgBase
 
         property var actions: [() => PowerManager.call("Sleep", 3), () => PowerManager.call("Reboot", 3), () => PowerManager.call("Shutdown", 3), () => SystemInfo.lock(), () => PowerManager.call("Logout", 3), () => root.close(),]
 

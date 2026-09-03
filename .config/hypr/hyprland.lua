@@ -426,6 +426,14 @@ hl.window_rule({
 })
 hl.window_rule({
     match = {
+        class = ".*GStreamer.*",
+    },
+
+    float = true,
+    size = {"(monitor_w*0.9)","(monitor_h*0.9)"}
+})
+hl.window_rule({
+    match = {
         class = ".*steam.*",
         title = "Friends List",
     },
