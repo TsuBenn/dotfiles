@@ -17,13 +17,68 @@
       "time": "19:30"
     }
   ],
-  "05-09-2026": [
+  "MO": [
     {
-      "title": "VOV134 FINALS",
-      "body": "",
+      "title": "UNI-JPD113",
+      "body": "Elementary Japanese 1   A1.1",
       "span": 1,
-      "urgency": 2,
-      "time": ""
+      "urgency": 0,
+      "time": "12:30"
+    },
+    {
+      "title": "UNI-LAB211",
+      "body": "OOP with Java Lab",
+      "span": 1,
+      "urgency": 0,
+      "time": "15:00"
+    }
+  ],
+  "TH": [
+    {
+      "title": "UNI-JPD113",
+      "body": "Elementary Japanese 1   A1.1",
+      "span": 1,
+      "urgency": 0,
+      "time": "12:30"
+    },
+    {
+      "title": "UNI-LAB211",
+      "body": "OOP with Java Lab",
+      "span": 1,
+      "urgency": 0,
+      "time": "15:00"
+    }
+  ],
+  "WE": [
+    {
+      "title": "UNI-MAS291",
+      "body": "Statistics & Probability",
+      "span": 1,
+      "urgency": 0,
+      "time": "12:30"
+    },
+    {
+      "title": "UNI-DBI202",
+      "body": "Databas Systems",
+      "span": 1,
+      "urgency": 0,
+      "time": "15:00"
+    }
+  ],
+  "SA": [
+    {
+      "title": "UNI-MAS291",
+      "body": "Statistics & Probability",
+      "span": 1,
+      "urgency": 0,
+      "time": "12:30"
+    },
+    {
+      "title": "UNI-DBI202",
+      "body": "Databas Systems",
+      "span": 1,
+      "urgency": 0,
+      "time": "15:00"
     }
   ]
 }

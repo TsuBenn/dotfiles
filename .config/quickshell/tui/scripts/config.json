@@ -6,7 +6,7 @@
   "hideBar": false,
   "bottomBar": false,
   "optimizeMemory": true,
-  "safeNotifications": true,
+  "safeNotifications": false,
   "dnd": false,
   "wallpaperAutoAdvance": true,
   "shadow": true,
@@ -25,5 +25,5 @@
   "moveFloatOnFocus": true,
   "purify": false,
   "compat": false,
-  "pacmanSearchMode": 0
+  "pacmanSearchMode": 2
 }
