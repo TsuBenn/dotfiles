@@ -1,4 +1,4 @@
-theme = "gruvbox"
+theme = "autumn"
 
 [editor]
 bufferline = "multiple"

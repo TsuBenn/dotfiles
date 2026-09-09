@@ -19,30 +19,14 @@
   ],
   "MO": [
     {
-      "title": "UNI-JPD113",
+      "title": "UNI-JPD113 (P.004)",
       "body": "Elementary Japanese 1   A1.1",
       "span": 1,
       "urgency": 0,
       "time": "12:30"
     },
     {
-      "title": "UNI-LAB211",
-      "body": "OOP with Java Lab",
-      "span": 1,
-      "urgency": 0,
-      "time": "15:00"
-    }
-  ],
-  "TH": [
-    {
-      "title": "UNI-JPD113",
-      "body": "Elementary Japanese 1   A1.1",
-      "span": 1,
-      "urgency": 0,
-      "time": "12:30"
-    },
-    {
-      "title": "UNI-LAB211",
+      "title": "UNI-LAB211 (P.137)",
       "body": "OOP with Java Lab",
       "span": 1,
       "urgency": 0,
@@ -51,15 +35,31 @@
   ],
   "WE": [
     {
-      "title": "UNI-MAS291",
+      "title": "UNI-MAS291 (P.107)",
       "body": "Statistics & Probability",
       "span": 1,
       "urgency": 0,
       "time": "12:30"
     },
     {
-      "title": "UNI-DBI202",
+      "title": "UNI-DBI202 (P.137)",
       "body": "Databas Systems",
+      "span": 1,
+      "urgency": 0,
+      "time": "15:00"
+    }
+  ],
+  "TH": [
+    {
+      "title": "UNI-JPD113 (P.004)",
+      "body": "Elementary Japanese 1   A1.1",
+      "span": 1,
+      "urgency": 0,
+      "time": "12:30"
+    },
+    {
+      "title": "UNI-LAB211 (P.137)",
+      "body": "OOP with Java Lab",
       "span": 1,
       "urgency": 0,
       "time": "15:00"
@@ -67,14 +67,14 @@
   ],
   "SA": [
     {
-      "title": "UNI-MAS291",
+      "title": "UNI-MAS291 (P.107)",
       "body": "Statistics & Probability",
       "span": 1,
       "urgency": 0,
       "time": "12:30"
     },
     {
-      "title": "UNI-DBI202",
+      "title": "UNI-DBI202 (P.137)",
       "body": "Databas Systems",
       "span": 1,
       "urgency": 0,
