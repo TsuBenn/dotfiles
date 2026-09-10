@@ -25,5 +25,5 @@
   "moveFloatOnFocus": true,
   "purify": false,
   "compat": false,
-  "pacmanSearchMode": 2
+  "pacmanSearchMode": 1
 }

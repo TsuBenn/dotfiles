@@ -10,3 +10,7 @@ roots = ["project.godot"]
 language-servers = ["godot"]
 formatter = { command = "gdformat", args = ["-"] }
 auto-format = true
+
+[[language]]
+name = "java"
+indent = { tab-width = 4, unit = "    "}

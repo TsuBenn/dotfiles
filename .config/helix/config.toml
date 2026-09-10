@@ -88,8 +88,8 @@ cursor-line = "warning"
     A-i = ["extend_to_line_bounds", "delete_selection", "move_line_up", "open_above", "extend_to_line_bounds", "replace_with_yanked", "normal_mode", "extend_to_line_bounds", "format_selections"]
     A-k = ["extend_to_line_bounds", "delete_selection", "paste_after", "format_selections"]
 
-    # Format and Save
-    C-s = [":format", ":write"]
+    # Save
+    C-s = [":write"]
 
     # Undo/Redo
     C-z = ["undo", "keep_primary_selection"]
@@ -280,7 +280,7 @@ cursor-line = "warning"
     o = "flip_selections"
 
     # Save
-    C-s = [":format", ":write", "normal_mode"]
+    C-s = [":write", "normal_mode"]
 
     # Switch case
     U = "switch_case"
@@ -359,7 +359,7 @@ cursor-line = "warning"
     "C-v" = ["paste_clipboard_before"]
 
     # Save
-    C-s = [":format", ":write", "normal_mode"]
+    C-s = [":write", "normal_mode"]
 
     # Undo
     C-z = ["undo", "normal_mode","keep_primary_selection"]
