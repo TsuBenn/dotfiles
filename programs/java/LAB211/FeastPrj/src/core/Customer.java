@@ -1,8 +1,9 @@
 package core;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Customer {
+public class Customer implements Serializable {
 
   static public String CODE_PAT = "^[cCgGkK][\\d]{4}$";
   static public String CODE_PREFIX_PAT = "^[cCgGkK]$";

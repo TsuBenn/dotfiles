@@ -1,17 +1,18 @@
 package core;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-public class Order {
+public class Order implements Serializable {
 
   static private int idIterator = 0;
 
-  public int orderCode;
-  public String custCode;
-  public String setMenuCode;
-  public int numTable;
-  public Date preferedDate;
+  private int orderCode;
+  private String custCode;
+  private String setMenuCode;
+  private int numTable;
+  private Date preferedDate;
 
   public Order(String custCode, String setMenuCode, int numTable, Date preferedDate) {
     this.orderCode = idIterator++;

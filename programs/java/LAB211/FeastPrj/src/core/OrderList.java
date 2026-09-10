@@ -10,7 +10,11 @@ import java.io.ObjectOutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.naming.directory.SearchResult;
+
+import core.SetMenu;
 import tool.ConsoleInputter;
 
 public class OrderList extends ArrayList<Order> {
@@ -18,6 +22,8 @@ public class OrderList extends ArrayList<Order> {
 
     SetMenuList setMenuList;
     CustomerList customerList;
+
+    public OrderList() {}
 
     public OrderList(SetMenuList setMenuList, CustomerList customerList) {
         this.setMenuList = setMenuList;
@@ -115,11 +121,107 @@ public class OrderList extends ArrayList<Order> {
         String customerCode;
         String setMenuCode;
         int numTable;
-        Date preferDate;
+        Date preferedDate;
 
         Customer customer;
         SetMenu setMenu;
 
-        customer = customerList.searchCustomer();
+        customer = customerList.searchCustomer("");
+
+        setMenu = (SetMenu) ConsoleInputter.objMenu(this.setMenuList);
+
+        numTable = ConsoleInputter.getInt("Number of Tables", 1, 100);
+
+        boolean before = true;
+
+        do {
+            preferedDate = ConsoleInputter.getDate("Prefered date (d/m/y): ", DATE_PAT);
+            before = preferedDate.before(new Date());
+            if (before) System.out.println("Prefered date must be after today");
+        } while (before);
+
+        printOrder(Order.getIdIterator(), customer, setMenu, numTable, preferedDate);
+
+        boolean response = ConsoleInputter.getBoolean("Save order? Y/N");
+        if (response) {
+            Order newOrder = new Order(customerCode, setMenuCode, numTable, preferedDate);
+
+            this.add(newOrder);
+            System.out.printf("New order %d was added." + "\n", newOrder.getOrderCode());
+        }
+
+    }
+
+    public Order searchOrder(String query) {
+        if (this.isEmpty()) {
+            System.out.println("List is Empty!");
+            return null;
+        }
+
+        query = query.trim();
+
+        while (query.isEmpty()) {
+            query = ConsoleInputter.getStr("Code or Search Customer Name: ").toLowerCase().replaceAll(" ", "").trim();
+        }
+        List<Order> results = new ArrayList<>();
+
+        for (Order order : this) {
+            if (order.getOrderCode() == Integer.parseInt(query)) {
+                return order;
+            }
+        }
+
+        if (customerList.isEmpty()) {
+            System.out.println("Customer List is Empty!");
+            return null;
+        }
+
+        Customer customer = customerList.searchCustomer(query);
+
+        for (Order order : this) {
+            if (order.getCustCode().equalsIgnoreCase(customer.getCode())) {
+                results.add(order);
+            }
+        }
+
+        if (results.size() == 0) {
+            System.out.println("No results!");
+            return null;
+        } else if (results.size() == 1) {
+            return results.get(0);
+        }
+
+        int choice = ConsoleInputter.intMenu(results);
+        return results.get(choice);
+    }
+
+    public void updateOrder() {
+        Order order = searchOrder("");
+        if (order == null) {
+            System.out.println("No order were selected!");
+            return;
+        }
+
+        String newCustomerCode, newSetMenuCode;
+        int newNumTable;
+        Date newPreferedDate;
+
+        System.out.println("Update Customer ["+ order.getCustCode() +"]: ");
+        Customer newCustomer = customerList.searchCustomer("", true);
+        if (newCustomer == null) {
+            newCustomerCode = order.getCustCode();
+        } else {
+            newCustomerCode = newCustomer.getCode();
+        }
+
+        System.out.println("Update Set Menu ["+ order.getSetMenuCode() +"]: ");
+        SetMenu newSetMenu = (SetMenu) ConsoleInputter.objMenu(setMenuList);
+        newSetMenuCode = newSetMenu.getCode();
+
+        newNumTable = ConsoleInputter.getInt("Update number of tables ["+ order.getNumTable() +"]: ", 0, 100);
+        if (newNumTable == 0) {
+            newNumTable = order.getNumTable();
+        }
+
     }
 }

@@ -1,0 +1,1 @@
+helix/helix-tui-open.sh

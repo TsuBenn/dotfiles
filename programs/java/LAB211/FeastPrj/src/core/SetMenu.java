@@ -1,9 +1,10 @@
 package core;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Objects;
 
-public class SetMenu {
+public class SetMenu implements Serializable {
     String code;
     String name;
     int price;
@@ -17,9 +18,9 @@ public class SetMenu {
     public String toStringScreen() {
         DecimalFormat dfCustom;
         dfCustom = new DecimalFormat("#,##0");
-        String S =  "Code        :" + code + "\n" +
-                    "Name        :" + name + "\n" +
-                    "Price       :" + dfCustom.format(price) + " VND\n" +
+        String S =  "Code        : " + code + "\n" +
+                    "Name        : " + name + "\n" +
+                    "Price       : " + dfCustom.format(price) + " VND\n" +
                     "Ingredients :" + "\n";
         String[] items = ingredients.split("#");
         for (String str : items) S += str + "\n";

@@ -61,13 +61,25 @@ public class CustomerList extends ArrayList<Customer> {
         System.out.println(footer);
     }
 
-    public Customer searchCustomer() {
+    public Customer searchCustomer(String query, boolean canSkip) {
         if (this.isEmpty()) {
             System.out.println("List is Empty!");
             return null;
         }
 
-        String query = ConsoleInputter.getStr("Code or Search Name: ").toLowerCase().replaceAll(" ", "");
+        query = query.trim();
+
+        if (query.isEmpty()) {
+            do {
+                query = ConsoleInputter.getStr("Code or Search Name: ").toLowerCase().replaceAll(" ", "").trim();
+            } while (query.isEmpty() && !canSkip);
+        }
+
+        if (query.isEmpty()) {
+            System.out.println("No Customer was selected, skipping!");
+            return null;
+        }
+
         CustomerList results = new CustomerList();
         List<String> result_codes = new ArrayList<>();
 
@@ -86,6 +98,8 @@ public class CustomerList extends ArrayList<Customer> {
         if (results.size() == 0) {
             System.out.println("No results!");
             return null;
+        } else if (results.size() == 1) {
+            return results.get(0);
         }
 
         results.print();
@@ -95,29 +109,33 @@ public class CustomerList extends ArrayList<Customer> {
 
     }
 
+    public Customer searchCustomer(String query) {
+        return searchCustomer(query, false);
+    }
+
     public void updateCustomer() {
-        Customer customer = searchCustomer();
+        Customer customer = searchCustomer("");
         if (customer == null)
             return;
 
         String newName, newPhone, newEmail;
 
         newName = ConsoleInputter.getStr(
-            String.format("Customer Name [%s]", customer.getName()),
+            String.format("Update Customer Name [%s]", customer.getName()),
             Customer.NAME_PAT + "|^$",
             "Name contains at least 2 and at most 25 characters! Leave blank to keep skip change."
         );
         customer.setName(newName.isEmpty() ? newName : customer.getName());
 
         newPhone = ConsoleInputter.getStr(
-            String.format("Customer Phone [%s]", customer.getPhone()),
+            String.format("Update Customer Phone [%s]", customer.getPhone()),
             Customer.PHONE_PAT + "|^$",
             "Only VN phone (10 digits) allowed! Leave blank to keep skip change."
         );
         customer.setPhone(newPhone.isEmpty() ? newPhone : customer.getPhone());
 
         newEmail = ConsoleInputter.getStr(
-            String.format("Customer Email [%s]", customer.getEmail()),
+            String.format("Update Customer Email [%s]", customer.getEmail()),
             Customer.EMAIL_PAT + "|^$",
             "Only valid email allowed (example@company.com)! Leave blank to keep skip change."
         );
