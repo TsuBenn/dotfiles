@@ -56,6 +56,10 @@ public class SetMenu implements Serializable {
         this.ingredients = ingredients;
     }
 
+    public SetMenu(String code) {
+        this.code = code;
+    }
+
     public String getCode() {
         return code;
     }

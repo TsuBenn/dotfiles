@@ -125,21 +125,25 @@ public class CustomerList extends ArrayList<Customer> {
             Customer.NAME_PAT + "|^$",
             "Name contains at least 2 and at most 25 characters! Leave blank to keep skip change."
         );
-        customer.setName(newName.isEmpty() ? newName : customer.getName());
+        customer.setName(newName.isEmpty() ? customer.getName() : newName);
 
         newPhone = ConsoleInputter.getStr(
             String.format("Update Customer Phone [%s]", customer.getPhone()),
             Customer.PHONE_PAT + "|^$",
             "Only VN phone (10 digits) allowed! Leave blank to keep skip change."
         );
-        customer.setPhone(newPhone.isEmpty() ? newPhone : customer.getPhone());
+        customer.setPhone(newPhone.isEmpty() ? customer.getPhone() : newPhone);
 
         newEmail = ConsoleInputter.getStr(
             String.format("Update Customer Email [%s]", customer.getEmail()),
             Customer.EMAIL_PAT + "|^$",
             "Only valid email allowed (example@company.com)! Leave blank to keep skip change."
         );
-        customer.setEmail(newEmail.isEmpty() ? newEmail : customer.getEmail());
+        customer.setEmail(newEmail.isEmpty() ? customer.getEmail() : newEmail);
+
+
+        System.out.println(newEmail);
+        System.out.println(customer);
 
     }
 

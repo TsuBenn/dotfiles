@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.naming.directory.SearchResult;
-
 import core.SetMenu;
 import tool.ConsoleInputter;
 
@@ -128,7 +126,11 @@ public class OrderList extends ArrayList<Order> {
 
         customer = customerList.searchCustomer("");
 
+        customerCode = customer.getCode();
+
         setMenu = (SetMenu) ConsoleInputter.objMenu(this.setMenuList);
+
+        setMenuCode = setMenu.getCode();
 
         numTable = ConsoleInputter.getInt("Number of Tables", 1, 100);
 
@@ -202,17 +204,12 @@ public class OrderList extends ArrayList<Order> {
             return;
         }
 
-        String newCustomerCode, newSetMenuCode;
+        int pos = customerList.indexOf(new Customer(order.getCustCode()));
+        Customer customer = customerList.get(pos);
+
+        String newSetMenuCode;
         int newNumTable;
         Date newPreferedDate;
-
-        System.out.println("Update Customer ["+ order.getCustCode() +"]: ");
-        Customer newCustomer = customerList.searchCustomer("", true);
-        if (newCustomer == null) {
-            newCustomerCode = order.getCustCode();
-        } else {
-            newCustomerCode = newCustomer.getCode();
-        }
 
         System.out.println("Update Set Menu ["+ order.getSetMenuCode() +"]: ");
         SetMenu newSetMenu = (SetMenu) ConsoleInputter.objMenu(setMenuList);
@@ -221,6 +218,65 @@ public class OrderList extends ArrayList<Order> {
         newNumTable = ConsoleInputter.getInt("Update number of tables ["+ order.getNumTable() +"]: ", 0, 100);
         if (newNumTable == 0) {
             newNumTable = order.getNumTable();
+        }
+
+        boolean before = true;
+        do {
+            newPreferedDate = ConsoleInputter.getDate("Update prefered date [" + ConsoleInputter.dateStr(order.getPreferedDate(), DATE_PAT) + "]:", DATE_PAT);
+            before = newPreferedDate.before(new Date());
+            if (before) System.out.println("Prefered date must be after today!");
+        } while (before);
+
+        printOrder(order.getOrderCode(), customer, newSetMenu, newNumTable, newPreferedDate);
+        boolean response = ConsoleInputter.getBoolean("Save order? Y/N");
+        if (response) {
+            order.setSetMenuCode(newSetMenuCode);
+            order.setNumTable(newNumTable);
+            order.setPreferedDate(newPreferedDate);
+        }
+
+    }
+
+    public void print() {
+        DecimalFormat dfCustom;
+        dfCustom = new DecimalFormat("#,##0");
+        if (this.isEmpty()) {
+            System.out.println("The Order List is Empty!");
+            return;
+        }
+
+        String header =
+        "-----------------------------------------------------------------------------------\n" +
+        "| ID   | Event Date | Customer ID | Set Menu |      Price |  Tables |        Cost |\n" +
+        "-----------------------------------------------------------------------------------\n";
+
+        System.out.println(header);
+
+        String footer =
+        "-----------------------------------------------------------------------------------\n";
+
+        String setMenuCode;
+        int pos;
+        SetMenu setMenu;
+        int total;
+
+        for (Order order : this) {
+            setMenuCode = order.getSetMenuCode();
+            pos = setMenuList.indexOf(new SetMenu(setMenuCode));
+            setMenu = setMenuList.get(pos);
+            total = order.getNumTable() * setMenu.getPrice();
+            Date preferedDate = order.getPreferedDate();
+            String line = String.format("| %-4s | %-10s | %-11s | %-8s | %10s | %7s | %11s |",
+                order.getOrderCode(),
+                ConsoleInputter.dateStr(preferedDate, DATE_PAT),
+                order.getCustCode(),
+                order.getSetMenuCode(),
+                dfCustom.format(setMenu.getPrice()),
+                order.getNumTable(),
+                dfCustom.format(total)
+            );
+
+            System.out.println(line);
         }
 
     }

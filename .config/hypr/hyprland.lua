@@ -430,6 +430,7 @@ hl.window_rule({
     },
 
     float = true,
+    center = true,
     size = {"(monitor_w*0.9)","(monitor_h*0.9)"}
 })
 hl.window_rule({
