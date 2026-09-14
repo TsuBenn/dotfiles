@@ -46,7 +46,9 @@ public class Main {
             switch(choice) {
                 case 1: customerList.addCustomer(); customerChanged = true; break;
                 case 2: customerList.updateCustomer(); customerChanged = true; break;
-                case 3: System.out.println(customerList.searchCustomer("").toString()); break;
+                case 3:
+                    customerList.listCustomers("", false, true);
+                    break;
                 case 4: setMenuList.print(); break;
                 case 5: orderList.addOrder(); orderChanged = true; break;
                 case 6: orderList.updateOrder(); orderChanged = true; break;

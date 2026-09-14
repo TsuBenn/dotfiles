@@ -45,13 +45,49 @@ public class ConsoleInputter {
     public static int getInt(String prompt, int min, int max){
         int result = 0;
         do{
-            System.out.print(prompt + "[" + min + ", " + max + "]: ");
-            result = Integer.parseInt(sc.nextLine().trim());
+            boolean valid = true;
+            do {
+                try {
+                    System.out.print(prompt + "[" + min + ", " + max + "]: ");
+                    result = Integer.parseInt(sc.nextLine().trim());
+                    valid = true;
+                } catch (Exception e) {
+                    valid = false;
+                    System.out.println("Only Integer is allowed in this field!");
+                }
+            } while (!valid);
             if (result < min || result > max )
                 System.out.println("Value range: " + "[" + min + ", " + max + "]" );
         } while (result < min || result > max );
         return result;
     }
+
+    // Giống hàm trên nhưng có giá trị mặc định nếu input không có gì
+    public static Integer getInt(String prompt, int min, int max, int defaultValue) {
+        int result = 0;
+        do{
+            boolean valid = true;
+            do {
+                try {
+                    System.out.print(prompt + "[" + min + ", " + max + "]: ");
+                    String input = sc.nextLine().trim();
+                    if (input.isEmpty()) {
+                        return defaultValue;
+                    }
+                    result = Integer.parseInt(input);
+                    valid = true;
+                } catch (Exception e) {
+                    valid = false;
+                    System.out.println("Only Integer is allowed in this field!");
+                }
+            } while (!valid);
+            if (result < min || result > max )
+                System.out.println("Value range: " + "[" + min + ", " + max + "]" );
+        } while (result < min || result > max );
+        return result;
+    }
+
+
     /* Nhập số thực trong 1 khoảng [min,max]
        Cách dùng: double salary = getDouble("Salary", 1.0,4000.0);
     */
@@ -120,6 +156,28 @@ public class ConsoleInputter {
         } while (d==null);
         return d;
     }
+
+    // Giống hàm trên nhưng có giá trị mặc định nếu input không có gì.
+    public static Date getDate(String prompt, String dateFormat, Date defaultDate){
+        String dateStr;
+        Date d;
+        // Tạo DateFormat formatter với date format trong tham sồ
+        DateFormat formatter = new SimpleDateFormat(dateFormat);
+        do{
+            System.out.print(prompt + ": "); // xuất lời nhắc
+            dateStr = sc.nextLine().trim(); // nhập data
+            try{ // phân tích String -> Date. Hành vi parse sẽ tự động điều
+                //chỉnh phù hợp. Thí dụ 32-12-2024 sẽ chuyển thành 01/01/2025
+                d = formatter.parse(dateStr);
+            }
+            catch (ParseException e){ // nếu phân tích có lỗi xuất thông báo
+                System.out.println("Date format should be " + dateFormat + ".");
+                d = null;
+            }
+        } while (d==null);
+        return d;
+    }
+
     /* Đổi Date sang chuỗi dd-MM-yyyy/ MM-dd-yyyy,... Cách dùng:
        System.out.println(dateStr(aDate, "dd-MM-yyyy"));
      */

@@ -49,11 +49,11 @@ public class CustomerList extends ArrayList<Customer> {
         }
 
         String header =
-                "----------------------------------------------------------------\n" +
-                " Code   | Customer name          | Phone     | Email            \n" +
-                "----------------------------------------------------------------";
+                "---------------------------------------------------------------------------\n" +
+                " Code   | Customer name           | Phone      | Email                     \n" +
+                "---------------------------------------------------------------------------";
         String footer =
-                "----------------------------------------------------------------";
+                "---------------------------------------------------------------------------";
 
         System.out.println(header);
         for (Customer cust : this)
@@ -61,7 +61,7 @@ public class CustomerList extends ArrayList<Customer> {
         System.out.println(footer);
     }
 
-    public Customer searchCustomer(String query, boolean canSkip) {
+    public CustomerList listCustomers(String query, boolean canSkip, boolean display) {
         if (this.isEmpty()) {
             System.out.println("List is Empty!");
             return null;
@@ -81,18 +81,39 @@ public class CustomerList extends ArrayList<Customer> {
         }
 
         CustomerList results = new CustomerList();
-        List<String> result_codes = new ArrayList<>();
 
         for (Customer customer : this) {
             if (customer.getCode().toLowerCase().equalsIgnoreCase(query)) {
-                return customer;
+                results.add(customer);
+                break;
             } else if (customer.getName().toLowerCase().replaceAll(" ", "").contains(query)) {
                 results.add(customer);
-                result_codes.add(customer.getCode());
                 if (results.size() >= 5) {
                     break;
                 }
             }
+        }
+
+        if (display) {
+            results.print();
+        }
+
+        return results;
+    }
+
+    public Customer searchCustomer(String query, boolean canSkip) {
+        if (this.isEmpty()) {
+            System.out.println("List is Empty!");
+            return null;
+        }
+
+        query = query.trim();
+
+        CustomerList results = listCustomers(query, canSkip, true);
+        List<String> result_codes = new ArrayList<>();
+
+        for (Customer customer : results) {
+            result_codes.add(customer.getCode());
         }
 
         if (results.size() == 0) {
@@ -102,9 +123,9 @@ public class CustomerList extends ArrayList<Customer> {
             return results.get(0);
         }
 
-        results.print();
+        // results.print();
 
-        int choice = ConsoleInputter.intMenu(result_codes);
+        int choice = ConsoleInputter.intMenu(result_codes) - 1;
         return results.get(choice);
 
     }
@@ -125,25 +146,43 @@ public class CustomerList extends ArrayList<Customer> {
             Customer.NAME_PAT + "|^$",
             "Name contains at least 2 and at most 25 characters! Leave blank to keep skip change."
         );
-        customer.setName(newName.isEmpty() ? customer.getName() : newName);
+        newName = newName.isEmpty() ? customer.getName() : newName;
 
         newPhone = ConsoleInputter.getStr(
             String.format("Update Customer Phone [%s]", customer.getPhone()),
             Customer.PHONE_PAT + "|^$",
             "Only VN phone (10 digits) allowed! Leave blank to keep skip change."
         );
-        customer.setPhone(newPhone.isEmpty() ? customer.getPhone() : newPhone);
+        newPhone = newPhone.isEmpty() ? customer.getPhone() : newPhone;
 
         newEmail = ConsoleInputter.getStr(
             String.format("Update Customer Email [%s]", customer.getEmail()),
             Customer.EMAIL_PAT + "|^$",
             "Only valid email allowed (example@company.com)! Leave blank to keep skip change."
         );
-        customer.setEmail(newEmail.isEmpty() ? customer.getEmail() : newEmail);
+        newEmail = newEmail.isEmpty() ? customer.getEmail() : newEmail;
 
+        String info =
+        "\n" +
+        "------------------------------------------------------------------------\n" +
+        " New Customer Info.\n" +
+        "------------------------------------------------------------------------\n" +
+        " Name: " + newName + "\n" +
+        " Phone: " + newPhone + "\n" +
+        " Email: " + newEmail + "\n" +
+        "------------------------------------------------------------------------\n";
 
-        System.out.println(newEmail);
-        System.out.println(customer);
+        System.out.println(info);
+
+        boolean response = ConsoleInputter.getBoolean("Update Customer Info?");
+        if (response) {
+            customer.setName(newName);
+            customer.setPhone(newPhone);
+            customer.setEmail(newEmail);
+            System.out.println("Updated Customer Info.");
+        } else {
+            System.out.println("Canceled Customer Update.");
+        }
 
     }
 
@@ -161,6 +200,7 @@ public class CustomerList extends ArrayList<Customer> {
             while (true) {
                 customer = (Customer) ois.readObject();
                 this.add(customer);
+                Customer.idIterator = Math.max(customer.code_num + 1, Customer.idIterator);
             }
         }
         catch (EOFException e) {

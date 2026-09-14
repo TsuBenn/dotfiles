@@ -11,18 +11,24 @@ public class Customer implements Serializable {
   static public String PHONE_PAT = "^0[235789][\\d]{8}$";
   static public String EMAIL_PAT = "^[\\w\\.-_+]*[\\w\\.-_]\\@([\\w]+\\.)+[\\w]+[\\w]$";
 
-  static private int idIterator = 0;
+  static public int idIterator = 0;
 
   public String code;
+  public int code_num;
+  public String code_prefix;
   public String name;
   public String phone;
   public String email;
 
   public Customer(String prefix, String name, String phone, String email) {
-    this.code = prefix.toUpperCase() + String.format("%04d", idIterator++);
+    this.code = prefix.toUpperCase() + String.format("%04d", idIterator);
+    this.code_num = idIterator;
+    this.code_prefix = prefix;
     this.name = name;
     this.phone = phone;
     this.email = email;
+
+    idIterator++;
   }
 
   public Customer(String code) {

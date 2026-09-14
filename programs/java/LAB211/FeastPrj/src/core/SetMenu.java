@@ -45,7 +45,7 @@ public class SetMenu implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Customer other = (Customer) obj;
+        final SetMenu other = (SetMenu) obj;
         return Objects.equals(this.code, other.code);
     }
 

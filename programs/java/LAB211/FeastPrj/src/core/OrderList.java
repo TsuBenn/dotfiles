@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.sql.ResultSetMetaData;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -165,12 +166,15 @@ public class OrderList extends ArrayList<Order> {
         while (query.isEmpty()) {
             query = ConsoleInputter.getStr("Code or Search Customer Name: ").toLowerCase().replaceAll(" ", "").trim();
         }
-        List<Order> results = new ArrayList<>();
+        OrderList results = new OrderList();
+        results.setMenuList = setMenuList;
 
         for (Order order : this) {
-            if (order.getOrderCode() == Integer.parseInt(query)) {
-                return order;
-            }
+            try {
+                if (order.getOrderCode() == Integer.parseInt(query)) {
+                    return order;
+                }
+            } catch (Exception e) {}
         }
 
         if (customerList.isEmpty()) {
@@ -190,8 +194,11 @@ public class OrderList extends ArrayList<Order> {
             System.out.println("No results!");
             return null;
         } else if (results.size() == 1) {
+            results.print();
             return results.get(0);
         }
+
+        results.print();
 
         int choice = ConsoleInputter.intMenu(results);
         return results.get(choice);
@@ -215,14 +222,11 @@ public class OrderList extends ArrayList<Order> {
         SetMenu newSetMenu = (SetMenu) ConsoleInputter.objMenu(setMenuList);
         newSetMenuCode = newSetMenu.getCode();
 
-        newNumTable = ConsoleInputter.getInt("Update number of tables ["+ order.getNumTable() +"]: ", 0, 100);
-        if (newNumTable == 0) {
-            newNumTable = order.getNumTable();
-        }
+        newNumTable = ConsoleInputter.getInt("Update number of tables ["+ order.getNumTable() +"]: ", 1, 100, order.getNumTable());
 
         boolean before = true;
         do {
-            newPreferedDate = ConsoleInputter.getDate("Update prefered date [" + ConsoleInputter.dateStr(order.getPreferedDate(), DATE_PAT) + "]:", DATE_PAT);
+            newPreferedDate = ConsoleInputter.getDate("Update prefered date [" + ConsoleInputter.dateStr(order.getPreferedDate(), DATE_PAT) + "]:", DATE_PAT, order.getPreferedDate());
             before = newPreferedDate.before(new Date());
             if (before) System.out.println("Prefered date must be after today!");
         } while (before);
@@ -248,7 +252,7 @@ public class OrderList extends ArrayList<Order> {
         String header =
         "-----------------------------------------------------------------------------------\n" +
         "| ID   | Event Date | Customer ID | Set Menu |      Price |  Tables |        Cost |\n" +
-        "-----------------------------------------------------------------------------------\n";
+        "-----------------------------------------------------------------------------------";
 
         System.out.println(header);
 
@@ -278,6 +282,9 @@ public class OrderList extends ArrayList<Order> {
 
             System.out.println(line);
         }
+
+        System.out.println(footer);
+
 
     }
 }
