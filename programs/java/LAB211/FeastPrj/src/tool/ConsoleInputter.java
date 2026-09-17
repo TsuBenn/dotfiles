@@ -166,6 +166,9 @@ public class ConsoleInputter {
         do{
             System.out.print(prompt + ": "); // xuất lời nhắc
             dateStr = sc.nextLine().trim(); // nhập data
+            if (dateStr.isEmpty()) {
+                return defaultDate;
+            }
             try{ // phân tích String -> Date. Hành vi parse sẽ tự động điều
                 //chỉnh phù hợp. Thí dụ 32-12-2024 sẽ chuyển thành 01/01/2025
                 d = formatter.parse(dateStr);
@@ -219,6 +222,7 @@ public class ConsoleInputter {
             System.out.println((i+1) + "-" + options[i]);
         return getInt("Choose ", 1, n); // User bị buộc nhập số phù hợp 1..n
     }
+
     public static int intMenu (List options){
        // int choice;
         int n= options.size() ; // số mục trong menu
@@ -226,6 +230,16 @@ public class ConsoleInputter {
             System.out.println((i+1) + "-" + options.get(i));
         return getInt("Choose ", 1, n); // User bị buộc nhập số phù hợp 1..n
     }
+
+    // Giống hàm trên nhưng có giá trị mặc định nếu input không có gì.
+    public static int intMenu(List options, int defaultValue){
+       // int choice;
+        int n= options.size() ; // số mục trong menu
+        for (int i=0; i< n; i++) // xuất các options
+            System.out.println((i+1) + "-" + options.get(i));
+        return getInt("Choose ", 1, n, defaultValue + 1); // User bị buộc nhập số phù hợp 1..n
+    }
+
     /*Menu trả về object mà người dùng chọn
      Cách dùng: String objChoice = (String)objMenu("Add", "Search", "Remove");
     */
@@ -233,8 +247,15 @@ public class ConsoleInputter {
         int choice = intMenu(options);
         return options[choice-1];
     }
+
     public static Object objMenu (List options){
         int choice = intMenu(options);
+        return options.get(choice-1);
+    }
+
+    // Giống hàm trên nhưng có giá trị mặc định nếu input không có gì.
+    public static Object objMenu(List options, int defaultValue){
+        int choice = intMenu(options, defaultValue);
         return options.get(choice-1);
     }
     // sinh key tự động dựa trên ngày tháng theo mẫu yyyyMMddhhmmss

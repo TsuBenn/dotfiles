@@ -201,7 +201,7 @@ public class OrderList extends ArrayList<Order> {
         results.print();
 
         int choice = ConsoleInputter.intMenu(results);
-        return results.get(choice);
+        return results.get(choice - 1);
     }
 
     public void updateOrder() {
@@ -219,7 +219,7 @@ public class OrderList extends ArrayList<Order> {
         Date newPreferedDate;
 
         System.out.println("Update Set Menu ["+ order.getSetMenuCode() +"]: ");
-        SetMenu newSetMenu = (SetMenu) ConsoleInputter.objMenu(setMenuList);
+        SetMenu newSetMenu = (SetMenu) ConsoleInputter.objMenu(setMenuList, setMenuList.indexOf(new SetMenu(order.getSetMenuCode())));
         newSetMenuCode = newSetMenu.getCode();
 
         newNumTable = ConsoleInputter.getInt("Update number of tables ["+ order.getNumTable() +"]: ", 1, 100, order.getNumTable());
