@@ -5,4 +5,8 @@ icon_cache.json
 clipboard_cache.png
 screenshot_cache.ppm
 
+system_data.db
+system_data.db-wal
+system_data.db-shm
+
 /__pycache__
