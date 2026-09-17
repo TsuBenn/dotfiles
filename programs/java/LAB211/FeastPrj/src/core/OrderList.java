@@ -167,6 +167,7 @@ public class OrderList extends ArrayList<Order> {
             query = ConsoleInputter.getStr("Code or Search Customer Name: ").toLowerCase().replaceAll(" ", "").trim();
         }
         OrderList results = new OrderList();
+
         results.setMenuList = setMenuList;
 
         for (Order order : this) {

@@ -1,6 +1,34 @@
 [
   {
     "category": "emoji",
+    "description": "Pleading face <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-concerned",
+      "pleading face",
+      "begging",
+      "big",
+      "eyes",
+      "face",
+      "mercy",
+      "not",
+      "pleading",
+      "please",
+      "pretty",
+      "puppy",
+      "sad",
+      "why"
+    ],
+    "label": "🥺",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 🥺"
+    ]
+  },
+  {
+    "category": "emoji",
     "description": "Loudly crying face <i>Smileys & Emotion</i>",
     "group": "Smileys & Emotion",
     "keywords": [
