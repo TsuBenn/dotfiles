@@ -1,6 +1,32 @@
 [
   {
     "category": "emoji",
+    "description": "Loudly crying face <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-concerned",
+      "loudly crying face",
+      "bawling",
+      "cry",
+      "crying",
+      "face",
+      "loudly",
+      "sad",
+      "sob",
+      "tear",
+      "tears",
+      "unhappy"
+    ],
+    "label": "😭",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 😭"
+    ]
+  },
+  {
+    "category": "emoji",
     "description": "Pleading face <i>Smileys & Emotion</i>",
     "group": "Smileys & Emotion",
     "keywords": [
@@ -25,32 +51,6 @@
       "bash",
       "-c",
       "sleep 0.2 && wtype 🥺"
-    ]
-  },
-  {
-    "category": "emoji",
-    "description": "Loudly crying face <i>Smileys & Emotion</i>",
-    "group": "Smileys & Emotion",
-    "keywords": [
-      "face-concerned",
-      "loudly crying face",
-      "bawling",
-      "cry",
-      "crying",
-      "face",
-      "loudly",
-      "sad",
-      "sob",
-      "tear",
-      "tears",
-      "unhappy"
-    ],
-    "label": "😭",
-    "type": "exec",
-    "value": [
-      "bash",
-      "-c",
-      "sleep 0.2 && wtype 😭"
     ]
   },
   {

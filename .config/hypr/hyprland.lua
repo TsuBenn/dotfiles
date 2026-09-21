@@ -442,13 +442,15 @@ hl.window_rule({
     float = true,
     size = {"(monitor_w*0.2)","(monitor_h*0.8)"}
 })
+
 hl.window_rule({
     match = {
         class = ".*mpv.*|.*vlc.*",
+        float = false,
     },
 
     float = true,
-    -- size = {"(monitor_w*0.7)","(monitor_h*0.7)"}
+    size = {"(monitor_w*0.7)","(monitor_h*0.7)"}
 })
 
 hl.window_rule({

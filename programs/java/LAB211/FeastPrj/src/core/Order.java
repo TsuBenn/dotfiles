@@ -48,6 +48,11 @@ public class Order implements Serializable {
     return Objects.equals(this.custCode, other.custCode);
   }
 
+  @Override
+  public String toString() {
+    return "Order ID: " + orderCode;
+  }
+
   public int getOrderCode() {
     return orderCode;
   }
