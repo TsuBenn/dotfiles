@@ -14,3 +14,7 @@ auto-format = true
 [[language]]
 name = "java"
 indent = { tab-width = 4, unit = "    "}
+
+[[language]]
+name = "c"
+indent = { tab-width = 4, unit = "    "}

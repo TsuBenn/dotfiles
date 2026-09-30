@@ -138,6 +138,7 @@ public class ConsoleInputter {
         } while (!valid); // lặp lại nếu data không trùng mẫu
         return data;
     }
+
     /* Nhập Date theo mẫu dd-MM-yyyy hoặc MM-dd-yyyy, .... Cách dủng
        Date d = getDate("Date of birth:", "dd-MM-yyyy");
        Ở đây hành vi parse(...) của lớp DateFormat được dùng. Hành vi này sẽ

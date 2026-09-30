@@ -20,6 +20,8 @@ alias ....='cd ../..'
 alias ......='cd ../../..'
 alias shutdown='shutdown -h now'
 
+alias script='python $HOME/dotfiles/programs/py/script-polish.py'
+
 # QUICK ACCESS
 alias setup='cd ~/dotfiles/ && bash ./arch_autosetup.sh'
 alias setupEdit='cd ~/dotfiles/ && nvim ./arch_autosetup.sh'
