@@ -21,10 +21,11 @@ public class Input {
             System.out.print(prompt + " (y/N): ");
         }
         String data = sc.nextLine().trim().toUpperCase();
-        if (data.isBlank()) {
+        if (data.isEmpty()) {
             return defaultValue;
         }
         char c = data.charAt(0);
+
         return c == 'Y' || c == 'T' || c == '1';
     }
 
@@ -55,6 +56,9 @@ public class Input {
         } else if (hasMin && hasMax) {
             hint = "[" + min + " - " + max + "]";
         }
+        if (defaultValue != null) {
+            hint += String.format(" [%d]", defaultValue);
+        }
 
         do {
             boolean valid = true;
@@ -62,7 +66,7 @@ public class Input {
                 try {
                     System.out.print(prompt + " " + hint + ": ");
                     String input = sc.nextLine().trim();
-                    if (input.isBlank()) {
+                    if (input.isEmpty()) {
                         if (defaultValue != null) {
                             return defaultValue;
                         } else {
@@ -121,6 +125,9 @@ public class Input {
         } else if (hasMin && hasMax) {
             hint = "[" + min + " - " + max + "]";
         }
+        if (defaultValue != null) {
+            hint += String.format(" [%.2f]", defaultValue);
+        }
 
         do {
             boolean valid = true;
@@ -128,7 +135,7 @@ public class Input {
                 try {
                     System.out.print(prompt + " " + hint + ": ");
                     String input = sc.nextLine().trim();
-                    if (input.isBlank()) {
+                    if (input.isEmpty()) {
                         if (defaultValue != null) {
                             return defaultValue;
                         } else {
@@ -160,33 +167,57 @@ public class Input {
         return getFloat(prompt, null, null, null);
     }
 
-    public static String getStr(String prompt, String pattern, String errorMsg) {
+    public static String getStr(String prompt, String pattern, String errorMsg, String defaultValue) {
         String data;
         boolean valid;
         do{
-            System.out.print(prompt + ": ");
-            data = sc.nextLine().trim();
+            data = getStr(prompt, defaultValue);
             valid = data.matches(pattern);
             if (!valid) System.out.println(errorMsg);
         } while (!valid);
+
         return data;
     }
 
-    public static String getStr(String prompt){
-        System.out.print(prompt + ": ");
-        return sc.nextLine().trim();
+    public static String getStr(String prompt, String pattern, String errorMsg) {
+        return getStr(prompt, pattern, errorMsg, null);
     }
 
-    public static Date getDate(String prompt, String dateFormat, Date defaultDate){
+    public static String getStr(String prompt, String defaultValue) {
+        String hint = "";
+        if (defaultValue != null) {
+            hint = " [" + defaultValue + "]";
+        }
+        System.out.print(prompt + hint + ": ");
+        String input = sc.nextLine().trim();
+        if (input.isEmpty() && defaultValue != null) {
+            return defaultValue;
+        }
+        return input;
+    }
+
+    public static String getStr(String prompt) {
+        return getStr(prompt, null);
+    }
+
+    public static String flattenString(String str) {
+        return str.trim().toLowerCase().replaceAll(" |-|_", "");
+    }
+
+    public static Date getDate(String prompt, String dateFormat, Date defaultValue){
         String dateStr;
         Date d;
+        String hint = "";
+        if (defaultValue != null) {
+            hint = " [" + dateToStr(defaultValue, "dd-MM-yyyy") + "]";
+        }
         // Tạo DateFormat formatter với date format trong tham sồ
         DateFormat formatter = new SimpleDateFormat(dateFormat);
         do{
-            System.out.print(prompt + ": "); // xuất lời nhắc
+            System.out.print(prompt + hint + ": "); // xuất lời nhắc
             dateStr = sc.nextLine().trim(); // nhập data
-            if (dateStr.isBlank() && defaultDate != null) {
-                return defaultDate;
+            if (dateStr.isEmpty() && defaultValue != null) {
+                return defaultValue;
             }
             try{ // phân tích String -> Date. Hành vi parse sẽ tự động điều
                 //chỉnh phù hợp. Thí dụ 32-12-2024 sẽ chuyển thành 01/01/2025
@@ -197,6 +228,7 @@ public class Input {
                 d = null;
             }
         } while (d==null);
+
         return d;
     }
     public static Date getDate(String prompt, String dateFormat){
@@ -235,6 +267,7 @@ public class Input {
         int n= options.length ; // số mục trong menu
         for (int i=0; i< n; i++) // xuất các options
             System.out.println((i+1) + "-" + options[i]);
+
         return getInt("Choose ", 1, n); // User bị buộc nhập số phù hợp 1..n
     }
 
@@ -245,6 +278,7 @@ public class Input {
         if (defaultValue == null) {
             return getInt("Choose ", 1, n);
         }
+
         return getInt("Choose ", 1, n, defaultValue + 1);
     }
 

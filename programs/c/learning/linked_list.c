@@ -104,32 +104,57 @@ void free_list(Node *head) {
   }
 }
 
-void pop_front(Node** head) {
+Node* pop_front(Node** head) {
   if (*head == NULL) {
-    printf("Cannot Pop Front an Empty List!");
-    return;
+    printf("Cannot Pop Front an Empty List!\n");
+    return NULL;
   }
   Node* temp = *head;
   *head = (*head)->next;
-  free(temp);
+  return temp;
 }
 
-void pop_back(Node** head) {
-  if ((*head)->next == NULL) {
-    pop_front(head);
-    return;
-  }
+Node* pop_back(Node** head) {
   if (*head == NULL) {
-    printf("Cannot Pop Back an Empty List!");
-    return;
+    printf("Cannot Pop Back an Empty List!\n");
+    return NULL;
+  }
+  if ((*head)->next == NULL) {
+    return pop_front(head);
   }
   Node* previous = NULL;
   Node* current = *head;
-  while (current != NULL) {
+  while (current->next != NULL) {
     previous = current;
     current = current->next;
   }
+  previous->next = NULL;
+  return current;
+}
 
+Node* remove_at(Node** head, int index) {
+  if (*head == NULL) {
+    printf("Cannot Remove Item an Empty List!\n");
+    return NULL;
+  }
+  if (index == 0) {
+    return pop_front(head);
+  }
+  Node* previous = NULL;
+  Node* current = *head;
+  int position = 0;
+  while (current != NULL && position != index) {
+    previous = current;
+    current = current->next;
+    position++;
+  }
+  if (position == index && current != NULL) {
+    previous->next = current->next;
+    return current;
+  } else {
+    printf("Cannot remove item at position %d!\n", index);
+    return NULL;
+  }
 }
 
 int main() {
@@ -141,8 +166,11 @@ int main() {
   insert(&a, 4, 1);  // middle
   insert(&a, 5, 3);  // end
   insert(&a, 6, -1); // negative
-  pop_front(&a);
+  free(pop_front(&a));
+  free(pop_back(&a));
+  free(remove_at(&a, 2));
   print_list(a);
+
   free_list(a);
 
   return 0;

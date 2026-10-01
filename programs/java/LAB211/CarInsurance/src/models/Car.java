@@ -3,6 +3,9 @@ package models;
 import java.io.Serializable;
 import java.util.Date;
 
+import tools.TablePrinter;
+import tools.Input;
+
 public class Car implements Serializable {
 
     // ENUMS for Car Type.
