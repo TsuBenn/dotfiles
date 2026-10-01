@@ -21,6 +21,7 @@ alias ......='cd ../../..'
 alias shutdown='shutdown -h now'
 
 alias script='python $HOME/dotfiles/programs/py/script-polish.py'
+alias qcc='gcc -Wall -Wextra -fsanitize=address -g -o ';
 
 # QUICK ACCESS
 alias setup='cd ~/dotfiles/ && bash ./arch_autosetup.sh'

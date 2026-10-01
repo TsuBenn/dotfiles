@@ -86,7 +86,7 @@ public class Input {
         return result;
     }
 
-    public static int getInt(String prompt, int min, int max) {
+    public static int getInt(String prompt, Integer min, Integer max) {
         return getInt(prompt, min, max, null);
     }
 
@@ -201,6 +201,15 @@ public class Input {
     }
     public static Date getDate(String prompt, String dateFormat){
         return getDate(prompt, dateFormat, null);
+    }
+
+    public static String formatInt(int num, String numFormat) {
+        DecimalFormat formatter = new DecimalFormat(numFormat);
+        return formatter.format(num);
+    }
+    public static String formatFloat(double num, String numFormat) {
+        DecimalFormat formatter = new DecimalFormat(numFormat);
+        return formatter.format(num);
     }
 
     public static String dateToStr(Date date, String dateFormat){
