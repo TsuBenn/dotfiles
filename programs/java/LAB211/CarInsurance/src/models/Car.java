@@ -3,9 +3,6 @@ package models;
 import java.io.Serializable;
 import java.util.Date;
 
-import tools.TablePrinter;
-import tools.Input;
-
 public class Car implements Serializable {
 
     // ENUMS for Car Type.
@@ -15,9 +12,6 @@ public class Car implements Serializable {
         NINE_SEATERS
     }
 
-    // Keeping track if Car IDs making sure the next Car contructed would always be unique.
-    static private int idIterator = 0;
-
     String licensePlate;      // UNIQUE, NOT NULL
     String owner;             // 2-35 CHARS, NOT NULL
     String brand;             // NOT NULL
@@ -25,20 +19,20 @@ public class Car implements Serializable {
     Date registrationDate;    // Valid Date, NOT NULL
     String registrationPlace; // Valid Place, NOT NULL
     CarType type;             // FIVE_SEATS, SEVEN_SEATS, NINE_SEATS
-    boolean hasInsurance;
+    boolean hasInsurance;     // TRUE OR FALSE
 
     static final public String OWNER_PAT =    "^[\\w\\s]{2,35}$"; // 2-35 CHARS PATTERN
     static final public String REG_DATE_PAT = "dd-MM-yyyy"; // 2-35 CHARS PATTERN
 
     // Car Constructor
-    public Car(String owner, String brand, int value, Date registrationDate, String registrationPlace, CarType type) {
+    public Car(String licensePlate, String owner, String brand, int value, Date registrationDate, String registrationPlace, CarType type) {
+        this.licensePlate = licensePlate;
         this.owner = owner;
         this.brand = brand;
         this.value = value;
         this.registrationDate = registrationDate;
         this.registrationPlace = registrationPlace;
         this.type = type;
-        this.licensePlate = brand.charAt(0) + String.format("%05d", idIterator++);
         this.hasInsurance = false;
     }
 
@@ -100,12 +94,12 @@ public class Car implements Serializable {
 		this.type = type;
 	}
 
-	public static int getIdIterator() {
-		return idIterator;
-	}
-	public static void setIdIterator(int idIterator) {
-		Car.idIterator = idIterator;
+	public boolean isHasInsurance() {
+		return hasInsurance;
 	}
 
+	public void setHasInsurance(boolean hasInsurance) {
+		this.hasInsurance = hasInsurance;
+	}
 
 }

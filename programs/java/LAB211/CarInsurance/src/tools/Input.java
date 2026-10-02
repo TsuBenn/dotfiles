@@ -49,22 +49,23 @@ public class Input {
         }
 
         String hint = "";
+        String defaultHint = "";
         if (hasMin && !hasMax) {
-            hint = "[" + min + " - " + "inf" + "]";
+            hint = " [" + min + " - " + "inf" + "]";
         } else if (!hasMin && hasMax) {
-            hint = "[" + "inf" + " - " + max + "]";
+            hint = " [" + "inf" + " - " + max + "]";
         } else if (hasMin && hasMax) {
-            hint = "[" + min + " - " + max + "]";
+            hint = " [" + min + " - " + max + "]";
         }
         if (defaultValue != null) {
-            hint += String.format(" [%d]", defaultValue);
+            defaultHint = String.format(" [%d]", defaultValue);
         }
 
         do {
             boolean valid = true;
             do {
                 try {
-                    System.out.print(prompt + " " + hint + ": ");
+                    System.out.print(prompt + hint + defaultHint + ": ");
                     String input = sc.nextLine().trim();
                     if (input.isEmpty()) {
                         if (defaultValue != null) {
@@ -79,7 +80,7 @@ public class Input {
                     valid = true;
                 } catch (Exception e) {
                     valid = false;
-                    System.out.println("Invalid Int! " + hint);
+                    System.out.println("Invalid Int!");
                 }
             } while (!valid);
             if (result < min || result > max) {
@@ -118,22 +119,23 @@ public class Input {
         }
 
         String hint = "";
+        String defaultHint = "";
         if (hasMin && !hasMax) {
-            hint = "[" + min + " - " + "inf" + "]";
+            hint = " [" + min + " - " + "inf" + "]";
         } else if (!hasMin && hasMax) {
-            hint = "[" + "inf" + " - " + max + "]";
+            hint = " [" + "inf" + " - " + max + "]";
         } else if (hasMin && hasMax) {
-            hint = "[" + min + " - " + max + "]";
+            hint = " [" + min + " - " + max + "]";
         }
         if (defaultValue != null) {
-            hint += String.format(" [%.2f]", defaultValue);
+            defaultHint = String.format(" [%.2f]", defaultValue);
         }
 
         do {
             boolean valid = true;
             do {
                 try {
-                    System.out.print(prompt + " " + hint + ": ");
+                    System.out.print(prompt + hint + defaultHint + ": ");
                     String input = sc.nextLine().trim();
                     if (input.isEmpty()) {
                         if (defaultValue != null) {
@@ -148,7 +150,7 @@ public class Input {
                     valid = true;
                 } catch (Exception e) {
                     valid = false;
-                    System.out.println("Out of range! " + hint);
+                    System.out.println("Invalid Float!");
                 }
             } while (!valid);
             if (result < min || result > max) {
@@ -185,14 +187,20 @@ public class Input {
 
     public static String getStr(String prompt, String defaultValue) {
         String hint = "";
-        if (defaultValue != null) {
+        if (defaultValue != null && !defaultValue.isEmpty()) {
             hint = " [" + defaultValue + "]";
         }
-        System.out.print(prompt + hint + ": ");
-        String input = sc.nextLine().trim();
-        if (input.isEmpty() && defaultValue != null) {
-            return defaultValue;
-        }
+        String input = "";
+        do {
+            System.out.print(prompt + hint + ": ");
+            input = sc.nextLine().trim();
+            if (input.isEmpty()) {
+                if (defaultValue != null)
+                    return defaultValue;
+                else
+                    System.out.println("This field cannot be empty!\n");
+            }
+        } while(input.isEmpty());
         return input;
     }
 
@@ -244,6 +252,12 @@ public class Input {
         return formatter.format(num);
     }
 
+    public static int compareDate(Date thisDate, Date thatDate) {
+        String dateThis = dateToStr(thisDate, "yyyy-MM-dd");
+        String dateThat = dateToStr(thatDate, "yyyy-MM-dd");
+        return dateThis.compareTo(dateThat);
+    }
+
     public static String dateToStr(Date date, String dateFormat){
         if (date==null) return null;
         DateFormat formatter = new SimpleDateFormat(dateFormat);
@@ -268,7 +282,7 @@ public class Input {
         for (int i=0; i< n; i++) // xuất các options
             System.out.println((i+1) + "-" + options[i]);
 
-        return getInt("Choose ", 1, n); // User bị buộc nhập số phù hợp 1..n
+        return getInt("Choose", 1, n)-1; // User bị buộc nhập số phù hợp 1..n
     }
 
     public static int intMenu(List options, Integer defaultValue) {
@@ -276,10 +290,10 @@ public class Input {
         for (int i=0; i< n; i++)
             System.out.println((i+1) + "-" + options.get(i));
         if (defaultValue == null) {
-            return getInt("Choose ", 1, n);
+            return getInt("Choose", 1, n)-1;
         }
 
-        return getInt("Choose ", 1, n, defaultValue + 1);
+        return getInt("Choose", 1, n, defaultValue + 1) - 1;
     }
 
     public static int intMenu(List options) {
@@ -293,12 +307,12 @@ public class Input {
 
     public static Object objMenu(List options, Integer defaultValue){
         int choice = intMenu(options, defaultValue);
-        return options.get(choice-1);
+        return options.get(choice);
     }
 
     public static Object objMenu(List options) {
         int choice = intMenu(options, null);
-        return options.get(choice-1);
+        return options.get(choice);
     }
 
     public static String dateKeyGen(){
