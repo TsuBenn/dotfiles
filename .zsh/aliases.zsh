@@ -9,6 +9,7 @@ clear() {
 }
 
 alias ls='ls --color=auto'
+alias ll='ls --color=auto -lah'
 alias list='ls -Alh --color=auto'
 alias grep='grep --color=auto'
 alias fetch='clear && fastfetch'

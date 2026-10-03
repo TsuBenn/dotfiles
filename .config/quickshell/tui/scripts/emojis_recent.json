@@ -1,6 +1,38 @@
 [
   {
     "category": "emoji",
+    "description": "Face holding back tears <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-concerned",
+      "face holding back tears",
+      "admiration",
+      "aww",
+      "back",
+      "cry",
+      "embarrassed",
+      "face",
+      "feelings",
+      "grateful",
+      "gratitude",
+      "holding",
+      "joy",
+      "please",
+      "proud",
+      "resist",
+      "sad",
+      "tears"
+    ],
+    "label": "🥹",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 🥹"
+    ]
+  },
+  {
+    "category": "emoji",
     "description": "Loudly crying face <i>Smileys & Emotion</i>",
     "group": "Smileys & Emotion",
     "keywords": [
