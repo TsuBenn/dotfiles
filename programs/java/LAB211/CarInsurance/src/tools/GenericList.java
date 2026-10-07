@@ -210,10 +210,6 @@ public abstract class GenericList<K, T> implements Serializable {
         return "";
     }
 
-    public boolean keyAvailable(K key) {
-        return !map.containsKey(key);
-    }
-
     // Decie whether the Object is "An" Object or "A" Something
     // Input: An option to capitalize incase it's at the start of a sentence.
     // Output: String
@@ -247,7 +243,7 @@ public abstract class GenericList<K, T> implements Serializable {
     //
     // Add Item to the Map directly with a Item.
     public T addItem(T item) {
-        if (keyAvailable(getKey(item))) {
+        if (!containsKey(getKey(item))) {
             map.put(getKey(item), item);
             return item;
         } else {

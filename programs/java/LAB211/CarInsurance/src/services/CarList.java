@@ -107,10 +107,10 @@ public class CarList extends GenericList<String, Car> {
         if (car == null) {
             do {
                 licensePlate = Input.getStr("Enter Car's License Plate").trim();
-                if (!keyAvailable(licensePlate)) {
+                if (containsKey(licensePlate)) {
                     System.out.println("This Car's License Plate is already exists!\n");
                 }
-            } while (!keyAvailable(licensePlate));
+            } while (containsKey(licensePlate));
         }
 
         owner = Input.getStr("Enter Car's Owner [2-35 chars]", Car.OWNER_PAT, "Car's Owner Should be 2-35 Characters!", car != null ? car.getOwner() : null);

@@ -1,6 +1,34 @@
 [
   {
     "category": "emoji",
+    "description": "Skull <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-negative",
+      "skull",
+      "body",
+      "dead",
+      "death",
+      "face",
+      "fairy",
+      "fairytale",
+      "i’m",
+      "lmao",
+      "monster",
+      "skull",
+      "tale",
+      "yolo"
+    ],
+    "label": "💀",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 💀"
+    ]
+  },
+  {
+    "category": "emoji",
     "description": "Face holding back tears <i>Smileys & Emotion</i>",
     "group": "Smileys & Emotion",
     "keywords": [
@@ -217,34 +245,6 @@
       "bash",
       "-c",
       "sleep 0.2 && wtype 😉"
-    ]
-  },
-  {
-    "category": "emoji",
-    "description": "Skull <i>Smileys & Emotion</i>",
-    "group": "Smileys & Emotion",
-    "keywords": [
-      "face-negative",
-      "skull",
-      "body",
-      "dead",
-      "death",
-      "face",
-      "fairy",
-      "fairytale",
-      "i’m",
-      "lmao",
-      "monster",
-      "skull",
-      "tale",
-      "yolo"
-    ],
-    "label": "💀",
-    "type": "exec",
-    "value": [
-      "bash",
-      "-c",
-      "sleep 0.2 && wtype 💀"
     ]
   },
   {

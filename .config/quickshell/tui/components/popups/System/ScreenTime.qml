@@ -492,7 +492,19 @@ ColumnLayout {
 
                             CellText {
                                 text: screentime_dist.model[dist_day.index]?.label
-                                color: Colors.bgOverlay
+                                color: {
+                                    if (root.date_offset != 0) {
+                                    return Colors.bgOverlay
+                                    }
+                                    if (root.range == 0) {
+                                        return DateTime.hour24 >= dist_day.index*4 && DateTime.hour24 < dist_day.index*4 + 4 ? Colors.secondary : Colors.bgOverlay
+                                    } else if (root.range == 1) {
+                                        return CalendarInfo.getDay(DateTime.date, DateTime.month_numeral, DateTime.year) == text ? Colors.secondary : Colors.bgOverlay
+                                    } else if (root.range == 2) {
+                                        return Math.floor(DateTime.date/7) == dist_day.index ?  Colors.secondary : Colors.bgOverlay
+                                    }
+                                    Colors.bgOverlay
+                                }
                                 font: Cell.fontB
                                 preferedW: dist_day.w
                                 centered: true
