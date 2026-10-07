@@ -1,0 +1,338 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+src/
+  input/
+    parse.rs
+    reader.rs
+  input.rs
+  lib.rs
+  main.rs
+.gitignore
+Cargo.toml
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/input/parse.rs">
+pub fn parse_int(input: &str) -> Option<i64> {
+    match input.parse() {
+        Ok(i) => Some(i),
+        _ => None
+    }
+}
+
+pub fn parse_float(input: &str) -> Option<f64> {
+    match input.parse() {
+        Ok(i) => Some(i),
+        _ => None
+    }
+}
+</file>
+
+<file path="src/input/reader.rs">
+use std::io::{self, Write};
+
+use crate::input::parse::{parse_float, parse_int};
+
+pub enum StrResult {
+    Ok(String),
+    Empty,
+    Err,
+}
+
+pub enum IntResult {
+    Ok(i64),
+    Empty,
+    Err,
+}
+
+pub enum FloatResult {
+    Ok(f64),
+    Empty,
+    Err,
+}
+
+pub fn read_line(prompt: &str) -> StrResult {
+    let mut input = String::new();
+    print!("{}: ", prompt);
+    io::stdout().flush().expect("Stdout Flush failed!");
+    io::stdin().read_line(&mut input).expect("Readline failed!");
+    input = input.trim().to_string();
+    if input.is_empty() {
+        return StrResult::Empty;
+    }
+    return StrResult::Ok(input);
+}
+
+pub fn read_int(prompt: &str) -> IntResult {
+    let input = read_line(prompt);
+    match input {
+        StrResult::Ok(input) => {
+            let Some(num) = parse_int(&input) else {
+                return IntResult::Err;
+            };
+            return IntResult::Ok(num);
+        }
+        StrResult::Empty => return IntResult::Empty,
+        StrResult::Err => return IntResult::Err
+    }
+}
+
+pub fn read_float(prompt: &str) -> FloatResult {
+    let input = read_line(prompt);
+    match input {
+        StrResult::Ok(input) => {
+            let Some(num) = parse_float(&input) else {
+                return FloatResult::Err;
+            };
+            return FloatResult::Ok(num);
+        }
+        StrResult::Empty => return FloatResult::Empty,
+        StrResult::Err => return FloatResult::Err
+    }
+}
+</file>
+
+<file path="src/input.rs">
+mod parse;
+mod reader;
+
+use std::f64::MAX as MAX_FLOAT;
+use std::f64::MIN as MIN_FLOAT;
+use std::i64::MAX as MAX_INT;
+use std::i64::MIN as MIN_INT;
+
+pub use reader::read_line as get_str;
+pub use reader::read_int as get_int;
+pub use reader::read_float as get_float;
+
+use reader::{IntResult,StrResult,FloatResult};
+
+pub fn get_str_no_empty(prompt: &str) -> String {
+    get_str_advanced(prompt, None)
+}
+
+pub fn get_str_with_default(prompt: &str, default_str: &str) -> String {
+    get_str_advanced(prompt, Some(default_str))
+}
+
+pub fn get_str_advanced(prompt: &str, default_str: Option<&str>) -> String {
+    let hint = match default_str {
+        Some(s) => &format!(" [{}]", s),
+        None => ""
+    };
+    let prompt = &format!("{} {}", prompt, hint);
+    loop {
+       match get_str(prompt) {
+           StrResult::Ok(s) => return s,
+           StrResult::Empty => match default_str {
+               Some(s) => return s.to_string(),
+               None => {
+                   println!("This field cannot be empty!");
+                   continue;
+               }
+           }
+           StrResult::Err => {
+               println!("Something went wrong!");
+               continue;
+           }
+       }
+    }
+}
+
+pub fn get_int_advanced(prompt: &str, min: Option<i64>, max: Option<i64>, default_int: Option<i64>) -> i64 {
+    let mut hint: String = if min == None && max == None {
+        String::new()
+    } else {
+        format!("[{} - {}]",
+            match min {
+                Some(i) => i.to_string(),
+                _ => "-inf".to_string(),
+            },
+            match max {
+                Some(i) => i.to_string(),
+                _ => "inf".to_string(),
+            }
+        )
+    };
+    match default_int {
+        Some(i) => {
+            hint = format!("{} [{}]", hint, i).trim().to_string()
+        },
+        _ => ()
+    }
+    let prompt = &format!("{} {}", prompt, hint);
+    loop {
+        match get_int(prompt) {
+            IntResult::Ok(i) => {
+                if i > match max {Some(i) => i, _ => MAX_INT} ||
+                   i < match min {Some(i) => i, _ => MIN_INT} {
+                    println!("Out of bound! {}", &hint);
+                    continue;
+                }
+                return i;
+            },
+            IntResult::Empty => {
+                match default_int {
+                    Some(i) => return i,
+                    None => {
+                        println!("This field cannot be empty!");
+                        continue;
+                    }
+                }
+            },
+            IntResult::Err => {
+                println!("Invalid Integer!");
+                continue;
+            }
+        }
+    }
+}
+
+pub fn get_int_no_empty(prompt: &str) -> i64 {
+    get_int_advanced(prompt, None, None, None)
+}
+
+pub fn get_int_with_default(prompt: &str, default_int: i64) -> i64 {
+    get_int_advanced(prompt, None, None, Some(default_int))
+}
+
+pub fn get_int_in_range(prompt: &str, min: i64, max: i64) -> i64 {
+    get_int_advanced(prompt, Some(min), Some(max), None)
+}
+
+pub fn get_float_advanced(prompt: &str, min: Option<f64>, max: Option<f64>, default_int: Option<f64>) -> f64 {
+    let mut hint: String = if min == None && max == None {
+        String::new()
+    } else {
+        format!("[{} - {}]",
+            match min {
+                Some(i) => i.to_string(),
+                _ => "-inf".to_string(),
+            },
+            match max {
+                Some(i) => i.to_string(),
+                _ => "inf".to_string(),
+            }
+        )
+    };
+    match default_int {
+        Some(i) => {
+            hint = format!("{} [{}]", hint, i).trim().to_string()
+        },
+        _ => ()
+    }
+    let prompt = &format!("{} {}", prompt, hint);
+    loop {
+        match get_float(prompt) {
+            FloatResult::Ok(i) => {
+                if i > match max {Some(i) => i, _ => MAX_FLOAT} ||
+                   i < match min {Some(i) => i, _ => MIN_FLOAT} {
+                    println!("Out of bound! {}", &hint);
+                    continue;
+                }
+                return i;
+            },
+            FloatResult::Empty => {
+                match default_int {
+                    Some(i) => return i,
+                    None => {
+                        println!("This field cannot be empty!");
+                        continue;
+                    }
+                }
+            },
+            FloatResult::Err => {
+                println!("Invalid Float!");
+                continue;
+            }
+        }
+    }
+}
+
+pub fn get_float_no_empty(prompt: &str) -> f64 {
+    get_float_advanced(prompt, None, None, None)
+}
+
+pub fn get_float_with_default(prompt: &str, default_float: f64) -> f64 {
+    get_float_advanced(prompt, None, None, Some(default_float))
+}
+
+pub fn get_float_in_range(prompt: &str, min: f64, max: f64) -> f64 {
+    get_float_advanced(prompt, Some(min), Some(max), None)
+}
+</file>
+
+<file path="src/lib.rs">
+pub mod input;
+</file>
+
+<file path="src/main.rs">
+use modules::input;
+
+fn main() {
+    let name = input::get_str_no_empty("Enter your name");
+    let age = input::get_int_in_range("Enter your age", 1, 99);
+    let gpa = input::get_float_in_range("Enter your GPA", 0.0, 4.0);
+
+    println!();
+    println!("So your name is {}, and you're {} years old.", name, age);
+    println!("Looking at your record, apparently you have a GPA of {}", gpa);
+}
+</file>
+
+<file path=".gitignore">
+target/
+</file>
+
+<file path="Cargo.toml">
+[package]
+name = "modules"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+</file>
+
+</files>

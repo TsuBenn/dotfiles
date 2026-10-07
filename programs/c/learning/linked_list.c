@@ -156,22 +156,3 @@ Node* remove_at(Node** head, int index) {
     return NULL;
   }
 }
-
-int main() {
-
-  Node *a = NULL;
-  insert(&a, 1, 0);  // empty, index 0
-  insert(&a, 2, 5);  // too far
-  insert(&a, 3, 0);  // non-empty, index 0  <- this one
-  insert(&a, 4, 1);  // middle
-  insert(&a, 5, 3);  // end
-  insert(&a, 6, -1); // negative
-  free(pop_front(&a));
-  free(pop_back(&a));
-  free(remove_at(&a, 2));
-  print_list(a);
-
-  free_list(a);
-
-  return 0;
-}

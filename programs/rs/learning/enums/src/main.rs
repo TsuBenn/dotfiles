@@ -11,6 +11,7 @@ enum Command {
     Complete(u64),
     Delete(u64),
     List(StatusFilter),
+    Help,
     Quit,
 }
 
@@ -31,11 +32,13 @@ fn main() {
 
         if io::stdin().read_line(&mut input).is_err() || input.is_empty() {
             println!("Input shall not be empty!");
-            continue
+            println!();
+            continue;
         }
 
         let Some(cmd) = parse_command(&input) else {
-            println!("Invalid command!");
+            println!("Invalid command! Type \"help\" to see available commands.");
+            println!();
             continue;
         };
         match cmd {
@@ -77,31 +80,49 @@ fn main() {
                     print_task_footer();
                 }
             }
+            Command::Help => {
+                print_help();
+            }
             Command::Quit => {
                 break
             }
         }
+
+        println!()
     }
 }
 
 fn print_task_header() {
-    println!("-------------------------------------------");
-    println!("|                  TASKS                  |");
-    println!("-------------------------------------------");
+    println!("+------------------------------------------------------+");
+    println!("|                        TASKS                         |");
+    println!("+------------------------------------------------------+");
 }
 
 fn print_task_empty() {
-    println!("            No Tasks Available!            ");
+    println!("|                 No Tasks Available!                  |");
 }
 
 fn print_task_footer() {
-    println!("-------------------------------------------");
+    println!("+------------------------------------------------------+");
+}
+
+fn print_help() {
+    println!("+------------------------------------------------------+");
+    println!("|                  LISTS OF COMMANDS                   |");
+    println!("+------------------------------------------------------+");
+    println!("| help                    -> Print this table          |");
+    println!("| list                    -> List all tasks            |");
+    println!("| list     <done|pending> -> List tasks with filter    |");
+    println!("| add      <description>  -> Add a task                |");
+    println!("| delete   <id>           -> Delete a task using ID    |");
+    println!("| complete <id>           -> Complete a task using ID  |");
+    println!("+------------------------------------------------------+");
 }
 
 fn print_task(task: &Task) {
-    println!("ID: {}", task.id);
-    println!("Description: {}", task.description);
-    println!("Completed: {}", if task.is_completed {"Done"} else {"Pending"});
+    println!("| ID: {}", task.id);
+    println!("| Description: {}", task.description);
+    println!("| Completed: {}", if task.is_completed {"Done"} else {"Pending"});
     print_task_footer();
 }
 
@@ -110,6 +131,7 @@ fn parse_command(input: &str) -> Option<Command> {
     let Some((cmd, arg)) = input.split_once(char::is_whitespace) else {
         match input {
             "list" => return Some(Command::List(StatusFilter::All)),
+            "help" => return Some(Command::Help),
             "quit" => return Some(Command::Quit),
             _ => return None,
         }

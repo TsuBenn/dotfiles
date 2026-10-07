@@ -19,7 +19,7 @@ mode.insert = "INSERT"
 mode.select = "SELECT"
 
 [editor.lsp]
-display-inlay-hints = true
+display-inlay-hints = false
 
 [editor.soft-wrap]
 enable = true
