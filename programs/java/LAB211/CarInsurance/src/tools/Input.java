@@ -215,9 +215,9 @@ public class Input {
     public static Date getDate(String prompt, String dateFormat, Date defaultValue){
         String dateStr;
         Date d;
-        String hint = "";
+        String hint = " ("+dateFormat+")";
         if (defaultValue != null) {
-            hint = " [" + dateToStr(defaultValue, "dd-MM-yyyy") + "]";
+            hint += " [" + dateToStr(defaultValue, dateFormat) + "]";
         }
         // Tạo DateFormat formatter với date format trong tham sồ
         DateFormat formatter = new SimpleDateFormat(dateFormat);

@@ -195,7 +195,7 @@ public class CarList extends GenericList<String, Car> {
             car.getOwner(),
             car.getBrand(),
             Input.formatInt(car.getValue(), "$ #,##0"),
-            Input.dateToStr(car.getRegistrationDate(), "dd-MM-yyyy"),
+            Input.dateToStr(car.getRegistrationDate(), "MM-dd-yyyy"),
             car.getRegistrationPlace(),
             car.getTypeString()
         };

@@ -19,6 +19,7 @@ public class InsuranceList extends GenericList<Integer, Insurance> {
     public String sortedByString = "";
     public String sortTypeString = "";
 
+    // Constructor needs to take a CarList
     public InsuranceList(CarList carList) {
         this.carList = carList;
     }
@@ -108,7 +109,7 @@ public class InsuranceList extends GenericList<Integer, Insurance> {
 
         Date establishedDate;
         while (true) {
-            establishedDate = Input.getDate("Enter Established Date", "dd-MM-yyyy", new Date());
+            establishedDate = Input.getDate("Enter Established Date", "MM-dd-yyyy", new Date());
             if (Input.compareDate(establishedDate, insuredCar.getRegistrationDate()) < 0) {
                 System.out.println("Establishing Date cannot be before the Car's registration Date!\n");
             } else {

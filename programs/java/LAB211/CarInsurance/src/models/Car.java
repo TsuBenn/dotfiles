@@ -22,7 +22,7 @@ public class Car implements Serializable {
     boolean hasInsurance;     // TRUE OR FALSE
 
     static final public String OWNER_PAT =    "^[\\w\\s]{2,35}$"; // 2-35 CHARS PATTERN
-    static final public String REG_DATE_PAT = "dd-MM-yyyy"; // 2-35 CHARS PATTERN
+    static final public String REG_DATE_PAT = "MM-dd-yyyy"; // 2-35 CHARS PATTERN
 
     // Car Constructor
     public Car(String licensePlate, String owner, String brand, int value, Date registrationDate, String registrationPlace, CarType type) {
