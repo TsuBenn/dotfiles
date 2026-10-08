@@ -349,6 +349,9 @@ cursor-line = "warning"
     C-k = ["open_below"]
     C-l = ["move_next_word_start", "collapse_selection"]
 
+    #Quick Ampersand
+    C-a = "@&"
+
     # Kill to end/start line
     C-q = "kill_to_line_start"
     C-e = "kill_to_line_end"

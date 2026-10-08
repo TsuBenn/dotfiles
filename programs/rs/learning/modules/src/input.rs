@@ -1,11 +1,6 @@
 mod parse;
 mod reader;
 
-use std::f64::MAX as MAX_FLOAT;
-use std::f64::MIN as MIN_FLOAT;
-use std::i64::MAX as MAX_INT;
-use std::i64::MIN as MIN_INT;
-
 pub use reader::read_line as get_str;
 pub use reader::read_int as get_int;
 pub use reader::read_float as get_float;
@@ -69,9 +64,10 @@ pub fn get_int_advanced(prompt: &str, min: Option<i64>, max: Option<i64>, defaul
     loop {
         match get_int(prompt) {
             IntResult::Ok(i) => {
-                if i > match max {Some(i) => i, _ => MAX_INT} ||
-                   i < match min {Some(i) => i, _ => MIN_INT} {
-                    println!("Out of bound! {}", &hint);
+                let max = max.unwrap_or(i64::MAX);
+                let min = min.unwrap_or(i64::MIN);
+                if !(min..=max).contains(&i) {
+                    println!("Out of bound! {}", hint);
                     continue;
                 }
                 return i;
@@ -130,9 +126,10 @@ pub fn get_float_advanced(prompt: &str, min: Option<f64>, max: Option<f64>, defa
     loop {
         match get_float(prompt) {
             FloatResult::Ok(i) => {
-                if i > match max {Some(i) => i, _ => MAX_FLOAT} ||
-                   i < match min {Some(i) => i, _ => MIN_FLOAT} {
-                    println!("Out of bound! {}", &hint);
+                let max = max.unwrap_or(f64::MAX);
+                let min = min.unwrap_or(f64::MIN);
+                if !(min..=max).contains(&i) {
+                    println!("Out of bound! {}", hint);
                     continue;
                 }
                 return i;

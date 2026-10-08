@@ -22,7 +22,7 @@ pub enum FloatResult {
 
 pub fn read_line(prompt: &str) -> StrResult {
     let mut input = String::new();
-    print!("{}: ", prompt);
+    print!("{}", prompt);
     io::stdout().flush().expect("Stdout Flush failed!");
     io::stdin().read_line(&mut input).expect("Readline failed!");
     input = input.trim().to_string();

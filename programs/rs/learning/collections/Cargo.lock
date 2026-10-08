@@ -3,5 +3,12 @@
 version = 4
 
 [[package]]
+name = "collections"
+version = "0.1.0"
+dependencies = [
+ "input_utils",
+]
+
+[[package]]
 name = "input_utils"
 version = "0.1.0"

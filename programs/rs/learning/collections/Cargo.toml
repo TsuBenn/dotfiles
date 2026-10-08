@@ -1,6 +1,7 @@
 [package]
-name = "input_utils"
+name = "collections"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+input_utils = {path = "../modules"}
