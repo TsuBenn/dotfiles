@@ -250,7 +250,7 @@ local ALT = "ALT+" -- Sets "Windows" key as main modifier
 local SHIFT = "SHIFT+" -- Sets "Windows" key as main modifier
 local CTRL = "CTRL+" -- Sets "Windows" key as main modifier
 
-hl.bind(SUPER..SHIFT..CTRL.."R", hl.dsp.exec_cmd("git -C ~/dotfiles reset --hard origin/main"))
+hl.bind(SUPER..SHIFT..CTRL.."R", hl.dsp.exec_cmd("cp -rT ~/dotfiles/programs/java/LAB211/CarInsurance_bak ~/dotfiles/programs/java/LAB211/CarInsurance"))
 
 -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for more
 hl.bind(SUPER.."Q", hl.dsp.exec_cmd(terminal))

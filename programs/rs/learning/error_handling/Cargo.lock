@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "error_handling"
+name = "input_utils"
 version = "0.1.0"
