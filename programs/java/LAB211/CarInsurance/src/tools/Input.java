@@ -282,6 +282,8 @@ public class Input {
         for (int i=0; i< n; i++) // xuất các options
             System.out.println((i+1) + "-" + options[i]);
 
+        System.out.println();
+
         return getInt("Choose", 1, n)-1; // User bị buộc nhập số phù hợp 1..n
     }
 
@@ -292,6 +294,8 @@ public class Input {
         if (defaultValue == null) {
             return getInt("Choose", 1, n)-1;
         }
+
+        System.out.println();
 
         return getInt("Choose", 1, n, defaultValue + 1) - 1;
     }

@@ -38,7 +38,7 @@ public class Main {
                         "Report on Uninsured Cars",
                         "Save data",
                         "Load data",
-                        "Inject Mock Data",
+                        // "Inject Mock Data",
                         "Quit"
                 );
 
@@ -76,7 +76,7 @@ public class Main {
                                 carList.printReport();
                                 break;
                         case 7:
-                                if (empty && !Input.getBool("The Program is currently Empty, are you sure you wanna Overide Previous Data?")) {
+                                if (empty && !Input.getBool("The Program is currently Empty, are you sure you wanna Override Previous Data?", false)) {
                                         break;
                                 }
                                 carList.saveToFile(CAR_LIST_PATH);
@@ -88,11 +88,11 @@ public class Main {
                                 insuranceList.loadFromFile(INSURANCE_LIST_PATH);
                                 empty = false;
                                 break;
-                        case 9:
-                                injectExampleData(carList, insuranceList);
-                                empty = false;
-                                hasChanges = true;
-                                break;
+                        // case 9:
+                        //         injectExampleData(carList, insuranceList);
+                        //         empty = false;
+                        //         hasChanges = true;
+                        //         break;
                         default:
                                 if (hasChanges && Input.getBool("Save Changes?")) {
                                         System.out.println("");

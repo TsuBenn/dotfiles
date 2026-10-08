@@ -23,6 +23,7 @@ public class InsuranceList extends GenericList<Integer, Insurance> {
         this.carList = carList;
     }
 
+    // Update Insurance Iterator by iterating through the Insurance List and check for the highest ID and set the new ID Iterator above it 1 unit.
     public void updateIDIterator() {
         for (Insurance insurance : getList()) {
             if (Insurance.idIterator <= insurance.getInsuranceId()) {
@@ -31,6 +32,7 @@ public class InsuranceList extends GenericList<Integer, Insurance> {
         }
     }
 
+    // Update ID Iterator after Loading File
     @Override
     public void postLoadFromFile() {
         updateIDIterator();
@@ -74,8 +76,12 @@ public class InsuranceList extends GenericList<Integer, Insurance> {
     // Output: An Insurance created by the User Input.
     //
     // Declare fields.
-    // Let the User Input the fields without any default, since Insurance Statements
-    // are not Updatable.
+    // Let the User Input the fields without any default, since Insurance Statements are not Updatable.
+    // First let the User choose a car.
+    // Check whether Car is null
+    // Else check if that car already has been insured
+    // Next ask for establishedDate, and it shall not be before the Car's registrationDate
+    // Next ask for the Periods option.
     // Create an Insurance from the Inputs and return it.
     @Override
     protected Insurance createItem(Insurance insurance) {
@@ -161,6 +167,9 @@ public class InsuranceList extends GenericList<Integer, Insurance> {
         return table;
     }
 
+    // Print Report by getting Comparator first
+    // Then print out the header
+    // Then List Items and Filter out the Insurance Year
     public void printReport() {
         if (isEmpty()) {
             System.out.printf("Insurance List is Empty!\n\n");
@@ -197,6 +206,16 @@ public class InsuranceList extends GenericList<Integer, Insurance> {
     // Getting a comparator from User to use for Listing Sorted Items
     // Input: None
     // Output: Comparator
+    //
+    // Ask field to be sorted
+    // Includes:
+    //     Insurance ID
+    //     Established Date
+    //     License Plate
+    //     Insurance Period
+    //
+    // Ask for sort order
+    // Remeber to set the sortedByString and sortTypeString so the Header prints correctly
     @Override
     public Comparator<Insurance> getComparator() {
         System.out.println("Select field for Sorting:");

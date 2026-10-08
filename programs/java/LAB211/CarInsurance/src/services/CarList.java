@@ -14,6 +14,9 @@ public class CarList extends GenericList<String, Car> {
     public String sortedByString = "";
     public String sortTypeString = "";
 
+    // Print Report by getting Comparator first
+    // Then print out the header
+    // Then List Items and Filter out Cars with CarInsurance
     public void printReport() {
         if (isEmpty()) {
             System.out.printf("Car List is Empty!\n\n");
@@ -31,6 +34,15 @@ public class CarList extends GenericList<String, Car> {
         );
     }
 
+    // Ask field to be sorted
+    // Includes:
+    //     License Plate
+    //     Vehicle Owner
+    //     Registration Date
+    //     Vehicle Type
+    //
+    // Ask for sort order
+    // Remeber to set the sortedByString and sortTypeString so the Header prints correctly
     @Override
     public Comparator<Car> getComparator() {
         System.out.println("Select field for Sorting:");
@@ -93,6 +105,7 @@ public class CarList extends GenericList<String, Car> {
     //
     // Declare fields.
     // Let the User Input the fields with the default value of the provided Car. If the provided Car is null, force the User to Input something.
+    // Note that registration Date shouldn't be in the future also.
     // Create a Car from the Inputs and return it.
     @Override
     protected Car createItem(Car car) {
