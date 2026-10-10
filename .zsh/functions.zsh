@@ -14,6 +14,7 @@ setopt hist_ignore_all_dups
 setopt hist_ignore_dups
 setopt hist_save_no_dups
 setopt hist_find_no_dups
+setopt extendedglob
 
 # tmux auto-attach
 if command -v tmux &> /dev/null && [ -z "$TMUX" ]; then

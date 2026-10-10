@@ -1,0 +1,269 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+lib.rs
+main.rs
+parse.rs
+reader.rs
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="lib.rs">
+mod parse;
+mod reader;
+
+use std::fmt::Display;
+use std::str::FromStr;
+
+pub use reader::read_bool as get_bool;
+pub use reader::read_line as get_str;
+pub use reader::read_num as get_num;
+
+use crate::reader::ReaderError;
+
+fn format_hint(prompt: &str, hint: &str) -> String {
+    if prompt.contains("{}") {
+        prompt.replace("{}", &hint)
+    } else {
+        prompt.to_string()
+    }
+}
+
+pub fn get_str_no_empty(prompt: &str) -> String {
+    get_str_advanced(prompt, None)
+}
+
+pub fn get_str_with_default(prompt: &str, default_str: &str) -> String {
+    get_str_advanced(prompt, Some(default_str))
+}
+
+pub fn get_str_advanced(prompt: &str, default_str: Option<&str>) -> String {
+    let hint = match default_str {
+        Some(s) => format!("[{}]", s),
+        None => String::new(),
+    };
+    let prompt = &format_hint(prompt, &hint);
+    loop {
+        match (get_str(prompt), default_str) {
+            (Ok(s), _) => return s,
+            (Err(ReaderError::Empty), Some(s)) => return s.to_string(),
+            (Err(ReaderError::Empty), None) => println!("This field cannot be empty!"),
+            (Err(_), _) => println!("Something went wrong!"),
+        }
+    }
+}
+
+pub fn get_num_advanced<T>(
+    prompt: &str,
+    min: Option<T>,
+    max: Option<T>,
+    default_int: Option<T>,
+) -> T
+where
+    T: FromStr + Copy + PartialOrd + Display,
+{
+    let mut hint: String = if min.is_none() && max.is_none() {
+        String::new()
+    } else {
+        format!(
+            "[{} - {}]",
+            min.map_or("-inf".to_string(), |i| i.to_string()),
+            max.map_or("inf".to_string(), |i| i.to_string())
+        )
+    };
+    match default_int {
+        Some(i) => hint = format!("{} [{}]", hint, i).trim().to_string(),
+        _ => (),
+    }
+    let prompt = &format_hint(prompt, &hint);
+    loop {
+        match (get_num(prompt), default_int) {
+            (Ok(i), _) => {
+                if match (min, max) {
+                    (Some(min), Some(max)) => (min..=max).contains(&i),
+                    (Some(min), None) => (min..).contains(&i),
+                    (None, Some(max)) => (..=max).contains(&i),
+                    (_, _) => true,
+                } {
+                    return i;
+                } else {
+                    println!("Out of bound! {}", hint)
+                }
+            }
+            (Err(ReaderError::Empty), Some(i)) => return i,
+            (Err(ReaderError::Empty), None) => println!("This field cannot be empty!"),
+            (Err(_), _) => println!("Invalid Integer!"),
+        }
+    }
+}
+
+pub fn get_num_no_empty<T>(prompt: &str) -> T
+where
+    T: FromStr + Copy + PartialOrd + Display,
+{
+    get_num_advanced(prompt, None, None, None)
+}
+
+pub fn get_num_with_default<T>(prompt: &str, default_num: T) -> T
+where
+    T: FromStr + Copy + PartialOrd + Display,
+{
+    get_num_advanced(prompt, None, None, Some(default_num))
+}
+
+pub fn get_num_in_range<T>(prompt: &str, min: T, max: T) -> T
+where
+    T: FromStr + Copy + PartialOrd + Display,
+{
+    get_num_advanced(prompt, Some(min), Some(max), None)
+}
+
+pub fn get_bool_advanced(prompt: &str, default_bool: Option<bool>) -> bool {
+    let hint = match default_bool {
+        Some(s) => {
+            if s {
+                "[Y/n]"
+            } else {
+                "[y/N]"
+            }
+        }
+        None => "[Y/N]",
+    };
+    let prompt = &format_hint(prompt, &hint);
+    loop {
+        match (get_bool(prompt), default_bool) {
+            (Ok(b), _) => return b,
+            (Err(ReaderError::Empty), Some(b)) => return b,
+            (Err(ReaderError::Empty), None) => println!("This field cannot be empty!"),
+            (Err(_), _) => println!("Invalid boolean!")
+        }
+    }
+}
+
+pub fn get_bool_no_empty(prompt: &str) -> bool {
+    get_bool_advanced(prompt, None)
+}
+
+pub fn get_bool_with_default(prompt: &str, default_bool: bool) -> bool {
+    get_bool_advanced(prompt, Some(default_bool))
+}
+</file>
+
+<file path="main.rs">
+use input_utils as input;
+
+fn main() {
+    let name = input::get_str_no_empty("Enter your name: ");
+    let major = input::get_str_with_default("Enter your Major {}: ", "CompSci");
+    let age = input::get_num_in_range::<i64>("Enter your age {}: ", 1, 99);
+    let gpa = input::get_num_in_range::<f64>("Enter your GPA {}: ", 0.0, 4.0);
+    let gay = input::get_bool_no_empty("Are you gay? {}: ");
+
+    println!();
+    println!("So your name is {}, you're {} years old and major in {}", name, age, major);
+    println!("Looking at your record, apparently you have a GPA of {}", gpa);
+    println!("And also, you are {}.", if gay {"gay"} else {"not gay"});
+}
+</file>
+
+<file path="parse.rs">
+use std::str::FromStr;
+
+const TRUE_CHAR: [&str; 5] = [
+    "y", "yes", "1", "t", "true"
+];
+
+const FALSE_CHAR: [&str; 5] = [
+    "n", "no", "0", "f", "false"
+];
+
+pub fn parse_num<T: FromStr>(input: &str) -> Option<T> {
+    input.parse::<T>().ok()
+}
+
+pub fn parse_bool(input: &str) -> Option<bool> {
+    let first_char = input.chars().next()?.to_lowercase().to_string();
+    if TRUE_CHAR.contains(&first_char.as_str()) {
+        return Some(true);
+    } else if FALSE_CHAR.contains(&first_char.as_str()) {
+        return Some(false);
+    }
+    None
+}
+</file>
+
+<file path="reader.rs">
+use std::{io::{self, Write}, str::FromStr};
+
+use crate::parse::{parse_bool, parse_num};
+
+pub enum ReaderError {
+    Empty,
+    Err,
+}
+
+pub fn read_line(prompt: &str) -> Result<String, ReaderError> {
+    let mut input = String::new();
+    print!("{}", prompt);
+    io::stdout().flush().map_err(|_| ReaderError::Err)?;
+    io::stdin().read_line(&mut input).map_err(|_| ReaderError::Err)?;
+    input = input.trim().to_string();
+    if input.is_empty() {
+        return Err(ReaderError::Empty);
+    }
+    Ok(input)
+}
+
+pub fn read_num<T: FromStr>(prompt: &str) -> Result<T, ReaderError> {
+    let input = read_line(prompt)?;
+    parse_num::<T>(&input).ok_or(ReaderError::Err)
+}
+
+pub fn read_bool(prompt: &str) -> Result<bool, ReaderError> {
+    let input = read_line(prompt)?;
+    parse_bool(&input).ok_or(ReaderError::Err)
+}
+</file>
+
+</files>
