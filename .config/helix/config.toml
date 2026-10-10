@@ -1,4 +1,4 @@
-theme = "hutao"
+theme = "gruvbox"
 
 [editor]
 bufferline = "multiple"

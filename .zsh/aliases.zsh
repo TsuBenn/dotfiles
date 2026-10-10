@@ -22,7 +22,7 @@ alias ......='cd ../../..'
 alias shutdown='shutdown -h now'
 
 alias script='python $HOME/dotfiles/programs/py/script-polish.py'
-alias qcc='gcc -Wall -Wextra -fsanitize=address -g -o ';
+alias qcc='gcc -Wall -Wextra -fsanitize=address,undefined -g -o ';
 
 # QUICK ACCESS
 alias setup='cd ~/dotfiles/ && bash ./arch_autosetup.sh'
@@ -60,7 +60,7 @@ alias kittyconf='cd ~/dotfiles/ && nvim ~/.config/kitty/kitty.conf'
 alias ghosttyconf='cd ~/dotfiles/ && nvim ~/.config/ghostty/config'
 alias tmuxconf='cd ~/dotfiles/ && nvim ~/.tmux.conf'
 alias nvimconf='cd ~/.config/nvim && nvim ~/.config/nvim/'
-alias helixconf='cd ~/dotfiles/.config/helix && nvim ~/.config/helix/'
+alias helixconf='cd ~/dotfiles/.config/helix && nvim .'
 alias bashconf='cd ~/dotfiles/ && nvim ~/.bashrc'
 alias zshconf='cd ~/dotfiles/.zsh/ && nvim ~/dotfiles/.zsh/'
 
