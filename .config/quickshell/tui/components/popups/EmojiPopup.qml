@@ -216,6 +216,11 @@ CellPopup {
                         emojis.result = [];
                     }
                 }
+
+                onEntered: {
+                    root.select();
+                }
+
             }
 
             CellSeparator {
@@ -250,7 +255,7 @@ CellPopup {
                 id: list
 
                 w: box.contentW
-                h: root.h - 2
+                h: root.h - 8
 
                 onVisibleChanged: {
                     reset();

@@ -1,3 +1,4 @@
+#include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -12,21 +13,52 @@ static size_t string_new_capacity(size_t current, size_t target) {
     new = 8;
   }
   while (new < target) {
+    if (new > SIZE_MAX / 2) {
+      return 0;
+    }
     new *= 2;
   }
   return new;
 }
 
 static int string_expand_capacity(string_t *str, size_t new_size) {
-  size_t new_capacity = string_new_capacity(str->capacity, new_size);
+  return string_reserve(str, string_new_capacity(str->capacity, new_size));
+}
+
+int string_reserve(string_t* str, size_t new_capacity) {
+  if (new_capacity <= str->capacity) {
+    return 1;
+  }
+  if (new_capacity > SIZE_MAX - 1) {
+    fprintf(stderr, "string_reserve (new_capacity: Capacity too large!)");
+    return 0;
+  }
   char *new_buf = realloc(str->buf, sizeof(char) * (new_capacity + 1));
   if (!new_buf) {
-    perror("string_push_string (new_buf: realloc)");
+    perror("string_reserve (new_buf: realloc)");
     return 0;
   }
   str->buf = new_buf;
   str->capacity = new_capacity;
   return 1;
+}
+
+string_t *string_from_buf(char *buf, size_t size) {
+  if (*buf == '\0' || size == 0) {
+    free(buf);
+    return string_new();
+  }
+  string_t *new_string = malloc(sizeof(string_t));
+  if (!new_string) {
+    perror("string_from_buf (new_string: malloc)");
+    return NULL;
+  }
+  new_string->buf = buf;
+  new_string->buf[size] = '\0';
+  new_string->len = size;
+  new_string->capacity = size;
+
+  return new_string;
 }
 
 string_t *string_from(const char *string) {
@@ -45,7 +77,7 @@ string_t *string_from(const char *string) {
     perror("string_from (new_string: malloc)");
     free(new_buf);
     return NULL;
-  }
+}
 
   new_string->buf = new_buf;
   new_string->len = new_len;
@@ -69,11 +101,18 @@ void string_debug(const string_t *str) {
          str->capacity);
 }
 
-int string_eq(const string_t *str, const string_t *other_str) {
+int string_eq_string(const string_t *str, const string_t *other_str) {
   if (str->len != other_str->len) {
     return 0;
   }
   return strcmp(str->buf, other_str->buf) == 0;
+}
+
+int string_eq_str(const string_t *str, const char *other_str) {
+  if (str->len != strlen(other_str)) {
+    return 0;
+  }
+  return strcmp(str->buf, other_str) == 0;
 }
 
 void string_clear(string_t *str) {
@@ -97,13 +136,14 @@ int string_push_string(string_t *str, const string_t *other_str) {
 }
 
 int string_push_str(string_t *str, const char *other_str) {
-  size_t new_len = str->len + strlen(other_str);
+  size_t other_len = strlen(other_str);
+  size_t new_len = str->len + other_len;
   if (new_len > str->capacity) {
     if (!string_expand_capacity(str, new_len)) {
       return 0;
     }
   }
-  memcpy(str->buf + str->len, other_str, strlen(other_str) + 1);
+  memcpy(str->buf + str->len, other_str, other_len + 1);
   str->len = new_len;
   return 1;
 }
@@ -297,3 +337,101 @@ cleanup:
   string_free(extension);
   return ok;
 }
+
+int string_contains_string(const string_t *str, const string_t *pat, size_t *match_postion) {
+  return string_contains_str(str, pat->buf, match_postion);
+}
+
+int string_contains_str(const string_t *str, const char* pat, size_t *match_postion) {
+  char* substring = strstr(str->buf, pat);
+  if (substring && match_postion) {
+    *match_postion = substring - str->buf;
+  }
+  return substring != NULL;
+}
+
+string_t* string_read_from_file(const char* file_path) {
+  FILE *f = fopen(file_path, "r");
+  if (!f) {
+    perror("string_read_from_file (f: fopen)");
+    return NULL;
+  }
+
+  fseek(f, 0, SEEK_END);
+  long len = ftell(f);
+  rewind(f);
+
+  if (len < 0) {
+    fclose(f);
+    fprintf(stderr, "string_read_from_file (l < 0)");
+    return NULL;
+  }
+
+  char* buf = malloc(len+1);
+  if (!buf) {
+    fclose(f);
+    fprintf(stderr, "string_read_from_file (buf: malloc)");
+    return NULL;
+  }
+
+  size_t read_bytes = fread(buf, 1, len, f);
+  if (read_bytes != (size_t)len) {
+    free(buf);
+    fclose(f);
+    fprintf(stderr, "string_read_from_file (read_bytes: fread)");
+    return NULL;
+  }
+
+  buf[len] = '\0';
+  fclose(f);
+
+  return string_from_buf(buf, (size_t) len);
+}
+
+string_t* string_read_line(const string_t* str, string_t* buf, size_t* offset) {
+  int end_of_string = 0;
+  for (size_t i = 0;;i++) {
+    if (str->buf[i+*offset] == '\0') {
+      if (i == 0) {
+        return NULL;
+      }
+      end_of_string = 1;
+      goto read_line;
+    }
+    if (str->buf[i+*offset] == '\n') {
+      if (i == 0) {
+        string_clear(buf);
+        *offset += 1;
+        return buf;
+      }
+      goto read_line;
+    }
+    continue;
+    read_line:
+    if (!string_reserve(buf, i + 1)) {
+      return NULL;
+    }
+    buf->len = i;
+    memcpy(buf->buf, (char *)str->buf + *offset, i);
+    buf->buf[i] = '\0';
+    *offset += i+1-end_of_string;
+    return buf;
+  }
+}
+
+void string_to_lowercase(string_t* str) {
+  for (size_t i = 0; i < str->len; i++) {
+    if (str->buf[i] >= 65 && str->buf[i] <= 90 ) {
+      str->buf[i] += 32;
+    }
+  }
+}
+
+void string_to_uppercase(string_t* str) {
+  for (size_t i = 0; i < str->len; i++) {
+    if (str->buf[i] >= 97 && str->buf[i] <= 122) {
+      str->buf[i] -= 32;
+    }
+  }
+}
+

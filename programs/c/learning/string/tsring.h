@@ -24,6 +24,18 @@ void string_debug(const string_t* str);
 string_t* string_from(const char* string);
 
 /**
+ * Creates a new string from an allocated `buf` with provided `size`.
+ *
+ * The caller are responsible of providing the correct `size`, representing the allocated memory size for `buf`.
+ * The returned `string_t` will take ownership the `buf` provided.
+ *
+ * Returns `NULL` if allocation fails.
+ *
+ * The caller owns the result and must free it with `string_free()`.
+ */
+string_t* string_from_buf(char* buf, size_t size);
+
+/**
  * Creates a new empty string.
  *
  * Returns `NULL` if allocation fails.
@@ -40,10 +52,25 @@ string_t* string_new(void);
 void string_free(string_t *string);
 
 /**
+ * Reserve a certain amount of capacity of a `str`.
+ *
+ * If `new_capacity` is `<= str->capacity`, nothing will happens and the function will return true.
+ *
+ * Returns `1` on success, returns `0` if allocation fails (`str` is left unchanged).
+ */
+int string_reserve(string_t* str, size_t new_capacity);
+
+/**
  * Comparing 2 strings.
  * Returns `1` if equal, returns `0` if not.
  */
-int string_eq(const string_t* str, const string_t* other_str);
+int string_eq_string(const string_t* str, const string_t* other_str);
+
+/**
+ * Comparing a strings with a char* string.
+ * Returns `1` if equal, returns `0` if not.
+ */
+int string_eq_str(const string_t* str, const char* other_str);
 
 /**
  * Clearing a string content.
@@ -183,5 +210,59 @@ int string_path_join(string_t* str, const string_t* other_str);
  * Returns `1` on success, returns `0` if allocation (capacity expansion) fails (`str` is left unchanged) or provided path is a directory.
  */
  int string_path_add_extension(string_t* str,const char* ext);
+
+/**
+ * Check whether `str` contains `pat` as a substring.
+ *
+ * If found, the position where the first match occured will be assigned to `match_position`
+ * `match_position` can be NULL if the caller isn't planning on using the value.
+ *
+ * Returns `1` on found, returns `0` if not.
+ */
+ int string_contains_string(const string_t* str, const string_t* pat, size_t *match_position);
+
+/**
+ * Check whether `str` contains `pat` as a substring.
+ *
+ * If found, the position where the first match occured will be assigned to `match_position`
+ * `match_position` can be NULL if the caller isn't planning on using the value.
+ *
+ * Returns `1` on found, returns `0` if not.
+ */
+ int string_contains_str(const string_t* str, const char* pat, size_t *match_position);
+
+/**
+ * Read from a file and returns a `string_t` pointer containing the file's content
+ *
+ * Returns NULL if read from file fails.
+ */
+ string_t* string_read_from_file(const char* file_path);
+
+/**
+ * Read a line starting at `offset` from `str` and store it in `buf`.
+ *
+ * `buf` will be overriden on success and will have its capacity expands when read line is longer than `buf->capacity`.
+ *
+ * `offset` will be updated to the index after the next occurence of `\n` or at the next occurance of `\0` if end of string is reached.
+ *
+ * Returns `buf` on success.
+ *
+ * Returns NULL when end of `str` occured while no character is read or allocation fails on `buf` (`buf` is left unchanged) or `offset == NULL`.
+ */
+ string_t* string_read_line(const string_t* str, string_t* buf, size_t* offset);
+
+/**
+ * Turns all character within the alphabet into lowercase.
+ *
+ * This function will modify `str`, use `string_clone()` if the caller wants a non-destructive `to_lowercase()` operation
+ */
+ void string_to_lowercase(string_t* str);
+
+/**
+ * Turns all character within the alphabet into uppercase.
+ *
+ * This function will modify `str`, use `string_clone()` if the caller wants a non-destructive `to_uppercase()` operation
+ */
+ void string_to_uppercase(string_t* str);
 
 #endif

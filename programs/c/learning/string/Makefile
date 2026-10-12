@@ -11,6 +11,9 @@ build/core_test: core_test.c tsring.c tsring.h
 	mkdir -p build
 	$(CC) $(CFLAGS) -o $@ core_test.c tsring.c
 
+main: build/main
+	./build/main
+
 test: all
 	./build/main
 	./build/core_test
