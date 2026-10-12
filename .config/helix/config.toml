@@ -1,10 +1,10 @@
-theme = "gruvbox"
+theme = "hutao"
 
 [editor]
 bufferline = "multiple"
 cursorline = true
 indent-heuristic = "hybrid"
-jump-label-alphabet = "qwertyuiopasdfghjklzxcvbmn"
+jump-label-alphabet = "qwertasdfgzxcvbyuiophjklnm"
 end-of-line-diagnostics = "info"
 popup-border = "popup"
 trim-trailing-whitespace = true
@@ -137,7 +137,7 @@ cursor-line = "warning"
     h = "hover"
     ";" = ":toggle-option lsp.display-inlay-hints"
 
-    C-r = [":sh tmux display-popup -E -d \"#{pane_current_path}\" -h 50%% -w 50%% \"~/dotfiles/.config/helix/run.sh %{buffer_name}\""]
+    C-r = [":sh tmux display-popup -E -d \"#{pane_current_path}\" -h 80%% -w 80%% \"~/dotfiles/.config/helix/run.sh %{buffer_name}\""]
 
 [keys.normal.G]
 

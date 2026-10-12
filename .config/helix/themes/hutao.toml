@@ -1,0 +1,153 @@
+# Hu Tao - deep plum, butterfly crimson
+# Drop in ~/.config/helix/themes/hutao.toml, then set theme = "hutao"
+
+# ---------- Syntax ----------
+"keyword" = "crimson_bright"
+"keyword.control" = "crimson_bright"
+"keyword.function" = "crimson_bright"
+"keyword.storage" = "crimson_bright"
+"keyword.storage.modifier" = "rose"
+"keyword.directive" = "plum"
+
+"function" = "ember"
+"function.macro" = { fg = "warning" }
+"function.builtin" = "ember"
+
+"type" = "plum"
+"type.builtin" = "plum_light"
+"constructor" = "plum"
+"namespace" = "ember_soft"
+
+"variable" = "fg"
+"variable.builtin" = { fg = "rose", modifiers = ["italic"] }
+"variable.parameter" = { fg = "rose_pale", modifiers = ["italic"] }
+"variable.other.member" = "rose_pale"
+
+"constant" = "ember_soft"
+"constant.builtin" = "ember"
+"constant.numeric" = "info"
+"constant.character.escape" = "warning"
+
+"string" = "success"
+"string.regexp" = "warning"
+"string.special" = "warning"
+
+"attribute" = { fg = "plum", modifiers = ["italic"] }
+"label" = { fg = "rose", modifiers = ["italic"] }  # Rust lifetimes ('a)
+"operator" = "rose"
+"special" = "ember"
+"tag" = "crimson_bright"
+
+"punctuation" = "fg_dim"
+"punctuation.delimiter" = "fg_dim"
+"punctuation.bracket" = "fg_dim"
+
+"comment" = { fg = "fg_subtle", modifiers = ["italic"] }
+"comment.line.documentation" = { fg = "fg_dim", modifiers = ["italic"] }
+"comment.block.documentation" = { fg = "fg_dim", modifiers = ["italic"] }
+
+# ---------- Markup ----------
+"markup.heading" = { fg = "crimson_bright", modifiers = ["bold"] }
+"markup.bold" = { modifiers = ["bold"] }
+"markup.italic" = { modifiers = ["italic"] }
+"markup.strikethrough" = { modifiers = ["crossed_out"] }
+"markup.link.url" = { fg = "info", modifiers = ["underlined"] }
+"markup.link.text" = "plum"
+"markup.raw" = "success"
+"markup.quote" = { fg = "fg_dim", modifiers = ["italic"] }
+"markup.list" = "ember"
+
+# ---------- Diff ----------
+"diff.plus" = "success"
+"diff.minus" = "danger"
+"diff.delta" = "warning"
+
+# ---------- UI ----------
+"ui.background" = { bg = "bg" }
+"ui.text" = "fg"
+"ui.text.focus" = { fg = "fg", bg = "crimson_dim", modifiers = ["bold"] }
+"ui.text.inactive" = "fg_subtle"
+"ui.text.info" = "fg_dim"
+
+# Cursor is white, selection bg is the secondary color
+"ui.cursor" = { fg = "bg", bg = "white_dim" }
+"ui.cursor.primary" = { fg = "bg", bg = "white" }
+"ui.cursor.match" = { fg = "fg", bg = "crimson_dim", modifiers = ["bold"] }
+"ui.selection" = { fg = "bg", bg = "ember" }
+"ui.selection.primary" = { fg = "bg", bg = "ember" }
+
+"ui.cursorline.primary" = { bg = "overlay" }
+"ui.cursorcolumn.primary" = { bg = "overlay" }
+"ui.highlight" = { bg = "crimson_dim" }
+
+"ui.linenr" = "fg_subtle"
+"ui.linenr.selected" = { fg = "ember", modifiers = ["bold"] }
+"ui.gutter" = {}
+
+"ui.virtual.ruler" = { bg = "overlay" }
+"ui.virtual.whitespace" = "#3a3237"
+"ui.virtual.indent-guide" = "border"
+"ui.virtual.inlay-hint" = { fg = "fg_subtle", modifiers = ["italic"] }
+"ui.virtual.jump-label" = { fg = "bg", bg = "ember", modifiers = ["bold"] }
+
+"ui.statusline" = { fg = "fg", bg = "overlay" }
+"ui.statusline.inactive" = { fg = "fg_subtle", bg = "surface" }
+"ui.statusline.normal" = { fg = "on_accent", bg = "crimson", modifiers = ["bold"] }
+"ui.statusline.insert" = { fg = "bg", bg = "success", modifiers = ["bold"] }
+"ui.statusline.select" = { fg = "bg", bg = "ember", modifiers = ["bold"] }
+
+"ui.bufferline" = { fg = "fg_dim", bg = "surface" }
+"ui.bufferline.active" = { fg = "fg", bg = "bg", modifiers = ["bold"] }
+"ui.bufferline.background" = { bg = "surface" }
+
+"ui.popup" = { fg = "fg", bg = "overlay" }
+"ui.popup.info" = { fg = "fg", bg = "overlay" }
+"ui.help" = { fg = "fg", bg = "overlay" }
+"ui.window" = { fg = "border" }
+"ui.menu" = { fg = "fg", bg = "overlay" }
+"ui.menu.selected" = { fg = "on_accent", bg = "crimson", modifiers = ["bold"] }
+"ui.picker.header.column.active" = { fg = "ember", modifiers = ["bold"] }
+
+"ui.debug.breakpoint" = "danger"
+"ui.highlight.frameline" = { bg = "crimson_dim" }
+
+# ---------- Diagnostics ----------
+"error" = "danger"
+"warning" = "warning"
+"info" = "info"
+"hint" = "plum"
+
+"diagnostic.error" = { underline = { color = "danger", style = "curl" } }
+"diagnostic.warning" = { underline = { color = "warning", style = "curl" } }
+"diagnostic.info" = { underline = { color = "info", style = "curl" } }
+"diagnostic.hint" = { underline = { color = "plum", style = "curl" } }
+"diagnostic.unnecessary" = { modifiers = ["dim"] }  # unused code from rust-analyzer
+"diagnostic.deprecated" = { modifiers = ["crossed_out"] }
+
+[palette]
+# base (from your reference)
+bg = "#151214"
+surface = "#151314"
+overlay = "#221d21"
+border = "#2A2428"
+fg = "#fdf0f0"
+on_accent = "#EDE6E8"
+fg_dim = "#A89BA0"
+fg_subtle = "#7A6F74"
+crimson = "#a32435"
+crimson_dim = "#6B1825"
+ember = "#f59b75"
+info = "#3AA5DE"
+success = "#98BB6C"
+warning = "#eea022"
+danger = "#ec2727"
+
+# extras for readability / variety
+white = "#ffffff"
+white_dim = "#cfc5c8"
+crimson_bright = "#e0485c"
+rose = "#f08fa0"
+rose_pale = "#f3c9cf"
+plum = "#c98bb5"
+plum_light = "#dcaed0"
+ember_soft = "#e8b9a0"

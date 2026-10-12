@@ -23,7 +23,7 @@ case "$EXT" in
         eval $ENV_VARS python3 "$FILE_PATH" $ARGS
         ;;
     c)
-        gcc "$FILE_PATH" -o /tmp/hx_c_out && eval $ENV_VARS /tmp/hx_c_out $ARGS
+        gcc "$FILE_PATH" -Wall -Wextra -Wpedantic -g -fsanitize=address,undefined -o /tmp/hx_c_out && eval $ENV_VARS /tmp/hx_c_out $ARGS
         ;;
     cpp|cc|cxx)
         g++ "$FILE_PATH" -o /tmp/hx_cpp_out && eval $ENV_VARS /tmp/hx_cpp_out $ARGS

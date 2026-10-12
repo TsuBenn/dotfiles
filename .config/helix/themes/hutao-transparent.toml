@@ -1,0 +1,7 @@
+inherits = "hutao"
+
+# ---------- Transparent bits ----------
+"ui.background" = {}
+"ui.gutter" = {}
+"ui.statusline" = { fg = "fg_base" }
+"ui.statusline.inactive" = { fg = "fg_subtle" }
