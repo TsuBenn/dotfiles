@@ -1,0 +1,1 @@
+/home/tsubenn/programs/c/learning/string/tsring.h

@@ -6,7 +6,7 @@
   "hideBar": false,
   "bottomBar": false,
   "optimizeMemory": true,
-  "safeNotifications": false,
+  "safeNotifications": true,
   "dnd": false,
   "wallpaperAutoAdvance": true,
   "shadow": true,

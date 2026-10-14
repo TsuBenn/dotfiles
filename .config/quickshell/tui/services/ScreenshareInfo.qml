@@ -11,10 +11,10 @@ Singleton {
 
     property bool active: false
 
-    property var whitelist_apps: ["discord"]
+    property var whitelist_apps: [] // ["discord"]
 
-    property var sensitive_apps_class: ["discord", "vesktop"]
-    property var sensitive_apps_re: [".*messenger.*"]
+    property var sensitive_apps_class: [] // ["discord", "vesktop"]
+    property var sensitive_apps_re: [] // [".*messenger.*"]
 
     property var _prev_lockedWS: new Set()
     property bool _prev_safeNotif: false

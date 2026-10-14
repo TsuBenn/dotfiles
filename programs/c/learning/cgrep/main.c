@@ -4,6 +4,7 @@
 #include "../string/tsring.h"
 
 int main(int argc, char *argv[]) {
+
     if (argc < 3) {
         usage:
         fprintf(stderr, "Usage: %s <pattern> -f <file>   [-i]\n", argv[0]);
@@ -12,7 +13,7 @@ int main(int argc, char *argv[]) {
     }
 
     string_t* pattern = string_from(argv[1]);
-    if (pattern) {
+    if (!pattern) {
         fprintf(stderr, "main (pattern: string_from)\n");
         return 1;
     }
@@ -21,15 +22,18 @@ int main(int argc, char *argv[]) {
     int case_insensitive = 0;
 
     string_t* content;
+    char* file_path;
 
     if (strcmp(argv[2], "-f") == 0) {
         if (!argv[3]) {
             goto usage;
         }
         content = string_read_from_file(argv[3]);
+        file_path = argv[3];
         read_from_file = 1;
     } else {
         content = string_from(argv[2]);
+        file_path = argv[2];
     }
 
     if (argc > 3 + read_from_file && strcmp(argv[3 + read_from_file], "-i") == 0) {
@@ -51,6 +55,12 @@ int main(int argc, char *argv[]) {
     size_t match = 0;
     size_t pat_len = pattern->len;
 
+    if (read_from_file) {
+      printf(" File | %s\n", file_path);
+    } else {
+      printf(" From | %s\n", file_path);
+    }
+    printf("      |\n");
     while (string_read_line(content, buf, &offset) != NULL) {
         string_t* tmp;
 

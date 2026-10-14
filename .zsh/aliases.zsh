@@ -8,6 +8,7 @@ clear() {
     print -rn $terminfo[clear]
 }
 
+export LS_COLORS="di=1;4;35:ex=1;31:fi=0;37:ln=1;36"
 alias ls='ls --color=auto'
 alias ll='ls --color=auto -lah'
 alias list='ls -Alh --color=auto'
