@@ -1,3 +1,4 @@
+#include "input.h"
 #include "tsring.h"
 #include "vec.h"
 #include <stddef.h>
@@ -32,6 +33,14 @@ int next(string_t* content, string_t* buffer, size_t* offset) {
 
 int main(int argc, char *argv[]) {
 
+  string_t* input = string_new(256);
+  input_get_string(input, "Enter your name {}: ", "nobody");
+
+  printf("%s!\n", input->buf);
+
+  string_free(input);
+  return 0;
+
   if (argc < 3) {
     fprintf(stderr, "Usage: %s <input> <output>\n", argv[0]);
     return 0;
@@ -47,13 +56,13 @@ int main(int argc, char *argv[]) {
 
   image_t image;
 
-  string_t *content = string_read_from_file(argv[1]);
+  string_t *content = string_read_from_file(argv[1], NULL);
   if (!content) {
     fprintf(stderr, "ppm_reader: Failed to open file %s", argv[1]);
     return 1;
   }
 
-  string_t *buffer = string_new();
+  string_t *buffer = string_new(256);
   size_t offset = 0;
 
   if (content->len == 0) {
@@ -105,7 +114,7 @@ int main(int argc, char *argv[]) {
     goto cleanup;
   }
 
-  image.pixels = vec_new_t(pixel_t);
+  image.pixels = vec_new_t(pixel_t, 256);
 
   pixel_t tmp_pixel;
   // 0 -> r

@@ -38,13 +38,13 @@ string_t *string_from(const char *string);
 string_t *string_from_buf(char *buf, size_t size);
 
 /**
- * Creates a new empty string.
+ * Creates a new empty string with `init_cap`.
  *
  * Returns `NULL` if allocation fails.
  *
  * The caller owns the result and must free it with `string_free()`.
  */
-string_t *string_new(void);
+string_t *string_new(size_t init_cap);
 
 /**
  * Free a string.
@@ -104,7 +104,15 @@ int string_push_str(string_t *str, const char *other_str);
  * Returns `1` on success, returns `0` if allocation (capacity expansion) fails
  * (`str` is left unchanged) or `position` > `str->len`.
  */
-int string_insert(string_t *str, const string_t *other_str, size_t position);
+int string_insert_string(string_t *str, const string_t *other_str, size_t position);
+
+/**
+ * Insert `other_str` into `str` at `position`.
+ *
+ * Returns `1` on success, returns `0` if allocation (capacity expansion) fails
+ * (`str` is left unchanged) or `position` > `str->len`.
+ */
+int string_insert_str(string_t *str, const char *other_str, size_t position);
 
 /**
  * Remove `size` amount of character at the back of the string.
@@ -149,7 +157,15 @@ string_t *string_clone(const string_t *str);
  * Returns `1` on success, returns `0` if `other_str` is empty or allocation
  * (capacity expansion) fails (`str` is left unchanged).
  */
-int string_path_join(string_t *str, const string_t *other_str);
+int string_path_join_string(string_t *str, const string_t *other_str);
+
+/**
+ * Joining `other_str` into `str` as path.
+ *
+ * Returns `1` on success, returns `0` if `other_str` is empty or allocation
+ * (capacity expansion) fails (`str` is left unchanged).
+ */
+int string_path_join_str(string_t *str, const char *other_str);
 
 /**
  * Gets the last component of a path (the file or directory name).
@@ -248,15 +264,18 @@ int string_contains_str(const string_t *str, const char *pat,
                         size_t *match_position);
 
 /**
- * Read from a file and returns a `string_t` pointer containing the file's
- * content
+ * Read from a file and store it in `buf`
  *
- * Returns `NULL` if read from file fails.
+ * if `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
+ *
+ * Returns `NULL` if read from file fails or allocation fails (`buf` might have been modified).
  */
-string_t *string_read_from_file(const char *file_path);
+string_t *string_read_from_file(const char *file_path, string_t* buf);
 
 /**
  * Read a line starting at `offset` from `str` and store it in `buf`.
+ *
+ * if `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
  *
  * The '\n' will not be included in the `buf` as well as the `offset` will be
  * set to the index after the '\n' and not on the '\n'.
@@ -269,14 +288,37 @@ string_t *string_read_from_file(const char *file_path);
  *
  * Returns `buf` on success.
  *
- * Returns 1NULL1 when end of `str` occured while no character is read or
+ * Returns `NULL` when end of `str` occured while no character is read or
  * allocation fails on `buf` (`buf` is left unchanged) or `offset == NULL`.
  */
 string_t *string_read_line(const string_t *str, string_t *buf, size_t *offset, int ignore_empty);
 
 /**
+ * Read a line starting at `offset` from `str` and store it in `buf`.
+ *
+ * if `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
+ *
+ * The '\n' will not be included in the `buf` as well as the `offset` will be
+ * set to the index after the '\n' and not on the '\n'.
+ *
+ * `buf` will be overriden on success and will have its capacity expands when
+ * read line is longer than `buf->capacity`.
+ *
+ * `offset` will be updated to the index after the next occurence of `\n` or at
+ * the next occurance of `\0` if end of string is reached.
+ *
+ * Returns `buf` on success.
+ *
+ * Returns `NULL` when end of `str` occured while no character is read or
+ * allocation fails on `buf` (`buf` is left unchanged) or `offset == NULL`.
+ */
+string_t *string_read_line_str(const char *str, string_t *buf, size_t *offset, int ignore_empty);
+
+/**
  * Read until a `delimiter` starting at `offset` from `str` and store it in
  * `buf`.
+ *
+ * if `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
  *
  * `delimiter` can be multiple characters, representing multiple possible `delimiter`.
  *
@@ -296,9 +338,13 @@ string_t *string_read_line(const string_t *str, string_t *buf, size_t *offset, i
  */
 string_t *string_read_delimiter(const string_t *str, string_t *buf, size_t *offset, char* delimiter, int ignore_empty);
 
+string_t *string_read_delimiter_str(const char *str, size_t str_len, string_t *buf, size_t *offset, char* delimiter, int ignore_empty);
+
 /**
  * Read a `stream` and flush into `buf` when the `stream` hits the
  * `delimiter`
+ *
+ * if `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
  *
  * Return `NULL` if allocation fails or `stream` is at the end of file or
  * `stream` returns an error (`buf` might have been modified).
@@ -308,11 +354,13 @@ string_t *string_read_stream(FILE *stream, string_t* buf, char delimiter);
 /**
  * Gets a new string from `stdin` and put it in `buf`.
  *
+ * if `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
+ *
  * The returned string will exclude the `\n` from 'stdin'.
  *
- * Return 1 on success, returns 0 if allocation fails (`buf` might have been modified).
+ * Returns `buf` on success, returns NULL if allocation fails (`buf` might have been modified).
  */
-int string_read_input(string_t* buf);
+string_t* string_read_input(string_t* buf);
 
 /**
  * Parse `int` from `str` and assign to `out`.
@@ -379,14 +427,14 @@ void string_trim(string_t *str);
 /**
  * Join `other_str` into `str` with a `separtor` in between
  *
- * Returns 1 on success, returns 0 if allocation fails (`str` is left unchanged)
+ * Returns `1` on success, returns `0` if allocation fails (`str` is left unchanged)
  */
 int string_join_string(string_t *str, const string_t* other_str, const char* separator);
 
 /**
  * Join `other_str` into `str` with a `separtor` in between
  *
- * Returns 1 on success, returns 0 if allocation fails (`str` is left unchanged)
+ * Returns `1` on success, returns `0` if allocation fails (`str` is left unchanged)
  */
 int string_join_str(string_t *str, const char* other_str, const char* separator);
 
@@ -395,18 +443,18 @@ int string_join_str(string_t *str, const char* other_str, const char* separator)
  *
  * If `pat` is not found inside of `str`, nothing will be changed and will be counted as success.
  *
- * Returns 1 on success, returns 0 if allocation fails (`str` is left unchanged).
+ * Returns `1` on success, returns `0` if allocation fails (`str` is left unchanged).
  */
-int string_replace_str(string_t *str, const char* pat, const char* replacement);
+int string_replace_str(string_t *str, const char* pat, const char* replacement, size_t *match);
 
 /**
  * Replace the first occurance of `pat` in `str` with `replacement`
  *
  * If `pat` is not found inside of `str`, nothing will be changed and will be counted as success.
  *
- * Returns 1 on success, returns 0 if allocation fails (`str` is left unchanged)
+ * Returns `1` on success, returns `0` if allocation fails (`str` is left unchanged)
  */
-int string_replace_string(string_t *str, const char* pat, const string_t* replacement);
+int string_replace_string(string_t *str, const char* pat, const string_t* replacement, size_t *match);
 
 /**
  * Turns all character within the alphabet into lowercase.
@@ -423,5 +471,53 @@ void string_to_lowercase(string_t *str);
  * non-destructive `to_uppercase()` operation
  */
 void string_to_uppercase(string_t *str);
+
+/**
+ * Check if the string is empty.
+ *
+ * A string with only whitespace is not considered empty.
+ *
+ * Returns `1` if empty, returns `0` if not.
+ */
+int str_is_empty(const char* str);
+
+/**
+ * Check if the string is empty.
+ *
+ * A string with only whitespace is not considered empty.
+ *
+ * Returns `1` if empty, returns `0` if not.
+ */
+int string_is_empty(const string_t* str);
+
+/**
+ * Replace `str` content with a copy of `other_str` content.
+ *
+ * Returns `1` on success, returns `0` if allocation fails (`str` is left unchanged).
+ */
+int string_copy_str(string_t* str, const char* other_str);
+
+/**
+ * Replace `str` content with a copy of `other_str` content.
+ *
+ * Returns `1` on success, returns `0` if allocation fails (`str` is left unchanged).
+ */
+int string_copy_string(string_t* str, const string_t* other_str);
+
+/**
+ * Return a formated string.
+ *
+ * `%c` -> `char`
+ * `%s` -> `char*` (string)
+ * `%d` -> `int` (digit)
+ * `%ld` -> `long` (long digit)
+ * `%f` -> `float`
+ * `%lf` -> `double` (long float)
+ * `%zu` -> `size_t`
+ * `%%` -> `%`
+ *
+ * Returns NULL if allocation fails (`buf` might have been modified).
+ */
+string_t* string_format(const char* format, string_t* buf,...);
 
 #endif

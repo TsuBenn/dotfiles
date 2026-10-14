@@ -2,10 +2,11 @@
 #define INPUT_H
 
 #include "tsring.h"
-#include <cstddef>
 
 /**
  * Get a `string` from the user and put it in `buf`.
+ *
+ * This function will use `buf` as a buffer for producing prompts to reduce allocation.
  *
  * If `default_string` is not NULL, default_string will be provided if input is blank.
  *
@@ -21,7 +22,7 @@
  *
  * Returns 1 on success, returns 0 if allocation fails (`buf` might have been modified) or input is empty and `default_string` is NULl.
  */
-int get_string(string_t* buf, const char* prompt, const char* default_string);
+int input_get_string(string_t* buf, const char* prompt, const char* default_string);
 
 /**
  * Get a `int` from the user and put it in `buf`.
@@ -49,7 +50,7 @@ int get_string(string_t* buf, const char* prompt, const char* default_string);
  *
  * Returns 1 on success, returns 0 if allocation fails (`buf` is left unchanged) or input is empty and `default_int` is NULl.
  */
-int get_int(int* buf, const char* prompt, int* min, int* max, int* default_int);
+int input_get_int(int* buf, const char* prompt, int* min, int* max, int* default_int);
 
 /**
  * Get a `long` from the user and put it in `buf`.
@@ -77,7 +78,7 @@ int get_int(int* buf, const char* prompt, int* min, int* max, int* default_int);
  *
  * Returns 1 on success, returns 0 if allocation fails (`buf` is left unchanged) or input is empty and `default_long` is NULl.
  */
-int get_long(long* buf, const char* prompt, long* min, long* max, long* default_long);
+int input_get_long(long* buf, const char* prompt, long* min, long* max, long* default_long);
 
 /**
  * Get a `float` from the user and put it in `buf`.
@@ -105,7 +106,7 @@ int get_long(long* buf, const char* prompt, long* min, long* max, long* default_
  *
  * Returns 1 on success, returns 0 if allocation fails (`buf` is left unchanged) or input is empty and `default_float` is NULl.
  */
-int get_float(float* buf, const char* prompt, float* min, float* max, float* default_float);
+int input_get_float(float* buf, const char* prompt, float* min, float* max, float* default_float);
 
 /**
  * Get a `double` from the user and put it in `buf`.
@@ -133,7 +134,7 @@ int get_float(float* buf, const char* prompt, float* min, float* max, float* def
  *
  * Returns 1 on success, returns 0 if allocation fails (`buf` is left unchanged) or input is empty and `default_double` is NULl.
  */
-int get_double(double* buf, const char* prompt, double* min, double* max, double* default_double);
+int input_get_double(double* buf, const char* prompt, double* min, double* max, double* default_double);
 
 /**
  * Print a list of choice from `menu_items` and let the user choose.
@@ -143,6 +144,6 @@ int get_double(double* buf, const char* prompt, double* min, double* max, double
  *
  * Returns 1 on success, returns 0 if allocation fails (`buf` is left unchanged) or input is empty and `default_choice` is NULl.
  */
-int get_menu_choice(size_t* buf, char** menu_items, size_t* default_choice);
+int input_get_menu_choice(size_t* buf, char** menu_items, size_t* default_choice);
 
 #endif

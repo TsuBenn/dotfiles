@@ -47,7 +47,7 @@ static void check_elem_in_vec(const vec_t *vec, const void *elem,
   }
 }
 
-vec_t *vec_new(size_t elem_size) {
+vec_t *vec_new(size_t elem_size, size_t init_cap) {
   if (elem_size == 0) {
     return NULL;
   }
@@ -57,9 +57,9 @@ vec_t *vec_new(size_t elem_size) {
     return NULL;
   }
 
-  new_vec->data = NULL;
+  new_vec->data = init_cap ? malloc(elem_size*init_cap) : NULL;
   new_vec->len = 0;
-  new_vec->capacity = 0;
+  new_vec->capacity = init_cap;
   new_vec->elem_size = elem_size;
   new_vec->alloc_count = 0;
 
@@ -67,12 +67,8 @@ vec_t *vec_new(size_t elem_size) {
 }
 
 vec_t* vec_clone(const vec_t* vec) {
-  vec_t* new_vec = vec_new(vec->elem_size);
+  vec_t* new_vec = vec_new(vec->elem_size, vec->len);
   if (!new_vec) {
-    return NULL;
-  }
-  if (!vec_reserve(new_vec, vec->len)) {
-    vec_free(new_vec);
     return NULL;
   }
   if (vec->len > 0) {

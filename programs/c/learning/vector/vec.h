@@ -18,7 +18,7 @@ typedef struct Vec {
  *
  * The caller owns the result and must free it with `vec_free()`
  */
-vec_t* vec_new(size_t elem_size);
+vec_t* vec_new(size_t elem_size, size_t init_cap);
 
 /**
  * Create a new empty `vec` with specified type size.
@@ -33,7 +33,7 @@ vec_t* vec_clone(const vec_t* vec);
  * Create a new empty `vec` with specified type.
  * This macro calls `vec_new()` with type wrapped inside of sizeof()
  */
- #define vec_new_t(type) (vec_new(sizeof(type)))
+ #define vec_new_t(type, init) (vec_new(sizeof(type), init))
 
 /**
  * Free a `vec`.
