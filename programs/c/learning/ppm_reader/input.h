@@ -20,7 +20,7 @@
  *
  * -> What the user will see: `Enter your name [nobody]:`
  *
- * Returns 1 on success, returns 0 if allocation fails (`buf` might have been modified) or input is empty and `default_string` is NULl.
+ * Returns 1 on success, returns 0 if allocation fails (`buf` might have been modified) or input is empty and `default_string` is `NULL`.
  */
 int input_get_string(string_t* buf, const char* prompt, const char* default_string);
 
@@ -42,13 +42,13 @@ int input_get_string(string_t* buf, const char* prompt, const char* default_stri
  *
  * Example:
  *
- * `get_string(&buf, "Enter your number {}:", &(int){0}, &(int){100}, &(int){69});`
+ * `get_int(&buf, "Enter your number {}:", &(int){0}, &(int){100}, &(int){69});`
  *
  * -> What the user will see: `Enter your name [0 - 100] [69]:`
  *
  * If the caller wants more control over the input, use `string_read_input()` instead.
  *
- * Returns 1 on success, returns 0 if allocation fails (`buf` is left unchanged) or input is empty and `default_int` is NULl.
+ * Returns 1 on success, returns 0 if allocation fails (`buf` is left unchanged) or input is empty and `default_int` is `NULL`, returns -1 if ouf of bound.
  */
 int input_get_int(int* buf, const char* prompt, int* min, int* max, int* default_int);
 
@@ -70,13 +70,13 @@ int input_get_int(int* buf, const char* prompt, int* min, int* max, int* default
  *
  * Example:
  *
- * `get_string(&buf, "Enter your number {}:", &(long){0}, &(long){100}, &(long){69});`
+ * `get_long(&buf, "Enter your number {}:", &(long){0}, &(long){100}, &(long){69});`
  *
  * -> What the user will see: `Enter your name [0 - 100] [69]:`
  *
  * If the caller wants more control over the input, use `string_read_input()` instead.
  *
- * Returns 1 on success, returns 0 if allocation fails (`buf` is left unchanged) or input is empty and `default_long` is NULl.
+ * Returns 1 on success, returns 0 if allocation fails (`buf` is left unchanged) or input is empty and `default_long` is `NULL`, returns -1 if ouf of bound.
  */
 int input_get_long(long* buf, const char* prompt, long* min, long* max, long* default_long);
 
@@ -98,13 +98,13 @@ int input_get_long(long* buf, const char* prompt, long* min, long* max, long* de
  *
  * Example:
  *
- * `get_string(&buf, "Enter your number {}:", &(float){0}, &(float){100}, &(float){69});`
+ * `get_float(&buf, "Enter your number {}:", &(float){0}, &(float){100}, &(float){69});`
  *
  * -> What the user will see: `Enter your name [0 - 100] [69]:`
  *
  * If the caller wants more control over the input, use `string_read_input()` instead.
  *
- * Returns 1 on success, returns 0 if allocation fails (`buf` is left unchanged) or input is empty and `default_float` is NULl.
+ * Returns 1 on success, returns 0 if allocation fails (`buf` is left unchanged) or input is empty and `default_float` is `NULL`, returns -1 if ouf of bound.
  */
 int input_get_float(float* buf, const char* prompt, float* min, float* max, float* default_float);
 
@@ -126,13 +126,13 @@ int input_get_float(float* buf, const char* prompt, float* min, float* max, floa
  *
  * Example:
  *
- * `get_string(&buf, "Enter your number {}:", &(double){0}, &(double){100}, &(double){69});`
+ * `get_double(&buf, "Enter your number {}:", &(double){0}, &(double){100}, &(double){69});`
  *
  * -> What the user will see: `Enter your name [0 - 100] [69]:`
  *
  * If the caller wants more control over the input, use `string_read_input()` instead.
  *
- * Returns 1 on success, returns 0 if allocation fails (`buf` is left unchanged) or input is empty and `default_double` is NULl.
+ * Returns 1 on success, returns 0 if allocation fails (`buf` is left unchanged) or input is empty and `default_double` is `NULL`, returns -1 if ouf of bound.
  */
 int input_get_double(double* buf, const char* prompt, double* min, double* max, double* default_double);
 
@@ -142,8 +142,10 @@ int input_get_double(double* buf, const char* prompt, double* min, double* max, 
  * The input the user puts in range from `1 -> n` with `n` being the number of menu_items.
  * While the choice assigned to `buf` will be put in the range of `0 -> (n-1)`.
  *
- * Returns 1 on success, returns 0 if allocation fails (`buf` is left unchanged) or input is empty and `default_choice` is NULl.
+ * Returns 1 on success, returns 0 if allocation fails (`buf` is left unchanged) or input is empty and `default_choice` is `NULL`, returns -1 if ouf of bound.
  */
-int input_get_menu_choice(size_t* buf, char** menu_items, size_t* default_choice);
+int input_get_menu_choice(int* buf, const char* prompt,char** menu_items, size_t menu_size, int* default_choice);
+
+void input_pause(const char* prompt);
 
 #endif

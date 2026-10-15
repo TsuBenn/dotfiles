@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <errno.h>
 #include <limits.h>
 #include <stddef.h>
@@ -10,14 +11,18 @@
 
 #include "tsring.h"
 
-int check_buf(string_t* buf) {
-  if (!buf) {
-    buf = string_new(64);
+static int ensure_buf(string_t** buf) {
+  if (!(*buf)) {
+    (*buf) = string_new(32);
   }
-  if (!buf) {
+  if (!(*buf)) {
     return 0;
   }
   return 1;
+}
+
+int string_ensure_buf(string_t **buf) {
+  return ensure_buf(buf);
 }
 
 static size_t string_new_capacity(size_t current, size_t target) {
@@ -143,7 +148,7 @@ void string_clear(string_t *str) {
   str->len = 0;
 }
 
-int string_push(string_t *str, const char *other_str, size_t other_len) {
+static int string_push(string_t *str, const char *other_str, size_t other_len) {
   size_t new_len = str->len + other_len;
   if (new_len > str->cap) {
     if (!string_expand_capacity(str, new_len)) {
@@ -368,20 +373,21 @@ cleanup:
   return ok;
 }
 
-int string_contains_string(const string_t *str, const string_t *pat, size_t *match_postion) {
-  return string_contains_str(str, pat->buf, match_postion);
-}
-
-int string_contains_str(const string_t *str, const char *pat, size_t *match_postion) {
-  char *substring = strstr(str->buf, pat);
+int string_find_str(const string_t *str, const char *pat, size_t *match_postion) {
+  size_t start = match_postion ? *match_postion : 0;
+  char *substring = strstr(str->buf + start, pat);
   if (substring && match_postion) {
     *match_postion = substring - str->buf;
   }
   return substring != NULL;
 }
 
+int string_find_string(const string_t *str, const string_t *pat, size_t *match_postion) {
+  return string_find_str(str, pat->buf, match_postion);
+}
+
 string_t *string_read_from_file(const char *file_path, string_t* buf) {
-  if (!check_buf(buf)) {
+  if (!ensure_buf(&buf)) {
     return NULL;
   }
 
@@ -412,6 +418,7 @@ string_t *string_read_from_file(const char *file_path, string_t* buf) {
   }
 
   buf->buf[len] = '\0';
+  buf->len = len;
   fclose(f);
 
   return buf;
@@ -430,7 +437,7 @@ string_t *string_read_delimiter(const string_t *str, string_t *buf, size_t *offs
 }
 
 string_t *string_read_delimiter_str(const char *str, size_t str_len, string_t *buf, size_t *offset, char* delimiter, int ignore_empty) {
-  if (!check_buf(buf)) {
+  if (!ensure_buf(&buf)) {
     return NULL;
   }
   if (!offset || *offset >= str_len || *delimiter == '\0') {
@@ -499,7 +506,7 @@ string_t *string_read_delimiter_str(const char *str, size_t str_len, string_t *b
 }
 
 string_t *string_read_stream(FILE *stream, string_t* buf, char delimiter) {
-   if (!check_buf(buf)) {
+   if (!ensure_buf(&buf)) {
      return NULL;
    }
    if (stream == stdin) {
@@ -507,7 +514,7 @@ string_t *string_read_stream(FILE *stream, string_t* buf, char delimiter) {
      return NULL;
    }
 
-   if (!check_buf(buf)) {
+   if (!ensure_buf(&buf)) {
      return NULL;
    }
 
@@ -551,7 +558,7 @@ string_t *string_read_stream(FILE *stream, string_t* buf, char delimiter) {
 }
 
 string_t* string_read_input(string_t* buf) {
-   if (!check_buf(buf)) {
+   if (!ensure_buf(&buf)) {
      return NULL;
    }
 
@@ -658,7 +665,7 @@ static int string_replace(string_t *str, const char* pat, const char* replacemen
     match = &tmp_match;
   }
   size_t pat_len = strlen(pat);
-  if (!string_contains_str(str, pat, match)) {
+  if (!string_find_str(str, pat, match)) {
     return 1;
   }
   size_t new_len = str->len - pat_len + rep_len;
@@ -743,25 +750,131 @@ int string_copy_string(string_t* str, const string_t* other_str) {
   return string_copy(str, other_str->buf, other_str->len);
 }
 
-string_t* string_format(const char* format, string_t* buf,...) {
-  if (check_buf(buf)) {
+static int string_vpush_format(string_t* str, const char* format, va_list args) {
+
+  va_list args_copy;
+  va_copy(args_copy, args);
+
+  char tmp[256];
+
+  int needed = vsnprintf(tmp, sizeof(tmp), format, args);
+
+  if (needed < 0) {
+    va_end(args_copy);
+    va_end(args);
+    return 0;
+  }
+
+  if ((size_t)needed < sizeof(tmp)) {
+    string_push_str(str, tmp);
+  } else {
+    if (!string_reserve(str, str->len + needed)) {
+      va_end(args_copy);
+      va_end(args);
+      return 0;
+    }
+
+    vsnprintf(str->buf + str->len, needed + 1, format, args_copy);
+    str->len += needed;
+  }
+
+  va_end(args_copy);
+  va_end(args);
+  return 1;
+}
+
+int string_push_format(string_t* str, const char* format, ...) {
+  va_list args;
+  va_start(args, format);
+  int ok = string_vpush_format(str, format, args);
+  va_end(args);
+  return ok;
+}
+
+
+string_t* string_format(string_t* buf, const char* format, ...) {
+  if (!ensure_buf(&buf)) {
     return NULL;
   }
 
   va_list args;
+  va_start(args, format);
 
-  va_start(args, buf);
-
-  int format_len = strlen(format);
-
-  string_copy_str(buf, format);
-  if (!buf) {
-    return NULL;
-  }
-
-  size_t offset = 0;
-  while(string_contains_str(buf, "%", &offset));
+  string_clear(buf);
+  string_vpush_format(buf, format, args);
 
   va_end(args);
   return buf;
+}
+
+chars_t* chars_from(char* str) {
+  chars_t* new_chars = malloc(sizeof(chars_t));
+  if (!new_chars) {
+    return NULL;
+  }
+  new_chars->str = str;
+  new_chars->offset = str;
+  return new_chars;
+}
+
+void chars_free(chars_t* chars) {
+  free(chars);
+}
+
+char* chars_next(chars_t* chars) {
+ if (*(chars->offset) == '\0') {
+  return NULL;
+ }
+ return (chars->offset)++;
+}
+
+char* chars_rewind(chars_t* chars) {
+  chars->offset = chars->str;
+  return chars->offset;
+}
+
+char *chars_next_until(chars_t *chars, char c) {
+  do {
+    if (*(++chars->offset) == '\0') {
+      return NULL;
+    }
+  } while (*(chars->offset) != c);
+  return (chars->offset)++;
+}
+
+char* chars_next_skip_whitespaces(chars_t* chars) {
+  do {
+    if (*(chars->offset) == '\0') {
+      return NULL;
+    }
+  } while (isspace(*(chars->offset)));
+  return (chars->offset)++;
+}
+
+int chars_skip_whitespaces(chars_t *chars) {
+  do {
+    if (*(chars->offset) == '\0') {
+      return 0;
+    }
+  } while (isspace(*(chars->offset++)));
+  return 1;
+}
+
+int chars_match(chars_t* chars, char* pat) {
+  size_t i = 0;
+  while (chars->offset[i] == pat[i]) {
+    if (pat[++i] == '\0') {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int chars_match_consume(chars_t* chars, char* pat) {
+  while (*(chars->offset++) == *(pat++)) {
+    if (*pat == '\0') {
+      return 1;
+    }
+  }
+  return 0;
 }

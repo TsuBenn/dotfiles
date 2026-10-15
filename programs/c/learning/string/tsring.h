@@ -4,11 +4,23 @@
 #include <stddef.h>
 #include <stdio.h>
 
+/**
+ * String type.
+ */
 typedef struct String {
   char *buf;
   size_t len;
   size_t cap;
 } string_t;
+
+/**
+ * Ensure `buf` is pointing to a string. If `buf` is pointing to `NULL`, create a new string and point `buf` to that new string.
+ *
+ * When new string is created, `buf` owns the string and the caller must manage and free it with `string_free()`
+ *
+ * Returns `1` on success, returns `0` on allocation fails.
+ */
+int string_ensure_buf(string_t** buf);
 
 /**
  * Prints the string along with its metadata for debug purposes.
@@ -240,33 +252,35 @@ string_t *string_path_get_extension(const string_t *str);
 int string_path_add_extension(string_t *str, const char *ext);
 
 /**
- * Check whether `str` contains `pat` as a substring.
+ * Find the first occurance of `pat` in `str`.
  *
- * If found, the position where the first match occured will be assigned to
- * `match_position` `match_position` can be NULL if the caller isn't planning on
- * using the value.
+ * If found, the position where the first match occured will be assigned to `match_position`
+ * `match_position` can be `NULL` if the caller isn't planning on using the value.
+ *
+ * Inital `match_position` value will be used to start the finding offset. If `match_position` is `NULL`, then it is default to `0`.
  *
  * Returns `1` on found, returns `0` if not.
  */
-int string_contains_string(const string_t *str, const string_t *pat,
+int string_find_string(const string_t *str, const string_t *pat,
                            size_t *match_position);
 
 /**
- * Check whether `str` contains `pat` as a substring.
+ * Find the first occurance of `pat` in `str`.
  *
- * If found, the position where the first match occured will be assigned to
- * `match_position` `match_position` can be NULL if the caller isn't planning on
- * using the value.
+ * If found, the position where the first match occured will be assigned to `match_position`
+ * `match_position` can be `NULL` if the caller isn't planning on using the value.
+ *
+ * Inital `match_position` value will be used to start the finding offset. If `match_position` is `NULL`, then it is default to `0`.
  *
  * Returns `1` on found, returns `0` if not.
  */
-int string_contains_str(const string_t *str, const char *pat,
+int string_find_str(const string_t *str, const char *pat,
                         size_t *match_position);
 
 /**
  * Read from a file and store it in `buf`
  *
- * if `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
+ * If `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
  *
  * Returns `NULL` if read from file fails or allocation fails (`buf` might have been modified).
  */
@@ -275,7 +289,7 @@ string_t *string_read_from_file(const char *file_path, string_t* buf);
 /**
  * Read a line starting at `offset` from `str` and store it in `buf`.
  *
- * if `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
+ * If `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
  *
  * The '\n' will not be included in the `buf` as well as the `offset` will be
  * set to the index after the '\n' and not on the '\n'.
@@ -296,7 +310,7 @@ string_t *string_read_line(const string_t *str, string_t *buf, size_t *offset, i
 /**
  * Read a line starting at `offset` from `str` and store it in `buf`.
  *
- * if `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
+ * If `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
  *
  * The '\n' will not be included in the `buf` as well as the `offset` will be
  * set to the index after the '\n' and not on the '\n'.
@@ -318,7 +332,7 @@ string_t *string_read_line_str(const char *str, string_t *buf, size_t *offset, i
  * Read until a `delimiter` starting at `offset` from `str` and store it in
  * `buf`.
  *
- * if `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
+ * If `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
  *
  * `delimiter` can be multiple characters, representing multiple possible `delimiter`.
  *
@@ -344,7 +358,7 @@ string_t *string_read_delimiter_str(const char *str, size_t str_len, string_t *b
  * Read a `stream` and flush into `buf` when the `stream` hits the
  * `delimiter`
  *
- * if `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
+ * If `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
  *
  * Return `NULL` if allocation fails or `stream` is at the end of file or
  * `stream` returns an error (`buf` might have been modified).
@@ -354,11 +368,11 @@ string_t *string_read_stream(FILE *stream, string_t* buf, char delimiter);
 /**
  * Gets a new string from `stdin` and put it in `buf`.
  *
- * if `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
+ * If `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
  *
  * The returned string will exclude the `\n` from 'stdin'.
  *
- * Returns `buf` on success, returns NULL if allocation fails (`buf` might have been modified).
+ * Returns `buf` on success, returns `NULL` if allocation fails (`buf` might have been modified).
  */
 string_t* string_read_input(string_t* buf);
 
@@ -443,6 +457,14 @@ int string_join_str(string_t *str, const char* other_str, const char* separator)
  *
  * If `pat` is not found inside of `str`, nothing will be changed and will be counted as success.
  *
+ * The initial value of `match` is used as a starting offset for finding `pat`. After replacement, `match` will be set to the index after the replacement string.
+ *
+ * Example ("*" is the `match` position):
+ *
+ * `*Replace this with that`
+ *
+ * `Replace that* with that`
+ *
  * Returns `1` on success, returns `0` if allocation fails (`str` is left unchanged).
  */
 int string_replace_str(string_t *str, const char* pat, const char* replacement, size_t *match);
@@ -452,7 +474,15 @@ int string_replace_str(string_t *str, const char* pat, const char* replacement, 
  *
  * If `pat` is not found inside of `str`, nothing will be changed and will be counted as success.
  *
- * Returns `1` on success, returns `0` if allocation fails (`str` is left unchanged)
+ * The initial value of `match` is used as a starting offset for finding `pat`. After replacement, `match` will be set to the index after the replacement string.
+ *
+ * Example ("*" is the `match` position):
+ *
+ * `*Replace this with that`
+ *
+ * `Replace that* with that`
+ *
+ * Returns `1` on success, returns `0` if allocation fails (`str` is left unchanged).
  */
 int string_replace_string(string_t *str, const char* pat, const string_t* replacement, size_t *match);
 
@@ -505,19 +535,101 @@ int string_copy_str(string_t* str, const char* other_str);
 int string_copy_string(string_t* str, const string_t* other_str);
 
 /**
- * Return a formated string.
+ * Push string with a formated string.
  *
- * `%c` -> `char`
- * `%s` -> `char*` (string)
- * `%d` -> `int` (digit)
- * `%ld` -> `long` (long digit)
- * `%f` -> `float`
- * `%lf` -> `double` (long float)
- * `%zu` -> `size_t`
- * `%%` -> `%`
- *
- * Returns NULL if allocation fails (`buf` might have been modified).
+ * Returns `1` on success, returns `0` on allocation fails (`str` is left unchanged) or format failed.
  */
-string_t* string_format(const char* format, string_t* buf,...);
+int string_push_format(string_t* str, const char* format, ...);
+
+/**
+ * Format string and replace `buf`.
+ *
+ * If `buf` is NULL, this function will return a newly allocated string and the caller owns the string and must `string_free()`
+ *
+ * Returns `NULL` if allocation fails (`buf` might have been modified) or format failed.
+ */
+string_t* string_format(string_t* buf, const char* format, ...);
+
+/**
+ * Chars iterator.
+ * Used for fast iteration over a string chars without buffering.
+ */
+typedef struct Chars {
+ char* str;
+ char* offset;
+} chars_t;
+
+/**
+ * Create a chars iterator from a string (char*)
+ *
+ * Returns `NULL` if allocation fails.
+ *
+ * The caller owns the result and must use `chars_free()`.
+ */
+chars_t* chars_from(char* str);
+
+/**
+ * Free a chars.
+ */
+void chars_free(chars_t* chars);
+
+/**
+ * Iterate to the next `char` and return a pointer that `char`.
+ *
+ * Returns `NULL` if end of string.
+ */
+char* chars_next(chars_t* chars);
+
+/**
+ * Iterate to the previous `char` and return a pointer that `char`.
+ *
+ * Returns `NULL` if start of string.
+ */
+char* chars_prev(chars_t* chars);
+
+/**
+ * Rewind the iterator back to the start of string and return a pointer to the `char` at the start.
+ */
+char* chars_rewind(chars_t* chars);
+
+/**
+ * Iterate forward until `c` and return the pointer to that `c`.
+ *
+ * Returns `NULL` if end of string.
+ */
+char* chars_next_until(chars_t* chars, char c);
+
+/**
+ * Iterate to the next non-whitespace `char` and return a pointer that `char`.
+ *
+ * Returns `NULL` if end of string.
+ */
+char* chars_next_skip_whitespaces(chars_t* chars);
+
+/**
+ * Bring the iterator to the next non-whitespace `char`.
+ *
+ * This operation does not consume the that "non-whitespace `char`".
+ * If the current `char` is already non-whitespace `char`, the iterator is left unchanged.
+ *
+ * Returns '1' on success, returns `0` if end of string.
+ */
+int chars_skip_whitespaces(chars_t* chars);
+
+/**
+ * Check whether the next set of `char` in `chars` matches `pat`.
+ *
+ * Returns `1` if match, returns `0` if not (`chars` is left unchanged).
+ */
+int chars_match(chars_t* chars, char* pat);
+
+/**
+ * Iterate through and check whether the next set of `char` in `chars` matches `pat`.
+ *
+ * This operation will consume the chars, for safer check use `chars_match()` instead.
+ *
+ * Returns `1` if match, returns `0` if not (`chars` might have been modified).
+ */
+int chars_match_consume(chars_t* chars, char* pat);
 
 #endif
