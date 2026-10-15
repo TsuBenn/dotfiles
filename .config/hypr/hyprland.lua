@@ -395,7 +395,7 @@ hl.window_rule({
 
 hl.window_rule({
     match = {
-        class = ".*localsend.*|.*qimgv.*",
+        class = ".*localsend.*|.*qimgv.*|.*feh.*",
     },
 
     float = true,

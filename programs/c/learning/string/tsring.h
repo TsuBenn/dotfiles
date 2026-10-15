@@ -573,6 +573,10 @@ chars_t* chars_from(char* str);
  */
 void chars_free(chars_t* chars);
 
+#define chars(x) (*(x->offset))
+
+#define for_chars(c,chars) for(char* c = chars_next(chars); c != NULL; c = chars_next(chars))
+
 /**
  * Iterate to the next `char` and return a pointer that `char`.
  *
@@ -612,24 +616,17 @@ char* chars_next_skip_whitespaces(chars_t* chars);
  * This operation does not consume the that "non-whitespace `char`".
  * If the current `char` is already non-whitespace `char`, the iterator is left unchanged.
  *
- * Returns '1' on success, returns `0` if end of string.
+ * Returns `1` if `chars` is still available, returns `0` if end of string.
  */
 int chars_skip_whitespaces(chars_t* chars);
 
 /**
  * Check whether the next set of `char` in `chars` matches `pat`.
  *
+ * This operation will only consume the chars on match.
+ *
  * Returns `1` if match, returns `0` if not (`chars` is left unchanged).
  */
 int chars_match(chars_t* chars, char* pat);
-
-/**
- * Iterate through and check whether the next set of `char` in `chars` matches `pat`.
- *
- * This operation will consume the chars, for safer check use `chars_match()` instead.
- *
- * Returns `1` if match, returns `0` if not (`chars` might have been modified).
- */
-int chars_match_consume(chars_t* chars, char* pat);
 
 #endif

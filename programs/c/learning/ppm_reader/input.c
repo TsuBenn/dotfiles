@@ -50,6 +50,9 @@ int input_get_int(int *buf, const char *prompt, int *min, int *max, int *default
                 string_push_str(hint, " inf]");
             }
         }
+        if (default_int) {
+            string_push_format(hint, " [%d]", *default_int);
+        }
         if (!string_replace_string(str_buf, "{}", hint, NULL)) {
             goto fail;
         }
@@ -106,6 +109,9 @@ int input_get_long(long *buf, const char *prompt, long *min, long *max, long *de
                 string_push_str(hint, " inf]");
             }
         }
+        if (default_long) {
+            string_push_format(hint, " [%d]", *default_long);
+        }
         if (!string_replace_string(str_buf, "{}", hint, NULL)) {
             goto fail;
         }
@@ -128,9 +134,13 @@ int input_get_long(long *buf, const char *prompt, long *min, long *max, long *de
         goto fail;
     }
     if (min && buf < min) {
+        string_free(str_buf);
+        string_free(hint);
         return -1;
     }
     if (max && buf > max) {
+        string_free(str_buf);
+        string_free(hint);
         return -1;
     }
     done:
@@ -162,6 +172,9 @@ int input_get_float(float *buf, const char *prompt, float *min, float *max, floa
                 string_push_str(hint, " inf]");
             }
         }
+        if (default_float) {
+            string_push_format(hint, " [%d]", *default_float);
+        }
         if (!string_replace_string(str_buf, "{}", hint, NULL)) {
             goto fail;
         }
@@ -184,9 +197,13 @@ int input_get_float(float *buf, const char *prompt, float *min, float *max, floa
         goto fail;
     }
     if (min && buf < min) {
+        string_free(str_buf);
+        string_free(hint);
         return -1;
     }
     if (max && buf > max) {
+        string_free(str_buf);
+        string_free(hint);
         return -1;
     }
     done:
@@ -218,6 +235,9 @@ int input_get_double(double *buf, const char *prompt, double *min, double *max, 
                 string_push_str(hint, " inf]");
             }
         }
+        if (default_double) {
+            string_push_format(hint, " [%d]", *default_double);
+        }
         if (!string_replace_string(str_buf, "{}", hint, NULL)) {
             goto fail;
         }
@@ -240,9 +260,13 @@ int input_get_double(double *buf, const char *prompt, double *min, double *max, 
         goto fail;
     }
     if (min && buf < min) {
+        string_free(str_buf);
+        string_free(hint);
         return -1;
     }
     if (max && buf > max) {
+        string_free(str_buf);
+        string_free(hint);
         return -1;
     }
     done:

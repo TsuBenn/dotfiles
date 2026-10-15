@@ -834,29 +834,36 @@ char* chars_rewind(chars_t* chars) {
 }
 
 char *chars_next_until(chars_t *chars, char c) {
-  do {
+  if (*(chars->offset) == '\0') {
+    return NULL;
+  }
+  while (*(chars->offset) != c) {
     if (*(++chars->offset) == '\0') {
       return NULL;
     }
-  } while (*(chars->offset) != c);
+  }
   return (chars->offset)++;
 }
 
 char* chars_next_skip_whitespaces(chars_t* chars) {
-  do {
-    if (*(chars->offset) == '\0') {
+  if (*(chars->offset) == '\0') {
+    return NULL;
+  }
+  while (isspace(*(chars->offset))) {
+    if (*(++chars->offset) == '\0') {
       return NULL;
     }
-  } while (isspace(*(chars->offset)));
+  }
   return (chars->offset)++;
 }
 
 int chars_skip_whitespaces(chars_t *chars) {
-  do {
-    if (*(chars->offset) == '\0') {
-      return 0;
-    }
-  } while (isspace(*(chars->offset++)));
+  while (isspace(*(chars->offset))) {
+    (chars->offset)++;
+  }
+  if (*(chars->offset) == '\0') {
+    return 0;
+  }
   return 1;
 }
 
@@ -864,15 +871,7 @@ int chars_match(chars_t* chars, char* pat) {
   size_t i = 0;
   while (chars->offset[i] == pat[i]) {
     if (pat[++i] == '\0') {
-      return 1;
-    }
-  }
-  return 0;
-}
-
-int chars_match_consume(chars_t* chars, char* pat) {
-  while (*(chars->offset++) == *(pat++)) {
-    if (*pat == '\0') {
+      chars->offset+=i;
       return 1;
     }
   }
