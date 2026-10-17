@@ -1,0 +1,1743 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+models/
+  Course.java
+  Student.java
+services/
+  CourseList.java
+  StudentList.java
+tools/
+  GenericList.java
+  Input.java
+  TablePrinter.java
+Main.java
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="models/Course.java">
+package models;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class Course implements Serializable {
+    String id;
+    Student student;
+    String name;
+    int weeks;
+    Date startDate;
+
+    public Course(String id, Student student, String name, int weeks, Date startDate) {
+        this.id = id;
+        this.student = student;
+        this.name = name;
+        this.weeks = weeks;
+        this.startDate = startDate;
+    }
+
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public Student getStudent() {
+		return student;
+	}
+	public String getStudentId() {
+		return student.getId();
+	}
+	public void setStudent(Student student) {
+		this.student = student;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getWeeks() {
+		return weeks;
+	}
+	public void setWeeks(int weeks) {
+		this.weeks = weeks;
+	}
+	public Date getStartDate() {
+		return startDate;
+	}
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+}
+</file>
+
+<file path="models/Student.java">
+package models;
+
+import java.io.Serializable;
+
+public class Student implements Serializable {
+
+    static public int idIterator = 0;
+
+    String id;
+    String name;
+    String major;
+    double gpa;
+    boolean hasCourse;
+
+    public Student(String id, String name, String major, double gpa) {
+    	this.id = id;
+        this.name = name;
+        this.major = major;
+        this.gpa = gpa;
+    }
+
+    public Student(String name, String major, double gpa) {
+        id = String.format("STU%04d", idIterator++);
+        this.name = name;
+        this.major = major;
+        this.gpa = gpa;
+    }
+
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getMajor() {
+		return major;
+	}
+	public void setMajor(String major) {
+		this.major = major;
+	}
+	public double getGpa() {
+		return gpa;
+	}
+	public void setGpa(float gpa) {
+		this.gpa = gpa;
+	}
+
+	public static int getIdIterator() {
+		return idIterator;
+	}
+
+	public static void setIdIterator(int idIterator) {
+		Student.idIterator = idIterator;
+	}
+
+	public void setGpa(double gpa) {
+		this.gpa = gpa;
+	}
+
+	public boolean isHasCourse() {
+		return hasCourse;
+	}
+
+	public void setHasCourse(boolean hasCourse) {
+		this.hasCourse = hasCourse;
+	}
+
+}
+</file>
+
+<file path="services/CourseList.java">
+package services;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+
+import models.Course;
+import models.Student;
+import tools.GenericList;
+import tools.Input;
+import tools.TablePrinter;
+
+public class CourseList extends GenericList<String, Course> {
+
+    StudentList studentList;
+
+    public CourseList(StudentList studentList) {
+        this.studentList = studentList;
+    }
+
+    @Override
+    public void postLoadFromFile() {
+        for (Course course : getList()) {
+            Student student = course.getStudent();
+            if (student != null) {
+                student.setHasCourse(true);
+            } else {
+                map.remove(getKey(course));
+            }
+
+        }
+    }
+
+    @ Override
+    protected String getKey(Course item) {
+        return item.getId();
+    }
+
+    @ Override
+    protected void setKey(Course item, String new_key) {
+        item.setId(new_key);
+    }
+
+    @Override
+    protected String getSearchPrompt() {
+        return "";
+    }
+
+    @Override
+    protected Course createItem(Course item) {
+
+        String id = Input.getStr("Enter Course's id", item != null ? item.getId() : null);
+        Student student = studentList.searchItems().selectItem();
+        student.setHasCourse(true);
+        String name = Input.getStr("Enter Course's name", item != null ? item.getName() : null);
+        int weeks = Input.getInt("Enter Course's week duration", 1, null, item != null ? item.getWeeks() : null);
+        Date startDate;
+        while (true) {
+            Date today = new Date();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(today);
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            Date tomorrow = calendar.getTime();
+            startDate = Input.getDate("Enter Course's starting date", "dd/MM/yyyy", tomorrow);
+            if (Input.compareDate(startDate, today) <= 0) {
+                System.out.println("Starting date should be a future date!");
+            } else {
+                break;
+            }
+        }
+
+        return new Course(id, student, name, weeks, startDate);
+
+    }
+
+
+    @Override
+    protected boolean matchItem(Course item, String query) {
+        return true;
+    }
+
+    @Override
+    protected GenericList<String, Course> createInstance() {
+        return new CourseList(studentList);
+    }
+
+    @Override
+    protected TablePrinter getTable() {
+        TablePrinter table = new TablePrinter();
+        studentId_temp = "";
+        table.addColumn("Student ID", 10);
+        table.addColumn("Name", 20);
+        table.addColumn("Major", 30);
+        table.addColumn("GPA", 3);
+        table.addColumn("Course ID", 12);
+        table.addColumn("Course name", 20);
+        table.addColumn("Duration", 8);
+        table.addColumn("Start Date", 10);
+        return table;
+    }
+
+    String studentId_temp = "";
+
+    @Override
+    protected Object[] getTableRow(Course item) {
+        boolean please = studentId_temp.equals(item.getStudentId());
+        if (!please) {
+            studentId_temp = item.getStudentId();
+        }
+        return new Object[] {
+            please ? "" : item.getStudent().getId(),
+            please ? "" : item.getStudent().getName(),
+            please ? "" : item.getStudent().getMajor(),
+            Input.formatFloat(item.getStudent().getGpa(), "#,##0.0"),
+            item.getId(),
+            item.getName(),
+            Input.formatFloat(item.getWeeks(), "#,##0"),
+            Input.dateToStr(item.getStartDate(),"dd/MM/yyyy")
+        };
+    }
+
+    @Override
+    public String textSerialize(Course item) {
+        return String.join(", ", Arrays.asList(item.getId(), item.getStudentId(), item.getName(), Integer.toString(item.getWeeks()), Input.dateToStr(item.getStartDate(), "dd/MM/yyyy")));
+    }
+
+    @Override
+    public Course textDeserialize(String itemString) {
+        String parts[] = itemString.split(",");
+        String id = parts[0].trim();
+        Student student = studentList.map.get(parts[1].trim());
+        String name = parts[2].trim();
+        int weeks = Integer.parseInt(parts[3].trim());
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Date startDate;
+        try {
+            startDate = formatter.parse(parts[4].trim());
+        } catch (ParseException e) {
+            System.err.println("Error loading Course data");
+            return null;
+        }
+        return new Course(id, student, name, weeks, startDate);
+    }
+
+    @Override
+    public String getType() {
+        return "Course";
+    }
+
+    @Override
+    public Comparator<Course> getComparator() {
+        return Comparator.comparing(Course::getStudentId);
+    }
+}
+</file>
+
+<file path="services/StudentList.java">
+package services;
+
+import java.util.Arrays;
+import java.util.Comparator;
+
+import models.Student;
+import tools.GenericList;
+import tools.Input;
+import tools.TablePrinter;
+
+public class StudentList extends GenericList<String, Student> {
+
+    @ Override
+    protected String getKey(Student item) {
+        return item.getId();
+    }
+
+    @ Override
+    protected void setKey(Student item, String new_key) {
+        item.setId(new_key);
+    }
+
+    @Override
+    public void postLoadFromFile() {
+        for (Student item : getList()) {
+            int id = Integer.parseInt(item.getId().substring(3));
+            if (Student.idIterator <= id) {
+                Student.idIterator = id + 1;
+            }
+        }
+    }
+
+    @Override
+    protected String getSearchPrompt() {
+        return "Search Student by ID, Name or Major";
+    }
+
+    @Override
+    protected Student createItem(Student item) {
+        String name = Input.getStr("Enter Student's name", item != null ? item.getName() : null);
+        String major = Input.getStr("Enter Student's major", item != null ? item.getMajor() : null);
+        double gpa = Input.getFloat("Enter Student's GPA", 0.0, 4.0, item != null ? item.getGpa() : null);
+
+        return new Student(name, major, gpa);
+    }
+
+    @Override
+    protected boolean matchItem(Student item, String query) {
+        if (query.isEmpty()) return true;
+        query = Input.flattenString(query.toLowerCase());
+        String id = Input.flattenString(item.getId().toLowerCase());
+        String name = Input.flattenString(item.getName().toLowerCase());
+        String major = Input.flattenString(item.getMajor().toLowerCase());
+        return id.contains(query) || name.contains(query) || major.contains(query);
+    }
+
+    @Override
+    protected GenericList<String, Student> createInstance() {
+        return new StudentList();
+    }
+
+    @Override
+    protected TablePrinter getTable() {
+        TablePrinter table = new TablePrinter();
+        table.addColumn("Student ID", 10);
+        table.addColumn("Name", 20);
+        table.addColumn("Major", 30);
+        table.addColumn("GPA", 3);
+        return table;
+    }
+
+    @Override
+    protected Object[] getTableRow(Student item) {
+        return new Object[] {
+            item.getId(),
+            item.getName(),
+            item.getMajor(),
+            item.getGpa()
+        };
+    }
+
+    @Override
+    public String getType() {
+        return "Student";
+    }
+
+    // Check if an Item can be deleted
+    // Input: None
+    // Output: A TablePrinter
+    //
+    // A helper function for checking Item removability.
+    // Example:
+    //     return person.inDebt;
+    @Override
+    public boolean canDelete(Student item) {
+        return !item.isHasCourse();
+    }
+
+    // Get removal error
+    // Input: None
+    // Output: A TablePrinter
+    //
+    // A helper function for fetching the reason why you can't delete this Item.
+    // Example:
+    //     if (person.inDebt) {
+    //         return "This Person is in debt and needs to pay it first!";
+    //     } else {
+    //         return "";
+    //     }
+    public String getDeleteError(Student item) {
+        if (item.isHasCourse()) {
+            return "Cannot Delete: Student is assigned to Courses!";
+        }
+        return "";
+    }
+
+    @Override
+    public String textSerialize(Student item) {
+        return String.join(", ", Arrays.asList(item.getId(), item.getName(), item.getMajor(), Double.toString(item.getGpa())));
+    }
+
+    @Override
+    public Student textDeserialize(String itemString) {
+        String parts[] = itemString.split(",");
+        String id = parts[0].trim();
+        String name = parts[1].trim();
+        String major = parts[2].trim();
+        double gpa = Double.parseDouble(parts[3].trim());
+
+        return new Student(id, name, major, gpa);
+    }
+
+    @Override
+    public Comparator<Student> getComparator() {
+        return Comparator.comparing(Student::getGpa).reversed();
+    }
+}
+</file>
+
+<file path="tools/GenericList.java">
+package tools;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
+public abstract class GenericList<K, T> implements Serializable {
+
+    public Map<K, T> map = new HashMap<>();
+
+    // Get key from an Item
+    // Input: The Value.
+    // Output: The Key.
+    //
+    // Example:
+    //     return item.getID();
+    protected abstract K getKey(T item);
+
+    // Set key of an Item
+    // Input: The Item and the new key.
+    // Output: None.
+    //
+    // Example:
+    //     item.setID(key);
+    protected abstract void setKey(T item, K new_key);
+
+    // Customize search prompt
+    // Input: None.
+    // Output: String Prompt.
+    //
+    // Prompt use to hint the User what to search for.
+    // Example:
+    //     return "Search by ID, Name or Occupation"
+    protected abstract String getSearchPrompt();
+
+    // Creating an Item from User Input
+    // Input: An Item as a default value, can be NULL.
+    // Output: An Item created by the User Input.
+    //
+    // Declare fields.
+    // Let the User Input the fields with the default value of the provided Item. If the provided Item is null, force the User to Input something.
+    // Create an Item from the Inputs and return it.
+    // Example:
+    //    String name = Input.getStr("Enter name: ", item != null ? item.getName() : null);
+    //    int health = Input.getInt("Enter health: ", 0, 100, item != null ? item.getHealth() : null);
+    //    return new Player(name, health);
+    protected abstract T createItem(T item);
+
+    // Match Item to query
+    // Input: Item and a Query
+    // Output: Boolean
+    //
+    // A helper function for comparing Item and query during searching.
+    // Exmaple:
+    //    return item.getName().contains(query) || item.getOccupation().contains(query)
+    protected abstract boolean matchItem(T item, String query);
+
+    // Create an Instance of oneself
+    // Input: None
+    // Output: A new instance of the List
+    //
+    // A helper function for instantiating the List which extends this abstract class.
+    // Example:
+    //     public class CarList extends GenericList<String, Car> {
+    //     ...
+    //         @Override
+    //         protected GenericList<String, Car> createInstance() {
+    //             return new CarList();
+    //         }
+    //     ...
+    //     }
+    protected abstract GenericList<K, T> createInstance();
+
+    // Creating a TablePrinter
+    // Input: None
+    // Output: A TablePrinter
+    //
+    // A helper function for creating a table for printing.
+    // Example:
+    //     TablePrinter table = new TablePrinter();
+    //     table.addColumn("License Plate", 13);
+    //     table.addColumn("Owner", 20);
+    //     table.addColumn("Brand", 20);
+    //     table.addColumn("Value", 9);
+    //     table.addColumn("Registration Date", 17);
+    //     table.addColumn("Registration Place", 18);
+    //     table.addColumn("Type", 9);
+    //     return table;
+    protected abstract TablePrinter getTable();
+
+    // Getting a Table Row Values
+    // Input: None
+    // Output: A TablePrinter
+    //
+    // A helper function for creating row for table printing.
+    // Example:
+    //     return new Object[] {
+    //         player.getId(),
+    //         player.getName(),
+    //         player.getHealth(),
+    //         player.getDefense()
+    //     }
+    protected abstract Object[] getTableRow(T item);
+
+    // Getting a comparator from User to use for Listing Sorted Items
+    // Input: None
+    // Output: Comparator
+    //
+    // A helper function for creating a Comparator used for sorting lists
+    // Example:
+    //     System.out.println("Select field for sorting:");
+    //     int choice = Input.intMenu(
+    //             Arrays.asList(
+    //                     "Insurance ID",
+    //                     "Established Date",
+    //                     "License Plate",
+    //                     "Insurance Period"),
+    //             1);
+    //     int direction = Input.intMenu(
+    //             Arrays.asList(
+    //                 "ASC",
+    //                 "DESC"
+    //             ),
+    //             1
+    //         );
+    //     Comparator<Insurance> comparator;
+    //     switch (choice) {
+    //         case 2: comparator = Comparator.comparing(Insurance::getEstablisedDate); break;
+    //         case 3: comparator = Comparator.comparing(Insurance::getLicensePlate); break;
+    //         case 4: comparator = Comparator.comparing(Insurance::getPeriod); break;
+    //         default: comparator = Comparator.comparing(Insurance::getInsuranceId); break;
+    //     }
+    //     switch (direction) {
+    //         case 2: return comparator;
+    //         default: return comparator.reversed();
+    //     }
+    public Comparator<T> getComparator() {
+        return null;
+    }
+
+    // Get the Object "pronoun"
+    // Input: None
+    // Output: String
+    //
+    // A helper function for getting the "pronoun" of the Object to use in print statements.
+    // For example, the object can be a "Car", "Employee", etc.
+    public String getType() {
+        return "Item";
+    }
+
+    // Check if an Item can be deleted
+    // Input: None
+    // Output: A TablePrinter
+    //
+    // A helper function for checking Item removability.
+    // Example:
+    //     return person.inDebt;
+    public boolean canDelete(T item) {
+        return true;
+    }
+
+    // Get removal error
+    // Input: None
+    // Output: A TablePrinter
+    //
+    // A helper function for fetching the reason why you can't delete this Item.
+    // Example:
+    //     if (person.inDebt) {
+    //         return "This Person is in debt and needs to pay it first!";
+    //     } else {
+    //         return "";
+    //     }
+    public String getDeleteError(T item) {
+        return "";
+    }
+
+    // Check if an Item can be updated
+    // Input: None
+    // Output: A TablePrinter
+    //
+    // A helper function for checking Item updatability.
+    // Example:
+    //     return person.role == Person.Role.Admin;
+    public boolean canUpdate(T item) {
+        return true;
+    }
+
+    // Get update error
+    // Input: None
+    // Output: A TablePrinter
+    //
+    // A helper function for fetching the reason why you can't update this Item.
+    // Example:
+    //     if (person.role == Person.Role.Admin) {
+    //         return "Thou shall not Update an Admin!";
+    //     } else {
+    //         return "";
+    //     }
+    public String getUpdateError(T item) {
+        return "";
+    }
+
+    // Decie whether the Object is "An" Object or "A" Something
+    // Input: An option to capitalize incase it's at the start of a sentence.
+    // Output: String
+    //
+    public String getAType(boolean capitalized){
+        String type = getType();
+        if (type.substring(0, 1).matches("[aiueoAIUEO]")) {
+            if (capitalized)
+                return "An";
+            else
+                return "an";
+        }
+        if (capitalized)
+            return "A";
+        else
+            return "a";
+    }
+
+    // Creating a new Item without default Item
+    // Input: None..
+    // Output: Item.
+    //
+    // Create an Item without a default Item.
+    public T createItem() {
+        return createItem(null);
+    }
+
+    // Adding an existing item
+    // Input: An Item.
+    // Output: None.
+    //
+    // Add Item to the Map directly with a Item.
+    public T addItem(T item) {
+        if (!containsKey(getKey(item))) {
+            map.put(getKey(item), item);
+            return item;
+        } else {
+            System.out.printf("Key has already existed. No %s has been added!\n\n", getType());
+        }
+        return null;
+    }
+
+    // Adding an Item from User Input
+    // Input: None.
+    // Output: None.
+    //
+    // Create an Item from User Inputer.
+    // Add to this Map using by creating an Item from User Input and print a success notice.
+    public T addItem() {
+        T new_item = createItem();
+        if (new_item == null) {
+            System.out.printf("\nNo %s has been added!\n\n", getType());
+            return null;
+        }
+        addItem(new_item);
+        printItem(new_item);
+        System.out.printf("\n%s %s has been added!\n\n", getAType(true), getType());
+        return new_item;
+    }
+
+    // Print a Car as a One Row Table
+    // Input: None.
+    // Output: None.
+    public void printItem(T item) {
+        if (item == null) {
+            return;
+        }
+    	TablePrinter table = getTable();
+        table.printHeader();
+        table.printRow(getTableRow(item));
+        table.printFooter();
+    }
+
+    // Listing Items
+    // Input: Comparator (For Sorting) and printIndex (option to print the Index of each Rows, used for searching items) and a Function Object as a Filter for which item should be and should not be listed.
+    // Output: None, just printing a Table
+    //
+    // Create a Table using getTable helper function to get the headers for the right Data Model.
+    // Turn the Map into a List using getList and if the Comparator is NOT NULL then use it to sort the List.
+    // Print Header
+    // Loop through each items in List:
+    //     Check whether Filter is NULL, if not then apply the Filter and decided whether to print that Row or not.
+    //     PrintRow using the helper function getTableRow for the Columns Values.
+    // Print Footer
+    public void listItems(Comparator<T> comparator, boolean printIndex, Function<T, Boolean> filter) {
+        TablePrinter table = getTable();
+
+        if (printIndex) {
+            table.addIndexColumn("Idx");
+        }
+
+        List<T> list = getList();
+        if (comparator != null) {
+            list.sort(comparator);
+        }
+
+        table.printHeader();
+        for (T item : list) {
+            if (filter != null) {
+                if (filter.apply(item)) {
+                    table.printRow(getTableRow(item));
+                }
+            } else {
+                table.printRow(getTableRow(item));
+            }
+        }
+        table.printFooter();
+
+        System.out.println("");
+    }
+
+    public void listItems(Comparator<T> comparator, boolean printIndex) {
+        listItems(comparator, printIndex, null);
+    }
+
+    // Listing Items without Comparator means no sorting needed
+    public void listItems(boolean printIndex) {
+        listItems(null, printIndex);
+    }
+
+    // Listing Items default to printing the Table without Index and Sorting.
+    public void listItems() {
+        listItems(false);
+    }
+
+    // Listing Items
+    // Input: None
+    // Output: List of items
+    //
+    // Return the GenericList as a List instead of a Map.
+    public List<T> getList() {
+        // if (map.isEmpty()) {
+        //     System.out.printf("%s List is Empty!\n", getType());
+        //     return new ArrayList<>();
+        // }
+        return new ArrayList<>(map.values());
+    }
+
+    public List<T> getSortedList(Comparator<T> comparator) {
+        List<T> list = (ArrayList<T>) getList();
+        list.sort(comparator);
+        return list;
+    }
+
+    // Searching Items
+    // Input: Search Query.
+    // Output: A GenericList contains matching Items.
+    //
+    // Create an Empty GenericList acting as the Search Result.
+    // Check if the query is directly searching for License Plate by checking whether the Map has similar Key or not.
+    // If not convert GenericList into a List, flatten the query and iterate through each car:
+    //    Check car against query using Match Item function.
+    //    If match then add that Item to the Search Result List.
+    // Return the Search Result List.
+    public GenericList<K, T> searchItems(String query) {
+
+        GenericList<K, T> searchedItem = createInstance();
+
+        if (map.containsKey(query)) {
+            searchedItem.addItem(map.get(query));
+            return searchedItem;
+        }
+
+        List<T> items = getList();
+
+        query = Input.flattenString(query);
+
+        for (T item : items) {
+            if (matchItem(item, query)) {
+                searchedItem.addItem(item);
+            }
+        }
+
+        if (searchedItem.map.isEmpty()) {
+            System.out.printf("No %s is found!\n", getType());
+        }
+
+        return searchedItem;
+    }
+
+    // Asking the User for query then call searchCar with the inputted query.
+    public GenericList<K, T> searchItems() {
+        if (map.isEmpty()) {
+            return createInstance();
+        }
+        String query = Input.getStr(getSearchPrompt(), "");
+        System.out.println("");
+        return searchItems(query);
+    }
+
+
+    // Select an Item
+    // Input: None
+    // Output: Item
+    //
+    // Convert GenericList into a List.
+    // Print out the Item Table with the Index Column.
+    // If the List only has 1 item then return that item
+    // Else ask the user for their selection on the List via the Index from 1 -> List size.
+    // Return the Item that the user selected from the list.
+    public T selectItem() {
+        if (map.isEmpty()) {
+            System.out.printf("%s List is Empty!\n\n", getType());
+            return null;
+        }
+        List<T> list = getList();
+
+        if (map.size() == 1) {
+            return list.get(0);
+        }
+
+        listItems(true);
+
+        int choice = Input.getInt("Select index", 1, list.size(), 1);
+
+        System.out.println("");
+        return list.get(choice - 1);
+    }
+
+    // Removing an Item
+    // Input: None
+    // Output: None
+    //
+    // Let the User choose an Item to be Deleted by Search Item and Select Item in that Searched Result.
+    // If the Item to be Deleted is NULL, print a warning and return with no changes.
+    // Else remove the Item from the Map by using the Item's Key and print a success notice.
+    public void deleteItem() {
+        T itemToDelete = searchItems().selectItem();
+        if (itemToDelete == null) {
+            System.out.printf("No %s has been Deleted!\n\n", getType());
+            return;
+        }
+        if (!canDelete(itemToDelete)) {
+            System.out.println(getDeleteError(itemToDelete));
+            return;
+        }
+
+        printItem(itemToDelete);
+        System.out.println();
+
+        if (Input.getBool("Comfirm Delete?")) {
+            System.out.println("");
+            map.remove(getKey(itemToDelete));
+            System.out.printf("%s %s has been Deleted!\n\n", getAType(true), getType());
+        } else
+            System.out.printf("No %s has been Deleted! (Canceled)\n\n", getType());
+    }
+
+    // Updating a Item
+    // Input: None
+    // Output: None
+    //
+    // Let the User choose an Item to be Updated by Search Item and Select Item in that Searched Result.
+    // If Item to be Updated is NULL, print a warning and return with no changes.
+    // Else Create a new Item with the To be Updated Item as the default value.
+    // after that override the To Be Updated Item in the map with the Updated one using the To Be Updated Item License Plate as Key.
+    public void updateItem() {
+        T itemToUpdate = searchItems().selectItem();
+        if (itemToUpdate == null) {
+            System.out.printf("No %s has been Updated!\n\n", getType());
+            return;
+        }
+        if (!canUpdate(itemToUpdate)) {
+            System.out.println(getUpdateError(itemToUpdate));
+            return;
+        }
+
+        T updatedItem = createItem(itemToUpdate);
+        setKey(updatedItem, getKey(itemToUpdate));
+
+        System.out.println("OLD:");
+        printItem(itemToUpdate);
+        System.out.println("NEW:");
+        printItem(updatedItem);
+
+        if (Input.getBool("Comfirm Update?")) {
+            System.out.println("");
+            try {
+                Class<?> clazz = updatedItem.getClass();
+                for (Field field : clazz.getDeclaredFields()) {
+                    field.setAccessible(true); // Bypass private modifiers
+                    Object value = field.get(updatedItem);
+                    field.set(itemToUpdate, value);
+                }
+            } catch (Exception e) {
+                System.out.println("Copy failed: " + e.getMessage());
+            }
+            System.out.printf("%s %s has been Updated!\n\n", getAType(true), getType());
+        } else {
+            System.out.println("");
+            System.out.printf("No %s has been Updateds! (Canceled)\n\n", getType());
+        }
+    }
+
+    // Save collection state to a binary file
+    // Input: File path string where the .dat file should be written.
+    // Output: Boolean indicating success (true) or failure (false).
+    //
+    // Open an ObjectOutputStream wrapped in a FileOutputStream via try-with-resources.
+    // Serialize the entire map object directly into the specified file path.
+    // Run postSaveFromFile() In case any class extending this Class can do extra stuff after.
+    // Catch IOException, notify the user with a friendly error notice, and return false.
+    // Note: FileOutputStream automatically creates the file if it does not exist yet.
+    //
+    // Example:
+    //     carList.saveToFile("cars.dat");
+    //     insuranceList.saveToFile("data/insurances.dat");
+    public boolean saveToFile(String filePath) {
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filePath))) {
+            oos.writeObject(this.map);
+            System.out.printf("%s data saved successfully to %s!\n\n", getType(), filePath);
+            postSaveFromFile();
+            return true;
+        } catch (IOException e) {
+            System.out.printf("Error saving %s data: %s\n\n", getType(), e.getMessage());
+            return false;
+        }
+    }
+
+    public String textSerialize(T item) {
+        return "";
+    }
+
+    public boolean saveToTextFile(String filePath) {
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
+            for (T item : getList()) {
+                bw.write(textSerialize(item));
+                bw.newLine();
+            }
+            postSaveFromFile();
+            return true;
+        } catch (IOException e) {
+            System.out.printf("Error saving %s data: %s\n\n", getType(), e.getMessage());
+            return false;
+        }
+    }
+
+    // Load collection state from a binary file
+    // Input: File path string pointing to the target .dat file.
+    // Output: Boolean indicating success (true) or failure/file missing (false).
+    //
+    // Check if the target file exists before attempting to open streams to avoid unneeded stack traces.
+    // Open an ObjectInputStream wrapped in a FileInputStream via try-with-resources.
+    // Read the serialized Map object, safely cast it to Map<K, T>, and assign it back to this instance's map.
+    // Run postLoadFromFile() In case any class extending this Class can do extra stuff after.
+    // Catch IOException or ClassNotFoundException, notify the user with a friendly error notice, and return false.
+    //
+    // Example:
+    //     carList.loadFromFile("cars.dat");
+    //     insuranceList.loadFromFile("data/insurances.dat");
+    public boolean loadFromFile(String filePath) {
+        File file = new File(filePath);
+
+        if (!file.exists()) {
+            System.out.printf("No existing %s data file found (%s). Starting with an empty list.\n\n", getType(), filePath);
+            return false;
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+            this.map = (Map<K, T>) ois.readObject();
+            System.out.printf("%s data loaded successfully from %s!\n\n", getType(), filePath);
+            postLoadFromFile();
+            return true;
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.printf("Error loading %s data: %s\n\n", getType(), e.getMessage());
+            return false;
+        }
+    }
+
+    public T textDeserialize(String itemString) {
+        return null;
+    }
+
+    public boolean loadFromTextFile(String filePath) {
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                T item = textDeserialize(line);
+                addItem(item);
+            }
+            postLoadFromFile();
+            return true;
+        } catch (IOException e) {
+            System.out.printf("Error saving %s data: %s\n\n", getType(), e.getMessage());
+            return false;
+        }
+    }
+
+    // Runs after SUCCESSFULL Save
+    public void postSaveFromFile() {}
+
+    // Runs after SUCCESSFULL Load
+    public void postLoadFromFile() {}
+
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
+
+    public boolean containsKey(K key) {
+        return map.containsKey(key);
+    }
+
+}
+</file>
+
+<file path="tools/Input.java">
+package tools;
+
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Scanner;
+
+public class Input {
+
+    private static Scanner sc = new Scanner(System.in);
+
+    public static boolean getBool(String prompt, boolean defaultValue) {
+        if (defaultValue) {
+            System.out.print(prompt + " (Y/n): ");
+        } else {
+            System.out.print(prompt + " (y/N): ");
+        }
+        String data = sc.nextLine().trim().toUpperCase();
+        if (data.isEmpty()) {
+            return defaultValue;
+        }
+        char c = data.charAt(0);
+
+        return c == 'Y' || c == 'T' || c == '1';
+    }
+
+    public static boolean getBool(String prompt) {
+        return getBool(prompt, true);
+    }
+
+    public static int getInt(String prompt, Integer min, Integer max, Integer defaultValue) {
+        int result = 0;
+
+        boolean hasMin = true;
+        boolean hasMax = true;
+
+        if (min == null) {
+            min = Integer.MIN_VALUE;
+            hasMin = false;
+        }
+        if (max == null) {
+            max = Integer.MAX_VALUE;
+            hasMax = false;
+        }
+
+        String hint = "";
+        String defaultHint = "";
+        if (hasMin && !hasMax) {
+            hint = " [" + min + " - " + "inf" + "]";
+        } else if (!hasMin && hasMax) {
+            hint = " [" + "inf" + " - " + max + "]";
+        } else if (hasMin && hasMax) {
+            hint = " [" + min + " - " + max + "]";
+        }
+        if (defaultValue != null) {
+            defaultHint = String.format(" [%d]", defaultValue);
+        }
+
+        do {
+            boolean valid = true;
+            do {
+                try {
+                    System.out.print(prompt + hint + defaultHint + ": ");
+                    String input = sc.nextLine().trim();
+                    if (input.isEmpty()) {
+                        if (defaultValue != null) {
+                            return defaultValue;
+                        } else {
+                            valid = false;
+                            System.out.println("Input is blank!");
+                            continue;
+                        }
+                    }
+                    result = Integer.parseInt(input);
+                    valid = true;
+                } catch (Exception e) {
+                    valid = false;
+                    System.out.println("Invalid Int!");
+                }
+            } while (!valid);
+            if (result < min || result > max) {
+                System.out.println("Out of range! " + hint);
+            }
+        } while (result < min || result > max);
+
+        return result;
+    }
+
+    public static int getInt(String prompt, Integer min, Integer max) {
+        return getInt(prompt, min, max, null);
+    }
+
+    public static int getInt(String prompt) {
+        return getInt(prompt, null, null, null);
+    }
+
+    public static int getInt(String prompt, int defaultValue) {
+        return getInt(prompt, null, null, defaultValue);
+    }
+
+    public static double getFloat(String prompt, Double min, Double max, Double defaultValue) {
+        double result = 0.0;
+
+        boolean hasMin = true;
+        boolean hasMax = true;
+
+        if (min == null) {
+            min = Double.MIN_VALUE;
+            hasMin = false;
+        }
+        if (max == null) {
+            max = Double.MAX_VALUE;
+            hasMax = false;
+        }
+
+        String hint = "";
+        String defaultHint = "";
+        if (hasMin && !hasMax) {
+            hint = " [" + min + " - " + "inf" + "]";
+        } else if (!hasMin && hasMax) {
+            hint = " [" + "inf" + " - " + max + "]";
+        } else if (hasMin && hasMax) {
+            hint = " [" + min + " - " + max + "]";
+        }
+        if (defaultValue != null) {
+            defaultHint = String.format(" [%.2f]", defaultValue);
+        }
+
+        do {
+            boolean valid = true;
+            do {
+                try {
+                    System.out.print(prompt + hint + defaultHint + ": ");
+                    String input = sc.nextLine().trim();
+                    if (input.isEmpty()) {
+                        if (defaultValue != null) {
+                            return defaultValue;
+                        } else {
+                            valid = false;
+                            System.out.println("Input is blank!");
+                            continue;
+                        }
+                    }
+                    result = Double.parseDouble(input);
+                    valid = true;
+                } catch (Exception e) {
+                    valid = false;
+                    System.out.println("Invalid Float!");
+                }
+            } while (!valid);
+            if (result < min || result > max) {
+                System.out.println("Out of range! " + hint);
+            }
+        } while (result < min || result > max);
+
+        return result;
+    }
+
+    public static double getFloat(String prompt, double min, double max) {
+        return getFloat(prompt, min, max, null);
+    }
+
+    public static double getFloat(String prompt) {
+        return getFloat(prompt, null, null, null);
+    }
+
+    public static String getStr(String prompt, String pattern, String errorMsg, String defaultValue) {
+        String data;
+        boolean valid;
+        do{
+            data = getStr(prompt, defaultValue);
+            valid = data.matches(pattern);
+            if (!valid) System.out.println(errorMsg);
+        } while (!valid);
+
+        return data;
+    }
+
+    public static String getStr(String prompt, String pattern, String errorMsg) {
+        return getStr(prompt, pattern, errorMsg, null);
+    }
+
+    public static String getStr(String prompt, String defaultValue) {
+        String hint = "";
+        if (defaultValue != null && !defaultValue.isEmpty()) {
+            hint = " [" + defaultValue + "]";
+        }
+        String input = "";
+        do {
+            System.out.print(prompt + hint + ": ");
+            input = sc.nextLine().trim();
+            if (input.isEmpty()) {
+                if (defaultValue != null)
+                    return defaultValue;
+                else
+                    System.out.println("This field cannot be empty!\n");
+            }
+        } while(input.isEmpty());
+        return input;
+    }
+
+    public static String getStr(String prompt) {
+        return getStr(prompt, null);
+    }
+
+    public static String flattenString(String str) {
+        return str.trim().toLowerCase().replaceAll(" |-|_", "");
+    }
+
+    public static Date getDate(String prompt, String dateFormat, Date defaultValue){
+        String dateStr;
+        Date d;
+        String hint = " ("+dateFormat+")";
+        if (defaultValue != null) {
+            hint += " [" + dateToStr(defaultValue, dateFormat) + "]";
+        }
+        // Tạo DateFormat formatter với date format trong tham sồ
+        DateFormat formatter = new SimpleDateFormat(dateFormat);
+        do{
+            System.out.print(prompt + hint + ": "); // xuất lời nhắc
+            dateStr = sc.nextLine().trim(); // nhập data
+            if (dateStr.isEmpty() && defaultValue != null) {
+                return defaultValue;
+            }
+            try{ // phân tích String -> Date. Hành vi parse sẽ tự động điều
+                //chỉnh phù hợp. Thí dụ 32-12-2024 sẽ chuyển thành 01/01/2025
+                d = formatter.parse(dateStr);
+            }
+            catch (ParseException e){ // nếu phân tích có lỗi xuất thông báo
+                System.out.println("Date format should be " + dateFormat + ".");
+                d = null;
+            }
+        } while (d==null);
+
+        return d;
+    }
+    public static Date getDate(String prompt, String dateFormat){
+        return getDate(prompt, dateFormat, null);
+    }
+
+    public static String formatInt(int num, String numFormat) {
+        DecimalFormat formatter = new DecimalFormat(numFormat);
+        return formatter.format(num);
+    }
+    public static String formatFloat(double num, String numFormat) {
+        DecimalFormat formatter = new DecimalFormat(numFormat);
+        return formatter.format(num);
+    }
+
+    public static int compareDate(Date thisDate, Date thatDate) {
+        String dateThis = dateToStr(thisDate, "yyyy-MM-dd");
+        String dateThat = dateToStr(thatDate, "yyyy-MM-dd");
+        return dateThis.compareTo(dateThat);
+    }
+
+    public static String dateToStr(Date date, String dateFormat){
+        if (date==null) return null;
+        DateFormat formatter = new SimpleDateFormat(dateFormat);
+        return formatter.format(date);
+    }
+
+    public static int dateGetPart(Date d, int calendarPart){
+        GregorianCalendar cal = new GregorianCalendar();// tạo calandar
+        cal.setTime(d); // cho calendar mang ngày d
+        return cal.get(calendarPart); // lấy ra thành phần thời gian này
+    }
+
+    public int getAge(Date birthDate){
+        int currentYear = dateGetPart(new Date(), Calendar.YEAR);
+        int birthYear = dateGetPart(birthDate, Calendar.YEAR);
+        return currentYear-birthYear;
+    }
+
+    public static int intMenu (Object... options){
+       // int choice;
+        int n= options.length ; // số mục trong menu
+        for (int i=0; i< n; i++) // xuất các options
+            System.out.println((i+1) + "-" + options[i]);
+
+        System.out.println();
+
+        return getInt("Choose", 1, n)-1; // User bị buộc nhập số phù hợp 1..n
+    }
+
+    public static int intMenu(List options, Integer defaultValue) {
+        int n= options.size() ;
+        for (int i=0; i< n; i++)
+            System.out.println((i+1) + "-" + options.get(i));
+        if (defaultValue == null) {
+            return getInt("Choose", 1, n)-1;
+        }
+
+        System.out.println();
+
+        return getInt("Choose", 1, n, defaultValue + 1) - 1;
+    }
+
+    public static int intMenu(List options) {
+        return intMenu(options, null);
+    }
+
+    public static Object objMenu (Object... options){
+        int choice = intMenu(options);
+        return options[choice-1];
+    }
+
+    public static Object objMenu(List options, Integer defaultValue){
+        int choice = intMenu(options, defaultValue);
+        return options.get(choice);
+    }
+
+    public static Object objMenu(List options) {
+        int choice = intMenu(options, null);
+        return options.get(choice);
+    }
+
+    public static String dateKeyGen(){
+        Date now = new Date(); // lấy ngày hiện tại
+        // chuyển thành dạng chuỗi theo mẫu
+        SimpleDateFormat f = new SimpleDateFormat("yyyyMMddhhmmss");
+        return f.format(now);
+    }
+
+    public static void main() {
+        DecimalFormat dfCustom = new DecimalFormat("#,##0.0#");
+        System.out.println (dfCustom.format(323897654));
+        // Test nhập boolean
+        boolean b = getBool("Gender");
+        System.out.println("Data input: " + b);
+        // Test nhập số
+        int any = getInt("Any num");
+        System.out.println("Any Int inputted: " + any);
+        int age = getInt("Age", 18, 60);
+        System.out.println("Age inputted: " + age);
+        /* Nhập số int lớn hơn 0. Các kiểu dữ liệu số đã định nghĩa sẵn
+           tầm trị bằng 2 hằng MIN_VLUE, MAX_VALUE */
+        int nItem = getInt("Number of Item", 1, Integer.MAX_VALUE);
+        System.out.println("Number of items: " + nItem);
+        // Nhập lương là số thực ít nhất là 200
+        double salary = getFloat("Sal", 200, Double.MAX_VALUE);
+        System.out.println("Salaray inputted: " + salary);
+        // Test nhập 1 String bất kỳ
+        String str;
+        str = getStr("Input a string");
+        System.out.println("Data input: " + str);
+        // Test nhập số phone theo mẫu: 9 số hoặc 11 số có chỉ định tính từ
+        // đầu chuỗi nhập (chỉ định bằng ^) đến cuối chuỗi nhập ($)
+        str = getStr("Phone 1","^[\\d]{9}|[\\d]{11}$","9/11 digits!");
+        System.out.println("Phone 1 input: " + str);
+        str = getStr("Phone 2","[\\d]{9}|[\\d]{11}","9/11 digits!");
+        System.out.println("Phone 2 input: " + str);
+        // Test xuất Date, truy xuất thành phần của Date
+        Date d = new Date(); //Lấy ngày hiện hành trong máy tính
+        System.out.println(d);
+        System.out.println("MM-dd-yyyy: " + dateToStr(d, "MM-dd-yyyy"));
+        System.out.println("dd-MM-yyyy: " +  dateToStr(d, "dd-MM-yyyy"));
+        System.out.println("yyyy-MM: " +  dateToStr(d, "yyyy-MM"));
+        System.out.println("Year: " + dateGetPart(d, Calendar.YEAR));
+        // Month bắt đầu từ 0 nên phải cộng thêm 1
+        System.out.println("Month: " + dateGetPart(d, Calendar.MONTH + 1));
+        System.out.println("Date: " + dateGetPart(d, Calendar.DATE));
+        // Test nhập và xuất Date
+        d= getDate("Date of birth dd-MM-yyyy", "dd-MM-yyyy");
+        System.out.println(d);
+        System.out.println("dd-MM-yyyy: " + dateToStr(d, "dd-MM-yyyy"));
+        // Test các menu
+        int choice = intMenu("Add", "Search", "Remove", "Update", "Print");
+        System.out.println("User choice (int): " + choice);
+        String objChoice = (String)objMenu("Add", "Search", "Remove", "Update");
+        System.out.println("User choice (obj): " + objChoice);
+        // test sinh mã tự động
+        String code = dateKeyGen();
+        System.out.println("Code: " + code);
+    } // main()
+}
+</file>
+
+<file path="tools/TablePrinter.java">
+package tools;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class TablePrinter {
+    private final List<String> columnHeaders = new ArrayList<>();
+    private final List<Integer> columnSizes = new ArrayList<>();
+
+    private int printedRows = 0;
+    private boolean hasIndex = false;
+    private int index = 1;
+
+    String emptyMessage = "Empty Table!";
+
+    public TablePrinter() {}
+
+    public TablePrinter(String emptyMessage) {
+        this.emptyMessage = emptyMessage;
+    }
+
+    // Adds a column header and its corresponding width
+    public void addColumn(String header, int width) {
+        columnHeaders.add(header);
+        columnSizes.add(width);
+    }
+
+    // Adds an Index Column at the front
+    public void addIndexColumn(String header) {
+        columnHeaders.add(0, header);
+        columnSizes.add(0, Math.max(header.length(), 3));
+        hasIndex = true;
+    }
+
+    // Prints top border and header row
+    public void printHeader() {
+        index = 1;
+        printedRows = 0;
+        printDivider();
+        printFormattedRow(columnHeaders.toArray());
+        printDivider();
+    }
+
+    // Prints a row of data matching column order
+    public void printRow(Object... values) {
+        if (hasIndex) {
+            Object[] combined = new Object[values.length + 1];
+            combined[0] = index++;
+            for (int i = 0; i < values.length; i++) {
+                combined[i+1] = values[i];
+            }
+            printFormattedRow(combined);
+        } else {
+            printFormattedRow(values);
+        }
+        printedRows++;
+    }
+
+    public void printEmpty(String message) {
+        int innerWidth = getFullWidth() - 2;
+
+        if (message.length() > innerWidth) {
+            message = message.substring(0, innerWidth);
+        }
+
+        int totalPadding = innerWidth - message.length();
+        int leftPadding = totalPadding / 2;
+        int rightPadding = totalPadding - leftPadding;
+
+        StringBuilder emptyRow = new StringBuilder("|");
+        for (int i = 0; i < leftPadding; i++) {
+            emptyRow.append(" ");
+        }
+        emptyRow.append(message);
+        for (int i = 0; i < rightPadding; i++) {
+            emptyRow.append(" ");
+        }
+        emptyRow.append("|");
+
+        System.out.println(emptyRow.toString());
+    }
+
+    // Prints the closing bottom border
+    public void printFooter() {
+        index = 1;
+        if (printedRows == 0) {
+            printEmpty(emptyMessage);
+        }
+        printedRows = 0;
+        printDivider();
+    }
+
+    // Helper method to format cells with padding and borders
+    private void printFormattedRow(Object[] values) {
+        StringBuilder row = new StringBuilder("|");
+        for (int i = 0; i < columnSizes.size(); i++) {
+            String cellText = (i < values.length && values[i] != null) ? values[i].toString() : "";
+            int width = columnSizes.get(i);
+
+            // Truncate text if it exceeds column width
+            if (cellText.length() > width) {
+                if (width > 1) {
+                    cellText = cellText.substring(0, width - 1) + "…";
+                } else {
+                    cellText = cellText.substring(0, width);
+                }
+            }
+
+            // %-10s left-aligns text with a total padded width of 10
+            row.append(String.format(" %-" + width + "s |", cellText));
+        }
+        System.out.println(row.toString());
+    }
+
+    // Helper method to draw horizontal divider lines (+----+-----+)
+    private void printDivider() {
+        StringBuilder divider = new StringBuilder("+");
+        for (int width : columnSizes) {
+            for (int i = 0; i < width + 2; i++) {
+                divider.append("-");
+            }
+            divider.append("+");
+        }
+        System.out.println(divider.toString());
+    }
+
+    // Get the Theoretical Width of the Table
+    public int getFullWidth() {
+        int totalCellWidth = 0;
+        for (int width : columnSizes) {
+            totalCellWidth += width;
+        }
+
+        // Each column has 2 spaces of padding plus 1 border character
+        // Add 1 final border character for the far-left border
+        return totalCellWidth + (columnSizes.size() * 3) + 1;
+    }
+}
+</file>
+
+<file path="Main.java">
+import java.util.Date;
+
+import services.CourseList;
+import services.StudentList;
+import tools.Input;
+
+public class Main {
+    public static void main(String[] args) {
+        String studentFile = "Students.txt";
+        String courseFile = "Courses.txt";
+
+        StudentList studentList = new StudentList();
+        studentList.loadFromTextFile(studentFile);
+        CourseList courseList = new CourseList(studentList);
+        courseList.loadFromTextFile(courseFile);
+
+        boolean hasChanges = false;
+        boolean quit = false;
+        while (!quit) {
+            System.out.println(
+                    "-------------------------------------------------------------------\n" +
+                    "                   STUDENTS AND COURSES MANAGEMENT                 \n" +
+                    "-------------------------------------------------------------------"
+            );
+
+            int menuChoice = Input.intMenu(
+                    "List all Students",
+                    "Add a new Student",
+                    "Search Student by ID",
+                    "Update a Student by ID",
+                    "List all Students by Major",
+                    "Add a new course",
+                    "List all courses by students (grouped)",
+                    "Remove a Student by ID",
+                    "Sort Student by GPA",
+                    "Save data to file",
+                    "Quit"
+            );
+
+            System.out.println("");
+
+            switch (menuChoice) {
+                case 0:
+                    studentList.listItems();
+                    break;
+                case 1:
+                    studentList.addItem();
+                    hasChanges = true;
+                    break;
+                case 2:
+                    studentList.printItem(studentList.searchItems().selectItem());
+                    break;
+                case 3:
+                    studentList.updateItem();
+                    hasChanges = true;
+                    break;
+                case 4:
+                    studentList.searchItems().listItems();
+                    break;
+                case 5:
+                    courseList.addItem();
+                    hasChanges = true;
+                    break;
+                case 6:
+                    courseList.listItems(courseList.getComparator(), false);
+                    break;
+                case 7:
+                    studentList.deleteItem();
+                    hasChanges = true;
+                    break;
+                case 8:
+                    studentList.listItems(studentList.getComparator(), false);
+                    break;
+                case 9:
+                    studentList.saveToTextFile(studentFile);
+                    courseList.saveToTextFile(courseFile);
+                    System.out.println();
+                    System.out.println("Save successfully");
+                    hasChanges = false;
+                    break;
+                default:
+                    if (hasChanges && Input.getBool("Save Changes?")) {
+                        System.out.println("");
+                        studentList.saveToTextFile(studentFile);
+                        courseList.saveToTextFile(courseFile);
+                    }
+                    quit = true;
+                    break;
+            }
+
+            System.out.println("");
+        }
+
+    }
+}
+</file>
+
+</files>

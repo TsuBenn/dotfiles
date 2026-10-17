@@ -1,0 +1,7 @@
+STU0001, Nguyen Van A, Software Engineering, 3.4
+STU0002, Tran Thi B, Information Systems, 3.8
+STU0003, Nguyen Van An, Software Engineering, 3.4
+STU0004, Tran Thi Bich, Information Systems, 3.7
+STU0005, Le Hoang Minh, Computer Science, 3.2
+STU0006, Pham Quoc Huy, Artificial Intelligence, 3.9
+STU0007, Vo Thanh Tam, Data Science, 3.5

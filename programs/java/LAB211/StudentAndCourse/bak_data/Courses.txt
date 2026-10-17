@@ -1,0 +1,7 @@
+CSE201, STU0002, Database Systems, 10, 15/09/2025
+MAT301, STU0003, Discrete Mathematics, 8, 20/09/2025
+AI401, STU0004, Machine Learning, 10, 05/10/2025
+DS501, STU0005, Big Data Analytics, 8, 10/10/2025
+PRJ301, STU0001, Java Web Project, 6, 20/10/2025
+PRO192, STU0003, Java Programming, 8, 25/10/2025
+DBI202, STU0002, Database Design, 5, 01/11/2025
