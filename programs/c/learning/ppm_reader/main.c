@@ -35,16 +35,21 @@ int main(int argc, char *argv[]) {
   }
 
   image_t image = {
-      .pixels = vec_new_t(pixel_t, 0), .width = 0, .height = 0, .max = 0};
+      .pixels = vec_new_t(pixel_t, 0), .width = 0, .height = 0, .max = 0
+  };
 
-  clock_t start = clock();
+  clock_t start,end;
+
+  start = clock();
 
   parse_file(content, &image);
 
-  clock_t end = clock();
+  end = clock();
 
   printf("Parse time: %.2lf ms\n",
          ((double)(end - start) / CLOCKS_PER_SEC) * 1000);
+
+  vec_t* pixels_bak = vec_clone(image.pixels);
 
 main_menu:
   printf("====================================================\n");
@@ -57,6 +62,7 @@ main_menu:
       "Invert Colors",
       "HSV Adjustment",
       "Box Blur",
+      "Reset",
       "Save to Output",
       "Quit",
   };
@@ -83,6 +89,7 @@ main_menu:
   switch (choice) {
     case 0: {
       printf("\nProcessing...");
+      fflush(stdout);
       apply_grayscale(&image);
       printf("\rApplied Grayscale filter Successfully!    \n\n");
       goto main_menu;
@@ -90,6 +97,7 @@ main_menu:
     }
     case 1: {
       printf("\nProcessing...");
+      fflush(stdout);
       apply_invert(&image);
       printf("\rApplied Invert Colors filter Successfully!    \n\n");
       goto main_menu;
@@ -109,19 +117,28 @@ main_menu:
       input_get_float(&hsv_offset.v, "Enter Value offset {}:", &(float){-1.0}, &(float){1.0}, &(float){0.0});
 
       printf("\nProcessing...");
+      fflush(stdout);
       apply_hsv_adjustment(&image, &hsv_offset);
       printf("\rApplied HSV Adjustment Successfully!    \n\n");
       goto main_menu;
       break;
     }
     case 3: {
+      int kernel_size = 3;
+      input_get_int(&kernel_size, "Enter kernel size {}:", &(int){3}, NULL, &(int){3});
       printf("\nProcessing...");
-      apply_box_blur(&image);
+      fflush(stdout);
+      apply_box_blur(&image, (size_t) kernel_size);
       printf("\rApplied Box blur filter Successfully!    \n\n");
       goto main_menu;
       break;
     }
     case 4: {
+        vec_copy(image.pixels, pixels_bak);
+      printf("\nPixel data reset Successfully!    \n\n");
+        goto main_menu;
+    }
+    case 5: {
       printf("\nSaving to %s...\n", argv[2]);
       if (!save_ppm(argv[2], &image)) {
         fprintf(stderr, "\nFailed saving to %s\n\n", argv[2]);
@@ -141,6 +158,7 @@ main_menu:
 
 clean_up:
   vec_free(image.pixels);
+  vec_free(pixels_bak);
   string_free(content);
   return err;
 }

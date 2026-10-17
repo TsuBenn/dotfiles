@@ -21,6 +21,13 @@ typedef struct Vec {
 vec_t* vec_new(size_t elem_size, size_t init_cap);
 
 /**
+ * Copy `other_vec` content into `vec`.
+ *
+ * Returns `1` on success, returns `0` if allocation fails (`vec` is left unchanged) or `vec->elem_size != other_vec->elem_size`.
+ */
+int vec_copy(vec_t* vec, const vec_t* other_vec);
+
+/**
  * Create a new empty `vec` with specified type size.
  *
  * Returns `NULL` if `elem_size == 0` or allocation fails.

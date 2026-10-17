@@ -1,4 +1,4 @@
-CC = gcc
+CC = clang
 CFLAGS = -Wall -Wextra -g -fsanitize=address,undefined
 CDEFS = -lm
 BIN = ppm_reader

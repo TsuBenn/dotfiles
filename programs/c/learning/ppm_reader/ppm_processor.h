@@ -41,6 +41,12 @@ void hsv_add_hsv(hsv_t* hsv, hsv_t* other_hsv);
 
 void apply_hsv_adjustment(image_t *image, hsv_t* hsv_offset);
 
-void apply_box_blur(image_t *image);
+void apply_box_blur(image_t *image, size_t kernel);
+
+pixel_t* get_pixel(image_t *image, size_t x, size_t y);
+
+size_t get_pixel_x(image_t *image, size_t index);
+
+size_t get_pixel_y(image_t *image, size_t index);
 
 #endif

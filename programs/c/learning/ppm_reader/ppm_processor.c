@@ -3,6 +3,9 @@
 #include <ctype.h>
 #include <math.h>
 #include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #include "ppm_processor.h"
 
@@ -150,7 +153,7 @@ void apply_grayscale(image_t *image) {
   for (size_t i = 0; i < image->pixels->len; i++) {
     pixel_t *pixel;
     if ((pixel = vec_get_t(image->pixels, i, pixel_t))) {
-      size_t avg_val = (pixel->r + pixel->b + pixel->b) / 3;
+      size_t avg_val = (pixel->r + pixel->g + pixel->b) / 3;
       pixel->r = pixel->g = pixel->b = avg_val;
     }
   }
@@ -172,52 +175,32 @@ hsv_t rgb_to_hsv(pixel_t *pixel, int max) {
   float ng = (pixel->g / (float)max);
   float nb = (pixel->b / (float)max);
 
-  // 0->r 1->g 3->b
-  int max_color = 0;
-  float nmax = 0;
-  float nmin = 1;
-
-  if (nr > nmax) {
-    nmax = nr;
-    max_color = 0;
-  }
-  if (ng > nmax) {
-    nmax = ng;
-    max_color = 1;
-  }
-  if (nb > nmax) {
-    nmax = nb;
-    max_color = 2;
-  }
-
-  if (nr < nmin)
-    nmin = nr;
-  if (ng < nmin)
-    nmin = ng;
-  if (nb < nmin)
-    nmin = nb;
+  float nmax = fmax(nr, fmax(ng, nb));
+  float nmin = fmin(nr, fmin(ng, nb));
 
   float delta = nmax - nmin;
 
-  hsv_t hsv;
+  hsv_t hsv = {nmax,nmax,nmax};
 
-  hsv.v = nmax;
-  hsv.s = nmax ? delta / (nmax) : 0;
+  hsv.s = nmax != 0 ? delta / (nmax) : 0;
 
-  switch (max_color) {
-  case 0:
-    hsv.h = 60 * fmodf((ng - nb) / delta, 6.0f);
-    break;
-  case 1:
-    hsv.h = 60 * ((nb - nr) / delta + 2.0f);
-    break;
-  case 2:
-    hsv.h = 60 * ((nr - ng) / delta + 4.0f);
-    break;
+  if (delta == 0.0f) {
+    hsv.h = 0.0f;
+  } else {
+    if (nmax == nr) {
+      hsv.h = fmodf((ng-nb)/delta,6.0f);
+    } else if (nmax == ng) {
+      hsv.h = (nb-nr)/delta + 2.0f;
+    } else if (nmax == nb) {
+      hsv.h = (nr-ng)/delta + 4.0f;
+    }
+    hsv.h *= 60.0f;
   }
 
   if (hsv.h < 0.0f) {
-    hsv.h += 360.0f;
+    hsv.h += 360.0;
+  } else if (hsv.h > 360.0f) {
+    hsv.h -= 360.0;
   }
 
   return hsv;
@@ -226,16 +209,14 @@ hsv_t rgb_to_hsv(pixel_t *pixel, int max) {
 pixel_t hsv_to_rgb(hsv_t *hsv, int max) {
   pixel_t pixel;
 
-  if (hsv->s == 0.0f) {
-    pixel.r = hsv->v * max;
-    pixel.g = hsv->v * max;
-    pixel.b = hsv->v * max;
+  if (hsv->s <= 0.0f) {
+    pixel.r = pixel.g = pixel.b = hsv->v * max;
     return pixel;
   }
 
-  float c = hsv->s * hsv->v;
+  float c = hsv->v * hsv->s;
   float h_prime = fmodf(hsv->h / 60.0f, 6.0f);
-  float x = c * (1.0f - fabsf(fmodf(h_prime, 2.0f) - 1.0f));
+  float x = (1.0f - fabsf(fmodf(h_prime, 2.0f)-1.0f)) * c;
   float m = hsv->v - c;
 
   float r_prime = 0.0f, g_prime = 0.0f, b_prime = 0.0f;
@@ -245,19 +226,19 @@ pixel_t hsv_to_rgb(hsv_t *hsv, int max) {
     r_prime = c;
     g_prime = x;
     b_prime = 0.0f;
-  } else if (h_prime >= 1.0f && h_prime < 2.0f) {
+  } else if (h_prime < 2.0f) {
     r_prime = x;
     g_prime = c;
     b_prime = 0.0f;
-  } else if (h_prime >= 2.0f && h_prime < 3.0f) {
+  } else if (h_prime < 3.0f) {
     r_prime = 0.0f;
     g_prime = c;
     b_prime = x;
-  } else if (h_prime >= 3.0f && h_prime < 4.0f) {
+  } else if (h_prime < 4.0f) {
     r_prime = 0.0f;
     g_prime = x;
     b_prime = c;
-  } else if (h_prime >= 4.0f && h_prime < 5.0f) {
+  } else if (h_prime < 5.0f) {
     r_prime = x;
     g_prime = 0.0f;
     b_prime = c;
@@ -268,9 +249,9 @@ pixel_t hsv_to_rgb(hsv_t *hsv, int max) {
   }
 
   // Add back the baseline brightness and scale to final output
-  pixel.r = (r_prime + m) * max;
-  pixel.g = (g_prime + m) * max;
-  pixel.b = (b_prime + m) * max;
+  pixel.r = fmax(fmin((r_prime + m)*max, max), 0);
+  pixel.g = fmax(fmin((g_prime + m)*max, max), 0);
+  pixel.b = fmax(fmin((b_prime + m)*max, max), 0);
 
   return pixel;
 }
@@ -282,16 +263,16 @@ void hsv_add_hsv(hsv_t *hsv, hsv_t *other_hsv) {
   } else if (hsv->h < 0) {
     hsv->h += 360;
   }
-  hsv->s += other_hsv->s;
+  hsv->s = hsv->s * (1 + other_hsv->s);
   if (hsv->s > 1.0) {
     hsv->s = 1.0;
   } else if (hsv->s < 0) {
     hsv->s = 0.0;
   }
-  hsv->v += other_hsv->v;
+  hsv->v = hsv->v * (1 + other_hsv->v);
   if (hsv->v > 1.0) {
     hsv->v = 1.0;
-  } else if (hsv->s < 0) {
+  } else if (hsv->v < 0) {
     hsv->v = 0.0;
   }
 }
@@ -307,4 +288,63 @@ void apply_hsv_adjustment(image_t *image, hsv_t *hsv_offset) {
   }
 }
 
-void apply_box_blur(image_t *image) {}
+
+
+pixel_t* get_pixel(image_t *image, size_t x, size_t y) {
+  if (x < 0) x = 0; else if (x >= (size_t)image->width) x = image->width - 1;
+  if (y < 0) y = 0; else if (y >= (size_t)image->height) y = image->height - 1;
+  return vec_get_t(image->pixels, y * (size_t)image->width + x, pixel_t);
+}
+
+size_t get_pixel_x(image_t *image, size_t index) {
+  if (index < 0) index = 0; else if (index >= (size_t)image->pixels->len) index = image->pixels->len-1;
+  return index % (size_t)image->width;
+}
+
+size_t get_pixel_y(image_t *image, size_t index) {
+  if (index < 0) index = 0; else if (index >= (size_t)image->pixels->len) index = image->pixels->len-1;
+  return index / (size_t)image->width;
+}
+
+static void clamp_pixel(pixel_t* pixel, size_t max) {
+  pixel->r = fmax(fmin(pixel->r, max), 0);
+  pixel->g = fmax(fmin(pixel->g, max), 0);
+  pixel->b = fmax(fmin(pixel->b, max), 0);
+}
+
+void apply_box_blur(image_t *image, size_t kernel) {
+  vec_t* tmp_pixels = vec_new_t(pixel_t, image->width*image->height);
+  for (size_t i = 0; i < image->pixels->len; i++) {
+    size_t ko = (kernel-1)/2;
+    size_t x = get_pixel_x(image, i);
+    size_t y = get_pixel_y(image, i);
+    size_t sum_r=0,sum_g=0,sum_b=0,count=0;
+    pixel_t tmp_pixel = {0, 0, 0};
+    for (size_t ky = y < 0 + ko ? 0 : y - ko; ky <= y + ko; ky++) {
+      for (size_t kx = x < 0 + ko ? 0 : x - ko; kx <= x + ko; kx++) {
+        pixel_t* pixel = get_pixel(image, kx, ky);
+        if (!pixel) {
+          fprintf(stderr, "ppm_reader: apply_box_blur (get_pixel)\n");
+          vec_free(tmp_pixels);
+          return;
+        }
+        sum_r+=pixel->r;
+        sum_g+=pixel->g;
+        sum_b+=pixel->b;
+        count++;
+      }
+    }
+    if (count == 0) {
+      fprintf(stderr, "ppm_reader: apply_box_blur (count == 0)\n");
+    }
+    tmp_pixel.r = sum_r/count;
+    tmp_pixel.g = sum_g/count;
+    tmp_pixel.b = sum_b/count;
+    clamp_pixel(&tmp_pixel, image->max);
+    vec_push(tmp_pixels, &tmp_pixel);
+  }
+  if (!vec_copy(image->pixels, tmp_pixels)) {
+    fprintf(stderr, "ppm_reader: apply_box_blur (vec_copy)\n");
+  }
+  vec_free(tmp_pixels);
+}

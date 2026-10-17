@@ -66,6 +66,18 @@ vec_t *vec_new(size_t elem_size, size_t init_cap) {
   return new_vec;
 }
 
+int vec_copy(vec_t* vec, const vec_t* other_vec) {
+  if (vec->elem_size != other_vec->elem_size) {
+    return 0;
+  }
+  if (!vec_reserve(vec, other_vec->len)) {
+    return 0;
+  }
+  memcpy(vec->data, other_vec->data, other_vec->len*other_vec->elem_size);
+  vec->len = other_vec->len;
+  return 1;
+}
+
 vec_t* vec_clone(const vec_t* vec) {
   vec_t* new_vec = vec_new(vec->elem_size, vec->len);
   if (!new_vec) {
