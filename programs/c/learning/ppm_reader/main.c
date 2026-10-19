@@ -128,7 +128,11 @@ main_menu:
       input_get_int(&kernel_size, "Enter kernel size {}:", &(int){3}, NULL, &(int){3});
       printf("\nProcessing...");
       fflush(stdout);
+      start = clock();
       apply_box_blur(&image, (size_t) kernel_size);
+      end = clock();
+      printf("Process time: %.2lf ms\n",
+             ((double)(end - start) / CLOCKS_PER_SEC) * 1000);
       printf("\rApplied Box blur filter Successfully!    \n\n");
       goto main_menu;
       break;

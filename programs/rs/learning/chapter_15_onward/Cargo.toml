@@ -1,0 +1,4 @@
+[workspace]
+resolver = "3"
+members = ["asynchronous","concurrency","input_utils", "smart_pointers", "term_player"]
+

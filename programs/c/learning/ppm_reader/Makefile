@@ -1,5 +1,5 @@
-CC = clang
-CFLAGS = -Wall -Wextra -g -fsanitize=address,undefined
+CC = gcc
+CFLAGS = -Wall -Wextra -g -fsanitize=address,undefined -o3
 CDEFS = -lm
 BIN = ppm_reader
 
