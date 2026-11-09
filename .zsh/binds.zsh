@@ -14,7 +14,7 @@ bindkey '^[[1;5C' forward-word
 
 # --- Tab & Suggestions ---
 # Tab: Standard completion (handled by Zsh/Zinit completions)
-bindkey '^I' expand-or-complete 
+bindkey '^I' expand-or-complete
 
 # Escape: Accept the current autosuggestion
 # Note: This requires zsh-autosuggestions to be loaded via zinit first
@@ -86,7 +86,7 @@ zle -N select-all
 # Bind it to Ctrl+A
 bindkey '^A' select-all
 
-# This function checks if a selection is active. 
+# This function checks if a selection is active.
 # If yes, it deletes the selection. If no, it deletes one char.
 backward-delete-char-or-selection() {
     if (( REGION_ACTIVE )); then

@@ -14,3 +14,7 @@ fi
 [ -f /home/tsubenn/.dart-cli-completion/bash-config.bash ] && . /home/tsubenn/.dart-cli-completion/bash-config.bash || true
 ## [/Completion]
 
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/tsubenn/.local/bin:$PATH"

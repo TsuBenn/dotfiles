@@ -1,6 +1,34 @@
 [
   {
     "category": "emoji",
+    "description": "Skull <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-negative",
+      "skull",
+      "body",
+      "dead",
+      "death",
+      "face",
+      "fairy",
+      "fairytale",
+      "i’m",
+      "lmao",
+      "monster",
+      "skull",
+      "tale",
+      "yolo"
+    ],
+    "label": "💀",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 💀"
+    ]
+  },
+  {
+    "category": "emoji",
     "description": "Loudly crying face <i>Smileys & Emotion</i>",
     "group": "Smileys & Emotion",
     "keywords": [
@@ -27,30 +55,113 @@
   },
   {
     "category": "emoji",
-    "description": "Skull <i>Smileys & Emotion</i>",
+    "description": "Grinning face with big eyes <i>Smileys & Emotion</i>",
     "group": "Smileys & Emotion",
     "keywords": [
-      "face-negative",
-      "skull",
-      "body",
-      "dead",
-      "death",
+      "face-smiling",
+      "grinning face with big eyes",
+      "awesome",
+      "big",
+      "eyes",
       "face",
-      "fairy",
-      "fairytale",
-      "i’m",
-      "lmao",
-      "monster",
-      "skull",
-      "tale",
-      "yolo"
+      "grin",
+      "grinning",
+      "happy",
+      "mouth",
+      "open",
+      "smile",
+      "smiling",
+      "teeth",
+      "yay"
     ],
-    "label": "💀",
+    "label": "😃",
     "type": "exec",
     "value": [
       "bash",
       "-c",
-      "sleep 0.2 && wtype 💀"
+      "sleep 0.2 && wtype 😃"
+    ]
+  },
+  {
+    "category": "emoji",
+    "description": "Flag: kosovo <i>Flags</i>",
+    "group": "Flags",
+    "keywords": [
+      "country-flag",
+      "flag: Kosovo",
+      "flag"
+    ],
+    "label": "🇽🇰",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 🇽🇰"
+    ]
+  },
+  {
+    "category": "emoji",
+    "description": "Folded hands <i>People & Body</i>",
+    "group": "People & Body",
+    "keywords": [
+      "hands",
+      "folded hands",
+      "appreciate",
+      "ask",
+      "beg",
+      "blessed",
+      "bow",
+      "cmon",
+      "five",
+      "folded",
+      "gesture",
+      "hand",
+      "high",
+      "please",
+      "pray",
+      "thanks",
+      "thx",
+      "folded hands",
+      "high five"
+    ],
+    "label": "🙏",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 🙏"
+    ]
+  },
+  {
+    "category": "emoji",
+    "description": "Smirking face <i>Smileys & Emotion</i>",
+    "group": "Smileys & Emotion",
+    "keywords": [
+      "face-neutral-skeptical",
+      "smirking face",
+      "boss",
+      "dapper",
+      "face",
+      "flirt",
+      "homie",
+      "kidding",
+      "leer",
+      "shade",
+      "slick",
+      "sly",
+      "smirk",
+      "smug",
+      "snicker",
+      "suave",
+      "suspicious",
+      "swag"
+    ],
+    "label": "😏",
+    "type": "exec",
+    "value": [
+      "bash",
+      "-c",
+      "sleep 0.2 && wtype 😏"
     ]
   },
   {

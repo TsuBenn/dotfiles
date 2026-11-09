@@ -6,3 +6,7 @@ source "${HOME}/dotfiles/.zsh/binds.zsh"
 source "${HOME}/dotfiles/.zsh/aliases.zsh"
 source "${HOME}/dotfiles/.zsh/functions.zsh"
 
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/tsubenn/.local/bin:$PATH"

@@ -1,13 +1,22 @@
 use std::{
-    error::Error, io::{self, Read}, process, sync::mpsc::{Receiver, Sender}, thread
+    error::Error,
+    fmt::Write,
+    io::{self, Read},
+    process,
+    sync::mpsc::Receiver,
+    thread,
+    time::Instant,
 };
 
 use crossterm::{
     cursor::{self},
     event::{Event, EventStream, KeyCode},
-    terminal,
+    style, terminal,
 };
-use ffmpeg_next::{codec::context, format::context::StreamIo};
+use ffmpeg_next::{
+    format::context::StreamIo,
+    software::scaling::{self, Flags},
+};
 use tokio_stream::StreamExt;
 
 struct ChannelReader {
@@ -63,33 +72,112 @@ fn start_decoder_thread(decoder_rx: Receiver<Vec<u8>>) {
 
         match ffmpeg_next::format::input_from_stream(io_stream, None, None) {
             Ok(mut ictx) => {
-                println!("\rSuccessfully opened video container from stream!");
-                let input = ictx.streams().best(ffmpeg_next::media::Type::Video).unwrap();
+                // println!("\rSuccessfully opened video container from stream!");
+                let input = ictx
+                    .streams()
+                    .best(ffmpeg_next::media::Type::Video)
+                    .unwrap();
 
                 let video_stream_index = input.index();
 
-                let context = ffmpeg_next::codec::context::Context::from_parameters(input.parameters()).unwrap();
+                let context =
+                    ffmpeg_next::codec::context::Context::from_parameters(input.parameters())
+                        .unwrap();
 
                 let mut decoder = context.decoder().video().unwrap();
 
                 println!("\rFound video stream at index {}!", video_stream_index);
 
                 let mut frame = ffmpeg_next::util::frame::video::Video::empty();
+                let mut rgb_frame = ffmpeg_next::util::frame::video::Video::empty();
+
+                let padding = 1;
+
+                let (mut ter_w, mut ter_h) = terminal::size().unwrap();
+                ter_w -= padding * 4;
+                ter_h -= padding * 2;
+                let mut w = ter_w;
+                let mut h = ter_h * 2;
+                let video_ratio = (decoder.width() as f64) / (decoder.height() as f64);
+                let ter_ratio = (w as f64) / (h as f64);
+
+                if video_ratio > ter_ratio {
+                    h = (w as f64 / video_ratio) as u16;
+                } else {
+                    w = (h as f64 * video_ratio) as u16;
+                }
+
+                let mut sws = scaling::context::Context::get(
+                    decoder.format(),
+                    decoder.width(),
+                    decoder.height(),
+                    ffmpeg_next::format::Pixel::RGB24,
+                    w as u32,
+                    h as u32,
+                    Flags::FAST_BILINEAR,
+                )
+                .unwrap();
+
+                crossterm::execute!(io::stdout(), terminal::Clear(terminal::ClearType::All))
+                    .unwrap();
 
                 for (stream, packet) in ictx.packets() {
                     if stream.index() == video_stream_index {
                         decoder.send_packet(&packet).unwrap();
                         while decoder.receive_frame(&mut frame).is_ok() {
-                            println!("\rDecoded a frame! Resolution: {}x{}, Format: {:?}", frame.width(), frame.height(), frame.format())
+                            sws.run(&frame, &mut rgb_frame).unwrap();
+                            let rgb_data = rgb_frame.data(0);
+                            let rgb_stride = rgb_frame.stride(0);
+                            let width = rgb_frame.width() as usize;
+                            let height = rgb_frame.height() as usize;
+
+                            // Preallocate a big enough buffer for the whole frame once (outside the loop)
+                            let mut frame_buffer = String::with_capacity(width * height * 32);
+
+                            // Inside your frame loop:
+                            frame_buffer.clear();
+
+                            // Move cursor to top-left once per frame
+                            frame_buffer.push_str("\x1b[H");
+
+                            for y in (0..height).step_by(2) {
+                                let top_row_idx = y * rgb_stride;
+                                let bottom_row_idx = (y + 1) * rgb_stride;
+                                for x in 0..width {
+                                    let top_idx = top_row_idx + (x * 3);
+                                    let bottom_idx = bottom_row_idx + (x * 3);
+
+                                    let tr = rgb_data[top_idx];
+                                    let tg = rgb_data[top_idx + 1];
+                                    let tb = rgb_data[top_idx + 2];
+
+                                    let br = rgb_data[bottom_idx];
+                                    let bg = rgb_data[bottom_idx + 1];
+                                    let bb = rgb_data[bottom_idx + 2];
+
+                                    let _ = write!(
+                                        &mut frame_buffer,
+                                        "\x1b[38;2;{};{};{}m\x1b[48;2;{};{};{}m▀",
+                                        tr, tg, tb, br, bg, bb
+                                    );
+                                }
+                                frame_buffer.push_str("\r\n");
+                            }
+
+                            frame_buffer.push_str("\x1b[0m");
+
+                            use std::io::Write;
+
+                            io::stdout().write_all(frame_buffer.as_bytes()).unwrap();
+                            io::stdout().flush().unwrap();
                         }
                     }
                 }
-            },
+            }
             Err(e) => {
-                println!("\rFailed to open video container from stream: {}",e);
+                println!("\rFailed to open video container from stream: {}", e);
             }
         }
-
     });
 }
 
@@ -106,7 +194,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let (network_tx, mut network_rx) = tokio::sync::mpsc::channel::<Vec<u8>>(32);
 
     tokio::spawn(async move {
-        let response = reqwest::get("https://samplelib.com/mp4/sample-5s-360p.mp4").await.unwrap();
+        let response = reqwest::get("https://samplelib.com/mp4/sample-10s-360p.mp4")
+            .await
+            .unwrap();
         let mut stream = response.bytes_stream();
 
         while let Some(Ok(bytes)) = stream.next().await {
@@ -146,6 +236,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
+    crossterm::execute!(std::io::stdout(), cursor::Show,).unwrap();
     terminal::disable_raw_mode()?;
     Ok(())
 }
